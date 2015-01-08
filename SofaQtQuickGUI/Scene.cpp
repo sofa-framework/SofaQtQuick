@@ -1,6 +1,5 @@
 #include "Scene.h"
 
-#include <sofa/component/init.h>
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
 #include <sofa/core/objectmodel/KeyreleasedEvent.h>
@@ -8,7 +7,7 @@
 #include <sofa/helper/system/PluginManager.h>
 #include <sofa/simulation/common/xml/initXml.h>
 #include <sofa/simulation/graph/DAGSimulation.h>
-#include <sofa/core/visual/VisualParams.h>
+#include <SofaComponentMain/init.h>
 
 #include <qqml.h>
 #include <QVector3D>
