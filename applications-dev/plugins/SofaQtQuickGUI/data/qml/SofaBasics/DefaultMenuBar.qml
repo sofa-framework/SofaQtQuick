@@ -56,8 +56,8 @@ MenuBar {
         Action {
             id: saveAsAction
             text: "&Save As..."
-            onTriggered: saveSofaSceneDialog.open();
             tooltip: "Save the Sofa Scene at a specific location"
+            onTriggered: saveSofaSceneDialog.open();
         },
 
         Action
@@ -66,6 +66,21 @@ MenuBar {
             text: "&Exit"
             shortcut: "Ctrl+Q"
             onTriggered: close()
+        },
+
+        Action {
+            id: simulateAction
+            text: "&Simulate"
+            shortcut: "Space"
+            tooltip: "Open a Sofa Scene"
+            checkable: true
+            checked: false
+            onTriggered: if(scene) scene.play = checked
+
+            property var sceneConnection: Connections {
+                target: scene
+                onPlayChanged: simulateAction.checked = scene.play
+            }
         },
 
         MessageDialog {
@@ -79,8 +94,8 @@ MenuBar {
         {
             id: aboutAction
             text: "&About"
-            onTriggered: aboutDialog.visible = true;
             tooltip: "What is this application ?"
+            onTriggered: aboutDialog.visible = true;
         }
     ]
 
@@ -138,6 +153,15 @@ MenuBar {
         MenuSeparator {}
         MenuItem {action: exitAction}
     }
+
+    Menu {
+        title: "&Simulation"
+        visible: true
+        enabled: scene && scene.ready
+
+        MenuItem {action: simulateAction}
+    }
+
 /*
     Menu {
         title: "&Edit"
