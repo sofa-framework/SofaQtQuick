@@ -8,9 +8,9 @@
 #include <QtQuick/qquickwindow.h>
 #include <QQmlEngine>
 #include <QQmlContext>
-#include <QOpenGLPaintDevice>
-#include <QPaintEngine>
-#include <QPainter>
+//#include <QOpenGLPaintDevice>
+//#include <QPaintEngine>
+//#include <QPainter>
 #include <QVector>
 #include <QVector4D>
 #include <QOpenGLFramebufferObject>
