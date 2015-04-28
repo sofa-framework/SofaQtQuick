@@ -8,6 +8,7 @@
 #include <QtQuick/qquickwindow.h>
 #include <QQmlEngine>
 #include <QQmlContext>
+//#include <QOpenGLContext>
 //#include <QOpenGLPaintDevice>
 //#include <QPaintEngine>
 //#include <QPainter>
@@ -249,7 +250,7 @@ void Viewer::paint()
 
     QPoint pos(qFloor(realPos.x()), qFloor(realPos.y()));
     QSize size((qCeil(width()) + qCeil(pos.x() - realPos.x())) * window()->devicePixelRatio(), (qCeil((height()) + qCeil(pos.y() - realPos.y())) * window()->devicePixelRatio()));
-	if(!size.isValid())
+    if(size.isEmpty())
         return;
 
     // clear the viewer rectangle and just its area, not the whole OpenGL buffer
@@ -261,6 +262,8 @@ void Viewer::paint()
 
     if(myScene && myScene->isLoading())
         myScene->initGraphics();
+
+//    qDebug() << QOpenGLContext::currentContext() << myFBO << size;
 
     // create or resize the fbo
     if(!myFBO ||
