@@ -423,7 +423,7 @@ void Scene::reinitComponent(const QString& path)
 
     Node::SPtr node = mySofaSimulation->GetRoot();
     unsigned int i = 0;
-    while(i < pathComponents.size()-1) {
+    while(i+1 < pathComponents.size()) {
         if (pathComponents[i]=="@") {
             ++i;
             continue;
