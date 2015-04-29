@@ -16,6 +16,7 @@ Viewer {
     backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
     wireframe: false
     culling: true
+    blending: false
     antialiasing: false
 
 	Action{
@@ -335,6 +336,23 @@ Viewer {
                                         description: "Enable culling"
                                     }
                                 }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: "Blending"
+                                }
+
+                                Switch {
+                                    id: blendingSwitch
+                                    Layout.alignment: Qt.AlignCenter
+                                    Component.onCompleted: checked = root.blending
+                                    onCheckedChanged: root.blending = checked
+
+                                    ToolTip {
+                                        anchors.fill: parent
+                                        description: "Enable blending"
+                                    }
+                                }
 /*
                                 // TODO: antialiasing not implemented yet
                                 Label {
@@ -400,43 +418,43 @@ Viewer {
                                     }
                                 }
 
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Logo"
-                                }
+//                                Label {
+//                                    Layout.fillWidth: true
+//                                    text: "Logo"
+//                                }
 
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 0
+//                                RowLayout {
+//                                    Layout.fillWidth: true
+//                                    spacing: 0
 
-                                    TextField {
-                                        id: logoTextField
-                                        Layout.fillWidth: true
-                                        Component.onCompleted: text = root.backgroundImageSource
-                                        onAccepted: root.backgroundImageSource = text
-                                    }
+//                                    TextField {
+//                                        id: logoTextField
+//                                        Layout.fillWidth: true
+//                                        Component.onCompleted: text = root.backgroundImageSource
+//                                        onAccepted: root.backgroundImageSource = text
+//                                    }
 
-                                    Button {
-                                        Layout.preferredWidth: 22
-                                        Layout.preferredHeight: Layout.preferredWidth
-                                        iconSource: "qrc:/icon/open.png"
+//                                    Button {
+//                                        Layout.preferredWidth: 22
+//                                        Layout.preferredHeight: Layout.preferredWidth
+//                                        iconSource: "qrc:/icon/open.png"
 
-                                        onClicked: openLogoDialog.open()
+//                                        onClicked: openLogoDialog.open()
 
-                                        FileDialog {
-                                            id: openLogoDialog
-                                            title: "Please choose a logo"
-                                            selectFolder: true
-                                            selectMultiple: false
-                                            selectExisting: true
-                                            property var resultTextField
-                                            onAccepted: {
-                                                logoTextField.text = Qt.resolvedUrl(fileUrl)
-                                                logoTextField.accepted();
-                                            }
-                                        }
-                                    }
-                                }
+//                                        FileDialog {
+//                                            id: openLogoDialog
+//                                            title: "Please choose a logo"
+//                                            selectFolder: true
+//                                            selectMultiple: false
+//                                            selectExisting: true
+//                                            property var resultTextField
+//                                            onAccepted: {
+//                                                logoTextField.text = Qt.resolvedUrl(fileUrl)
+//                                                logoTextField.accepted();
+//                                            }
+//                                        }
+//                                    }
+//                                }
                             }
                         }
 
@@ -514,75 +532,88 @@ Viewer {
 
                                         Button {
                                             Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-                                            text: "Front"
+                                            Layout.columnSpan: 2
+                                            text: "Fit"
 
-                                            onClicked: if(camera) camera.viewFromFront()
+                                            onClicked: if(camera) camera.fit(root.boundingBoxMin(), root.boundingBoxMax())
 
                                             ToolTip {
                                                 anchors.fill: parent
-                                                description: "Front View"
+                                                description: "Fit in view"
                                             }
                                         }
 
                                         Button {
                                             Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-                                            text: "Back"
-
-                                            onClicked: if(camera) camera.viewFromBack()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Back View"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            text: "Left"
+                                            text: "-X"
 
                                             onClicked: if(camera) camera.viewFromLeft()
 
                                             ToolTip {
                                                 anchors.fill: parent
-                                                description: "Left View"
+                                                description: "Align view along the negative X Axis"
                                             }
                                         }
 
                                         Button {
                                             Layout.fillWidth: true
-                                            text: "Right"
+                                            text: "+X"
 
                                             onClicked: if(camera) camera.viewFromRight()
 
                                             ToolTip {
                                                 anchors.fill: parent
-                                                description: "Right View"
+                                                description: "Align view along the positive X Axis"
                                             }
                                         }
 
                                         Button {
                                             Layout.fillWidth: true
-                                            text: "Top"
+                                            text: "-Y"
 
                                             onClicked: if(camera) camera.viewFromTop()
 
                                             ToolTip {
                                                 anchors.fill: parent
-                                                description: "Top View"
+                                                description: "Align view along the negative Y Axis"
                                             }
                                         }
 
                                         Button {
                                             Layout.fillWidth: true
-                                            text: "Bottom"
+                                            text: "+Y"
 
                                             onClicked: if(camera) camera.viewFromBottom()
 
                                             ToolTip {
                                                 anchors.fill: parent
-                                                description: "Bottom View"
+                                                description: "Align view along the positive Y Axis"
+                                            }
+                                        }
+
+                                        Button {
+                                            Layout.fillWidth: true
+                                            Layout.preferredWidth: parent.width
+                                            text: "-Z"
+
+                                            onClicked: if(camera) camera.viewFromFront()
+
+                                            ToolTip {
+                                                anchors.fill: parent
+                                                description: "Align view along the negative Z Axis"
+                                            }
+                                        }
+
+                                        Button {
+                                            Layout.fillWidth: true
+                                            Layout.preferredWidth: parent.width
+                                            text: "+Z"
+
+                                            onClicked: if(camera) camera.viewFromBack()
+
+                                            ToolTip {
+                                                anchors.fill: parent
+                                                description: "Align view along the positive Z Axis"
                                             }
                                         }
 

@@ -93,15 +93,6 @@ const QMatrix4x4& Camera::model() const
 	return myModel;
 }
 
-void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up)
-{
-    myView.setToIdentity();
-    myView.lookAt(eye, target, up);
-    myModel = myView.inverted();
-
-    myViewDirty = false;
-}
-
 double Camera::computeDepth(const QVector3D& point)
 {
     QVector4D csPosition = projection() * view() * QVector4D(point, 1.0);
@@ -296,8 +287,19 @@ void Camera::setZFar(double zFar)
 	myProjectionDirty = true;
 }
 
+void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up)
+{
+    myView.setToIdentity();
+    myView.lookAt(eye, target, up);
+    myModel = myView.inverted();
+
+    myViewDirty = false;
+}
+
 void Camera::fit(const QVector3D& min, const QVector3D& max)
 {
+    qDebug() << min << max;
+
     myTarget = (min + max) * 0.5;
 	QVector3D diagonal = max - min;
 	double radius = diagonal.length();
@@ -316,6 +318,9 @@ void Camera::fit(const QVector3D& min, const QVector3D& max)
     myModel = myView.inverted();
 
     myViewDirty = false;
+
+    if(orthographic())
+        computeOrthographic();
 }
 
 void Camera::computeOrthographic()

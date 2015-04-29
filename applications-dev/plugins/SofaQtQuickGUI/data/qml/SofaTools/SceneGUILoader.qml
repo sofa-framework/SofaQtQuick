@@ -19,7 +19,6 @@ ContentItem {
         id: d
 
         property Item item
-        property Component componentFactory
         property int status: Loader.Null
 
         property Timer timer: Timer {
@@ -34,13 +33,13 @@ ContentItem {
                 SofaToolsScript.Tools.trimCache();
 
                 if(0 !== root.source.toString().length) {
-                    d.componentFactory = Qt.createComponent(root.source);
-                    if(Component.Ready === d.componentFactory.status)
-                        d.item = d.componentFactory.createObject(layout, {"Layout.fillWidth": true});
+                    var componentFactory = Qt.createComponent(root.source);
+                    if(Component.Ready === componentFactory.status)
+                        d.item = componentFactory.createObject(layout, {"Layout.fillWidth": true});
 
                     if(!d.item) {
                         errorLabel.text = "Cannot create Component from:" + root.source + "\n\n";
-                        errorLabel.text += d.componentFactory.errorString().replace("\n", "\n\n");
+                        errorLabel.text += componentFactory.errorString().replace("\n", "\n\n");
                         d.status = Loader.Error;
                         return;
                     }
@@ -54,10 +53,6 @@ ContentItem {
     onSourceChanged: {
         if(d.item)
             d.item.destroy();
-
-        // we have to do this to be able to trim the item from cache
-        if(d.componentFactory)
-            d.componentFactory.destroy();
 
         if(0 !== root.source.toString().length)
             d.status = Loader.Loading;

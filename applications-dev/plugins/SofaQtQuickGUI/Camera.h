@@ -47,8 +47,6 @@ public:
     Q_INVOKABLE QVector3D up() const				{return  model().column(1).toVector3D().normalized();}
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
-    Q_INVOKABLE void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
-
     Q_INVOKABLE double computeDepth(const QVector3D& point);
     Q_INVOKABLE QVector3D projectOnViewPlane(const QVector3D& point, double depth);
 
@@ -65,6 +63,9 @@ public slots:
     void turn(double angleAroundX, double angleAroundY, double angleAroundZ);
     void zoom(double factor);
 
+    void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
+    void fit(const QVector3D& min, const QVector3D& max);
+
 public:
     void setOrthoLeft(double left);
     void setOrthoRight(double right);
@@ -75,8 +76,6 @@ public:
     void setPerspectiveAspectRatio(double aspectRatio);
 	void setZNear(double zNear);
 	void setZFar(double zFar);
-
-	void fit(const QVector3D& min, const QVector3D& max);
 
 private:
     void computeOrthographic();

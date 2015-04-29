@@ -38,6 +38,7 @@ public:
     Q_PROPERTY(QUrl backgroundImageSource READ backgroundImageSource WRITE setBackgroundImageSource NOTIFY backgroundImageSourceChanged)
     Q_PROPERTY(bool wireframe READ wireframe WRITE setWireframe NOTIFY wireframeChanged)
     Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
+    Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
     Q_PROPERTY(bool antialiasing READ antialiasing WRITE setAntialiasing NOTIFY antialiasingChanged)
     Q_PROPERTY(int texture READ texture NOTIFY textureChanged)
 
@@ -60,6 +61,9 @@ public:
     bool culling() const        {return myCulling;}
     void setCulling(bool newCulling);
 
+    bool blending() const        {return myBlending;}
+    void setBlending(bool newBlending);
+
     bool antialiasing() const        {return myAntialiasing;}
     void setAntialiasing(bool newAntialiasing);
 
@@ -70,6 +74,10 @@ public:
 
     Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint);    // .w == 0 => background hit ; .w == 1 => geometry hit
 
+    Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;
+    Q_INVOKABLE QVector3D boundingBoxMin() const;
+    Q_INVOKABLE QVector3D boundingBoxMax() const;
+
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
 	void scenePathChanged();
@@ -78,6 +86,7 @@ signals:
     void backgroundImageSourceChanged(QUrl newBackgroundImageSource);
     void wireframeChanged(bool newWireframe);
     void cullingChanged(bool newCulling);
+    void blendingChanged(bool newBlending);
     void antialiasingChanged(bool newAntialiasing);
     void textureChanged(bool newTexture);
 
@@ -99,6 +108,7 @@ private:
     QImage                      myBackgroundImage;
     bool                        myWireframe;
     bool                        myCulling;
+    bool                        myBlending;
     bool                        myAntialiasing;
     QOpenGLFramebufferObject*   myFBO;
 

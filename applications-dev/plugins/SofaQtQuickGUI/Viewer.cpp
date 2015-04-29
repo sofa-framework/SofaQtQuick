@@ -16,6 +16,7 @@
 #include <QVector4D>
 #include <QOpenGLFramebufferObject>
 #include <QTime>
+#include <QPair>
 #include <QThread>
 #include <qqml.h>
 #include <qmath.h>
@@ -34,6 +35,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myBackgroundImage(),
     myWireframe(false),
     myCulling(true),
+    myBlending(false),
     myAntialiasing(false),
     myFBO(0)
 {
@@ -141,6 +143,17 @@ void Viewer::setCulling(bool newCulling)
     cullingChanged(newCulling);
 }
 
+void Viewer::setBlending(bool newBlending)
+{
+    if(newBlending == myBlending)
+        return;
+
+    myBlending = newBlending;
+
+    blendingChanged(newBlending);
+}
+
+
 void Viewer::setAntialiasing(bool newAntialiasing)
 {
     if(newAntialiasing == myAntialiasing)
@@ -199,6 +212,30 @@ QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint)
     myFBO->release();
 
     return QVector4D(mapToWorld(QVector3D(ssPoint.x(), ssPoint.y(), z)), qCeil(1.0f - z));
+}
+
+QPair<QVector3D, QVector3D> Viewer::boundingBox() const
+{
+    QVector3D min, max;
+    myScene->computeBoundingBox(min, max);
+
+    return QPair<QVector3D, QVector3D>(min, max);
+}
+
+QVector3D Viewer::boundingBoxMin() const
+{
+    QVector3D min, max;
+    myScene->computeBoundingBox(min, max);
+
+    return min;
+}
+
+QVector3D Viewer::boundingBoxMax() const
+{
+    QVector3D min, max;
+    myScene->computeBoundingBox(min, max);
+
+    return max;
 }
 
 void Viewer::handleSceneChanged(Scene* scene)
@@ -290,6 +327,7 @@ void Viewer::paint()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
 
 //    if(!myBackgroundImage.isNull())
 //    {
@@ -329,6 +367,9 @@ void Viewer::paint()
 
         if(culling())
             glEnable(GL_CULL_FACE);
+
+        if(blending())
+            glEnable(GL_BLEND);
 
         //if(antialiasing())
         //glEnable(GL_MULTISAMPLE);
@@ -377,6 +418,9 @@ void Viewer::paint()
 
     if(wireframe())
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    if(blending())
+        glDisable(GL_BLEND);
 
     glViewport(pos.x(), pos.y(), size.width(), size.height());
 
