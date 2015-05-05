@@ -175,7 +175,7 @@ static QVariant ExtractPythonValueHelper(PyObject* parameter)
 
 	if(parameter)
 	{
-		if(PyBool_Check(parameter))
+        if PyBool_Check(parameter)
 			value = (Py_False != parameter);
 		else if(PyInt_Check(parameter))
             value = (int)PyInt_AsLong(parameter);
