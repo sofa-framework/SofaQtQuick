@@ -103,7 +103,7 @@ if(NOT MSVC)
 endif()
 
 find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
-# make sure to use QT > 5.0
+# make sure to use QT > 5.2
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
 include_directories(${Qt5Gui_INCLUDE_DIRS})
