@@ -99,7 +99,7 @@ CollapsibleGroupBox {
             }
         }
         TextField {
-            Layout.preferredWidth: 32
+            Layout.preferredWidth: 40
             enabled: false
             text: interactionStiffnessSlider.value
         }

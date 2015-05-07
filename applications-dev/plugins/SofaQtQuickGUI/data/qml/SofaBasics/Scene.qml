@@ -10,6 +10,7 @@ Scene {
     id: root
 
     asynchronous: false
+    header: ""
     source: ""
     sourceQML: ""
     property string statusMessage: ""
@@ -38,7 +39,7 @@ Scene {
     readonly property bool ready: status === Scene.Ready
 
     // allow us to interact with the python script controller
-    property var pythonInteractor: PythonInteractor {}
+    property var pythonInteractor: PythonInteractor {scene: root}
 
     // allow us to interact with the scene physics
     property var pickingInteractor: PickingInteractor {

@@ -32,6 +32,7 @@
 #include "SceneListModel.h"
 #include "DataListModel.h"
 #include "Viewer.h"
+#include "PythonConsole.h"
 
 using namespace sofa::qtquick;
 
@@ -65,4 +66,5 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<SceneListModel>             ("SceneListModel"   , versionMajor, versionMinor, "SceneListModel");
     qmlRegisterType<DataListModel>              ("DataListModel"    , versionMajor, versionMinor, "DataListModel");
     qmlRegisterType<Viewer>                     ("Viewer"			, versionMajor, versionMinor, "Viewer");
+    qmlRegisterType<PythonConsole>              ("PythonConsole"    , versionMajor, versionMinor, "PythonConsole");
 }

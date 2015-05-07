@@ -134,15 +134,15 @@ void Tools::useDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath)
         QFile file(finalDefaultSettingsPath);
         if(!file.open(QFile::OpenModeFlag::ReadOnly))
         {
-            qDebug() << "ERROR: the default config file has not been found!";
+            qWarning() << "ERROR: the default config file has not been found!";
         }
         else
         {
             if(!file.copy(defaultConfigFilePath))
-                qDebug() << "ERROR: the config file could not be created!";
+                qWarning() << "ERROR: the config file could not be created!";
             else
                 if(!QFile::setPermissions(defaultConfigFilePath, QFile::ReadOwner | QFile::ReadUser | QFile::ReadGroup))
-                    qDebug() << "ERROR: cannot set permission on the config file!";
+                    qWarning() << "ERROR: cannot set permission on the config file!";
         }
     }
 

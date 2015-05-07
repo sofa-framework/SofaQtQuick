@@ -300,8 +300,6 @@ void Viewer::paint()
     if(myScene && myScene->isLoading())
         myScene->initGraphics();
 
-//    qDebug() << QOpenGLContext::currentContext() << myFBO << size;
-
     // create or resize the fbo
     if(!myFBO ||
             size.width() > myFBO->width() || size.height() > myFBO->height() ||

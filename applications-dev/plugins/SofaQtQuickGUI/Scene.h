@@ -75,6 +75,7 @@ public:
 
 public:
     Q_PROPERTY(Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
@@ -97,6 +98,9 @@ public:
     bool isLoading() const							{return Status::Loading == myStatus;}
     bool isReady() const							{return Status::Ready == myStatus;}
 
+    const QString& header() const					{return myHeader;}
+    void setHeader(const QString& newHeader);
+
 	const QUrl& source() const						{return mySource;}
 	void setSource(const QUrl& newSource);
 
@@ -116,6 +120,7 @@ signals:
 	void loaded();
     void aboutToUnload();
 	void statusChanged(Status newStatus);
+    void headerChanged(const QString& newHeader);
 	void sourceChanged(const QUrl& newSource);
 	void sourceQMLChanged(const QUrl& newSourceQML);
 	void dtChanged(double newDt);
@@ -176,6 +181,7 @@ protected:
 
 private:
     Status                                      myStatus;
+    QString                                     myHeader;
     QUrl                                        mySource;
     QUrl                                        mySourceQML;
     QString                                     myPathQML;

@@ -9,6 +9,7 @@ set(SOURCE_FILES
                 SceneListModel.cpp
                 DataListModel.cpp
 		PythonInteractor.cpp
+                PythonConsole.cpp
 		PickingInteractor.cpp
 )
 
@@ -21,6 +22,7 @@ set(HEADER_FILES
                 SceneListModel.h
                 DataListModel.h
 		PythonInteractor.h
+                PythonConsole.h
 		PickingInteractor.h
 )
 
@@ -71,15 +73,20 @@ set(QML_FILES
                 data/qml/SofaTools/SceneGraphView.qml
                 data/qml/SofaTools/DataListView.qml
 		data/qml/SofaTools/SceneGUILoader.qml
-		data/qml/SofaWidgets/qmldir
+                data/qml/SofaWidgets/qmldir
 		data/qml/SofaWidgets/Viewer.qml
                 data/qml/SofaWidgets/DataView.qml
 		data/qml/SofaWidgets/ImageViewer.qml
 		data/qml/SofaWidgets/ToolPanel.qml
+                data/qml/SofaWidgets/PythonConsole.qml
 )
 
 set(CONFIG_FILES
 		data/config/default.ini
+)
+
+set(PYTHON_FILES
+                data/python/baseHeader.py
 )
 
 set(QRC_FILES
@@ -128,7 +135,7 @@ qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
 add_definitions(-DQT_PLUGIN)
 
-add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
+add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES})
 
 AddCompilerDefinitions("SOFA_BUILD_SOFAQTQUICKGUI")
 AddLinkerDependencies(SofaPython SofaSimulationGraph SofaComponentMain Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick)

@@ -14,6 +14,7 @@ ApplicationWindow {
     height: 720
     title: Qt.application.name
 
+
     property var scene: SofaApplication.scene
 
     style: ApplicationWindowStyle {
@@ -21,7 +22,8 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        visible = true;
+        showNormal();
+        //showFullScreen();
 
         if(Qt.application.arguments.length > 1) {
             scene.source = "file:" + Qt.application.arguments[1];

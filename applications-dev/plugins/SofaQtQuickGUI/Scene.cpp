@@ -13,6 +13,7 @@
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <sofa/helper/system/glut.h>
+#include <SofaPython/SceneLoaderPY.h>
 #include <SofaComponentMain/init.h>
 
 #include <sstream>
@@ -20,6 +21,7 @@
 #include <QtCore/QCoreApplication>
 #include <QVector3D>
 #include <QStack>
+#include <QFile>
 #include <QTimer>
 #include <QString>
 #include <QUrl>
@@ -199,7 +201,7 @@ static bool LoaderProcess(sofa::simulation::Simulation* sofaSimulation, const QS
 	if(vparams)
 		vparams->displayFlags().setShowVisualModels(true);
 
-	if(sofaSimulation->load(scenePath.toLatin1().constData()))
+    if(sofaSimulation->load(scenePath.toLatin1().constData()))
         if(sofaSimulation->GetRoot()) {
             sofaSimulation->init(sofaSimulation->GetRoot().get());
 			return true;
@@ -211,7 +213,7 @@ static bool LoaderProcess(sofa::simulation::Simulation* sofaSimulation, const QS
 class LoaderThread : public QThread
 {
 public:
-	LoaderThread(sofa::simulation::Simulation* sofaSimulation, const QString& scenePath) :
+    LoaderThread(sofa::simulation::Simulation* sofaSimulation, const QString& scenePath) :
 		mySofaSimulation(sofaSimulation),
 		myScenepath(scenePath),
 		myIsLoaded(false)
@@ -221,7 +223,7 @@ public:
 
 	void run()
 	{
-		myIsLoaded = LoaderProcess(mySofaSimulation, myScenepath);
+        myIsLoaded = LoaderProcess(mySofaSimulation, myScenepath);
 	}
 
 	bool isLoaded() const			{return myIsLoaded;}
@@ -275,6 +277,22 @@ void Scene::open()
 
     mySofaSimulation->unload(mySofaSimulation->GetRoot());
 
+    QString finalHeader;
+
+    QFile baseHeaderFile(":/python/baseHeader.py");
+    if(!baseHeaderFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning("ERROR: base header not found");
+    }
+    else
+    {
+        finalHeader += QTextStream(&baseHeaderFile).readAll();
+    }
+
+    finalHeader += myHeader;
+
+    SceneLoaderPY::setHeader(finalHeader.toStdString());
+
 	if(myAsynchronous)
 	{
         LoaderThread* loaderThread = new LoaderThread(mySofaSimulation, finalFilename);
@@ -326,6 +344,16 @@ void Scene::setStatus(Status newStatus)
 	myStatus = newStatus;
 
 	statusChanged(newStatus);
+}
+
+void Scene::setHeader(const QString& newHeader)
+{
+    if(newHeader == myHeader || Status::Loading == myStatus)
+        return;
+
+    myHeader = newHeader;
+
+    headerChanged(newHeader);
 }
 
 void Scene::setSource(const QUrl& newSource)
