@@ -1,6 +1,10 @@
 #include "Tools.h"
 #include "SofaQtQuickGUI.h"
 
+#include <sofa/helper/system/FileSystem.h>
+#include <sofa/helper/system/FileRepository.h>
+#include <sofa/helper/Utils.h>
+
 #include <qqml.h>
 #include <QDebug>
 #include <QQmlContext>
@@ -111,6 +115,38 @@ void Tools::useOpenGLDebugLogger()
     else
     {
         qDebug() << "OpenGL debug logging disabled: your graphics card does not support this functionality";
+    }
+}
+
+void Tools::useDefaultSofaPath()
+{
+    // add the plugin directory to PluginRepository
+#ifdef WIN32
+    const std::string pluginDir = sofa::helper::Utils::getExecutableDirectory();
+#else
+    const std::string pluginDir = sofa::helper::Utils::getSofaPathPrefix() + "/lib";
+#endif
+    sofa::helper::system::PluginRepository.addFirstPath(pluginDir);
+
+    // read the paths to the share/ and examples/ directories from etc/sofa.ini,
+    const std::string etcDir = sofa::helper::Utils::getSofaPathPrefix() + "/etc";
+    const std::string sofaIniFilePath = etcDir + "/sofa.ini";
+    std::map<std::string, std::string> iniFileValues = sofa::helper::Utils::readBasicIniFile(sofaIniFilePath);
+
+    // and add them to DataRepository
+    if(iniFileValues.find("SHARE_DIR") != iniFileValues.end())
+    {
+        std::string shareDir = iniFileValues["SHARE_DIR"];
+        if (!sofa::helper::system::FileSystem::isAbsolute(shareDir))
+            shareDir = etcDir + "/" + shareDir;
+        sofa::helper::system::DataRepository.addFirstPath(shareDir);
+    }
+    if(iniFileValues.find("EXAMPLES_DIR") != iniFileValues.end())
+    {
+        std::string examplesDir = iniFileValues["EXAMPLES_DIR"];
+        if (!sofa::helper::system::FileSystem::isAbsolute(examplesDir))
+            examplesDir = etcDir + "/" + examplesDir;
+        sofa::helper::system::DataRepository.addFirstPath(examplesDir);
     }
 }
 

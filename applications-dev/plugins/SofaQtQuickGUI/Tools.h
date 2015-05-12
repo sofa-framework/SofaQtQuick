@@ -44,6 +44,7 @@ public:
     static void setOpenGLDebugContext();    // must be call before the window has been shown
     static void useOpenGLDebugLogger();     // must be call after a valid opengl debug context has been made current
 
+    static void useDefaultSofaPath();
     static void useDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath = QString());
     static void copySettings(const QSettings& src, QSettings& dst);
 

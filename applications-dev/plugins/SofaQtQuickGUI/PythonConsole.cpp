@@ -37,6 +37,26 @@ namespace PythonConsoleModule {
 
 PythonConsole::PythonConsole(QObject *parent) : QObject(parent)
 {
+    InitConsoleRedirection();
+
+    OurPythonConsoles.insert(this);
+}
+
+PythonConsole::~PythonConsole()
+{
+    OurPythonConsoles.remove(this);
+}
+
+void PythonConsole::AddText(const QString& text)
+{
+    for(PythonConsole* pythonConsole : OurPythonConsoles)
+        pythonConsole->textAdded(text);
+}
+
+QSet<PythonConsole*> PythonConsole::OurPythonConsoles;
+
+void PythonConsole::InitConsoleRedirection()
+{
     static bool redirect = false;
     if(!redirect)
     {
@@ -48,21 +68,6 @@ PythonConsole::PythonConsole(QObject *parent) : QObject(parent)
 
         redirect = true;
     }
-
-    OurPythonConsoles.insert(this);
-}
-
-PythonConsole::~PythonConsole()
-{
-    OurPythonConsoles.remove(this);
-}
-
-QSet<PythonConsole*> PythonConsole::OurPythonConsoles;
-
-void PythonConsole::AddText(const QString& text)
-{
-    for(PythonConsole* pythonConsole : OurPythonConsoles)
-        pythonConsole->textAdded(text);
 }
 
 }

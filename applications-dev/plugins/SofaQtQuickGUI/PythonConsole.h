@@ -29,6 +29,9 @@ public:
     static void AddText(const QString& text);
 
 private:
+    static void InitConsoleRedirection();
+
+private:
     static QSet<PythonConsole*> OurPythonConsoles;
 
 };
