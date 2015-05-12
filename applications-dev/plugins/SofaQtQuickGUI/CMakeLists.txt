@@ -86,7 +86,8 @@ set(CONFIG_FILES
 )
 
 set(PYTHON_FILES
-                data/python/baseHeader.py
+                data/python/BaseHeader.py
+                data/python/PythonConsole.py
 )
 
 set(QRC_FILES

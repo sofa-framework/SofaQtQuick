@@ -1,7 +1,9 @@
 #include "PythonConsole.h"
 
 #include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/SceneLoaderPY.h>
+
+#include <QTextStream>
+#include <QFile>
 
 namespace sofa
 {
@@ -12,8 +14,8 @@ namespace qtquick
 using namespace sofa::simulation;
 
 // PythonConsole Module Definition
-namespace {
-    static const std::string moduleName = "PythonConsole";
+namespace PythonConsoleModule {
+    static std::string Name() {return "PythonConsole";}
 
     static PyObject* Write(PyObject *self, PyObject *args)
     {
@@ -27,30 +29,26 @@ namespace {
         return Py_BuildValue("");
     }
 
-    static PyMethodDef PythonConsoleMethods[] = {
+    static PyMethodDef Methods[] = {
         {"write", Write, METH_VARARGS, "Write text in the PythonConsole(s)"},
         {NULL, NULL, 0, NULL}
     };
-
-    class RAII
-    {
-    public:
-        RAII()
-        {
-            SceneLoaderPY::addModules(moduleName.c_str(), PythonConsoleMethods);
-        }
-
-        ~RAII()
-        {
-            SceneLoaderPY::removeModules(moduleName.c_str());
-        }
-    };
-
-    static RAII singleton;
 }
 
 PythonConsole::PythonConsole(QObject *parent) : QObject(parent)
 {
+    static bool redirect = false;
+    if(!redirect)
+    {
+        PythonEnvironment::addModule(PythonConsoleModule::Name(), PythonConsoleModule::Methods);
+
+        QFile pythonFile(":/python/PythonConsole.py");
+        pythonFile.open(QIODevice::ReadOnly | QIODevice::Text);
+        PythonEnvironment::runString(QTextStream(&pythonFile).readAll().toStdString());
+
+        redirect = true;
+    }
+
     OurPythonConsoles.insert(this);
 }
 

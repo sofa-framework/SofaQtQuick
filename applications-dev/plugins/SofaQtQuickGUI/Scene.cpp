@@ -279,7 +279,7 @@ void Scene::open()
 
     QString finalHeader;
 
-    QFile baseHeaderFile(":/python/baseHeader.py");
+    QFile baseHeaderFile(":/python/BaseHeader.py");
     if(!baseHeaderFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         qWarning("ERROR: base header not found");
