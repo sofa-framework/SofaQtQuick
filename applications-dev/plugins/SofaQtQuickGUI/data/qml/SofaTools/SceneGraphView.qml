@@ -17,6 +17,11 @@ CollapsibleGroupBox {
 
     enabled: scene ? scene.ready : false
 
+    QtObject {
+        id: d
+        property var sceneListModel: scene && scene.listModel ? scene.listModel : null
+    }
+
     GridLayout {
         id: layout
         anchors.fill: parent
@@ -28,10 +33,10 @@ CollapsibleGroupBox {
             Layout.preferredHeight: 400
             clip: true
 
-            model: scene.listModel
+            model: d.sceneListModel
             focus: true
-            Component.onCompleted: scene.listModel.selectedId = currentIndex
-            onCurrentIndexChanged: scene.listModel.selectedId = currentIndex
+            Component.onCompleted: if(d.sceneListModel) d.sceneListModel.selectedId = currentIndex
+            onCurrentIndexChanged: if(d.sceneListModel) d.sceneListModel.selectedId = currentIndex
             onCountChanged: {
                 if(currentIndex >= count)
                     currentIndex = -1;

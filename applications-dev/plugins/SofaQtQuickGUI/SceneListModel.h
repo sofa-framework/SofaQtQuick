@@ -55,6 +55,7 @@ protected:
     Q_INVOKABLE QVariant get(int row) const;
     Q_INVOKABLE sofa::qtquick::SceneComponent* getComponentById(int row) const;
     Q_INVOKABLE void setCollapsed(int row, bool value);
+	Q_INVOKABLE void markDirty() {myIsDirty = true;}
 
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
@@ -113,6 +114,7 @@ private:
 private:
     QList<Item>                     myItems;
     int                             myUpdatedCount;
+	bool							myIsDirty;
     Scene*                          myScene;
 
 };

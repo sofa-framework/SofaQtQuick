@@ -15,7 +15,7 @@ CollapsibleGroupBox {
     contentMargin: 0
 
     property var scene
-    property var sceneComponent: scene && scene.ready ? scene.listModel.getComponentById(scene.listModel.selectedId) : null // TODO: use SceneGraphView.selectedId
+    property var sceneComponent: scene && scene.ready && scene.listModel ? scene.listModel.getComponentById(scene.listModel.selectedId) : null // TODO: use SceneGraphView.selectedId
 
     enabled: scene ? scene.ready : false
 

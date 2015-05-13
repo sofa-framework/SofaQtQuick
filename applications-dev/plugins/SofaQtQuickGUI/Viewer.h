@@ -40,7 +40,6 @@ public:
     Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
     Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
     Q_PROPERTY(bool antialiasing READ antialiasing WRITE setAntialiasing NOTIFY antialiasingChanged)
-    Q_PROPERTY(int texture READ texture NOTIFY textureChanged)
 
 public:
     Scene* scene() const        {return myScene;}
@@ -67,8 +66,6 @@ public:
     bool antialiasing() const        {return myAntialiasing;}
     void setAntialiasing(bool newAntialiasing);
 
-    Q_INVOKABLE unsigned int texture() const;
-
     Q_INVOKABLE QVector3D mapFromWorld(const QVector3D& wsPoint);
     Q_INVOKABLE QVector3D mapToWorld(const QVector3D& ssPoint);
 
@@ -88,11 +85,14 @@ signals:
     void cullingChanged(bool newCulling);
     void blendingChanged(bool newBlending);
     void antialiasingChanged(bool newAntialiasing);
-    void textureChanged(bool newTexture);
 
 public slots:
     void paint();
 	void viewAll();
+
+private:
+	QRect glRect();
+	void internalDraw();
 
 private slots:
 	void handleSceneChanged(Scene* scene);

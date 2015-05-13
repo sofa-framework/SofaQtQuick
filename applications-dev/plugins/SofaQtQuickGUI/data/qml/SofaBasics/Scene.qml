@@ -16,7 +16,9 @@ Scene {
     property string statusMessage: ""
 
     onStatusChanged: {
-        listModel.selectedId = -1;
+		if(listModel)
+			listModel.selectedId = -1;
+
         var path = source.toString().replace("///", "/").replace("file:", "");
         switch(status) {
         case Scene.Loading:
@@ -33,7 +35,27 @@ Scene {
     }
 
     property var listModel: SceneListModel {id : listModel}
-    onStepEnd: listModel.update()
+    property bool listModelDirty: true
+
+    onStepEnd: {
+        if(root.play)
+            listModelDirty = true;
+        else
+            listModel.update();
+    }
+
+    property var listModelUpdateTimer: Timer {
+        running: root.play && root.listModel ? true : false
+        repeat: true
+        interval: 200
+        onTriggered: {
+            if(root.listModelDirty) {
+                root.listModel.update()
+                root.listModelDirty = false;
+            }
+        }
+
+    }
 
     // convenience
     readonly property bool ready: status === Scene.Ready

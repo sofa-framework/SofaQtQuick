@@ -15,6 +15,7 @@ using namespace sofa::simulation;
 SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), QQmlParserStatus(), MutationListener(),
     myItems(),
     myUpdatedCount(0),
+	myIsDirty(true),
     myScene(0)
 {
 
@@ -40,23 +41,26 @@ void SceneListModel::componentComplete()
 
 void SceneListModel::update()
 {
+	if(!myIsDirty)
+		return;
+
     int changeNum = myItems.size() - myUpdatedCount;
     if(changeNum > 0)
     {
         beginInsertRows(QModelIndex(), myUpdatedCount, myItems.size() - 1);
         endInsertRows();
-    }
+	}
     else if(changeNum < 0)
     {
         beginRemoveRows(QModelIndex(), myItems.size(), myUpdatedCount - 1);
         endRemoveRows();
     }
-    else
-    {
-        dataChanged(createIndex(0, 0), createIndex(myItems.size() - 1, 0));
-    }
+    
+	dataChanged(createIndex(0, 0), createIndex(myItems.size() - 1, 0));
 
     myUpdatedCount = myItems.size();
+
+	myIsDirty = false;
 }
 
 void SceneListModel::handleSceneChange(Scene* /*newScene*/)
@@ -245,7 +249,7 @@ void SceneListModel::setCollapsed(int row, bool collapsed)
                 children.append(child->children[i]);
     }
 
-    dataChanged(createIndex(0, 0), createIndex(myItems.size() - 1, 0));
+	markDirty();
 }
 
 void SceneListModel::addChild(Node* parent, Node* child)
@@ -282,6 +286,8 @@ void SceneListModel::addChild(Node* parent, Node* child)
     }
 
     MutationListener::addChild(parent, child);
+
+	markDirty();
 }
 
 void SceneListModel::removeChild(Node* parent, Node* child)
@@ -316,6 +322,8 @@ void SceneListModel::removeChild(Node* parent, Node* child)
             ++itemIt;
         }
     }
+
+	markDirty();
 }
 
 //void SceneListModel::moveChild(Node* previous, Node* parent, Node* child)
@@ -350,6 +358,8 @@ void SceneListModel::addObject(Node* parent, BaseObject* object)
     }
 
     MutationListener::addObject(parent, object);
+
+	markDirty();
 }
 
 void SceneListModel::removeObject(Node* parent, BaseObject* object)
@@ -384,21 +394,27 @@ void SceneListModel::removeObject(Node* parent, BaseObject* object)
             ++itemIt;
         }
     }
+
+	markDirty();
 }
 
 //void SceneListModel::moveObject(Node* previous, Node* parent, BaseObject* object)
 //{
-
+//	markDirty();
 //}
 
 void SceneListModel::addSlave(BaseObject* master, BaseObject* slave)
 {
     MutationListener::addSlave(master, slave);
+
+	markDirty();
 }
 
 void SceneListModel::removeSlave(BaseObject* master, BaseObject* slave)
 {
     MutationListener::removeSlave(master, slave);
+
+	markDirty();
 }
 
 }
