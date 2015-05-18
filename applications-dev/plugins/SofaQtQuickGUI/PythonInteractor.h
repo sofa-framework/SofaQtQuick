@@ -32,10 +32,14 @@ namespace qtquick
 
 class Scene;
 
+
+/// call a PythonScriptController function from qml
 class SOFA_SOFAQTQUICKGUI_API PythonInteractor : public QObject, public QQmlParserStatus
 {
 	Q_OBJECT
 	Q_INTERFACES(QQmlParserStatus)
+
+    typedef sofa::component::controller::PythonScriptController PythonScriptController;
 
 public:
 	PythonInteractor(QObject *parent = 0);
@@ -60,10 +64,23 @@ signals:
 	
 public:
     Q_INVOKABLE bool run(const QString& script);
+
+    /// call by controller class name
     QVariant call(const QString& pythonClassName, const QString& funcName, const QVariant& parameter = QVariant());
+    /// call by controller name
+    QVariant callByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());
 
 protected:
-    Q_INVOKABLE QVariant onCall(const QString& pythonClassName, const QString& funcName, const QVariant& parameter = QVariant());
+
+    /// basic common verifications
+    bool onCallBasicVerifications(const QString& funcName, const QVariant& parameter = QVariant());
+    /// call by controller
+    QVariant onCallByController(PythonScriptController* controller, const QString& funcName, const QVariant& parameter = QVariant());
+
+    /// call by controller class name
+    Q_INVOKABLE QVariant onCallByClassName(const QString& pythonClassName, const QString& funcName, const QVariant& parameter = QVariant());
+    /// call by controller name
+    Q_INVOKABLE QVariant onCallByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());
 
 public slots:
 	void sendEvent(const QString& pythonClassName, const QString& eventName, const QVariant& parameter = QVariant());
@@ -74,10 +91,10 @@ private slots:
     void retrievePythonScriptControllers();
 
 private:
-	typedef sofa::component::controller::PythonScriptController PythonScriptController;
+    Scene* myScene;
 
-	Scene*									myScene;
-	QMap<QString, PythonScriptController*>	myPythonScriptControllers;
+    typedef QMap<QString, PythonScriptController*> PythonScriptControllersMap;
+    PythonScriptControllersMap	myPythonScriptControllers;
 	
 };
 

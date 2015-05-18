@@ -266,38 +266,102 @@ bool PythonInteractor::run(const QString& script)
 
 QVariant PythonInteractor::call(const QString& pythonClassName, const QString& funcName, const QVariant& parameter)
 {
-    return onCall(pythonClassName, funcName, parameter);
+    return onCallByClassName(pythonClassName, funcName, parameter);
 }
 
-QVariant PythonInteractor::onCall(const QString& pythonClassName, const QString& funcName, const QVariant& parameter)
+QVariant PythonInteractor::callByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
-	QVariant result;
+    return onCallByControllerName(pythonScriptControllerName, funcName, parameter);
+}
 
-	if(!myScene)
-	{
+
+
+bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& parameter)
+{
+    if(!myScene)
+    {
         qWarning() << "ERROR: cannot call Python function on a null scene";
-		return result;
-	}
+        return false;
+    }
 
-	if(!myScene->isReady())
-	{
+    if(!myScene->isReady())
+    {
         qWarning() << "ERROR: cannot call Python function on a scene that is still loading";
-		return result;
-	}
+        return false;
+    }
 
-	if(pythonClassName.isEmpty())
-	{
-        qWarning() << "ERROR: cannot call Python function without a valid python class name";
-		return result;
-	}
-
-	if(funcName.isEmpty())
-	{
+    if(funcName.isEmpty())
+    {
         qWarning() << "ERROR: cannot call Python function without a valid python function name";
-		return result;
-	}
+        return false;
+    }
 
-	auto pythonScriptControllerIterator = myPythonScriptControllers.find(pythonClassName);
+
+    return true;
+}
+
+
+QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScriptController, const QString& funcName, const QVariant& parameter)
+{
+    if(!pythonScriptController)
+    {
+        qWarning() << "ERROR: cannot call Python function without a valid pythonScriptController";
+        return QVariant();
+    }
+
+    PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
+    if(!pyCallableObject)
+    {
+        qWarning() << "ERROR: cannot call Python function without a valid python class and function name";
+        return QVariant();
+    }
+
+
+    sofa::core::objectmodel::PythonScriptFunction pythonScriptFunction(pyCallableObject, true);
+    sofa::core::objectmodel::PythonScriptFunctionParameter pythonScriptParameter(PythonBuildTupleHelper(parameter, true), true);
+    sofa::core::objectmodel::PythonScriptFunctionResult pythonScriptResult;
+
+    pythonScriptFunction(&pythonScriptParameter, &pythonScriptResult);
+
+    return ExtractPythonTupleHelper(pythonScriptResult.data());
+}
+
+
+QVariant PythonInteractor::onCallByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
+{
+    QVariant result;
+
+    if( !onCallBasicVerifications(funcName,parameter) ) return result;
+
+    if(pythonScriptControllerName.isEmpty())
+    {
+        qWarning() << "ERROR: cannot call Python function without a valid python controller name";
+        return false;
+    }
+
+    for( PythonScriptControllersMap::iterator it = myPythonScriptControllers.begin(), itend = myPythonScriptControllers.end() ; it!=itend ; ++it )
+    {
+        if( it.value()->getName() == pythonScriptControllerName.toUtf8().constData() )
+            return onCallByController( it.value(), funcName, parameter );
+    }
+
+    return QVariant();
+}
+
+
+QVariant PythonInteractor::onCallByClassName(const QString& pythonClassName, const QString& funcName, const QVariant& parameter)
+{
+    if( !onCallBasicVerifications(funcName,parameter) ) return QVariant();
+
+
+    if(pythonClassName.isEmpty())
+    {
+        qWarning() << "ERROR: cannot call Python function without a valid python class name";
+        return false;
+    }
+
+
+    auto pythonScriptControllerIterator = myPythonScriptControllers.find(pythonClassName);
 	if(myPythonScriptControllers.end() == pythonScriptControllerIterator)
 	{
         qWarning() << "ERROR: cannot send Python event on an unknown script controller:" << pythonClassName;
@@ -312,30 +376,10 @@ QVariant PythonInteractor::onCall(const QString& pythonClassName, const QString&
                 qWarning() << "-" << pythonScriptControllerName;
 		}
 
-		return result;
-	}
+        return QVariant();
+    }
 
-	PythonScriptController* pythonScriptController = pythonScriptControllerIterator.value();
-	if(pythonScriptController)
-	{
-		PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
-		if(!pyCallableObject)
-		{
-            qWarning() << "ERROR: cannot call Python function without a valid python class and function name";
-		}
-		else
-		{
-            sofa::core::objectmodel::PythonScriptFunction pythonScriptFunction(pyCallableObject, true);
-            sofa::core::objectmodel::PythonScriptFunctionParameter pythonScriptParameter(PythonBuildTupleHelper(parameter, true), true);
-            sofa::core::objectmodel::PythonScriptFunctionResult pythonScriptResult;
-
-            pythonScriptFunction(&pythonScriptParameter, &pythonScriptResult);
-
-			result = ExtractPythonTupleHelper(pythonScriptResult.data());
-		}
-	}
-
-	return result;
+    return onCallByController( pythonScriptControllerIterator.value(), funcName, parameter );
 }
 
 void PythonInteractor::sendEvent(const QString& pythonClassName, const QString& eventName, const QVariant& parameter)
