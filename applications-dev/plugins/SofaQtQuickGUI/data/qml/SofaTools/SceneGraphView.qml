@@ -58,21 +58,25 @@ CollapsibleGroupBox {
                     anchors.fill: parent
                     spacing: 0
 
-                    Image {
-                        visible: isNode
-                        source: !(SceneListModel.Collapsed & visibility) ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
+                    Item {
                         Layout.preferredHeight: rowHeight
                         Layout.preferredWidth: Layout.preferredHeight
 
-                        MouseArea {
+                        Image {
                             anchors.fill: parent
-                            enabled: isNode
-                            onClicked: listView.model.setCollapsed(index, !(SceneListModel.Collapsed & visibility))
+                            visible: collapsible
+                            source: !(SceneListModel.Collapsed & visibility) ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
+
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: collapsible
+                                onClicked: listView.model.setCollapsed(index, !(SceneListModel.Collapsed & visibility))
+                            }
                         }
                     }
 
                     Text {
-                        text: 0 !== type.length || 0 !== name.length ? type + " - " + name : ""
+                        text: (multiparent ? "Multi" : "") + (0 !== type.length || 0 !== name.length ? type + " - " + name : "")
                         color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
                         font.bold: isNode
 

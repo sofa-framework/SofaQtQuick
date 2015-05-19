@@ -977,7 +977,7 @@ void Scene::initGraphics()
     }
 #endif
 
-    // WARNING: some plugins like "image" need a valid OpenGL Context during init because they are initing textures during init instead of initTextures ...
+    // need a valig OpenGL context for initTextures
 	mySofaSimulation->initTextures(mySofaSimulation->GetRoot().get());
 	setDt(mySofaSimulation->GetRoot()->getDt());
 

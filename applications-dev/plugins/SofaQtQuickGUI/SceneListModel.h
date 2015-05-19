@@ -75,10 +75,12 @@ protected:
 private:
     enum {
         NameRole = Qt::UserRole + 1,
+        MultiParentRole,
         DepthRole,
         VisibilityRole,
         TypeRole,
-        IsNodeRole
+        IsNodeRole,
+        CollapsibleRole
     };
 
     struct Item
@@ -86,6 +88,7 @@ private:
         Item() :
             parent(0),
             children(0),
+            multiparent(false),
             depth(0),
             visibility(0),
             base(0),
@@ -98,6 +101,7 @@ private:
 
         Item*                                   parent;
         QVector<Item*>                          children;
+        bool                                    multiparent;
         int                                     depth;
         int                                     visibility;
 
@@ -110,6 +114,8 @@ private:
     Item buildNodeItem(Item* parent, sofa::core::objectmodel::BaseNode* node) const;
     Item buildObjectItem(Item* parent, sofa::core::objectmodel::BaseObject* object) const;
 
+private:
+    bool isAncestor(Item* ancestor, Item* child);
 
 private:
     QList<Item>                     myItems;

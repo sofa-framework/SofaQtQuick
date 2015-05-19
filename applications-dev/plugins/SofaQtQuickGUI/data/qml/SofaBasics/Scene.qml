@@ -40,9 +40,11 @@ Scene {
     onStepEnd: {
         if(root.play)
             listModelDirty = true;
-        else
-            listModel.update();
+        else if(listModel)
+                listModel.update();
     }
+
+    onReseted: if(listModel) listModel.update();
 
     property var listModelUpdateTimer: Timer {
         running: root.play && root.listModel ? true : false
@@ -54,7 +56,6 @@ Scene {
                 root.listModelDirty = false;
             }
         }
-
     }
 
     // convenience

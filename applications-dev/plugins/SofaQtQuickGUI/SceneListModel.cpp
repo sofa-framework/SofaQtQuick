@@ -1,6 +1,8 @@
 #include "SceneListModel.h"
 
 #include <QStack>
+#include <QDebug>
+#include <iostream>
 
 namespace sofa
 {
@@ -55,8 +57,8 @@ void SceneListModel::update()
         beginRemoveRows(QModelIndex(), myItems.size(), myUpdatedCount - 1);
         endRemoveRows();
     }
-    
-	dataChanged(createIndex(0, 0), createIndex(myItems.size() - 1, 0));
+
+    dataChanged(createIndex(0, 0), createIndex(myItems.size() - 1, 0));
 
     myUpdatedCount = myItems.size();
 
@@ -69,7 +71,10 @@ void SceneListModel::handleSceneChange(Scene* /*newScene*/)
     if(myScene)
     {
         if(myScene->isReady())
+        {
             addChild(0, myScene->sofaSimulation()->GetRoot().get());
+            update();
+        }
 
         connect(myScene, &Scene::loaded, [this]() {addChild(0, myScene->sofaSimulation()->GetRoot().get()); update();});
         connect(myScene, &Scene::aboutToUnload, this, &SceneListModel::clear);
@@ -79,6 +84,8 @@ void SceneListModel::handleSceneChange(Scene* /*newScene*/)
 void SceneListModel::clear()
 {
     myItems.clear();
+
+    markDirty();
     update();
 }
 
@@ -87,6 +94,7 @@ SceneListModel::Item SceneListModel::buildNodeItem(SceneListModel::Item* parent,
     SceneListModel::Item item;
 
     item.parent = parent;
+    item.multiparent = node->getParents().size() > 1;
     item.depth = parent ? parent->depth + 1 : 0;
     item.visibility = !parent ? Visible : (((Hidden | Collapsed) & parent->visibility) ? Hidden : Visible);
     item.base = node;
@@ -101,6 +109,7 @@ SceneListModel::Item SceneListModel::buildObjectItem(SceneListModel::Item* paren
     SceneListModel::Item item;
 
     item.parent = parent;
+    item.multiparent = false;
     item.depth = parent ? parent->depth + 1 : 0;
     item.visibility = !parent ? Visible : (((Hidden | Collapsed) & parent->visibility) ? Hidden : Visible);
     item.base = object;
@@ -139,9 +148,13 @@ QVariant SceneListModel::data(const QModelIndex& index, int role) const
     }
 
     if(index.row() >= myItems.size())
+    {
+        qWarning("Index out of bound");
         return QVariant("");
+    }
 
     const Item& item = myItems[index.row()];
+    bool multiparent = item.multiparent;
     int depth = item.depth;
     int visibility = item.visibility;
     Base* base = item.base;
@@ -157,6 +170,8 @@ QVariant SceneListModel::data(const QModelIndex& index, int role) const
     {
     case NameRole:
         return QVariant::fromValue(QString(base->name.getValue().c_str()));
+    case MultiParentRole:
+        return QVariant::fromValue(multiparent);
     case DepthRole:
         return QVariant::fromValue(depth);
     case VisibilityRole:
@@ -165,6 +180,8 @@ QVariant SceneListModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(QString(base->getClass()->className.c_str()));
     case IsNodeRole:
         return QVariant::fromValue(0 == object);
+    case CollapsibleRole:
+        return QVariant::fromValue(0 == object && item.children.size() != 0);
     default:
         qWarning("Role unknown");
     }
@@ -177,10 +194,12 @@ QHash<int,QByteArray> SceneListModel::roleNames() const
     QHash<int,QByteArray> roles;
 
     roles[NameRole]         = "name";
+    roles[MultiParentRole]  = "multiparent";
     roles[DepthRole]        = "depth";
     roles[VisibilityRole]   = "visibility";
     roles[TypeRole]         = "type";
     roles[IsNodeRole]       = "isNode";
+    roles[CollapsibleRole]  = "collapsible";
 
     return roles;
 }
@@ -249,13 +268,32 @@ void SceneListModel::setCollapsed(int row, bool collapsed)
                 children.append(child->children[i]);
     }
 
-	markDirty();
+    markDirty();
+    update();
+}
+
+bool SceneListModel::isAncestor(SceneListModel::Item* ancestor, SceneListModel::Item* child)
+{
+    if(!child)
+        return false;
+
+    if(!ancestor)
+        return true;
+
+    Item* parent = child;
+    while((parent = parent->parent))
+        if(ancestor == parent)
+            return true;
+
+    return false;
 }
 
 void SceneListModel::addChild(Node* parent, Node* child)
 {
     if(!child)
         return;
+
+    //std::cerr << "++" << child->getName().c_str() << "(" << child << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
 
     if(!parent)
     {
@@ -272,13 +310,15 @@ void SceneListModel::addChild(Node* parent, Node* child)
 
                 QList<Item>::iterator itemIt = parentItemIt;
                 while(++itemIt != myItems.end())
-                    if(parent != itemIt->node)
+                    if(!isAncestor(parentItem, &*itemIt))
                         break;
 
                 QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildNodeItem(parentItem, child));
+                //std::cerr << &*childItemIt << std::endl;
                 parentItem->children.append(&*childItemIt);
 
                 parentItemIt = childItemIt;
+                break;
             }
             else
                 ++parentItemIt;
@@ -297,14 +337,18 @@ void SceneListModel::removeChild(Node* parent, Node* child)
 
     MutationListener::removeChild(parent, child);
 
+    //std::cerr << "--" << child->getName().c_str() << "(" << child << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
+
     QList<Item>::iterator itemIt = myItems.begin();
     while(itemIt != myItems.end())
     {
-        if(child == itemIt->node)
+        if(child == itemIt->base)
         {
             Item* parentItem = itemIt->parent;
             if((!parent && !parentItem) || (parent && parentItem && parent == parentItem->base))
             {
+                //std::cerr << &*itemIt << std::endl;
+
                 if(parentItem)
                 {
                     int index = parentItem->children.indexOf(&*itemIt);
@@ -313,6 +357,7 @@ void SceneListModel::removeChild(Node* parent, Node* child)
                 }
 
                 itemIt = myItems.erase(itemIt);
+                break;
             }
             else
                 ++itemIt;
@@ -336,30 +381,52 @@ void SceneListModel::addObject(Node* parent, BaseObject* object)
     if(!object || !parent)
         return;
 
-    QList<Item>::iterator parentItemIt = myItems.begin();
-    while(parentItemIt != myItems.end())
-    {
-        if(parent == parentItemIt->base)
+    //std::cerr << "+" << object->getName().c_str() << "(" << object << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
+
+    bool alreadyAdded = false;
+    for(auto it = myItems.begin(); it != myItems.end(); ++it)
+        if(it->base == object)
         {
-            Item* parentItem = &*parentItemIt;
-
-            QList<Item>::iterator itemIt = parentItemIt;
-            while(++itemIt != myItems.end())
-                if(parent != itemIt->node)
-                    break;
-
-            QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildObjectItem(parentItem, object));
-            parentItem->children.append(&*childItemIt);
-
-            parentItemIt = childItemIt;
+            alreadyAdded = true;
+            //std::cerr << std::endl;
+            break;
         }
-        else
-            ++parentItemIt;
+
+    if(!alreadyAdded)
+    {
+        QList<Item>::iterator parentItemIt = myItems.begin();
+        while(parentItemIt != myItems.end())
+        {
+            if(parent == parentItemIt->base)
+            {
+                Item* parentItem = &*parentItemIt;
+
+                QList<Item>::iterator itemIt = parentItemIt;
+                while(++itemIt != myItems.end())
+                    if(parentItem != itemIt->parent)
+                        break;
+
+                if(!alreadyAdded)
+                {
+                    QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildObjectItem(parentItem, object));
+                    //std::cerr << &*childItemIt << " - " << &*childItemIt->parent << std::endl;
+                    parentItem->children.append(&*childItemIt);
+                    parentItemIt = childItemIt;
+                }
+                else
+                {
+                    //std::cerr << &*itemIt << std::endl;
+                }
+                break;
+            }
+            else
+                ++parentItemIt;
+        }
+
+        markDirty();
     }
 
     MutationListener::addObject(parent, object);
-
-	markDirty();
 }
 
 void SceneListModel::removeObject(Node* parent, BaseObject* object)
@@ -369,6 +436,8 @@ void SceneListModel::removeObject(Node* parent, BaseObject* object)
 
     MutationListener::removeObject(parent, object);
 
+    //std::cerr << "-" << object->getName().c_str() << "(" << object << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
+
     QList<Item>::iterator itemIt = myItems.begin();
     while(itemIt != myItems.end())
     {
@@ -377,14 +446,17 @@ void SceneListModel::removeObject(Node* parent, BaseObject* object)
             Item* parentItem = itemIt->parent;
             if(parentItem && parent == parentItem->base)
             {
+                //std::cerr << &*itemIt << " - " << &*itemIt->parent << std::endl;
                 if(parentItem)
                 {
                     int index = parentItem->children.indexOf(&*itemIt);
+
                     if(-1 != index)
                         parentItem->children.remove(index);
                 }
 
                 itemIt = myItems.erase(itemIt);
+                break;
             }
             else
                 ++itemIt;

@@ -14,7 +14,6 @@ ApplicationWindow {
     height: 720
     title: Qt.application.name
 
-
     property var scene: SofaApplication.scene
 
     style: ApplicationWindowStyle {
