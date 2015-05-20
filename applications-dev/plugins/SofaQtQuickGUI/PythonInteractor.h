@@ -86,8 +86,6 @@ public slots:
 	void sendEvent(const QString& pythonClassName, const QString& eventName, const QVariant& parameter = QVariant());
 	void sendEventToAll(const QString& eventName, const QVariant& parameter = QVariant());
 
-private slots:
-	void handleSceneChanged(Scene* scene);
     void retrievePythonScriptControllers();
 
 private:

@@ -26,7 +26,7 @@ PythonInteractor::PythonInteractor(QObject *parent) : QObject(parent), QQmlParse
 	myScene(0),
 	myPythonScriptControllers()
 {
-	connect(this, &PythonInteractor::sceneChanged, this, &PythonInteractor::handleSceneChanged);
+
 }
 
 PythonInteractor::~PythonInteractor()
@@ -58,17 +58,6 @@ void PythonInteractor::setScene(Scene* newScene)
 QList<QString> PythonInteractor::pythonScriptControllersName() const
 {
     return myPythonScriptControllers.keys();
-}
-
-void PythonInteractor::handleSceneChanged(Scene* scene)
-{
-	if(scene)
-	{
-		if(scene->isReady())
-            retrievePythonScriptControllers();
-
-        connect(scene, &Scene::loaded, this, &PythonInteractor::retrievePythonScriptControllers);
-	}
 }
 
 void PythonInteractor::retrievePythonScriptControllers()
