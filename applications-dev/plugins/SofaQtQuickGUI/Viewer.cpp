@@ -339,6 +339,11 @@ void Viewer::internalDraw()
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
 	glEnable(GL_LIGHT0);
 
+    if(wireframe())
+        glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
 	if(culling())
 		glEnable(GL_CULL_FACE);
 
@@ -372,12 +377,12 @@ void Viewer::internalDraw()
 		_vparams->sceneBBox() = myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
 		_vparams->setProjectionMatrix(_projmatrix);
 		_vparams->setModelViewMatrix(_mvmatrix);
-
-		if(wireframe())
-			_vparams->drawTool()->setPolygonMode(0, true);
 	}
 
 	myScene->draw();
+
+    if(wireframe())
+        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
