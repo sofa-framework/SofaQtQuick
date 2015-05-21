@@ -82,11 +82,11 @@ CollapsibleGroupBox {
                     stepSize:0.01
 
                     function update() {
-                        scene.pythonInteractor.callByControllerName("script", "setGravity", vx, vy, vz);
+                        scene.pythonInteractor.call("script", "setGravity", vx, vy, vz);
                     }
 
                     Component.onCompleted: {
-                        setValueFromArray(scene.pythonInteractor.callByControllerName("script", "getGravity"));
+                        setValueFromArray(scene.pythonInteractor.call("script", "getGravity"));
 
                         onVxChanged.connect(update);
                         onVyChanged.connect(update);
@@ -95,7 +95,7 @@ CollapsibleGroupBox {
 
                     Connections {
                         target: scene
-                        onStepEnd: gravity.setValueFromArray(scene.pythonInteractor.callByControllerName("script", "getGravity"));
+                        onStepEnd: gravity.setValueFromArray(scene.pythonInteractor.call("script", "getGravity"));
                     }
                 }
 
@@ -120,7 +120,7 @@ CollapsibleGroupBox {
                     }
 
                     function update() {
-                        setValueFromArray(scene.pythonInteractor.callByControllerName("script", "getPointLocation"));
+                        setValueFromArray(scene.pythonInteractor.call("script", "getPointLocation"));
                     }
                 }
             }

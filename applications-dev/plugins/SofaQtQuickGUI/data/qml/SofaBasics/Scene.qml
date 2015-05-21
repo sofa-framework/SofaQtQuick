@@ -28,7 +28,6 @@ Scene {
             statusMessage = 'Scene "' + path + '" issued an error during loading';
             break;
         case Scene.Ready:
-            pythonInteractor.retrievePythonScriptControllers();
             statusMessage = 'Scene "' + path + '" loaded successfully';
             SofaSettingsScript.Recent.add(path);
             break;

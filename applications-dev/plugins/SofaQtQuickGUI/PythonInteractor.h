@@ -49,50 +49,34 @@ public:
 	void componentComplete();
 	
 public:
-    Q_PROPERTY(sofa::qtquick::Scene* scene READ scene WRITE setScene NOTIFY sceneChanged)
-    Q_PROPERTY(QList<QString> pythonScriptControllersName READ pythonScriptControllersName NOTIFY pythonScriptControllersNameChanged)
+    Q_PROPERTY(sofa::qtquick::Scene* scene READ scene WRITE setScene /*NOTIFY sceneChanged*/)
 
-public:
-	Scene* scene() const	{return myScene;}
-	void setScene(Scene* newScene);
+    Scene* scene() const	{return myScene;}
+    void setScene(Scene* newScene);
 
-    QList<QString> pythonScriptControllersName() const;
 	
-signals:
-    void sceneChanged(sofa::qtquick::Scene* newScene);
-    void pythonScriptControllersNameChanged(const QList<QString>& newPythonScriptControllersName);
+//signals:
+//    void sceneChanged(sofa::qtquick::Scene* newScene);
 	
 public:
     Q_INVOKABLE bool run(const QString& script);
 
-    /// call by controller class name
-    QVariant call(const QString& pythonClassName, const QString& funcName, const QVariant& parameter = QVariant());
     /// call by controller name
-    QVariant callByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());
+    QVariant call(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());
 
 protected:
 
-    /// basic common verifications
+    /// @internal basic common verifications
     bool onCallBasicVerifications(const QString& funcName, const QVariant& parameter = QVariant());
-    /// call by controller
+    /// @internal call by controller
     QVariant onCallByController(PythonScriptController* controller, const QString& funcName, const QVariant& parameter = QVariant());
 
-    /// call by controller class name
-    Q_INVOKABLE QVariant onCallByClassName(const QString& pythonClassName, const QString& funcName, const QVariant& parameter = QVariant());
     /// call by controller name
-    Q_INVOKABLE QVariant onCallByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());
-
-public slots:
-	void sendEvent(const QString& pythonClassName, const QString& eventName, const QVariant& parameter = QVariant());
-	void sendEventToAll(const QString& eventName, const QVariant& parameter = QVariant());
-
-    void retrievePythonScriptControllers();
+    Q_INVOKABLE QVariant onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());
 
 private:
-    Scene* myScene;
 
-    typedef QMap<QString, PythonScriptController*> PythonScriptControllersMap;
-    PythonScriptControllersMap	myPythonScriptControllers;
+    Scene* myScene;
 	
 };
 
