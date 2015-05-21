@@ -265,16 +265,10 @@ bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const Q
 
 QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScriptController, const QString& funcName, const QVariant& parameter)
 {
-    if(!pythonScriptController)
-    {
-        qWarning() << "ERROR: cannot call Python function without a valid pythonScriptController";
-        return QVariant();
-    }
-
     PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
     if(!pyCallableObject)
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python class and function name";
+        qWarning() << "ERROR: cannot call Python function without a valid function name "<<funcName;
         return QVariant();
     }
 
@@ -297,13 +291,33 @@ QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, con
 
     if(pythonScriptControllerName.isEmpty())
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python controller name";
-        return false;
+        qWarning() << "ERROR: cannot call Python function without a python controller path/name";
+        return QVariant();
     }
 
-    // FOR NOW the controller is always looked for in the scene, as its component can be deleted or moved or another component with the same name can be somewhere else
-    // TODO improve that
-    PythonScriptController* controller = dynamic_cast<PythonScriptController*>( myScene->sofaSimulation()->GetRoot()->getObject( pythonScriptControllerName.toUtf8().constData() ) );
+
+    const char * path = pythonScriptControllerName.toUtf8().constData();
+    PythonScriptController* controller;
+
+    // try to find by path (faster)
+    void* cont = myScene->sofaSimulation()->GetRoot()->getObject( classid(PythonScriptController), path );
+
+    if( cont ) // found by path
+    {
+       controller = reinterpret_cast<PythonScriptController*>( cont );
+    }
+    else // try to find by name (slower but more generic)
+    {
+        std::cerr<<"FINDING BY NAME "<<path<<" "<<funcName.toUtf8().constData()<<std::endl;
+        controller = dynamic_cast<PythonScriptController*>( myScene->sofaSimulation()->GetRoot()->getObject( path ) );
+    }
+
+    if( !controller )
+    {
+        qWarning() << "ERROR: cannot call Python function without a valid python controller path/name "<<pythonScriptControllerName;
+        return QVariant();
+    }
+
     return onCallByController( controller, funcName, parameter );
 
     return QVariant();
