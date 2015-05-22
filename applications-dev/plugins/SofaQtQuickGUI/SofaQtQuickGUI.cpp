@@ -33,6 +33,7 @@
 #include "DataListModel.h"
 #include "Viewer.h"
 #include "PythonConsole.h"
+#include <sofa/helper/system/PluginManager.h>
 
 using namespace sofa::qtquick;
 
@@ -50,6 +51,8 @@ void SofaQtQuickGUI::init()
     Q_INIT_RESOURCE(resources);
 
     registerTypes("SofaQtQuickGUI");
+
+    sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
 }
 
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
