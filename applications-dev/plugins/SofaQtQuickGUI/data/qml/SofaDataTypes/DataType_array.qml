@@ -40,11 +40,22 @@ Loader {
                     movable: false
                     resizable: false
                     horizontalAlignment: Text.AlignHCenter
-                    width: (tableView.width - 14) / tableView.columnCount - 1
+                    width: (tableView.width - 80) / (tableView.columnCount - 1)
+                }
+            }
+
+            Component {
+                id: columnLines
+                TableViewColumn {
+                    movable: false
+                    resizable: false
+                    horizontalAlignment: Text.AlignHCenter
+                    width: 80
                 }
             }
 
             Component.onCompleted: {
+                addColumn(columnLines.createObject(tableView, {"title": "", "role": "printLinesNumber"}));
                 for(var i = 0; i < dataObject.properties.cols; ++i)
                     addColumn(columnComponent.createObject(tableView, {"title": i.toString(), "role": "c" + i.toString()}));
             }
@@ -108,13 +119,15 @@ Loader {
                 anchors.leftMargin: 6
                 anchors.rightMargin: 6
                 clip: true
-                readOnly: -1 === styleData.row || dataObject.readOnly
+                readOnly: -1 === styleData.row || dataObject.readOnly || 0 === styleData.column
                 color: styleData.textColor
                 horizontalAlignment: TextEdit.AlignHCenter
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
                 text: {
-                    if(-1 !== styleData.row) {
-                        var value = dataObject.value[styleData.row][styleData.column];
+                    if (styleData.column === 0)
+                        return styleData.row;
+                    else if(-1 !== styleData.row && styleData.column !== 0) {
+                        var value = dataObject.value[styleData.row][styleData.column - 1];
                         if("string" === typeof(value))
                             return value;
                         else
@@ -125,7 +138,7 @@ Loader {
                 }
                 property int previousRow: -1
                 onTextChanged: {
-                    if(-1 === styleData.row || dataObject.readOnly)
+                    if(-1 === styleData.row || dataObject.readOnly || 0 === styleData.column)
                         return;
 
                     if(previousRow !== styleData.row) {
@@ -133,14 +146,15 @@ Loader {
                         return;
                     }
 
-                    var oldValue = dataObject.value[styleData.row][styleData.column];
-                    if("string" !== typeof(oldValue))
-                        oldValue = oldValue.toFixed(3);
+                    if(styleData.column !== 0)
+                        var oldValue = dataObject.value[styleData.row][styleData.column - 1];
+                        if("string" !== typeof(oldValue))
+                            oldValue = oldValue.toFixed(3);
 
-                    var value = text;
-                    if(value !== oldValue) {
-                        dataObject.value[styleData.row][styleData.column] = value;
-                        dataObject.modified = true;
+                        var value = text;
+                        if(value !== oldValue) {
+                            dataObject.value[styleData.row][styleData.column - 1] = value;
+                            dataObject.modified = true;
                     }
                 }
             }
