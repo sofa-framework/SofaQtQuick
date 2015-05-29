@@ -93,6 +93,15 @@ QVariantMap SceneData::object() const
     return QVariantMap();
 }
 
+QVariant SceneData::value()
+{
+    BaseData* data = SceneData::data();
+    if(data)
+        return Scene::dataValue(data);
+
+    return QVariant();
+}
+
 bool SceneData::setValue(const QVariant& value)
 {
     BaseData* data = SceneData::data();
@@ -164,8 +173,8 @@ Scene::Scene(QObject *parent) : QObject(parent),
 	sofa::component::init();
 	sofa::simulation::xml::initXml();
 
-	// plugins
-	QVector<QString> plugins;
+    // plugins
+    QVector<QString> plugins;
 	plugins.append("SofaPython");
 
     for(const QString& plugin : plugins)
@@ -301,7 +310,10 @@ void Scene::open()
             if(!loaderThread->isLoaded())
                 setStatus(Status::Error);
             else
+            {
                 myIsInit = true;
+                preloaded();
+            }
 
             loaderThread->deleteLater();
         });
@@ -313,7 +325,10 @@ void Scene::open()
         if(!LoaderProcess(mySofaSimulation, finalFilename))
             setStatus(Status::Error);
         else
+        {
             myIsInit = true;
+            preloaded();
+        }
 	}
 }
 
@@ -331,7 +346,7 @@ void Scene::handleStatusChange(Scene::Status newStatus)
     case Status::Error:
         break;
     default:
-        qWarning() << "Scene status unknown";
+        qCritical() << "Scene status unknown";
         break;
     }
 }
@@ -396,6 +411,16 @@ void Scene::setPlay(bool newPlay)
 	myPlay = newPlay;
 
 	playChanged(newPlay);
+}
+
+void Scene::setAsynchronous(bool newAsynchronous)
+{
+    if(newAsynchronous == myAsynchronous)
+        return;
+
+    myAsynchronous = newAsynchronous;
+
+    asynchronousChanged(newAsynchronous);
 }
 
 void Scene::setVisualDirty(bool newVisualDirty)
@@ -943,7 +968,7 @@ void Scene::onSetDataValue(const QString& path, const QVariant& value)
 
 void Scene::initGraphics()
 {
-    if(!myIsInit)
+    if(!isPreLoaded() || !isLoading())
         return;
 
     if(!mySofaSimulation->GetRoot())
@@ -995,9 +1020,17 @@ void Scene::reload()
     open();
 }
 
+void Scene::animate(bool play)
+{
+    if(!isReady())
+        return;
+
+    setPlay(play);
+}
+
 void Scene::step()
 {
-	if(!mySofaSimulation->GetRoot())
+    if(!isReady())
 		return;
 
 	emit stepBegin();
@@ -1008,7 +1041,7 @@ void Scene::step()
 
 void Scene::reset()
 {
-    if(!mySofaSimulation->GetRoot())
+    if(!isReady())
         return;
 
     // TODO: ! NEED CURRENT OPENGL CONTEXT
@@ -1019,8 +1052,8 @@ void Scene::reset()
 
 void Scene::draw()
 {
-	if(!mySofaSimulation->GetRoot())
-		return;
+    if(!isReady())
+        return;
 
     // prepare the sofa visual params
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
@@ -1052,8 +1085,8 @@ void Scene::draw()
 
 void Scene::onKeyPressed(char key)
 {
-	if(!mySofaSimulation->GetRoot())
-		return;
+    if(!isReady())
+        return;
 
 	sofa::core::objectmodel::KeypressedEvent keyEvent(key);
 	sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
@@ -1061,8 +1094,8 @@ void Scene::onKeyPressed(char key)
 
 void Scene::onKeyReleased(char key)
 {
-	if(!mySofaSimulation->GetRoot())
-		return;
+    if(!isReady())
+        return;
 
 	sofa::core::objectmodel::KeyreleasedEvent keyEvent(key);
 	sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);

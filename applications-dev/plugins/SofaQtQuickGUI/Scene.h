@@ -49,6 +49,8 @@ public:
     SceneData(const Scene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
 
     Q_INVOKABLE QVariantMap object() const;
+
+    Q_INVOKABLE QVariant value();
     Q_INVOKABLE bool setValue(const QVariant& value);
     Q_INVOKABLE bool setLink(const QString& path);
 
@@ -79,8 +81,8 @@ public:
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
-	Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
-	Q_PROPERTY(bool asynchronous MEMBER myAsynchronous NOTIFY asynchronousChanged)
+    Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
+    Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool visualDirty READ visualDirty NOTIFY visualDirtyChanged)
 
 	Q_ENUMS(Status)
@@ -95,6 +97,7 @@ public:
 	Status status()	const							{return myStatus;}
 	void setStatus(Status newStatus);
 
+    bool isPreLoaded() const                        {return myIsInit;}
     bool isLoading() const							{return Status::Loading == myStatus;}
     bool isReady() const							{return Status::Ready == myStatus;}
 
@@ -113,13 +116,17 @@ public:
 	bool playing() const							{return myPlay;}
 	void setPlay(bool newPlay);
 
+    bool asynchronous() const                       {return myAsynchronous;}
+    void setAsynchronous(bool newPlay);
+
     bool visualDirty() const						{return myVisualDirty;}
     void setVisualDirty(bool newVisualDirty);
 
 signals:
-	void loaded();
-    void aboutToUnload();
-	void statusChanged(Status newStatus);
+    void preloaded();                                   /// this signal is emitted after basic init has been done, call initGraphics() with a valid opengl context bound to effectively load the scene
+    void loaded();                                      /// scene has been loaded and is ready
+    void aboutToUnload();                               /// scene is being to be unloaded
+    void statusChanged(Status newStatus);
     void headerChanged(const QString& newHeader);
 	void sourceChanged(const QUrl& newSource);
 	void sourceQMLChanged(const QUrl& newSourceQML);
@@ -154,6 +161,7 @@ protected:
 public slots:
     void initGraphics();        // need an opengl context made current
 	void reload();
+    void animate(bool play);
 	void step();
 	void reset();
 	void draw();

@@ -9,7 +9,7 @@ import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 Scene {
     id: root
 
-    asynchronous: false
+    asynchronous: true
     header: ""
     source: ""
     sourceQML: ""
