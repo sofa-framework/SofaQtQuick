@@ -11,7 +11,7 @@ m1 = None
 def createScene(root):
     global m1
 
-    root.createObject('PythonScriptController', name="script", filename=__file, classname="PythonScript")
+    root.createObject('PythonScriptController', name="PythonScript", filename=__file, classname="PythonScript")
     root.createObject('VisualStyle',name='VisualStyle', displayFlags="showAll")
     root.createObject('EulerImplicitSolver',name='EulerSolver')
     root.createObject('CGLinearSolver',name='CGLinearSolver', template="GraphScattered", iterations="25", tolerance="1e-005", threshold="1e-005")
