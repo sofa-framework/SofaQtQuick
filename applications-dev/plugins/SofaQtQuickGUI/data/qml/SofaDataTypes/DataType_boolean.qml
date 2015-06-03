@@ -8,7 +8,7 @@ Item {
 
     property var dataObject
 
-    Switch {
+    CheckBox {
         id: control
         anchors.centerIn: parent
         enabled: !dataObject.readOnly
