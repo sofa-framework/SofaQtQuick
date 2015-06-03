@@ -12,9 +12,10 @@ ApplicationWindow {
     id: root
     width: 1280
     height: 720
-    title: Qt.application.name
+    title: Qt.application.name + " - \"" + scenePath + "\""
 
     property var scene: SofaApplication.scene
+    property string scenePath: ""
 
     style: ApplicationWindowStyle {
         background: null
@@ -33,6 +34,7 @@ ApplicationWindow {
             else
                 scene.source = "file:Demos/caduceus.scn";
         }
+        scenePath = scene.source.toString().replace("///", "/").replace("file:", "");
     }
 
     // dialog
@@ -42,6 +44,7 @@ ApplicationWindow {
         nameFilters: ["Scene files (*.xml *.scn *.pscn *.py *.simu *)"]
         onAccepted: {
             scene.source = fileUrl;
+            scenePath = scene.source.toString().replace("///", "/").replace("file:", "");
         }
     }
 
