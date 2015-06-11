@@ -76,7 +76,7 @@ public:
 	~Scene();
 
 public:
-    Q_PROPERTY(Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(sofa::qtquick::Scene::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
@@ -85,8 +85,8 @@ public:
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool visualDirty READ visualDirty NOTIFY visualDirtyChanged)
 
-	Q_ENUMS(Status)
-	enum Status {
+    Q_ENUMS(Status)
+    enum Status {
 		Null,
 		Ready,
 		Loading,
@@ -94,8 +94,8 @@ public:
 	};
 
 public:
-	Status status()	const							{return myStatus;}
-	void setStatus(Status newStatus);
+    sofa::qtquick::Scene::Status status()	const							{return myStatus;}
+    void setStatus(sofa::qtquick::Scene::Status newStatus);
 
     bool isPreLoaded() const                        {return myIsInit;}
     bool isLoading() const							{return Status::Loading == myStatus;}

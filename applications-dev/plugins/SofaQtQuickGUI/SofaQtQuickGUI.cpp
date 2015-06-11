@@ -59,6 +59,8 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
 	//Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
 
+    qRegisterMetaType<Scene::Status>("Status");
+
     qmlRegisterType<Tools>                      ("Tools"			, versionMajor, versionMinor, "Tools");
     qmlRegisterType<Camera>                     ("Camera"			, versionMajor, versionMinor, "Camera");
     qmlRegisterType<PickingInteractor>          ("PickingInteractor", versionMajor, versionMinor, "PickingInteractor");

@@ -8,13 +8,14 @@
 #include <QtQuick/qquickwindow.h>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QRunnable>
+#include <QEventLoop>
 //#include <QOpenGLContext>
 //#include <QOpenGLPaintDevice>
 //#include <QPaintEngine>
 //#include <QPainter>
 #include <QVector>
 #include <QVector4D>
-#include <QOpenGLFramebufferObject>
 #include <QTime>
 #include <QPair>
 #include <QThread>
@@ -36,8 +37,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myWireframe(false),
     myCulling(true),
     myBlending(false),
-    myAntialiasing(false),
-    myFBO(0)
+    myAntialiasing(false)
 {
     setFlag(QQuickItem::ItemHasContents);
 
@@ -49,8 +49,6 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
 
 Viewer::~Viewer()
 {
-    //delete myFBO;
-
 	/*sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
 	if(_vparams && _vparams->drawTool())
 	{
@@ -187,48 +185,48 @@ QVector3D Viewer::mapToWorld(const QVector3D& ssPoint)
 	return (myCamera->model() * vsPosition).toVector3D();
 }
 
+class ProjectOnGeometryWorker : public QRunnable
+{
+public:
+    ProjectOnGeometryWorker(QPointF position, float& z, bool& finished) :
+        myPosition(position),
+        myZ(z),
+        myFinished(finished)
+    {
+
+    }
+
+    void run()
+    {
+        glReadPixels(myPosition.x(), myPosition.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &myZ);
+
+        myFinished = true;
+    }
+
+private:
+    QPointF myPosition;
+    float&  myZ;
+    bool&   myFinished;
+
+};
+
 QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint)
 {
     if(!window())
         return QVector4D();
 
-    QPointF ssPointGL = ssPoint;
+    QPointF ssPointGL = mapToScene(ssPoint);
     ssPointGL.setX(ssPointGL.x() * window()->devicePixelRatio());
-    ssPointGL.setY((height() - ssPointGL.y()) * window()->devicePixelRatio());  // OpenGL has its Y coordinate inverted compared to Qt
+    ssPointGL.setY((window()->height() - ssPointGL.y()) * window()->devicePixelRatio());  // OpenGL has its Y coordinate inverted compared to Qt
 
-	QSize size = glRect().size();
+    float z = 1.0;
+    bool finished = false;
 
-	// TODO: use a custom fbo without color, only depth
-	if(!myFBO ||
-		size.width() > myFBO->width() || size.height() > myFBO->height() ||
-		myFBO->width() >= size.width() / 2 || myFBO->height() >= size.height() / 2)
-	{
-		delete myFBO;
-		myFBO = new QOpenGLFramebufferObject(size);
-		myFBO->setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
-	}
-
-	if(!myFBO->isValid())
-	{
-		qWarning() << "ERROR: cannot bind fbo to draw the Sofa scene";
-		return QVector4D();
-	}
-
-	// draw only the depth in the fbo
-	myFBO->bind();
-
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, size.width(), size.height());
-
-	glDisable(GL_LIGHTING);
-	glDisable(GL_BLEND);
-
-	internalDraw();
-
-    float z;
-    glReadPixels(ssPointGL.x(), ssPointGL.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-
-	myFBO->release();
+    ProjectOnGeometryWorker* worker = new ProjectOnGeometryWorker(ssPointGL, z, finished);
+    window()->scheduleRenderJob(worker, QQuickWindow::BeforeRenderingStage);
+    window()->update();
+    while(!finished)
+        qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
 
     return QVector4D(mapToWorld(QVector3D(ssPoint.x(), ssPoint.y(), z)), qCeil(1.0f - z));
 }
@@ -260,7 +258,7 @@ QVector3D Viewer::boundingBoxMax() const
 void Viewer::handleSceneChanged(Scene* scene)
 {
 	if(scene)
-	{
+    {
 		if(scene->isReady())
 			scenePathChanged();
 
@@ -435,6 +433,8 @@ void Viewer::paint()
 
 	if(blending())
 		glDisable(GL_BLEND);
+
+        window()->update();
 }
 
 void Viewer::viewAll()

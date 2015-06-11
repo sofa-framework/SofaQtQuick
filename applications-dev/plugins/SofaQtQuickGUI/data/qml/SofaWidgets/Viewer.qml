@@ -23,14 +23,14 @@ Viewer {
 		shortcut: "F5"
 		onTriggered: root.viewAll()
 	}
-
+/*
     Timer {
         running: true
         repeat: true
         interval: 16
         onTriggered: root.update() // TODO: warning, does not work with multithreaded render loop
     }
-
+*/
     BusyIndicator {
         id: busyIndicator
         anchors.centerIn: parent
