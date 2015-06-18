@@ -11,6 +11,9 @@ set(SOURCE_FILES
 		PythonInteractor.cpp
                 PythonConsole.cpp
 		PickingInteractor.cpp
+                Manipulator.cpp
+                Manipulator2D_Translation.cpp
+                Manipulator2D_Rotation.cpp
 )
 
 set(HEADER_FILES
@@ -24,6 +27,9 @@ set(HEADER_FILES
 		PythonInteractor.h
                 PythonConsole.h
 		PickingInteractor.h
+                Manipulator.h
+                Manipulator2D_Translation.h
+                Manipulator2D_Rotation.h
 )
 
 set(QML_FILES
@@ -68,6 +74,10 @@ set(QML_FILES
                 data/qml/SofaBasics/DynamicContent.qml
                 data/qml/SofaInteractors/qmldir
                 data/qml/SofaInteractors/UserInteractor_Selection.qml
+                data/qml/SofaManipulators/qmldir
+                data/qml/SofaManipulators/Manipulator.qml
+                data/qml/SofaManipulators/Manipulator2D_Translation.qml
+                data/qml/SofaManipulators/Manipulator2D_Rotation.qml
 		data/qml/SofaTools/qmldir
 		data/qml/SofaTools/SimulationControl.qml
                 data/qml/SofaTools/SceneGraphView.qml

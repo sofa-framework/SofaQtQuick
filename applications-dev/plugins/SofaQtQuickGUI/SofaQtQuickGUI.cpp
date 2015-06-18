@@ -28,6 +28,9 @@
 #include "Camera.h"
 #include "PickingInteractor.h"
 #include "PythonInteractor.h"
+#include "Manipulator.h"
+#include "Manipulator2D_Translation.h"
+#include "Manipulator2D_Rotation.h"
 #include "Scene.h"
 #include "SceneListModel.h"
 #include "DataListModel.h"
@@ -61,15 +64,18 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 
     qRegisterMetaType<Scene::Status>("Status");
 
-    qmlRegisterType<Tools>                      ("Tools"			, versionMajor, versionMinor, "Tools");
-    qmlRegisterType<Camera>                     ("Camera"			, versionMajor, versionMinor, "Camera");
-    qmlRegisterType<PickingInteractor>          ("PickingInteractor", versionMajor, versionMinor, "PickingInteractor");
-    qmlRegisterType<PythonInteractor>           ("PythonInteractor"	, versionMajor, versionMinor, "PythonInteractor");
-    qmlRegisterType<Scene>                      ("Scene"			, versionMajor, versionMinor, "Scene");
-    qmlRegisterUncreatableType<SceneComponent> 	("SceneComponent"	, versionMajor, versionMinor, "SceneComponent", "SceneComponent is not instantiable");
-    qmlRegisterUncreatableType<SceneData>       ("SceneData"        , versionMajor, versionMinor, "SceneData", "SceneData is not instantiable");
-    qmlRegisterType<SceneListModel>             ("SceneListModel"   , versionMajor, versionMinor, "SceneListModel");
-    qmlRegisterType<DataListModel>              ("DataListModel"    , versionMajor, versionMinor, "DataListModel");
-    qmlRegisterType<Viewer>                     ("Viewer"			, versionMajor, versionMinor, "Viewer");
-    qmlRegisterType<PythonConsole>              ("PythonConsole"    , versionMajor, versionMinor, "PythonConsole");
+    qmlRegisterType<Tools>                      ("Tools"                    , versionMajor, versionMinor, "Tools");
+    qmlRegisterType<Camera>                     ("Camera"                   , versionMajor, versionMinor, "Camera");
+    qmlRegisterType<PickingInteractor>          ("PickingInteractor"        , versionMajor, versionMinor, "PickingInteractor");
+    qmlRegisterType<PythonInteractor>           ("PythonInteractor"         , versionMajor, versionMinor, "PythonInteractor");
+    qmlRegisterType<Manipulator>                ("Manipulator"              , versionMajor, versionMinor, "Manipulator");
+    qmlRegisterType<Manipulator2D_Translation>  ("Manipulator2D_Translation", versionMajor, versionMinor, "Manipulator2D_Translation");
+    qmlRegisterType<Manipulator2D_Rotation>     ("Manipulator2D_Rotation"   , versionMajor, versionMinor, "Manipulator2D_Rotation");
+    qmlRegisterType<Scene>                      ("Scene"                    , versionMajor, versionMinor, "Scene");
+    qmlRegisterUncreatableType<SceneComponent> 	("SceneComponent"           , versionMajor, versionMinor, "SceneComponent", "SceneComponent is not instantiable");
+    qmlRegisterUncreatableType<SceneData>       ("SceneData"                , versionMajor, versionMinor, "SceneData", "SceneData is not instantiable");
+    qmlRegisterType<SceneListModel>             ("SceneListModel"           , versionMajor, versionMinor, "SceneListModel");
+    qmlRegisterType<DataListModel>              ("DataListModel"            , versionMajor, versionMinor, "DataListModel");
+    qmlRegisterType<Viewer>                     ("Viewer"                   , versionMajor, versionMinor, "Viewer");
+    qmlRegisterType<PythonConsole>              ("PythonConsole"            , versionMajor, versionMinor, "PythonConsole");
 }

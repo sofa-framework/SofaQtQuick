@@ -93,22 +93,36 @@ const QMatrix4x4& Camera::model() const
 	return myModel;
 }
 
-double Camera::computeDepth(const QVector3D& point)
+double Camera::computeDepth(const QVector3D& wsPosition)
 {
-    QVector4D csPosition = projection() * view() * QVector4D(point, 1.0);
+    QVector4D csPosition = projection() * view() * QVector4D(wsPosition, 1.0);
 
     return csPosition.z() / csPosition.w();
 }
 
-QVector3D Camera::projectOnViewPlane(const QVector3D& point, double depth)
+QVector3D Camera::projectOnViewPlane(const QVector3D& wsPosition, double depth)
 {
-    QVector4D csPosition = projection() * view() * QVector4D(point, 1.0);
+    QVector4D csPosition = projection() * view() * QVector4D(wsPosition, 1.0);
     QVector4D nsPosition = csPosition / csPosition.w();
 
     csPosition = projection().inverted() * QVector4D(nsPosition.x(), nsPosition.y(), depth, 1.0);
     QVector4D vsPosition = csPosition / csPosition.w();
 
     return (model() * vsPosition).toVector3D();
+}
+
+QVector3D Camera::projectOnViewSpaceXAxis(const QVector3D& wsVector)
+{
+    QVector3D right(Camera::right());
+
+    return right * QVector3D::dotProduct(right, wsVector);
+}
+
+QVector3D Camera::projectOnViewSpaceYAxis(const QVector3D& wsVector)
+{
+    QVector3D up(Camera::up());
+
+    return up * QVector3D::dotProduct(up, wsVector);
 }
 
 void Camera::viewFromFront()

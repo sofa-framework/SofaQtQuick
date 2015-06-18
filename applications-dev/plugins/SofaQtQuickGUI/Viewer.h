@@ -2,6 +2,8 @@
 #define VIEWER_H
 
 #include "SofaQtQuickGUI.h"
+#include "Camera.h"
+
 #include <QtQuick/QQuickItem>
 #include <QVector3D>
 #include <QVector4D>
@@ -16,12 +18,18 @@ namespace sofa
 namespace qtquick
 {
 
+class SceneComponent;
 class Scene;
 class Camera;
+class Manipulator;
+
+class PickUsingRasterizationWorker;
 
 class SOFA_SOFAQTQUICKGUI_API Viewer : public QQuickItem
 {
     Q_OBJECT
+
+    friend class PickUsingRasterizationWorker;
 
 public:
     explicit Viewer(QQuickItem* parent = 0);
@@ -90,9 +98,17 @@ public slots:
     void paint();
 	void viewAll();
 
+public:
+    /// \brief      Mid-level function for color index picking
+    /// \note       The best way to pick an object is to use a 'PickingInteractor' instead of directly call this function
+    /// \return     True if an object has been picked, false if we hit the background or a non-selectable object
+    bool pickUsingRasterization(const QPointF& ssPoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, QVector3D& wsPoint);
+
 private:
 	QRect glRect();
-	void internalDraw();
+    void internalDraw();
+
+    QPointF mapToNative(const QPointF& ssPoint);
 
 private slots:
 	void handleSceneChanged(Scene* scene);
@@ -110,7 +126,6 @@ private:
     bool                        myCulling;
     bool                        myBlending;
     bool                        myAntialiasing;
-    QOpenGLFramebufferObject*   myFBO;
 
 };
 

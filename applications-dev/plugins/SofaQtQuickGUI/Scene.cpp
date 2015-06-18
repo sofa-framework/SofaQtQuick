@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include "Scene.h"
+#include "Viewer.h"
 
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
@@ -14,6 +15,7 @@
 #include <sofa/core/visual/DrawToolGL.h>
 #include <sofa/helper/system/glut.h>
 #include <SofaPython/SceneLoaderPY.h>
+#include <SofaOpenglVisual/OglModel.h>
 #include <SofaComponentMain/init.h>
 
 #include <sstream>
@@ -29,6 +31,9 @@
 #include <QSequentialIterable>
 #include <QJSValue>
 #include <QDebug>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QOpenGLShaderProgram>
 
 namespace sofa
 {
@@ -38,6 +43,7 @@ namespace qtquick
 
 using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
+using namespace sofa::component::visualmodel;
 using namespace sofa::simulation;
 
 SceneComponent::SceneComponent(const Scene* scene, const sofa::core::objectmodel::Base* base) : QObject(),
@@ -45,6 +51,22 @@ SceneComponent::SceneComponent(const Scene* scene, const sofa::core::objectmodel
     myBase(base)
 {
 
+}
+
+SceneComponent::SceneComponent(const SceneComponent& sceneComponent) :
+    myScene(sceneComponent.scene()),
+    myBase(sceneComponent.base())
+{
+
+}
+
+QString SceneComponent::name() const
+{
+    const Base* base = SceneComponent::base();
+    if(!base)
+        return QString("Invalid SceneComponent");
+
+    return QString::fromStdString(base->getName());
 }
 
 Base* SceneComponent::base()
@@ -82,6 +104,16 @@ SceneData::SceneData(const Scene* scene, const sofa::core::objectmodel::Base* ba
     myData(data)
 {
 
+}
+
+SceneData::SceneData(const SceneData& sceneData) :
+    myScene(sceneData.myScene),
+    myBase(),
+    myData(sceneData.data())
+{
+    // if the data exists, its base is valid
+    if(myData)
+        myBase = sceneData.myBase;
 }
 
 QVariantMap SceneData::object() const
@@ -159,9 +191,14 @@ Scene::Scene(QObject *parent) : QObject(parent),
 	myDt(0.04),
 	myPlay(false),
 	myAsynchronous(true),
-	mySofaSimulation(0),
+    mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
-    myBases()
+    myBases(),
+    myManipulators(),
+    mySelectedManipulators(),
+    mySelectedModels(),
+    mySelectedModelShaderProgram(nullptr),
+    myPickingShaderProgram(nullptr)
 {
 	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
 	boost::shared_ptr<sofa::core::ObjectFactory::ClassEntry> classVisualModel;
@@ -433,6 +470,72 @@ void Scene::setVisualDirty(bool newVisualDirty)
     visualDirtyChanged(newVisualDirty);
 }
 
+static void appendManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property, sofa::qtquick::Manipulator *value)
+{
+    static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->append(value);
+}
+
+static sofa::qtquick::Manipulator* atManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property, int index)
+{
+    return static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->at(index);
+}
+
+static void clearManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property)
+{
+    static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->clear();
+}
+
+static int countManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property)
+{
+    return static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->size();
+}
+
+QQmlListProperty<sofa::qtquick::Manipulator> Scene::manipulators()
+{
+    return QQmlListProperty<sofa::qtquick::Manipulator>(this, &myManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
+}
+
+QQmlListProperty<sofa::qtquick::Manipulator> Scene::selectedManipulators()
+{
+    return QQmlListProperty<sofa::qtquick::Manipulator>(this, &mySelectedManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
+}
+
+static void appendSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property, sofa::qtquick::SceneComponent *value)
+{
+    OglModel* model = dynamic_cast<OglModel*>(value->base());
+    if(nullptr == model)
+        return;
+
+    // TODO: is it really useful ?
+    SceneComponent* valueCopy = new SceneComponent(*value);
+
+    static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->append(valueCopy);
+}
+
+static sofa::qtquick::SceneComponent* atSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property, int index)
+{
+    return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->at(index);
+}
+
+static void clearSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
+{
+    QList<sofa::qtquick::SceneComponent*>& selectedModels = *static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data);
+    for(SceneComponent* sceneComponent : selectedModels)
+        delete sceneComponent;
+
+    static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->clear();
+}
+
+static int countSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
+{
+    return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->size();
+}
+
+QQmlListProperty<sofa::qtquick::SceneComponent> Scene::selectedModels()
+{
+    return QQmlListProperty<sofa::qtquick::SceneComponent>(this, &mySelectedModels, appendSelectedModel, countSelectedModel, atSelectedModel, clearSelectedModel);
+}
+
 double Scene::radius() const
 {
 	QVector3D min, max;
@@ -495,6 +598,23 @@ void Scene::reinitComponent(const QString& path)
         return;
     }
     object->reinit();
+}
+
+bool Scene::areSameComponent(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB)
+{
+    // one or other is null => no component
+    if(!sceneComponentA || !sceneComponentB)
+        return false;
+
+    // same wrapper => same component
+    if(sceneComponentA == sceneComponentB)
+        return true;
+
+    // same base object => same component
+    if(sceneComponentA->base() == sceneComponentB->base())
+        return true;
+
+    return false;
 }
 
 void Scene::sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value)
@@ -981,6 +1101,44 @@ void Scene::initGraphics()
     if(0 != err)
         qWarning() << "GLEW Initialization failed with error code:" << err;
 
+    // init the highlight shader program
+    if(!mySelectedModelShaderProgram)
+    {
+        mySelectedModelShaderProgram = new QOpenGLShaderProgram(this);
+
+        mySelectedModelShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        mySelectedModelShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
+            "}");
+
+        mySelectedModelShaderProgram->link();
+    }
+
+    // init the picking shader program
+    if(!myPickingShaderProgram)
+    {
+        myPickingShaderProgram = new QOpenGLShaderProgram();
+        myPickingShaderProgram->create();
+        myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "uniform highp vec4 index;\n"
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = index;\n"
+            "}");
+        myPickingShaderProgram->link();
+    }
+
     // prepare the sofa visual params
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
     if(visualParams)
@@ -1050,7 +1208,7 @@ void Scene::reset()
     emit reseted();
 }
 
-void Scene::draw()
+void Scene::draw(const Viewer& viewer)
 {
     if(!isReady())
         return;
@@ -1080,7 +1238,111 @@ void Scene::draw()
         setVisualDirty(false);
 	}
 
-	mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), mySofaSimulation->GetRoot().get());
+    mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), mySofaSimulation->GetRoot().get());
+
+    // highlight selected models using a specific shader
+    if(!mySelectedModels.isEmpty())
+    {
+        glDepthFunc(GL_EQUAL);
+        glDepthMask(GL_FALSE);
+
+        glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
+
+        mySelectedModelShaderProgram->bind();
+        for(SceneComponent* sceneComponent : mySelectedModels)
+        {
+            if(sceneComponent)
+            {
+                OglModel* model = dynamic_cast<OglModel*>(sceneComponent->base());
+                if(model)
+                    model->drawVisual(visualParams);
+            }
+        }
+        mySelectedModelShaderProgram->release();
+
+        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
+    }
+
+    for(Manipulator* manipulator : myManipulators)
+        if(manipulator)
+            manipulator->draw(viewer);
+}
+
+bool Scene::pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, float& z)
+{
+    sceneComponent = nullptr;
+    manipulator = nullptr;
+    z = 1.0;
+
+    Node* root = sofaSimulation()->GetRoot().get();
+
+    sofa::helper::vector<OglModel*> models;
+    root->getTreeObjects<OglModel>(&models);
+
+    if(!models.empty())
+    {
+        myPickingShaderProgram->bind();
+        {
+            int indexLocation = myPickingShaderProgram->uniformLocation("index");
+
+            int j = 0;
+            for(; j < models.size(); ++j)
+            {
+                OglModel* model = models[j];
+                if(model)
+                {
+                    int i = j + 1;
+                    QVector4D indexComponents((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, ((i & 0xFF000000) >> 24) / 255.0);
+                    myPickingShaderProgram->setUniformValue(indexLocation, indexComponents);
+
+                    model->drawVisual(sofa::core::visual::VisualParams::defaultInstance());
+                }
+            }
+
+            for(Manipulator* manipulator : myManipulators)
+            {
+                if(manipulator)
+                {
+                    int i = j + 1;
+                    QVector4D indexComponents((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, ((i & 0xFF000000) >> 24) / 255.0);
+                    myPickingShaderProgram->setUniformValue(indexLocation, indexComponents);
+                    manipulator->draw(viewer);
+                }
+
+                ++j;
+            }
+        }
+        myPickingShaderProgram->release();
+
+        std::array<unsigned char, 4> indexComponents;
+        glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
+        int j = (indexComponents[0] | (indexComponents[1] << 8) | (indexComponents[2] << 16) | (indexComponents[3] << 24)) - 1;
+
+        if(-1 != j)
+        {
+            if(j < models.size())
+            {
+                sceneComponent = new SceneComponent(this, models[j]);
+            }
+            else
+            {
+                j -= models.size();
+                if(j < myManipulators.size())
+                    manipulator = myManipulators[j];
+            }
+        }
+
+        if(sceneComponent || manipulator)
+        {
+            glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void Scene::onKeyPressed(char key)

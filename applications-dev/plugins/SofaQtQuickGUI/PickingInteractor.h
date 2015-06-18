@@ -2,6 +2,8 @@
 #define PICKINGINTERACTOR_H
 
 #include "SofaQtQuickGUI.h"
+#include "Viewer.h"
+
 #include <QObject>
 #include <QQmlParserStatus>
 #include <QVector3D>
@@ -25,10 +27,22 @@ namespace objectmodel
 
 }
 
+namespace component
+{
+
+namespace visualmodel
+{
+    class OglModel;
+}
+
+}
+
 namespace qtquick
 {
 
+class SceneComponent;
 class Scene;
+class Manipulator;
 
 class SOFA_SOFAQTQUICKGUI_API PickingInteractor : public QObject, public QQmlParserStatus
 {
@@ -38,10 +52,13 @@ class SOFA_SOFAQTQUICKGUI_API PickingInteractor : public QObject, public QQmlPar
 	typedef sofa::core::behavior::BaseMechanicalState			BaseMechanicalState;
 	typedef sofa::core::behavior::BaseInteractionForceField		BaseInteractionForceField;
 	typedef sofa::core::objectmodel::BaseNode					BaseNode;
+    typedef sofa::component::visualmodel::OglModel              OglModel;
 
 	struct PickedPoint {
 		BaseMechanicalState*	mechanicalState;
 		int						index;
+        OglModel*               model;
+        Manipulator*            manipulator;
 		QVector3D				position;
 	};
 
@@ -78,14 +95,14 @@ signals:
 public slots:
 	void release();
 
-private slots:
-	void handleSceneChanged(Scene* scene);
-	void computePickProperties();
-
 public:
-	Q_INVOKABLE bool pick(const QVector3D& origin, const QVector3D& ray);
+    Q_INVOKABLE bool pickUsingGeometry(const QVector3D& origin, const QVector3D& ray);
+    Q_INVOKABLE bool pickUsingRasterization(sofa::qtquick::Viewer* viewer, const QPointF& ssPoint);
 
-	Q_INVOKABLE QVector3D pickedPointPosition() const;
+    Q_INVOKABLE QVector3D                      pickedPosition() const;
+    Q_INVOKABLE sofa::qtquick::Manipulator*    pickedManipulator() const;
+    Q_INVOKABLE sofa::qtquick::SceneComponent* pickedMechanicalObject() const;
+    Q_INVOKABLE sofa::qtquick::SceneComponent* pickedOglModel() const;
 
 private:
 	Scene*									myScene;

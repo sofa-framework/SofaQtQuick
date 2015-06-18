@@ -264,10 +264,7 @@ Viewer {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.AllButtons
-            onWheel: {
-                //flickable.;
-                wheel.accepted = true
-            }
+            onWheel: wheel.accepted = true
 
             ColumnLayout {
                 anchors.fill: parent

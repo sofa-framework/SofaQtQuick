@@ -2,17 +2,20 @@
 #define SCENE_H
 
 #include "SofaQtQuickGUI.h"
+#include "Manipulator.h"
 
 #include <sofa/simulation/common/Simulation.h>
 #include <sofa/simulation/common/MutationListener.h>
 
 #include <QObject>
+#include <QQmlListProperty>
 #include <QVariant>
 #include <QSet>
 #include <QVector3D>
 #include <QUrl>
 
 class QTimer;
+class QOpenGLShaderProgram;
 
 namespace sofa
 {
@@ -22,13 +25,21 @@ namespace qtquick
 
 class Scene;
 
+/// QtQuick wrapper for a Sofa component (i.e baseObject / baseNode), allowing us to share a component in a QML context
 class SOFA_SOFAQTQUICKGUI_API SceneComponent : public QObject
 {
     Q_OBJECT
 
 public:
     SceneComponent(const Scene* scene, const sofa::core::objectmodel::Base* base);
+    SceneComponent(const SceneComponent& sceneComponent);
 
+public:
+    Q_PROPERTY(QString name READ name)
+
+public:
+
+    QString name() const;
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;
 
@@ -40,6 +51,7 @@ private:
 
 };
 
+/// QtQuick wrapper for a Sofa base data, allowing us to share a component data in a QML context
 class SOFA_SOFAQTQUICKGUI_API SceneData : public QObject
 {
     Q_OBJECT
@@ -47,6 +59,7 @@ class SOFA_SOFAQTQUICKGUI_API SceneData : public QObject
 public:
     SceneData(const SceneComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data);
     SceneData(const Scene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
+    SceneData(const SceneData& sceneData);
 
     Q_INVOKABLE QVariantMap object() const;
 
@@ -64,6 +77,9 @@ private:
 
 };
 
+class Viewer;
+
+/// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
 class Scene : public QObject, private sofa::simulation::MutationListener
 {
     Q_OBJECT
@@ -84,6 +100,9 @@ public:
     Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool visualDirty READ visualDirty NOTIFY visualDirtyChanged)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::SceneComponent> selectedModels READ selectedModels DESIGNABLE false FINAL)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> selectedManipulators READ selectedManipulators DESIGNABLE false FINAL)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators DESIGNABLE false FINAL)
 
     Q_ENUMS(Status)
     enum Status {
@@ -122,6 +141,10 @@ public:
     bool visualDirty() const						{return myVisualDirty;}
     void setVisualDirty(bool newVisualDirty);
 
+    QQmlListProperty<sofa::qtquick::Manipulator>    manipulators();
+    QQmlListProperty<sofa::qtquick::Manipulator>    selectedManipulators();
+    QQmlListProperty<sofa::qtquick::SceneComponent> selectedModels();
+
 signals:
     void preloaded();                                   /// this signal is emitted after basic init has been done, call initGraphics() with a valid opengl context bound to effectively load the scene
     void loaded();                                      /// scene has been loaded and is ready
@@ -140,6 +163,7 @@ public:
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE void reinitComponent(const QString& path);
+    Q_INVOKABLE bool areSameComponent(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
 
 public:
@@ -164,7 +188,6 @@ public slots:
     void animate(bool play);
 	void step();
 	void reset();
-	void draw();
 
 	void onKeyPressed(char key);
 	void onKeyReleased(char key);
@@ -180,6 +203,17 @@ private slots:
 
 public:
 	sofa::simulation::Simulation* sofaSimulation() const {return mySofaSimulation;}
+
+    /// \brief      Low-level drawing function
+    /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
+    /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
+    void draw(const Viewer& viewer);
+
+    /// \brief      Low-level function for color index picking
+    /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
+    /// \note       The best way to pick an object is to use a 'PickingInteractor' instead of directly call this function
+    /// \return     True if an object has been picked, false if we hit the background or a non-selectable object
+    bool pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, float& z);
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
@@ -201,7 +235,14 @@ private:
 
     sofa::simulation::Simulation*               mySofaSimulation;
     QTimer*                                     myStepTimer;
-    QSet<const sofa::core::objectmodel::Base*>  myBases;
+    QSet<const sofa::core::objectmodel::Base*>  myBases;                        /// \todo For each base, reference a unique SceneComponent and use it in QML as a wrapper
+
+    QList<Manipulator*>                         myManipulators;
+    QList<Manipulator*>                         mySelectedManipulators;         /// \todo Currently we can select only one manipulator, change that
+    QList<SceneComponent*>                      mySelectedModels;               /// \todo Currently we can select only one model, change that
+
+    QOpenGLShaderProgram*                       mySelectedModelShaderProgram;
+    QOpenGLShaderProgram*                       myPickingShaderProgram;
 };
 
 }

@@ -1,5 +1,7 @@
 #include "PickingInteractor.h"
 #include "Scene.h"
+#include "Viewer.h"
+#include "Manipulator.h"
 
 #include <sofa/simulation/common/MechanicalVisitor.h>
 #include <sofa/simulation/common/CleanupVisitor.h>
@@ -7,6 +9,7 @@
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <SofaBoundaryCondition/FixedConstraint.h>
 #include <SofaDeformable/StiffSpringForceField.h>
+#include <SofaOpenglVisual/OglModel.h>
 
 #include <qqml.h>
 #include <QDebug>
@@ -32,7 +35,7 @@ PickingInteractor::PickingInteractor(QObject *parent) : QObject(parent), QQmlPar
 	myPickedPoint(0),
 	myStiffness(100)
 {
-	connect(this, &PickingInteractor::sceneChanged, this, &PickingInteractor::handleSceneChanged);
+
 }
 
 PickingInteractor::~PickingInteractor()
@@ -61,27 +64,7 @@ void PickingInteractor::setScene(Scene* newScene)
 	sceneChanged(newScene);
 }
 
-void PickingInteractor::handleSceneChanged(Scene* scene)
-{
-	if(scene)
-	{
-		if(scene->isReady())
-			computePickProperties();
-
-		connect(scene, &Scene::loaded, this, &PickingInteractor::computePickProperties);
-	}
-}
-
-void PickingInteractor::computePickProperties()
-{
-	if(!myScene)
-		return;
-
-	myDistanceToRay = myScene->radius() / 76.0;
-	myDistanceToRayGrowth = 0.001;
-}
-
-bool PickingInteractor::pick(const QVector3D& origin, const QVector3D& ray)
+bool PickingInteractor::pickUsingGeometry(const QVector3D& origin, const QVector3D& ray)
 {
 	release();
 
@@ -91,6 +74,8 @@ bool PickingInteractor::pick(const QVector3D& origin, const QVector3D& ray)
 	sofa::defaulttype::Vector3 direction(ray.x(), ray.y(), ray.z());
 	direction.normalize();
 
+    myDistanceToRay = myScene->radius() / 76.0;
+    myDistanceToRayGrowth = 0.001;
 	sofa::simulation::MechanicalPickParticlesVisitor pickVisitor(sofa::core::ExecParams::defaultInstance(),
 																 sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
 																 direction,
@@ -109,6 +94,8 @@ bool PickingInteractor::pick(const QVector3D& origin, const QVector3D& ray)
 
 		myPickedPoint->mechanicalState = pickedPointMechanicalObject;
 		myPickedPoint->index = pickVisitor.particles.begin()->second.second;
+        myPickedPoint->model = nullptr;
+        myPickedPoint->manipulator = nullptr;
 		myPickedPoint->position = QVector3D(myPickedPoint->mechanicalState->getPX(myPickedPoint->index),
 											myPickedPoint->mechanicalState->getPY(myPickedPoint->index),
 											myPickedPoint->mechanicalState->getPZ(myPickedPoint->index));
@@ -144,12 +131,71 @@ bool PickingInteractor::pick(const QVector3D& origin, const QVector3D& ray)
 	return false;
 }
 
-QVector3D PickingInteractor::pickedPointPosition() const
+bool PickingInteractor::pickUsingRasterization(Viewer* viewer, const QPointF& ssPoint)
+{
+    release();
+
+    if(!myScene || !myScene->isReady())
+        return false;
+
+    SceneComponent* sceneComponent = nullptr;
+    Manipulator* manipulator = nullptr;
+    QVector3D position;
+
+    if(viewer->pickUsingRasterization(ssPoint, sceneComponent, manipulator, position))
+    {
+        OglModel* model = nullptr;
+        if(sceneComponent)
+        {
+            model = dynamic_cast<OglModel*>(sceneComponent->base());
+            if(!model)
+                return false;
+        }
+
+        myPickedPoint = new PickedPoint();
+
+        myPickedPoint->mechanicalState = nullptr;
+        myPickedPoint->index = -1;
+        myPickedPoint->model = model;
+        myPickedPoint->manipulator = manipulator;
+        myPickedPoint->position = position;
+
+        return true;
+    }
+
+    return false;
+}
+
+QVector3D PickingInteractor::pickedPosition() const
 {
 	if(!myPickedPoint)
 		return QVector3D();
 
 	return myPickedPoint->position;
+}
+
+sofa::qtquick::Manipulator* PickingInteractor::pickedManipulator() const
+{
+    if(!myPickedPoint)
+        return nullptr;
+
+    return myPickedPoint->manipulator;
+}
+
+sofa::qtquick::SceneComponent* PickingInteractor::pickedMechanicalObject() const
+{
+    if(!myPickedPoint || !myPickedPoint->mechanicalState)
+        return nullptr;
+
+    return new SceneComponent(myScene, myPickedPoint->mechanicalState);
+}
+
+sofa::qtquick::SceneComponent* PickingInteractor::pickedOglModel() const
+{
+    if(!myPickedPoint || !myPickedPoint->model)
+        return nullptr;
+
+    return new SceneComponent(myScene, myPickedPoint->model);
 }
 
 QVector3D PickingInteractor::position() const
@@ -165,13 +211,15 @@ QVector3D PickingInteractor::position() const
 
 void PickingInteractor::setPosition(const QVector3D& position)
 {
-    if(!myPickedPoint || !myMechanicalState)
+    if(!myPickedPoint)
 		return;
 
-	MechanicalObject3d* mechanicalObject = static_cast<MechanicalObject3d*>(myMechanicalState);
-	mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
-
-	positionChanged(position);
+    if(myMechanicalState)
+    {
+        MechanicalObject3d* mechanicalObject = static_cast<MechanicalObject3d*>(myMechanicalState);
+        mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
+        positionChanged(position);
+    }
 }
 
 void PickingInteractor::release()

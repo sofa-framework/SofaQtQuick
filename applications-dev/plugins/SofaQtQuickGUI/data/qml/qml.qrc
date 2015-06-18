@@ -51,5 +51,9 @@
         <file>SofaBasics/SofaApplication.qml</file>
         <file>SofaInteractors/qmldir</file>
         <file>SofaInteractors/UserInteractor_Selection.qml</file>
+        <file>SofaManipulators/qmldir</file>
+        <file>SofaManipulators/Manipulator.qml</file>
+        <file>SofaManipulators/Manipulator2D_Translation.qml</file>
+        <file>SofaManipulators/Manipulator2D_Rotation.qml</file>
     </qresource>
 </RCC>

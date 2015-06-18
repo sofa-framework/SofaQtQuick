@@ -1,8 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import Qt.labs.settings 1.0
-import Scene 1.0
 import PickingInteractor 1.0
+import Scene 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 
@@ -18,6 +18,8 @@ Scene {
     onStatusChanged: {
 		if(listModel)
 			listModel.selectedId = -1;
+
+        clearManipulators();
 
         var path = source.toString().replace("///", "/").replace("file:", "");
         switch(status) {
@@ -106,5 +108,72 @@ Scene {
         }
 
         console.debug("ERROR: Scene - using setDataValue with an invalid number of arguments:", arguments.length);
+    }
+
+    ///// SELECTED MODELS
+
+    function selectedModel() {
+        if(0 === root.selectedModels.length)
+            return null;
+
+        return root.selectedModels[0];
+    }
+
+    function setSelectedModel(selectedModel) {
+        var selectedModels = [];
+        selectedModels.push(selectedModel);
+        root.selectedModels = selectedModels;
+    }
+
+    function clearSelectedModels() {
+        root.selectedModels = [];
+    }
+
+    ///// MANIPULATOR
+
+    function addManipulator(manipulator) {
+        var manipulators = [];
+        for(var i = 0; i < root.manipulators.length; ++i)
+            manipulators.push(root.manipulators[i]);
+
+        manipulators.push(manipulator);
+        root.manipulators = manipulators;
+
+        // if the added manipulator is a compound also add its children manipulators
+        if(manipulator.manipulators && 0 !== manipulator.manipulators.length)
+            for(var i = 0; i < manipulator.manipulators.length; ++i)
+                addManipulator(manipulator.manipulators[i]);
+    }
+
+    function removeManipulator(manipulator) {
+        var manipulators = [];
+        for(var i = 0; i < root.manipulators; ++i)
+            if(manipulator !== root.manipulators[i])
+                manipulators.push(root.manipulators[i]);
+
+        root.manipulators = manipulators;
+    }
+
+    function clearManipulators() {
+        root.manipulators = [];
+    }
+
+    ///// SELECTED MANIPULATORS
+
+    function selectedManipulator() {
+        if(0 === root.selectedManipulators.length)
+            return null;
+
+        return root.selectedManipulators[0];
+    }
+
+    function setSelectedManipulator(selectedManipulator) {
+        var selectedManipulators = [];
+        selectedManipulators.push(selectedManipulator);
+        root.selectedManipulators = selectedManipulators;
+    }
+
+    function clearSelectedManipulators() {
+        root.selectedManipulators = [];
     }
 }
