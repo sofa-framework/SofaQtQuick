@@ -19,49 +19,6 @@ CollapsibleGroupBox {
         anchors.fill: parent
         columns: 3
 
-        Button {
-            id: animateButton
-            Layout.columnSpan: 3
-            Layout.fillWidth: true
-            text: "Animate"
-            checkable: true
-            onCheckedChanged: if(scene) scene.play = animateButton.checked
-            tooltip: ""
-
-            Connections {
-                target: scene
-                ignoreUnknownSignals: true
-                onPlayChanged: {
-                    animateButton.checked = scene.play;
-                }
-            }
-        }
-
-        Button {
-            id: stepButton
-            Layout.columnSpan: 3
-            Layout.fillWidth: true
-            text: "Step"
-            tooltip: ""
-
-            onClicked: {
-                if(scene)
-                    scene.step();
-            }
-        }
-        Button {
-            id: resetButton
-            Layout.columnSpan: 3
-            Layout.fillWidth: true
-            text: "Reset"
-            tooltip: "Reset the scene"
-
-            onClicked: {
-                if(scene)
-                    scene.reset();
-            }
-        }
-
         Label {
             Layout.preferredWidth: implicitWidth
             text: "DT"
