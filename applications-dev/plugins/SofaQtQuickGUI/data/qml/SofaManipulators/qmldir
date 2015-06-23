@@ -1,3 +1,5 @@
 Manipulator 1.0 Manipulator.qml
 Manipulator2D_Translation 1.0 Manipulator2D_Translation.qml
 Manipulator2D_Rotation 1.0 Manipulator2D_Rotation.qml
+Manipulator3D_Translation 1.0 Manipulator3D_Translation.qml
+Manipulator3D_Rotation 1.0 Manipulator3D_Rotation.qml

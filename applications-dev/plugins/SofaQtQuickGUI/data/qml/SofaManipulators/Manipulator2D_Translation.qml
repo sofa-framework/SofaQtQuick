@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import SofaBasics 1.0
 import Manipulator2D_Translation 1.0
 
 Manipulator2D_Translation {
@@ -14,7 +13,12 @@ Manipulator2D_Translation {
     }
 
     function mouseMoved(mouse, scene, viewer) {
-        if(xAxis || yAxis) {
+        var xAxis = -1 !== axis.indexOf("x") ? true : false;
+        var yAxis = -1 !== axis.indexOf("y") ? true : false;
+
+        var axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0);
+
+        if(0 !== axisNum) {
             // unproject from screen to world
             var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
             var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPosition());
@@ -24,12 +28,12 @@ Manipulator2D_Translation {
             var direction = position.minus(root.position.plus(baseVector));
 
             // project on a specific axis aligned with the view space axis
-            if(!xAxis) {
-                position = root.position.plus(viewer.camera.projectOnViewSpaceYAxis(direction));
-            } else if(!yAxis) {
-                position = root.position.plus(viewer.camera.projectOnViewSpaceXAxis(direction));
-            } else { // or let it free on the view plane
+            if(xAxis && yAxis) {  // or let it free on the view plane
                 position = root.position.plus(direction);
+            } else if(xAxis) {
+                position = root.position.plus(viewer.camera.projectOnViewSpaceXAxis(direction));
+            } else if(yAxis) {
+                position = root.position.plus(viewer.camera.projectOnViewSpaceYAxis(direction));
             }
 
             root.position = position;

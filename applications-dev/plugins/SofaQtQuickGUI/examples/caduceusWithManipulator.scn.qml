@@ -23,8 +23,7 @@ CollapsibleGroupBox {
             Manipulator2D_Translation {
                 id: txy
 
-                xAxis: true
-                yAxis: true
+                axis: "xy"
 
                 onPositionChanged: manipulator.position = position;
             }
@@ -32,8 +31,7 @@ CollapsibleGroupBox {
             Manipulator2D_Translation {
                 id: tx
 
-                xAxis: true
-                yAxis: false
+                axis: "x"
 
                 onPositionChanged: manipulator.position = position;
             }
@@ -41,8 +39,7 @@ CollapsibleGroupBox {
             Manipulator2D_Translation {
                 id: ty
 
-                xAxis: false
-                yAxis: true
+                axis: "y"
 
                 onPositionChanged: manipulator.position = position;
             }
@@ -55,8 +52,74 @@ CollapsibleGroupBox {
         }
     }
 
+    Component {
+        id: manipulator3DComponent
+
+        Manipulator {
+            id: manipulator
+/*
+            Manipulator3D_Translation {
+                id: txyz
+
+                axis: "xyz"
+
+                onPositionChanged: manipulator.position = position;
+            }
+*/
+            Manipulator3D_Translation {
+                id: tx
+
+                axis: "x"
+
+                onPositionChanged: manipulator.position = position;
+            }
+
+            Manipulator3D_Translation {
+                id: ty
+
+                axis: "y"
+
+                onPositionChanged: manipulator.position = position;
+            }
+
+            Manipulator3D_Translation {
+                id: tz
+
+                axis: "z"
+
+                onPositionChanged: manipulator.position = position;
+            }
+/*
+            Manipulator3D_Rotation {
+                id: rx
+
+                axis: "x"
+
+                onOrientationChanged: manipulator.orientation = orientation;
+            }
+
+            Manipulator3D_Rotation {
+                id: ry
+
+                axis: "y"
+
+                onOrientationChanged: manipulator.orientation = orientation;
+            }
+
+            Manipulator3D_Rotation {
+                id: rz
+
+                axis: "z"
+
+                onOrientationChanged: manipulator.orientation = orientation;
+            }
+*/
+        }
+    }
+
     Component.onCompleted: {
         scene.addManipulator(manipulator2DComponent.createObject(root));
+        scene.addManipulator(manipulator3DComponent.createObject(root, {position: Qt.vector3d(20.0, 20.0, 20.0)}));
     }
 
     ColumnLayout {

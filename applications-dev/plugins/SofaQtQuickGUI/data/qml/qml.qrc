@@ -55,5 +55,7 @@
         <file>SofaManipulators/Manipulator.qml</file>
         <file>SofaManipulators/Manipulator2D_Translation.qml</file>
         <file>SofaManipulators/Manipulator2D_Rotation.qml</file>
+        <file>SofaManipulators/Manipulator3D_Translation.qml</file>
+        <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
     </qresource>
 </RCC>
