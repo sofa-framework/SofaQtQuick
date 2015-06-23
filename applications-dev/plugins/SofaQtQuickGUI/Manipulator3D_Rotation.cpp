@@ -1,4 +1,4 @@
-#include "Manipulator2D_Rotation.h"
+#include "Manipulator3D_Rotation.h"
 #include "Viewer.h"
 
 #include <GL/glew.h>
@@ -12,7 +12,8 @@ namespace sofa
 namespace qtquick
 {
 
-Manipulator2D_Rotation::Manipulator2D_Rotation(QObject* parent) : Manipulator(parent),
+Manipulator3D_Rotation::Manipulator3D_Rotation(QObject* parent) : Manipulator(parent),
+    myAxis("x"),
     myDisplayMark(false),
     myFromMarkAngle(0.0f),
     myToMarkAngle(0.0f)
@@ -20,12 +21,23 @@ Manipulator2D_Rotation::Manipulator2D_Rotation(QObject* parent) : Manipulator(pa
 
 }
 
-Manipulator2D_Rotation::~Manipulator2D_Rotation()
+Manipulator3D_Rotation::~Manipulator3D_Rotation()
 {
 
 }
 
-void Manipulator2D_Rotation::setMark(float fromAngle, float toAngle)
+void Manipulator3D_Rotation::setAxis(QString newAxis)
+{
+    if(newAxis == myAxis)
+        return;
+
+    myAxis = newAxis;
+
+    axisChanged(newAxis);
+}
+
+
+void Manipulator3D_Rotation::setMark(float fromAngle, float toAngle)
 {
     myFromMarkAngle = fromAngle;
     myToMarkAngle = toAngle;
@@ -39,7 +51,7 @@ void Manipulator2D_Rotation::setMark(float fromAngle, float toAngle)
     myDisplayMark = true;
 }
 
-void Manipulator2D_Rotation::unsetMark()
+void Manipulator3D_Rotation::unsetMark()
 {
     myDisplayMark = false;
 
@@ -47,10 +59,18 @@ void Manipulator2D_Rotation::unsetMark()
     myToMarkAngle = 0.0f;
 }
 
-void Manipulator2D_Rotation::draw(const Viewer& viewer) const
+void Manipulator3D_Rotation::draw(const Viewer& viewer) const
 {
     Camera* camera = viewer.camera();
     if(!camera)
+        return;
+
+    bool xAxis = (-1 != myAxis.indexOf('x'));
+    bool yAxis = (-1 != myAxis.indexOf('y'));
+    bool zAxis = (-1 != myAxis.indexOf('z'));
+    int axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0) + (zAxis ? 1 : 0);
+
+    if(1 != axisNum)
         return;
 
     glMatrixMode(GL_PROJECTION);
@@ -62,12 +82,29 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
     glLoadIdentity();
 
     QVector4D position = camera->projection() * camera->view() * QVector4D(Manipulator::position(), 1.0);
-    position = position / position.w();
+    position /= position.w();
 
+    glScaled(1.0, 1.0, 0.5);
     glTranslatef(position.x(), position.y(), position.z());
     glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
+    glMultMatrixf(QMatrix4x4(camera->view().normalMatrix()).constData());
+
+    QVector3D axis = QVector3D(0.0, 0.0, -1.0);
+    if(xAxis)
+        axis = QVector3D(-1.0, 0.0, 0.0);
+    else if(yAxis)
+        axis = QVector3D(0.0, -1.0, 0.0);
+
+    bool invertedZ = false;
+    if(QVector3D::dotProduct(camera->direction(), axis) < 0.0)
+        invertedZ = true;
 
     // object
+    if(xAxis)
+        glRotated(90.0, 0.0, 1.0, 0.0);
+    else if(yAxis)
+        glRotated(-90.0, 1.0, 0.0, 0.0);
+
     const float radius = 0.15f;
     const float width = 8.0f;
 
@@ -83,7 +120,12 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
     glBegin(GL_LINE_STRIP);
     {
         //front
-        glColor3f(0.25, 0.5, 1.0);
+        if(xAxis)
+            glColor3d(1.0, 0.0, 0.0);
+        else if(yAxis)
+            glColor3d(0.0, 1.0, 0.0);
+        else if(zAxis)
+            glColor3d(0.0, 0.0, 1.0);
 
         for(int i = 0; i < resolution; ++i)
         {
@@ -108,11 +150,27 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
             bool stop = false;
             for(int i = 0; i < resolution; ++i)
             {
-                float angle = myFromMarkAngle + i / (resolution - 1.0f) * 2.0f * M_PI;
-                if(angle >= myToMarkAngle)
+                float angle = myFromMarkAngle;
+
+                if(!invertedZ)
                 {
-                    angle = myToMarkAngle;
-                    stop = true;
+                    angle += i / (resolution - 1.0f) * 2.0f * M_PI;
+
+                    if(angle >= myToMarkAngle)
+                    {
+                        angle = myToMarkAngle;
+                        stop = true;
+                    }
+                }
+                else
+                {
+                    angle -= i / (resolution - 1.0f) * 2.0f * M_PI;
+
+                    if(angle <= myToMarkAngle - 2 * M_PI)
+                    {
+                        angle = myToMarkAngle - 2 * M_PI;
+                        stop = true;
+                    }
                 }
 
                 float alpha = qSin(angle);

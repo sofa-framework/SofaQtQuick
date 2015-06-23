@@ -23,8 +23,4 @@ Manipulator {
         for(var i = 0; i < manipulators.length; ++i)
             manipulators[i].scale = scale;
     }
-
-    function mouseMoveMapping() {
-
-    }
 }

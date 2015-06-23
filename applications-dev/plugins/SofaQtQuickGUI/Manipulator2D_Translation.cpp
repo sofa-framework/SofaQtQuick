@@ -12,8 +12,7 @@ namespace qtquick
 {
 
 Manipulator2D_Translation::Manipulator2D_Translation(QObject* parent) : Manipulator(parent),
-    myXAxis(true),
-    myYAxis(true)
+    myAxis("xy")
 {
 
 }
@@ -23,24 +22,14 @@ Manipulator2D_Translation::~Manipulator2D_Translation()
 
 }
 
-void Manipulator2D_Translation::setXAxis(bool newXAxis)
+void Manipulator2D_Translation::setAxis(QString newAxis)
 {
-    if(newXAxis == myXAxis)
+    if(newAxis == myAxis)
         return;
 
-    myXAxis = newXAxis;
+    myAxis = newAxis;
 
-    xAxisChanged(newXAxis);
-}
-
-void Manipulator2D_Translation::setYAxis(bool newYAxis)
-{
-    if(newYAxis == myYAxis)
-        return;
-
-    myYAxis = newYAxis;
-
-    yAxisChanged(newYAxis);
+    axisChanged(newAxis);
 }
 
 void Manipulator2D_Translation::draw(const Viewer& viewer) const
@@ -49,7 +38,12 @@ void Manipulator2D_Translation::draw(const Viewer& viewer) const
     if(!camera)
         return;
 
-    if(!myXAxis && !myYAxis)
+    bool xAxis = (-1 != myAxis.indexOf('x'));
+    bool yAxis = (-1 != myAxis.indexOf('y'));
+
+    int axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0);
+
+    if(0 == axisNum)
         return;
 
     glMatrixMode(GL_PROJECTION);
@@ -58,39 +52,35 @@ void Manipulator2D_Translation::draw(const Viewer& viewer) const
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
+    glLoadIdentity();
 
     QVector4D position = camera->projection() * camera->view() * QVector4D(Manipulator::position(), 1.0);
-    position = position / position.w();
+    position /= position.w();
 
-    glLoadIdentity();
     glTranslatef(position.x(), position.y(), position.z());
     glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
-
-    // scale
-    QVector3D scale = Manipulator::scale();
-    glScaled(scale.x(), scale.y(), scale.z());
 
     // object
     float height = 0.1f;
     float width = 0.01f;
 
-    if(myXAxis && !myYAxis)
-        glScaled(height, width, width);
-    else if(!myXAxis && myYAxis)
-        glScaled(width, height, width);
-    else
+    if(-1 != myAxis.indexOf('x') && -1 != myAxis.indexOf('y'))
         glScaled(height * 0.5, height * 0.5, width);
+    else if(-1 != myAxis.indexOf('x'))
+        glScaled(height, width, width);
+    else if(-1 != myAxis.indexOf('y'))
+        glScaled(width, height, width);
 
     glDepthFunc(GL_ALWAYS);
 
     // draw arrows
     glBegin(GL_QUADS);
     {
-        if(myXAxis && myYAxis)
+        if(xAxis && yAxis)
             glColor3f(1.0, 1.0, 1.0);
-        else if(myXAxis)
+        else if(xAxis)
             glColor3f(1.0, 0.0, 0.0);
-        else
+        else if(yAxis)
             glColor3f(0.0, 1.0, 0.0);
 
         glVertex3f( 1.0, 1.0, 0.0);

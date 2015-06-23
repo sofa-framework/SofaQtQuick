@@ -14,6 +14,8 @@ set(SOURCE_FILES
                 Manipulator.cpp
                 Manipulator2D_Translation.cpp
                 Manipulator2D_Rotation.cpp
+                Manipulator3D_Translation.cpp
+                Manipulator3D_Rotation.cpp
 )
 
 set(HEADER_FILES
@@ -30,6 +32,8 @@ set(HEADER_FILES
                 Manipulator.h
                 Manipulator2D_Translation.h
                 Manipulator2D_Rotation.h
+                Manipulator3D_Translation.h
+                Manipulator3D_Rotation.h
 )
 
 set(QML_FILES
@@ -78,6 +82,8 @@ set(QML_FILES
                 data/qml/SofaManipulators/Manipulator.qml
                 data/qml/SofaManipulators/Manipulator2D_Translation.qml
                 data/qml/SofaManipulators/Manipulator2D_Rotation.qml
+                data/qml/SofaManipulators/Manipulator3D_Translation.qml
+                data/qml/SofaManipulators/Manipulator3D_Rotation.qml
 		data/qml/SofaTools/qmldir
 		data/qml/SofaTools/SimulationControl.qml
                 data/qml/SofaTools/SceneGraphView.qml

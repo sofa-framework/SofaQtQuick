@@ -31,6 +31,8 @@
 #include "Manipulator.h"
 #include "Manipulator2D_Translation.h"
 #include "Manipulator2D_Rotation.h"
+#include "Manipulator3D_Translation.h"
+#include "Manipulator3D_Rotation.h"
 #include "Scene.h"
 #include "SceneListModel.h"
 #include "DataListModel.h"
@@ -71,6 +73,8 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<Manipulator>                ("Manipulator"              , versionMajor, versionMinor, "Manipulator");
     qmlRegisterType<Manipulator2D_Translation>  ("Manipulator2D_Translation", versionMajor, versionMinor, "Manipulator2D_Translation");
     qmlRegisterType<Manipulator2D_Rotation>     ("Manipulator2D_Rotation"   , versionMajor, versionMinor, "Manipulator2D_Rotation");
+    qmlRegisterType<Manipulator3D_Translation>  ("Manipulator3D_Translation", versionMajor, versionMinor, "Manipulator3D_Translation");
+    qmlRegisterType<Manipulator3D_Rotation>     ("Manipulator3D_Rotation"   , versionMajor, versionMinor, "Manipulator3D_Rotation");
     qmlRegisterType<Scene>                      ("Scene"                    , versionMajor, versionMinor, "Scene");
     qmlRegisterUncreatableType<SceneComponent> 	("SceneComponent"           , versionMajor, versionMinor, "SceneComponent", "SceneComponent is not instantiable");
     qmlRegisterUncreatableType<SceneData>       ("SceneData"                , versionMajor, versionMinor, "SceneData", "SceneData is not instantiable");

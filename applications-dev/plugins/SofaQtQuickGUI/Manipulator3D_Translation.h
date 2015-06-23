@@ -1,5 +1,5 @@
-#ifndef MANIPULATOR2D_TRANSLATION_H
-#define MANIPULATOR2D_TRANSLATION_H
+#ifndef MANIPULATOR3D_TRANSLATION_H
+#define MANIPULATOR3D_TRANSLATION_H
 
 #include "SofaQtQuickGUI.h"
 #include "Manipulator.h"
@@ -13,13 +13,13 @@ namespace sofa
 namespace qtquick
 {
 
-class SOFA_SOFAQTQUICKGUI_API Manipulator2D_Translation : public Manipulator
+class SOFA_SOFAQTQUICKGUI_API Manipulator3D_Translation : public Manipulator
 {
     Q_OBJECT
 
 public:
-    explicit Manipulator2D_Translation(QObject* parent = 0);
-    ~Manipulator2D_Translation();
+    explicit Manipulator3D_Translation(QObject* parent = 0);
+    ~Manipulator3D_Translation();
 
 public:
     Q_PROPERTY(QString axis READ axis WRITE setAxis NOTIFY axisChanged)
@@ -43,4 +43,4 @@ private:
 
 }
 
-#endif // MANIPULATOR2D_TRANSLATION_H
+#endif // MANIPULATOR3D_TRANSLATION_H
