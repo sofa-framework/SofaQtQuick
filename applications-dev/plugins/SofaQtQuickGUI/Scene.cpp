@@ -18,6 +18,7 @@
 #include <SofaOpenglVisual/OglModel.h>
 #include <SofaComponentMain/init.h>
 
+#include <array>
 #include <sstream>
 #include <qqml.h>
 #include <QtCore/QCoreApplication>

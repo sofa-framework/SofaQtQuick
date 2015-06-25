@@ -16,5 +16,9 @@
         <file>icon/invalid.png</file>
         <file>icon/sofaLogo.png</file>
         <file>icon/sofaLogoAlpha.png</file>
+        <file>icon/playButton.png</file>
+        <file>icon/resetButton.png</file>
+        <file>icon/stepButton.png</file>
+        <file>icon/stopButton.png</file>
     </qresource>
 </RCC>
