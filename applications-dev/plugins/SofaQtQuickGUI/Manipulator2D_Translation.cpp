@@ -61,7 +61,7 @@ void Manipulator2D_Translation::draw(const Viewer& viewer) const
     glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
 
     // object
-    float height = 0.1f;
+    float height = 0.125f;
     float width = 0.01f;
 
     if(-1 != myAxis.indexOf('x') && -1 != myAxis.indexOf('y'))
@@ -70,8 +70,6 @@ void Manipulator2D_Translation::draw(const Viewer& viewer) const
         glScaled(height, width, width);
     else if(-1 != myAxis.indexOf('y'))
         glScaled(width, height, width);
-
-    glDepthFunc(GL_ALWAYS);
 
     // draw arrows
     glBegin(GL_QUADS);
@@ -89,8 +87,6 @@ void Manipulator2D_Translation::draw(const Viewer& viewer) const
         glVertex3f( 1.0,-1.0, 0.0);
     }
     glEnd();
-
-    glDepthFunc(GL_LESS);
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();

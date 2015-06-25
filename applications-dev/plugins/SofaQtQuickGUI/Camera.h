@@ -47,6 +47,9 @@ public:
     Q_INVOKABLE QVector3D up() const				{return  model().column(1).toVector3D().normalized();}
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
+    Q_INVOKABLE double zNear() const                {return myZNear;}
+    Q_INVOKABLE double zFar() const                 {return myZFar;}
+
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition);
     Q_INVOKABLE QVector3D projectOnViewPlane(const QVector3D& wsPosition, double depth);
 

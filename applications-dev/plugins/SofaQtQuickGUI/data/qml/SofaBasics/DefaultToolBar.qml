@@ -12,8 +12,6 @@ ToolBar {
 
     property var scene
 
-    enabled: scene ? scene.ready : false
-
     Row {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -75,61 +73,6 @@ ToolBar {
                 for(var key in interactorComponentMap)
                     if(interactorComponentMap.hasOwnProperty(key))
                         SofaCommonScript.InstanciateComponent(interactorButtonComponent, interactorPositioner, {interactorName: key, interactorComponent: interactorComponentMap[key]});
-            }
-        }
-
-        Row {
-            id: simulationControlTools
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            spacing: 5
-
-            ToolButton {
-                id: animateButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-
-                iconSource: animateButton.checked ? "qrc:/icon/stopButton.png" : "qrc:/icon/playButton.png"
-                tooltip: "Animate"
-                checkable: true
-                checked: false
-                onCheckedChanged: if(scene) scene.play = animateButton.checked
-
-                Connections {
-                    target: scene
-                    ignoreUnknownSignals: true
-                    onPlayChanged: {
-                        animateButton.checked = scene.play;
-                    }
-                }
-            }
-
-            ToolButton {
-                id: stepButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-
-                iconSource: "qrc:/icon/stepButton.png"
-                tooltip: "Step"
-
-                onClicked: {
-                    if(scene)
-                        scene.step();
-                }
-            }
-
-            ToolButton {
-                id: resetButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-
-                iconSource: "qrc:/icon/resetButton.png"
-                tooltip: "Reset the scene"
-
-                onClicked: {
-                    if(scene)
-                        scene.reset();
-                }
             }
         }
     }

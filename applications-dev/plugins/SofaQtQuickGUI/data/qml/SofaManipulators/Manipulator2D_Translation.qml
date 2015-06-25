@@ -20,7 +20,7 @@ Manipulator2D_Translation {
 
         if(0 !== axisNum) {
             // unproject from screen to world
-            var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
+            var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
             var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPosition());
 
             // project on a specific plane parallel to our view plane

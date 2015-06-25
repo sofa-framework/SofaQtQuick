@@ -68,13 +68,12 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
     glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
 
     // object
-    const float radius = 0.15f;
+    const float radius = 0.2f;
     const float width = 8.0f;
 
     const int resolution = 64;
 
     glDisable(GL_CULL_FACE);
-    glDepthFunc(GL_ALWAYS);
 
     glLineWidth(width);
     glEnable(GL_LINE_SMOOTH);
@@ -99,6 +98,9 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
     // draw a ring portion to know the delta angle
     if(myDisplayMark)
     {
+        glDepthRange(0.0, 0.9999995);
+        glDepthFunc(GL_ALWAYS);
+
         // draw a ring
         glBegin(GL_LINE_STRIP);
         {
@@ -125,12 +127,14 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
             }
         }
         glEnd();
+
+        glDepthFunc(GL_LESS);
+        glDepthRange(0.0, 1.0);
     }
 
     glDisable(GL_LINE_SMOOTH);
     glLineWidth(1.0f);
 
-    glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
 
     glMatrixMode(GL_PROJECTION);

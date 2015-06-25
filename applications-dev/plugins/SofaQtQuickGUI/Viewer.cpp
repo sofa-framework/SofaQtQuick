@@ -176,12 +176,12 @@ QVector3D Viewer::mapFromWorld(const QVector3D& wsPoint)
 	return QVector3D((nsPosition.x() * 0.5 + 0.5) * qCeil(width()) + 0.5, qCeil(height()) - (nsPosition.y() * 0.5 + 0.5) * qCeil(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
 }
 
-QVector3D Viewer::mapToWorld(const QVector3D& ssPoint)
+QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z)
 {
 	if(!myCamera)
 		return QVector3D();
 
-    QVector3D nsPosition = QVector3D(ssPoint.x() / (double) qCeil(width()) * 2.0 - 1.0, (1.0 - ssPoint.y() / (double) qCeil(height())) * 2.0 - 1.0, ssPoint.z() * 2.0 - 1.0);
+    QVector3D nsPosition = QVector3D(ssPoint.x() / (double) qCeil(width()) * 2.0 - 1.0, (1.0 - ssPoint.y() / (double) qCeil(height())) * 2.0 - 1.0, z * 2.0 - 1.0);
 	QVector4D vsPosition = myCamera->projection().inverted() * QVector4D(nsPosition, 1.0);
 	vsPosition /= vsPosition.w();
 
@@ -213,6 +213,49 @@ private:
 
 };
 
+QVector3D Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal)
+{
+    QVector3D normalizedRayDirection = rayDirection.normalized();
+    QVector3D normalizedPlaneNormal = planeNormal.normalized();
+
+    double d = -QVector3D(0.0, 0.0, 0.0).distanceToPlane(planeOrigin, normalizedPlaneNormal);
+    double nDotP0 = QVector3D::dotProduct(normalizedPlaneNormal, rayOrigin);
+    double nDotDir = QVector3D::dotProduct(normalizedPlaneNormal, normalizedRayDirection);
+
+    return rayOrigin + (((d - nDotP0) / nDotDir) * normalizedRayDirection);
+}
+
+QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection)
+{
+    if(!window())
+        return QVector3D();
+
+    QVector3D wsOrigin = mapToWorld(ssPoint, 0.0);
+    QVector3D wsDirection = mapToWorld(ssPoint, 1.0) - wsOrigin;
+
+    QVector3D normalizedLineDirection = lineDirection.normalized();
+    QVector3D planAxis = QVector3D::normal(normalizedLineDirection, wsDirection);
+    QVector3D planNormal = QVector3D::normal(normalizedLineDirection, planAxis);
+
+    QVector3D intersectionPoint = intersectRayWithPlane(wsOrigin, wsDirection, lineOrigin, planNormal);
+    QVector3D projectedPoint = lineOrigin + normalizedLineDirection * QVector3D::dotProduct(normalizedLineDirection, intersectionPoint - lineOrigin);
+
+    //qDebug() << projectedPoint;
+
+    return projectedPoint;
+}
+
+QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal)
+{
+    if(!window())
+        return QVector3D();
+
+    QVector3D wsOrigin = mapToWorld(ssPoint, 0.0);
+    QVector3D wsDirection = mapToWorld(ssPoint, 1.0) - wsOrigin;
+
+    return intersectRayWithPlane(wsOrigin, wsDirection, planeOrigin, planeNormal);
+}
+
 QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint)
 {
     if(!window())
@@ -231,7 +274,7 @@ QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint)
     while(!finished)
         qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
 
-    return QVector4D(mapToWorld(QVector3D(ssPoint.x(), ssPoint.y(), z)), qCeil(1.0f - z));
+    return QVector4D(mapToWorld(ssPoint, z), qCeil(1.0f - z));
 }
 
 QPair<QVector3D, QVector3D> Viewer::boundingBox() const
@@ -565,7 +608,7 @@ bool Viewer::pickUsingRasterization(const QPointF& ssPoint, SceneComponent*& sce
     bool finished = false;
 
     PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(myScene, this, mapToNative(ssPoint), sceneComponent, manipulator, z, finished);
-    window()->scheduleRenderJob(worker, QQuickWindow::BeforeSynchronizingStage);
+    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
     window()->update();
 
     // TODO: add a timeout
@@ -574,7 +617,7 @@ bool Viewer::pickUsingRasterization(const QPointF& ssPoint, SceneComponent*& sce
 
     if(sceneComponent || manipulator)
     {
-        wsPoint = mapToWorld(QVector3D(ssPoint.x(), ssPoint.y(), z));
+        wsPoint = mapToWorld(ssPoint, z);
         return true;
     }
 

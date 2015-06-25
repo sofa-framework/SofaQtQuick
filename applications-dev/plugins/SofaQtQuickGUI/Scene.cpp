@@ -1244,7 +1244,7 @@ void Scene::draw(const Viewer& viewer)
     // highlight selected models using a specific shader
     if(!mySelectedModels.isEmpty())
     {
-        glDepthFunc(GL_EQUAL);
+        glDepthFunc(GL_ALWAYS);
         glDepthMask(GL_FALSE);
 
         glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
@@ -1265,7 +1265,11 @@ void Scene::draw(const Viewer& viewer)
 
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
+
+        glDisable(GL_POLYGON_OFFSET_LINE);
     }
+
+    glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
     for(Manipulator* manipulator : myManipulators)
         if(manipulator)
@@ -1302,6 +1306,8 @@ bool Scene::pickUsingRasterization(const Viewer& viewer, const QPointF& nativePo
                     model->drawVisual(sofa::core::visual::VisualParams::defaultInstance());
                 }
             }
+
+            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
             for(Manipulator* manipulator : myManipulators)
             {

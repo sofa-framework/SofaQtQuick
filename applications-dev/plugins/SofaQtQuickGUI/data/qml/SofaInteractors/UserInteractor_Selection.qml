@@ -41,15 +41,15 @@ UserInteractor {
                 if(!scene.areSameComponent(scene.selectedModel(), selectedModel)) {
                     scene.setSelectedModel(selectedModel);
                 } else {
-                    var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
-                    var farPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 1.0));
+                    var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
+                    var farPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 1.0);
                     if(scene.pickingInteractor.pickUsingGeometry(nearPosition, farPosition.minus(nearPosition))) {
                         var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPosition());
                         var position = viewer.camera.projectOnViewPlane(nearPosition, z);
                         scene.pickingInteractor.position = position;
 
                         setMouseMoveMapping(function(mouse) {
-                            var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
+                            var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
                             var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPosition());
                             var position = viewer.camera.projectOnViewPlane(nearPosition, z);
                             scene.pickingInteractor.position = position;

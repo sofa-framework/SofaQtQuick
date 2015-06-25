@@ -7,9 +7,18 @@ Manipulator3D_Translation {
     property var baseVector: Qt.vector3d(0.0, 0.0, 0.0)
 
     function mousePressed(mouse, scene, viewer) {
-        var pickedPosition = scene.pickingInteractor.pickedPosition();
+        var xAxis = -1 !== axis.indexOf("x") ? true : false;
+        var yAxis = -1 !== axis.indexOf("y") ? true : false;
+        var zAxis = -1 !== axis.indexOf("z") ? true : false;
+        var axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0) + (zAxis ? 1 : 0);
 
-        baseVector = pickedPosition.minus(root.position);
+        if(2 === axisNum) { // project on a specific plane
+            var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
+            baseVector = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
+        } else if(1 === axisNum) {
+            var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
+            baseVector = viewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
+        }
     }
 
     function mouseMoved(mouse, scene, viewer) {
@@ -18,35 +27,18 @@ Manipulator3D_Translation {
         var zAxis = -1 !== axis.indexOf("z") ? true : false;
         var axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0) + (zAxis ? 1 : 0);
 
-        if(0 !== axisNum) {
-            // unproject from screen to world
-            var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
-            var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPosition());
+        if(2 === axisNum) { // project on a specific plane
+            var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
+            var direction = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
+            var position = root.position.plus(direction).minus(baseVector);
 
-            // project on a specific plane parallel to our view plane
-            var position = viewer.camera.projectOnViewPlane(nearPosition, z);
-            var direction = position.minus(root.position.plus(baseVector));
-
-            position = root.position.plus(direction);
-/*
-            if(xAxis) {
-                var axisVector = Qt.vector3d(1.0, 0.0, 0.0);
-                console.log(axisVector.dotProduct(position));
-                position = root.position.plus(axisVector.times(axisVector.dotProduct(position)));
-            }
-
-            if(yAxis) {
-                var axisVector = Qt.vector3d(0.0, 1.0, 0.0);
-                position = root.position.plus(axisVector.times(axisVector.dotProduct(position)));
-            }
-
-            if(zAxis) {
-                var axisVector = Qt.vector3d(0.0, 0.0, 1.0);
-                position = root.position.plus(axisVector.times(axisVector.dotProduct(position)));
-            }
-*/
             root.position = position;
-            console.log("pos", root.position);
+        } else if(1 === axisNum) { // project on a specific axis
+            var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
+            var direction = viewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
+            var position = root.position.plus(direction).minus(baseVector);
+
+            root.position = position;
         }
     }
 }

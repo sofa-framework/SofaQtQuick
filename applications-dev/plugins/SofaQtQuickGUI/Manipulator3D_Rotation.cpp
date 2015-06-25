@@ -75,19 +75,11 @@ void Manipulator3D_Rotation::draw(const Viewer& viewer) const
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadIdentity();
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadIdentity();
 
-    QVector4D position = camera->projection() * camera->view() * QVector4D(Manipulator::position(), 1.0);
-    position /= position.w();
-
-    glScaled(1.0, 1.0, 0.5);
-    glTranslatef(position.x(), position.y(), position.z());
-    glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
-    glMultMatrixf(QMatrix4x4(camera->view().normalMatrix()).constData());
+    glTranslatef(position().x(), position().y(), position().z());
 
     QVector3D axis = QVector3D(0.0, 0.0, -1.0);
     if(xAxis)
@@ -105,13 +97,20 @@ void Manipulator3D_Rotation::draw(const Viewer& viewer) const
     else if(yAxis)
         glRotated(-90.0, 1.0, 0.0, 0.0);
 
-    const float radius = 0.15f;
     const float width = 8.0f;
+
+    float radius = 0.125f;
+    {
+        QVector4D p0 = camera->projection() * camera->view() * QVector4D(position(), 1.0);
+        QVector4D p1 = camera->projection() * camera->view() * QVector4D(position() + camera->right(), 1.0);
+        QVector3D direction = ((p1 / p1.w() - p0 / p0.w()).toVector3D());
+
+        radius *= 1.0 / direction.length();
+    }
 
     const int resolution = 64;
 
     glDisable(GL_CULL_FACE);
-    glDepthFunc(GL_ALWAYS);
 
     glLineWidth(width);
     glEnable(GL_LINE_SMOOTH);
@@ -121,11 +120,11 @@ void Manipulator3D_Rotation::draw(const Viewer& viewer) const
     {
         //front
         if(xAxis)
-            glColor3d(1.0, 0.0, 0.0);
+            glColor3d(0.8, 0.0, 0.0);
         else if(yAxis)
-            glColor3d(0.0, 1.0, 0.0);
+            glColor3d(0.0, 0.8, 0.0);
         else if(zAxis)
-            glColor3d(0.0, 0.0, 1.0);
+            glColor3d(0.0, 0.0, 0.8);
 
         for(int i = 0; i < resolution; ++i)
         {
@@ -141,6 +140,9 @@ void Manipulator3D_Rotation::draw(const Viewer& viewer) const
     // draw a ring portion to know the delta angle
     if(myDisplayMark)
     {
+        glDepthRange(0.0, 0.9999995);
+        glDepthFunc(GL_ALWAYS);
+
         // draw a ring
         glBegin(GL_LINE_STRIP);
         {
@@ -183,12 +185,14 @@ void Manipulator3D_Rotation::draw(const Viewer& viewer) const
             }
         }
         glEnd();
+
+        glDepthFunc(GL_LESS);
+        glDepthRange(0.0, 1.0);
     }
 
     glDisable(GL_LINE_SMOOTH);
     glLineWidth(1.0f);
 
-    glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
 
     glMatrixMode(GL_PROJECTION);

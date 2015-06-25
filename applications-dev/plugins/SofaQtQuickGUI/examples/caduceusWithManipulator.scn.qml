@@ -57,15 +57,31 @@ CollapsibleGroupBox {
 
         Manipulator {
             id: manipulator
-/*
-            Manipulator3D_Translation {
-                id: txyz
 
-                axis: "xyz"
+            Manipulator3D_Translation {
+                id: txy
+
+                axis: "xy"
 
                 onPositionChanged: manipulator.position = position;
             }
-*/
+
+            Manipulator3D_Translation {
+                id: tyz
+
+                axis: "yz"
+
+                onPositionChanged: manipulator.position = position;
+            }
+
+            Manipulator3D_Translation {
+                id: txz
+
+                axis: "xz"
+
+                onPositionChanged: manipulator.position = position;
+            }
+
             Manipulator3D_Translation {
                 id: tx
 
@@ -89,7 +105,7 @@ CollapsibleGroupBox {
 
                 onPositionChanged: manipulator.position = position;
             }
-/*
+
             Manipulator3D_Rotation {
                 id: rx
 
@@ -113,7 +129,6 @@ CollapsibleGroupBox {
 
                 onOrientationChanged: manipulator.orientation = orientation;
             }
-*/
         }
     }
 

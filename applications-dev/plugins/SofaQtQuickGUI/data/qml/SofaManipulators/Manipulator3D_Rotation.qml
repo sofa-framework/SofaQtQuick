@@ -13,35 +13,12 @@ Manipulator3D_Rotation {
         var axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0) + (zAxis ? 1 : 0);
 
         if(1 === axisNum) {
-            // unproject from screen to world
-            var pickedPosition = scene.pickingInteractor.pickedPosition();
-            var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
-            var z = viewer.camera.computeDepth(root.position);
+            var normalVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
+            var direction = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position).normalized();
 
-            // project on a specific plane parallel to our view plane
-            pickedPosition = viewer.camera.projectOnViewPlane(nearPosition, z);
-            var direction = pickedPosition.minus(root.position).normalized();
-
-            var up;
-            var right;
-            var front;
-
-            if(xAxis) {
-                up = Qt.vector3d(0.0, 1.0, 0.0);
-                right = Qt.vector3d(0.0, 0.0, -1.0);
-                front = Qt.vector3d(-1.0, 0.0, 0.0);
-            } else if(yAxis) {
-                up = Qt.vector3d(0.0, 0.0, -1.0);
-                right = Qt.vector3d(1.0, 0.0, 0.0);
-                front = Qt.vector3d(0.0, -1.0, 0.0);
-            } else if(zAxis) {
-                up = Qt.vector3d(0.0, 1.0, 0.0);
-                right = Qt.vector3d(1.0, 0.0, 0.0);
-                front = Qt.vector3d(0.0, 0.0, -1.0);
-            }
-
-            //if(right.dotProduct(viewer.camera.right()) < 0.0 || up.dotProduct(viewer.camera.up()) < 0.0)
-            //    front = Qt.vector3d(0.0, 0.0, 0.0).minus(front);
+            var right = Qt.vector3d(yAxis || zAxis ?  1.0 : 0.0,                        0.0, xAxis ? -1.0 : 0.0);
+            var up    = Qt.vector3d(                        0.0, xAxis || zAxis ? 1.0 : 0.0, yAxis ? -1.0 : 0.0);
+            var front = Qt.vector3d(         xAxis ? -1.0 : 0.0,          yAxis ? 1.0 : 0.0, zAxis ?  1.0 : 0.0);
 
             baseAngle = Math.acos(up.dotProduct(direction));
             if(right.dotProduct(direction) < 0.0)
@@ -56,37 +33,12 @@ Manipulator3D_Rotation {
         var axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0) + (zAxis ? 1 : 0);
 
         if(1 === axisNum) {
-            // unproject from screen to world
-            var pickedPosition = scene.pickingInteractor.pickedPosition();
-            var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
-            var z = viewer.camera.computeDepth(root.position);
+            var normalVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
+            var direction = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position).normalized();
 
-            // TODO: project on the correct plan not the view one, i.e XY for Z XZ for Y and YZ for X
-
-            // project on a specific plane parallel to our view plane
-            pickedPosition = viewer.camera.projectOnViewPlane(nearPosition, z);
-            var direction = pickedPosition.minus(root.position).normalized();
-
-            var up;
-            var right;
-            var front;
-
-            if(xAxis) {
-                up = Qt.vector3d(0.0, 1.0, 0.0);
-                right = Qt.vector3d(0.0, 0.0, -1.0);
-                front = Qt.vector3d(-1.0, 0.0, 0.0);
-            } else if(yAxis) {
-                up = Qt.vector3d(0.0, 0.0, -1.0);
-                right = Qt.vector3d(1.0, 0.0, 0.0);
-                front = Qt.vector3d(0.0, -1.0, 0.0);
-            } else if(zAxis) {
-                up = Qt.vector3d(0.0, 1.0, 0.0);
-                right = Qt.vector3d(1.0, 0.0, 0.0);
-                front = Qt.vector3d(0.0, 0.0, -1.0);
-            }
-
-            //if(right.dotProduct(viewer.camera.right()) < 0.0 || up.dotProduct(viewer.camera.up()) < 0.0)
-            //    front = Qt.vector3d(0.0, 0.0, 0.0).minus(front);
+            var right = Qt.vector3d(yAxis || zAxis ?  1.0 : 0.0,                        0.0, xAxis ? -1.0 : 0.0);
+            var up    = Qt.vector3d(                        0.0, xAxis || zAxis ? 1.0 : 0.0, yAxis ? -1.0 : 0.0);
+            var front = Qt.vector3d(         xAxis ? -1.0 : 0.0,          yAxis ? 1.0 : 0.0, zAxis ?  1.0 : 0.0);
 
             var angle = Math.acos(up.dotProduct(direction));
             if(right.dotProduct(direction) < 0.0)

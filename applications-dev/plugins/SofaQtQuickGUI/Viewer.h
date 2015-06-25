@@ -75,8 +75,12 @@ public:
     void setAntialiasing(bool newAntialiasing);
 
     Q_INVOKABLE QVector3D mapFromWorld(const QVector3D& wsPoint);
-    Q_INVOKABLE QVector3D mapToWorld(const QVector3D& ssPoint);
+    Q_INVOKABLE QVector3D mapToWorld(const QPointF& ssPoint, double z);
 
+    QVector3D intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal);
+
+    Q_INVOKABLE QVector3D projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection);
+    Q_INVOKABLE QVector3D projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal);
     Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint);    // .w == 0 => background hit ; .w == 1 => geometry hit
 
     Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;

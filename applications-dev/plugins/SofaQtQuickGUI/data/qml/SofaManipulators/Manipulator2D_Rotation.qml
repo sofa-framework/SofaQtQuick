@@ -9,7 +9,7 @@ Manipulator2D_Rotation {
     function mousePressed(mouse, scene, viewer) {
         // unproject from screen to world
         var pickedPosition = scene.pickingInteractor.pickedPosition();
-        var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
+        var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
         var z = viewer.camera.computeDepth(root.position);
 
         // project on a specific plane parallel to our view plane
@@ -24,7 +24,7 @@ Manipulator2D_Rotation {
     function mouseMoved(mouse, scene, viewer) {
         // unproject from screen to world
         var pickedPosition = scene.pickingInteractor.pickedPosition();
-        var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
+        var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
         var z = viewer.camera.computeDepth(root.position);
 
         // project on a specific plane parallel to our view plane
