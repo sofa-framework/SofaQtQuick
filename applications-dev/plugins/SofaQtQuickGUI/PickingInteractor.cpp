@@ -18,9 +18,9 @@ namespace qtquick
 {
 
 typedef sofa::simulation::Node Node;
-typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3dTypes> MechanicalObject3d;
-typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3dTypes> FixedConstraint3d;
-typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3dTypes> StiffSpringForceField3d;
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3d;
+typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3Types> FixedConstraint3d;
+typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceField3d;
 
 PickingInteractor::PickingInteractor(QObject *parent) : QObject(parent), QQmlParserStatus(),
 	myScene(0),
