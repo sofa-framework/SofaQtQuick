@@ -18,9 +18,9 @@ namespace qtquick
 {
 
 typedef sofa::simulation::Node Node;
-typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3d;
-typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3Types> FixedConstraint3d;
-typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceField3d;
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObjectVec3;
+typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3Types> FixedConstraintVec3;
+typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceFieldVec3;
 
 PickingInteractor::PickingInteractor(QObject *parent) : QObject(parent), QQmlParserStatus(),
 	myScene(0),
@@ -101,7 +101,7 @@ bool PickingInteractor::pick(const QVector3D& origin, const QVector3D& ray)
 
 	if(!pickVisitor.particles.empty())
 	{
-		MechanicalObject3d* pickedPointMechanicalObject = dynamic_cast<MechanicalObject3d*>(pickVisitor.particles.begin()->second.first);
+        MechanicalObjectVec3* pickedPointMechanicalObject = dynamic_cast<MechanicalObjectVec3*>(pickVisitor.particles.begin()->second.first);
 		if(!pickedPointMechanicalObject)
 			return false;
 
@@ -113,15 +113,15 @@ bool PickingInteractor::pick(const QVector3D& origin, const QVector3D& ray)
 											myPickedPoint->mechanicalState->getPY(myPickedPoint->index),
 											myPickedPoint->mechanicalState->getPZ(myPickedPoint->index));
 
-		MechanicalObject3d::SPtr mechanicalObject = sofa::core::objectmodel::New<MechanicalObject3d>();
+        MechanicalObjectVec3::SPtr mechanicalObject = sofa::core::objectmodel::New<MechanicalObjectVec3>();
 		mechanicalObject->setName("Attractor");
 		mechanicalObject->resize(1);
 		mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(myPickedPoint->position.x(), myPickedPoint->position.y(), myPickedPoint->position.z());
 		myMechanicalState = mechanicalObject.get();
 
-		FixedConstraint3d::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraint3d>();
+        FixedConstraintVec3::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraintVec3>();
 
-		StiffSpringForceField3d::SPtr stiffSpringForcefield = sofa::core::objectmodel::New<StiffSpringForceField3d>(mechanicalObject.get(), pickedPointMechanicalObject);
+        StiffSpringForceFieldVec3::SPtr stiffSpringForcefield = sofa::core::objectmodel::New<StiffSpringForceFieldVec3>(mechanicalObject.get(), pickedPointMechanicalObject);
 		stiffSpringForcefield->setName("Spring");
 		stiffSpringForcefield->addSpring(0, myPickedPoint->index, myStiffness, 0.1, 0.0);
 		myForcefield = stiffSpringForcefield.get();
@@ -157,7 +157,7 @@ QVector3D PickingInteractor::position() const
 	if(!myMechanicalState)
 		return QVector3D();
 
-	MechanicalObject3d* mechanicalObject = static_cast<MechanicalObject3d*>(myMechanicalState);
+    MechanicalObjectVec3* mechanicalObject = static_cast<MechanicalObjectVec3*>(myMechanicalState);
 	sofa::defaulttype::Vector3 position = mechanicalObject->readPositions()[0];
 
 	return QVector3D(position.x(), position.y(), position.z());
@@ -168,7 +168,7 @@ void PickingInteractor::setPosition(const QVector3D& position)
     if(!myPickedPoint || !myMechanicalState)
 		return;
 
-	MechanicalObject3d* mechanicalObject = static_cast<MechanicalObject3d*>(myMechanicalState);
+    MechanicalObjectVec3* mechanicalObject = static_cast<MechanicalObjectVec3*>(myMechanicalState);
 	mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
 
 	positionChanged(position);
@@ -180,7 +180,7 @@ void PickingInteractor::release()
 
 	if(myNode)
 	{
-        StiffSpringForceField3d::SPtr stiffSpringForcefield = static_cast<StiffSpringForceField3d*>(myForcefield);
+        StiffSpringForceFieldVec3::SPtr stiffSpringForcefield = static_cast<StiffSpringForceFieldVec3*>(myForcefield);
         myNode->moveObject(stiffSpringForcefield);
 
 		Node::SPtr node = static_cast<Node*>(myNode);
