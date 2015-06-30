@@ -5,6 +5,7 @@ Manipulator2D_Rotation {
     id: root
 
     property real baseAngle: 0.0
+    property var  baseOrientation
 
     function mousePressed(mouse, scene, viewer) {
         // unproject from screen to world
@@ -19,6 +20,8 @@ Manipulator2D_Rotation {
         baseAngle = Math.acos(viewer.camera.up().dotProduct(direction));
         if(viewer.camera.right().dotProduct(direction) < 0.0)
             baseAngle = -baseAngle;
+
+        baseOrientation = Qt.quaternion(root.orientation.scalar, root.orientation.x, root.orientation.y, root.orientation.z);
     }
 
     function mouseMoved(mouse, scene, viewer) {
@@ -37,11 +40,8 @@ Manipulator2D_Rotation {
 
         setMark(baseAngle, angle);
 
-        var deltaAngle = angle - baseAngle;
-        var quatAngle = deltaAngle * 0.5;
-        var quatAxis = viewer.camera.direction().times(Math.sin(quatAngle));
-        var orientation = Qt.quaternion(Math.cos(quatAngle), quatAxis.x, quatAxis.y, quatAxis.z);
-        root.orientation = orientation;
+        var orientation = quaternionFromAxisAngle(viewer.camera.direction().normalized(), (angle - baseAngle) / Math.PI * 180.0);
+        root.orientation = quaternionMultiply(orientation, baseOrientation);
     }
 
     function mouseReleased(mouse, scene, viewer) {

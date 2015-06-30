@@ -38,6 +38,10 @@ public:
     const QVector3D& scale() const {return myScale;}
     void setScale(const QVector3D& newScale);
 
+public:
+    Q_INVOKABLE QQuaternion quaternionFromAxisAngle(const QVector3D& axis, float angle);
+    Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1);
+
 public slots:
     virtual void draw(const Viewer& viewer) const;
 

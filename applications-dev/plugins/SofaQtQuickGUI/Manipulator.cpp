@@ -54,6 +54,16 @@ void Manipulator::setScale(const QVector3D& newScale)
     scaleChanged(newScale);
 }
 
+QQuaternion Manipulator::quaternionFromAxisAngle(const QVector3D& axis, float angle)
+{
+    return QQuaternion::fromAxisAndAngle(axis, angle);
+}
+
+QQuaternion Manipulator::quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1)
+{
+    return q0 * q1;
+}
+
 void Manipulator::draw(const Viewer& viewer) const
 {
     // a base manipulator has no visual representation
