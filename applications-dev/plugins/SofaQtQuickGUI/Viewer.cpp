@@ -34,7 +34,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myBackgroundImageSource(),
     myBackgroundImage(),
     myWireframe(false),
-    myCulling(true),
+    myCulling(false),
     myBlending(false),
     myAntialiasing(false),
     myFBO(0)
