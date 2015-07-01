@@ -69,7 +69,7 @@ set(QML_FILES
 		data/qml/SofaBasics/DefaultMenuBar.qml
 		data/qml/SofaBasics/Scene.qml
                 data/qml/SofaBasics/SceneListModel.qml
-                data/qml/SofaBasics/Data.qml
+                data/qml/SofaBasics/DataItem.qml
                 data/qml/SofaBasics/DataListModel.qml
 		data/qml/SofaBasics/PythonInteractor.qml
                 data/qml/SofaBasics/UserInteractor.qml
