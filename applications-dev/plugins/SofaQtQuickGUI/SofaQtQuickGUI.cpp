@@ -34,6 +34,8 @@
 #include "Manipulator3D_Translation.h"
 #include "Manipulator3D_Rotation.h"
 #include "Scene.h"
+#include "SceneComponent.h"
+#include "SceneData.h"
 #include "SceneListModel.h"
 #include "DataListModel.h"
 #include "Viewer.h"

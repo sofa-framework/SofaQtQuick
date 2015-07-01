@@ -2,6 +2,8 @@
 #define SCENE_H
 
 #include "SofaQtQuickGUI.h"
+#include "SceneComponent.h"
+#include "SceneData.h"
 #include "Manipulator.h"
 
 #include <sofa/simulation/common/Simulation.h>
@@ -22,60 +24,6 @@ namespace sofa
 
 namespace qtquick
 {
-
-class Scene;
-
-/// QtQuick wrapper for a Sofa component (i.e baseObject / baseNode), allowing us to share a component in a QML context
-class SOFA_SOFAQTQUICKGUI_API SceneComponent : public QObject
-{
-    Q_OBJECT
-
-public:
-    SceneComponent(const Scene* scene, const sofa::core::objectmodel::Base* base);
-    SceneComponent(const SceneComponent& sceneComponent);
-
-public:
-    Q_PROPERTY(QString name READ name)
-
-public:
-
-    QString name() const;
-    sofa::core::objectmodel::Base* base();
-    const sofa::core::objectmodel::Base* base() const;
-
-    const Scene* scene() const;
-
-private:
-    const Scene*                                    myScene;
-    mutable const sofa::core::objectmodel::Base*    myBase;
-
-};
-
-/// QtQuick wrapper for a Sofa base data, allowing us to share a component data in a QML context
-class SOFA_SOFAQTQUICKGUI_API SceneData : public QObject
-{
-    Q_OBJECT
-
-public:
-    SceneData(const SceneComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data);
-    SceneData(const Scene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
-    SceneData(const SceneData& sceneData);
-
-    Q_INVOKABLE QVariantMap object() const;
-
-    Q_INVOKABLE QVariant value();
-    Q_INVOKABLE bool setValue(const QVariant& value);
-    Q_INVOKABLE bool setLink(const QString& path);
-
-    sofa::core::objectmodel::BaseData* data();
-    const sofa::core::objectmodel::BaseData* data() const;
-
-private:
-    const Scene*                                        myScene;
-    mutable const sofa::core::objectmodel::Base*        myBase;
-    mutable const sofa::core::objectmodel::BaseData*    myData;
-
-};
 
 class Viewer;
 

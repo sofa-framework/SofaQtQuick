@@ -4,14 +4,7 @@
 #include "SofaQtQuickGUI.h"
 
 #include <sofa/simulation/common/Simulation.h>
-#include <sofa/simulation/common/MutationListener.h>
-
-#include <QObject>
-#include <QQmlListProperty>
-#include <QVariant>
-#include <QSet>
-#include <QVector3D>
-#include <QUrl>
+#include <QVariantMap>
 
 class QTimer;
 class QOpenGLShaderProgram;

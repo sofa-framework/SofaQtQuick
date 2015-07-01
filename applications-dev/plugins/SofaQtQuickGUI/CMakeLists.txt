@@ -6,6 +6,8 @@ set(SOURCE_FILES
 		Viewer.cpp
 		Camera.cpp
                 Scene.cpp
+                SceneComponent.cpp
+                SceneData.cpp
                 SceneListModel.cpp
                 DataListModel.cpp
 		PythonInteractor.cpp
@@ -24,6 +26,8 @@ set(HEADER_FILES
 		Viewer.h
 		Camera.h
                 Scene.h
+                SceneComponent.h
+                SceneData.h
                 SceneListModel.h
                 DataListModel.h
 		PythonInteractor.h
