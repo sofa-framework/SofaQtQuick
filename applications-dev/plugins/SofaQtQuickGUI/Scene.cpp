@@ -1287,7 +1287,7 @@ bool Scene::pickUsingRasterization(const Viewer& viewer, const QPointF& nativePo
     sofa::helper::vector<OglModel*> models;
     root->getTreeObjects<OglModel>(&models);
 
-    if(!models.empty())
+    if(!models.empty() || !myManipulators.empty())
     {
         myPickingShaderProgram->bind();
         {
