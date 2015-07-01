@@ -9,6 +9,10 @@ set(SOURCE_FILES
                 SceneComponent.cpp
                 SceneData.cpp
                 SceneListModel.cpp
+                Selectable.cpp
+                SelectableManipulator.cpp
+                SelectableSceneComponent.cpp
+                SelectableSceneComponentParticle.cpp
                 DataListModel.cpp
 		PythonInteractor.cpp
                 PythonConsole.cpp
@@ -29,6 +33,10 @@ set(HEADER_FILES
                 SceneComponent.h
                 SceneData.h
                 SceneListModel.h
+                Selectable.h
+                SelectableManipulator.h
+                SelectableSceneComponent.h
+                SelectableSceneComponentParticle.h
                 DataListModel.h
 		PythonInteractor.h
                 PythonConsole.h
