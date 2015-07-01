@@ -16,7 +16,7 @@ Viewer {
     backgroundColor: "#FF404040"
     backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
     wireframe: false
-    culling: false
+    culling: true
     blending: false
     antialiasing: false
 
