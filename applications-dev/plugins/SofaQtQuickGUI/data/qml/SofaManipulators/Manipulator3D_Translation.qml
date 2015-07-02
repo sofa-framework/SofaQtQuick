@@ -4,7 +4,7 @@ import Manipulator3D_Translation 1.0
 Manipulator3D_Translation {
     id: root
 
-    property var baseVector: Qt.vector3d(0.0, 0.0, 0.0)
+    property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
 
     function mousePressed(mouse, scene, viewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
@@ -14,10 +14,10 @@ Manipulator3D_Translation {
 
         if(2 === axisNum) { // project on a specific plane
             var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
-            baseVector = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
+            startVector = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
         } else if(1 === axisNum) {
             var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
-            baseVector = viewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
+            startVector = viewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
         }
     }
 
@@ -30,13 +30,13 @@ Manipulator3D_Translation {
         if(2 === axisNum) { // project on a specific plane
             var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
             var direction = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
-            var position = root.position.plus(direction).minus(baseVector);
+            var position = root.position.plus(direction).minus(startVector);
 
             root.position = position;
         } else if(1 === axisNum) { // project on a specific axis
             var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
             var direction = viewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
-            var position = root.position.plus(direction).minus(baseVector);
+            var position = root.position.plus(direction).minus(startVector);
 
             root.position = position;
         }

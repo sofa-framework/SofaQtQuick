@@ -17,6 +17,11 @@ Selectable::~Selectable()
 
 }
 
+void Selectable::setPosition(const QVector3D& position)
+{
+    myPosition = position;
+}
+
 }
 
 }

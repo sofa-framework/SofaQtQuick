@@ -50,11 +50,13 @@ public:
     Q_INVOKABLE double zNear() const                {return myZNear;}
     Q_INVOKABLE double zFar() const                 {return myZFar;}
 
-    Q_INVOKABLE double computeDepth(const QVector3D& wsPosition);
-    Q_INVOKABLE QVector3D projectOnViewPlane(const QVector3D& wsPosition, double depth);
+    /// @return depth in normalized device coordinate (ndc) space
+    Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
 
-    Q_INVOKABLE QVector3D projectOnViewSpaceXAxis(const QVector3D& wsVector);
-    Q_INVOKABLE QVector3D projectOnViewSpaceYAxis(const QVector3D& wsVector);
+    Q_INVOKABLE QVector3D projectOnViewPlane(const QVector3D& wsPosition, double depth) const;
+
+    Q_INVOKABLE QVector3D projectOnViewSpaceXAxis(const QVector3D& wsVector) const;
+    Q_INVOKABLE QVector3D projectOnViewSpaceYAxis(const QVector3D& wsVector) const;
 
 public slots:
     void viewFromFront();

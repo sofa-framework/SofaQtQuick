@@ -11,13 +11,13 @@ namespace qtquick
 {
 
 /// QtQuick wrapper for a selectable object representing a SceneComponent particle (a dof)
-class SOFA_SOFAQTQUICKGUI_API SelectableSceneComponentParticle : public SelectableSceneComponent
+class SOFA_SOFAQTQUICKGUI_API SelectableSceneParticle : public SelectableSceneComponent
 {
     Q_OBJECT
 
 public:
-    SelectableSceneComponentParticle(SceneComponent* sceneComponent, int particleIndex);
-    ~SelectableSceneComponentParticle();
+    SelectableSceneParticle(const SceneComponent& sceneComponent, int particleIndex);
+    ~SelectableSceneParticle();
 
 public:
     Q_PROPERTY(int particleIndex READ particleIndex)

@@ -3,6 +3,7 @@
 
 #include "SofaQtQuickGUI.h"
 #include <QObject>
+#include <QVector3D>
 
 namespace sofa
 {
@@ -18,6 +19,16 @@ class SOFA_SOFAQTQUICKGUI_API Selectable : public QObject
 public:
     Selectable(QObject* parent = 0);
     ~Selectable();
+
+public:
+    Q_PROPERTY(QVector3D position READ position)
+
+public:
+    const QVector3D& position() const {return myPosition;}
+    void setPosition(const QVector3D& position);
+
+private:
+    QVector3D myPosition;   ///< the position of the selected object
 
 };
 

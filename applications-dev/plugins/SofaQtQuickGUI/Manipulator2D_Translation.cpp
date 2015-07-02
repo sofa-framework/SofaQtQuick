@@ -34,6 +34,16 @@ void Manipulator2D_Translation::setAxis(QString newAxis)
 
 void Manipulator2D_Translation::draw(const Viewer& viewer) const
 {
+    internalDraw(viewer, false);
+}
+
+void Manipulator2D_Translation::pick(const Viewer& viewer) const
+{
+    internalDraw(viewer, true);
+}
+
+void Manipulator2D_Translation::internalDraw(const Viewer& viewer, bool isPicking) const
+{
     Camera* camera = viewer.camera();
     if(!camera)
         return;

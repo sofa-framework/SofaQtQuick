@@ -110,23 +110,23 @@ Scene {
         console.debug("ERROR: Scene - using setDataValue with an invalid number of arguments:", arguments.length);
     }
 
-    ///// SELECTED MODELS
+    ///// SELECTED COMPONENTS
 
-    function selectedModel() {
-        if(0 === root.selectedModels.length)
+    function selectedComponent() {
+        if(0 === root.selectedComponents.length)
             return null;
 
-        return root.selectedModels[0];
+        return root.selectedComponents[0];
     }
 
-    function setSelectedModel(selectedModel) {
-        var selectedModels = [];
-        selectedModels.push(selectedModel);
-        root.selectedModels = selectedModels;
+    function setSelectedComponent(selectedComponent) {
+        var selectedComponents = [];
+        selectedComponents.push(selectedComponent);
+        root.selectedComponents = selectedComponents;
     }
 
-    function clearSelectedModels() {
-        root.selectedModels = [];
+    function clearselectedComponents() {
+        root.selectedComponents = [];
     }
 
     ///// MANIPULATOR

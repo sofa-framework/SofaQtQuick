@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include "Scene.h"
 #include "Viewer.h"
+#include "SelectableManipulator.h"
 
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
@@ -15,8 +16,12 @@
 #include <sofa/core/visual/DrawToolGL.h>
 #include <sofa/helper/system/glut.h>
 #include <SofaPython/SceneLoaderPY.h>
+#include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
+#include <SofaMeshCollision/TriangleModel.h>
 #include <SofaComponentMain/init.h>
+#include <SofaBaseMechanics/MechanicalObject.h>
+#include <sofa/simulation/common/MechanicalVisitor.h>
 
 #include <array>
 #include <sstream>
@@ -45,7 +50,10 @@ namespace qtquick
 using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
 using namespace sofa::component::visualmodel;
+using namespace sofa::component::collision;
 using namespace sofa::simulation;
+
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3dTypes> MechanicalObject3d;
 
 Scene::Scene(QObject *parent) : QObject(parent),
 	myStatus(Status::Null),
@@ -62,8 +70,8 @@ Scene::Scene(QObject *parent) : QObject(parent),
     myBases(),
     myManipulators(),
     mySelectedManipulators(),
-    mySelectedModels(),
-    mySelectedModelShaderProgram(nullptr),
+    mySelectedComponents(),
+    myHighlightShaderProgram(nullptr),
     myPickingShaderProgram(nullptr)
 {
 	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
@@ -326,7 +334,7 @@ void Scene::setAsynchronous(bool newAsynchronous)
     asynchronousChanged(newAsynchronous);
 }
 
-void Scene::setVisualDirty(bool newVisualDirty)
+void Scene::setVisualDirty(bool newVisualDirty) const
 {
     if(newVisualDirty == myVisualDirty)
         return;
@@ -366,40 +374,40 @@ QQmlListProperty<sofa::qtquick::Manipulator> Scene::selectedManipulators()
     return QQmlListProperty<sofa::qtquick::Manipulator>(this, &mySelectedManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
 }
 
-static void appendSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property, sofa::qtquick::SceneComponent *value)
+static void appendSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property, sofa::qtquick::SceneComponent *value)
 {
-    OglModel* model = dynamic_cast<OglModel*>(value->base());
-    if(nullptr == model)
-        return;
-
     // TODO: is it really useful ?
     SceneComponent* valueCopy = new SceneComponent(*value);
 
     static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->append(valueCopy);
+
+    qobject_cast<Scene*>(property->object)->selectedComponentsChanged();
 }
 
-static sofa::qtquick::SceneComponent* atSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property, int index)
+static sofa::qtquick::SceneComponent* atSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property, int index)
 {
     return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->at(index);
 }
 
-static void clearSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
+static void clearSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
 {
-    QList<sofa::qtquick::SceneComponent*>& selectedModels = *static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data);
-    for(SceneComponent* sceneComponent : selectedModels)
+    QList<sofa::qtquick::SceneComponent*>& selectedComponents = *static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data);
+    for(SceneComponent* sceneComponent : selectedComponents)
         delete sceneComponent;
 
     static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->clear();
+
+    qobject_cast<Scene*>(property->object)->selectedComponentsChanged();
 }
 
-static int countSelectedModel(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
+static int countSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
 {
     return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->size();
 }
 
-QQmlListProperty<sofa::qtquick::SceneComponent> Scene::selectedModels()
+QQmlListProperty<sofa::qtquick::SceneComponent> Scene::selectedComponents()
 {
-    return QQmlListProperty<sofa::qtquick::SceneComponent>(this, &mySelectedModels, appendSelectedModel, countSelectedModel, atSelectedModel, clearSelectedModel);
+    return QQmlListProperty<sofa::qtquick::SceneComponent>(this, &mySelectedComponents, appendSelectedComponent, countSelectedComponent, atSelectedComponent, clearSelectedComponent);
 }
 
 double Scene::radius() const
@@ -968,22 +976,22 @@ void Scene::initGraphics()
         qWarning() << "GLEW Initialization failed with error code:" << err;
 
     // init the highlight shader program
-    if(!mySelectedModelShaderProgram)
+    if(!myHighlightShaderProgram)
     {
-        mySelectedModelShaderProgram = new QOpenGLShaderProgram(this);
+        myHighlightShaderProgram = new QOpenGLShaderProgram(this);
 
-        mySelectedModelShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+        myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
             "void main(void)\n"
             "{\n"
             "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
             "}");
-        mySelectedModelShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+        myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
             "void main(void)\n"
             "{\n"
             "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
             "}");
 
-        mySelectedModelShaderProgram->link();
+        myHighlightShaderProgram->link();
     }
 
     // init the picking shader program
@@ -1074,7 +1082,7 @@ void Scene::reset()
     emit reseted();
 }
 
-void Scene::draw(const Viewer& viewer)
+void Scene::draw(const Viewer& viewer) const
 {
     if(!isReady())
         return;
@@ -1106,27 +1114,55 @@ void Scene::draw(const Viewer& viewer)
 
     mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), mySofaSimulation->GetRoot().get());
 
-    // highlight selected models using a specific shader
-    if(!mySelectedModels.isEmpty())
+    // highlight selected components using a specific shader
+    if(!mySelectedComponents.isEmpty())
     {
         glDepthFunc(GL_ALWAYS);
         glDepthMask(GL_FALSE);
 
-        glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
-
-        mySelectedModelShaderProgram->bind();
-        for(SceneComponent* sceneComponent : mySelectedModels)
+        myHighlightShaderProgram->bind();
+        for(SceneComponent* sceneComponent : mySelectedComponents)
         {
             if(sceneComponent)
             {
-                OglModel* model = dynamic_cast<OglModel*>(sceneComponent->base());
-                if(model)
-                    model->drawVisual(visualParams);
+                OglModel* oglModel = dynamic_cast<OglModel*>(sceneComponent->base());
+                if(oglModel)
+                {
+                    VisualStyle* visualStyle = nullptr;
+                    oglModel->getContext()->get(visualStyle);
+
+                    if(visualStyle)
+                        visualStyle->fwdDraw(visualParams);
+
+                    visualParams->displayFlags().setShowWireFrame(true);
+
+                    oglModel->drawVisual(visualParams);
+
+                    if(visualStyle)
+                        visualStyle->bwdDraw(visualParams);
+                }
+                else
+                {
+                    TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(sceneComponent->base());
+                    if(triangleModel)
+                    {
+                        VisualStyle* visualStyle = nullptr;
+                        triangleModel->getContext()->get(visualStyle);
+
+                        if(visualStyle)
+                            visualStyle->fwdDraw(visualParams);
+
+                        visualParams->displayFlags().setShowWireFrame(true);
+
+                        triangleModel->draw(visualParams);
+
+                        if(visualStyle)
+                            visualStyle->bwdDraw(visualParams);
+                    }
+                }
             }
         }
-        mySelectedModelShaderProgram->release();
-
-        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+        myHighlightShaderProgram->release();
 
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
@@ -1136,52 +1172,109 @@ void Scene::draw(const Viewer& viewer)
 
     glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
-    for(Manipulator* manipulator : myManipulators)
-        if(manipulator)
-            manipulator->draw(viewer);
+    if(!myManipulators.isEmpty())
+    {
+        // since manipulator may use transparency, we order them by z
+        QVector<Manipulator*> zOrderedManipulators(QVector<Manipulator*>::fromList(myManipulators));
+        qSort(zOrderedManipulators.begin(), zOrderedManipulators.end(), [&](Manipulator* a, Manipulator* b) {
+            return viewer.computeDepth(a->position()) < viewer.computeDepth(b->position());
+        });
+
+        for(Manipulator* zOrderedManipulator : zOrderedManipulators)
+            if(zOrderedManipulator)
+                zOrderedManipulator->draw(viewer);
+    }
 }
 
-bool Scene::pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, float& z)
+SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth) const
 {
-    sceneComponent = nullptr;
-    manipulator = nullptr;
-    z = 1.0;
+    SelectableSceneParticle* selectableSceneParticle = nullptr;
 
+    sofa::simulation::MechanicalPickParticlesVisitor pickVisitor(sofa::core::ExecParams::defaultInstance(),
+                                                                 sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
+                                                                 sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
+                                                                 distanceToRay,
+                                                                 distanceToRayGrowth);
+
+    pickVisitor.execute(sofaSimulation()->GetRoot()->getContext());
+
+    if(!pickVisitor.particles.empty())
+    {
+        MechanicalObject3d* mechanicalObject = dynamic_cast<MechanicalObject3d*>(pickVisitor.particles.begin()->second.first);
+        int index = pickVisitor.particles.begin()->second.second;
+
+        if(mechanicalObject && -1 != index)
+            selectableSceneParticle = new SelectableSceneParticle(SceneComponent(this, mechanicalObject), index);
+    }
+
+    return selectableSceneParticle;
+}
+
+static QVector4D packPickingIndex(int i)
+{
+    return QVector4D((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, ((i & 0xFF000000) >> 24) / 255.0);
+}
+
+static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
+{
+    return (i[0] | (i[1] << 8) | (i[2] << 16) | (i[3] << 24)) - 1;
+}
+
+Selectable* Scene::pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint)
+{
     Node* root = sofaSimulation()->GetRoot().get();
 
-    sofa::helper::vector<OglModel*> models;
-    root->getTreeObjects<OglModel>(&models);
+    sofa::helper::vector<OglModel*> oglModels;
+    root->getTreeObjects<OglModel>(&oglModels);
 
-    if(!models.empty() || !myManipulators.empty())
+    sofa::helper::vector<TriangleModel*> triangleModels;
+    root->getTreeObjects<TriangleModel>(&triangleModels);
+
+    if(!oglModels.empty() || !triangleModels.empty() || !myManipulators.empty())
     {
+        sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+
         myPickingShaderProgram->bind();
         {
             int indexLocation = myPickingShaderProgram->uniformLocation("index");
 
             int j = 0;
-            for(; j < models.size(); ++j)
+            for(; j < oglModels.size(); ++j)
             {
-                OglModel* model = models[j];
-                if(model)
+                OglModel* oglModel = oglModels[j];
+                if(oglModel)
                 {
-                    int i = j + 1;
-                    QVector4D indexComponents((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, ((i & 0xFF000000) >> 24) / 255.0);
-                    myPickingShaderProgram->setUniformValue(indexLocation, indexComponents);
-
-                    model->drawVisual(sofa::core::visual::VisualParams::defaultInstance());
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
+                    oglModel->drawVisual(visualParams);
                 }
             }
 
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+            for(; j < triangleModels.size(); ++j)
+            {
+                TriangleModel* triangleModel = triangleModels[j];
+                if(triangleModel)
+                {
+                    VisualStyle* visualStyle = nullptr;
+                    triangleModel->getContext()->get(visualStyle);
+
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
+
+                    if(visualStyle)
+                        visualStyle->fwdDraw(visualParams);
+
+                    triangleModel->draw(visualParams);
+
+                    if(visualStyle)
+                        visualStyle->bwdDraw(visualParams);
+                }
+            }
 
             for(Manipulator* manipulator : myManipulators)
             {
                 if(manipulator)
                 {
-                    int i = j + 1;
-                    QVector4D indexComponents((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, ((i & 0xFF000000) >> 24) / 255.0);
-                    myPickingShaderProgram->setUniformValue(indexLocation, indexComponents);
-                    manipulator->draw(viewer);
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
+                    manipulator->pick(viewer);
                 }
 
                 ++j;
@@ -1191,30 +1284,24 @@ bool Scene::pickUsingRasterization(const Viewer& viewer, const QPointF& nativePo
 
         std::array<unsigned char, 4> indexComponents;
         glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
-        int j = (indexComponents[0] | (indexComponents[1] << 8) | (indexComponents[2] << 16) | (indexComponents[3] << 24)) - 1;
 
+        int j = unpackPickingIndex(indexComponents);
         if(-1 != j)
         {
-            if(j < models.size())
-            {
-                sceneComponent = new SceneComponent(this, models[j]);
-            }
-            else
-            {
-                j -= models.size();
-                if(j < myManipulators.size())
-                    manipulator = myManipulators[j];
-            }
-        }
+            if(j < oglModels.size())
+                return new SelectableSceneComponent(SceneComponent(this, oglModels[j]));
 
-        if(sceneComponent || manipulator)
-        {
-            glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-            return true;
+            j -= oglModels.size();
+            if(j < triangleModels.size())
+                return new SelectableSceneComponent(SceneComponent(this, triangleModels[j]));
+
+            j -= triangleModels.size();
+            if(j < myManipulators.size())
+                return new SelectableManipulator(*myManipulators[j]);
         }
     }
 
-    return false;
+    return nullptr;
 }
 
 void Scene::onKeyPressed(char key)

@@ -44,6 +44,7 @@ public:
 
 public slots:
     virtual void draw(const Viewer& viewer) const;
+    virtual void pick(const Viewer& viewer) const;
 
 signals:
     void positionChanged(const QVector3D& newPosition);

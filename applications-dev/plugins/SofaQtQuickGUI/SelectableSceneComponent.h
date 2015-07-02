@@ -17,11 +17,11 @@ class SOFA_SOFAQTQUICKGUI_API SelectableSceneComponent : public Selectable
     Q_OBJECT
 
 public:
-    SelectableSceneComponent(SceneComponent* sceneComponent);
+    SelectableSceneComponent(const SceneComponent& sceneComponent);
     ~SelectableSceneComponent();
 
 public:
-    Q_PROPERTY(SceneComponent* sceneComponent READ sceneComponent)
+    Q_PROPERTY(sofa::qtquick::SceneComponent* sceneComponent READ sceneComponent)
 
 public:
     SceneComponent* sceneComponent() const {return mySceneComponent;}

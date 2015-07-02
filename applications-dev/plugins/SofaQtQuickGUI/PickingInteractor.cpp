@@ -138,6 +138,8 @@ bool PickingInteractor::pickUsingRasterization(Viewer* viewer, const QPointF& ss
     if(!myScene || !myScene->isReady())
         return false;
 
+    // TODO: broken
+    /*
     SceneComponent* sceneComponent = nullptr;
     Manipulator* manipulator = nullptr;
     QVector3D position;
@@ -162,6 +164,7 @@ bool PickingInteractor::pickUsingRasterization(Viewer* viewer, const QPointF& ss
 
         return true;
     }
+    */
 
     return false;
 }

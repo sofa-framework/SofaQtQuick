@@ -12,7 +12,7 @@ set(SOURCE_FILES
                 Selectable.cpp
                 SelectableManipulator.cpp
                 SelectableSceneComponent.cpp
-                SelectableSceneComponentParticle.cpp
+                SelectableSceneParticle.cpp
                 DataListModel.cpp
 		PythonInteractor.cpp
                 PythonConsole.cpp
@@ -36,7 +36,7 @@ set(HEADER_FILES
                 Selectable.h
                 SelectableManipulator.h
                 SelectableSceneComponent.h
-                SelectableSceneComponentParticle.h
+                SelectableSceneParticle.h
                 DataListModel.h
 		PythonInteractor.h
                 PythonConsole.h

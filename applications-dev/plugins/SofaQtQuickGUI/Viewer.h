@@ -3,6 +3,7 @@
 
 #include "SofaQtQuickGUI.h"
 #include "Camera.h"
+#include "SelectableSceneParticle.h"
 
 #include <QtQuick/QQuickItem>
 #include <QVector3D>
@@ -25,6 +26,13 @@ class Manipulator;
 
 class PickUsingRasterizationWorker;
 
+/// @class Display a Sofa Scene in a QQuickItem
+/// @note Coordinate prefix meaning:
+/// ws  => world space
+/// vs  => view space
+/// cs  => clip space
+/// ndc => ndc space
+/// ss  => screen space (window space)
 class SOFA_SOFAQTQUICKGUI_API Viewer : public QQuickItem
 {
     Q_OBJECT
@@ -74,14 +82,20 @@ public:
     bool antialiasing() const        {return myAntialiasing;}
     void setAntialiasing(bool newAntialiasing);
 
-    Q_INVOKABLE QVector3D mapFromWorld(const QVector3D& wsPoint);
-    Q_INVOKABLE QVector3D mapToWorld(const QPointF& ssPoint, double z);
+    /// @return depth in screen space
+    Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
 
-    QVector3D intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal);
+    Q_INVOKABLE QVector3D mapFromWorld(const QVector3D& wsPoint) const;
+    Q_INVOKABLE QVector3D mapToWorld(const QPointF& ssPoint, double z) const;
 
-    Q_INVOKABLE QVector3D projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection);
-    Q_INVOKABLE QVector3D projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal);
-    Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint);    // .w == 0 => background hit ; .w == 1 => geometry hit
+    QVector3D intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal) const;
+
+    Q_INVOKABLE QVector3D projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const;
+    Q_INVOKABLE QVector3D projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const;
+    Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint) const;    // .w == 0 => background hit ; .w == 1 => geometry hit
+
+    Q_INVOKABLE sofa::qtquick::SelectableSceneParticle*    pickParticle(const QPointF& ssPoint) const;
+    Q_INVOKABLE sofa::qtquick::Selectable*                 pickObject(const QPointF& ssPoint);
 
     Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;
     Q_INVOKABLE QVector3D boundingBoxMin() const;
@@ -102,17 +116,11 @@ public slots:
     void paint();
 	void viewAll();
 
-public:
-    /// \brief      Mid-level function for color index picking
-    /// \note       The best way to pick an object is to use a 'PickingInteractor' instead of directly call this function
-    /// \return     True if an object has been picked, false if we hit the background or a non-selectable object
-    bool pickUsingRasterization(const QPointF& ssPoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, QVector3D& wsPoint);
-
 private:
-	QRect glRect();
+    QRect glRect() const;
     void internalDraw();
 
-    QPointF mapToNative(const QPointF& ssPoint);
+    QPointF mapToNative(const QPointF& ssPoint) const;
 
 private slots:
 	void handleSceneChanged(Scene* scene);

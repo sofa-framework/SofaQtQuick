@@ -4,8 +4,8 @@ import Manipulator3D_Rotation 1.0
 Manipulator3D_Rotation {
     id: root
 
-    property real baseAngle: 0.0
-    property var  baseOrientation
+    property real startAngle: 0.0
+    property var  startOrientation
 
     function mousePressed(mouse, scene, viewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
@@ -19,13 +19,13 @@ Manipulator3D_Rotation {
 
             var right = Qt.vector3d(yAxis || zAxis ?  1.0 : 0.0,                        0.0, xAxis ? -1.0 : 0.0);
             var up    = Qt.vector3d(                        0.0, xAxis || zAxis ? 1.0 : 0.0, yAxis ? -1.0 : 0.0);
-            var front = Qt.vector3d(         xAxis ? -1.0 : 0.0,          yAxis ? 1.0 : 0.0, zAxis ?  1.0 : 0.0);
+            var front = Qt.vector3d(         xAxis ? -1.0 : 0.0,          yAxis ?-1.0 : 0.0, zAxis ? -1.0 : 0.0);
 
-            baseAngle = Math.acos(up.dotProduct(direction));
+            startAngle = Math.acos(up.dotProduct(direction));
             if(right.dotProduct(direction) < 0.0)
-                baseAngle = -baseAngle;
+                startAngle = -startAngle;
 
-            baseOrientation = Qt.quaternion(root.orientation.scalar, root.orientation.x, root.orientation.y, root.orientation.z);
+            startOrientation = Qt.quaternion(root.orientation.scalar, root.orientation.x, root.orientation.y, root.orientation.z);
         }
     }
 
@@ -41,16 +41,16 @@ Manipulator3D_Rotation {
 
             var right = Qt.vector3d(yAxis || zAxis ?  1.0 : 0.0,                        0.0, xAxis ? -1.0 : 0.0);
             var up    = Qt.vector3d(                        0.0, xAxis || zAxis ? 1.0 : 0.0, yAxis ? -1.0 : 0.0);
-            var front = Qt.vector3d(         xAxis ? -1.0 : 0.0,          yAxis ? 1.0 : 0.0, zAxis ?  1.0 : 0.0);
+            var front = Qt.vector3d(         xAxis ? -1.0 : 0.0,          yAxis ?-1.0 : 0.0, zAxis ? -1.0 : 0.0);
 
             var angle = Math.acos(up.dotProduct(direction));
             if(right.dotProduct(direction) < 0.0)
                 angle = -angle;
 
-            setMark(baseAngle, angle);
+            setMark(startAngle, angle);
 
-            var orientation = quaternionFromAxisAngle(front, (angle - baseAngle) / Math.PI * 180.0);
-            root.orientation = quaternionMultiply(orientation, baseOrientation);
+            var orientation = quaternionFromAxisAngle(front, (angle - startAngle) / Math.PI * 180.0);
+            root.orientation = quaternionMultiply(orientation, startOrientation);
         }
     }
 

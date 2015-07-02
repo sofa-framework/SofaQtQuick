@@ -165,7 +165,15 @@ void Viewer::setAntialiasing(bool newAntialiasing)
     antialiasingChanged(newAntialiasing);
 }
 
-QVector3D Viewer::mapFromWorld(const QVector3D& wsPoint)
+double Viewer::computeDepth(const QVector3D& wsPosition) const
+{
+    if(!myCamera)
+        return 1.0;
+
+    return myCamera->computeDepth(wsPosition) * 0.5 + 0.5;
+}
+
+QVector3D Viewer::mapFromWorld(const QVector3D& wsPoint) const
 {
 	if(!myCamera)
 		return QVector3D();
@@ -176,7 +184,7 @@ QVector3D Viewer::mapFromWorld(const QVector3D& wsPoint)
 	return QVector3D((nsPosition.x() * 0.5 + 0.5) * qCeil(width()) + 0.5, qCeil(height()) - (nsPosition.y() * 0.5 + 0.5) * qCeil(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
 }
 
-QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z)
+QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z) const
 {
 	if(!myCamera)
 		return QVector3D();
@@ -213,7 +221,7 @@ private:
 
 };
 
-QVector3D Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal)
+QVector3D Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal) const
 {
     QVector3D normalizedRayDirection = rayDirection.normalized();
     QVector3D normalizedPlaneNormal = planeNormal.normalized();
@@ -225,7 +233,7 @@ QVector3D Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVecto
     return rayOrigin + (((d - nDotP0) / nDotDir) * normalizedRayDirection);
 }
 
-QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection)
+QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const
 {
     if(!window())
         return QVector3D();
@@ -245,7 +253,7 @@ QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOri
     return projectedPoint;
 }
 
-QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal)
+QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const
 {
     if(!window())
         return QVector3D();
@@ -256,7 +264,7 @@ QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeO
     return intersectRayWithPlane(wsOrigin, wsDirection, planeOrigin, planeNormal);
 }
 
-QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint)
+QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
 {
     if(!window())
         return QVector4D();
@@ -275,6 +283,136 @@ QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint)
         qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
 
     return QVector4D(mapToWorld(ssPoint, z), qCeil(1.0f - z));
+}
+
+SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
+{
+    QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
+    QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
+
+    QVector3D origin = nearPosition;
+    QVector3D direction = (farPosition - nearPosition).normalized();
+
+    double distanceToRay = myScene->radius() / 76.0;
+    double distanceToRayGrowth = 0.001;
+
+    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth);
+}
+
+using sofa::simulation::Node;
+using sofa::component::visualmodel::OglModel;
+
+class PickUsingRasterizationWorker : public QRunnable
+{
+public:
+    PickUsingRasterizationWorker(Scene* scene, Viewer* viewer, QPointF nativePoint, Selectable*& selectable, float& z, bool& finished) :
+        myScene(scene),
+        myViewer(viewer),
+        myPosition(nativePoint),
+        mySelectable(selectable),
+        myZ(z),
+        myFinished(finished)
+    {
+
+    }
+
+    void run()
+    {
+        QRect rect = myViewer->glRect();
+
+        QPoint pos = rect.topLeft();
+        QSize size = rect.size();
+        if(size.isEmpty())
+            return;
+
+        Camera* camera = myViewer->camera();
+        if(!camera)
+            return;
+
+        // clear the viewer rectangle and just its area, not the whole OpenGL buffer
+        glScissor(pos.x(), pos.y(), size.width(), size.height());
+        glEnable(GL_SCISSOR_TEST);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDisable(GL_SCISSOR_TEST);
+
+        glDisable(GL_BLEND);
+        glDisable(GL_LIGHTING);
+
+        if(myScene && myScene->isLoading())
+            myScene->initGraphics();
+
+        glViewport(pos.x(), pos.y(), size.width(), size.height());
+
+        glDisable(GL_CULL_FACE);
+
+        camera->setPerspectiveAspectRatio(size.width() / (double) size.height());
+
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadMatrixf(camera->projection().constData());
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadMatrixf(camera->view().constData());
+
+        if(myViewer->wireframe())
+            glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
+        if(myViewer->culling())
+            glEnable(GL_CULL_FACE);
+
+        mySelectable = myScene->pickUsingRasterization(*myViewer, myPosition);
+
+        if(mySelectable)
+            glReadPixels(myPosition.x(), myPosition.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &myZ);
+
+        if(myViewer->wireframe())
+            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+
+        myFinished = true;
+    }
+
+private:
+    Scene*              myScene;
+    Viewer*             myViewer;
+    QPointF             myPosition;
+    Selectable*&        mySelectable;
+    float&              myZ;
+    bool&               myFinished;
+
+};
+
+Selectable* Viewer::pickObject(const QPointF& ssPoint)
+{
+    Selectable* selectable = nullptr;
+
+    if(!window())
+        return selectable;
+
+    float z = 1.0;
+    bool finished = false;
+
+    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(myScene, this, mapToNative(ssPoint), selectable, z, finished);
+    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+    window()->update();
+
+    // TODO: add a timeout
+    while(!finished)
+        qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
+
+    if(selectable)
+        selectable->setPosition(mapToWorld(ssPoint, z));
+
+    return selectable;
 }
 
 QPair<QVector3D, QVector3D> Viewer::boundingBox() const
@@ -338,7 +476,7 @@ void Viewer::handleWindowChanged(QQuickWindow* window)
     }
 }
 
-QRect Viewer::glRect()
+QRect Viewer::glRect() const
 {
 	if(!window())
 		return QRect();
@@ -421,7 +559,7 @@ void Viewer::internalDraw()
 	glPopMatrix();
 }
 
-QPointF Viewer::mapToNative(const QPointF& ssPoint)
+QPointF Viewer::mapToNative(const QPointF& ssPoint) const
 {
     QPointF ssNativePoint = mapToScene(ssPoint);
     ssNativePoint.setX(ssNativePoint.x() * window()->devicePixelRatio());
@@ -506,122 +644,6 @@ void Viewer::viewAll()
     myScene->computeBoundingBox(min, max);
 
 	myCamera->fit(min, max);
-}
-
-using sofa::simulation::Node;
-using sofa::component::visualmodel::OglModel;
-
-class PickUsingRasterizationWorker : public QRunnable
-{
-public:
-    PickUsingRasterizationWorker(Scene* scene, Viewer* viewer, QPointF nativePoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, float& z, bool& finished) :
-        myScene(scene),
-        myViewer(viewer),
-        myPosition(nativePoint),
-        mySceneComponent(sceneComponent),
-        myManipulator(manipulator),
-        myZ(z),
-        myFinished(finished)
-    {
-
-    }
-
-    void run()
-    {
-        QRect rect = myViewer->glRect();
-
-        QPoint pos = rect.topLeft();
-        QSize size = rect.size();
-        if(size.isEmpty())
-            return;
-
-        Camera* camera = myViewer->camera();
-        if(!camera)
-            return;
-
-        // clear the viewer rectangle and just its area, not the whole OpenGL buffer
-        glScissor(pos.x(), pos.y(), size.width(), size.height());
-        glEnable(GL_SCISSOR_TEST);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glDisable(GL_SCISSOR_TEST);
-
-        glDisable(GL_BLEND);
-        glDisable(GL_LIGHTING);
-
-        if(myScene && myScene->isLoading())
-            myScene->initGraphics();
-
-        glViewport(pos.x(), pos.y(), size.width(), size.height());
-
-        glDisable(GL_CULL_FACE);
-
-        camera->setPerspectiveAspectRatio(size.width() / (double) size.height());
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadMatrixf(camera->projection().constData());
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadMatrixf(camera->view().constData());
-
-        if(myViewer->wireframe())
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
-        else
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-        if(myViewer->culling())
-            glEnable(GL_CULL_FACE);
-
-        myScene->pickUsingRasterization(*myViewer, myPosition, mySceneComponent, myManipulator, myZ);
-
-        if(myViewer->wireframe())
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-
-        myFinished = true;
-    }
-
-private:
-    Scene*              myScene;
-    Viewer*             myViewer;
-    QPointF             myPosition;
-    SceneComponent*&    mySceneComponent;
-    Manipulator*&       myManipulator;
-    float&              myZ;
-    bool&               myFinished;
-
-};
-
-bool Viewer::pickUsingRasterization(const QPointF& ssPoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, QVector3D& wsPoint)
-{
-    if(!window())
-        return false;
-
-    float z = 1.0;
-    bool finished = false;
-
-    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(myScene, this, mapToNative(ssPoint), sceneComponent, manipulator, z, finished);
-    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
-    window()->update();
-
-    // TODO: add a timeout
-    while(!finished)
-        qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
-
-    if(sceneComponent || manipulator)
-    {
-        wsPoint = mapToWorld(ssPoint, z);
-        return true;
-    }
-
-    return false;
 }
 
 }

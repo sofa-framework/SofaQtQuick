@@ -7,8 +7,8 @@ namespace sofa
 namespace qtquick
 {
 
-SelectableManipulator::SelectableManipulator(Manipulator* manipulator) : Selectable(manipulator),
-    myManipulator(manipulator)
+SelectableManipulator::SelectableManipulator(Manipulator& manipulator) : Selectable(),
+    myManipulator(&manipulator)
 {
 
 }

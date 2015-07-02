@@ -39,7 +39,7 @@
 #include "Selectable.h"
 #include "SelectableManipulator.h"
 #include "SelectableSceneComponent.h"
-#include "SelectableSceneComponentParticle.h"
+#include "SelectableSceneParticle.h"
 #include "SceneListModel.h"
 #include "DataListModel.h"
 #include "Viewer.h"
@@ -87,7 +87,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterUncreatableType<Selectable>                          ("Selectable.h"                         , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
     qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator.h"              , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
     qmlRegisterUncreatableType<SelectableSceneComponent>            ("SelectableSceneComponent.h"           , versionMajor, versionMinor, "SelectableSceneComponent", "SelectableSceneComponent is not instantiable");
-    qmlRegisterUncreatableType<SelectableSceneComponentParticle>    ("SelectableSceneComponentParticle.h"   , versionMajor, versionMinor, "SelectableSceneComponentParticle", "SelectableSceneComponentParticle is not instantiable");
+    qmlRegisterUncreatableType<SelectableSceneParticle>             ("SelectableSceneParticle.h"            , versionMajor, versionMinor, "SelectableSceneParticle", "SelectableSceneParticle is not instantiable");
     qmlRegisterType<SceneListModel>                                 ("SceneListModel"                       , versionMajor, versionMinor, "SceneListModel");
     qmlRegisterType<DataListModel>                                  ("DataListModel"                        , versionMajor, versionMinor, "DataListModel");
     qmlRegisterType<Viewer>                                         ("Viewer"                               , versionMajor, versionMinor, "Viewer");

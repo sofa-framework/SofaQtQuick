@@ -61,6 +61,16 @@ void Manipulator3D_Rotation::unsetMark()
 
 void Manipulator3D_Rotation::draw(const Viewer& viewer) const
 {
+    internalDraw(viewer, false);
+}
+
+void Manipulator3D_Rotation::pick(const Viewer& viewer) const
+{
+    internalDraw(viewer, true);
+}
+
+void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) const
+{
     Camera* camera = viewer.camera();
     if(!camera)
         return;
@@ -115,16 +125,12 @@ void Manipulator3D_Rotation::draw(const Viewer& viewer) const
     glLineWidth(width);
     glEnable(GL_LINE_SMOOTH);
 
+    QColor color(xAxis ? 255 : 50, yAxis ? 255 : 50, zAxis ? 255 : 50);
+
     // draw a ring
     glBegin(GL_LINE_STRIP);
     {
-        //front
-        if(xAxis)
-            glColor3d(0.8, 0.0, 0.0);
-        else if(yAxis)
-            glColor3d(0.0, 0.8, 0.0);
-        else if(zAxis)
-            glColor3d(0.0, 0.0, 0.8);
+        glColor3f(color.redF(), color.greenF(), color.blueF());
 
         for(int i = 0; i < resolution; ++i)
         {
@@ -136,6 +142,51 @@ void Manipulator3D_Rotation::draw(const Viewer& viewer) const
         }
     }
     glEnd();
+
+    if(!isPicking)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    glBegin(GL_QUAD_STRIP);
+    {
+        //front
+        for(int i = 0; i < resolution; ++i)
+        {
+            float angle = i / (resolution - 1.0f) * 2.0f * M_PI;
+            float alpha = qCos(angle);
+            float beta  = qSin(angle);
+
+            glColor4f(color.redF(), color.greenF(), color.blueF(), 0.0f);
+            glVertex3f(0.9 * radius * alpha, 0.9 * radius * beta, 0.0);
+
+            glColor4f(color.redF(), color.greenF(), color.blueF(), 1.0f);
+            glVertex3f(radius * alpha, radius * beta, 0.0);
+        }
+    }
+    glEnd();
+
+    glBegin(GL_QUAD_STRIP);
+    {
+        //front
+        for(int i = 0; i < resolution; ++i)
+        {
+            float angle = i / (resolution - 1.0f) * 2.0f * M_PI;
+            float alpha = qCos(angle);
+            float beta  = qSin(angle);
+
+            glColor4f(color.redF(), color.greenF(), color.blueF(), 0.0f);
+            glVertex3f(1.1 * radius * alpha, 1.1 * radius * beta, 0.0);
+
+            glColor4f(color.redF(), color.greenF(), color.blueF(), 1.0f);
+            glVertex3f(radius * alpha, radius * beta, 0.0);
+        }
+    }
+    glEnd();
+
+    if(!isPicking)
+        glDisable(GL_BLEND);
 
     // draw a ring portion to know the delta angle
     if(myDisplayMark)

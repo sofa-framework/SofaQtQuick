@@ -5,6 +5,7 @@
 #include "SceneComponent.h"
 #include "SceneData.h"
 #include "Manipulator.h"
+#include "SelectableSceneParticle.h"
 
 #include <sofa/simulation/common/Simulation.h>
 #include <sofa/simulation/common/MutationListener.h>
@@ -48,7 +49,7 @@ public:
     Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool visualDirty READ visualDirty NOTIFY visualDirtyChanged)
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::SceneComponent> selectedModels READ selectedModels DESIGNABLE false FINAL)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::SceneComponent> selectedComponents READ selectedComponents DESIGNABLE false FINAL)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> selectedManipulators READ selectedManipulators DESIGNABLE false FINAL)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators DESIGNABLE false FINAL)
 
@@ -87,11 +88,11 @@ public:
     void setAsynchronous(bool newPlay);
 
     bool visualDirty() const						{return myVisualDirty;}
-    void setVisualDirty(bool newVisualDirty);
+    void setVisualDirty(bool newVisualDirty) const;
 
     QQmlListProperty<sofa::qtquick::Manipulator>    manipulators();
     QQmlListProperty<sofa::qtquick::Manipulator>    selectedManipulators();
-    QQmlListProperty<sofa::qtquick::SceneComponent> selectedModels();
+    QQmlListProperty<sofa::qtquick::SceneComponent> selectedComponents();
 
 signals:
     void preloaded();                                   /// this signal is emitted after basic init has been done, call initGraphics() with a valid opengl context bound to effectively load the scene
@@ -104,7 +105,8 @@ signals:
 	void dtChanged(double newDt);
 	void playChanged(bool newPlay);
 	void asynchronousChanged(bool newAsynchronous);
-    void visualDirtyChanged(bool newVisualDirty);
+    void visualDirtyChanged(bool newVisualDirty) const;
+    void selectedComponentsChanged();
 
 public:
     Q_INVOKABLE double radius() const;
@@ -155,13 +157,15 @@ public:
     /// \brief      Low-level drawing function
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
-    void draw(const Viewer& viewer);
+    void draw(const Viewer& viewer) const;
+
+    SelectableSceneParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth) const;
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to pick an object is to use a 'PickingInteractor' instead of directly call this function
     /// \return     True if an object has been picked, false if we hit the background or a non-selectable object
-    bool pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint, SceneComponent*& sceneComponent, Manipulator*& manipulator, float& z);
+    Selectable* pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint);
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
@@ -176,7 +180,7 @@ private:
     QUrl                                        mySourceQML;
     QString                                     myPathQML;
     bool                                        myIsInit;
-    bool                                        myVisualDirty;
+    mutable bool                                myVisualDirty;
     double                                      myDt;
     bool                                        myPlay;
     bool                                        myAsynchronous;
@@ -187,9 +191,9 @@ private:
 
     QList<Manipulator*>                         myManipulators;
     QList<Manipulator*>                         mySelectedManipulators;         /// \todo Currently we can select only one manipulator, change that
-    QList<SceneComponent*>                      mySelectedModels;               /// \todo Currently we can select only one model, change that
+    QList<SceneComponent*>                      mySelectedComponents;               /// \todo Currently we can select only one model, change that
 
-    QOpenGLShaderProgram*                       mySelectedModelShaderProgram;
+    QOpenGLShaderProgram*                       myHighlightShaderProgram;
     QOpenGLShaderProgram*                       myPickingShaderProgram;
 };
 

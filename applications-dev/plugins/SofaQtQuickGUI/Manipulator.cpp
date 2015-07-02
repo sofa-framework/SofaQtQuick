@@ -69,6 +69,11 @@ void Manipulator::draw(const Viewer& viewer) const
     // a base manipulator has no visual representation
 }
 
+void Manipulator::pick(const Viewer& viewer) const
+{
+    draw(viewer);
+}
+
 }
 
 }

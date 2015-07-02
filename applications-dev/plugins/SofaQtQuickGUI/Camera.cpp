@@ -93,14 +93,14 @@ const QMatrix4x4& Camera::model() const
 	return myModel;
 }
 
-double Camera::computeDepth(const QVector3D& wsPosition)
+double Camera::computeDepth(const QVector3D& wsPosition) const
 {
     QVector4D csPosition = projection() * view() * QVector4D(wsPosition, 1.0);
 
     return csPosition.z() / csPosition.w();
 }
 
-QVector3D Camera::projectOnViewPlane(const QVector3D& wsPosition, double depth)
+QVector3D Camera::projectOnViewPlane(const QVector3D& wsPosition, double depth) const
 {
     QVector4D csPosition = projection() * view() * QVector4D(wsPosition, 1.0);
     QVector4D nsPosition = csPosition / csPosition.w();
@@ -111,14 +111,14 @@ QVector3D Camera::projectOnViewPlane(const QVector3D& wsPosition, double depth)
     return (model() * vsPosition).toVector3D();
 }
 
-QVector3D Camera::projectOnViewSpaceXAxis(const QVector3D& wsVector)
+QVector3D Camera::projectOnViewSpaceXAxis(const QVector3D& wsVector) const
 {
     QVector3D right(Camera::right());
 
     return right * QVector3D::dotProduct(right, wsVector);
 }
 
-QVector3D Camera::projectOnViewSpaceYAxis(const QVector3D& wsVector)
+QVector3D Camera::projectOnViewSpaceYAxis(const QVector3D& wsVector) const
 {
     QVector3D up(Camera::up());
 

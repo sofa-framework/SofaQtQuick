@@ -49,6 +49,16 @@ void Manipulator2D_Rotation::unsetMark()
 
 void Manipulator2D_Rotation::draw(const Viewer& viewer) const
 {
+    internalDraw(viewer, false);
+}
+
+void Manipulator2D_Rotation::pick(const Viewer& viewer) const
+{
+    internalDraw(viewer, true);
+}
+
+void Manipulator2D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) const
+{
     Camera* camera = viewer.camera();
     if(!camera)
         return;
@@ -77,12 +87,13 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
 
     glLineWidth(width);
     glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 
     // draw a ring
     glBegin(GL_LINE_STRIP);
     {
         //front
-        glColor3f(0.25, 0.5, 1.0);
+        glColor4f(0.25f, 0.5f, 1.0f, 1.0f);
 
         for(int i = 0; i < resolution; ++i)
         {
@@ -94,6 +105,51 @@ void Manipulator2D_Rotation::draw(const Viewer& viewer) const
         }
     }
     glEnd();
+
+    if(!isPicking)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    glBegin(GL_QUAD_STRIP);
+    {
+        //front
+        for(int i = 0; i < resolution; ++i)
+        {
+            float angle = i / (resolution - 1.0f) * 2.0f * M_PI;
+            float alpha = qCos(angle);
+            float beta  = qSin(angle);
+
+            glColor4f(0.25, 0.5, 1.0, 0.0);
+            glVertex3f(0.9 * radius * alpha, 0.9 * radius * beta, 0.0);
+
+            glColor4f(0.25, 0.5, 1.0, 1.0);
+            glVertex3f(radius * alpha, radius * beta, 0.0);
+        }
+    }
+    glEnd();
+
+    glBegin(GL_QUAD_STRIP);
+    {
+        //front
+        for(int i = 0; i < resolution; ++i)
+        {
+            float angle = i / (resolution - 1.0f) * 2.0f * M_PI;
+            float alpha = qCos(angle);
+            float beta  = qSin(angle);
+
+            glColor4f(0.25, 0.5, 1.0, 0.0);
+            glVertex3f(1.1 * radius * alpha, 1.1 * radius * beta, 0.0);
+
+            glColor4f(0.25, 0.5, 1.0, 1.0);
+            glVertex3f(radius * alpha, radius * beta, 0.0);
+        }
+    }
+    glEnd();
+
+    if(!isPicking)
+        glDisable(GL_BLEND);
 
     // draw a ring portion to know the delta angle
     if(myDisplayMark)

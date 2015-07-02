@@ -17,11 +17,11 @@ class SOFA_SOFAQTQUICKGUI_API SelectableManipulator : public Selectable
     Q_OBJECT
 
 public:
-    SelectableManipulator(Manipulator* manipulator);
+    SelectableManipulator(Manipulator& manipulator);
     ~SelectableManipulator();
 
 public:
-    Q_PROPERTY(Manipulator* manipulator READ manipulator)
+    Q_PROPERTY(sofa::qtquick::Manipulator* manipulator READ manipulator)
 
 public:
     Manipulator* manipulator() const {return myManipulator;}

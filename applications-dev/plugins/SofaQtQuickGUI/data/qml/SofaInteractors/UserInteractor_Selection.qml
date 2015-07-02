@@ -14,16 +14,20 @@ UserInteractor {
     property real zoomSpeed: 1.0
 
     property var selectedManipulator: null
-    property var selectedModel: null
+    property var selectedComponent: null
 
     function init() {
         addMousePressedMapping(Qt.LeftButton, function(mouse) {
             selectedManipulator = scene.selectedManipulator();
-            selectedModel = scene.selectedModel();
+            selectedComponent = scene.selectedComponent();
 
-            if(scene.pickingInteractor.pickUsingRasterization(viewer, Qt.point(mouse.x + 0.5, mouse.y + 0.5))) {
-                selectedManipulator = scene.pickingInteractor.pickedManipulator();
-                selectedModel = scene.pickingInteractor.pickedOglModel();
+            var selectable = viewer.pickObject(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+            if(selectable) {
+                if(selectable.manipulator) {
+                    selectedManipulator = selectable.manipulator;
+                } else if(selectable.sceneComponent) {
+                    selectedComponent = selectable.sceneComponent;
+                }
             }
 
             if(selectedManipulator) {
@@ -35,12 +39,15 @@ UserInteractor {
                 if(selectedManipulator.mouseMoved)
                     setMouseMoveMapping(selectedManipulator.mouseMoved);
 
-                // TODO: map selectedManipulator.mouseReleased
-
-            } else if(selectedModel) {
-                if(!scene.areSameComponent(scene.selectedModel(), selectedModel)) {
-                    scene.setSelectedModel(selectedModel);
+            } else if(selectedComponent) {
+                if(!scene.areSameComponent(scene.selectedComponent(), selectedComponent)) {
+                    console.log(selectedComponent);
+                    scene.setSelectedComponent(selectedComponent);
                 } else {
+                    var particle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+                    console.log(particle);
+                    return;
+
                     var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
                     var farPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 1.0);
                     if(scene.pickingInteractor.pickUsingGeometry(nearPosition, farPosition.minus(nearPosition))) {

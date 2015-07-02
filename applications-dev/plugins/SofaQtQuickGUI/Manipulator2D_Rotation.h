@@ -27,6 +27,10 @@ public:
 
 public slots:
     virtual void draw(const Viewer& viewer) const;
+    virtual void pick(const Viewer& viewer) const;
+
+private:
+    void internalDraw(const Viewer& viewer, bool isPicking = false) const;
 
 private:
     bool  myDisplayMark;
