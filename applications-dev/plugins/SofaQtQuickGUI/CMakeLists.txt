@@ -16,7 +16,7 @@ set(SOURCE_FILES
                 DataListModel.cpp
 		PythonInteractor.cpp
                 PythonConsole.cpp
-		PickingInteractor.cpp
+                ParticleInteractor.cpp
                 Manipulator.cpp
                 Manipulator2D_Translation.cpp
                 Manipulator2D_Rotation.cpp
@@ -40,7 +40,7 @@ set(HEADER_FILES
                 DataListModel.h
 		PythonInteractor.h
                 PythonConsole.h
-		PickingInteractor.h
+                ParticleInteractor.h
                 Manipulator.h
                 Manipulator2D_Translation.h
                 Manipulator2D_Rotation.h

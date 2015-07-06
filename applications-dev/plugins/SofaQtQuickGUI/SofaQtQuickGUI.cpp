@@ -26,7 +26,7 @@
 #include "SofaQtQuickGUI.h"
 #include "Tools.h"
 #include "Camera.h"
-#include "PickingInteractor.h"
+#include "ParticleInteractor.h"
 #include "PythonInteractor.h"
 #include "Manipulator.h"
 #include "Manipulator2D_Translation.h"
@@ -74,7 +74,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 
     qmlRegisterType<Tools>                                          ("Tools"                                , versionMajor, versionMinor, "Tools");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
-    qmlRegisterType<PickingInteractor>                              ("PickingInteractor"                    , versionMajor, versionMinor, "PickingInteractor");
+    qmlRegisterType<ParticleInteractor>                             ("ParticleInteractor"                   , versionMajor, versionMinor, "ParticleInteractor");
     qmlRegisterType<PythonInteractor>                               ("PythonInteractor"                     , versionMajor, versionMinor, "PythonInteractor");
     qmlRegisterType<Manipulator>                                    ("Manipulator"                          , versionMajor, versionMinor, "Manipulator");
     qmlRegisterType<Manipulator2D_Translation>                      ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");

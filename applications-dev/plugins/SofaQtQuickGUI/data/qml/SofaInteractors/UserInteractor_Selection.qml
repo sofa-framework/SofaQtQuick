@@ -43,22 +43,14 @@ UserInteractor {
                 if(!scene.areSameComponent(scene.selectedComponent(), selectedComponent)) {
                     scene.setSelectedComponent(selectedComponent);
                 } else {
-                    var particle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
-                    //console.log(particle);
-                    return;
-
-                    var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
-                    var farPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 1.0);
-                    if(scene.pickingInteractor.pickUsingGeometry(nearPosition, farPosition.minus(nearPosition))) {
-                        var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPosition());
-                        var position = viewer.camera.projectOnViewPlane(nearPosition, z);
-                        scene.pickingInteractor.position = position;
+                    var sceneComponentParticle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+                    if(sceneComponentParticle) {
+                        scene.particleInteractor.start(sceneComponentParticle.sceneComponent, sceneComponentParticle.particleIndex);
 
                         setMouseMoveMapping(function(mouse) {
-                            var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);
-                            var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPosition());
-                            var position = viewer.camera.projectOnViewPlane(nearPosition, z);
-                            scene.pickingInteractor.position = position;
+                            var z = viewer.computeDepth(scene.particleInteractor.particlePosition());
+                            var position = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+                            scene.particleInteractor.update(position);
                         });
                     }
                 }
@@ -66,7 +58,8 @@ UserInteractor {
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse) {
-            scene.pickingInteractor.release();
+            if(scene.particleInteractor)
+                scene.particleInteractor.release();
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, scene, viewer);

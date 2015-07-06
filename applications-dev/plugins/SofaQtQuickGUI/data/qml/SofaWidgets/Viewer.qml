@@ -69,13 +69,13 @@ Viewer {
     Image {
         id: handIcon
         source: "qrc:/icon/hand.png"
-        visible: scene ? scene.pickingInteractor.picking : false
+        visible: scene ? scene.particleInteractor.interacting : false
         antialiasing: true
 
         Connections {
-            target: scene ? scene.pickingInteractor : null
-            onPositionChanged: {
-                var position = root.mapFromWorld(scene.pickingInteractor.position)
+            target: scene ? scene.particleInteractor : null
+            onInteractorPositionChanged: {
+                var position = root.mapFromWorld(scene.particleInteractor.interactorPosition)
                 if(position.z > 0.0 && position.z < 1.0) {
                     handIcon.x = position.x - 6;
                     handIcon.y = position.y - 2;

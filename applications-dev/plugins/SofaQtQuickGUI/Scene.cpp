@@ -476,19 +476,10 @@ void Scene::reinitComponent(const QString& path)
 
 bool Scene::areSameComponent(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB)
 {
-    // one or other is null => no component
-    if(!sceneComponentA || !sceneComponentB)
+    if(!sceneComponentA)
         return false;
 
-    // same wrapper => same component
-    if(sceneComponentA == sceneComponentB)
-        return true;
-
-    // same base object => same component
-    if(sceneComponentA->base() == sceneComponentB->base())
-        return true;
-
-    return false;
+    return sceneComponentA->isSame(sceneComponentB);
 }
 
 void Scene::sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value)
@@ -1220,7 +1211,7 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
     return (i[0] | (i[1] << 8) | (i[2] << 16) | (i[3] << 24)) - 1;
 }
 
-Selectable* Scene::pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint)
+Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
 {
     Node* root = sofaSimulation()->GetRoot().get();
 

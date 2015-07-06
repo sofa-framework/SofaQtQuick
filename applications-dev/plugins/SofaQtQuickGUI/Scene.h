@@ -27,12 +27,15 @@ namespace qtquick
 {
 
 class Viewer;
+class PickUsingRasterizationWorker;
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
 class Scene : public QObject, private sofa::simulation::MutationListener
 {
     Q_OBJECT
 
+    friend class Viewer;
+    friend class PickUsingRasterizationWorker;
     friend class SceneComponent;
     friend class SceneData;
 
@@ -154,6 +157,7 @@ private slots:
 public:
 	sofa::simulation::Simulation* sofaSimulation() const {return mySofaSimulation;}
 
+protected:
     /// \brief      Low-level drawing function
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
@@ -163,9 +167,9 @@ public:
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
-    /// \note       The best way to pick an object is to use a 'PickingInteractor' instead of directly call this function
+    /// \note       The best way to pick an object is to use a Viewer instead of directly call this function
     /// \return     True if an object has been picked, false if we hit the background or a non-selectable object
-    Selectable* pickUsingRasterization(const Viewer& viewer, const QPointF& nativePoint);
+    Selectable* pickObject(const Viewer& viewer, const QPointF& nativePoint);
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);

@@ -26,9 +26,12 @@ public:
     Q_PROPERTY(QString name READ name)
 
 public:
-
     QString name() const;
 
+public:
+    Q_INVOKABLE bool isSame(SceneComponent* sceneComponent);
+
+public:
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;
 

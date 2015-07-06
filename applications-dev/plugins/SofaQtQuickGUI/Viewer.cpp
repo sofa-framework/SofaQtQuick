@@ -364,7 +364,7 @@ public:
         if(myViewer->culling())
             glEnable(GL_CULL_FACE);
 
-        mySelectable = myScene->pickUsingRasterization(*myViewer, myPosition);
+        mySelectable = myScene->pickObject(*myViewer, myPosition);
 
         if(mySelectable)
             glReadPixels(myPosition.x(), myPosition.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &myZ);

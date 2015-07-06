@@ -33,6 +33,22 @@ QString SceneComponent::name() const
     return QString::fromStdString(base->getName());
 }
 
+bool SceneComponent::isSame(SceneComponent* sceneComponent)
+{
+    if(!sceneComponent)
+        return false;
+
+    // same wrapper => same component
+    if(this == sceneComponent)
+        return true;
+
+    // same base object => same component
+    if(base() == sceneComponent->base())
+        return true;
+
+    return false;
+}
+
 Base* SceneComponent::base()
 {
     return const_cast<Base*>(static_cast<const SceneComponent*>(this)->base());

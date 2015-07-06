@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import Qt.labs.settings 1.0
-import PickingInteractor 1.0
+import ParticleInteractor 1.0
 import Scene 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
@@ -66,11 +66,11 @@ Scene {
     // allow us to interact with the python script controller
     property var pythonInteractor: PythonInteractor {scene: root}
 
-    // allow us to interact with the scene physics
-    property var pickingInteractor: PickingInteractor {
+    // allow us to interact with the scene particles
+    property var particleInteractor: ParticleInteractor {
         stiffness: 100
 
-        onPickingChanged: SofaToolsScript.Tools.overrideCursorShape = picking ? Qt.BlankCursor : 0
+        onInteractingChanged: SofaToolsScript.Tools.overrideCursorShape = interacting ? Qt.BlankCursor : 0
     }
 
     function keyPressed(event) {
