@@ -44,6 +44,9 @@ void Manipulator2D_Translation::pick(const Viewer& viewer) const
 
 void Manipulator2D_Translation::internalDraw(const Viewer& viewer, bool isPicking) const
 {
+    if(!visible())
+        return;
+
     Camera* camera = viewer.camera();
     if(!camera)
         return;

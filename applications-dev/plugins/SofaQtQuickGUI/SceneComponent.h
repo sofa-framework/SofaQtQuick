@@ -28,6 +28,7 @@ public:
 public:
 
     QString name() const;
+
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;
 

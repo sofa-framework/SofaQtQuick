@@ -71,6 +71,9 @@ void Manipulator3D_Rotation::pick(const Viewer& viewer) const
 
 void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) const
 {
+    if(!visible())
+        return;
+
     Camera* camera = viewer.camera();
     if(!camera)
         return;

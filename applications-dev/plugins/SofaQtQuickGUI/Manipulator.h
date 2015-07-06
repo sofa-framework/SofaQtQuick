@@ -24,11 +24,15 @@ public:
     ~Manipulator();
 
 public:
+    Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQuaternion orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_PROPERTY(QVector3D scale READ scale WRITE setScale NOTIFY scaleChanged)
 
 public:
+    bool visible() const {return myVisible;}
+    void setVisible(bool newVisible);
+
     const QVector3D& position() const {return myPosition;}
     void setPosition(const QVector3D& newPosition);
 
@@ -47,11 +51,13 @@ public slots:
     virtual void pick(const Viewer& viewer) const;
 
 signals:
+    void visibleChanged(bool newVisible);
     void positionChanged(const QVector3D& newPosition);
     void orientationChanged(const QQuaternion& newOrientation);
     void scaleChanged(const QVector3D& newScale);
 
 private:
+    bool        myVisible;
     QVector3D   myPosition;
     QQuaternion myOrientation;
     QVector3D   myScale;

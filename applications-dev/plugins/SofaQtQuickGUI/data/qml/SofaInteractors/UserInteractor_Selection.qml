@@ -41,11 +41,10 @@ UserInteractor {
 
             } else if(selectedComponent) {
                 if(!scene.areSameComponent(scene.selectedComponent(), selectedComponent)) {
-                    console.log(selectedComponent);
                     scene.setSelectedComponent(selectedComponent);
                 } else {
                     var particle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
-                    console.log(particle);
+                    //console.log(particle);
                     return;
 
                     var nearPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), 0.0);

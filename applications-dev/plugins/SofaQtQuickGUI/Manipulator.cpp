@@ -12,6 +12,7 @@ namespace qtquick
 {
 
 Manipulator::Manipulator(QObject* parent) : QObject(parent),
+    myVisible(true),
     myPosition(),
     myOrientation(),
     myScale(1.0f, 1.0f, 1.0f)
@@ -22,6 +23,16 @@ Manipulator::Manipulator(QObject* parent) : QObject(parent),
 Manipulator::~Manipulator()
 {
 
+}
+
+void Manipulator::setVisible(bool newVisible)
+{
+    if(newVisible == myVisible)
+        return;
+
+    myVisible = newVisible;
+
+    visibleChanged(newVisible);
 }
 
 void Manipulator::setPosition(const QVector3D& newPosition)
