@@ -1,6 +1,7 @@
 #include "Manipulator2D_Translation.h"
 #include "Viewer.h"
 
+#include <QApplication>
 #include <GL/glew.h>
 #include <QMatrix4x4>
 #include <QDebug>
@@ -75,31 +76,63 @@ void Manipulator2D_Translation::internalDraw(const Viewer& viewer, bool isPickin
 
     // object
     float height = 0.125f;
-    float width = 0.01f;
 
-    if(-1 != myAxis.indexOf('x') && -1 != myAxis.indexOf('y'))
-        glScaled(height * 0.5, height * 0.5, width);
-    else if(-1 != myAxis.indexOf('x'))
-        glScaled(height, width, width);
-    else if(-1 != myAxis.indexOf('y'))
-        glScaled(width, height, width);
+    float width = height * 0.1f;
+    if(isPicking)
+        width *= 2.5f;
+
+    QColor color(xAxis ? 255 : 0, yAxis ? 255 : 0, (xAxis && yAxis) ? 255 : 0);
+    glColor3f(color.redF(), color.greenF(), color.blueF());
 
     // draw arrows
-    glBegin(GL_QUADS);
+    if(1 == axisNum)
     {
-        if(xAxis && yAxis)
-            glColor3f(1.0, 1.0, 1.0);
-        else if(xAxis)
-            glColor3f(1.0, 0.0, 0.0);
-        else if(yAxis)
-            glColor3f(0.0, 1.0, 0.0);
+        width *= 0.5f;
 
-        glVertex3f( 1.0, 1.0, 0.0);
-        glVertex3f(-1.0, 1.0, 0.0);
-        glVertex3f(-1.0,-1.0, 0.0);
-        glVertex3f( 1.0,-1.0, 0.0);
+        glRotated(-90.0, 1.0, 0.0, 0.0);
+
+        if(xAxis)
+            glRotated(90.0, 0.0, 1.0, 0.0);
+
+        glBegin(GL_QUADS);
+        {
+            glVertex3f(-0.2 * height,   0.0,    0.8 * height + width);
+            glVertex3f(-0.2 * height,   0.0,    0.8 * height - width);
+            glVertex3f( 0.0,            0.0,          height - width);
+            glVertex3f( 0.0,            0.0,          height + width);
+
+            glVertex3f( 0.0,            0.0,          height + width);
+            glVertex3f( 0.0,            0.0,          height - width);
+            glVertex3f( 0.2 * height,   0.0,    0.8 * height - width);
+            glVertex3f( 0.2 * height,   0.0,    0.8 * height + width);
+
+            glVertex3f(       -width,   0.0,          height - width);
+            glVertex3f(       -width,   0.0,                   width);
+            glVertex3f(        width,   0.0,                   width);
+            glVertex3f(        width,   0.0,          height - width);
+        }
+        glEnd();
     }
-    glEnd();
+    else // draw quad
+    {
+        height *= 0.33;
+        if(isPicking)
+            height *= 1.25f;
+
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(-1.0f, -1.0f);
+
+        glBegin(GL_QUADS);
+        {
+            glVertex3f(   0.0, height, 0.0);
+            glVertex3f(   0.0,    0.0, 0.0);
+            glVertex3f(height,    0.0, 0.0);
+            glVertex3f(height, height, 0.0);
+        }
+        glEnd();
+
+        glDisable(GL_POLYGON_OFFSET_FILL);
+    }
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();

@@ -1,6 +1,7 @@
 #include "Manipulator3D_Translation.h"
 #include "Viewer.h"
 
+#include <QApplication>
 #include <GL/glew.h>
 #include <QMatrix4x4>
 #include <QDebug>
@@ -74,7 +75,7 @@ void Manipulator3D_Translation::internalDraw(const Viewer& viewer, bool isPickin
         axis = QVector3D(0.0, 1.0, 0.0);
 
     // object
-    float height = 0.1f;
+    float height = 0.2f;
     {
         QVector4D p0 = camera->projection() * camera->view() * QVector4D(position(), 1.0);
         QVector4D p1 = camera->projection() * camera->view() * QVector4D(position() + camera->right(), 1.0);
@@ -83,7 +84,9 @@ void Manipulator3D_Translation::internalDraw(const Viewer& viewer, bool isPickin
         height *= 1.0 / direction.length();
     }
 
-    const float width = 8.0f;
+    float width = height * 0.05f;
+    if(isPicking)
+        width *= 2.5f;
 
     glDisable(GL_CULL_FACE);
 
@@ -92,53 +95,64 @@ void Manipulator3D_Translation::internalDraw(const Viewer& viewer, bool isPickin
     QColor color(xAxis ? 255 : 0, yAxis ? 255 : 0, zAxis ? 255 : 0);
     glColor3f(color.redF(), color.greenF(), color.blueF());
 
+    glEnable(GL_POLYGON_OFFSET_FILL);
+
     // draw arrows
     if(1 == axisNum)
     {
-        if(xAxis)
-            glRotated(90.0, 0.0, 1.0, 0.0);
-        else if(yAxis)
+        width *= 0.5f;
+
+        if(xAxis || yAxis)
             glRotated(-90.0, 1.0, 0.0, 0.0);
 
-        glBegin(GL_LINES);
+        if(xAxis)
+            glRotated(90.0, 0.0, 1.0, 0.0);
+
+        glPolygonOffset(-1.0f, -1.0f);
+
+        glBegin(GL_QUADS);
         {
-            glVertex3f( 0.0,            0.0,    0.0);
-            glVertex3f( 0.0,            0.0,    height);
+            glVertex3f(-0.2 * height,   0.0,    0.8 * height + width);
+            glVertex3f(-0.2 * height,   0.0,    0.8 * height - width);
+            glVertex3f( 0.0,            0.0,          height - width);
+            glVertex3f( 0.0,            0.0,          height + width);
 
-            glVertex3f(-0.2 * height,   0.0,    0.8 * height);
-            glVertex3f( 0.0,            0.0,    height);
+            glVertex3f( 0.0,            0.0,          height + width);
+            glVertex3f( 0.0,            0.0,          height - width);
+            glVertex3f( 0.2 * height,   0.0,    0.8 * height - width);
+            glVertex3f( 0.2 * height,   0.0,    0.8 * height + width);
 
-            glVertex3f( 0.2 * height,   0.0,    0.8 * height);
-            glVertex3f( 0.0,            0.0,    height);
+            glVertex3f(       -width,   0.0,          height - width);
+            glVertex3f(       -width,   0.0,                   width);
+            glVertex3f(        width,   0.0,                   width);
+            glVertex3f(        width,   0.0,          height - width);
         }
         glEnd();
     }
     else // draw quad surrounded by lines
     {
-        height *= 0.25;
+        height *= 0.33;
+        if(isPicking)
+            height *= 1.25f;
 
         if(!xAxis)
             glRotated(-90.0, 0.0, 1.0, 0.0);
         else if(!yAxis)
             glRotated(90.0, 1.0, 0.0, 0.0);
 
+        glPolygonOffset(-1.0f, -3.0f);
+
         glBegin(GL_QUADS);
         {
-            glVertex3f( height * 0.5, height * 0.5, 0.0);
-            glVertex3f( height      , height * 0.5, 0.0);
-            glVertex3f( height      , height      , 0.0);
-            glVertex3f( height * 0.5, height      , 0.0);
-        }
-        glEnd();
-
-        glBegin(GL_LINE_STRIP);
-        {
-            glVertex3f( height,    0.0, 0.0);
-            glVertex3f( height, height, 0.0);
-            glVertex3f(    0.0, height, 0.0);
+            glVertex3f(   0.0, height, 0.0);
+            glVertex3f(   0.0,    0.0, 0.0);
+            glVertex3f(height,    0.0, 0.0);
+            glVertex3f(height, height, 0.0);
         }
         glEnd();
     }
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
 
     glLineWidth(1.0f);
 

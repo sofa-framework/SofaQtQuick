@@ -5,7 +5,6 @@ import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import SofaBasics 1.0
 import SofaManipulators 1.0
-//import Scene 1.0
 
 CollapsibleGroupBox {
     id: root
@@ -21,7 +20,7 @@ CollapsibleGroupBox {
 
             property var scene
             property int index: -1
-/*
+
             Manipulator2D_Translation {
                 id: txy
 
@@ -48,7 +47,7 @@ CollapsibleGroupBox {
 
                 onPositionChanged: manipulator.position = position;
             }
-*/
+
             Manipulator2D_Rotation {
                 id: rz
 
@@ -89,7 +88,7 @@ CollapsibleGroupBox {
 
             property var scene
             property int index: -1
-/*
+
             Manipulator3D_Translation {
                 id: tx
 
@@ -117,33 +116,33 @@ CollapsibleGroupBox {
                 onPositionChanged: manipulator.position = position;
             }
 
-            Manipulator3D_Translation {
-                id: txy
+//            Manipulator3D_Translation {
+//                id: txy
 
-                visible: manipulator.visible
-                axis: "xy"
+//                visible: manipulator.visible
+//                axis: "xy"
 
-                onPositionChanged: manipulator.position = position;
-            }
+//                onPositionChanged: manipulator.position = position;
+//            }
 
-            Manipulator3D_Translation {
-                id: txz
+//            Manipulator3D_Translation {
+//                id: txz
 
-                visible: manipulator.visible
-                axis: "xz"
+//                visible: manipulator.visible
+//                axis: "xz"
 
-                onPositionChanged: manipulator.position = position;
-            }
+//                onPositionChanged: manipulator.position = position;
+//            }
 
-            Manipulator3D_Translation {
-                id: tyz
+//            Manipulator3D_Translation {
+//                id: tyz
 
-                visible: manipulator.visible
-                axis: "yz"
+//                visible: manipulator.visible
+//                axis: "yz"
 
-                onPositionChanged: manipulator.position = position;
-            }
-*/
+//                onPositionChanged: manipulator.position = position;
+//            }
+
             Manipulator3D_Rotation {
                 id: rx
 

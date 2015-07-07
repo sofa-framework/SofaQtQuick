@@ -1,8 +1,10 @@
 #include "Manipulator3D_Rotation.h"
 #include "Viewer.h"
 
+#include <QApplication>
 #include <GL/glew.h>
 #include <QMatrix4x4>
+#include <QScreen>
 #include <qmath.h>
 #include <QDebug>
 
@@ -110,7 +112,7 @@ void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) 
     else if(yAxis)
         glRotated(-90.0, 1.0, 0.0, 0.0);
 
-    const float width = 8.0f;
+    const float width = 4.0f * qApp->devicePixelRatio();
 
     float radius = 0.125f;
     {
@@ -152,6 +154,11 @@ void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
+    float thickness = 0.1f;
+    if(isPicking)
+        thickness *= 1.5f;
+
+    float innerRadius = (1.0f - thickness) * radius;
     glBegin(GL_QUAD_STRIP);
     {
         //front
@@ -162,7 +169,7 @@ void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) 
             float beta  = qSin(angle);
 
             glColor4f(color.redF(), color.greenF(), color.blueF(), 0.0f);
-            glVertex3f(0.9 * radius * alpha, 0.9 * radius * beta, 0.0);
+            glVertex3f(innerRadius * alpha, innerRadius * beta, 0.0);
 
             glColor4f(color.redF(), color.greenF(), color.blueF(), 1.0f);
             glVertex3f(radius * alpha, radius * beta, 0.0);
@@ -170,6 +177,7 @@ void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) 
     }
     glEnd();
 
+    float outerRadius = (1.0f + thickness) * radius;
     glBegin(GL_QUAD_STRIP);
     {
         //front
@@ -180,7 +188,7 @@ void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) 
             float beta  = qSin(angle);
 
             glColor4f(color.redF(), color.greenF(), color.blueF(), 0.0f);
-            glVertex3f(1.1 * radius * alpha, 1.1 * radius * beta, 0.0);
+            glVertex3f(outerRadius * alpha, outerRadius * beta, 0.0);
 
             glColor4f(color.redF(), color.greenF(), color.blueF(), 1.0f);
             glVertex3f(radius * alpha, radius * beta, 0.0);
