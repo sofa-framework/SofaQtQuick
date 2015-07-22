@@ -10,7 +10,7 @@
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/PluginManager.h>
-#include <sofa/simulation/common/xml/initXml.h>
+#include <sofa/simulation/graph/graph.h>
 #include <sofa/simulation/graph/DAGSimulation.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
@@ -82,7 +82,7 @@ Scene::Scene(QObject *parent) : QObject(parent),
 	mySofaSimulation = sofa::simulation::graph::getSimulation();
 
 	sofa::component::init();
-	sofa::simulation::xml::initXml();
+    sofa::simulation::graph::init();
 
     // plugins
     QVector<QString> plugins;
