@@ -85,9 +85,13 @@ Viewer {
     }
 
     Component.onCompleted: {
+        SofaApplication.addViewer(root)
+
         if(scene)
             sceneChanged(scene);
     }
+
+    Component.onDestruction: SofaApplication.removeViewer(root)
 
     MouseArea {
         id: mouseArea

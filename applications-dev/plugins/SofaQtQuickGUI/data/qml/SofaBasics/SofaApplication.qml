@@ -14,8 +14,10 @@ QtObject {
 
 ////////////////////////////////////////////////// PRIVATE
     property QtObject d: QtObject {
+        id: d
 
         property var sceneListModel: null
+        property var viewers: []
 
     }
 
@@ -33,6 +35,22 @@ QtObject {
 
 //        return d.sceneListModel;
 //    }
+
+////////////////////////////////////////////////// VIEWER
+
+    readonly property alias viewers: d.viewers
+
+    function addViewer(viewer) {
+        viewers.push(viewer)
+    }
+
+    function removeViewer(viewer) {
+        var index = d.viewers.indexOf(viewer);
+        if(-1 === index)
+            return;
+
+        d.viewers.splice(index, 1);
+    }
 
 ////////////////////////////////////////////////// SETTINGS
 
