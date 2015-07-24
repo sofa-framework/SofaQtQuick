@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import SofaBasics 1.0
+import SceneComponent 1.0
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 
 UserInteractor {
@@ -12,27 +13,58 @@ UserInteractor {
     property real turnSpeed: 20.0
     property real zoomSpeed: 1.0
 
+    property var selectedManipulator: null
+    property var selectedComponent: null
+
     function init() {
         addMousePressedMapping(Qt.LeftButton, function(mouse) {
-            var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
-            var farPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 1.0));
-            if(scene.pickingInteractor.pick(nearPosition, farPosition.minus(nearPosition))) {
-                var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPointPosition());
-                var position = viewer.camera.projectOnViewPlane(nearPosition, z);
-                scene.pickingInteractor.position = position;
+            selectedManipulator = scene.selectedManipulator();
+            selectedComponent = scene.selectedComponent();
 
-                setMouseMoveMapping(function(mouse) {
-                    var nearPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 0.0));
-                    var farPosition = viewer.mapToWorld(Qt.vector3d(mouse.x + 0.5, mouse.y + 0.5, 1.0));
-                    var z = viewer.camera.computeDepth(scene.pickingInteractor.pickedPointPosition());
-                    var position = viewer.camera.projectOnViewPlane(nearPosition, z);
-                    scene.pickingInteractor.position = position;
-                });
+            var selectable = viewer.pickObject(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+            if(selectable) {
+                if(selectable.manipulator) {
+                    selectedManipulator = selectable.manipulator;
+                } else if(selectable.sceneComponent) {
+                    selectedComponent = selectable.sceneComponent;
+                }
+            }
+
+            if(selectedManipulator) {
+                scene.setSelectedManipulator(selectedManipulator);
+
+                if(selectedManipulator.mousePressed)
+                    selectedManipulator.mousePressed(mouse, scene, viewer);
+
+                if(selectedManipulator.mouseMoved)
+                    setMouseMoveMapping(selectedManipulator.mouseMoved);
+
+            } else if(selectedComponent) {
+                if(!scene.areSameComponent(scene.selectedComponent(), selectedComponent)) {
+                    scene.setSelectedComponent(selectedComponent);
+                } else {
+                    var sceneComponentParticle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+                    if(sceneComponentParticle) {
+                        scene.particleInteractor.start(sceneComponentParticle.sceneComponent, sceneComponentParticle.particleIndex);
+
+                        setMouseMoveMapping(function(mouse) {
+                            var z = viewer.computeDepth(scene.particleInteractor.particlePosition());
+                            var position = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+                            scene.particleInteractor.update(position);
+                        });
+                    }
+                }
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse) {
-            scene.pickingInteractor.release();
+            if(scene.particleInteractor)
+                scene.particleInteractor.release();
+
+            if(selectedManipulator && selectedManipulator.mouseReleased)
+                selectedManipulator.mouseReleased(mouse, scene, viewer);
+
+            scene.clearSelectedManipulators();
 
             setMouseMoveMapping(null);
         });

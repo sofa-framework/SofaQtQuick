@@ -82,7 +82,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            Data {
+            DataItem {
                 id: dataItem
                 anchors.fill: parent
                 anchors.margins: 2

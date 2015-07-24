@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
+import "."
 
 MenuBar {
     id: menuBar
@@ -26,6 +27,7 @@ MenuBar {
             onTriggered: {
                 var title = source.text.toString();
                 var source = title.replace(/^.*"(.*)"$/m, "$1");
+                scenePath = source;
                 scene.source = "file:" + source
             }
         },

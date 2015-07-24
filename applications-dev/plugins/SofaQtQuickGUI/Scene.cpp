@@ -1,5 +1,7 @@
 #include <GL/glew.h>
 #include "Scene.h"
+#include "Viewer.h"
+#include "SelectableManipulator.h"
 
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
@@ -8,14 +10,20 @@
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/PluginManager.h>
-#include <sofa/simulation/common/xml/initXml.h>
+#include <sofa/simulation/graph/graph.h>
 #include <sofa/simulation/graph/DAGSimulation.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <sofa/helper/system/glut.h>
 #include <SofaPython/SceneLoaderPY.h>
+#include <SofaBaseVisual/VisualStyle.h>
+#include <SofaOpenglVisual/OglModel.h>
+#include <SofaMeshCollision/TriangleModel.h>
 #include <SofaComponentMain/init.h>
+#include <SofaBaseMechanics/MechanicalObject.h>
+#include <sofa/simulation/common/MechanicalVisitor.h>
 
+#include <array>
 #include <sstream>
 #include <qqml.h>
 #include <QtCore/QCoreApplication>
@@ -29,6 +37,9 @@
 #include <QSequentialIterable>
 #include <QJSValue>
 #include <QDebug>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QOpenGLShaderProgram>
 
 namespace sofa
 {
@@ -38,107 +49,11 @@ namespace qtquick
 
 using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
+using namespace sofa::component::visualmodel;
+using namespace sofa::component::collision;
 using namespace sofa::simulation;
 
-SceneComponent::SceneComponent(const Scene* scene, const sofa::core::objectmodel::Base* base) : QObject(),
-    myScene(scene),
-    myBase(base)
-{
-
-}
-
-Base* SceneComponent::base()
-{
-    return const_cast<Base*>(static_cast<const SceneComponent*>(this)->base());
-}
-
-const Base* SceneComponent::base() const
-{
-    // check object existence
-    if(myScene && myBase)
-        if(myScene->myBases.contains(myBase))
-            return myBase;
-
-    myBase = 0;
-    return myBase;
-}
-
-const Scene* SceneComponent::scene() const
-{
-    return myScene;
-}
-
-SceneData::SceneData(const SceneComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    myScene(sceneComponent->scene()),
-    myBase(sceneComponent->base()),
-    myData(data)
-{
-
-}
-
-SceneData::SceneData(const Scene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    myScene(scene),
-    myBase(base),
-    myData(data)
-{
-
-}
-
-QVariantMap SceneData::object() const
-{
-    const BaseData* data = SceneData::data();
-    if(data)
-        return Scene::dataObject(data);
-
-    return QVariantMap();
-}
-
-bool SceneData::setValue(const QVariant& value)
-{
-    BaseData* data = SceneData::data();
-    if(data)
-        return Scene::setDataValue(data, value);
-
-    return false;
-}
-
-bool SceneData::setLink(const QString& path)
-{
-    BaseData* data = SceneData::data();
-    if(data)
-    {
-        std::streambuf* backup(std::cerr.rdbuf());
-
-        std::ostringstream stream;
-        std::cerr.rdbuf(stream.rdbuf());
-        bool status = Scene::setDataLink(data, path);
-        std::cerr.rdbuf(backup);
-
-        return status;
-    }
-
-    return false;
-}
-
-BaseData* SceneData::data()
-{
-    return const_cast<BaseData*>(static_cast<const SceneData*>(this)->data());
-}
-
-const BaseData* SceneData::data() const
-{
-    // check if the base still exists hence if the data is still valid
-    const Base* base = 0;
-    if(myScene && myBase)
-        if(myScene->myBases.contains(myBase))
-            base = myBase;
-
-    myBase = base;
-    if(!myBase)
-        myData = 0;
-
-    return myData;
-}
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3dTypes> MechanicalObject3d;
 
 Scene::Scene(QObject *parent) : QObject(parent),
 	myStatus(Status::Null),
@@ -150,9 +65,14 @@ Scene::Scene(QObject *parent) : QObject(parent),
 	myDt(0.04),
 	myPlay(false),
 	myAsynchronous(true),
-	mySofaSimulation(0),
+    mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
-    myBases()
+    myBases(),
+    myManipulators(),
+    mySelectedManipulators(),
+    mySelectedComponents(),
+    myHighlightShaderProgram(nullptr),
+    myPickingShaderProgram(nullptr)
 {
 	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
 	boost::shared_ptr<sofa::core::ObjectFactory::ClassEntry> classVisualModel;
@@ -162,10 +82,10 @@ Scene::Scene(QObject *parent) : QObject(parent),
 	mySofaSimulation = sofa::simulation::graph::getSimulation();
 
 	sofa::component::init();
-	sofa::simulation::xml::initXml();
+    sofa::simulation::graph::init();
 
-	// plugins
-	QVector<QString> plugins;
+    // plugins
+    QVector<QString> plugins;
 	plugins.append("SofaPython");
 
     for(const QString& plugin : plugins)
@@ -301,7 +221,10 @@ void Scene::open()
             if(!loaderThread->isLoaded())
                 setStatus(Status::Error);
             else
+            {
                 myIsInit = true;
+                preloaded();
+            }
 
             loaderThread->deleteLater();
         });
@@ -313,7 +236,10 @@ void Scene::open()
         if(!LoaderProcess(mySofaSimulation, finalFilename))
             setStatus(Status::Error);
         else
+        {
             myIsInit = true;
+            preloaded();
+        }
 	}
 }
 
@@ -331,7 +257,7 @@ void Scene::handleStatusChange(Scene::Status newStatus)
     case Status::Error:
         break;
     default:
-        qWarning() << "Scene status unknown";
+        qCritical() << "Scene status unknown";
         break;
     }
 }
@@ -398,7 +324,17 @@ void Scene::setPlay(bool newPlay)
 	playChanged(newPlay);
 }
 
-void Scene::setVisualDirty(bool newVisualDirty)
+void Scene::setAsynchronous(bool newAsynchronous)
+{
+    if(newAsynchronous == myAsynchronous)
+        return;
+
+    myAsynchronous = newAsynchronous;
+
+    asynchronousChanged(newAsynchronous);
+}
+
+void Scene::setVisualDirty(bool newVisualDirty) const
 {
     if(newVisualDirty == myVisualDirty)
         return;
@@ -406,6 +342,72 @@ void Scene::setVisualDirty(bool newVisualDirty)
     myVisualDirty = newVisualDirty;
 
     visualDirtyChanged(newVisualDirty);
+}
+
+static void appendManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property, sofa::qtquick::Manipulator *value)
+{
+    static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->append(value);
+}
+
+static sofa::qtquick::Manipulator* atManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property, int index)
+{
+    return static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->at(index);
+}
+
+static void clearManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property)
+{
+    static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->clear();
+}
+
+static int countManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property)
+{
+    return static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->size();
+}
+
+QQmlListProperty<sofa::qtquick::Manipulator> Scene::manipulators()
+{
+    return QQmlListProperty<sofa::qtquick::Manipulator>(this, &myManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
+}
+
+QQmlListProperty<sofa::qtquick::Manipulator> Scene::selectedManipulators()
+{
+    return QQmlListProperty<sofa::qtquick::Manipulator>(this, &mySelectedManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
+}
+
+static void appendSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property, sofa::qtquick::SceneComponent *value)
+{
+    // TODO: is it really useful ?
+    SceneComponent* valueCopy = new SceneComponent(*value);
+
+    static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->append(valueCopy);
+
+    qobject_cast<Scene*>(property->object)->selectedComponentsChanged();
+}
+
+static sofa::qtquick::SceneComponent* atSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property, int index)
+{
+    return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->at(index);
+}
+
+static void clearSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
+{
+    QList<sofa::qtquick::SceneComponent*>& selectedComponents = *static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data);
+    for(SceneComponent* sceneComponent : selectedComponents)
+        delete sceneComponent;
+
+    static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->clear();
+
+    qobject_cast<Scene*>(property->object)->selectedComponentsChanged();
+}
+
+static int countSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
+{
+    return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->size();
+}
+
+QQmlListProperty<sofa::qtquick::SceneComponent> Scene::selectedComponents()
+{
+    return QQmlListProperty<sofa::qtquick::SceneComponent>(this, &mySelectedComponents, appendSelectedComponent, countSelectedComponent, atSelectedComponent, clearSelectedComponent);
 }
 
 double Scene::radius() const
@@ -470,6 +472,14 @@ void Scene::reinitComponent(const QString& path)
         return;
     }
     object->reinit();
+}
+
+bool Scene::areSameComponent(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB)
+{
+    if(!sceneComponentA)
+        return false;
+
+    return sceneComponentA->isSame(sceneComponentB);
 }
 
 void Scene::sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value)
@@ -943,7 +953,7 @@ void Scene::onSetDataValue(const QString& path, const QVariant& value)
 
 void Scene::initGraphics()
 {
-    if(!myIsInit)
+    if(!isPreLoaded() || !isLoading())
         return;
 
     if(!mySofaSimulation->GetRoot())
@@ -955,6 +965,44 @@ void Scene::initGraphics()
     GLenum err = glewInit();
     if(0 != err)
         qWarning() << "GLEW Initialization failed with error code:" << err;
+
+    // init the highlight shader program
+    if(!myHighlightShaderProgram)
+    {
+        myHighlightShaderProgram = new QOpenGLShaderProgram(this);
+
+        myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
+            "}");
+
+        myHighlightShaderProgram->link();
+    }
+
+    // init the picking shader program
+    if(!myPickingShaderProgram)
+    {
+        myPickingShaderProgram = new QOpenGLShaderProgram();
+        myPickingShaderProgram->create();
+        myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "uniform highp vec4 index;\n"
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = index;\n"
+            "}");
+        myPickingShaderProgram->link();
+    }
 
     // prepare the sofa visual params
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
@@ -995,9 +1043,17 @@ void Scene::reload()
     open();
 }
 
+void Scene::animate(bool play)
+{
+    if(!isReady())
+        return;
+
+    setPlay(play);
+}
+
 void Scene::step()
 {
-	if(!mySofaSimulation->GetRoot())
+    if(!isReady())
 		return;
 
 	emit stepBegin();
@@ -1008,7 +1064,7 @@ void Scene::step()
 
 void Scene::reset()
 {
-    if(!mySofaSimulation->GetRoot())
+    if(!isReady())
         return;
 
     // TODO: ! NEED CURRENT OPENGL CONTEXT
@@ -1017,10 +1073,10 @@ void Scene::reset()
     emit reseted();
 }
 
-void Scene::draw()
+void Scene::draw(const Viewer& viewer) const
 {
-	if(!mySofaSimulation->GetRoot())
-		return;
+    if(!isReady())
+        return;
 
     // prepare the sofa visual params
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
@@ -1047,13 +1103,202 @@ void Scene::draw()
         setVisualDirty(false);
 	}
 
-	mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), mySofaSimulation->GetRoot().get());
+    mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), mySofaSimulation->GetRoot().get());
+
+    // highlight selected components using a specific shader
+    if(!mySelectedComponents.isEmpty())
+    {
+        glDepthFunc(GL_ALWAYS);
+        glDepthMask(GL_FALSE);
+
+        myHighlightShaderProgram->bind();
+        for(SceneComponent* sceneComponent : mySelectedComponents)
+        {
+            if(sceneComponent)
+            {
+                OglModel* oglModel = dynamic_cast<OglModel*>(sceneComponent->base());
+                if(oglModel)
+                {
+                    VisualStyle* visualStyle = nullptr;
+                    oglModel->getContext()->get(visualStyle);
+
+                    if(visualStyle)
+                        visualStyle->fwdDraw(visualParams);
+
+                    visualParams->displayFlags().setShowWireFrame(true);
+
+                    oglModel->drawVisual(visualParams);
+
+                    if(visualStyle)
+                        visualStyle->bwdDraw(visualParams);
+                }
+                else
+                {
+                    TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(sceneComponent->base());
+                    if(triangleModel)
+                    {
+                        VisualStyle* visualStyle = nullptr;
+                        triangleModel->getContext()->get(visualStyle);
+
+                        if(visualStyle)
+                            visualStyle->fwdDraw(visualParams);
+
+                        visualParams->displayFlags().setShowWireFrame(true);
+
+                        triangleModel->draw(visualParams);
+
+                        if(visualStyle)
+                            visualStyle->bwdDraw(visualParams);
+                    }
+                }
+            }
+        }
+        myHighlightShaderProgram->release();
+
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
+
+        glDisable(GL_POLYGON_OFFSET_LINE);
+    }
+
+    glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
+    if(!myManipulators.isEmpty())
+    {
+        // since manipulator may use transparency, we order them by z
+        QVector<Manipulator*> zOrderedManipulators(QVector<Manipulator*>::fromList(myManipulators));
+        qSort(zOrderedManipulators.begin(), zOrderedManipulators.end(), [&](Manipulator* a, Manipulator* b) {
+            return viewer.computeDepth(a->position()) < viewer.computeDepth(b->position());
+        });
+
+        for(Manipulator* zOrderedManipulator : zOrderedManipulators)
+            if(zOrderedManipulator)
+                zOrderedManipulator->draw(viewer);
+    }
+}
+
+SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth) const
+{
+    SelectableSceneParticle* selectableSceneParticle = nullptr;
+
+    sofa::simulation::MechanicalPickParticlesVisitor pickVisitor(sofa::core::ExecParams::defaultInstance(),
+                                                                 sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
+                                                                 sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
+                                                                 distanceToRay,
+                                                                 distanceToRayGrowth);
+
+    pickVisitor.execute(sofaSimulation()->GetRoot()->getContext());
+
+    if(!pickVisitor.particles.empty())
+    {
+        MechanicalObject3d* mechanicalObject = dynamic_cast<MechanicalObject3d*>(pickVisitor.particles.begin()->second.first);
+        int index = pickVisitor.particles.begin()->second.second;
+
+        if(mechanicalObject && -1 != index)
+            selectableSceneParticle = new SelectableSceneParticle(SceneComponent(this, mechanicalObject), index);
+    }
+
+    return selectableSceneParticle;
+}
+
+static QVector4D packPickingIndex(int i)
+{
+    return QVector4D((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, ((i & 0xFF000000) >> 24) / 255.0);
+}
+
+static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
+{
+    return (i[0] | (i[1] << 8) | (i[2] << 16) | (i[3] << 24)) - 1;
+}
+
+Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
+{
+    Node* root = sofaSimulation()->GetRoot().get();
+
+    sofa::helper::vector<OglModel*> oglModels;
+    root->getTreeObjects<OglModel>(&oglModels);
+
+    sofa::helper::vector<TriangleModel*> triangleModels;
+    root->getTreeObjects<TriangleModel>(&triangleModels);
+
+    if(!oglModels.empty() || !triangleModels.empty() || !myManipulators.empty())
+    {
+        sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+
+        myPickingShaderProgram->bind();
+        {
+            int indexLocation = myPickingShaderProgram->uniformLocation("index");
+
+            unsigned int j = 0;
+            for(; j < oglModels.size(); ++j)
+            {
+                OglModel* oglModel = oglModels[j];
+                if(oglModel)
+                {
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
+                    oglModel->drawVisual(visualParams);
+                }
+            }
+
+            for(; j < triangleModels.size(); ++j)
+            {
+                TriangleModel* triangleModel = triangleModels[j];
+                if(triangleModel)
+                {
+                    VisualStyle* visualStyle = nullptr;
+                    triangleModel->getContext()->get(visualStyle);
+
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
+
+                    if(visualStyle)
+                        visualStyle->fwdDraw(visualParams);
+
+                    triangleModel->draw(visualParams);
+
+                    if(visualStyle)
+                        visualStyle->bwdDraw(visualParams);
+                }
+            }
+
+            for(Manipulator* manipulator : myManipulators)
+            {
+                if(manipulator)
+                {
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
+                    manipulator->pick(viewer);
+                }
+
+                ++j;
+            }
+        }
+        myPickingShaderProgram->release();
+
+        std::array<unsigned char, 4> indexComponents;
+        glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
+
+        int j = unpackPickingIndex(indexComponents);
+        if(-1 != j)
+        {
+            if(j < oglModels.size())
+                return new SelectableSceneComponent(SceneComponent(this, oglModels[j]));
+
+            j -= oglModels.size();
+            if(j < triangleModels.size())
+                return new SelectableSceneComponent(SceneComponent(this, triangleModels[j]));
+
+            j -= triangleModels.size();
+            if(j < myManipulators.size())
+                return new SelectableManipulator(*myManipulators[j]);
+        }
+    }
+
+    return nullptr;
 }
 
 void Scene::onKeyPressed(char key)
 {
-	if(!mySofaSimulation->GetRoot())
-		return;
+    if(!isReady())
+        return;
 
 	sofa::core::objectmodel::KeypressedEvent keyEvent(key);
 	sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
@@ -1061,8 +1306,8 @@ void Scene::onKeyPressed(char key)
 
 void Scene::onKeyReleased(char key)
 {
-	if(!mySofaSimulation->GetRoot())
-		return;
+    if(!isReady())
+        return;
 
 	sofa::core::objectmodel::KeyreleasedEvent keyEvent(key);
 	sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);

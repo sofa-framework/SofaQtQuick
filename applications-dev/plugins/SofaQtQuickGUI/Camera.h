@@ -41,14 +41,22 @@ public:
 	const QMatrix4x4& view() const;
 	const QMatrix4x4& model() const;
 
-    Q_INVOKABLE QVector3D eye() const				{return model().column(3).toVector3D();}
+    Q_INVOKABLE QVector3D eye() const				{return  model().column(3).toVector3D();}
 
     Q_INVOKABLE QVector3D direction() const			{return -model().column(2).toVector3D().normalized();}
     Q_INVOKABLE QVector3D up() const				{return  model().column(1).toVector3D().normalized();}
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
-    Q_INVOKABLE double computeDepth(const QVector3D& point);
-    Q_INVOKABLE QVector3D projectOnViewPlane(const QVector3D& point, double depth);
+    Q_INVOKABLE double zNear() const                {return myZNear;}
+    Q_INVOKABLE double zFar() const                 {return myZFar;}
+
+    /// @return depth in normalized device coordinate (ndc) space
+    Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
+
+    Q_INVOKABLE QVector3D projectOnViewPlane(const QVector3D& wsPosition, double depth) const;
+
+    Q_INVOKABLE QVector3D projectOnViewSpaceXAxis(const QVector3D& wsVector) const;
+    Q_INVOKABLE QVector3D projectOnViewSpaceYAxis(const QVector3D& wsVector) const;
 
 public slots:
     void viewFromFront();

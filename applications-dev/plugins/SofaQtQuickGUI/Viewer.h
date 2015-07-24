@@ -2,6 +2,9 @@
 #define VIEWER_H
 
 #include "SofaQtQuickGUI.h"
+#include "Camera.h"
+#include "SelectableSceneParticle.h"
+
 #include <QtQuick/QQuickItem>
 #include <QVector3D>
 #include <QVector4D>
@@ -16,12 +19,25 @@ namespace sofa
 namespace qtquick
 {
 
+class SceneComponent;
 class Scene;
 class Camera;
+class Manipulator;
 
+class PickUsingRasterizationWorker;
+
+/// @class Display a Sofa Scene in a QQuickItem
+/// @note Coordinate prefix meaning:
+/// ws  => world space
+/// vs  => view space
+/// cs  => clip space
+/// ndc => ndc space
+/// ss  => screen space (window space)
 class SOFA_SOFAQTQUICKGUI_API Viewer : public QQuickItem
 {
     Q_OBJECT
+
+    friend class PickUsingRasterizationWorker;
 
 public:
     explicit Viewer(QQuickItem* parent = 0);
@@ -66,10 +82,20 @@ public:
     bool antialiasing() const        {return myAntialiasing;}
     void setAntialiasing(bool newAntialiasing);
 
-    Q_INVOKABLE QVector3D mapFromWorld(const QVector3D& wsPoint);
-    Q_INVOKABLE QVector3D mapToWorld(const QVector3D& ssPoint);
+    /// @return depth in screen space
+    Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
 
-    Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint);    // .w == 0 => background hit ; .w == 1 => geometry hit
+    Q_INVOKABLE QVector3D mapFromWorld(const QVector3D& wsPoint) const;
+    Q_INVOKABLE QVector3D mapToWorld(const QPointF& ssPoint, double z) const;
+
+    QVector3D intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal) const;
+
+    Q_INVOKABLE QVector3D projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const;
+    Q_INVOKABLE QVector3D projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const;
+    Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint) const;    // .w == 0 => background hit ; .w == 1 => geometry hit
+
+    Q_INVOKABLE sofa::qtquick::SelectableSceneParticle*    pickParticle(const QPointF& ssPoint) const;
+    Q_INVOKABLE sofa::qtquick::Selectable*                 pickObject(const QPointF& ssPoint);
 
     Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;
     Q_INVOKABLE QVector3D boundingBoxMin() const;
@@ -91,8 +117,10 @@ public slots:
 	void viewAll();
 
 private:
-	QRect glRect();
-	void internalDraw();
+    QRect glRect() const;
+    void internalDraw();
+
+    QPointF mapToNative(const QPointF& ssPoint) const;
 
 private slots:
 	void handleSceneChanged(Scene* scene);
@@ -110,7 +138,6 @@ private:
     bool                        myCulling;
     bool                        myBlending;
     bool                        myAntialiasing;
-    QOpenGLFramebufferObject*   myFBO;
 
 };
 

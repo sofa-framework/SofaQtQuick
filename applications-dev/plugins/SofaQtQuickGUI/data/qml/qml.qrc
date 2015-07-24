@@ -19,7 +19,7 @@
         <file>SofaBasics/RecentSettings.qml</file>
         <file>SofaBasics/SceneListModel.qml</file>
         <file>SofaBasics/DataListModel.qml</file>
-        <file>SofaBasics/Data.qml</file>
+        <file>SofaBasics/DataItem.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaTools/qmldir</file>
         <file>SofaTools/SimulationControl.qml</file>
@@ -51,5 +51,11 @@
         <file>SofaBasics/SofaApplication.qml</file>
         <file>SofaInteractors/qmldir</file>
         <file>SofaInteractors/UserInteractor_Selection.qml</file>
+        <file>SofaManipulators/qmldir</file>
+        <file>SofaManipulators/Manipulator.qml</file>
+        <file>SofaManipulators/Manipulator2D_Translation.qml</file>
+        <file>SofaManipulators/Manipulator2D_Rotation.qml</file>
+        <file>SofaManipulators/Manipulator3D_Translation.qml</file>
+        <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
     </qresource>
 </RCC>

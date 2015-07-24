@@ -24,14 +24,14 @@ Viewer {
 		shortcut: "F5"
 		onTriggered: root.viewAll()
 	}
-
+/*
     Timer {
         running: true
         repeat: true
         interval: 16
         onTriggered: root.update() // TODO: warning, does not work with multithreaded render loop
     }
-
+*/
     BusyIndicator {
         id: busyIndicator
         anchors.centerIn: parent
@@ -70,13 +70,13 @@ Viewer {
     Image {
         id: handIcon
         source: "qrc:/icon/hand.png"
-        visible: scene ? scene.pickingInteractor.picking : false
+        visible: scene ? scene.particleInteractor.interacting : false
         antialiasing: true
 
         Connections {
-            target: scene ? scene.pickingInteractor : null
-            onPositionChanged: {
-                var position = root.mapFromWorld(scene.pickingInteractor.position)
+            target: scene ? scene.particleInteractor : null
+            onInteractorPositionChanged: {
+                var position = root.mapFromWorld(scene.particleInteractor.interactorPosition)
                 if(position.z > 0.0 && position.z < 1.0) {
                     handIcon.x = position.x - 6;
                     handIcon.y = position.y - 2;
@@ -86,9 +86,13 @@ Viewer {
     }
 
     Component.onCompleted: {
+        SofaApplication.addViewer(root)
+
         if(scene)
             sceneChanged(scene);
     }
+
+    Component.onDestruction: SofaApplication.removeViewer(root)
 
     MouseArea {
         id: mouseArea
@@ -268,10 +272,7 @@ Viewer {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.AllButtons
-            onWheel: {
-                //flickable.;
-                wheel.accepted = true
-            }
+            onWheel: wheel.accepted = true
 
             ColumnLayout {
                 anchors.fill: parent

@@ -6,11 +6,22 @@ set(SOURCE_FILES
 		Viewer.cpp
 		Camera.cpp
                 Scene.cpp
+                SceneComponent.cpp
+                SceneData.cpp
                 SceneListModel.cpp
+                Selectable.cpp
+                SelectableManipulator.cpp
+                SelectableSceneComponent.cpp
+                SelectableSceneParticle.cpp
                 DataListModel.cpp
 		PythonInteractor.cpp
                 PythonConsole.cpp
-		PickingInteractor.cpp
+                ParticleInteractor.cpp
+                Manipulator.cpp
+                Manipulator2D_Translation.cpp
+                Manipulator2D_Rotation.cpp
+                Manipulator3D_Translation.cpp
+                Manipulator3D_Rotation.cpp
 )
 
 set(HEADER_FILES
@@ -19,11 +30,22 @@ set(HEADER_FILES
 		Viewer.h
 		Camera.h
                 Scene.h
+                SceneComponent.h
+                SceneData.h
                 SceneListModel.h
+                Selectable.h
+                SelectableManipulator.h
+                SelectableSceneComponent.h
+                SelectableSceneParticle.h
                 DataListModel.h
 		PythonInteractor.h
                 PythonConsole.h
-		PickingInteractor.h
+                ParticleInteractor.h
+                Manipulator.h
+                Manipulator2D_Translation.h
+                Manipulator2D_Rotation.h
+                Manipulator3D_Translation.h
+                Manipulator3D_Rotation.h
 )
 
 set(QML_FILES
@@ -55,7 +77,7 @@ set(QML_FILES
 		data/qml/SofaBasics/DefaultMenuBar.qml
 		data/qml/SofaBasics/Scene.qml
                 data/qml/SofaBasics/SceneListModel.qml
-                data/qml/SofaBasics/Data.qml
+                data/qml/SofaBasics/DataItem.qml
                 data/qml/SofaBasics/DataListModel.qml
 		data/qml/SofaBasics/PythonInteractor.qml
                 data/qml/SofaBasics/UserInteractor.qml
@@ -68,6 +90,12 @@ set(QML_FILES
                 data/qml/SofaBasics/DynamicContent.qml
                 data/qml/SofaInteractors/qmldir
                 data/qml/SofaInteractors/UserInteractor_Selection.qml
+                data/qml/SofaManipulators/qmldir
+                data/qml/SofaManipulators/Manipulator.qml
+                data/qml/SofaManipulators/Manipulator2D_Translation.qml
+                data/qml/SofaManipulators/Manipulator2D_Rotation.qml
+                data/qml/SofaManipulators/Manipulator3D_Translation.qml
+                data/qml/SofaManipulators/Manipulator3D_Rotation.qml
 		data/qml/SofaTools/qmldir
 		data/qml/SofaTools/SimulationControl.qml
                 data/qml/SofaTools/SceneGraphView.qml

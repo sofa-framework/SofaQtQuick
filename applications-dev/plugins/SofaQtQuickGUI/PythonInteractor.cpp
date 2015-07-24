@@ -8,7 +8,6 @@
 #include <SofaPython/PythonMacros.h>
 #include <SofaPython/PythonScriptFunction.h>
 #include <SofaPython/PythonScriptController.h>
-#include <SofaPython/PythonMainScriptController.h>
 
 #include <qqml.h>
 #include <QDebug>
@@ -295,9 +294,8 @@ QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, con
         return QVariant();
     }
 
-
     const char * path = pythonScriptControllerName.toUtf8().constData();
-    PythonScriptController* controller;
+    PythonScriptController* controller = nullptr;
 
     // try to find by path (faster)
     void* cont = myScene->sofaSimulation()->GetRoot()->getObject( classid(PythonScriptController), path );

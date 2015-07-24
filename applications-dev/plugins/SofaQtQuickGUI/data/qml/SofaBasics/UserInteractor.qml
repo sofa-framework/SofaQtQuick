@@ -56,59 +56,49 @@ QtObject {
     function mouseClicked(mouse) {
         var binding = mouseClickedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, scene, viewer);
     }
 
     function mouseDoubleClicked(mouse) {
         var binding = mouseDoubleClickedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, scene, viewer);
     }
 
     function mousePressed(mouse) {
         var binding = mousePressedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, scene, viewer);
     }
 
     function mouseReleased(mouse) {
         var binding = mouseReleasedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, scene, viewer);
     }
 
     function mouseWheel(wheel) {
         var binding = mouseWheelMapping;
         if(binding)
-            binding(wheel);
+            binding(wheel, scene, viewer);
     }
 
     function mouseMove(mouse) {
         var binding = mouseMoveMapping;
         if(binding)
-            binding(mouse);
+            binding(mouse, scene, viewer);
     }
 
     function keyPressed(event) {
         var binding = keyPressedMapping[event.key];
         if(binding)
-            binding(event);
+            binding(event, scene, viewer);
     }
 
     function keyReleased(event) {
         var binding = keyReleasedMapping[event.key];
         if(binding)
-            binding(event);
-    }
-
-    //Component.onCompleted: if(scene) init();
-    onSceneChanged:
-    {
-        //if(scene)
-        //    scene.Component.completed();
-
-        //console.log(scene);
-        //if(scene) init();
+            binding(event, scene, viewer);
     }
 
     readonly property QtObject d: QtObject {
