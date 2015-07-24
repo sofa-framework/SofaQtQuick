@@ -82,11 +82,21 @@ CollapsibleGroupBox {
                     stepSize:0.01
 
                     function update() {
-                        scene.pythonInteractor.callByControllerName("script", "setGravity", vx, vy, vz);
+                        
+                        // PythonScriptController given by NAME
+                        // slower method but more generic
+                        // the component can be moved
+                        // or even be removed (this will generate a warning but no crash)
+                        
+                        scene.pythonInteractor.call("script", "setGravity", vx, vy, vz);
                     }
 
                     Component.onCompleted: {
-                        setValueFromArray(scene.pythonInteractor.callByControllerName("script", "getGravity"));
+                        
+                        // PythonScriptController given by PATH
+                        // faster method for "static" component
+                        
+                        setValueFromArray(scene.pythonInteractor.call("/script", "getGravity"));
 
                         onVxChanged.connect(update);
                         onVyChanged.connect(update);
@@ -95,7 +105,11 @@ CollapsibleGroupBox {
 
                     Connections {
                         target: scene
-                        onStepEnd: gravity.setValueFromArray(scene.pythonInteractor.callByControllerName("script", "getGravity"));
+                        
+                        // PythonScriptController given by PATH
+                        // faster method for "static" component
+                        
+                        onStepEnd: gravity.setValueFromArray(scene.pythonInteractor.call("/script", "getGravity"));
                     }
                 }
 
@@ -120,7 +134,7 @@ CollapsibleGroupBox {
                     }
 
                     function update() {
-                        setValueFromArray(scene.pythonInteractor.callByControllerName("script", "getPointLocation"));
+                        setValueFromArray(scene.pythonInteractor.call("/script", "getPointLocation"));
                     }
                 }
             }

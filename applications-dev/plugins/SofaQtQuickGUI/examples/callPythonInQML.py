@@ -1,4 +1,3 @@
-0000000000.
 import Sofa
 import os
 __file = __file__.replace('\\', '/')  # windows compatible filename 

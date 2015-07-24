@@ -22,9 +22,8 @@ namespace sofa
 namespace qtquick
 {
 
-PythonInteractor::PythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus(),
-	myScene(0),
-	myPythonScriptControllers()
+PythonInteractor::PythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus()
+    , myScene(0)
 {
 
 }
@@ -47,34 +46,13 @@ void PythonInteractor::componentComplete()
 
 void PythonInteractor::setScene(Scene* newScene)
 {
-	if(newScene == myScene)
-		return;
-
-	myScene = newScene;
-
-	sceneChanged(newScene);
-}
-
-QList<QString> PythonInteractor::pythonScriptControllersName() const
-{
-    return myPythonScriptControllers.keys();
-}
-
-void PythonInteractor::retrievePythonScriptControllers()
-{
-	myPythonScriptControllers.clear();
-
-    if(myScene && myScene->isReady())
+    if(newScene != myScene)
     {
-        std::vector<PythonScriptController*> pythonScriptControllers;
-        myScene->sofaSimulation()->GetRoot()->get<PythonScriptController>(&pythonScriptControllers, sofa::core::objectmodel::BaseContext::SearchDown);
-
-        for(size_t i = 0; i < pythonScriptControllers.size(); ++i)
-            myPythonScriptControllers.insert(pythonScriptControllers[i]->m_classname.getValue().c_str(), pythonScriptControllers[i]);
+        myScene = newScene;
+        //	sceneChanged(newScene); // do we really need to send a signal?
     }
-
-    pythonScriptControllersNameChanged(pythonScriptControllersName());
 }
+
 
 static PyObject* PythonBuildValueHelper(const QVariant& parameter)
 {
@@ -253,14 +231,10 @@ bool PythonInteractor::run(const QString& script)
     return sofa::simulation::PythonEnvironment::runString(script.toStdString());
 }
 
-QVariant PythonInteractor::call(const QString& pythonClassName, const QString& funcName, const QVariant& parameter)
-{
-    return onCallByClassName(pythonClassName, funcName, parameter);
-}
 
-QVariant PythonInteractor::callByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
+QVariant PythonInteractor::call(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
-    return onCallByControllerName(pythonScriptControllerName, funcName, parameter);
+    return onCall(pythonScriptControllerName, funcName, parameter);
 }
 
 
@@ -285,23 +259,16 @@ bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const Q
         return false;
     }
 
-
     return true;
 }
 
 
 QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScriptController, const QString& funcName, const QVariant& parameter)
 {
-    if(!pythonScriptController)
-    {
-        qWarning() << "ERROR: cannot call Python function without a valid pythonScriptController";
-        return QVariant();
-    }
-
     PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
     if(!pyCallableObject)
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python class and function name";
+        qWarning() << "ERROR: cannot call Python function without a valid function name "<<funcName;
         return QVariant();
     }
 
@@ -316,7 +283,7 @@ QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScri
 }
 
 
-QVariant PythonInteractor::onCallByControllerName(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
+QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
     QVariant result;
 
@@ -324,100 +291,38 @@ QVariant PythonInteractor::onCallByControllerName(const QString& pythonScriptCon
 
     if(pythonScriptControllerName.isEmpty())
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python controller name";
-        return false;
+        qWarning() << "ERROR: cannot call Python function without a python controller path/name";
+        return QVariant();
     }
 
-    for( PythonScriptControllersMap::iterator it = myPythonScriptControllers.begin(), itend = myPythonScriptControllers.end() ; it!=itend ; ++it )
+
+    const char * path = pythonScriptControllerName.toUtf8().constData();
+    PythonScriptController* controller;
+
+    // try to find by path (faster)
+    void* cont = myScene->sofaSimulation()->GetRoot()->getObject( classid(PythonScriptController), path );
+
+    if( cont ) // found by path
     {
-        if( it.value()->getName() == pythonScriptControllerName.toUtf8().constData() )
-            return onCallByController( it.value(), funcName, parameter );
+       controller = reinterpret_cast<PythonScriptController*>( cont );
     }
+    else // try to find by name (slower but more generic)
+    {
+        std::cerr<<"FINDING BY NAME "<<path<<" "<<funcName.toUtf8().constData()<<std::endl;
+        controller = dynamic_cast<PythonScriptController*>( myScene->sofaSimulation()->GetRoot()->getObject( path ) );
+    }
+
+    if( !controller )
+    {
+        qWarning() << "ERROR: cannot call Python function without a valid python controller path/name "<<pythonScriptControllerName;
+        return QVariant();
+    }
+
+    return onCallByController( controller, funcName, parameter );
 
     return QVariant();
 }
 
-
-QVariant PythonInteractor::onCallByClassName(const QString& pythonClassName, const QString& funcName, const QVariant& parameter)
-{
-    if( !onCallBasicVerifications(funcName,parameter) ) return QVariant();
-
-
-    if(pythonClassName.isEmpty())
-    {
-        qWarning() << "ERROR: cannot call Python function without a valid python class name";
-        return false;
-    }
-
-
-    auto pythonScriptControllerIterator = myPythonScriptControllers.find(pythonClassName);
-	if(myPythonScriptControllers.end() == pythonScriptControllerIterator)
-	{
-        qWarning() << "ERROR: cannot send Python event on an unknown script controller:" << pythonClassName;
-		if(myPythonScriptControllers.isEmpty())
-		{
-            qWarning() << "There is no PythonScriptController";
-		}
-		else
-		{
-            qWarning() << "Known PythonScriptController(s):";
-			for(const QString& pythonScriptControllerName : myPythonScriptControllers.keys())
-                qWarning() << "-" << pythonScriptControllerName;
-		}
-
-        return QVariant();
-    }
-
-    return onCallByController( pythonScriptControllerIterator.value(), funcName, parameter );
-}
-
-void PythonInteractor::sendEvent(const QString& pythonClassName, const QString& eventName, const QVariant& parameter)
-{
-	if(!myScene)
-	{
-        qWarning() << "ERROR: cannot send Python event on a null scene";
-		return;
-	}
-
-	if(!myScene->isReady())
-	{
-        qWarning() << "ERROR: cannot send Python event on a scene that is still loading";
-		return;
-	}
-
-	auto pythonScriptControllerIterator = myPythonScriptControllers.find(pythonClassName);
-	if(myPythonScriptControllers.end() == pythonScriptControllerIterator)
-	{
-        qWarning() << "ERROR: cannot send Python event on an unknown script controller:" << pythonClassName;
-		if(myPythonScriptControllers.isEmpty())
-		{
-            qWarning() << "There is no PythonScriptController";
-		}
-		else
-		{
-            qWarning() << "Known PythonScriptController(s):";
-			for(const QString& pythonScriptControllerName : myPythonScriptControllers.keys())
-                qWarning() << "-" << pythonScriptControllerName;
-		}
-
-		return;
-	}
-
-	PythonScriptController* pythonScriptController = pythonScriptControllerIterator.value();
-
-	PyObject* pyParameter = PythonBuildValueHelper(parameter);
-	if(!pyParameter)
-		pyParameter = Py_BuildValue("");
-
-	sofa::core::objectmodel::PythonScriptEvent pythonScriptEvent(myScene->sofaSimulation()->GetRoot(), eventName.toLatin1().constData(), pyParameter);
-	pythonScriptController->handleEvent(&pythonScriptEvent);
-}
-
-void PythonInteractor::sendEventToAll(const QString& eventName, const QVariant& parameter)
-{
-	for(const QString& pythonClassName : myPythonScriptControllers.keys())
-		sendEvent(pythonClassName, eventName, parameter);
-}
 
 }
 
