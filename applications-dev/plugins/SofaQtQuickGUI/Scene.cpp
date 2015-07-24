@@ -1229,7 +1229,7 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
         {
             int indexLocation = myPickingShaderProgram->uniformLocation("index");
 
-            int j = 0;
+            unsigned int j = 0;
             for(; j < oglModels.size(); ++j)
             {
                 OglModel* oglModel = oglModels[j];
