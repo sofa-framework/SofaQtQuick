@@ -22,6 +22,7 @@
 #include <QTime>
 #include <QPair>
 #include <QThread>
+#include <QString>
 #include <qqml.h>
 #include <qmath.h>
 
@@ -37,6 +38,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myBackgroundColor("#00404040"),
     myBackgroundImageSource(),
     myBackgroundImage(),
+    myScreenshotImage(),
     myWireframe(false),
     myCulling(true),
     myBlending(false),
@@ -476,6 +478,39 @@ void Viewer::handleWindowChanged(QQuickWindow* window)
     }
 }
 
+void Viewer::takeViewerScreenshot()
+{
+    QRect rect = qtRect();
+    QPoint pos = rect.topLeft();
+    QSize size = rect.size();
+
+    // Take window screenshot
+    QImage screenshot =  window()->grabWindow();
+
+    // Resize screenshot to the viewer
+    myScreenshotImage = screenshot.copy(pos.x(),pos.y()-size.height(),size.width(),size.height());
+}
+
+void Viewer::saveScreenshotInFile()
+{
+    QString finalFilename = myScene->screenshotFilename().toLocalFile();
+    if(finalFilename.isEmpty())
+    {
+        std::cerr << "File to save screenshot doesn't exist" << std::endl;
+        return;
+    }
+
+    if(myScreenshotImage.height()!=0)
+    {
+        #ifdef SOFA_HAVE_PNG
+            myScreenshotImage.save(finalFilename,"png");
+        #else
+            myScreenshotImage.save(finalFilename,"bmp");
+        #endif
+        std::cout << "Saved "<< myScreenshotImage.width() <<"x"<< myScreenshotImage.height() <<" viewer screen image to "<< finalFilename.toStdString() <<std::endl;
+    }
+}
+
 QRect Viewer::glRect() const
 {
 	if(!window())
@@ -487,6 +522,21 @@ QRect Viewer::glRect() const
 	QSize size((qCeil(width()) + qCeil(pos.x() - realPos.x())) * window()->devicePixelRatio(), (qCeil((height()) + qCeil(pos.y() - realPos.y())) * window()->devicePixelRatio()));
 	
 	return QRect(pos, size);
+}
+
+QRect Viewer::qtRect() const
+{
+    if(!window())
+        return QRect();
+
+    QPointF realPos = mapToScene(QPointF(0.0, height()));
+    realPos.setX( realPos.x() * window()->devicePixelRatio());
+    realPos.setY( realPos.y() * window()->devicePixelRatio());
+
+    QPoint pos(qFloor(realPos.x()), qFloor(realPos.y()));
+    QSize size((qCeil(width()) + qCeil(pos.x() - realPos.x())) * window()->devicePixelRatio(), (qCeil((height()) + qCeil(pos.y() - realPos.y())) * window()->devicePixelRatio()));
+
+    return QRect(pos, size);
 }
 
 void Viewer::internalDraw()

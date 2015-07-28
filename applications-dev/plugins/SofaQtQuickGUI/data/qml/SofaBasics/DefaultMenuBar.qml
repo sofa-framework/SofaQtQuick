@@ -56,6 +56,18 @@ MenuBar {
 //        },
 
         Action {
+            id: saveScreenshotAction
+            text: "&SaveScreenshot"
+            shortcut: "s"
+            onTriggered:
+            {
+                scene.takeScreenshot();
+                saveSofaSceneScreenshotDialog.open();
+            }
+            tooltip: "Save the Sofa Scene"
+        },
+
+        Action {
             id: saveAsAction
             text: "&Save As..."
             tooltip: "Save the Sofa Scene at a specific location"
@@ -152,6 +164,7 @@ MenuBar {
         MenuItem {action: reloadAction}
         //MenuItem {action: saveAction}
         //MenuItem {action: saveAsAction}
+        MenuItem {action:saveScreenshotAction }
         MenuSeparator {}
         MenuItem {action: exitAction}
     }

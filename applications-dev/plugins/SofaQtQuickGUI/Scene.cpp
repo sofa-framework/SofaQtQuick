@@ -59,6 +59,7 @@ Scene::Scene(QObject *parent) : QObject(parent),
 	myStatus(Status::Null),
 	mySource(),
     mySourceQML(),
+    myScreenshotFilename(),
     myPathQML(),
 	myIsInit(false),
     myVisualDirty(false),
@@ -262,6 +263,32 @@ void Scene::handleStatusChange(Scene::Status newStatus)
     }
 }
 
+void Scene::takeScreenshot()
+{
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    screenshot.init(viewport[2], viewport[3], 1, 1, helper::io::Image::UNORM8, helper::io::Image::RGB);
+    glReadBuffer(GL_FRONT);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(viewport[0], viewport[1], viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE, screenshot.getPixels());
+}
+
+void Scene::saveScreenshotInFile()
+{
+    QString finalFilename = myScreenshotFilename.toLocalFile();
+    if(finalFilename.isEmpty())
+    {
+        std::cerr << "File to save screenshot doesn't exist" << std::endl;
+        return;
+    }
+
+    std::string filepath = finalFilename.toLatin1().constData();
+
+    if (!screenshot.save(filepath)) return;
+        std::cout << "Saved "<<screenshot.getWidth()<<"x"<<screenshot.getHeight()<<" screen image to "<<filepath<<std::endl;
+    glReadBuffer(GL_BACK);
+}
+
 void Scene::setStatus(Status newStatus)
 {
 	if(newStatus == myStatus)
@@ -302,6 +329,16 @@ void Scene::setSourceQML(const QUrl& newSourceQML)
 	mySourceQML = newSourceQML;
 
 	sourceQMLChanged(newSourceQML);
+}
+
+void Scene::setScreenshotFilename(const QUrl& newScreenshotFilename)
+{
+    if(newScreenshotFilename == myScreenshotFilename)
+        return;
+
+    myScreenshotFilename = newScreenshotFilename;
+
+    screenshotFilenameChanged(newScreenshotFilename);
 }
 
 void Scene::setDt(double newDt)

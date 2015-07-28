@@ -9,6 +9,10 @@
 
 #include <sofa/simulation/common/Simulation.h>
 #include <sofa/simulation/common/MutationListener.h>
+#include <sofa/helper/io/ImageBMP.h>
+#ifdef SOFA_HAVE_PNG
+#include <sofa/helper/io/ImagePNG.h>
+#endif
 
 #include <QObject>
 #include <QQmlListProperty>
@@ -48,6 +52,7 @@ public:
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
+    Q_PROPERTY(QUrl screenshotFilename READ screenshotFilename WRITE setScreenshotFilename NOTIFY screenshotFilenameChanged)
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
     Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
@@ -81,6 +86,9 @@ public:
 	const QUrl& sourceQML() const					{return mySourceQML;}
 	void setSourceQML(const QUrl& newSourceQML);
 
+    const QUrl& screenshotFilename() const			{return myScreenshotFilename;}
+    void setScreenshotFilename(const QUrl& newScreenshotFilename);
+
 	double dt() const								{return myDt;}
 	void setDt(double newDt);
 	
@@ -105,6 +113,7 @@ signals:
     void headerChanged(const QString& newHeader);
 	void sourceChanged(const QUrl& newSource);
 	void sourceQMLChanged(const QUrl& newSourceQML);
+    void screenshotFilenameChanged(const QUrl& newScreenshotFilename);
 	void dtChanged(double newDt);
 	void playChanged(bool newPlay);
 	void asynchronousChanged(bool newAsynchronous);
@@ -141,6 +150,8 @@ public slots:
     void animate(bool play);
 	void step();
 	void reset();
+    void takeScreenshot();
+    void saveScreenshotInFile();
 
 	void onKeyPressed(char key);
 	void onKeyReleased(char key);
@@ -182,6 +193,7 @@ private:
     QString                                     myHeader;
     QUrl                                        mySource;
     QUrl                                        mySourceQML;
+    QUrl                                        myScreenshotFilename;
     QString                                     myPathQML;
     bool                                        myIsInit;
     mutable bool                                myVisualDirty;
@@ -199,6 +211,12 @@ private:
 
     QOpenGLShaderProgram*                       myHighlightShaderProgram;
     QOpenGLShaderProgram*                       myPickingShaderProgram;
+
+    #ifdef SOFA_HAVE_PNG
+        sofa::helper::io::ImagePNG screenshot;
+    #else
+        sofa::helper::io::ImageBMP screenshot;
+    #endif
 };
 
 }
