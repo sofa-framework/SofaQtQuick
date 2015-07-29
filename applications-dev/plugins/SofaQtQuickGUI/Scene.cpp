@@ -12,6 +12,7 @@
 #include <sofa/helper/system/PluginManager.h>
 #include <sofa/simulation/graph/graph.h>
 #include <sofa/simulation/graph/DAGSimulation.h>
+#include <sofa/simulation/graph/init.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <sofa/helper/system/glut.h>
