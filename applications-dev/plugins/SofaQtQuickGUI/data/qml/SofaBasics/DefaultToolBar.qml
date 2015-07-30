@@ -13,6 +13,8 @@ ToolBar {
 
     property var scene
 
+    enabled: scene ? scene.ready : false
+
     Row {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -89,7 +91,7 @@ ToolBar {
                 anchors.bottom: parent.bottom
 
                 iconSource: animateButton.checked ? "qrc:/icon/stopButton.png" : "qrc:/icon/playButton.png"
-                tooltip: "Animate"
+                tooltip: animateButton.checked ? "Stop" : "Animate"
                 checkable: true
                 checked: false
                 onCheckedChanged: if(scene) scene.play = animateButton.checked
