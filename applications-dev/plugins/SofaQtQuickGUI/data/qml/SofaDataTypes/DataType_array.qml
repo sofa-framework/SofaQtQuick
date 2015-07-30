@@ -40,7 +40,7 @@ Loader {
                     movable: false
                     resizable: false
                     horizontalAlignment: Text.AlignHCenter
-                    width: (tableView.width - 80) / (tableView.columnCount - 1)
+                    width: (tableView.width - 58) / (tableView.columnCount - 1)
                 }
             }
 
@@ -50,7 +50,7 @@ Loader {
                     movable: false
                     resizable: false
                     horizontalAlignment: Text.AlignHCenter
-                    width: 80
+                    width: 58
                 }
             }
 

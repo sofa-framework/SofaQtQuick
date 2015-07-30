@@ -3,6 +3,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
+import SceneComponent 1.0
 import "qrc:/SofaCommon/SofaCommonScript.js" as SofaCommonScript
 import "."
 
@@ -73,6 +74,83 @@ ToolBar {
                 for(var key in interactorComponentMap)
                     if(interactorComponentMap.hasOwnProperty(key))
                         SofaCommonScript.InstanciateComponent(interactorButtonComponent, interactorPositioner, {interactorName: key, interactorComponent: interactorComponentMap[key]});
+            }
+        }
+
+        Row {
+            id: simulationControlTools
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            spacing: 5
+
+            ToolButton {
+                id: animateButton
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+
+                iconSource: animateButton.checked ? "qrc:/icon/stopButton.png" : "qrc:/icon/playButton.png"
+                tooltip: "Animate"
+                checkable: true
+                checked: false
+                onCheckedChanged: if(scene) scene.play = animateButton.checked
+
+                Connections {
+                    target: scene
+                    ignoreUnknownSignals: true
+                    onPlayChanged: {
+                        animateButton.checked = scene.play;
+                    }
+                }
+            }
+
+            ToolButton {
+                id: stepButton
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+
+                iconSource: "qrc:/icon/stepButton.png"
+                tooltip: "Step"
+
+                onClicked: {
+                    if(scene)
+                        scene.step();
+                }
+            }
+
+            ToolButton {
+                id: resetButton
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+
+                iconSource: "qrc:/icon/resetButton.png"
+                tooltip: "Reset the scene"
+
+                onClicked: {
+                    if(scene)
+                        scene.reset();
+                }
+            }
+        }
+
+        Row {
+            id: saveScreenshotTools
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            spacing: 5
+
+            ToolButton {
+                id: saveScreenshotButton
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+
+                text: "Save Screenshot"
+                tooltip: "Save screenshot"
+
+                onClicked: {
+                    if(scene)
+                        scene.takeScreenshot();
+                        saveSofaSceneScreenshotDialog.open();
+                }
             }
         }
     }

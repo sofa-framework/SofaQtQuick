@@ -358,7 +358,7 @@ Viewer {
                                         description: "Enable blending"
                                     }
                                 }
-/*
+/*  
                                 // TODO: antialiasing not implemented yet
                                 Label {
                                     Layout.fillWidth: true
@@ -422,6 +422,31 @@ Viewer {
                                         }
                                     }
                                 }
+
+                                Button {
+                                     Layout.fillWidth: true
+                                     text: "Save Screenshot"
+
+                                     onClicked: {
+                                         toolPanel.visible = false
+                                         root.takeViewerScreenshot();
+                                         saveScreenshotViewerFileDialog.open();
+                                         toolPanel.visible = true
+                                     }
+
+                                     FileDialog {
+                                         id: saveScreenshotViewerFileDialog
+                                         title: "Please select the file where you want to save the screenshot"
+                                         selectFolder: false
+                                         selectMultiple: false
+                                         selectExisting: false
+                                         nameFilters: ["Scene files (*.png *.bmp)"]
+                                         onAccepted: {
+                                             scene.screenshotFilename = fileUrl;
+                                             root.saveScreenshotInFile();
+                                         }
+                                     }
+                                 }
 
 //                                Label {
 //                                    Layout.fillWidth: true

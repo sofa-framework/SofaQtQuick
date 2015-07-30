@@ -17,7 +17,7 @@ SceneComponent::SceneComponent(const Scene* scene, const sofa::core::objectmodel
 
 }
 
-SceneComponent::SceneComponent(const SceneComponent& sceneComponent) :
+SceneComponent::SceneComponent(const SceneComponent& sceneComponent) : QObject(),
     myScene(sceneComponent.scene()),
     myBase(sceneComponent.base())
 {

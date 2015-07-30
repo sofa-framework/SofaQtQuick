@@ -58,6 +58,18 @@ ApplicationWindow {
         }
     }
 
+    property FileDialog saveSofaSceneScreenshotDialog: saveSofaSceneScreenshotDialog
+    FileDialog {
+        id: saveSofaSceneScreenshotDialog
+        selectExisting: false
+        nameFilters: ["Scene files (*.png *.bmp)"]
+        title: "Choose the file where you want to save the screenshot"
+        onAccepted: {
+            scene.screenshotFilename = fileUrl;
+            scene.saveScreenshotInFile();
+        }
+    }
+
     menuBar: DefaultMenuBar {
         id: menuBar
         scene: root.scene

@@ -101,6 +101,10 @@ public:
     Q_INVOKABLE QVector3D boundingBoxMin() const;
     Q_INVOKABLE QVector3D boundingBoxMax() const;
 
+    Q_INVOKABLE void takeViewerScreenshot();
+    Q_INVOKABLE void saveScreenshotInFile();
+
+
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
 	void scenePathChanged();
@@ -118,6 +122,8 @@ public slots:
 
 private:
     QRect glRect() const;
+    QRect qtRect() const;
+
     void internalDraw();
 
     QPointF mapToNative(const QPointF& ssPoint) const;
@@ -134,6 +140,7 @@ private:
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
     QImage                      myBackgroundImage;
+    QImage                      myScreenshotImage;
     bool                        myWireframe;
     bool                        myCulling;
     bool                        myBlending;
