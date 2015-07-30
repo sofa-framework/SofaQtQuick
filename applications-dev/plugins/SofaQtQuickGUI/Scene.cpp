@@ -1315,7 +1315,7 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
         glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
 
         int j = unpackPickingIndex(indexComponents);
-        if(-1 != j)
+        if(-1 < j)
         {
             if(j < oglModels.size())
                 return new SelectableSceneComponent(SceneComponent(this, oglModels[j]));
