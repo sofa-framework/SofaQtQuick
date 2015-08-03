@@ -59,7 +59,11 @@ Rectangle {
         for(var i = 0; i < contentList.length; ++i)
         {
             contentList[i].parent = loaderLocation;
-            var menuItem = contextMenu.addItem(contentList[i].title);
+            var title = "Scene GUI";
+            if(contentList[i].title)
+                title = contentList[i].title;
+
+            var menuItem = contextMenu.addItem(title);
             menuItem.checkable = true;
             menuItem.checked = true;
 
