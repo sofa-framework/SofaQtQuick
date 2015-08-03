@@ -335,6 +335,91 @@ void Camera::fit(const QVector3D& min, const QVector3D& max)
         computeOrthographic();
 }
 
+void Camera::alignCameraAxis()
+{
+    // Get camera right and up vectors
+    QVector3D right(Camera::right());
+    QVector3D up(Camera::up());
+
+    // Compute nearest axis of right vector
+    int nearAxisIndex = 0;
+    QVector3D rightRef = computeNearestAxis(right,nearAxisIndex);
+    int caseTested = nearAxisIndex;
+
+    // Compute nearest axis of up vector
+    QVector3D upRef = computeNearestAxis(up,nearAxisIndex,caseTested);
+
+    // Update lookAt
+    QVector3D eye = myTarget + QVector3D::crossProduct(rightRef,upRef) * (myTarget - Camera::eye()).length();
+    lookAt(eye, myTarget, upRef);
+}
+
+QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int caseTested)
+{
+    QVector3D axisRef(0,0,0);
+    double dotProductAxis;
+
+    // If we search the nearest axis of the first vector
+    if(caseTested == -1)
+    {
+        // Init
+        QVector3D iRef(1,0,0);
+        dotProductAxis = QVector3D::dotProduct(axis, iRef);
+        nearAxisIndex = 0;
+
+        for(int j = 1; j<3; j++)
+        {
+            axisRef[j] = 1;
+            if(fabsf(dotProductAxis) < fabsf(QVector3D::dotProduct(axis, axisRef)))
+            {
+                nearAxisIndex = j;
+                dotProductAxis = QVector3D::dotProduct(axis, axisRef);
+            }
+            axisRef[j] = 0;
+        }
+    }
+
+    // If we search the nearest axis of the second vector, remove the axis found for the first vector
+    else
+    {
+        double iterations = 0;
+        for(int j=0;j<3;j++)
+        {
+            // First iteration: init
+            if(j!= caseTested && !iterations)
+            {
+                // Init axisRef
+                axisRef[j]=1;
+                nearAxisIndex = j;
+                // Compute dotProduct
+                dotProductAxis = QVector3D::dotProduct(axis, axisRef);
+                axisRef[j] = 0;
+                iterations++;
+            }
+
+            // Second iteration
+            else if(j!= caseTested && iterations)
+            {
+                axisRef[j]=1;
+                if(fabsf(dotProductAxis) < fabsf(QVector3D::dotProduct(axis, axisRef)))
+                {
+                    nearAxisIndex = j;
+                    dotProductAxis = QVector3D::dotProduct(axis, axisRef);
+                }
+                axisRef[j] = 0;
+            }
+        }
+    }
+
+    // Return the nearest axis
+    if(dotProductAxis >= 0)
+      axisRef[nearAxisIndex] = 1;
+    else
+      axisRef[nearAxisIndex] = -1;
+
+    return axisRef;
+}
+
 void Camera::computeOrthographic()
 {
     if(!orthographic())

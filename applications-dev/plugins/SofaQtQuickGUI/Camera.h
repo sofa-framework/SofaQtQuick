@@ -74,6 +74,8 @@ public slots:
     void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
     void fit(const QVector3D& min, const QVector3D& max);
 
+    void alignCameraAxis();
+
 public:
     void setOrthoLeft(double left);
     void setOrthoRight(double right);
@@ -88,6 +90,7 @@ public:
 private:
     void computeOrthographic();
     void computeModel();
+    QVector3D computeNearestAxis(QVector3D axis,int& nearAxisIndex, int caseTested = -1);
 
 private:
     bool                myOrthographic;
