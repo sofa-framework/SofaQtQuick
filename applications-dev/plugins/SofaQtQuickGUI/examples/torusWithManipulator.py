@@ -31,14 +31,16 @@ def createScene(root):
     # bodies
     for i in xrange(N):
         r = StructuralAPI.RigidBody( root, 'P'+str(i) )
-               
+
         r.setManually(  [i,0,0,0,0,0,1], 1, [1,1,1] )
-        
+
         r.addCollisionMesh( 'mesh/torus.obj', [.1, .1, .1], [0,0,0,0,0,0,1], "_" + str(i))
 
         model = r.collision.node.getObject("model")
+
+        # define the body index in the name of the selectable component (here a collision model) to be able to retrieve the index from its name
         model.name = model.name + "_" + str(i)
-        
+
         r.collision.node.createObject('NormalsFromPoints', name="NormalsFromPoints", template="Vec3", position="@dofs.position", triangles="@loader.triangles", quads="@loader.quads")
         
         bodies.append(r)

@@ -12,6 +12,7 @@ CollapsibleGroupBox {
     title: "Scene Parameters"
     enabled: scene.ready
 
+    // define a view space manipulator component
     Component {
         id: manipulator2DComponent
 
@@ -76,10 +77,10 @@ CollapsibleGroupBox {
 
                 scene.pythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
             }
-
         }
     }
 
+    // define a world space manipulator component
     Component {
         id: manipulator3DComponent
 
@@ -187,6 +188,7 @@ CollapsibleGroupBox {
         }
     }
 
+    // retrieve the selected component in the scene
     property int currentIndex: -1
     Connections {
         target: scene
@@ -194,15 +196,21 @@ CollapsibleGroupBox {
             var selectedComponent = scene.selectedComponent();
             if(selectedComponent) {
                 var selectedComponentName = scene.selectedComponent().name;
+
+                // deduce the component index from its name
                 currentIndex = Number(selectedComponentName.slice(selectedComponentName.lastIndexOf("_") + 1));
             }
             else {
+                // -1 means no component is selected
                 currentIndex = -1;
             }
         }
     }
 
     Component.onCompleted: {
+        // instanciate manipulators and show only if their index if the same as the selected component index
+        // in this way, we only see manipulators of the selected component
+
         for(var i = 0; i < 5; ++i)
             scene.addManipulator(manipulator2DComponent.createObject(root, {scene: scene, index: i, visible: Qt.binding(function () {return this.index == root.currentIndex;})}));
 

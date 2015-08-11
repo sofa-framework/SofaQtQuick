@@ -22,13 +22,18 @@ CollapsibleGroupBox {
             ColumnLayout {
                 anchors.fill: parent
 
-                Label {
+                Item {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: implicitHeight
+                    Layout.preferredHeight: about.implicitHeight
 
-                    wrapMode: Text.WordWrap
-                    text: "<b>About ?</b><br />
-                        The goal of this example is to show you how to create a dynamic GUI.<br />"
+                    Label {
+                        id: about
+                        anchors.fill: parent
+
+                        wrapMode: Text.WordWrap
+                        text: "<b>About ?</b><br />
+                            The goal of this example is to show you how to create a dynamic GUI.<br />"
+                    }
                 }
 
                 RowLayout {
