@@ -1241,12 +1241,12 @@ SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVec
 
 static QVector4D packPickingIndex(int i)
 {
-    return QVector4D((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, ((i & 0xFF000000) >> 24) / 255.0);
+    return QVector4D((i & 0x000000FF) / 255.0, ((i & 0x0000FF00) >> 8) / 255.0, ((i & 0x00FF0000) >> 16) / 255.0, 0.0);
 }
 
 static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
 {
-    return (i[0] | (i[1] << 8) | (i[2] << 16) | (i[3] << 24)) - 1;
+    return (i[0] | (i[1] << 8) | (i[2] << 16)) - 1;
 }
 
 Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
@@ -1315,7 +1315,7 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
         glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
 
         int j = unpackPickingIndex(indexComponents);
-        if(-1 < j)
+        if(-1 != j)
         {
             if(j < oglModels.size())
                 return new SelectableSceneComponent(SceneComponent(this, oglModels[j]));
