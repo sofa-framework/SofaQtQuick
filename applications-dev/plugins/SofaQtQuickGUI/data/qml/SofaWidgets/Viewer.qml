@@ -8,7 +8,6 @@ import SofaBasics 1.0
 import SofaInteractors 1.0
 import Viewer 1.0
 import Scene 1.0
-import "."
 
 Viewer {
     id: root
@@ -102,19 +101,16 @@ Viewer {
         property alias interactor: interactorLoader.item
         Loader {
             id: interactorLoader
-			source: "qrc:/SofaInteractors/UserInteractor_Selection.qml"
-            //sourceComponent: SofaApplication.interactorComponent
+            sourceComponent: SofaApplication.interactorComponent
             onLoaded: {
                 var interactor = item;
                 interactor.scene   = root.scene;
                 interactor.viewer  = root;
                 interactor.init();
-				//console.log("mouseArea - interactor.init() " + interactor);
             }
         }
 
         onClicked: {
-			//console.log("mouseArea - onClicked() " + interactor);
             if(!activeFocus)
                 focus = true;
 
