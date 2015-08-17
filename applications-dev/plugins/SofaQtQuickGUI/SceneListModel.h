@@ -15,17 +15,13 @@ namespace sofa
 namespace qtquick
 {
 
-class SceneListModel : public QAbstractListModel, public QQmlParserStatus, private sofa::simulation::MutationListener
+class SceneListModel : public QAbstractListModel, private sofa::simulation::MutationListener
 {
     Q_OBJECT
-    Q_INTERFACES(QQmlParserStatus)
 
 public:
     SceneListModel(QObject* parent = 0);
     ~SceneListModel();
-
-    void classBegin();
-    void componentComplete();
 
     Q_INVOKABLE void update();
 
