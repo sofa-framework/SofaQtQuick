@@ -357,7 +357,7 @@ void Camera::alignCameraAxis()
 QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int caseTested)
 {
     QVector3D axisRef(0,0,0);
-    double dotProductAxis;
+    double dotProductAxis=0.;
 
     // If we search the nearest axis of the first vector
     if(caseTested == -1)
