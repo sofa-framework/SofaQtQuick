@@ -89,6 +89,7 @@ set(QML_FILES
 		data/qml/SofaBasics/DynamicSplitView.qml
                 data/qml/SofaBasics/DynamicContent.qml
                 data/qml/SofaInteractors/qmldir
+                data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
                 data/qml/SofaInteractors/UserInteractor_Selection.qml
                 data/qml/SofaManipulators/qmldir
                 data/qml/SofaManipulators/Manipulator.qml
