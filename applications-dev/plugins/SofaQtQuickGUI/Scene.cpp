@@ -56,7 +56,7 @@ using namespace sofa::simulation;
 
 typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3dTypes> MechanicalObject3d;
 
-Scene::Scene(QObject *parent) : QObject(parent),
+Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
 	myStatus(Status::Null),
 	mySource(),
     mySourceQML(),
@@ -64,6 +64,8 @@ Scene::Scene(QObject *parent) : QObject(parent),
     myPathQML(),
 	myIsInit(false),
     myVisualDirty(false),
+    myDrawNormals(false),
+    myNormalsDrawLength(1.0f),
 	myDt(0.04),
 	myPlay(false),
 	myAsynchronous(true),
@@ -76,15 +78,15 @@ Scene::Scene(QObject *parent) : QObject(parent),
     myHighlightShaderProgram(nullptr),
     myPickingShaderProgram(nullptr)
 {
+    sofa::component::init();
+    sofa::simulation::graph::init();
+
 	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
 	boost::shared_ptr<sofa::core::ObjectFactory::ClassEntry> classVisualModel;
 	sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
 
 	myStepTimer->setInterval(0);
 	mySofaSimulation = sofa::simulation::graph::getSimulation();
-
-	sofa::component::init();
-    sofa::simulation::graph::init();
 
     // plugins
     QVector<QString> plugins;
@@ -112,6 +114,8 @@ Scene::~Scene()
 {
 	if(mySofaSimulation == sofa::simulation::getSimulation())
 		sofa::simulation::setSimulation(0);
+
+    sofa::simulation::graph::cleanup();
 }
 
 static bool LoaderProcess(sofa::simulation::Simulation* sofaSimulation, const QString& scenePath)
@@ -370,16 +374,6 @@ void Scene::setAsynchronous(bool newAsynchronous)
     myAsynchronous = newAsynchronous;
 
     asynchronousChanged(newAsynchronous);
-}
-
-void Scene::setVisualDirty(bool newVisualDirty) const
-{
-    if(newVisualDirty == myVisualDirty)
-        return;
-
-    myVisualDirty = newVisualDirty;
-
-    visualDirtyChanged(newVisualDirty);
 }
 
 static void appendManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property, sofa::qtquick::Manipulator *value)
@@ -1096,7 +1090,7 @@ void Scene::step()
 
 	emit stepBegin();
     mySofaSimulation->animate(mySofaSimulation->GetRoot().get(), myDt);
-    setVisualDirty(true);
+    myVisualDirty = true;
     emit stepEnd();
 }
 
@@ -1107,7 +1101,7 @@ void Scene::reset()
 
     // TODO: ! NEED CURRENT OPENGL CONTEXT
     mySofaSimulation->reset(mySofaSimulation->GetRoot().get());
-    setVisualDirty(true);
+    myVisualDirty = true;
     emit reseted();
 }
 
@@ -1127,21 +1121,52 @@ void Scene::draw(const Viewer& viewer) const
         glGetDoublev(GL_MODELVIEW_MATRIX, _mvmatrix);
         glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
 
-        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-        visualParams->sceneBBox() = mySofaSimulation->GetRoot()->f_bbox.getValue();
-        visualParams->setProjectionMatrix(_projmatrix);
-        visualParams->setModelViewMatrix(_mvmatrix);
+//        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+//        visualParams->sceneBBox() = mySofaSimulation->GetRoot()->f_bbox.getValue();
+//        visualParams->setProjectionMatrix(_projmatrix);
+//        visualParams->setModelViewMatrix(_mvmatrix);
     }
 
-    //qDebug() << "draw - thread" << QThread::currentThread() << QOpenGLContext::currentContext();
-
-    if(visualDirty())
+    if(myVisualDirty)
     {
         mySofaSimulation->updateVisual(mySofaSimulation->GetRoot().get());
-        setVisualDirty(false);
-	}
+        myVisualDirty = false;
+    }
 
     mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), mySofaSimulation->GetRoot().get());
+
+    // draw normals
+    if(myDrawNormals)
+    {
+        Node* root = sofaSimulation()->GetRoot().get();
+
+        sofa::helper::vector<OglModel*> oglModels;
+        root->getTreeObjects<OglModel>(&oglModels);
+
+        for(OglModel* oglModel : oglModels)
+        {
+            const ResizableExtVector<ExtVec3fTypes::Coord>& vertices = oglModel->getVertices();
+            const ResizableExtVector<ExtVec3fTypes::Deriv>& normals = oglModel->getVnormals();
+
+            if(vertices.size() != normals.size())
+                continue;
+
+            for(int i = 0; i < vertices.size(); ++i)
+            {
+                ExtVec3fTypes::Coord vertex = vertices[i];
+                ExtVec3fTypes::Deriv normal = normals[i];
+                float length = qBound(0.0f, normal.norm(), 1.0f);
+
+                glColor3f(1.0f - length, length, length * length);
+                glBegin(GL_LINES);
+                {
+                    glVertex3f(vertex.x(), vertex.y(), vertex.z());
+                    glVertex3f(vertex.x() + normal.x() * myNormalsDrawLength, vertex.y() + normal.y() * myNormalsDrawLength, vertex.z() + normal.z() * myNormalsDrawLength);
+                }
+                glEnd();
+            }
+        }
+    }
 
     // highlight selected components using a specific shader
     if(!mySelectedComponents.isEmpty())
