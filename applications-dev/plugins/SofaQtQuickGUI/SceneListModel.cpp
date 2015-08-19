@@ -318,7 +318,6 @@ void SceneListModel::addChild(Node* parent, Node* child)
                     break;
 
                 QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildNodeItem(parentItem, child));
-                //std::cerr << &*childItemIt << std::endl;
                 parentItem->children.append(&*childItemIt);
 
                 parentItemIt = childItemIt;
@@ -406,7 +405,7 @@ void SceneListModel::addObject(Node* parent, BaseObject* object)
 
                 QList<Item>::iterator itemIt = parentItemIt;
                 while(++itemIt != myItems.end())
-                    if(parentItem != itemIt->parent)
+                    if(parentItem != itemIt->parent || !itemIt->object)
                         break;
 
                 QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildObjectItem(parentItem, object));
