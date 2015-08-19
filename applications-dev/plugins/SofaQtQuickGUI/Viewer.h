@@ -56,6 +56,8 @@ public:
     Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
     Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
     Q_PROPERTY(bool antialiasing READ antialiasing WRITE setAntialiasing NOTIFY antialiasingChanged)
+    Q_PROPERTY(bool drawNormals MEMBER myDrawNormals NOTIFY drawNormalsChanged)
+    Q_PROPERTY(float normalsDrawLength MEMBER myNormalsDrawLength NOTIFY normalsDrawLengthChanged)
 
 public:
     Scene* scene() const        {return myScene;}
@@ -115,6 +117,8 @@ signals:
     void cullingChanged(bool newCulling);
     void blendingChanged(bool newBlending);
     void antialiasingChanged(bool newAntialiasing);
+    void drawNormalsChanged(bool newDrawNormals);
+    void normalsDrawLengthChanged(float newNormalsDrawLength);
 
 public slots:
     void paint();
@@ -129,7 +133,7 @@ private:
     QPointF mapToNative(const QPointF& ssPoint) const;
 
 private slots:
-	void handleSceneChanged(Scene* scene);
+    void handleSceneChanged(Scene* scene);
 	void handleScenePathChanged();
     void handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource);
     void handleWindowChanged(QQuickWindow* window);
@@ -145,6 +149,8 @@ private:
     bool                        myCulling;
     bool                        myBlending;
     bool                        myAntialiasing;
+    bool                        myDrawNormals;
+    float                       myNormalsDrawLength;
 
 };
 

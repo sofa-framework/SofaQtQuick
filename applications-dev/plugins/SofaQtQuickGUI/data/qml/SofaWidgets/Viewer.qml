@@ -357,6 +357,40 @@ Viewer {
                                         description: "Enable blending"
                                     }
                                 }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: "Normals"
+                                }
+
+                                Switch {
+                                    id: normalsSwitch
+                                    Layout.alignment: Qt.AlignCenter
+                                    Component.onCompleted: checked = root.blending
+                                    onCheckedChanged: root.drawNormals = checked
+
+                                    ToolTip {
+                                        anchors.fill: parent
+                                        description: "Display normals"
+                                    }
+                                }
+
+                                Slider {
+                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.columnSpan: 2
+                                    visible: normalsSwitch.checked
+
+                                    Component.onCompleted: {
+                                        value = Math.sqrt(root.normalsDrawLength);
+                                        minimumValue = value * 0.1;
+                                        maximumValue = value * 2.0;
+                                        stepSize = minimumValue;
+                                    }
+                                    onValueChanged: {
+                                        root.normalsDrawLength = value * value
+                                    }
+                                }
+
 /*  
                                 // TODO: antialiasing not implemented yet
                                 Label {

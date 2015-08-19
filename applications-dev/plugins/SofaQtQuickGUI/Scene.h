@@ -56,7 +56,6 @@ public:
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
     Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
-    Q_PROPERTY(bool visualDirty READ visualDirty NOTIFY visualDirtyChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::SceneComponent> selectedComponents READ selectedComponents DESIGNABLE false FINAL)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> selectedManipulators READ selectedManipulators DESIGNABLE false FINAL)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators DESIGNABLE false FINAL)
@@ -70,36 +69,39 @@ public:
 	};
 
 public:
-    sofa::qtquick::Scene::Status status()	const							{return myStatus;}
+    sofa::qtquick::Scene::Status status()	const			{return myStatus;}
     void setStatus(sofa::qtquick::Scene::Status newStatus);
 
-    bool isPreLoaded() const                        {return myIsInit;}
-    bool isLoading() const							{return Status::Loading == myStatus;}
-    bool isReady() const							{return Status::Ready == myStatus;}
+    bool isPreLoaded() const                                {return myIsInit;}
+    bool isLoading() const							        {return Status::Loading == myStatus;}
+    bool isReady() const							        {return Status::Ready == myStatus;}
 
-    const QString& header() const					{return myHeader;}
+    const QString& header() const					        {return myHeader;}
     void setHeader(const QString& newHeader);
 
-	const QUrl& source() const						{return mySource;}
+    const QUrl& source() const						        {return mySource;}
 	void setSource(const QUrl& newSource);
 
-	const QUrl& sourceQML() const					{return mySourceQML;}
+    const QUrl& sourceQML() const					        {return mySourceQML;}
 	void setSourceQML(const QUrl& newSourceQML);
 
-    const QUrl& screenshotFilename() const			{return myScreenshotFilename;}
+    const QUrl& screenshotFilename() const			        {return myScreenshotFilename;}
     void setScreenshotFilename(const QUrl& newScreenshotFilename);
 
-	double dt() const								{return myDt;}
+    double dt() const								        {return myDt;}
 	void setDt(double newDt);
 	
-	bool playing() const							{return myPlay;}
+    bool playing() const							        {return myPlay;}
 	void setPlay(bool newPlay);
 
-    bool asynchronous() const                       {return myAsynchronous;}
+    bool asynchronous() const                               {return myAsynchronous;}
     void setAsynchronous(bool newPlay);
 
-    bool visualDirty() const						{return myVisualDirty;}
-    void setVisualDirty(bool newVisualDirty) const;
+    bool drawnNormals() const                               {return myDrawNormals;}
+    void setDrawNormals(bool newDrawNormals)                {myDrawNormals = newDrawNormals;}
+
+    float normalsDrawLength() const                         {return myNormalsDrawLength;}
+    void setNormalsDrawLength(float newNormalDrawLength)    {myNormalsDrawLength = newNormalDrawLength;}
 
     QQmlListProperty<sofa::qtquick::Manipulator>    manipulators();
     QQmlListProperty<sofa::qtquick::Manipulator>    selectedManipulators();
@@ -116,8 +118,7 @@ signals:
     void screenshotFilenameChanged(const QUrl& newScreenshotFilename);
 	void dtChanged(double newDt);
 	void playChanged(bool newPlay);
-	void asynchronousChanged(bool newAsynchronous);
-    void visualDirtyChanged(bool newVisualDirty) const;
+    void asynchronousChanged(bool newAsynchronous);
     void selectedComponentsChanged();
 
 public:
@@ -197,6 +198,8 @@ private:
     QString                                     myPathQML;
     bool                                        myIsInit;
     mutable bool                                myVisualDirty;
+    bool                                        myDrawNormals;
+    float                                       myNormalsDrawLength;
     double                                      myDt;
     bool                                        myPlay;
     bool                                        myAsynchronous;

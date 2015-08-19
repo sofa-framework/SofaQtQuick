@@ -42,7 +42,9 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myWireframe(false),
     myCulling(true),
     myBlending(false),
-    myAntialiasing(false)
+    myAntialiasing(false),
+    myDrawNormals(false),
+    myNormalsDrawLength(1.0f)
 {
     setFlag(QQuickItem::ItemHasContents);
 
@@ -597,6 +599,12 @@ void Viewer::internalDraw()
 		_vparams->setModelViewMatrix(_mvmatrix);
 	}
 
+    myScene->setDrawNormals(myDrawNormals);
+    myScene->setNormalsDrawLength(myNormalsDrawLength);
+
+    glColor4f(1, 1, 1, 1);
+    glDisable(GL_COLOR_MATERIAL);
+
     myScene->draw(*this);
 
     if(wireframe())
@@ -655,22 +663,38 @@ void Viewer::paint()
 
 	glViewport(pos.x(), pos.y(), size.width(), size.height());
 
-    // set a default light
+    // set default lights
     {
         QVector3D cameraPosition(myCamera->eye());
-        float lightPosition[] = { cameraPosition.x(), cameraPosition.y(), cameraPosition.z(), 1.0f};
-        float lightAmbient [] = { 0.0f, 0.0f, 0.0f, 0.0f};
-        float lightDiffuse [] = { 1.0f, 1.0f, 1.0f, 0.0f};
-        float lightSpecular[] = { 1.0f, 1.0f, 1.0f, 0.0f};
 
-        glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-        glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
-        glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
-        glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
         glEnable(GL_LIGHT0);
+        {
+            float lightPosition[] = {0.75f, 0.75f, 1.0f, 0.0f};
+            float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
+            float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
+            float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
+
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
+            glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
+            glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+        }
+
+        glEnable(GL_LIGHT1);
+        {
+            float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
+            float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
+            float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
+            float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
+
+            glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+            glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
+            glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
+            glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
+        }
     }
 
-	glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
 
 	if(blending())
 		glEnable(GL_BLEND);
