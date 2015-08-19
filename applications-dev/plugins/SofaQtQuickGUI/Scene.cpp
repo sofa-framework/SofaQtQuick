@@ -165,39 +165,39 @@ void Scene::open()
 	if(Status::Loading == myStatus) // return now if a scene is already loading
 		return;
 
-    setStatus(Status::Loading);
-
-    setPlay(false);
-    myIsInit = false;
-
-    aboutToUnload();
-    mySofaSimulation->unload(mySofaSimulation->GetRoot());
-
 	QString finalFilename = mySource.toLocalFile();
 	if(finalFilename.isEmpty())
-    {
+	{
 		setStatus(Status::Error);
-        return;
-    }
+		return;
+	}
 
-    std::string filepath = finalFilename.toLatin1().constData();
-    if(sofa::helper::system::DataRepository.findFile(filepath))
-    {
-        finalFilename = filepath.c_str();
-        finalFilename.replace("\\", "/");
-    }
+	std::string filepath = finalFilename.toLatin1().constData();
+	if(sofa::helper::system::DataRepository.findFile(filepath))
+		finalFilename = filepath.c_str();
 
-    if(finalFilename.isEmpty())
-    {
-        setStatus(Status::Error);
-        return;
-    }
+	if(finalFilename.isEmpty())
+	{
+		setStatus(Status::Error);
+		return;
+	}
+
+	finalFilename.replace("\\", "/");
+
+    aboutToUnload();
+
+	setStatus(Status::Loading);
+
+	setPlay(false);
+	myIsInit = false;
 
     std::string qmlFilepath = (finalFilename + ".qml").toLatin1().constData();
     if(!sofa::helper::system::DataRepository.findFile(qmlFilepath))
         qmlFilepath.clear();
 
     myPathQML = QString::fromStdString(qmlFilepath);
+
+    mySofaSimulation->unload(mySofaSimulation->GetRoot());
 
     QString finalHeader;
 
@@ -1163,12 +1163,9 @@ void Scene::draw(const Viewer& viewer) const
                     if(visualStyle)
                         visualStyle->fwdDraw(visualParams);
 
-                    sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
                     visualParams->displayFlags().setShowWireFrame(true);
 
                     oglModel->drawVisual(visualParams);
-
-                    visualParams->displayFlags().setShowWireFrame(state);
 
                     if(visualStyle)
                         visualStyle->bwdDraw(visualParams);
@@ -1184,12 +1181,9 @@ void Scene::draw(const Viewer& viewer) const
                         if(visualStyle)
                             visualStyle->fwdDraw(visualParams);
 
-                        sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
                         visualParams->displayFlags().setShowWireFrame(true);
 
                         triangleModel->draw(visualParams);
-
-                        visualParams->displayFlags().setShowWireFrame(state);
 
                         if(visualStyle)
                             visualStyle->bwdDraw(visualParams);

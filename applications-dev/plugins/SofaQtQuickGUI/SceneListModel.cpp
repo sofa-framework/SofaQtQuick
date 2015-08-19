@@ -14,11 +14,11 @@ using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
 using namespace sofa::simulation;
 
-SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), MutationListener(),
+SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), QQmlParserStatus(), MutationListener(),
     myItems(),
     myUpdatedCount(0),
 	myIsDirty(true),
-    myScene(nullptr)
+    myScene(0)
 {
 
 }
@@ -26,6 +26,19 @@ SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), Mu
 SceneListModel::~SceneListModel()
 {
 
+}
+
+void SceneListModel::classBegin()
+{
+
+}
+
+void SceneListModel::componentComplete()
+{
+    if(!myScene)
+        setScene(qobject_cast<Scene*>(parent()));
+    else
+        handleSceneChange(myScene);
 }
 
 void SceneListModel::update()
@@ -59,11 +72,11 @@ void SceneListModel::handleSceneChange(Scene* /*newScene*/)
     {
         if(myScene->isReady())
         {
-            //addChild(0, myScene->sofaSimulation()->GetRoot().get());
+            addChild(0, myScene->sofaSimulation()->GetRoot().get());
             update();
         }
 
-        connect(myScene, &Scene::loaded, [this]() {clear(); addChild(0, myScene->sofaSimulation()->GetRoot().get()); update();});
+        connect(myScene, &Scene::loaded, [this]() {addChild(0, myScene->sofaSimulation()->GetRoot().get()); update();});
         connect(myScene, &Scene::aboutToUnload, this, &SceneListModel::clear);
     }
 }
@@ -128,9 +141,6 @@ int	SceneListModel::rowCount(const QModelIndex & /*parent*/) const
 
 QVariant SceneListModel::data(const QModelIndex& index, int role) const
 {
-    if(!myScene || !myScene->isReady())
-        return QVariant("");
-
     if(!index.isValid())
     {
         qWarning("Invalid index");
