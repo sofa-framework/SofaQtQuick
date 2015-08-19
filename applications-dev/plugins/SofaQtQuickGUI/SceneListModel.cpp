@@ -291,6 +291,8 @@ void SceneListModel::addChild(Node* parent, Node* child)
     }
     else
     {
+        bool alreadyAdded = false;
+
         QList<Item>::iterator parentItemIt = myItems.begin();
         while(parentItemIt != myItems.end())
         {
@@ -300,8 +302,20 @@ void SceneListModel::addChild(Node* parent, Node* child)
 
                 QList<Item>::iterator itemIt = parentItemIt;
                 while(++itemIt != myItems.end())
-                    if(!isAncestor(parentItem, &*itemIt))
+                {
+                    Item* childItem = &*itemIt;
+                    if(childItem->base == child)
+                    {
+                        alreadyAdded = true;
                         break;
+                    }
+
+                    if(!isAncestor(parentItem, childItem))
+                        break;
+                }
+
+                if(alreadyAdded)
+                    break;
 
                 QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildNodeItem(parentItem, child));
                 //std::cerr << &*childItemIt << std::endl;
@@ -378,7 +392,6 @@ void SceneListModel::addObject(Node* parent, BaseObject* object)
         if(it->base == object)
         {
             alreadyAdded = true;
-            //std::cerr << std::endl;
             break;
         }
 
@@ -396,17 +409,10 @@ void SceneListModel::addObject(Node* parent, BaseObject* object)
                     if(parentItem != itemIt->parent)
                         break;
 
-                if(!alreadyAdded)
-                {
-                    QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildObjectItem(parentItem, object));
-                    //std::cerr << &*childItemIt << " - " << &*childItemIt->parent << std::endl;
-                    parentItem->children.append(&*childItemIt);
-                    parentItemIt = childItemIt;
-                }
-                else
-                {
-                    //std::cerr << &*itemIt << std::endl;
-                }
+                QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildObjectItem(parentItem, object));
+                parentItem->children.append(&*childItemIt);
+                parentItemIt = childItemIt;
+
                 break;
             }
             else
