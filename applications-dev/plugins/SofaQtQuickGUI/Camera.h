@@ -83,7 +83,7 @@ public:
     void setOrthoTop(double top);
 
     void setPerspectiveFovY(double fovY);
-    void setPerspectiveAspectRatio(double aspectRatio);
+    void setAspectRatio(double aspectRatio);
 	void setZNear(double zNear);
 	void setZFar(double zFar);
 
@@ -99,7 +99,7 @@ private:
     double              myOrthoBottom;
     double              myOrthoTop;
     double				myPerspectiveFovY;
-    double				myPerspectiveAspectRatio;
+    double				myAspectRatio;
 	double				myZNear;
 	double				myZFar;
 

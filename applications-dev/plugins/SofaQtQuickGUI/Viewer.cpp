@@ -350,7 +350,7 @@ public:
 
         glDisable(GL_CULL_FACE);
 
-        camera->setPerspectiveAspectRatio(size.width() / (double) size.height());
+        camera->setAspectRatio(size.width() / (double) size.height());
 
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
@@ -549,7 +549,7 @@ void Viewer::internalDraw()
 	glDisable(GL_CULL_FACE);
 
 	QSize size = glRect().size();
-	myCamera->setPerspectiveAspectRatio(size.width() / (double) size.height());
+    myCamera->setAspectRatio(size.width() / (double) size.height());
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -596,7 +596,7 @@ void Viewer::internalDraw()
 		_vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
 		_vparams->sceneBBox() = myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
 		_vparams->setProjectionMatrix(_projmatrix);
-		_vparams->setModelViewMatrix(_mvmatrix);
+        _vparams->setModelViewMatrix(_mvmatrix);
 	}
 
     myScene->setDrawNormals(myDrawNormals);

@@ -17,7 +17,7 @@ Camera::Camera(QObject* parent) : QObject(parent),
     myOrthoBottom(-1.0),
     myOrthoTop(1.0),
     myPerspectiveFovY(55.0),
-    myPerspectiveAspectRatio(16.0 / 9.0),
+    myAspectRatio(16.0 / 9.0),
 	myZNear(0.1f),
 	myZFar(1000.f),
 	myProjection(),
@@ -70,7 +70,7 @@ const QMatrix4x4& Camera::projection() const
         if(myOrthographic)
             myProjection.ortho(myOrthoLeft, myOrthoRight, myOrthoBottom, myOrthoTop, myZNear, myZFar);
         else
-            myProjection.perspective((float) myPerspectiveFovY, (float) myPerspectiveAspectRatio, myZNear, myZFar);
+            myProjection.perspective((float) myPerspectiveFovY, (float) myAspectRatio, myZNear, myZFar);
 		myProjectionDirty = false;
 	}
 
@@ -271,14 +271,17 @@ void Camera::setPerspectiveFovY(double fovY)
 	myProjectionDirty = true;
 }
 
-void Camera::setPerspectiveAspectRatio(double aspectRatio)
+void Camera::setAspectRatio(double aspectRatio)
 {
-    if(aspectRatio == myPerspectiveAspectRatio)
+    if(aspectRatio == myAspectRatio)
 		return;
 
-    myPerspectiveAspectRatio = aspectRatio;
+    myAspectRatio = aspectRatio;
 
 	myProjectionDirty = true;
+
+    if(orthographic())
+        computeOrthographic();
 }
 
 void Camera::setZNear(double zNear)
