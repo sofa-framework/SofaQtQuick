@@ -42,6 +42,7 @@ CollapsibleGroupBox {
                     currentIndex = -1;
             }
 
+            highlightMoveDuration: 0
             highlight: Rectangle {
                 color: "lightsteelblue";
                 radius: 5
