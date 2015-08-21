@@ -70,5 +70,10 @@ UserInteractor_MoveCamera {
                 viewer.crosshairGizmo.pop();
             }
         });
+
+        addMouseDoubleRightClickedMapping(Qt.RightButton, function(mouse) {
+                // Align camera axis
+                viewer.camera.alignCameraAxis();
+        });
     }
 }
