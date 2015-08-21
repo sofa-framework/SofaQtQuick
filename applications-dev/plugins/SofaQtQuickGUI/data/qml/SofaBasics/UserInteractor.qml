@@ -11,6 +11,7 @@ QtObject {
 
     property var mouseClickedMapping: Array()
     property var mouseDoubleClickedMapping: Array()
+    property var mouseDoubleRightClickedMapping: Array()
     property var mousePressedMapping: Array()
     property var mouseReleasedMapping: Array()
     property var mouseWheelMapping: null
@@ -26,6 +27,10 @@ QtObject {
 
     function addMouseDoubleClickedMapping(button, binding) {
         mouseDoubleClickedMapping[button] = binding;
+    }
+
+    function addMouseDoubleRightClickedMapping(button, binding) {
+        mouseDoubleRightClickedMapping[button] = binding;
     }
 
     function addMousePressedMapping(button, binding) {
@@ -61,6 +66,12 @@ QtObject {
 
     function mouseDoubleClicked(mouse) {
         var binding = mouseDoubleClickedMapping[mouse.button];
+        if(binding)
+            binding(mouse, scene, viewer);
+    }
+
+    function mouseDoubleRightClicked(mouse) {
+        var binding = mouseDoubleRightClickedMapping[mouse.button];
         if(binding)
             binding(mouse, scene, viewer);
     }

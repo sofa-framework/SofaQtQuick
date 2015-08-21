@@ -122,8 +122,8 @@ Viewer {
             if(!activeFocus)
                 focus = true;
 
-            if(camera)
-                camera.alignCameraAxis();
+            if(interactor && camera)
+                interactor.mouseDoubleRightClicked(mouse);
 
             if(interactor)
                 interactor.mouseDoubleClicked(mouse);
