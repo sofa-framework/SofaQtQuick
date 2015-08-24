@@ -455,17 +455,30 @@ Viewer {
                                         }
                                     }
                                 }
+                            }
+                        }
 
-                                Button {
-                                     Layout.fillWidth: true
-                                     text: "Save Screenshot"
+                        GroupBox {
+                            id: savePanel
+                            implicitWidth: parent.width
 
-                                     onClicked: {
-                                         toolPanel.visible = false
-                                         root.takeViewerScreenshot();
-                                         saveScreenshotViewerFileDialog.open();
-                                         toolPanel.visible = true
-                                     }
+                            title: "Save"
+
+                                GridLayout {
+                                    anchors.fill: parent
+                                    columnSpacing: 0
+                                    rowSpacing: 2
+                                    columns: 2
+
+                                    Button {
+                                        text: "Save Screenshot"
+                                        Layout.columnSpan: 2
+                                        onClicked: {
+                                            toolPanel.visible = false
+                                            root.takeViewerScreenshot();
+                                            saveScreenshotViewerFileDialog.open();
+                                            toolPanel.visible = true
+                                        }
 
                                      FileDialog {
                                          id: saveScreenshotViewerFileDialog
@@ -479,45 +492,92 @@ Viewer {
                                              root.saveScreenshotInFile();
                                          }
                                      }
-                                 }
+                                    }
 
-//                                Label {
-//                                    Layout.fillWidth: true
-//                                    text: "Logo"
-//                                }
+                                    CheckBox {
+                                        id: saveVideoCheckBox
+                                        text: "Save video "
+                                        checked: false
 
-//                                RowLayout {
-//                                    Layout.fillWidth: true
-//                                    spacing: 0
+                                        onClicked: {// bool saveVideo to true
+                                                    root.saveVideo = checked
+                                                    // Close toolPanel
+                                                    toolPanel.visible = false
+                                                    // Print message dialog
+                                                    if(root.saveVideo)
+                                                        saveViewerVideoDialog.open()
+                                        }
 
-//                                    TextField {
-//                                        id: logoTextField
-//                                        Layout.fillWidth: true
-//                                        Component.onCompleted: text = root.backgroundImageSource
-//                                        onAccepted: root.backgroundImageSource = text
-//                                    }
+                                        ToolTip {
+                                            anchors.fill: parent
+                                            description: "Save video for this viewer"
+                                        }
 
-//                                    Button {
-//                                        Layout.preferredWidth: 22
-//                                        Layout.preferredHeight: Layout.preferredWidth
-//                                        iconSource: "qrc:/icon/open.png"
+                                        Dialog {
+                                            id: saveViewerVideoDialog
+                                            title: "Save video"
+                                            width: 300
+                                            Text {
+                                            text: "You have selected this viewer.<br>To start taking a video press v.</br><br>To stop taking the video re-press v.</br>"
+                                            }
+                                        }
+                                    }
 
-//                                        onClicked: openLogoDialog.open()
+                                    Button {
+                                        Layout.columnSpan: 1
+                                        Layout.fillWidth: true
+                                        text: "Video Folder"
 
-//                                        FileDialog {
-//                                            id: openLogoDialog
-//                                            title: "Please choose a logo"
-//                                            selectFolder: true
-//                                            selectMultiple: false
-//                                            selectExisting: true
-//                                            property var resultTextField
-//                                            onAccepted: {
-//                                                logoTextField.text = Qt.resolvedUrl(fileUrl)
-//                                                logoTextField.accepted();
-//                                            }
-//                                        }
-//                                    }
-//                                }
+                                        onClicked: {
+                                            videoManagerDialog.open();
+                                        }
+
+                                    Dialog {
+                                        id: videoManagerDialog
+                                        visible: false
+                                        title: "Video Folder"
+                                        width: 500
+
+                                        ColumnLayout {
+
+                                        TextField {
+                                            id: folderPathTextField
+                                            placeholderText: qsTr("Select folder")
+                                            style: TextFieldStyle {
+                                                    textColor: "black"
+                                                    background: Rectangle {
+                                                        radius: 2
+                                                        implicitWidth: 500
+                                                        implicitHeight: 24
+                                                    }
+                                            }
+                                        }
+
+                                        Button{
+                                            Layout.columnSpan: 1
+                                            Layout.fillWidth: true
+                                            text: "Select Folder"
+
+                                            onClicked: {
+                                                openVideoFolderDialog.open();
+                                           }
+
+                                            FileDialog {
+                                                id: openVideoFolderDialog
+                                                title: "Please choose a folder"
+                                                selectFolder: true
+                                                selectMultiple: false
+                                                selectExisting: true
+                                                onAccepted: {
+                                                    folderPathTextField.placeholderText = folder.toString().replace("file:","").replace("///","/");
+                                                    root.folderToSaveVideo = folder;
+                                                }
+                                            }
+
+                                        }
+                                        }
+                                    }
+                                    }
                             }
                         }
 
@@ -581,6 +641,45 @@ Viewer {
                                         }
                                     }
                                 }
+
+
+                                //                                Label {
+                                //                                    Layout.fillWidth: true
+                                //                                    text: "Logo"
+                                //                                }
+
+                                //                                RowLayout {
+                                //                                    Layout.fillWidth: true
+                                //                                    spacing: 0
+
+                                //                                    TextField {
+                                //                                        id: logoTextField
+                                //                                        Layout.fillWidth: true
+                                //                                        Component.onCompleted: text = root.backgroundImageSource
+                                //                                        onAccepted: root.backgroundImageSource = text
+                                //                                    }
+
+                                //                                    Button {
+                                //                                        Layout.preferredWidth: 22
+                                //                                        Layout.preferredHeight: Layout.preferredWidth
+                                //                                        iconSource: "qrc:/icon/open.png"
+
+                                //                                        onClicked: openLogoDialog.open()
+
+                                //                                        FileDialog {
+                                //                                            id: openLogoDialog
+                                //                                            title: "Please choose a logo"
+                                //                                            selectFolder: true
+                                //                                            selectMultiple: false
+                                //                                            selectExisting: true
+                                //                                            property var resultTextField
+                                //                                            onAccepted: {
+                                //                                                logoTextField.text = Qt.resolvedUrl(fileUrl)
+                                //                                                logoTextField.accepted();
+                                //                                            }
+                                //                                        }
+                                //                                    }
+                                //                                }
 
                                 GroupBox {
                                     implicitWidth: parent.width

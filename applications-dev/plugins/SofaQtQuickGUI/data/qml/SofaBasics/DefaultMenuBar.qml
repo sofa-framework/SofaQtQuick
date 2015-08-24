@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.1
+import QtQuick.Dialogs 1.2
 import Qt.labs.settings 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 import "."
@@ -10,6 +10,8 @@ MenuBar {
     id: menuBar
 
     property var scene
+    property var viewers
+    property int timerInterval: 16
 
     property list<QtObject> objects: [
 
@@ -57,7 +59,7 @@ MenuBar {
 
         Action {
             id: saveScreenshotAction
-            text: "&SaveScreenshot"
+            text: "&Save Screenshot"
             shortcut: "s"
             onTriggered:
             {
@@ -65,6 +67,68 @@ MenuBar {
                 saveSofaSceneScreenshotDialog.open();
             }
             tooltip: "Save the Sofa Scene"
+        },
+
+        Timer {
+            id: timerSaveVideo
+            running: false
+            repeat: true
+            interval: timerInterval
+            onTriggered: {
+                // Loop on viewer lists
+                for (var i = 0; i < viewers.length; i++) {
+                    if(viewers[i].saveVideo) {
+                        //timerInterval = 1000.0/viewers[i].videoFrameRate
+                        var folder = viewers[i].folderToSaveVideo;
+                        viewers[i].saveVideoInFile(folder,i);
+                    }
+                }
+
+            }
+        },
+
+        Action {
+            id: saveVideoAction
+            text: "&Save Viewer Video"
+            shortcut: "v"
+
+            onTriggered:
+            {
+                timerSaveVideo.running ? timerSaveVideo.stop():timerSaveVideo.start();
+            }
+            tooltip: "Save video of a viewer"
+        },
+
+        Action {
+            id: videoRecorderManagerAction
+            text: "&Video Recorder Manager"
+            shortcut: "r"
+
+            onTriggered:
+            {
+                videoManagerDialog.open();
+            }
+            tooltip: "Save video of a viewer"
+        },
+
+        Dialog {
+            id: videoManagerDialog
+            title: "Video Manager"
+            width: 400
+            ColumnLayout {
+            Text {
+                text: "To save a video select the viewer(s) you want to record.<br> Press v to start the video.</br><br>Re-press v to stop the video.</br>"
+            }
+            SpinBox {
+                id: frameRateSpinBox
+                minimumValue: 1
+                maximumValue: 100
+                stepSize: 1
+                prefix: " Framerate (in img/s): "
+                value: 60
+                onValueChanged: timerInterval = 1000.0/value
+                }
+            }
         },
 
         Action {
@@ -165,6 +229,8 @@ MenuBar {
         //MenuItem {action: saveAction}
         //MenuItem {action: saveAsAction}
         MenuItem {action:saveScreenshotAction }
+        MenuItem {action:saveVideoAction }
+        MenuItem {action:videoRecorderManagerAction}
         MenuSeparator {}
         MenuItem {action: exitAction}
     }
