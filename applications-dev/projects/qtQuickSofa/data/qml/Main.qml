@@ -15,6 +15,7 @@ ApplicationWindow {
     title: Qt.application.name + " - \"" + scenePath + "\""
 
     property var scene: SofaApplication.scene
+    property var viewers: SofaApplication.viewers
     property string scenePath: ""
 
     style: ApplicationWindowStyle {
@@ -73,6 +74,7 @@ ApplicationWindow {
     menuBar: DefaultMenuBar {
         id: menuBar
         scene: root.scene
+        viewers: root.viewers
     }
 
     toolBar: DefaultToolBar {

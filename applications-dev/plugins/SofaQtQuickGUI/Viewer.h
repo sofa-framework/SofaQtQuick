@@ -11,6 +11,14 @@
 #include <QImage>
 #include <QColor>
 
+#ifdef SOFA_HAVE_PNG
+#include <sofa/helper/io/ImagePNG.h>
+#else
+#include <sofa/helper/io/ImageBMP.h>
+#endif
+
+
+
 class QOpenGLFramebufferObject;
 
 namespace sofa
@@ -52,12 +60,15 @@ public:
 
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QUrl backgroundImageSource READ backgroundImageSource WRITE setBackgroundImageSource NOTIFY backgroundImageSourceChanged)
+    Q_PROPERTY(QUrl folderToSaveVideo READ folderToSaveVideo WRITE setFolderToSaveVideo NOTIFY folderToSaveVideoChanged)
     Q_PROPERTY(bool wireframe READ wireframe WRITE setWireframe NOTIFY wireframeChanged)
     Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
     Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
     Q_PROPERTY(bool antialiasing READ antialiasing WRITE setAntialiasing NOTIFY antialiasingChanged)
     Q_PROPERTY(bool drawNormals MEMBER myDrawNormals NOTIFY drawNormalsChanged)
     Q_PROPERTY(float normalsDrawLength MEMBER myNormalsDrawLength NOTIFY normalsDrawLengthChanged)
+    Q_PROPERTY(bool saveVideo READ saveVideo WRITE setSaveVideo NOTIFY saveVideoChanged)
+
 
 public:
     Scene* scene() const        {return myScene;}
@@ -72,6 +83,9 @@ public:
     QUrl backgroundImageSource() const	{return myBackgroundImageSource;}
     void setBackgroundImageSource(QUrl newBackgroundImageSource);
 
+    const QUrl& folderToSaveVideo() const	{return myFolderToSaveVideo;}
+    void setFolderToSaveVideo(const QUrl& newFolderToSaveVideo);
+
     bool wireframe() const      {return myWireframe;}
     void setWireframe(bool newWireframe);
 
@@ -83,6 +97,9 @@ public:
 
     bool antialiasing() const        {return myAntialiasing;}
     void setAntialiasing(bool newAntialiasing);
+
+    bool saveVideo() const        {return mySaveVideo;}
+    void setSaveVideo(bool newSaveVideo);
 
     /// @return depth in screen space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
@@ -105,7 +122,7 @@ public:
 
     Q_INVOKABLE void takeViewerScreenshot();
     Q_INVOKABLE void saveScreenshotInFile();
-
+    Q_INVOKABLE void saveVideoInFile(QUrl folderPath, int viewerIndex);
 
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
@@ -113,16 +130,18 @@ signals:
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
     void backgroundImageSourceChanged(QUrl newBackgroundImageSource);
+    void folderToSaveVideoChanged(const QUrl& newFolderToSaveVideo);
     void wireframeChanged(bool newWireframe);
     void cullingChanged(bool newCulling);
     void blendingChanged(bool newBlending);
     void antialiasingChanged(bool newAntialiasing);
     void drawNormalsChanged(bool newDrawNormals);
     void normalsDrawLengthChanged(float newNormalsDrawLength);
+    void saveVideoChanged(bool newSaveVideo);
 
 public slots:
     void paint();
-	void viewAll();
+    void viewAll();
 
 private:
     QRect glRect() const;
@@ -143,6 +162,7 @@ private:
 	Camera*						myCamera;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
+    QUrl                        myFolderToSaveVideo;
     QImage                      myBackgroundImage;
     QImage                      myScreenshotImage;
     bool                        myWireframe;
@@ -151,6 +171,14 @@ private:
     bool                        myAntialiasing;
     bool                        myDrawNormals;
     float                       myNormalsDrawLength;
+    bool                        mySaveVideo;
+    int                         myVideoFrameCounter;
+
+#ifdef SOFA_HAVE_PNG
+    sofa::helper::io::ImagePNG myVideoFrame;
+#else
+    sofa::helper::io::ImageBMP myVideoFrame;
+#endif
 
 };
 

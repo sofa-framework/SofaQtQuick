@@ -23,8 +23,12 @@
 #include <QPair>
 #include <QThread>
 #include <QString>
+#include <QDir>
 #include <qqml.h>
 #include <qmath.h>
+
+#include <iomanip>
+#include <sstream>
 
 namespace sofa
 {
@@ -37,6 +41,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myCamera(nullptr),
     myBackgroundColor("#00404040"),
     myBackgroundImageSource(),
+    myFolderToSaveVideo(""),
     myBackgroundImage(),
     myScreenshotImage(),
     myWireframe(false),
@@ -44,7 +49,9 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myBlending(false),
     myAntialiasing(false),
     myDrawNormals(false),
-    myNormalsDrawLength(1.0f)
+    myNormalsDrawLength(1.0f),
+    mySaveVideo(false),
+    myVideoFrameCounter(0)
 {
     setFlag(QQuickItem::ItemHasContents);
 
@@ -128,6 +135,16 @@ void Viewer::setBackgroundImageSource(QUrl newBackgroundImageSource)
     backgroundImageSourceChanged(newBackgroundImageSource);
 }
 
+void Viewer::setFolderToSaveVideo(const QUrl& newFolderToSaveVideo)
+{
+    if(newFolderToSaveVideo == myFolderToSaveVideo)
+        return;
+
+    myFolderToSaveVideo = newFolderToSaveVideo;
+
+    folderToSaveVideoChanged(newFolderToSaveVideo);
+}
+
 void Viewer::setWireframe(bool newWireframe)
 {
     if(newWireframe == myWireframe)
@@ -167,6 +184,16 @@ void Viewer::setAntialiasing(bool newAntialiasing)
     myAntialiasing = newAntialiasing;
 
     antialiasingChanged(newAntialiasing);
+}
+
+void Viewer::setSaveVideo(bool newSaveVideo)
+{
+    if(newSaveVideo == mySaveVideo)
+        return;
+
+    mySaveVideo = newSaveVideo;
+
+    saveVideoChanged(newSaveVideo);
 }
 
 double Viewer::computeDepth(const QVector3D& wsPosition) const
@@ -513,6 +540,67 @@ void Viewer::saveScreenshotInFile()
     }
 }
 
+void Viewer::saveVideoInFile(QUrl folderPath, int viewerIndex)
+{
+    // Define folder path to save video
+    QString folderPathString = folderPath.toLocalFile();
+
+    // If no folder path is selected take by default screenshots folder in build directory
+    if(folderPathString.isEmpty())
+    {
+        QDir dir;
+
+        folderPathString = dir.currentPath().replace("/bin","")+"/screenshots";
+    }
+
+    // Check folder exists
+    QDir dirFolder (folderPathString);
+    if(!dirFolder.exists())
+    {
+        std::cout << "Folder = " << folderPathString.toStdString() << "doesn't exist" << std::endl;
+        return;
+    }
+
+    // Define file name to save the different video frames
+    QString finalFilename = folderPathString + "/"+ myScene->source().toString().replace("file:", "").remove( QRegExp( "(.*/)" ) ).replace(".scn","");
+
+    // Number of the frame
+    std::ostringstream ss;
+    ss << std::setw( 8 ) << std::setfill( '0' ) << myVideoFrameCounter;
+    std::string result = ss.str();
+    finalFilename = finalFilename + "Viewer" +  QString::fromStdString(std::to_string(viewerIndex)) +  QString::fromStdString("_" + result);
+
+    // Take frame screenshot
+    QRect rect = glRect();
+    QPoint pos = rect.topLeft();
+    QSize size = rect.size();
+
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    myVideoFrame.init(size.width(),size.height(), 1, 1, helper::io::Image::UNORM8, helper::io::Image::RGB);
+    glReadBuffer(GL_FRONT);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(pos.x(),pos.y(), size.width(), size.height(), GL_RGB, GL_UNSIGNED_BYTE, myVideoFrame.getPixels());
+
+    // Save frame image
+    if(myVideoFrame.getHeight()!=0)
+    {
+        #ifdef SOFA_HAVE_PNG
+            finalFilename = finalFilename + ".png";
+        #else
+            finalFilename = finalFilename + ".bmp";
+        #endif
+        std::string filepath = finalFilename.toLatin1().constData();
+        if (!myVideoFrame.save(filepath)) return;
+            std::cout << "Saved "<<myVideoFrame.getWidth()<<"x"<<myVideoFrame.getHeight()<<" screen image to "<<filepath<<std::endl;
+    }
+
+    glReadBuffer(GL_BACK);
+
+    // Frame counter
+    myVideoFrameCounter++;
+}
+
 QRect Viewer::glRect() const
 {
 	if(!window())
@@ -543,78 +631,78 @@ QRect Viewer::qtRect() const
 
 void Viewer::internalDraw()
 {
-	if(!myScene || !myScene->isReady() || !myCamera)
-		return;
+         if(!myScene || !myScene->isReady() || !myCamera)
+                 return;
 
-	glDisable(GL_CULL_FACE);
+         glDisable(GL_CULL_FACE);
 
-	QSize size = glRect().size();
-    myCamera->setAspectRatio(size.width() / (double) size.height());
+         QSize size = glRect().size();
+     myCamera->setAspectRatio(size.width() / (double) size.height());
 
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadMatrixf(myCamera->projection().constData());
+         glMatrixMode(GL_PROJECTION);
+         glPushMatrix();
+         glLoadMatrixf(myCamera->projection().constData());
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadMatrixf(myCamera->view().constData());
+         glMatrixMode(GL_MODELVIEW);
+         glPushMatrix();
+         glLoadMatrixf(myCamera->view().constData());
 
-    if(wireframe())
+     if(wireframe())
         glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
-    else
-        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+     else
+         glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
-	if(culling())
-		glEnable(GL_CULL_FACE);
+         if(culling())
+                 glEnable(GL_CULL_FACE);
 
-// 	if(antialiasing())
-// 		glEnable(GL_MULTISAMPLE);
+ //      if(antialiasing())
+ //              glEnable(GL_MULTISAMPLE);
 
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_TEXTURE_2D);
+         glEnable(GL_DEPTH_TEST);
+         glDisable(GL_TEXTURE_2D);
 
-	// qt does not release its shader program and we do not use one so we have to release the current bound program
-	glUseProgram(0);
+         // qt does not release its shader program and we do not use one so we have to release the current bound program
+         glUseProgram(0);
 
-	// prepare the sofa visual params
-	sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-	if(_vparams)
-	{
-		if(!_vparams->drawTool())
-		{
-			_vparams->drawTool() = new sofa::core::visual::DrawToolGL();
-			_vparams->setSupported(sofa::core::visual::API_OpenGL);
-		}
+         // prepare the sofa visual params
+          sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+          if(_vparams)
+          {
+                  if(!_vparams->drawTool())
+                  {
+                          _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
+                          _vparams->setSupported(sofa::core::visual::API_OpenGL);
+                  }
 
-		GLint _viewport[4];
-		GLdouble _mvmatrix[16], _projmatrix[16];
+                  GLint _viewport[4];
+                  GLdouble _mvmatrix[16], _projmatrix[16];
 
-		glGetIntegerv (GL_VIEWPORT, _viewport);
-		glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
-		glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
+                  glGetIntegerv (GL_VIEWPORT, _viewport);
+                  glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
+                  glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
 
-		_vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-		_vparams->sceneBBox() = myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
-		_vparams->setProjectionMatrix(_projmatrix);
-        _vparams->setModelViewMatrix(_mvmatrix);
-	}
+                  _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+                  _vparams->sceneBBox() = myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
+                  _vparams->setProjectionMatrix(_projmatrix);
+          _vparams->setModelViewMatrix(_mvmatrix);
+          }
 
-    myScene->setDrawNormals(myDrawNormals);
-    myScene->setNormalsDrawLength(myNormalsDrawLength);
+      myScene->setDrawNormals(myDrawNormals);
+      myScene->setNormalsDrawLength(myNormalsDrawLength);
 
-    glColor4f(1, 1, 1, 1);
-    glDisable(GL_COLOR_MATERIAL);
+      glColor4f(1, 1, 1, 1);
+      glDisable(GL_COLOR_MATERIAL);
 
-    myScene->draw(*this);
+      myScene->draw(*this);
 
-    if(wireframe())
-        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+      if(wireframe())
+          glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
+          glMatrixMode(GL_PROJECTION);
+          glPopMatrix();
 
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+          glMatrixMode(GL_MODELVIEW);
+          glPopMatrix();
 }
 
 QPointF Viewer::mapToNative(const QPointF& ssPoint) const
@@ -649,6 +737,7 @@ void Viewer::paint()
 	glClearColor(myBackgroundColor.redF(), myBackgroundColor.greenF(), myBackgroundColor.blueF(), myBackgroundColor.alphaF());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_SCISSOR_TEST);
+
 
 //    if(!myBackgroundImage.isNull())
 //    {
