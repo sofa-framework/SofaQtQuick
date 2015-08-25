@@ -36,6 +36,10 @@ QtObject {
 //        return d.sceneListModel;
 //    }
 
+////////////////////////////////////////////////// STATUSBAR
+
+    property var statusBar: null
+
 ////////////////////////////////////////////////// VIEWER
 
     readonly property alias viewers: d.viewers

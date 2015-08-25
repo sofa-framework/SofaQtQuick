@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
+import "."
 
 ToolBar {
     id: root
@@ -11,6 +12,8 @@ ToolBar {
     property var scene
     property string statusMessage: ""
     property int    statusDuration: 5000
+
+    Component.onCompleted: SofaApplication.statusBar = root
 
     onStatusMessageChanged: clearStatusTimer.restart()
 
