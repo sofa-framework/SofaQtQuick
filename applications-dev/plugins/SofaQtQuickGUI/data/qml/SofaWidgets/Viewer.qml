@@ -8,7 +8,6 @@ import SofaBasics 1.0
 import SofaInteractors 1.0
 import Viewer 1.0
 import Scene 1.0
-import "."
 
 Viewer {
     id: root
@@ -19,6 +18,7 @@ Viewer {
     culling: true
     blending: false
     antialiasing: false
+    property bool defaultCameraOrthographic: false
 
 	Action{
 		shortcut: "F5"
@@ -56,7 +56,6 @@ Viewer {
         id: cameraComponent
 
         Camera {
-
         }
     }
 
@@ -64,7 +63,7 @@ Viewer {
         if(camera)
             camera.destroy();
 
-        camera = cameraComponent.createObject(root);
+        camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
     }
 
     Image {
@@ -102,8 +101,8 @@ Viewer {
         property alias interactor: interactorLoader.item
         Loader {
             id: interactorLoader
-			source: "qrc:/SofaInteractors/UserInteractor_Selection.qml"
-            //sourceComponent: SofaApplication.interactorComponent
+            // source: "qrc:/SofaInteractors/UserInteractor_Selection.qml"
+            sourceComponent: SofaApplication.interactorComponent
             onLoaded: {
                 var interactor = item;
                 interactor.scene   = root.scene;
@@ -551,7 +550,7 @@ Viewer {
 
                                             text: "Orthographic"
                                             checkable: true
-                                            checked: false
+                                            checked: root.defaultCameraOrthographic
                                             onCheckedChanged: root.camera.orthographic = checked
                                             onClicked: {
                                                 checked = true;
@@ -571,7 +570,7 @@ Viewer {
 
                                             text: "Perspective"
                                             checkable: true
-                                            checked: true
+                                            checked: !root.defaultCameraOrthographic
                                             onCheckedChanged: root.camera.orthographic = !checked
                                             onClicked: {
                                                 checked = true;
