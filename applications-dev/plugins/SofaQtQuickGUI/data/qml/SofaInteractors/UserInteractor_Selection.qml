@@ -69,13 +69,6 @@ UserInteractor_MoveCamera {
             setMouseMoveMapping(null);
         });
 
-        addMouseDoubleClickedMapping(Qt.LeftButton, function(mouse) {
-            var position = viewer.projectOnGeometry(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
-            if(1.0 === position.w) {
-                viewer.camera.target = position.toVector3d();
-                viewer.crosshairGizmo.pop();
-            }
-        });
 
         addMouseDoubleRightClickedMapping(Qt.RightButton, function(mouse) {
                 // Align camera axis
