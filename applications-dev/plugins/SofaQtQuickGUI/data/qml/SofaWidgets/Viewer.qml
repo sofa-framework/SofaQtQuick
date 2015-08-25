@@ -101,8 +101,8 @@ Viewer {
         property alias interactor: interactorLoader.item
         Loader {
             id: interactorLoader
-            // source: "qrc:/SofaInteractors/UserInteractor_Selection.qml"
-            sourceComponent: SofaApplication.interactorComponent
+            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
+            // sourceComponent: SofaApplication.interactorComponent
             onLoaded: {
                 var interactor = item;
                 interactor.scene   = root.scene;
