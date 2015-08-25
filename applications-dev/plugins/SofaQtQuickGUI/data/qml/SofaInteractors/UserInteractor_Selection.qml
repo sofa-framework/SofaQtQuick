@@ -69,10 +69,5 @@ UserInteractor_MoveCamera {
             setMouseMoveMapping(null);
         });
 
-
-        addMouseDoubleRightClickedMapping(Qt.RightButton, function(mouse) {
-                // Align camera axis
-                viewer.camera.alignCameraAxis();
-        });
     }
 }
