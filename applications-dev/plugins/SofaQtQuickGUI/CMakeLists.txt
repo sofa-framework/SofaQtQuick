@@ -76,7 +76,7 @@ set(QML_FILES
                 data/qml/SofaBasics/DefaultToolBar.qml
 		data/qml/SofaBasics/DefaultMenuBar.qml
 		data/qml/SofaBasics/Scene.qml
-                data/qml/SofaBasics/SceneListModel.qml
+                data/qml/SofaBasics/SceneInterface.qml
                 data/qml/SofaBasics/DataItem.qml
                 data/qml/SofaBasics/DataListModel.qml
 		data/qml/SofaBasics/PythonInteractor.qml
@@ -101,7 +101,7 @@ set(QML_FILES
 		data/qml/SofaTools/SimulationControl.qml
                 data/qml/SofaTools/SceneGraphView.qml
                 data/qml/SofaTools/DataListView.qml
-		data/qml/SofaTools/SceneGUILoader.qml
+                data/qml/SofaTools/SceneToolPanel.qml
                 data/qml/SofaWidgets/qmldir
 		data/qml/SofaWidgets/Viewer.qml
                 data/qml/SofaWidgets/DataView.qml

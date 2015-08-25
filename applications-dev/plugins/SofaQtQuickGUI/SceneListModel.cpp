@@ -1,7 +1,6 @@
 #include "SceneListModel.h"
 
 #include <QStack>
-#include <QDebug>
 #include <iostream>
 
 namespace sofa
@@ -25,7 +24,7 @@ SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), Mu
 
 SceneListModel::~SceneListModel()
 {
-
+    clear();
 }
 
 void SceneListModel::update()
@@ -59,17 +58,28 @@ void SceneListModel::handleSceneChange(Scene* /*newScene*/)
     {
         if(myScene->isReady())
         {
-            //addChild(0, myScene->sofaSimulation()->GetRoot().get());
+            addChild(0, myScene->sofaSimulation()->GetRoot().get());
             update();
         }
 
-        connect(myScene, &Scene::loaded, [this]() {clear(); addChild(0, myScene->sofaSimulation()->GetRoot().get()); update();});
+        connect(myScene, &Scene::loaded, this, [this]() {clear(); addChild(0, myScene->sofaSimulation()->GetRoot().get()); update();});
         connect(myScene, &Scene::aboutToUnload, this, &SceneListModel::clear);
     }
 }
 
 void SceneListModel::clear()
 {
+    if(myItems.isEmpty())
+        return;
+
+    for(Item& item : myItems)
+        if(item.base == item.node)
+        {
+            Node* node = static_cast<Node*>(item.node);
+            if(node)
+                node->removeListener(this);
+        }
+
     myItems.clear();
 
     markDirty();
@@ -112,7 +122,7 @@ void SceneListModel::setScene(Scene* newScene)
         return;
 
     if(myScene)
-        myScene->disconnect(this);
+        disconnect(myScene);
 
     myScene = newScene;
 
@@ -214,14 +224,6 @@ QVariant SceneListModel::get(int row) const
     return object;
 }
 
-SceneComponent* SceneListModel::getComponentById(int row) const
-{
-    if(row < 0 || row >= myItems.size())
-        return 0;
-
-    return new SceneComponent(myScene, myItems.at(row).base);
-}
-
 void SceneListModel::setCollapsed(int row, bool collapsed)
 {
     if(-1 == row)
@@ -261,6 +263,29 @@ void SceneListModel::setCollapsed(int row, bool collapsed)
     markDirty();
     update();
 }
+
+SceneComponent* SceneListModel::getComponentById(int row) const
+{
+    if(row < 0 || row >= myItems.size())
+        return 0;
+
+    return new SceneComponent(myScene, myItems.at(row).base);
+}
+
+int SceneListModel::getComponentId(SceneComponent* sceneComponent) const
+{
+    Base* base = nullptr;
+    if(sceneComponent)
+        base = sceneComponent->base();
+
+    if(base)
+        for(int i = 0; i < myItems.size(); ++i)
+            if(base == myItems[i].base)
+                return i;
+
+    return -1;
+}
+
 
 bool SceneListModel::isAncestor(SceneListModel::Item* ancestor, SceneListModel::Item* child)
 {

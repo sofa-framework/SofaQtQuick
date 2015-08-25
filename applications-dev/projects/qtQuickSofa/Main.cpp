@@ -9,6 +9,7 @@
 
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/Utils.h>
+#include <sofa/helper/AdvancedTimer.h>
 #include <sofa/gui/BaseGUI.h>
 
 using namespace sofa::qtquick;

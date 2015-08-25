@@ -6,11 +6,8 @@ import Qt.labs.settings 1.0
 import SofaBasics 1.0
 import SofaManipulators 1.0
 
-CollapsibleGroupBox {
+SceneInterface {
     id: root
-
-    title: "Scene Parameters"
-    enabled: scene.ready
 
     // define a view space manipulator component
     Component {
@@ -192,10 +189,10 @@ CollapsibleGroupBox {
     property int currentIndex: -1
     Connections {
         target: scene
-        onSelectedComponentsChanged: {
-            var selectedComponent = scene.selectedComponent();
+        onSelectedComponentChanged: {
+            var selectedComponent = scene.selectedComponent;
             if(selectedComponent) {
-                var selectedComponentName = scene.selectedComponent().name;
+                var selectedComponentName = scene.selectedComponent.name;
 
                 // deduce the component index from its name
                 currentIndex = Number(selectedComponentName.slice(selectedComponentName.lastIndexOf("_") + 1));

@@ -14,8 +14,8 @@ CollapsibleGroupBox {
     property int priority: 80
     contentMargin: 0
 
-    property var scene
-    property var sceneComponent: scene && scene.ready && scene.listModel ? scene.listModel.getComponentById(scene.listModel.selectedId) : null // TODO: use SceneGraphView.selectedId
+    property var scene: null
+    property var sceneComponent: scene ? scene.selectedComponent : null
 
     enabled: scene ? scene.ready : false
 

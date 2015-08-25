@@ -31,6 +31,7 @@ namespace qtquick
 {
 
 class Viewer;
+class InitGraphicsWorker;
 class PickUsingRasterizationWorker;
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
@@ -39,6 +40,7 @@ class Scene : public QObject, private sofa::simulation::MutationListener
     Q_OBJECT
 
     friend class Viewer;
+    friend class InitGraphicsWorker;
     friend class PickUsingRasterizationWorker;
     friend class SceneComponent;
     friend class SceneData;
@@ -56,8 +58,8 @@ public:
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
     Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::SceneComponent> selectedComponents READ selectedComponents DESIGNABLE false FINAL)
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> selectedManipulators READ selectedManipulators DESIGNABLE false FINAL)
+    Q_PROPERTY(sofa::qtquick::SceneComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
+    Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators DESIGNABLE false FINAL)
 
     Q_ENUMS(Status)
@@ -69,46 +71,48 @@ public:
 	};
 
 public:
-    sofa::qtquick::Scene::Status status()	const			{return myStatus;}
+    sofa::qtquick::Scene::Status status()	const               {return myStatus;}
     void setStatus(sofa::qtquick::Scene::Status newStatus);
 
-    bool isPreLoaded() const                                {return myIsInit;}
-    bool isLoading() const							        {return Status::Loading == myStatus;}
-    bool isReady() const							        {return Status::Ready == myStatus;}
+    bool isLoading() const                                      {return Status::Loading == myStatus;}
+    bool isReady() const                                        {return Status::Ready == myStatus;}
 
-    const QString& header() const					        {return myHeader;}
+    const QString& header() const                               {return myHeader;}
     void setHeader(const QString& newHeader);
 
-    const QUrl& source() const						        {return mySource;}
+    const QUrl& source() const                                  {return mySource;}
 	void setSource(const QUrl& newSource);
 
-    const QUrl& sourceQML() const					        {return mySourceQML;}
+    const QUrl& sourceQML() const                               {return mySourceQML;}
 	void setSourceQML(const QUrl& newSourceQML);
 
-    const QUrl& screenshotFilename() const			        {return myScreenshotFilename;}
+    const QUrl& screenshotFilename() const                      {return myScreenshotFilename;}
     void setScreenshotFilename(const QUrl& newScreenshotFilename);
 
-    double dt() const								        {return myDt;}
+    double dt() const                                           {return myDt;}
 	void setDt(double newDt);
 	
-    bool playing() const							        {return myPlay;}
+    bool playing() const                                        {return myPlay;}
 	void setPlay(bool newPlay);
 
-    bool asynchronous() const                               {return myAsynchronous;}
+    bool asynchronous() const                                   {return myAsynchronous;}
     void setAsynchronous(bool newPlay);
 
-    bool drawnNormals() const                               {return myDrawNormals;}
-    void setDrawNormals(bool newDrawNormals)                {myDrawNormals = newDrawNormals;}
+    sofa::qtquick::SceneComponent* selectedComponent() const    {return mySelectedComponent;}
+    void setSelectedComponent(sofa::qtquick::SceneComponent* newSelectedComponent);
 
-    float normalsDrawLength() const                         {return myNormalsDrawLength;}
-    void setNormalsDrawLength(float newNormalDrawLength)    {myNormalsDrawLength = newNormalDrawLength;}
+    sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
+    void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
+
+    bool drawNormals() const                                    {return myDrawNormals;}
+    void setDrawNormals(bool newDrawNormals)                    {myDrawNormals = newDrawNormals;}
+
+    float normalsDrawLength() const                             {return myNormalsDrawLength;}
+    void setNormalsDrawLength(float newNormalDrawLength)        {myNormalsDrawLength = newNormalDrawLength;}
 
     QQmlListProperty<sofa::qtquick::Manipulator>    manipulators();
-    QQmlListProperty<sofa::qtquick::Manipulator>    selectedManipulators();
-    QQmlListProperty<sofa::qtquick::SceneComponent> selectedComponents();
 
 signals:
-    void preloaded();                                   /// this signal is emitted after basic init has been done, call initGraphics() with a valid opengl context bound to effectively load the scene
     void loaded();                                      /// scene has been loaded and is ready
     void aboutToUnload();                               /// scene is being to be unloaded
     void statusChanged(Status newStatus);
@@ -119,7 +123,8 @@ signals:
 	void dtChanged(double newDt);
 	void playChanged(bool newPlay);
     void asynchronousChanged(bool newAsynchronous);
-    void selectedComponentsChanged();
+    void selectedComponentChanged(sofa::qtquick::SceneComponent* newSelectedComponent);
+    void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
 public:
     Q_INVOKABLE double radius() const;
@@ -146,7 +151,6 @@ protected:
     Q_INVOKABLE void onSetDataValue(const QString& path, const QVariant& value);
 
 public slots:
-    void initGraphics();        // need an opengl context made current
 	void reload();
     void animate(bool play);
 	void step();
@@ -164,6 +168,7 @@ signals:
 
 private slots:
     void open();
+    void initGraphics();
     void handleStatusChange(Status newStatus);
 
 public:
@@ -196,7 +201,6 @@ private:
     QUrl                                        mySourceQML;
     QUrl                                        myScreenshotFilename;
     QString                                     myPathQML;
-    bool                                        myIsInit;
     mutable bool                                myVisualDirty;
     bool                                        myDrawNormals;
     float                                       myNormalsDrawLength;
@@ -209,8 +213,8 @@ private:
     QSet<const sofa::core::objectmodel::Base*>  myBases;                        /// \todo For each base, reference a unique SceneComponent and use it in QML as a wrapper
 
     QList<Manipulator*>                         myManipulators;
-    QList<Manipulator*>                         mySelectedManipulators;         /// \todo Currently we can select only one manipulator, change that
-    QList<SceneComponent*>                      mySelectedComponents;               /// \todo Currently we can select only one model, change that
+    Manipulator*                                mySelectedManipulator;
+    SceneComponent*                             mySelectedComponent;
 
     QOpenGLShaderProgram*                       myHighlightShaderProgram;
     QOpenGLShaderProgram*                       myPickingShaderProgram;

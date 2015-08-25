@@ -12,15 +12,10 @@ CollapsibleGroupBox {
     title: "Scene Graph"
     property int priority: 90
 
-    property var scene
+    property var scene: null
     property real rowHeight: 16
 
     enabled: scene ? scene.ready : false
-
-    QtObject {
-        id: d
-        property var sceneListModel: scene && scene.listModel ? scene.listModel : null
-    }
 
     GridLayout {
         id: layout
@@ -33,10 +28,51 @@ CollapsibleGroupBox {
             Layout.preferredHeight: 400
             clip: true
 
-            model: d.sceneListModel
+            model: SceneListModel {
+                id: listModel
+                scene: root.scene
+
+                property bool dirty: true
+            }
+
+            Connections {
+                target: root.scene
+                onStatusChanged: {
+                    listView.currentIndex = -1;
+                }
+                onStepEnd: {
+                    if(root.scene.play)
+                        listModel.dirty = true;
+                    else if(listModel)
+                        listModel.update();
+                }
+                onReseted: {
+                    if(listModel)
+                        listModel.update();
+                }
+                onSelectedComponentChanged: {
+                    listView.currentIndex = listModel.getComponentId(scene.selectedComponent);
+                }
+            }
+
+            Timer {
+                running: root.scene.play ? true : false
+                repeat: true
+                interval: 200
+                onTriggered: {
+                    if(listModel.dirty) {
+                        listModel.update()
+                        listModel.dirty = false;
+                    }
+                }
+            }
+
             focus: true
-            Component.onCompleted: if(d.sceneListModel) d.sceneListModel.selectedId = currentIndex
-            onCurrentIndexChanged: if(d.sceneListModel) d.sceneListModel.selectedId = currentIndex
+
+            onCurrentIndexChanged: {
+                scene.selectedComponent = listModel.getComponentById(listView.currentIndex);
+            }
+
             onCountChanged: {
                 if(currentIndex >= count)
                     currentIndex = -1;

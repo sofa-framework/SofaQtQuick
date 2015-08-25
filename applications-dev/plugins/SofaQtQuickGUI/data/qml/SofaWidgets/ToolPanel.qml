@@ -14,16 +14,14 @@ Rectangle {
 
     FolderListModel {
         id: folderListModel
+        folder: "qrc:/SofaTools";
         nameFilters: ["*.qml"]
         showDirs: false
-        showFiles: true
+        showFiles: false
         sortField: FolderListModel.Name
 
-        Component.onCompleted: {
-            folder = "qrc:/SofaTools";
-        }
-
-        onCountChanged: refresh()
+        Component.onCompleted: showFiles = true;
+        onCountChanged: refresh();
     }
 
     function refresh() {
@@ -59,7 +57,7 @@ Rectangle {
         for(var i = 0; i < contentList.length; ++i)
         {
             contentList[i].parent = loaderLocation;
-            var title = "Scene GUI";
+            var title = "Tool - " + i;
             if(contentList[i].title)
                 title = contentList[i].title;
 

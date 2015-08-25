@@ -12,8 +12,8 @@ UserInteractor_MoveCamera {
     function init() {
         moveCamera_init();
         addMousePressedMapping(Qt.LeftButton, function(mouse) {
-            selectedManipulator = scene.selectedManipulator();
-            selectedComponent = scene.selectedComponent();
+            selectedManipulator = scene.selectedManipulator;
+            selectedComponent = scene.selectedComponent;
 
             var selectable = viewer.pickObject(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
             if(selectable) {
@@ -22,10 +22,13 @@ UserInteractor_MoveCamera {
                 } else if(selectable.sceneComponent) {
                     selectedComponent = selectable.sceneComponent;
                 }
+            } else {
+                selectedManipulator = null;
+                selectedComponent = null;
             }
 
             if(selectedManipulator) {
-                scene.setSelectedManipulator(selectedManipulator);
+                scene.selectedManipulator = selectedManipulator;
 
                 if(selectedManipulator.mousePressed)
                     selectedManipulator.mousePressed(mouse, scene, viewer);
@@ -34,8 +37,8 @@ UserInteractor_MoveCamera {
                     setMouseMoveMapping(selectedManipulator.mouseMoved);
 
             } else if(selectedComponent) {
-                if(!scene.areSameComponent(scene.selectedComponent(), selectedComponent)) {
-                    scene.setSelectedComponent(selectedComponent);
+                if(!scene.areSameComponent(scene.selectedComponent, selectedComponent)) {
+                    scene.selectedComponent = selectedComponent;
                 } else {
                     var sceneComponentParticle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
                     if(sceneComponentParticle) {
@@ -48,6 +51,9 @@ UserInteractor_MoveCamera {
                         });
                     }
                 }
+            } else {
+                scene.selectedManipulator = null;
+                scene.selectedComponent = null;
             }
         });
 
@@ -58,7 +64,7 @@ UserInteractor_MoveCamera {
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, scene, viewer);
 
-            scene.clearSelectedManipulators();
+            scene.selectedManipulator = null;
 
             setMouseMoveMapping(null);
         });

@@ -33,7 +33,6 @@ public:
     };
 
 public slots:
-    void handleSceneChange(Scene* newScene);
     void clear();
 
 public:
@@ -49,9 +48,13 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
     Q_INVOKABLE QVariant get(int row) const;
-    Q_INVOKABLE sofa::qtquick::SceneComponent* getComponentById(int row) const;
     Q_INVOKABLE void setCollapsed(int row, bool value);
 	Q_INVOKABLE void markDirty() {myIsDirty = true;}
+
+    Q_INVOKABLE sofa::qtquick::SceneComponent* getComponentById(int row) const;
+    Q_INVOKABLE int getComponentId(sofa::qtquick::SceneComponent*) const;
+
+    void handleSceneChange(Scene* newScene);
 
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);

@@ -41,6 +41,11 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLContext>
+#include <QQuickWindow>
+#include <QRunnable>
+#include <QGuiApplication>
+#include <QOffscreenSurface>
 
 namespace sofa
 {
@@ -62,7 +67,6 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     mySourceQML(),
     myScreenshotFilename(),
     myPathQML(),
-	myIsInit(false),
     myVisualDirty(false),
     myDrawNormals(false),
     myNormalsDrawLength(1.0f),
@@ -73,8 +77,8 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     myStepTimer(new QTimer(this)),
     myBases(),
     myManipulators(),
-    mySelectedManipulators(),
-    mySelectedComponents(),
+    mySelectedManipulator(nullptr),
+    mySelectedComponent(nullptr),
     myHighlightShaderProgram(nullptr),
     myPickingShaderProgram(nullptr)
 {
@@ -82,7 +86,7 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     sofa::simulation::graph::init();
 
 	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
-	boost::shared_ptr<sofa::core::ObjectFactory::ClassEntry> classVisualModel;
+    sofa::core::ObjectFactory::ClassEntry::SPtr classVisualModel;
 	sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
 
 	myStepTimer->setInterval(0);
@@ -161,6 +165,25 @@ private:
 
 };
 
+class WaitTillSwapWorker : public QRunnable
+{
+public:
+    WaitTillSwapWorker(bool& finished) :
+        myFinished(finished)
+    {
+
+    }
+
+    void run()
+    {
+        myFinished = true;
+    }
+
+private:
+    bool&   myFinished;
+
+};
+
 void Scene::open()
 {
     myPathQML.clear();
@@ -169,10 +192,29 @@ void Scene::open()
 	if(Status::Loading == myStatus) // return now if a scene is already loading
 		return;
 
+    setPlay(false);
+
     setStatus(Status::Loading);
 
-    setPlay(false);
-    myIsInit = false;
+    if(qGuiApp)
+    {
+        QWindowList windows = qGuiApp->allWindows();
+        for(QWindow* window : windows)
+        {
+            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
+            if(quickWindow)
+            {
+                bool finished = false;
+                WaitTillSwapWorker* worker = new WaitTillSwapWorker(finished);
+                quickWindow->scheduleRenderJob(worker, QQuickWindow::AfterSwapStage);
+                quickWindow->update();
+
+                // TODO: add a timeout
+                while(!finished)
+                    qGuiApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
+            }
+        }
+    }
 
     aboutToUnload();
     mySofaSimulation->unload(mySofaSimulation->GetRoot());
@@ -228,8 +270,8 @@ void Scene::open()
                 setStatus(Status::Error);
             else
             {
-                myIsInit = true;
-                preloaded();
+                setDt(mySofaSimulation->GetRoot()->getDt());
+                initGraphics();
             }
 
             loaderThread->deleteLater();
@@ -243,8 +285,8 @@ void Scene::open()
             setStatus(Status::Error);
         else
         {
-            myIsInit = true;
-            preloaded();
+            setDt(mySofaSimulation->GetRoot()->getDt());
+            initGraphics();
         }
 	}
 }
@@ -376,6 +418,26 @@ void Scene::setAsynchronous(bool newAsynchronous)
     asynchronousChanged(newAsynchronous);
 }
 
+void Scene::setSelectedComponent(sofa::qtquick::SceneComponent* newSelectedComponent)
+{
+    if(newSelectedComponent == mySelectedComponent)
+        return;
+
+    mySelectedComponent = newSelectedComponent;
+
+    selectedComponentChanged(newSelectedComponent);
+}
+
+void Scene::setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator)
+{
+    if(newSelectedManipulator == mySelectedManipulator)
+        return;
+
+    mySelectedManipulator = newSelectedManipulator;
+
+    selectedManipulatorChanged(newSelectedManipulator);
+}
+
 static void appendManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *property, sofa::qtquick::Manipulator *value)
 {
     static_cast<QList<sofa::qtquick::Manipulator*>*>(property->data)->append(value);
@@ -399,47 +461,6 @@ static int countManipulator(QQmlListProperty<sofa::qtquick::Manipulator> *proper
 QQmlListProperty<sofa::qtquick::Manipulator> Scene::manipulators()
 {
     return QQmlListProperty<sofa::qtquick::Manipulator>(this, &myManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
-}
-
-QQmlListProperty<sofa::qtquick::Manipulator> Scene::selectedManipulators()
-{
-    return QQmlListProperty<sofa::qtquick::Manipulator>(this, &mySelectedManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
-}
-
-static void appendSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property, sofa::qtquick::SceneComponent *value)
-{
-    // TODO: is it really useful ?
-    SceneComponent* valueCopy = new SceneComponent(*value);
-
-    static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->append(valueCopy);
-
-    qobject_cast<Scene*>(property->object)->selectedComponentsChanged();
-}
-
-static sofa::qtquick::SceneComponent* atSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property, int index)
-{
-    return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->at(index);
-}
-
-static void clearSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
-{
-    QList<sofa::qtquick::SceneComponent*>& selectedComponents = *static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data);
-    for(SceneComponent* sceneComponent : selectedComponents)
-        delete sceneComponent;
-
-    static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->clear();
-
-    qobject_cast<Scene*>(property->object)->selectedComponentsChanged();
-}
-
-static int countSelectedComponent(QQmlListProperty<sofa::qtquick::SceneComponent> *property)
-{
-    return static_cast<QList<sofa::qtquick::SceneComponent*>*>(property->data)->size();
-}
-
-QQmlListProperty<sofa::qtquick::SceneComponent> Scene::selectedComponents()
-{
-    return QQmlListProperty<sofa::qtquick::SceneComponent>(this, &mySelectedComponents, appendSelectedComponent, countSelectedComponent, atSelectedComponent, clearSelectedComponent);
 }
 
 double Scene::radius() const
@@ -983,9 +1004,96 @@ void Scene::onSetDataValue(const QString& path, const QVariant& value)
     }
 }
 
+class InitGraphicsWorker : public QRunnable
+{
+public:
+    InitGraphicsWorker(Scene& scene, bool& finished) :
+        myScene(scene),
+        myFinished(finished)
+    {
+
+    }
+
+    void run()
+    {
+        GLenum err = glewInit();
+        if(0 != err)
+            qWarning() << "GLEW Initialization failed with error code:" << err;
+
+        // init the highlight shader program
+        if(!myScene.myHighlightShaderProgram)
+        {
+            myScene.myHighlightShaderProgram = new QOpenGLShaderProgram(&myScene);
+
+            myScene.myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+                "void main(void)\n"
+                "{\n"
+                "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                "}");
+            myScene.myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+                "void main(void)\n"
+                "{\n"
+                "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
+                "}");
+
+            myScene.myHighlightShaderProgram->link();
+        }
+
+        // init the picking shader program
+        if(!myScene.myPickingShaderProgram)
+        {
+            myScene.myPickingShaderProgram = new QOpenGLShaderProgram();
+            myScene.myPickingShaderProgram->create();
+            myScene.myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+                "void main(void)\n"
+                "{\n"
+                "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                "}");
+            myScene.myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+                "uniform highp vec4 index;\n"
+                "void main(void)\n"
+                "{\n"
+                "   gl_FragColor = index;\n"
+                "}");
+            myScene.myPickingShaderProgram->link();
+        }
+
+        // prepare the sofa visual params
+        sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+        if(visualParams)
+        {
+            if(!visualParams->drawTool())
+            {
+                visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
+                visualParams->setSupported(sofa::core::visual::API_OpenGL);
+            }
+        }
+
+    #ifdef __linux__
+        static bool glutInited = false;
+        if(!glutInited)
+        {
+            int argc = 0;
+            glutInit(&argc, NULL);
+            glutInited = true;
+        }
+    #endif
+
+        // need a valig OpenGL context for initTextures
+        myScene.mySofaSimulation->initTextures(myScene.mySofaSimulation->GetRoot().get());
+
+        myFinished = true;
+    }
+
+private:
+    Scene&  myScene;
+    bool&   myFinished;
+
+};
+
 void Scene::initGraphics()
 {
-    if(!isPreLoaded() || !isLoading())
+    if(!isLoading())
         return;
 
     if(!mySofaSimulation->GetRoot())
@@ -994,72 +1102,60 @@ void Scene::initGraphics()
 		return;
     }
 
-    GLenum err = glewInit();
-    if(0 != err)
-        qWarning() << "GLEW Initialization failed with error code:" << err;
+    bool initDone = false;
 
-    // init the highlight shader program
-    if(!myHighlightShaderProgram)
+    // use the current opengl context if any
+    if(QOpenGLContext::currentContext())
     {
-        myHighlightShaderProgram = new QOpenGLShaderProgram(this);
+        bool finished = false;
+        InitGraphicsWorker(*this, finished).run();
 
-        myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-            "void main(void)\n"
-            "{\n"
-            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-            "}");
-        myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-            "void main(void)\n"
-            "{\n"
-            "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
-            "}");
-
-        myHighlightShaderProgram->link();
+        initDone = true;
     }
 
-    // init the picking shader program
-    if(!myPickingShaderProgram)
+    // or retrieve one from a window
+    if(!initDone && qGuiApp)
     {
-        myPickingShaderProgram = new QOpenGLShaderProgram();
-        myPickingShaderProgram->create();
-        myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-            "void main(void)\n"
-            "{\n"
-            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-            "}");
-        myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-            "uniform highp vec4 index;\n"
-            "void main(void)\n"
-            "{\n"
-            "   gl_FragColor = index;\n"
-            "}");
-        myPickingShaderProgram->link();
-    }
-
-    // prepare the sofa visual params
-    sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
-    if(visualParams)
-    {
-        if(!visualParams->drawTool())
+        QWindowList windows = qGuiApp->allWindows();
+        for(QWindow* window : windows)
         {
-            visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
-            visualParams->setSupported(sofa::core::visual::API_OpenGL);
+            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
+            if(quickWindow)
+            {
+                bool finished = false;
+                InitGraphicsWorker* worker = new InitGraphicsWorker(*this, finished);
+                quickWindow->scheduleRenderJob(worker, QQuickWindow::BeforeRenderingStage);
+                quickWindow->update();
+
+                // TODO: add a timeout
+                while(!finished)
+                    qGuiApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
+
+                initDone = true;
+                break;
+            }
         }
     }
 
-#ifdef __linux__
-    static bool glutInited = false;
-    if(!glutInited)
+    // or create one
+    if(!initDone)
     {
-        int argc = 0;
-        glutInit(&argc, NULL);
-        glutInited = true;
-    }
-#endif
+        QOpenGLContext* openglContext = new QOpenGLContext(this);
+        if(!openglContext->create())
+            qFatal("Cannot create an OpenGL Context needed to init sofa scenes");
 
-    // need a valig OpenGL context for initTextures
-	mySofaSimulation->initTextures(mySofaSimulation->GetRoot().get());
-	setDt(mySofaSimulation->GetRoot()->getDt());
+        QOffscreenSurface* surface = new QOffscreenSurface();
+        surface->create();
+        if(!surface->isValid())
+            qFatal("Cannot create an OpenGL Surface needed to init sofa scenes");
+
+        openglContext->makeCurrent(surface);
+
+        bool finished = false;
+        InitGraphicsWorker(*this, finished).run();
+
+        initDone = true;
+    }
 
     setStatus(Status::Ready);
 
@@ -1169,21 +1265,43 @@ void Scene::draw(const Viewer& viewer) const
     }
 
     // highlight selected components using a specific shader
-    if(!mySelectedComponents.isEmpty())
+    Base* selectedBase = nullptr;
+    if(mySelectedComponent)
+        selectedBase = mySelectedComponent->base();
+
+    if(selectedBase)
     {
         glDepthFunc(GL_ALWAYS);
         glDepthMask(GL_FALSE);
 
         myHighlightShaderProgram->bind();
-        for(SceneComponent* sceneComponent : mySelectedComponents)
         {
-            if(sceneComponent)
+            OglModel* oglModel = dynamic_cast<OglModel*>(selectedBase);
+            if(oglModel)
             {
-                OglModel* oglModel = dynamic_cast<OglModel*>(sceneComponent->base());
-                if(oglModel)
+                VisualStyle* visualStyle = nullptr;
+                oglModel->getContext()->get(visualStyle);
+
+                if(visualStyle)
+                    visualStyle->fwdDraw(visualParams);
+
+                sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
+                visualParams->displayFlags().setShowWireFrame(true);
+
+                oglModel->drawVisual(visualParams);
+
+                visualParams->displayFlags().setShowWireFrame(state);
+
+                if(visualStyle)
+                    visualStyle->bwdDraw(visualParams);
+            }
+            else
+            {
+                TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(selectedBase);
+                if(triangleModel)
                 {
                     VisualStyle* visualStyle = nullptr;
-                    oglModel->getContext()->get(visualStyle);
+                    triangleModel->getContext()->get(visualStyle);
 
                     if(visualStyle)
                         visualStyle->fwdDraw(visualParams);
@@ -1191,34 +1309,12 @@ void Scene::draw(const Viewer& viewer) const
                     sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
                     visualParams->displayFlags().setShowWireFrame(true);
 
-                    oglModel->drawVisual(visualParams);
+                    triangleModel->draw(visualParams);
 
                     visualParams->displayFlags().setShowWireFrame(state);
 
                     if(visualStyle)
                         visualStyle->bwdDraw(visualParams);
-                }
-                else
-                {
-                    TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(sceneComponent->base());
-                    if(triangleModel)
-                    {
-                        VisualStyle* visualStyle = nullptr;
-                        triangleModel->getContext()->get(visualStyle);
-
-                        if(visualStyle)
-                            visualStyle->fwdDraw(visualParams);
-
-                        sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
-                        visualParams->displayFlags().setShowWireFrame(true);
-
-                        triangleModel->draw(visualParams);
-
-                        visualParams->displayFlags().setShowWireFrame(state);
-
-                        if(visualStyle)
-                            visualStyle->bwdDraw(visualParams);
-                    }
                 }
             }
         }

@@ -2,17 +2,50 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
-import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 
-ContentItem {
+CollapsibleGroupBox {
     id: root
 
-    property string title: "Scene GUI"
+    visible: interfaceToolPanel ? Loader.Error === interfaceToolPanel.status || Loader.Ready === interfaceToolPanel.status : false
+    title: "Scene ToolPanel"
 
-    property int priority: 100
-    property var scene
-    property url source: scene ? scene.sourceQML : ""
-    readonly property alias status: d.status
+    property int priority: 95
+    property var scene: null
+
+    readonly property Loader interfaceLoader: scene ? scene.interfaceLoader : null
+    readonly property QtObject interfaceObject: interfaceLoader ? interfaceLoader.item : null
+    readonly property Component interfaceToolPanel: interfaceObject ? interfaceObject.toolpanel : null
+
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 0
+
+        Loader {
+            id: loader
+            Layout.fillWidth: true
+            Layout.preferredHeight: item ? item.implicitHeight : 0
+            asynchronous: true
+            sourceComponent: interfaceToolPanel
+        }
+
+        BusyIndicator {
+            visible: running
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            running: Loader.Loading === loader.status
+        }
+
+        Text {
+            visible: Loader.Error === root.interfaceLoader.status || Loader.Error === loader.status
+            Layout.fillWidth: true
+            Layout.preferredHeight: implicitHeight
+            textFormat: Text.RichText
+
+            text: "<b><font color='darkred'>Error loading scene toolpanel, take a look in the console for error log</font></b>"
+        }
+    }
+
+/*    readonly property alias status: d.status
     readonly property alias item: d.item
 
     QtObject {
@@ -102,4 +135,5 @@ ContentItem {
             }
         }
     }
+*/
 }

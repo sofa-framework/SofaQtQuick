@@ -4,14 +4,11 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
 
-CollapsibleGroupBox {
+SceneInterface {
     id: root
 
-    title: "Scene Parameters"
-    enabled: scene.ready
-
-    ColumnLayout {
-        anchors.fill: parent
+    toolpanel: ColumnLayout {
+        enabled: scene.ready
 
         GroupBox {
             Layout.fillWidth: true

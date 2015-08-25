@@ -16,9 +16,6 @@ Scene {
     property string statusMessage: ""
 
     onStatusChanged: {
-		if(listModel)
-			listModel.selectedId = -1;
-
         clearManipulators();
 
         var path = source.toString().replace("///", "/").replace("file:", "");
@@ -33,30 +30,6 @@ Scene {
             statusMessage = 'Scene "' + path + '" loaded successfully';
             SofaSettingsScript.Recent.add(path);
             break;
-        }
-    }
-
-    property var listModel: SceneListModel {id : listModel}
-    property bool listModelDirty: true
-
-    onStepEnd: {
-        if(root.play)
-            listModelDirty = true;
-        else if(listModel)
-                listModel.update();
-    }
-
-    onReseted: if(listModel) listModel.update();
-
-    property var listModelUpdateTimer: Timer {
-        running: root.play && root.listModel ? true : false
-        repeat: true
-        interval: 200
-        onTriggered: {
-            if(root.listModelDirty) {
-                root.listModel.update()
-                root.listModelDirty = false;
-            }
         }
     }
 
@@ -90,6 +63,8 @@ Scene {
         tooltip: "Reset the simulation"
     }
 
+    // GET AND SET SOFA DATA VALUE
+
     function dataValue(dataName) {
         if(arguments.length == 1) {
             return onDataValue(dataName);
@@ -108,25 +83,6 @@ Scene {
         }
 
         console.debug("ERROR: Scene - using setDataValue with an invalid number of arguments:", arguments.length);
-    }
-
-    ///// SELECTED COMPONENTS
-
-    function selectedComponent() {
-        if(0 === root.selectedComponents.length)
-            return null;
-
-        return root.selectedComponents[0];
-    }
-
-    function setSelectedComponent(selectedComponent) {
-        var selectedComponents = [];
-        selectedComponents.push(selectedComponent);
-        root.selectedComponents = selectedComponents;
-    }
-
-    function clearselectedComponents() {
-        root.selectedComponents = [];
     }
 
     ///// MANIPULATOR
@@ -158,22 +114,11 @@ Scene {
         root.manipulators = [];
     }
 
-    ///// SELECTED MANIPULATORS
+    ///// INTERFACE
 
-    function selectedManipulator() {
-        if(0 === root.selectedManipulators.length)
-            return null;
-
-        return root.selectedManipulators[0];
-    }
-
-    function setSelectedManipulator(selectedManipulator) {
-        var selectedManipulators = [];
-        selectedManipulators.push(selectedManipulator);
-        root.selectedManipulators = selectedManipulators;
-    }
-
-    function clearSelectedManipulators() {
-        root.selectedManipulators = [];
+    readonly property Loader interfaceLoader: Loader {
+        id: interfaceLoader
+        asynchronous: true
+        source: root.sourceQML
     }
 }

@@ -5,6 +5,7 @@
         <file>SofaBasics/DefaultToolBar.qml</file>
         <file>SofaBasics/DefaultMenuBar.qml</file>
         <file>SofaBasics/Scene.qml</file>
+        <file>SofaBasics/SceneInterface.qml</file>
         <file>SofaBasics/PythonInteractor.qml</file>
         <file>SofaBasics/FPSDisplay.qml</file>
         <file>SofaBasics/Camera.qml</file>
@@ -17,13 +18,12 @@
         <file>SofaBasics/UISettings.qml</file>
         <file>SofaBasics/Tools.qml</file>
         <file>SofaBasics/RecentSettings.qml</file>
-        <file>SofaBasics/SceneListModel.qml</file>
         <file>SofaBasics/DataListModel.qml</file>
         <file>SofaBasics/DataItem.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaTools/qmldir</file>
         <file>SofaTools/SimulationControl.qml</file>
-        <file>SofaTools/SceneGUILoader.qml</file>
+        <file>SofaTools/SceneToolPanel.qml</file>
         <file>SofaTools/SceneGraphView.qml</file>
         <file>SofaTools/DataListView.qml</file>
         <file>SofaWidgets/qmldir</file>

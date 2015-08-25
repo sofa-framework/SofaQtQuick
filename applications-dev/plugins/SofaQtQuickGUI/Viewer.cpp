@@ -370,9 +370,6 @@ public:
         glDisable(GL_BLEND);
         glDisable(GL_LIGHTING);
 
-        if(myScene && myScene->isLoading())
-            myScene->initGraphics();
-
         glViewport(pos.x(), pos.y(), size.width(), size.height());
 
         glDisable(GL_CULL_FACE);
@@ -631,78 +628,81 @@ QRect Viewer::qtRect() const
 
 void Viewer::internalDraw()
 {
-         if(!myScene || !myScene->isReady() || !myCamera)
-                 return;
+    if(!myScene || !myScene->isReady() || !myCamera)
+        return;
 
-         glDisable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
 
-         QSize size = glRect().size();
-     myCamera->setAspectRatio(size.width() / (double) size.height());
+    QSize size = glRect().size();
+    myCamera->setAspectRatio(size.width() / (double) size.height());
 
-         glMatrixMode(GL_PROJECTION);
-         glPushMatrix();
-         glLoadMatrixf(myCamera->projection().constData());
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadMatrixf(myCamera->projection().constData());
 
-         glMatrixMode(GL_MODELVIEW);
-         glPushMatrix();
-         glLoadMatrixf(myCamera->view().constData());
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadMatrixf(myCamera->view().constData());
 
      if(wireframe())
         glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
      else
          glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
-         if(culling())
-                 glEnable(GL_CULL_FACE);
+    if(culling())
+        glEnable(GL_CULL_FACE);
 
- //      if(antialiasing())
- //              glEnable(GL_MULTISAMPLE);
+//      if(antialiasing())
+//              glEnable(GL_MULTISAMPLE);
 
-         glEnable(GL_DEPTH_TEST);
-         glDisable(GL_TEXTURE_2D);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_TEXTURE_2D);
 
-         // qt does not release its shader program and we do not use one so we have to release the current bound program
-         glUseProgram(0);
+    // qt does not release its shader program and we do not use one so we have to release the current bound program
+    glUseProgram(0);
 
-         // prepare the sofa visual params
-          sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-          if(_vparams)
-          {
-                  if(!_vparams->drawTool())
-                  {
-                          _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
-                          _vparams->setSupported(sofa::core::visual::API_OpenGL);
-                  }
+    // prepare the sofa visual params
+    sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+    if(_vparams)
+    {
+        if(!_vparams->drawTool())
+        {
+            _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
+            _vparams->setSupported(sofa::core::visual::API_OpenGL);
+        }
 
-                  GLint _viewport[4];
-                  GLdouble _mvmatrix[16], _projmatrix[16];
+        GLint _viewport[4];
+        GLdouble _mvmatrix[16], _projmatrix[16];
 
-                  glGetIntegerv (GL_VIEWPORT, _viewport);
-                  glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
-                  glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
+        glGetIntegerv (GL_VIEWPORT, _viewport);
+        glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
+        glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
 
-                  _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-                  _vparams->sceneBBox() = myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
-                  _vparams->setProjectionMatrix(_projmatrix);
-          _vparams->setModelViewMatrix(_mvmatrix);
-          }
+        _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+        _vparams->sceneBBox() = myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
+        _vparams->setProjectionMatrix(_projmatrix);
+        _vparams->setModelViewMatrix(_mvmatrix);
+    }
 
-      myScene->setDrawNormals(myDrawNormals);
-      myScene->setNormalsDrawLength(myNormalsDrawLength);
+    bool drawNormalBackup = myScene->drawNormals();
+    float normalDrawLengthBackup = myScene->normalsDrawLength();
 
-      glColor4f(1, 1, 1, 1);
-      glDisable(GL_COLOR_MATERIAL);
+    myScene->setDrawNormals(myDrawNormals);
+    myScene->setNormalsDrawLength(myNormalsDrawLength);
 
-      myScene->draw(*this);
+    myScene->draw(*this);
 
-      if(wireframe())
-          glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+    myScene->setDrawNormals(drawNormalBackup);
+    myScene->setNormalsDrawLength(normalDrawLengthBackup);
 
-          glMatrixMode(GL_PROJECTION);
-          glPopMatrix();
+    if(wireframe())
+        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
-          glMatrixMode(GL_MODELVIEW);
-          glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 }
 
 QPointF Viewer::mapToNative(const QPointF& ssPoint) const
@@ -718,10 +718,6 @@ void Viewer::paint()
 {
     if(!window())
         return;
-
-    // init the graphical part of the scene if not done already
-    if(myScene && myScene->isLoading())
-        myScene->initGraphics();
 
     // compute the correct viewer position and size
     QRect rect = glRect();
@@ -754,11 +750,9 @@ void Viewer::paint()
 
     // set default lights
     {
-        QVector3D cameraPosition(myCamera->eye());
-
         glEnable(GL_LIGHT0);
         {
-            float lightPosition[] = {0.75f, 0.75f, 1.0f, 0.0f};
+            float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
             float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
             float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
             float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
