@@ -24,7 +24,7 @@ CollapsibleGroupBox {
             id: loader
             Layout.fillWidth: true
             Layout.preferredHeight: item ? item.implicitHeight : 0
-            asynchronous: true
+            asynchronous: false
             sourceComponent: interfaceToolPanel
         }
 
