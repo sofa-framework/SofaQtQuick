@@ -59,7 +59,7 @@ using namespace sofa::component::visualmodel;
 using namespace sofa::component::collision;
 using namespace sofa::simulation;
 
-typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3dTypes> MechanicalObject3d;
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
 
 Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
 	myStatus(Status::Null),
@@ -1356,7 +1356,7 @@ SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVec
 
     if(!pickVisitor.particles.empty())
     {
-        MechanicalObject3d* mechanicalObject = dynamic_cast<MechanicalObject3d*>(pickVisitor.particles.begin()->second.first);
+        MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(pickVisitor.particles.begin()->second.first);
         int index = pickVisitor.particles.begin()->second.second;
 
         if(mechanicalObject && -1 != index)
