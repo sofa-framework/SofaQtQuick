@@ -21,9 +21,9 @@ namespace qtquick
 {
 
 typedef sofa::simulation::Node Node;
-typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3dTypes> MechanicalObject3d;
-typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3dTypes> FixedConstraint3d;
-typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3dTypes> StiffSpringForceField3d;
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
+typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3Types> FixedConstraint3;
+typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceField3;
 
 ParticleInteractor::ParticleInteractor(QObject *parent) : QObject(parent),
     mySceneComponent(nullptr),
@@ -47,7 +47,7 @@ QVector3D ParticleInteractor::particlePosition() const
     if(!mySceneComponent)
         return particlePosition;
 
-    MechanicalObject3d* mechanicalObject = static_cast<MechanicalObject3d*>(myMechanicalState);
+    MechanicalObject3* mechanicalObject = static_cast<MechanicalObject3*>(myMechanicalState);
     sofa::defaulttype::Vector3 position = mechanicalObject->readPositions()[0];
 
     return QVector3D(position.x(), position.y(), position.z());
@@ -59,7 +59,7 @@ QVector3D ParticleInteractor::interactorPosition() const
 	if(!myMechanicalState)
         return interactorPosition;
 
-	MechanicalObject3d* mechanicalObject = static_cast<MechanicalObject3d*>(myMechanicalState);
+    MechanicalObject3* mechanicalObject = static_cast<MechanicalObject3*>(myMechanicalState);
 	sofa::defaulttype::Vector3 position = mechanicalObject->readPositions()[0];
 
 	return QVector3D(position.x(), position.y(), position.z());
@@ -81,7 +81,7 @@ bool ParticleInteractor::start(SceneComponent* sceneComponent, int particleIndex
         return false;
 
     const Scene* scene = sceneComponent->scene();
-    MechanicalObject3d* particleMechanicalObject = dynamic_cast<MechanicalObject3d*>(sceneComponent->base());
+    MechanicalObject3* particleMechanicalObject = dynamic_cast<MechanicalObject3*>(sceneComponent->base());
 
     if(!scene || !particleMechanicalObject)
         return false;
@@ -93,15 +93,15 @@ bool ParticleInteractor::start(SceneComponent* sceneComponent, int particleIndex
                                    particleMechanicalObject->getPY(myParticleIndex),
                                    particleMechanicalObject->getPZ(myParticleIndex));
 
-    MechanicalObject3d::SPtr mechanicalObject = sofa::core::objectmodel::New<MechanicalObject3d>();
+    MechanicalObject3::SPtr mechanicalObject = sofa::core::objectmodel::New<MechanicalObject3>();
     mechanicalObject->setName("Attractor");
     mechanicalObject->resize(1);
     mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
     myMechanicalState = mechanicalObject.get();
 
-    FixedConstraint3d::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraint3d>();
+    FixedConstraint3::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraint3>();
 
-    StiffSpringForceField3d::SPtr stiffSpringForcefield = sofa::core::objectmodel::New<StiffSpringForceField3d>(mechanicalObject.get(), particleMechanicalObject);
+    StiffSpringForceField3::SPtr stiffSpringForcefield = sofa::core::objectmodel::New<StiffSpringForceField3>(mechanicalObject.get(), particleMechanicalObject);
     stiffSpringForcefield->setName("Spring");
     stiffSpringForcefield->addSpring(0, myParticleIndex, myStiffness, 0.1, 0.0);
     myForcefield = stiffSpringForcefield.get();
@@ -127,7 +127,7 @@ bool ParticleInteractor::update(const QVector3D& position)
     if(!myMechanicalState)
         return false;
 
-    MechanicalObject3d* mechanicalObject = static_cast<MechanicalObject3d*>(myMechanicalState);
+    MechanicalObject3* mechanicalObject = static_cast<MechanicalObject3*>(myMechanicalState);
     mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
     interactorPositionChanged(position);
 
@@ -138,7 +138,7 @@ void ParticleInteractor::release()
 {
     if(myNode)
     {
-        StiffSpringForceField3d::SPtr stiffSpringForcefield = static_cast<StiffSpringForceField3d*>(myForcefield);
+        StiffSpringForceField3::SPtr stiffSpringForcefield = static_cast<StiffSpringForceField3*>(myForcefield);
         myNode->moveObject(stiffSpringForcefield);
 
         Node::SPtr node = static_cast<Node*>(myNode);
