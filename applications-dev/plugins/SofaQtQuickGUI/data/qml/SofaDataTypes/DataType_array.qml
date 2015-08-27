@@ -19,7 +19,7 @@ Loader {
         }
         else {
             if(dataObject.properties.innerStatic) {
-                if(dataObject.properties.cols <= 7)
+                if(dataObject.properties.cols <= 7 || dataObject.properties.cols === 12) // Case of Affine type
                     return staticInDynamicTableView;
                 else
                     return dynamicArrayView;
