@@ -36,6 +36,10 @@ QtObject {
 //        return d.sceneListModel;
 //    }
 
+////////////////////////////////////////////////// TOOLBAR
+
+    property var toolBar: null
+
 ////////////////////////////////////////////////// STATUSBAR
 
     property var statusBar: null

@@ -13,6 +13,8 @@ ToolBar {
 
     property var scene
 
+    Component.onCompleted: SofaApplication.toolBar = root
+
     enabled: scene ? scene.ready : false
 
     Row {
