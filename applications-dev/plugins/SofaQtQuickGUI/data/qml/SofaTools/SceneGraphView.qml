@@ -13,7 +13,14 @@ CollapsibleGroupBox {
     property int priority: 90
 
     property var scene: null
+    property bool activatedData: true
     property real rowHeight: 16
+
+    QtObject {
+        id : d
+
+        property QtObject sceneData
+    }
 
     enabled: scene ? scene.ready : false
 
@@ -126,9 +133,37 @@ CollapsibleGroupBox {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: rowHeight
 
+                                // Menu to activate or desactivate a node
+                                Menu {
+                                    id: nodeMenu
+                                    MenuItem {
+                                        text: {
+                                            activatedData ? "Desactivate" :"Activate"
+                                        }
+                                        onTriggered: {                                            
+                                            activatedData ? d.sceneData.setValue(0) : d.sceneData.setValue(1)
+                                            activatedData = d.sceneData.value()
+                                            // Hide/Show children of desactivated/activated node
+                                            listView.model.setCollapsed(index, !(SceneListModel.Collapsed & visibility))
+                                            // Change color of current item
+                                            activatedData ? listView.currentItem.opacity = 1 : listView.currentItem.opacity = 0.2
+                                        }
+                                   }
+                                }
                                 MouseArea {
                                     anchors.fill: parent
-                                    onClicked: listView.currentIndex = index
+                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                    onClicked: {
+                                                    if (mouse.button == Qt.LeftButton) {
+                                                        listView.currentIndex = index
+                                                    }
+                                                    else if (mouse.button == Qt.RightButton && isNode) {
+                                                        listView.currentIndex = index
+                                                        d.sceneData = scene.selectedComponent.getComponentData("activated")
+                                                        activatedData = d.sceneData.value()
+                                                        nodeMenu.popup()
+                                                    }
+                                    }
                                 }
                             }
                         }

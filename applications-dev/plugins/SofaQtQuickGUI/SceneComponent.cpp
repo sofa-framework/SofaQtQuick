@@ -49,6 +49,15 @@ bool SceneComponent::isSame(SceneComponent* sceneComponent)
     return false;
 }
 
+SceneData* SceneComponent::getComponentData(const QString& name) const
+{
+    sofa::core::objectmodel::BaseData* data = myBase->findData(name.toStdString());
+    if(!data)
+        return 0;
+
+    return new SceneData(this, data);
+}
+
 Base* SceneComponent::base()
 {
     return const_cast<Base*>(static_cast<const SceneComponent*>(this)->base());
