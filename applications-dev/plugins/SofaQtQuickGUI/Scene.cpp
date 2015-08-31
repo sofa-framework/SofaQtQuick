@@ -1271,9 +1271,6 @@ void Scene::draw(const Viewer& viewer) const
 
     if(selectedBase)
     {
-        glDepthFunc(GL_ALWAYS);
-        glDepthMask(GL_FALSE);
-
         myHighlightShaderProgram->bind();
         {
             OglModel* oglModel = dynamic_cast<OglModel*>(selectedBase);
@@ -1319,9 +1316,6 @@ void Scene::draw(const Viewer& viewer) const
             }
         }
         myHighlightShaderProgram->release();
-
-        glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LESS);
 
         glDisable(GL_POLYGON_OFFSET_LINE);
     }
