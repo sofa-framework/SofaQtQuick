@@ -428,9 +428,13 @@ void Scene::setSelectedComponent(sofa::qtquick::SceneComponent* newSelectedCompo
     if(newSelectedComponent == mySelectedComponent)
         return;
 
-    mySelectedComponent = newSelectedComponent;
+    delete mySelectedComponent;
+    mySelectedComponent = nullptr;
 
-    selectedComponentChanged(newSelectedComponent);
+    if(newSelectedComponent)
+        mySelectedComponent = new SceneComponent(*newSelectedComponent);
+
+    selectedComponentChanged(mySelectedComponent);
 }
 
 void Scene::setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator)
