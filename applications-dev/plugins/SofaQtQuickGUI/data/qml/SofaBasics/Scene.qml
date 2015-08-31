@@ -16,8 +16,6 @@ Scene {
     property string statusMessage: ""
 
     onStatusChanged: {
-        clearManipulators();
-
         var path = source.toString().replace("///", "/").replace("file:", "");
         switch(status) {
         case Scene.Loading:

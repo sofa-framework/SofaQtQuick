@@ -217,6 +217,11 @@ void Scene::open()
     }
 
     aboutToUnload();
+
+    setSelectedComponent(nullptr);
+    setSelectedManipulator(nullptr);
+    myManipulators.clear();
+
     mySofaSimulation->unload(mySofaSimulation->GetRoot());
 
 	QString finalFilename = mySource.toLocalFile();
