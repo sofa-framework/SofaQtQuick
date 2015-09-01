@@ -132,6 +132,7 @@ public:
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE void reinitComponent(const QString& path);
     Q_INVOKABLE bool areSameComponent(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB);
+    Q_INVOKABLE bool areInSameBranch(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
 
 public:

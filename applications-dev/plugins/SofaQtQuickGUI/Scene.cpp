@@ -544,6 +544,32 @@ bool Scene::areSameComponent(SceneComponent* sceneComponentA, SceneComponent* sc
     return sceneComponentA->isSame(sceneComponentB);
 }
 
+bool Scene::areInSameBranch(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB)
+{
+    if(!sceneComponentA || !sceneComponentB)
+        return false;
+
+    BaseObject* baseObjectA = dynamic_cast<BaseObject*>(sceneComponentA->base());
+    BaseObject* baseObjectB = dynamic_cast<BaseObject*>(sceneComponentB->base());
+
+    if(!baseObjectA || !baseObjectB)
+        return false;
+
+    BaseNode* baseNodeA = dynamic_cast<BaseNode*>(baseObjectA->getContext());
+    BaseNode* baseNodeB = dynamic_cast<BaseNode*>(baseObjectB->getContext());
+
+    if(!baseNodeA || !baseNodeB)
+        return false;
+
+    if(baseNodeA == baseNodeB)
+        return true;
+
+    if(baseNodeA->hasAncestor(baseNodeB) || baseNodeB->hasAncestor(baseNodeA))
+        return true;
+
+    return false;
+}
+
 void Scene::sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value)
 {
     if(!mySofaSimulation->GetRoot())
@@ -1280,6 +1306,11 @@ void Scene::draw(const Viewer& viewer) const
 
     if(selectedBase)
     {
+        glDepthFunc(GL_LEQUAL);
+
+        glEnable(GL_POLYGON_OFFSET_LINE);
+        glPolygonOffset(-0.2f, 0.0f);
+
         myHighlightShaderProgram->bind();
         {
             OglModel* oglModel = dynamic_cast<OglModel*>(selectedBase);
@@ -1327,6 +1358,8 @@ void Scene::draw(const Viewer& viewer) const
         myHighlightShaderProgram->release();
 
         glDisable(GL_POLYGON_OFFSET_LINE);
+
+        glDepthFunc(GL_LESS);
     }
 
     glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
