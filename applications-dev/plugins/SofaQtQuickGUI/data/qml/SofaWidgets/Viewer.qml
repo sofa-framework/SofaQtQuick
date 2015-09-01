@@ -125,9 +125,6 @@ Viewer {
             if(!activeFocus)
                 focus = true;
 
-            if(interactor && camera)
-                interactor.mouseDoubleRightClicked(mouse);
-
             if(interactor)
                 interactor.mouseDoubleClicked(mouse);
         }
@@ -269,34 +266,38 @@ Viewer {
         radius: 5
         visible: false
         opacity: 0.9
-        layer.enabled: true
 
+        // avoid mouse event propagation through the toolpanel to the viewer
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.AllButtons
             onWheel: wheel.accepted = true
+        }
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: toolPanel.radius / 2
-                anchors.rightMargin: anchors.margins - toolPanel.anchors.rightMargin
-                spacing: 2
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: toolPanel.radius / 2
+            anchors.rightMargin: anchors.margins - toolPanel.anchors.rightMargin
+            spacing: 2
 
-                Text {
-                    Layout.fillWidth: true
-                    text: "Viewer parameters"
-                    font.bold: true
-                    color: "darkblue"
-                }
+            Text {
+                Layout.fillWidth: true
+                text: "Viewer parameters"
+                font.bold: true
+                color: "darkblue"
+            }
+
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
                 Flickable {
-                    id: flickable
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    anchors.fill: parent
+                    contentHeight: panelColumn.implicitHeight
 
                     Column {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        id: panelColumn
+                        anchors.fill: parent
                         spacing: 5
 
                         GroupBox {
@@ -394,7 +395,7 @@ Viewer {
                                     }
                                 }
 
-/*  
+/*
                                 // TODO: antialiasing not implemented yet
                                 Label {
                                     Layout.fillWidth: true

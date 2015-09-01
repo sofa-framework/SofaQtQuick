@@ -59,9 +59,8 @@ UserInteractor {
             viewer.crosshairGizmo.hide();
         });
 
-        addMouseDoubleRightClickedMapping(Qt.RightButton, function(mouse) {
-                // Align camera axis
-                viewer.camera.alignCameraAxis();
+        addMouseDoubleClickedMapping(Qt.RightButton, function(mouse) {
+            viewer.camera.alignCameraAxis();
         });
 
         addMousePressedMapping(Qt.MiddleButton, function(mouse) {

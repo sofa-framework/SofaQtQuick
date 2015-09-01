@@ -16,23 +16,15 @@ CollapsibleGroupBox {
     property bool activatedData: true
     property real rowHeight: 16
 
-    QtObject {
-        id : d
-
-        property QtObject sceneData
-    }
-
     enabled: scene ? scene.ready : false
 
     ScrollView {
         anchors.fill: parent
-        implicitHeight: Math.min(listView.implicitHeight,listView.contentHeight+ 15)
+        implicitHeight: Math.min(listView.implicitHeight, listView.contentHeight + 15)
 
         ListView {
             id: listView
-            Layout.fillWidth: true
             implicitHeight: 400
-            anchors.fill: parent
             clip: true
 
             model: SceneListModel {
@@ -163,5 +155,11 @@ CollapsibleGroupBox {
                 }
             }
         }
+    }
+
+    QtObject {
+        id : d
+
+        property QtObject sceneData
     }
 }

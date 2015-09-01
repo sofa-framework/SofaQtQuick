@@ -76,22 +76,19 @@ Rectangle {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: if(contextMenu) contextMenu.popup()
+    }
 
-        ScrollView {
-            id: scrollView
+    ScrollView {
+        anchors.fill: parent
+
+        Flickable {
             anchors.fill: parent
-            //horizontalScrollBarPolicy: Qt.ScrollBarAsNeeded
+            contentHeight: loaderLocation.implicitHeight
 
-            Flickable {
-                id: flickable
+            ColumnLayout {
+                id: loaderLocation
                 anchors.fill: parent
-                contentHeight: loaderLocation.implicitHeight
-
-                ColumnLayout {
-                    id: loaderLocation
-                    width: parent.width - 1
-                    spacing: 0
-                }
+                spacing: 0
             }
         }
     }

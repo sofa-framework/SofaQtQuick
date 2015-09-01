@@ -11,7 +11,6 @@ QtObject {
 
     property var mouseClickedMapping: Array()
     property var mouseDoubleClickedMapping: Array()
-    property var mouseDoubleRightClickedMapping: Array()
     property var mousePressedMapping: Array()
     property var mouseReleasedMapping: Array()
     property var mouseWheelMapping: null
@@ -27,10 +26,6 @@ QtObject {
 
     function addMouseDoubleClickedMapping(button, binding) {
         mouseDoubleClickedMapping[button] = binding;
-    }
-
-    function addMouseDoubleRightClickedMapping(button, binding) {
-        mouseDoubleRightClickedMapping[button] = binding;
     }
 
     function addMousePressedMapping(button, binding) {
@@ -61,55 +56,49 @@ QtObject {
     function mouseClicked(mouse) {
         var binding = mouseClickedMapping[mouse.button];
         if(binding)
-            binding(mouse, scene, viewer);
+            binding(mouse);
     }
 
     function mouseDoubleClicked(mouse) {
         var binding = mouseDoubleClickedMapping[mouse.button];
         if(binding)
-            binding(mouse, scene, viewer);
-    }
-
-    function mouseDoubleRightClicked(mouse) {
-        var binding = mouseDoubleRightClickedMapping[mouse.button];
-        if(binding)
-            binding(mouse, scene, viewer);
+            binding(mouse);
     }
 
     function mousePressed(mouse) {
         var binding = mousePressedMapping[mouse.button];
         if(binding)
-            binding(mouse, scene, viewer);
+            binding(mouse);
     }
 
     function mouseReleased(mouse) {
         var binding = mouseReleasedMapping[mouse.button];
         if(binding)
-            binding(mouse, scene, viewer);
+            binding(mouse);
     }
 
     function mouseWheel(wheel) {
         var binding = mouseWheelMapping;
         if(binding)
-            binding(wheel, scene, viewer);
+            binding(wheel);
     }
 
     function mouseMove(mouse) {
         var binding = mouseMoveMapping;
         if(binding)
-            binding(mouse, scene, viewer);
+            binding(mouse);
     }
 
     function keyPressed(event) {
         var binding = keyPressedMapping[event.key];
         if(binding)
-            binding(event, scene, viewer);
+            binding(event);
     }
 
     function keyReleased(event) {
         var binding = keyReleasedMapping[event.key];
         if(binding)
-            binding(event, scene, viewer);
+            binding(event);
     }
 
     readonly property QtObject d: QtObject {
