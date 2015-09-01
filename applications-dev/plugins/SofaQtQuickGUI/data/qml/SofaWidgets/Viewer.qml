@@ -97,6 +97,7 @@ Viewer {
         id: mouseArea
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
+        enabled: scene ? Scene.Ready === scene.status : false
 
         property alias interactor: interactorLoader.item
         Loader {
