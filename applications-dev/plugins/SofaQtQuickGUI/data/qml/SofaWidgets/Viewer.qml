@@ -19,6 +19,8 @@ Viewer {
     blending: false
     antialiasing: false
 
+    property alias interactor: interactorLoader.item
+
 	Action{
 		shortcut: "F5"
 		onTriggered: root.viewAll()
