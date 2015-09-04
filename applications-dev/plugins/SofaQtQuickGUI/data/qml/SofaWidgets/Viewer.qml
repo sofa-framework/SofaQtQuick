@@ -518,10 +518,10 @@ Viewer {
                                         onClicked: {// bool saveVideo to true
                                                     root.saveVideo = checked
                                                     // Close toolPanel
-                                                    toolPanel.visible = false
+//                                                    toolPanel.visible = false
                                                     // Print message dialog
-                                                    if(root.saveVideo)
-                                                        saveViewerVideoDialog.open()
+//                                                    if(root.saveVideo)
+//                                                        saveViewerVideoDialog.open()
                                         }
 
                                         ToolTip {
