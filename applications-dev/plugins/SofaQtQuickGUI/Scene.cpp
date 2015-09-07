@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include "Scene.h"
 #include "Viewer.h"
 #include "SelectableManipulator.h"

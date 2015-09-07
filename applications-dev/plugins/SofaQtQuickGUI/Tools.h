@@ -7,6 +7,7 @@
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QSettings>
+#include <QPluginLoader>
 
 class QOpenGLDebugLogger;
 
@@ -47,6 +48,11 @@ public:
     static void useDefaultSofaPath();
     static void useDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath = QString());
     static void copySettings(const QSettings& src, QSettings& dst);
+
+    /// Centralized common settings for most sofaqtquick applications.
+    /// Every applications will be updated when modifying this code.
+    /// To be called in the main function.
+    static bool basicMain(QApplication& app, QQmlApplicationEngine& applicationEngine , const QString &mainScript);
 
 };
 

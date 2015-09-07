@@ -218,6 +218,59 @@ void Tools::copySettings(const QSettings& src, QSettings& dst)
     SettingsCopyGroupsHelper(src, dst);
 }
 
+bool Tools::basicMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
+{
+    // TODO: this command disable the multithreaded render loop, currently we need this on Linux/OSX because our implementation of the sofa interface is not thread-safe
+#ifndef WIN32
+    qputenv("QML_BAD_GUI_RENDER_LOOP", "1");
+#endif // !WIN32
+
+    QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
+    app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");
+
+    QSettings::setPath(QSettings::Format::IniFormat, QSettings::Scope::UserScope, QCoreApplication::applicationDirPath() + "/config/");
+    QSettings::setDefaultFormat(QSettings::Format::IniFormat);
+
+    // initialise paths
+    Tools::useDefaultSofaPath();
+
+    // use the default.ini settings if it is the first time the user launch the application
+    Tools::useDefaultSettingsAtFirstLaunch();
+
+    // plugin initialization
+    QString pluginName("SofaQtQuickGUI");
+#ifdef SOFA_LIBSUFFIX
+    pluginName += sofa_tostring(SOFA_LIBSUFFIX);
+#endif
+    QPluginLoader pluginLoader(pluginName);
+
+    // first call to instance() initialize the plugin
+    if(0 == pluginLoader.instance()) {
+        qCritical() << "SofaQtQuickGUI plugin has not been found!";
+        return false;
+    }
+
+    // launch the main script
+    applicationEngine.addImportPath("qrc:/");
+    applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
+    applicationEngine.load(QUrl(mainScript));
+
+    //    QList<QObject*> objects = applicationEngine.rootObjects();
+    //    foreach(QObject* object, objects)
+    //    {
+    //        QQuickWindow* window = qobject_cast<QQuickWindow*>(object);
+    //        if(!window)
+    //            continue;
+
+    //        window->connect(window, &QQuickWindow::openglContextCreated, [](QOpenGLContext *context) {
+    //            qDebug() << "opengl context creation";
+    //        });
+    //        window->show();
+    //    }
+
+    return true;
+}
+
 }
 
 }
