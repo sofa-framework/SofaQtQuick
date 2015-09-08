@@ -73,7 +73,7 @@ void Tools::clearSettingGroup(const QString& group)
 	settings.endGroup();
 }
 
-void Tools::setOpenGLDebugContext()
+void Tools::SetOpenGLDebugContext()
 {
     QSurfaceFormat format;
     format.setMajorVersion(4);
@@ -86,7 +86,7 @@ void Tools::setOpenGLDebugContext()
     QSurfaceFormat::setDefaultFormat(format);
 }
 
-void Tools::useOpenGLDebugLogger()
+void Tools::UseOpenGLDebugLogger()
 {
     QOpenGLContext *ctx = QOpenGLContext::currentContext();
     if(0 == ctx) {
@@ -118,7 +118,7 @@ void Tools::useOpenGLDebugLogger()
     }
 }
 
-void Tools::useDefaultSofaPath()
+void Tools::UseDefaultSofaPath()
 {
     // add the plugin directory to PluginRepository
 #ifdef WIN32
@@ -150,7 +150,7 @@ void Tools::useDefaultSofaPath()
     }
 }
 
-void Tools::useDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath)
+void Tools::UseDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath)
 {
     QSettings settings;
     bool notFirstLaunch = settings.value("notFirstLaunch", false).toBool();
@@ -184,7 +184,7 @@ void Tools::useDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath)
 
     // copy properties of default.ini into the current settings
     QSettings defaultSettings(defaultConfigFilePath, QSettings::IniFormat);
-    copySettings(defaultSettings, settings);
+    CopySettings(defaultSettings, settings);
 
     settings.setValue("notFirstLaunch", true);
 }
@@ -213,12 +213,12 @@ static void SettingsCopyGroupsHelper(const QSettings& src, QSettings& dst)
     SettingsCopyValuesHelper(src, dst);
 }
 
-void Tools::copySettings(const QSettings& src, QSettings& dst)
+void Tools::CopySettings(const QSettings& src, QSettings& dst)
 {
     SettingsCopyGroupsHelper(src, dst);
 }
 
-bool Tools::basicMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
+bool Tools::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
     // TODO: this command disable the multithreaded render loop, currently we need this on Linux/OSX because our implementation of the sofa interface is not thread-safe
 #ifndef WIN32
@@ -232,10 +232,10 @@ bool Tools::basicMain(QApplication& app, QQmlApplicationEngine &applicationEngin
     QSettings::setDefaultFormat(QSettings::Format::IniFormat);
 
     // initialise paths
-    Tools::useDefaultSofaPath();
+    Tools::UseDefaultSofaPath();
 
     // use the default.ini settings if it is the first time the user launch the application
-    Tools::useDefaultSettingsAtFirstLaunch();
+    Tools::UseDefaultSettingsAtFirstLaunch();
 
     // plugin initialization
     QString pluginName("SofaQtQuickGUI");

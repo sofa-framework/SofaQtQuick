@@ -12,7 +12,8 @@ int main(int argc, char **argv)
     app.setApplicationName("qtQuickSofa");
 
     // common settings for most sofaqtquick applications
-    if( !sofa::qtquick::Tools::basicMain( app, applicationEngine, "qrc:/qml/Main.qml" ) ) return -1;
+    if(!sofa::qtquick::Tools::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
+        return -1;
 
     return app.exec();
 }

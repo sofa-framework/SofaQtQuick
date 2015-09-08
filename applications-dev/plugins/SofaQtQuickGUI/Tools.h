@@ -42,17 +42,17 @@ public:
 	Q_INVOKABLE void clearSettingGroup(const QString& group);
 
 public:
-    static void setOpenGLDebugContext();    // must be call before the window has been shown
-    static void useOpenGLDebugLogger();     // must be call after a valid opengl debug context has been made current
+    static void SetOpenGLDebugContext();    // must be call before the window has been shown
+    static void UseOpenGLDebugLogger();     // must be call after a valid opengl debug context has been made current
 
-    static void useDefaultSofaPath();
-    static void useDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath = QString());
-    static void copySettings(const QSettings& src, QSettings& dst);
+    static void UseDefaultSofaPath();
+    static void UseDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath = QString());
+    static void CopySettings(const QSettings& src, QSettings& dst);
 
     /// Centralized common settings for most sofaqtquick applications.
     /// Every applications will be updated when modifying this code.
     /// To be called in the main function.
-    static bool basicMain(QApplication& app, QQmlApplicationEngine& applicationEngine , const QString &mainScript);
+    static bool DefaultMain(QApplication& app, QQmlApplicationEngine& applicationEngine , const QString &mainScript);
 
 };
 
