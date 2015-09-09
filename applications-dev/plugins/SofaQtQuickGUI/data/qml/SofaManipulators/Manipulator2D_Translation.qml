@@ -6,14 +6,14 @@ Manipulator2D_Translation {
 
     property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
 
-    function mousePressed(mouse, scene, viewer) {
+    function mousePressed(mouse, viewer) {
         var z = viewer.computeDepth(root.position);
         var startPosition = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
 
         startVector = startPosition.minus(root.position);
     }
 
-    function mouseMoved(mouse, scene, viewer) {
+    function mouseMoved(mouse, viewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
         var yAxis = -1 !== axis.indexOf("y") ? true : false;
 

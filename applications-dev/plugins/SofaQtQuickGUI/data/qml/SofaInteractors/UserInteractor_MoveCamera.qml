@@ -15,7 +15,7 @@ UserInteractor {
 
     function moveCamera_init() {
 
-        addMouseDoubleClickedMapping(Qt.LeftButton, function(mouse) {
+        addMouseDoubleClickedMapping(Qt.LeftButton, function(mouse, viewer) {
             var position = viewer.projectOnGeometry(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
             if(1.0 === position.w) {
                 viewer.camera.target = position.toVector3d();
@@ -23,14 +23,14 @@ UserInteractor {
             }
         });
 
-        addMousePressedMapping(Qt.RightButton, function(mouse) {
+        addMousePressedMapping(Qt.RightButton, function(mouse, viewer) {
             previousX = mouse.x;
             previousY = mouse.y;
 
             viewer.crosshairGizmo.show();
             SofaToolsScript.Tools.overrideCursorShape = Qt.ClosedHandCursor;
 
-            setMouseMoveMapping(function(mouse) {
+            setMouseMoveMapping(function(mouse, viewer) {
                 if(!viewer.camera)
                     return;
 
@@ -52,18 +52,18 @@ UserInteractor {
             });
         });
 
-        addMouseReleasedMapping(Qt.RightButton, function(mouse) {
+        addMouseReleasedMapping(Qt.RightButton, function(mouse, viewer) {
             setMouseMoveMapping(null);
 
             SofaToolsScript.Tools.overrideCursorShape = 0;
             viewer.crosshairGizmo.hide();
         });
 
-        addMouseDoubleClickedMapping(Qt.RightButton, function(mouse) {
+        addMouseDoubleClickedMapping(Qt.RightButton, function(mouse, viewer) {
             viewer.camera.alignCameraAxis();
         });
 
-        addMousePressedMapping(Qt.MiddleButton, function(mouse) {
+        addMousePressedMapping(Qt.MiddleButton, function(mouse, viewer) {
             previousX = mouse.x;
             previousY = mouse.y;
 
@@ -85,14 +85,14 @@ UserInteractor {
             });
         });
 
-        addMouseReleasedMapping(Qt.MiddleButton, function(mouse) {
+        addMouseReleasedMapping(Qt.MiddleButton, function(mouse, viewer) {
             setMouseMoveMapping(null);
 
             SofaToolsScript.Tools.overrideCursorShape = 0;
             viewer.crosshairGizmo.hide();
         });
 
-        setMouseWheelMapping(function(wheel) {
+        setMouseWheelMapping(function(wheel, viewer) {
             if(!viewer.camera)
                 return;
 

@@ -6,7 +6,7 @@ Manipulator3D_Translation {
 
     property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
 
-    function mousePressed(mouse, scene, viewer) {
+    function mousePressed(mouse, viewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
         var yAxis = -1 !== axis.indexOf("y") ? true : false;
         var zAxis = -1 !== axis.indexOf("z") ? true : false;
@@ -21,7 +21,7 @@ Manipulator3D_Translation {
         }
     }
 
-    function mouseMoved(mouse, scene, viewer) {
+    function mouseMoved(mouse, viewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
         var yAxis = -1 !== axis.indexOf("y") ? true : false;
         var zAxis = -1 !== axis.indexOf("z") ? true : false;

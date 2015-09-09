@@ -11,7 +11,7 @@ UserInteractor_MoveCamera {
 
     function init() {
         moveCamera_init();
-        addMousePressedMapping(Qt.LeftButton, function(mouse) {
+        addMousePressedMapping(Qt.LeftButton, function(mouse, viewer) {
             selectedManipulator = scene.selectedManipulator;
             selectedComponent = scene.selectedComponent;
 
@@ -31,7 +31,7 @@ UserInteractor_MoveCamera {
                 scene.selectedManipulator = selectedManipulator;
 
                 if(selectedManipulator.mousePressed)
-                    selectedManipulator.mousePressed(mouse, scene, viewer);
+                    selectedManipulator.mousePressed(mouse, viewer);
 
                 if(selectedManipulator.mouseMoved)
                     setMouseMoveMapping(selectedManipulator.mouseMoved);
@@ -44,7 +44,7 @@ UserInteractor_MoveCamera {
                     if(sceneComponentParticle) {
                         scene.particleInteractor.start(sceneComponentParticle.sceneComponent, sceneComponentParticle.particleIndex);
 
-                        setMouseMoveMapping(function(mouse) {
+                        setMouseMoveMapping(function(mouse, viewer) {
                             var z = viewer.computeDepth(scene.particleInteractor.particlePosition());
                             var position = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
                             scene.particleInteractor.update(position);
@@ -57,12 +57,12 @@ UserInteractor_MoveCamera {
             }
         });
 
-        addMouseReleasedMapping(Qt.LeftButton, function(mouse) {
+        addMouseReleasedMapping(Qt.LeftButton, function(mouse, viewer) {
             if(scene.particleInteractor)
                 scene.particleInteractor.release();
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
-                selectedManipulator.mouseReleased(mouse, scene, viewer);
+                selectedManipulator.mouseReleased(mouse, viewer);
 
             scene.selectedManipulator = null;
 

@@ -7,7 +7,7 @@ Manipulator3D_Rotation {
     property real startAngle: 0.0
     property var  startOrientation
 
-    function mousePressed(mouse, scene, viewer) {
+    function mousePressed(mouse, viewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
         var yAxis = -1 !== axis.indexOf("y") ? true : false;
         var zAxis = -1 !== axis.indexOf("z") ? true : false;
@@ -29,7 +29,7 @@ Manipulator3D_Rotation {
         }
     }
 
-    function mouseMoved(mouse, scene, viewer) {
+    function mouseMoved(mouse, viewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
         var yAxis = -1 !== axis.indexOf("y") ? true : false;
         var zAxis = -1 !== axis.indexOf("z") ? true : false;
@@ -54,7 +54,7 @@ Manipulator3D_Rotation {
         }
     }
 
-    function mouseReleased(mouse, scene, viewer) {
+    function mouseReleased(mouse, viewer) {
         unsetMark();
     }
 }

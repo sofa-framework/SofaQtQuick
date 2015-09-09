@@ -107,8 +107,6 @@ Viewer {
             sourceComponent: SofaApplication.interactorComponent
             onLoaded: {
                 var interactor = item;
-                interactor.scene   = root.scene;
-                interactor.viewer  = root;
                 interactor.init();
             }
         }
@@ -118,7 +116,7 @@ Viewer {
                 focus = true;
 
             if(interactor)
-                interactor.mouseClicked(mouse);
+                interactor.mouseClicked(mouse, root);
         }
 
         onDoubleClicked: {
@@ -126,7 +124,7 @@ Viewer {
                 focus = true;
 
             if(interactor)
-                interactor.mouseDoubleClicked(mouse);
+                interactor.mouseDoubleClicked(mouse, root);
         }
 
         onPressed: {
@@ -134,22 +132,22 @@ Viewer {
                 focus = true;
 
             if(interactor)
-                interactor.mousePressed(mouse);
+                interactor.mousePressed(mouse, root);
         }
 
         onReleased: {
             if(interactor)
-                interactor.mouseReleased(mouse);
+                interactor.mouseReleased(mouse, root);
         }
 
         onWheel: {
             if(interactor)
-                interactor.mouseWheel(wheel);
+                interactor.mouseWheel(wheel, root);
         }
 
         onPositionChanged: {
             if(interactor)
-                interactor.mouseMove(mouse);
+                interactor.mouseMove(mouse, root);
         }
 
         Keys.onPressed: {
@@ -162,7 +160,7 @@ Viewer {
                 scene.keyPressed(event);
 
             if(interactor)
-                interactor.keyPressed(event);
+                interactor.keyPressed(event, root);
 
             event.accepted = true;
         }
@@ -177,7 +175,7 @@ Viewer {
                 scene.keyReleased(event);
 
             if(interactor)
-                interactor.keyReleased(event);
+                interactor.keyReleased(event, root);
 
             event.accepted = true;
         }

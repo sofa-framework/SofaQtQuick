@@ -6,8 +6,6 @@ QtObject {
     id: root
 
     property string name: ""
-    property var scene: null
-    property Viewer viewer: null
 
     property var mouseClickedMapping: Array()
     property var mouseDoubleClickedMapping: Array()
@@ -53,61 +51,52 @@ QtObject {
     }
 
     // event
-    function mouseClicked(mouse) {
+    function mouseClicked(mouse, viewer) {
         var binding = mouseClickedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, viewer);
     }
 
-    function mouseDoubleClicked(mouse) {
+    function mouseDoubleClicked(mouse, viewer) {
         var binding = mouseDoubleClickedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, viewer);
     }
 
-    function mousePressed(mouse) {
+    function mousePressed(mouse, viewer) {
         var binding = mousePressedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, viewer);
     }
 
-    function mouseReleased(mouse) {
+    function mouseReleased(mouse, viewer) {
         var binding = mouseReleasedMapping[mouse.button];
         if(binding)
-            binding(mouse);
+            binding(mouse, viewer);
     }
 
-    function mouseWheel(wheel) {
+    function mouseWheel(wheel, viewer) {
         var binding = mouseWheelMapping;
         if(binding)
-            binding(wheel);
+            binding(wheel, viewer);
     }
 
-    function mouseMove(mouse) {
+    function mouseMove(mouse, viewer) {
         var binding = mouseMoveMapping;
         if(binding)
-            binding(mouse);
+            binding(mouse, viewer);
     }
 
-    function keyPressed(event) {
+    function keyPressed(event, viewer) {
         var binding = keyPressedMapping[event.key];
         if(binding)
-            binding(event);
+            binding(event, viewer);
     }
 
-    function keyReleased(event) {
+    function keyReleased(event, viewer) {
         var binding = keyReleasedMapping[event.key];
         if(binding)
-            binding(event);
-    }
-
-    readonly property QtObject d: QtObject {
-
-        readonly property var sceneConnections: Connections {
-            target: root
-            onSceneChanged: root.init();
-            Component.onCompleted: root.init();
-        }
+            binding(event, viewer);
     }
 
     function init() {
