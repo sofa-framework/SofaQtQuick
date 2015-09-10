@@ -229,10 +229,8 @@ void Tools::CopySettings(const QSettings& src, QSettings& dst)
 
 bool Tools::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
-    // TODO: this command disable the multithreaded render loop, currently we need this on Linux/OSX because our implementation of the sofa interface is not thread-safe
-#ifndef WIN32
-    qputenv("QML_BAD_GUI_RENDER_LOOP", "1");
-#endif // !WIN32
+    // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
+    qputenv("QSG_RENDER_LOOP", "basic");
 
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");

@@ -134,7 +134,7 @@ CollapsibleGroupBox {
                                     // Change color of current item
                                     activatedData ? listView.currentItem.opacity = 1 : listView.currentItem.opacity = 0.2
                                 }
-                           }
+                            }
                         }
                         MouseArea {
                             anchors.fill: parent

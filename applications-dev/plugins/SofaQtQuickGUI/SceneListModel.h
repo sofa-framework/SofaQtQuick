@@ -49,7 +49,7 @@ protected:
 
     Q_INVOKABLE QVariant get(int row) const;
     Q_INVOKABLE void setCollapsed(int row, bool value);
-	Q_INVOKABLE void markDirty() {myIsDirty = true;}
+    Q_INVOKABLE void markDirty() {myIsDirty = true;}
 
     Q_INVOKABLE sofa::qtquick::SceneComponent* getComponentById(int row) const;
     Q_INVOKABLE int getComponentId(sofa::qtquick::SceneComponent*) const;

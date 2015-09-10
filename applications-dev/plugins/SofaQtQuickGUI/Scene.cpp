@@ -188,28 +188,30 @@ void Scene::open()
     myPathQML.clear();
 	setSourceQML(QUrl());
 
-	if(Status::Loading == myStatus) // return now if a scene is already loading
-		return;
+    if(Status::Loading == myStatus) // return now if a scene is already loading
+        return;
 
     setPlay(false);
 
     setStatus(Status::Loading);
 
+// TODO: we will need this to make the Scene class thread-safe, this block wait the end of all draw calls before releasing then loading the scene
+// this is not needed in mono-threaded mode because we are sure we are not in the middle of draw calls
     if(qGuiApp)
     {
+        bool finished = false;
+
         QWindowList windows = qGuiApp->allWindows();
         for(QWindow* window : windows)
         {
             QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-            if(quickWindow)
+            if(quickWindow && quickWindow->isActive())
             {
-                bool finished = false;
-                WaitTillSwapWorker* worker = new WaitTillSwapWorker(finished);
-                quickWindow->scheduleRenderJob(worker, QQuickWindow::AfterSwapStage);
+                quickWindow->scheduleRenderJob(new WaitTillSwapWorker(finished), QQuickWindow::AfterSwapStage);
                 quickWindow->update();
 
                 // TODO: add a timeout
-                while(!finished)
+                while(!finished && quickWindow->isActive())
                     qGuiApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
             }
         }
@@ -1154,7 +1156,7 @@ void Scene::initGraphics()
         for(QWindow* window : windows)
         {
             QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-            if(quickWindow)
+            if(quickWindow && quickWindow->isActive())
             {
                 bool finished = false;
                 InitGraphicsWorker* worker = new InitGraphicsWorker(*this, finished);
@@ -1171,7 +1173,7 @@ void Scene::initGraphics()
         }
     }
 
-    // or create one
+    // or create one if there is no window
     if(!initDone)
     {
         QOpenGLContext* openglContext = new QOpenGLContext(this);

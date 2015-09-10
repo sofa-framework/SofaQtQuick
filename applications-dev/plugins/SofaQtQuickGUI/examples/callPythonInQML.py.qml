@@ -8,9 +8,6 @@ SceneInterface {
     id: root
 
     toolpanel: ColumnLayout {
-        enabled: scene.ready
-        anchors.fill: parent
-
         GroupBox {
             Layout.fillWidth: true
 

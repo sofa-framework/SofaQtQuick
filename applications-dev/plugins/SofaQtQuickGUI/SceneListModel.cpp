@@ -16,7 +16,7 @@ using namespace sofa::simulation;
 SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), MutationListener(),
     myItems(),
     myUpdatedCount(0),
-	myIsDirty(true),
+    myIsDirty(true),
     myScene(nullptr)
 {
 
@@ -29,26 +29,26 @@ SceneListModel::~SceneListModel()
 
 void SceneListModel::update()
 {
-	if(!myIsDirty)
-		return;
+    if(!myIsDirty)
+        return;
+
+    dataChanged(createIndex(0, 0), createIndex(qMin(myItems.size(), myUpdatedCount) - 1, 0));
 
     int changeNum = myItems.size() - myUpdatedCount;
     if(changeNum > 0)
     {
         beginInsertRows(QModelIndex(), myUpdatedCount, myItems.size() - 1);
         endInsertRows();
-	}
+    }
     else if(changeNum < 0)
     {
         beginRemoveRows(QModelIndex(), myItems.size(), myUpdatedCount - 1);
         endRemoveRows();
     }
 
-    dataChanged(createIndex(0, 0), createIndex(myItems.size() - 1, 0));
-
     myUpdatedCount = myItems.size();
 
-	myIsDirty = false;
+    myIsDirty = false;
 }
 
 void SceneListModel::handleSceneChange(Scene* /*newScene*/)
@@ -62,8 +62,14 @@ void SceneListModel::handleSceneChange(Scene* /*newScene*/)
             update();
         }
 
-        connect(myScene, &Scene::loaded, this, [this]() {clear(); addChild(0, myScene->sofaSimulation()->GetRoot().get()); update();});
-        connect(myScene, &Scene::aboutToUnload, this, &SceneListModel::clear);
+        connect(myScene, &Scene::statusChanged, this, [this]() {
+            clear();
+
+            if(Scene::Ready == myScene->status())
+                addChild(0, myScene->sofaSimulation()->GetRoot().get());
+
+            update();
+        });
     }
 }
 
@@ -131,7 +137,7 @@ void SceneListModel::setScene(Scene* newScene)
     sceneChanged(newScene);
 }
 
-int	SceneListModel::rowCount(const QModelIndex & /*parent*/) const
+int SceneListModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return myItems.size();
 }
@@ -355,7 +361,7 @@ void SceneListModel::addChild(Node* parent, Node* child)
 
     MutationListener::addChild(parent, child);
 
-	markDirty();
+    markDirty();
 }
 
 void SceneListModel::removeChild(Node* parent, Node* child)
@@ -396,7 +402,7 @@ void SceneListModel::removeChild(Node* parent, Node* child)
         }
     }
 
-	markDirty();
+    markDirty();
 }
 
 //void SceneListModel::moveChild(Node* previous, Node* parent, Node* child)

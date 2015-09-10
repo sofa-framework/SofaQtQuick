@@ -279,8 +279,6 @@ QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOri
     QVector3D intersectionPoint = intersectRayWithPlane(wsOrigin, wsDirection, lineOrigin, planNormal);
     QVector3D projectedPoint = lineOrigin + normalizedLineDirection * QVector3D::dotProduct(normalizedLineDirection, intersectionPoint - lineOrigin);
 
-    //qDebug() << projectedPoint;
-
     return projectedPoint;
 }
 
@@ -297,7 +295,7 @@ QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeO
 
 QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
 {
-    if(!window())
+    if(!window() || !window()->isActive())
         return QVector4D();
 
     QPointF ssPointGL = mapToNative(ssPoint);
@@ -423,7 +421,7 @@ Selectable* Viewer::pickObject(const QPointF& ssPoint)
 {
     Selectable* selectable = nullptr;
 
-    if(!window())
+    if(!window() || !window()->isActive())
         return selectable;
 
     float z = 1.0;

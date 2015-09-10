@@ -77,6 +77,20 @@ FocusScope {
                                                                       (layoutItem.anchors.fill ? layoutItem.anchors.topMargin +
                                                                                                  layoutItem.anchors.bottomMargin : 0) : container.childrenRect.height) }
                     }
+
+//                    Rectangle {
+//                        color: "black"
+//                        anchors.left: parent.left
+//                        anchors.right: parent.right
+//                        height: 5
+
+//                        MouseArea {
+//                            anchors.fill: parent
+//                            drag.target: parent
+//                            drag.axis: Drag.YAxis
+//                            drag.minimumY: parent.height
+//                        }
+//                    }
                 }
             }
         }]
