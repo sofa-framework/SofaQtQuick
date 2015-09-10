@@ -128,12 +128,14 @@ void Tools::UseDefaultSofaPath()
 #endif
     sofa::helper::system::PluginRepository.addFirstPath(pluginDir);
 
-    // read the paths to the share/ and examples/ directories from etc/sofa.ini,
+    // read the paths to the share/ and examples/ directories from etc/sofa.ini
+
     const std::string etcDir = sofa::helper::Utils::getSofaPathPrefix() + "/etc";
     const std::string sofaIniFilePath = etcDir + "/sofa.ini";
     std::map<std::string, std::string> iniFileValues = sofa::helper::Utils::readBasicIniFile(sofaIniFilePath);
 
     // and add them to DataRepository
+
     if(iniFileValues.find("SHARE_DIR") != iniFileValues.end())
     {
         std::string shareDir = iniFileValues["SHARE_DIR"];
@@ -148,6 +150,13 @@ void Tools::UseDefaultSofaPath()
             examplesDir = etcDir + "/" + examplesDir;
         sofa::helper::system::DataRepository.addFirstPath(examplesDir);
     }
+
+    // also add pplication binary path
+#ifndef WIN32
+       sofa::helper::system::DataRepository.addFirstPath(QCoreApplication::applicationDirPath().toStdString());
+#else
+       sofa::helper::system::DataRepository.addFirstPath("./");
+#endif
 }
 
 void Tools::UseDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath)
