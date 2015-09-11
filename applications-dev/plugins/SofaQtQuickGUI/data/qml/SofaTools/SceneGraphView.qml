@@ -20,7 +20,7 @@ CollapsibleGroupBox {
 
     ScrollView {
         anchors.fill: parent
-        implicitHeight: Math.min(listView.implicitHeight, listView.contentHeight + 15)
+        implicitHeight: Math.min(listView.implicitHeight, listView.contentHeight)
 
         ListView {
             id: listView
