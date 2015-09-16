@@ -71,7 +71,7 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     myNormalsDrawLength(1.0f),
 	myDt(0.04),
 	myPlay(false),
-	myAsynchronous(true),
+    myAsynchronous(true),
     mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
     myBases(),
@@ -205,7 +205,8 @@ void Scene::open()
         for(QWindow* window : windows)
         {
             QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-            if(quickWindow && quickWindow->isActive())
+
+            if(quickWindow && quickWindow->isActive() && quickWindow->openglContext() != QOpenGLContext::currentContext())
             {
                 quickWindow->scheduleRenderJob(new WaitTillSwapWorker(finished), QQuickWindow::AfterSwapStage);
                 quickWindow->update();
