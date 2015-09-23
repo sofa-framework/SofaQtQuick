@@ -612,10 +612,10 @@ QRect Viewer::glRect() const
 	if(!window())
 		return QRect();
 
-    QPointF realPos(mapToNative(QPointF(0.0, height())));
+    QPointF realPos(mapToNative(QPointF(0.0, qCeil(height()))));
 
-	QPoint pos(qFloor(realPos.x()), qFloor(realPos.y()));
-	QSize size((qCeil(width()) + qCeil(pos.x() - realPos.x())) * window()->devicePixelRatio(), (qCeil((height()) + qCeil(pos.y() - realPos.y())) * window()->devicePixelRatio()));
+    QPoint pos(qFloor(realPos.x()), qFloor(realPos.y()));
+    QSize size((qCeil(width()) + qCeil(pos.x() - realPos.x())) * window()->devicePixelRatio(), (qCeil((height()) + qCeil(pos.y() - realPos.y())) * window()->devicePixelRatio()));
 	
 	return QRect(pos, size);
 }
@@ -625,7 +625,7 @@ QRect Viewer::qtRect() const
     if(!window())
         return QRect();
 
-    QPointF realPos = mapToScene(QPointF(0.0, height()));
+    QPointF realPos = mapToScene(QPointF(0.0, qCeil(height())));
     realPos.setX( realPos.x() * window()->devicePixelRatio());
     realPos.setY( realPos.y() * window()->devicePixelRatio());
 
