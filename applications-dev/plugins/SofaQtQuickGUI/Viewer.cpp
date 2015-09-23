@@ -39,6 +39,7 @@ namespace qtquick
 Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myScene(nullptr),
     myCamera(nullptr),
+    mySubTree(nullptr),
     myBackgroundColor("#00404040"),
     myBackgroundImageSource(),
     myFolderToSaveVideo(""),
@@ -113,6 +114,16 @@ void Viewer::setCamera(Camera* newCamera)
 	myCamera = newCamera;
 
 	cameraChanged(newCamera);
+}
+
+void Viewer::setSubTree(SceneComponent* newSubTree)
+{
+    if(newSubTree == mySubTree)
+        return;
+
+    mySubTree = newSubTree;
+
+    subTreeChanged(newSubTree);
 }
 
 void Viewer::setBackgroundColor(QColor newBackgroundColor)
@@ -688,7 +699,7 @@ void Viewer::internalDraw()
     myScene->setDrawNormals(myDrawNormals);
     myScene->setNormalsDrawLength(myNormalsDrawLength);
 
-    myScene->draw(*this);
+    myScene->draw(*this, mySubTree);
 
     myScene->setDrawNormals(drawNormalBackup);
     myScene->setNormalsDrawLength(normalDrawLengthBackup);

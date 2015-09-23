@@ -18,6 +18,7 @@ Viewer {
     culling: true
     blending: false
     antialiasing: false
+    scene: SofaApplication.scene
 
     property alias interactor: interactorLoader.item
 

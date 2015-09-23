@@ -1238,7 +1238,7 @@ void Scene::reset()
     emit reseted();
 }
 
-void Scene::draw(const Viewer& viewer) const
+void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
 {
     if(!isReady())
         return;
@@ -1266,7 +1266,16 @@ void Scene::draw(const Viewer& viewer) const
         myVisualDirty = false;
     }
 
-    mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), mySofaSimulation->GetRoot().get());
+    sofa::simulation::Node* root = nullptr;
+    if(nullptr != subTree)
+        root = dynamic_cast<sofa::simulation::Node*>(subTree->base());
+
+    if(!root)
+        root = mySofaSimulation->GetRoot().get();
+
+    //qDebug() << root << QString::fromStdString(root->getName());
+
+    mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
 
     // draw normals
     if(myDrawNormals)

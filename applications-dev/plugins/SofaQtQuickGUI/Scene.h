@@ -179,7 +179,7 @@ protected:
     /// \brief      Low-level drawing function
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
-    void draw(const Viewer& viewer) const;
+    void draw(const Viewer& viewer, SceneComponent* subTree = nullptr) const;
 
     SelectableSceneParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth) const;
 

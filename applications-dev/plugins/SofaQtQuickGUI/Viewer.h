@@ -57,7 +57,7 @@ public:
 public:
     Q_PROPERTY(sofa::qtquick::Scene* scene READ scene WRITE setScene NOTIFY sceneChanged)
     Q_PROPERTY(sofa::qtquick::Camera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
-
+    Q_PROPERTY(sofa::qtquick::SceneComponent* subTree READ subTree WRITE setSubTree NOTIFY subTreeChanged)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QUrl backgroundImageSource READ backgroundImageSource WRITE setBackgroundImageSource NOTIFY backgroundImageSourceChanged)
     Q_PROPERTY(QUrl folderToSaveVideo READ folderToSaveVideo WRITE setFolderToSaveVideo NOTIFY folderToSaveVideoChanged)
@@ -76,6 +76,9 @@ public:
 
     Camera* camera() const      {return myCamera;}
     void setCamera(Camera* newCamera);
+
+    SceneComponent* subTree() const      {return mySubTree;}
+    void setSubTree(SceneComponent* newSubTree);
 
     QColor backgroundColor() const	{return myBackgroundColor;}
     void setBackgroundColor(QColor newBackgroundColor);
@@ -127,6 +130,7 @@ public:
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
 	void scenePathChanged();
+    void subTreeChanged(sofa::qtquick::SceneComponent* newSubTree);
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
     void backgroundImageSourceChanged(QUrl newBackgroundImageSource);
@@ -160,6 +164,7 @@ private slots:
 private:
 	Scene*						myScene;
 	Camera*						myCamera;
+    SceneComponent*				mySubTree;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
     QUrl                        myFolderToSaveVideo;

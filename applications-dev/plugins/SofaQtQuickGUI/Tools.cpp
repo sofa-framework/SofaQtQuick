@@ -143,6 +143,7 @@ void Tools::UseDefaultSofaPath()
             shareDir = etcDir + "/" + shareDir;
         sofa::helper::system::DataRepository.addFirstPath(shareDir);
     }
+
     if(iniFileValues.find("EXAMPLES_DIR") != iniFileValues.end())
     {
         std::string examplesDir = iniFileValues["EXAMPLES_DIR"];
@@ -151,7 +152,7 @@ void Tools::UseDefaultSofaPath()
         sofa::helper::system::DataRepository.addFirstPath(examplesDir);
     }
 
-    // also add pplication binary path
+    // also add application binary path
 #ifndef WIN32
        sofa::helper::system::DataRepository.addFirstPath(QCoreApplication::applicationDirPath().toStdString());
 #else
