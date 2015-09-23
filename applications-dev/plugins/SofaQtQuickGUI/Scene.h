@@ -27,6 +27,11 @@ class QOpenGLShaderProgram;
 namespace sofa
 {
 
+namespace simulation
+{
+    class Node;
+}
+
 namespace qtquick
 {
 
@@ -181,7 +186,7 @@ protected:
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
     void draw(const Viewer& viewer, SceneComponent* subTree = nullptr) const;
 
-    SelectableSceneParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth) const;
+    SelectableSceneParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, sofa::simulation::Node* subTree = nullptr) const;
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set

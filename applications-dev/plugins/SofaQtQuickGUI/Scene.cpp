@@ -1389,7 +1389,7 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
     }
 }
 
-SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth) const
+SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, Node* subTree) const
 {
     SelectableSceneParticle* selectableSceneParticle = nullptr;
 
@@ -1399,7 +1399,14 @@ SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVec
                                                                  distanceToRay,
                                                                  distanceToRayGrowth);
 
-    pickVisitor.execute(sofaSimulation()->GetRoot()->getContext());
+    Node* root = nullptr;
+    if(subTree)
+        root = subTree;
+
+    if(!root)
+        root = sofaSimulation()->GetRoot().get();
+
+    pickVisitor.execute(root->getContext());
 
     if(!pickVisitor.particles.empty())
     {
@@ -1425,7 +1432,12 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
 
 Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
 {
-    Node* root = sofaSimulation()->GetRoot().get();
+    Node* root = nullptr;
+    if(viewer.subTree())
+        root = dynamic_cast<Node*>(viewer.subTree()->base());
+
+    if(!root)
+        root = sofaSimulation()->GetRoot().get();
 
     sofa::helper::vector<OglModel*> oglModels;
     root->getTreeObjects<OglModel>(&oglModels);

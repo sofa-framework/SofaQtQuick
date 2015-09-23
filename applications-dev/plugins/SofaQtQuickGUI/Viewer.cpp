@@ -36,6 +36,8 @@ namespace sofa
 namespace qtquick
 {
 
+using namespace sofa::simulation;
+
 Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myScene(nullptr),
     myCamera(nullptr),
@@ -70,6 +72,8 @@ Viewer::~Viewer()
 		delete _vparams->drawTool();
 		_vparams->drawTool() = 0;
 	}*/
+
+    setSubTree(nullptr);
 }
 
 void Viewer::classBegin()
@@ -121,7 +125,11 @@ void Viewer::setSubTree(SceneComponent* newSubTree)
     if(newSubTree == mySubTree)
         return;
 
-    mySubTree = newSubTree;
+    delete mySubTree;
+    mySubTree = nullptr;
+
+    if(newSubTree)
+        mySubTree = new SceneComponent(*newSubTree);
 
     subTreeChanged(newSubTree);
 }
@@ -336,7 +344,11 @@ SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
     double distanceToRay = myScene->radius() / 76.0;
     double distanceToRayGrowth = 0.001;
 
-    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth);
+    sofa::simulation::Node* root = nullptr;
+    if(subTree())
+        root = dynamic_cast<Node*>(subTree()->base());
+
+    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, root);
 }
 
 using sofa::simulation::Node;
@@ -793,7 +805,11 @@ void Viewer::paint()
 	else
 		glDisable(GL_BLEND);
 
+    preDraw();
+
 	internalDraw();
+
+    postDraw();
 
 	if(blending())
 		glDisable(GL_BLEND);

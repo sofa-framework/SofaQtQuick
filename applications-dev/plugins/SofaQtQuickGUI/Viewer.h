@@ -143,6 +143,9 @@ signals:
     void normalsDrawLengthChanged(float newNormalsDrawLength);
     void saveVideoChanged(bool newSaveVideo);
 
+    void preDraw();
+    void postDraw();
+
 public slots:
     void paint();
     void viewAll();
