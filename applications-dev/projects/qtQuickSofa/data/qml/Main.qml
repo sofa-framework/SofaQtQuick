@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import QtQuick.Controls.Styles 1.3
 import SofaBasics 1.0
+import SofaApplication 1.0
 import SofaTools 1.0
 import SofaWidgets 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
@@ -14,7 +15,21 @@ ApplicationWindow {
     height: 720
     title: Qt.application.name + " - \"" + scenePath + "\""
 
-    property var scene: SofaApplication.scene
+    property var scene: Scene {
+        Component.onCompleted: {
+            if(Qt.application.arguments.length > 1) {
+                scene.source = "file:" + Qt.application.arguments[1];
+            }
+            else {
+                if(0 !== SofaSettingsScript.Recent.scenes.length)
+                    scene.source = SofaSettingsScript.Recent.mostRecent();
+                else
+                    scene.source = "file:Demos/caduceus.scn";
+            }
+            scenePath = scene.source.toString().replace("///", "/").replace("file:", "");
+        }
+    }
+
     property var viewers: SofaApplication.viewers
     property string scenePath: ""
 
@@ -25,17 +40,6 @@ ApplicationWindow {
     Component.onCompleted: {
         showNormal();
         //showFullScreen();
-
-        if(Qt.application.arguments.length > 1) {
-            scene.source = "file:" + Qt.application.arguments[1];
-        }
-        else {
-            if(0 !== SofaSettingsScript.Recent.scenes.length)
-                scene.source = SofaSettingsScript.Recent.mostRecent();
-            else
-                scene.source = "file:Demos/caduceus.scn";
-        }
-        scenePath = scene.source.toString().replace("///", "/").replace("file:", "");
     }
 
     // dialog

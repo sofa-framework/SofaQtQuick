@@ -5,6 +5,7 @@ import ParticleInteractor 1.0
 import Scene 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
+import SofaApplication 1.0
 
 Scene {
     id: root
@@ -14,6 +15,15 @@ Scene {
     source: ""
     sourceQML: ""
     property string statusMessage: ""
+
+    Component.onCompleted: {
+        SofaApplication.scene = root;
+    }
+
+    Component.onDestruction: {
+        if(root === SofaApplication.scene)
+            SofaApplication.scene = null;
+    }
 
     onStatusChanged: {
         var path = source.toString().replace("///", "/").replace("file:", "");

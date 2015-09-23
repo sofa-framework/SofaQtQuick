@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
-import "."
+import SofaApplication 1.0
 
 ToolBar {
     id: root

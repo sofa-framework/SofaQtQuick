@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import Qt.labs.settings 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
-import "."
 
 MenuBar {
     id: menuBar

@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
+        <file>SofaApplication/qmldir</file>
+        <file>SofaApplication/SofaApplication.qml</file>
         <file>SofaBasics/qmldir</file>
         <file>SofaBasics/DefaultStatusBar.qml</file>
         <file>SofaBasics/DefaultToolBar.qml</file>
@@ -48,7 +50,6 @@
         <file>SofaDataTypes/DataType_BoundingBox.qml</file>
         <file>SofaDataTypes/DataType_Material.qml</file>
         <file>SofaDataTypes/DataType_OptionsGroup.qml</file>
-        <file>SofaBasics/SofaApplication.qml</file>
         <file>SofaInteractors/qmldir</file>
         <file>SofaInteractors/UserInteractor_Selection.qml</file>
         <file>SofaManipulators/qmldir</file>

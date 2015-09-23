@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
 import SofaBasics 1.0
+import SofaApplication 1.0
 import SofaInteractors 1.0
 import Viewer 1.0
 import Scene 1.0
@@ -21,6 +22,17 @@ Viewer {
     scene: SofaApplication.scene
 
     property alias interactor: interactorLoader.item
+
+    Component.onCompleted: {
+        SofaApplication.addViewer(root)
+
+        if(scene)
+            sceneChanged(scene);
+    }
+
+    Component.onDestruction: {
+        SofaApplication.removeViewer(root)
+    }
 
 	Action{
 		shortcut: "F5"
@@ -86,15 +98,6 @@ Viewer {
             }
         }
     }
-
-    Component.onCompleted: {
-        SofaApplication.addViewer(root)
-
-        if(scene)
-            sceneChanged(scene);
-    }
-
-    Component.onDestruction: SofaApplication.removeViewer(root)
 
     MouseArea {
         id: mouseArea

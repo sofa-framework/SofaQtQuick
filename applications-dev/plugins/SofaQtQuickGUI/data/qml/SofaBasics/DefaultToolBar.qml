@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SceneComponent 1.0
 import "qrc:/SofaCommon/SofaCommonScript.js" as SofaCommonScript
-import "."
+import SofaApplication 1.0
 
 ToolBar {
     id: root

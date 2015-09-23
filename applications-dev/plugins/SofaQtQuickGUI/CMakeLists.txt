@@ -71,8 +71,9 @@ set(QML_FILES
     data/qml/SofaCommon/SofaCommonScript.js
     data/qml/SofaCommon/SofaToolsScript.js
     data/qml/SofaCommon/SofaSettingsScript.js
+    data/qml/SofaApplication/qmldir
+    data/qml/SofaApplication/SofaApplication.qml
     data/qml/SofaBasics/qmldir
-    data/qml/SofaBasics/SofaApplication.qml
     data/qml/SofaBasics/RecentSettings.qml
     data/qml/SofaBasics/UISettings.qml
     data/qml/SofaBasics/Tools.qml
