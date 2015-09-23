@@ -19,7 +19,11 @@
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
 #include <SofaMeshCollision/TriangleModel.h>
-#include <SofaComponentMain/init.h>
+#include <SofaComponentCommon/initComponentCommon.h>
+#include <SofaComponentBase/initComponentBase.h>
+#include <SofaComponentGeneral/initComponentGeneral.h>
+#include <SofaComponentAdvanced/initComponentAdvanced.h>
+#include <SofaComponentMisc/initComponentMisc.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <sofa/simulation/common/MechanicalVisitor.h>
 
@@ -81,8 +85,15 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     myHighlightShaderProgram(nullptr),
     myPickingShaderProgram(nullptr)
 {
-    sofa::component::init();
+
     sofa::simulation::graph::init();
+    sofa::component::initComponentBase();
+    sofa::component::initComponentCommon();
+    sofa::component::initComponentGeneral();
+    sofa::component::initComponentAdvanced();
+    sofa::component::initComponentMisc();
+
+
 
 	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
     sofa::core::ObjectFactory::ClassEntry::SPtr classVisualModel;
