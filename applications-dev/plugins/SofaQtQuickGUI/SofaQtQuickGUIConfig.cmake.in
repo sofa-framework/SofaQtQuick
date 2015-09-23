@@ -1,0 +1,12 @@
+# CMake package configuration file for the SofaQtQuickGUI plugin
+
+@PACKAGE_INIT@
+
+find_package(SofaMisc REQUIRED)
+find_package(SofaPython REQUIRED)
+
+if(NOT TARGET SofaQtQuickGUI)
+	include("${CMAKE_CURRENT_LIST_DIR}/SofaQtQuickGUITargets.cmake")
+endif()
+
+check_required_components(SofaQtQuickGUI)
