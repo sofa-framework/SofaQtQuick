@@ -1,0 +1,3 @@
+add_subdirectory(applications-dev/plugins/SofaQtQuickGUI)
+include_directories(applications-dev/plugins)
+add_subdirectory(applications-dev/projects/qtQuickSofa)
