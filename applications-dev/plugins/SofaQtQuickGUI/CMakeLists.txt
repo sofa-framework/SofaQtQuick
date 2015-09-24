@@ -169,7 +169,8 @@ qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
 add_definitions(-DQT_PLUGIN)
 
-find_package(SofaMisc REQUIRED)
+#  find_package(SofaMisc REQUIRED)
+find_package(SofaFramework REQUIRED)
 find_package(SofaPython REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES})
@@ -185,7 +186,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${SOFAQTQUICKGUI_VERSIO
 add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
 
 ## Install rules for the library; CMake package configurations files
-include(SofaPackageConfigHelpers)
 sofa_create_package(SofaQtQuickGUI ${SOFAQTQUICKGUI_VERSION} SofaQtQuickGUI SofaQtQuickGUI)
 
 ## Install rules for the resources
