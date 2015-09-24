@@ -1,24 +1,23 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(qtQuickSofa)
+include(${SOFA_CMAKE_DIR}/preProject.cmake)
 
 set(SOURCE_FILES
-    Main.cpp
+		Main.cpp
 )
 
 set(HEADER_FILES
-    ""
+		""
 )
 
 set(QML_FILES
-    data/qml/Main.qml
+                data/qml/Main.qml
 )
 
 set(CONFIG_FILES
-    data/config/default.ini
+		data/config/default.ini
 )
 
 set(QRC_FILES
-    data/resource.qrc
+		data/resource.qrc
 )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -51,15 +50,12 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 
-find_package(SofaQtQuickGUI REQUIRED)
-
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
-target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick)
+AddLinkerDependencies(SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick)
 
-include(SofaPackageConfigHelpers)
-sofa_install_targets(SofaGui qtQuickSofa "")
+include(${SOFA_CMAKE_DIR}/postProject.cmake)
 
