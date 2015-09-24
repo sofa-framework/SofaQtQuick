@@ -6,9 +6,10 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
+import SofaApplicationSingleton 1.0
 import "qrc:/SofaCommon/SofaCommonScript.js" as SofaCommonScript
 
-QtObject {
+SofaApplication {
     id: root
 
 ////////////////////////////////////////////////// PRIVATE

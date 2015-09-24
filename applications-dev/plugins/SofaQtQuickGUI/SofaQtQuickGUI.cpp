@@ -24,6 +24,7 @@
 ******************************************************************************/
 
 #include "SofaQtQuickGUI.h"
+#include "SofaApplication.h"
 #include "Tools.h"
 #include "Camera.h"
 #include "ParticleInteractor.h"
@@ -72,6 +73,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 
     qRegisterMetaType<Scene::Status>("Status");
 
+    qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
     qmlRegisterType<Tools>                                          ("Tools"                                , versionMajor, versionMinor, "Tools");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<ParticleInteractor>                             ("ParticleInteractor"                   , versionMajor, versionMinor, "ParticleInteractor");
