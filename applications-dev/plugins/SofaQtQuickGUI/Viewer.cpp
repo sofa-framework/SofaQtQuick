@@ -58,8 +58,6 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
 {
     setFlag(QQuickItem::ItemHasContents);
 
-	connect(this, &Viewer::sceneChanged, this, &Viewer::handleSceneChanged);
-	connect(this, &Viewer::scenePathChanged, this, &Viewer::handleScenePathChanged);
     connect(this, &Viewer::backgroundImageSourceChanged, this, &Viewer::handleBackgroundImageSourceChanged);
     connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
 }
@@ -74,30 +72,6 @@ Viewer::~Viewer()
 	}*/
 
     setSubTree(nullptr);
-}
-
-void Viewer::classBegin()
-{
-    // TODO: implicit assignation => to be removed
-	if(!myScene)
-	{
-		QQmlContext* context = QQmlEngine::contextForObject(this);
-		if(context)
-		{
-			QVariant sceneVariant = context->contextProperty("scene");
-			if(sceneVariant.canConvert(QMetaType::QObjectStar))
-			{
-				Scene* scene = qobject_cast<Scene*>(sceneVariant.value<QObject*>());
-				if(scene)
-					setScene(scene);
-			}
-		}
-	}
-}
-
-void Viewer::componentComplete()
-{
-
 }
 
 void Viewer::setScene(Scene* newScene)
@@ -486,25 +460,6 @@ QVector3D Viewer::boundingBoxMax() const
     myScene->computeBoundingBox(min, max);
 
     return max;
-}
-
-void Viewer::handleSceneChanged(Scene* scene)
-{
-	if(scene)
-    {
-		if(scene->isReady())
-			scenePathChanged();
-
-		connect(scene, &Scene::loaded, this, &Viewer::scenePathChanged);
-	}
-}
-
-void Viewer::handleScenePathChanged()
-{
-	if(!myScene || !myScene->isReady())
-		return;
-
-	viewAll();
 }
 
 void Viewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource)

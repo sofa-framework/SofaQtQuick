@@ -51,9 +51,6 @@ public:
     explicit Viewer(QQuickItem* parent = 0);
 	~Viewer();
 
-	void classBegin();
-	void componentComplete();
-
 public:
     Q_PROPERTY(sofa::qtquick::Scene* scene READ scene WRITE setScene NOTIFY sceneChanged)
     Q_PROPERTY(sofa::qtquick::Camera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
@@ -68,7 +65,6 @@ public:
     Q_PROPERTY(bool drawNormals MEMBER myDrawNormals NOTIFY drawNormalsChanged)
     Q_PROPERTY(float normalsDrawLength MEMBER myNormalsDrawLength NOTIFY normalsDrawLengthChanged)
     Q_PROPERTY(bool saveVideo READ saveVideo WRITE setSaveVideo NOTIFY saveVideoChanged)
-
 
 public:
     Scene* scene() const        {return myScene;}
@@ -129,7 +125,6 @@ public:
 
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
-	void scenePathChanged();
     void subTreeChanged(sofa::qtquick::SceneComponent* newSubTree);
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
@@ -159,8 +154,6 @@ private:
     QPointF mapToNative(const QPointF& ssPoint) const;
 
 private slots:
-    void handleSceneChanged(Scene* scene);
-	void handleScenePathChanged();
     void handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource);
     void handleWindowChanged(QQuickWindow* window);
 

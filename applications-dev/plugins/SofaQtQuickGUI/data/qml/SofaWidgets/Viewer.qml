@@ -12,6 +12,7 @@ import Scene 1.0
 
 Viewer {
     id: root
+
     clip: true
     backgroundColor: "#FF404040"
     backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
@@ -26,8 +27,7 @@ Viewer {
     Component.onCompleted: {
         SofaApplication.addViewer(root)
 
-        if(scene)
-            sceneChanged(scene);
+        recreateCamera();
     }
 
     Component.onDestruction: {
@@ -37,15 +37,8 @@ Viewer {
 	Action{
 		shortcut: "F5"
 		onTriggered: root.viewAll()
-	}
-/*
-    Timer {
-        running: true
-        repeat: true
-        interval: 16
-        onTriggered: root.update() // TODO: warning, does not work with multithreaded render loop
     }
-*/
+
     BusyIndicator {
         id: busyIndicator
         anchors.centerIn: parent
@@ -74,11 +67,26 @@ Viewer {
         }
     }
 
-    onScenePathChanged: {
-        if(camera)
+    property bool keepCamera: false
+    function recreateCamera() {
+        if(camera && !keepCamera) {
             camera.destroy();
+            camera = null;
+        }
 
-        camera = cameraComponent.createObject(root);
+        if(!camera) {
+            camera = cameraComponent.createObject(root);
+
+            viewAll();
+        }
+    }
+
+    Connections {
+        target: root.scene
+        onStatusChanged: {
+            if(Scene.Ready === root.scene.status)
+                root.recreateCamera();
+        }
     }
 
     Image {
@@ -99,6 +107,7 @@ Viewer {
         }
     }
 
+    property Component interactorComponent: SofaApplication.interactorComponent
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -108,7 +117,7 @@ Viewer {
         property alias interactor: interactorLoader.item
         Loader {
             id: interactorLoader
-            sourceComponent: SofaApplication.interactorComponent
+            sourceComponent: root.interactorComponent
             onLoaded: {
                 var interactor = item;
                 interactor.init();

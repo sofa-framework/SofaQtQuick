@@ -13,12 +13,14 @@ class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
 {
     Q_OBJECT
 
+public:
+    static SofaApplication* Instance();
+
 protected:
     SofaApplication(QObject* parent = 0);
 
 public:
     ~SofaApplication();
-    static SofaApplication* Instance();
 
 private:
     static SofaApplication* OurInstance;

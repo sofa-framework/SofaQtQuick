@@ -306,7 +306,7 @@ QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, con
     }
     else // try to find by name (slower but more generic)
     {
-        std::cerr<<"FINDING BY NAME "<<path<<" "<<funcName.toUtf8().constData()<<std::endl;
+        qDebug() << "FINDING BY NAME " << path << "::" << funcName;
         controller = dynamic_cast<PythonScriptController*>( myScene->sofaSimulation()->GetRoot()->getObject( path ) );
     }
 

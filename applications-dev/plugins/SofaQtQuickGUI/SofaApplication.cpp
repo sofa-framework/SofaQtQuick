@@ -1,7 +1,5 @@
 #include "SofaApplication.h"
 
-
-
 namespace sofa
 {
 
