@@ -169,7 +169,6 @@ qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
 add_definitions(-DQT_PLUGIN)
 
-#  find_package(SofaMisc REQUIRED)
 find_package(SofaFramework REQUIRED)
 find_package(SofaPython REQUIRED)
 
