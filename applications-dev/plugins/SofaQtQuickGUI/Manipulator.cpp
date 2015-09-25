@@ -75,7 +75,7 @@ QQuaternion Manipulator::quaternionMultiply(const QQuaternion& q0, const QQuater
     return q0 * q1;
 }
 
-void Manipulator::draw(const Viewer& viewer) const
+void Manipulator::draw(const Viewer& /*viewer*/) const
 {
     // a base manipulator has no visual representation
 }

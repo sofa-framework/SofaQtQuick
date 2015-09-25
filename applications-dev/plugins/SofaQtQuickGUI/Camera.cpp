@@ -373,7 +373,7 @@ QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int cas
         for(int j = 1; j<3; j++)
         {
             axisRef[j] = 1;
-            if(fabsf(dotProductAxis) < fabsf(QVector3D::dotProduct(axis, axisRef)))
+            if(std::abs(dotProductAxis) < std::abs(QVector3D::dotProduct(axis, axisRef)))
             {
                 nearAxisIndex = j;
                 dotProductAxis = QVector3D::dotProduct(axis, axisRef);
@@ -404,7 +404,7 @@ QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int cas
             else if(j!= caseTested && iterations)
             {
                 axisRef[j]=1;
-                if(fabsf(dotProductAxis) < fabsf(QVector3D::dotProduct(axis, axisRef)))
+                if(std::abs(dotProductAxis) < std::abs(QVector3D::dotProduct(axis, axisRef)))
                 {
                     nearAxisIndex = j;
                     dotProductAxis = QVector3D::dotProduct(axis, axisRef);
