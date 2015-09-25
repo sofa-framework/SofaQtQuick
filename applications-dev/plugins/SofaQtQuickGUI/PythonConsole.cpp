@@ -17,7 +17,7 @@ using namespace sofa::simulation;
 namespace PythonConsoleModule {
     static std::string Name() {return "PythonConsole";}
 
-    static PyObject* Write(PyObject *self, PyObject *args)
+    static PyObject* Write(PyObject */*self*/, PyObject *args)
     {
         const char *arg;
 
