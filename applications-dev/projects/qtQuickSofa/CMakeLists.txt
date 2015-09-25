@@ -61,5 +61,5 @@ add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QR
 
 target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick)
 
-sofa_install_targets(SofaGui qtQuickSofa "")
+sofa_install_targets(SofaGui ${PROJECT_NAME} "")
 
