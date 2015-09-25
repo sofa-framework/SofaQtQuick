@@ -1304,7 +1304,7 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
             if(vertices.size() != normals.size())
                 continue;
 
-            for(int i = 0; i < vertices.size(); ++i)
+            for(size_t i = 0; i < vertices.size(); ++i)
             {
                 ExtVec3fTypes::Coord vertex = vertices[i];
                 ExtVec3fTypes::Deriv normal = normals[i];
@@ -1514,11 +1514,11 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
         int j = unpackPickingIndex(indexComponents);
         if(-1 != j)
         {
-            if(j < oglModels.size())
+            if((size_t)j < oglModels.size())
                 return new SelectableSceneComponent(SceneComponent(this, oglModels[j]));
 
             j -= oglModels.size();
-            if(j < triangleModels.size())
+            if((size_t)j < triangleModels.size())
                 return new SelectableSceneComponent(SceneComponent(this, triangleModels[j]));
 
             j -= triangleModels.size();

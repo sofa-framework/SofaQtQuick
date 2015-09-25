@@ -238,7 +238,7 @@ QVariant PythonInteractor::call(const QString& pythonScriptControllerName, const
 
 
 
-bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& parameter)
+bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& /*parameter*/)
 {
     if(!myScene)
     {
