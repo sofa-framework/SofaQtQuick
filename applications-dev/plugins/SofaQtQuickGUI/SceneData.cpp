@@ -29,15 +29,15 @@ SceneData::SceneData(const Scene* scene, const sofa::core::objectmodel::Base* ba
 
 }
 
-SceneData::SceneData(const SceneData& sceneData) :
-    myScene(sceneData.myScene),
-    myBase(),
-    myData(sceneData.data())
-{
-    // if the data exists, its base is valid
-    if(myData)
-        myBase = sceneData.myBase;
-}
+//SceneData::SceneData(const SceneData& sceneData) :
+//    myScene(sceneData.myScene),
+//    myBase(),
+//    myData(sceneData.data())
+//{
+//    // if the data exists, its base is valid
+//    if(myData)
+//        myBase = sceneData.myBase;
+//}
 
 QVariantMap SceneData::object() const
 {

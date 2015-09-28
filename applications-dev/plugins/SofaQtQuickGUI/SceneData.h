@@ -26,7 +26,7 @@ class SOFA_SOFAQTQUICKGUI_API SceneData : public QObject
 public:
     SceneData(const SceneComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data);
     SceneData(const Scene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
-    SceneData(const SceneData& sceneData);
+//    SceneData(const SceneData& sceneData);
 
     Q_INVOKABLE QVariantMap object() const;
 
