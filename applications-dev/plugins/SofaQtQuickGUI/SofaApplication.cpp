@@ -1,5 +1,8 @@
 #include "SofaApplication.h"
 
+#include <QCoreApplication>
+#include <QDir>
+
 namespace sofa
 {
 
@@ -22,6 +25,11 @@ SofaApplication::~SofaApplication()
 SofaApplication* SofaApplication::Instance()
 {
     return OurInstance;
+}
+
+QString SofaApplication::binaryDirectory() const
+{
+    return QCoreApplication::applicationDirPath();
 }
 
 }

@@ -14,7 +14,11 @@ class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
     Q_OBJECT
 
 public:
+
+public:
     static SofaApplication* Instance();
+
+    Q_INVOKABLE QString binaryDirectory() const;
 
 protected:
     SofaApplication(QObject* parent = 0);
