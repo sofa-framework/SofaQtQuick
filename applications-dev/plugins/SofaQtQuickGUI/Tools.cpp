@@ -247,14 +247,14 @@ bool Tools::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEng
 
     // plugin initialization
     QString pluginName("SofaQtQuickGUI");
-#ifdef SOFA_LIBSUFFIX
-    pluginName += sofa_tostring(SOFA_LIBSUFFIX);
+#ifndef NDEBUG
+    pluginName += "_d";
 #endif
     QPluginLoader pluginLoader(pluginName);
 
     // first call to instance() initialize the plugin
     if(0 == pluginLoader.instance()) {
-        qCritical() << "SofaQtQuickGUI plugin has not been found!";
+        qCritical() << "ERROR: SofaQtQuickGUI plugin has not been found "<<pluginName;
         return false;
     }
 
