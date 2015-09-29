@@ -4,12 +4,12 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import Qt.labs.settings 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
+import SofaApplication 1.0
 
 MenuBar {
     id: menuBar
 
-    property var scene
-    property var viewers
+    property var scene: null
     property int timerInterval: 16
 
     property list<QtObject> objects: [
@@ -74,7 +74,8 @@ MenuBar {
             repeat: true
             interval: timerInterval
             onTriggered: {
-                // Loop on viewer lists
+                // loop on viewer lists
+                var viewers = SofaApplication.viewers;
                 for (var i = 0; i < viewers.length; i++) {
                     if(viewers[i].saveVideo) {
                         //timerInterval = 1000.0/viewers[i].videoFrameRate

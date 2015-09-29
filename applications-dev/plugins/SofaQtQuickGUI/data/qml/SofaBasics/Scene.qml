@@ -128,5 +128,7 @@ Scene {
         id: interfaceLoader
         asynchronous: true
         source: root.sourceQML
+
+        property var scene: root
     }
 }
