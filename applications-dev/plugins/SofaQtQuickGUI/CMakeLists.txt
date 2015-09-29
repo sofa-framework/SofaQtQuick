@@ -7,6 +7,7 @@ set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINO
 
 set(SOURCE_FILES
     SofaQtQuickGUI.cpp
+    SofaApplication.cpp
     Tools.cpp
     Viewer.cpp
     Camera.cpp
@@ -31,6 +32,7 @@ set(SOURCE_FILES
 
 set(HEADER_FILES
     SofaQtQuickGUI.h
+    SofaApplication.h
     Tools.h
     Viewer.h
     Camera.h

@@ -126,6 +126,8 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
 
 Scene::~Scene()
 {
+    setSelectedComponent(nullptr);
+
 	if(mySofaSimulation == sofa::simulation::getSimulation())
 		sofa::simulation::setSimulation(0);
 
@@ -973,12 +975,16 @@ void Scene::setDataValue(const QString& path, const QVariant& value)
 static BaseData* FindDataHelper(BaseNode* node, const QString& path)
 {
     BaseData* data = 0;
-    std::streambuf* backup(std::cerr.rdbuf());
 
-    std::ostringstream stream;
-    std::cerr.rdbuf(stream.rdbuf());
-    node->findDataLinkDest(data, path.toStdString(), 0);
-    std::cerr.rdbuf(backup);
+    if(node)
+    {
+        std::streambuf* backup(std::cerr.rdbuf());
+
+        std::ostringstream stream;
+        std::cerr.rdbuf(stream.rdbuf());
+        node->findDataLinkDest(data, path.toStdString(), 0);
+        std::cerr.rdbuf(backup);
+    }
 
     return data;
 }

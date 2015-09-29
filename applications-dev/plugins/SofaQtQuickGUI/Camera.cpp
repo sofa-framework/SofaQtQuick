@@ -310,6 +310,8 @@ void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector
     myView.lookAt(eye, target, up);
     myModel = myView.inverted();
 
+    myTarget = target;
+
     myViewDirty = false;
 }
 
