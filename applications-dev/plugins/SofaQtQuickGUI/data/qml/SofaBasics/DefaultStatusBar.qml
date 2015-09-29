@@ -9,7 +9,7 @@ ToolBar {
     anchors.margins: 0
     anchors.leftMargin: 0
 
-    property var scene
+    property var    scene: null
     property string statusMessage: ""
     property int    statusDuration: 5000
 
