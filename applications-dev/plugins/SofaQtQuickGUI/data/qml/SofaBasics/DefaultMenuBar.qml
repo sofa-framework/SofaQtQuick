@@ -10,7 +10,6 @@ MenuBar {
     id: menuBar
 
     property var scene: null
-    property int timerInterval: 16
 
     property list<QtObject> objects: [
 
@@ -66,69 +65,6 @@ MenuBar {
                 saveSofaSceneScreenshotDialog.open();
             }
             tooltip: "Save the Sofa Scene"
-        },
-
-        Timer {
-            id: timerSaveVideo
-            running: false
-            repeat: true
-            interval: timerInterval
-            onTriggered: {
-                // loop on viewer lists
-                var viewers = SofaApplication.viewers;
-                for (var i = 0; i < viewers.length; i++) {
-                    if(viewers[i].saveVideo) {
-                        //timerInterval = 1000.0/viewers[i].videoFrameRate
-                        var folder = viewers[i].folderToSaveVideo;
-                        viewers[i].saveVideoInFile(folder,i);
-                    }
-                }
-
-            }
-        },
-
-        Action {
-            id: saveVideoAction
-            text: "&Save Viewer Video"
-            shortcut: "v"
-
-            onTriggered:
-            {
-                timerSaveVideo.running ? timerSaveVideo.stop():timerSaveVideo.start();
-            }
-            tooltip: "Save video of a viewer"
-        },
-
-        Action {
-            id: videoRecorderManagerAction
-            text: "&Video Recorder Manager"
-            shortcut: "r"
-
-            onTriggered:
-            {
-                videoManagerDialog.open();
-            }
-            tooltip: "Save video of a viewer"
-        },
-
-        Dialog {
-            id: videoManagerDialog
-            title: "Video Manager"
-            width: 400
-            ColumnLayout {
-            Text {
-                text: "To save a video select the viewer(s) you want to record.<br> Press v to start the video.</br><br>Re-press v to stop the video.</br>"
-            }
-            SpinBox {
-                id: frameRateSpinBox
-                minimumValue: 1
-                maximumValue: 100
-                stepSize: 1
-                prefix: " Framerate (in img/s): "
-                value: 60
-                onValueChanged: timerInterval = 1000.0/value
-                }
-            }
         },
 
         Action {
@@ -229,8 +165,6 @@ MenuBar {
         //MenuItem {action: saveAction}
         //MenuItem {action: saveAsAction}
         MenuItem {action:saveScreenshotAction }
-        MenuItem {action:saveVideoAction }
-        MenuItem {action:videoRecorderManagerAction}
         MenuSeparator {}
         MenuItem {action: exitAction}
     }

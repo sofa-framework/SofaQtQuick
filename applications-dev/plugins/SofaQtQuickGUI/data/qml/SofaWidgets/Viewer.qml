@@ -533,7 +533,7 @@ Viewer {
                                             title: "Save video"
                                             width: 300
                                             Text {
-                                            text: "You have selected this viewer.<br>To start taking a video press v.</br><br>To stop taking the video re-press v.</br>"
+                                            text: "You have selected this viewer.<br>To start taking a video animate the scene."
                                             }
                                         }
                                     }
