@@ -118,6 +118,7 @@ Viewer {
         Loader {
             id: interactorLoader
             sourceComponent: root.interactorComponent
+//            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
             onLoaded: {
                 var interactor = item;
                 interactor.init();
