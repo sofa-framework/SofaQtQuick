@@ -116,10 +116,6 @@ UserInteractor {
             wheel.accepted = true;
         });
         
-        addMouseDoubleRightClickedMapping(Qt.RightButton, function(mouse) {
-            // Align camera axis
-            viewer.camera.alignCameraAxis();
-        });
     }
 
     function init() {
