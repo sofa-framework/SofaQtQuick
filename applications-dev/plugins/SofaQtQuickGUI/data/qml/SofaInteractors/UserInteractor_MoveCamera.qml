@@ -93,6 +93,7 @@ UserInteractor {
         });
 
         setMouseWheelMapping(function(wheel, viewer) {
+            
             if(!viewer.camera)
                 return;
 
@@ -113,6 +114,11 @@ UserInteractor {
             viewer.camera.zoom(factor);
 
             wheel.accepted = true;
+        });
+        
+        addMouseDoubleRightClickedMapping(Qt.RightButton, function(mouse) {
+            // Align camera axis
+            viewer.camera.alignCameraAxis();
         });
     }
 
