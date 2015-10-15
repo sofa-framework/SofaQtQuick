@@ -21,6 +21,7 @@ Viewer {
     blending: false
     antialiasing: false
     scene: SofaApplication.scene
+    property bool defaultCameraOrthographic: false
 
     property alias interactor: interactorLoader.item
 
@@ -63,7 +64,6 @@ Viewer {
         id: cameraComponent
 
         Camera {
-
         }
     }
 
@@ -75,7 +75,7 @@ Viewer {
         }
 
         if(!camera) {
-            camera = cameraComponent.createObject(root);
+            camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
 
             viewAll();
         }
@@ -623,7 +623,7 @@ Viewer {
 
                                             text: "Orthographic"
                                             checkable: true
-                                            checked: false
+                                            checked: root.defaultCameraOrthographic
                                             onCheckedChanged: root.camera.orthographic = checked
                                             onClicked: {
                                                 checked = true;
@@ -643,7 +643,7 @@ Viewer {
 
                                             text: "Perspective"
                                             checkable: true
-                                            checked: true
+                                            checked: !root.defaultCameraOrthographic
                                             onCheckedChanged: root.camera.orthographic = !checked
                                             onClicked: {
                                                 checked = true;
