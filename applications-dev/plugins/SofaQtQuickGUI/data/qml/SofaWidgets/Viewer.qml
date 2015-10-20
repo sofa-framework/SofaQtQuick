@@ -644,7 +644,7 @@ Viewer {
                                             text: "Perspective"
                                             checkable: true
                                             checked: !root.defaultCameraOrthographic
-                                            onCheckedChanged: root.camera.orthographic = !checked
+                                            onCheckedChanged: if(root.camera) root.camera.orthographic = !checked
                                             onClicked: {
                                                 checked = true;
                                                 orthoButton.checked = false;
