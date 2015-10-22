@@ -199,7 +199,7 @@ private:
 void Scene::open()
 {
     myPathQML.clear();
-	setSourceQML(QUrl());
+    setSourceQML(QUrl());
 
     if(Status::Loading == myStatus) // return now if a scene is already loading
         return;
@@ -1444,7 +1444,7 @@ static QVector4D packPickingIndex(int i)
 
 static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
 {
-    return (i[0] | (i[1] << 8) | (i[2] << 16)) - 1;
+    return (i[0] | (i[1] << 8) | (i[2] << 16));
 }
 
 Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
@@ -1462,75 +1462,87 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
     sofa::helper::vector<TriangleModel*> triangleModels;
     root->getTreeObjects<TriangleModel>(&triangleModels);
 
-    if(!oglModels.empty() || !triangleModels.empty() || !myManipulators.empty())
+    if(oglModels.empty() && triangleModels.empty() && myManipulators.empty())
+        return nullptr;
+
+    sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+
+    unsigned int index = 1;
+
+    // write index
+
+    glDisable(GL_ALPHA_TEST);
+    glDisable(GL_BLEND);
+
+    myPickingShaderProgram->bind();
     {
-        sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+        int indexLocation = myPickingShaderProgram->uniformLocation("index");
 
-        myPickingShaderProgram->bind();
+        for(OglModel* oglModel : oglModels)
         {
-            int indexLocation = myPickingShaderProgram->uniformLocation("index");
-
-            unsigned int j = 0;
-            for(; j < oglModels.size(); ++j)
+            if(oglModel)
             {
-                OglModel* oglModel = oglModels[j];
-                if(oglModel)
-                {
-                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
-                    oglModel->drawVisual(visualParams);
-                }
+                myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                oglModel->drawVisual(visualParams);
             }
 
-            for(; j < triangleModels.size(); ++j)
-            {
-                TriangleModel* triangleModel = triangleModels[j];
-                if(triangleModel)
-                {
-                    VisualStyle* visualStyle = nullptr;
-                    triangleModel->getContext()->get(visualStyle);
-
-                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
-
-                    if(visualStyle)
-                        visualStyle->fwdDraw(visualParams);
-
-                    triangleModel->draw(visualParams);
-
-                    if(visualStyle)
-                        visualStyle->bwdDraw(visualParams);
-                }
-            }
-
-            for(Manipulator* manipulator : myManipulators)
-            {
-                if(manipulator)
-                {
-                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(j + 1));
-                    manipulator->pick(viewer);
-                }
-
-                ++j;
-            }
+            index++;
         }
-        myPickingShaderProgram->release();
 
-        std::array<unsigned char, 4> indexComponents;
-        glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
-
-        int j = unpackPickingIndex(indexComponents);
-        if(-1 != j)
+        for(TriangleModel* triangleModel : triangleModels)
         {
-            if((size_t)j < oglModels.size())
-                return new SelectableSceneComponent(SceneComponent(this, oglModels[j]));
+            if(triangleModel)
+            {
+                VisualStyle* visualStyle = nullptr;
+                triangleModel->getContext()->get(visualStyle);
 
-            j -= oglModels.size();
-            if((size_t)j < triangleModels.size())
-                return new SelectableSceneComponent(SceneComponent(this, triangleModels[j]));
+                myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
 
-            j -= triangleModels.size();
-            if(j < myManipulators.size())
-                return new SelectableManipulator(*myManipulators[j]);
+                if(visualStyle)
+                    visualStyle->fwdDraw(visualParams);
+
+                triangleModel->draw(visualParams);
+
+                if(visualStyle)
+                    visualStyle->bwdDraw(visualParams);
+            }
+
+            index++;
         }
+
+        for(Manipulator* manipulator : myManipulators)
+        {
+            if(manipulator)
+            {
+                myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                manipulator->pick(viewer);
+            }
+
+            index++;
+        }
+    }
+    myPickingShaderProgram->release();
+
+    // read index
+
+    std::array<unsigned char, 4> indexComponents;
+    glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
+
+    index = unpackPickingIndex(indexComponents);
+    if(0 != index)
+    {
+        --index;
+
+        if((size_t) index < oglModels.size())
+            return new SelectableSceneComponent(SceneComponent(this, oglModels[index]));
+        index -= oglModels.size();
+
+        if((size_t) index < triangleModels.size())
+            return new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));
+        index -= triangleModels.size();
+
+        if((int) index < myManipulators.size())
+            return new SelectableManipulator(*myManipulators[index]);
     }
 
     return nullptr;
