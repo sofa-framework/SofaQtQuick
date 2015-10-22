@@ -160,6 +160,7 @@ public slots:
 	void reload();
     void animate(bool play);
 	void step();
+    void markVisualDirty(); // useful when you move objects without stepping (with manipulators for instance)
 	void reset();
     void takeScreenshot();
     void saveScreenshotInFile();

@@ -1244,6 +1244,11 @@ void Scene::step()
     emit stepEnd();
 }
 
+void Scene::markVisualDirty()
+{
+    myVisualDirty = true;
+}
+
 void Scene::reset()
 {
     if(!isReady())

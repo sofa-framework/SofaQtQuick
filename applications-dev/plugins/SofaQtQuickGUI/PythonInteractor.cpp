@@ -298,21 +298,16 @@ QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, con
     PythonScriptController* controller = nullptr;
 
     // try to find by path (faster)
-    void* cont = myScene->sofaSimulation()->GetRoot()->getObject( classid(PythonScriptController), path );
+    void* rawController = myScene->sofaSimulation()->GetRoot()->getObject(classid(PythonScriptController), path);
 
-    if( cont ) // found by path
-    {
-       controller = reinterpret_cast<PythonScriptController*>( cont );
-    }
-    else // try to find by name (slower but more generic)
-    {
-        qDebug() << "FINDING BY NAME " << path << "::" << funcName;
-        controller = dynamic_cast<PythonScriptController*>( myScene->sofaSimulation()->GetRoot()->getObject( path ) );
-    }
+    if(rawController) // found by path
+       controller = reinterpret_cast<PythonScriptController*>(rawController);
+    else // try to find by name in the root node (slower but more generic)
+        controller = dynamic_cast<PythonScriptController*>(myScene->sofaSimulation()->GetRoot()->getObject( path ));
 
-    if( !controller )
+    if(!controller)
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python controller path/name "<<pythonScriptControllerName;
+        qWarning() << "ERROR: cannot call Python function without a valid python controller path/name " << pythonScriptControllerName;
         return QVariant();
     }
 
