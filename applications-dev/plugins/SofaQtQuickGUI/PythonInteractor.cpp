@@ -271,7 +271,6 @@ QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScri
         return QVariant();
     }
 
-
     sofa::core::objectmodel::PythonScriptFunction pythonScriptFunction(pyCallableObject, true);
     sofa::core::objectmodel::PythonScriptFunctionParameter pythonScriptParameter(PythonBuildTupleHelper(parameter, true), true);
     sofa::core::objectmodel::PythonScriptFunctionResult pythonScriptResult;
@@ -284,9 +283,8 @@ QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScri
 
 QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
-    QVariant result;
-
-    if( !onCallBasicVerifications(funcName,parameter) ) return result;
+    if(!onCallBasicVerifications(funcName, parameter))
+        return QVariant();
 
     if(pythonScriptControllerName.isEmpty())
     {
@@ -311,11 +309,8 @@ QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, con
         return QVariant();
     }
 
-    return onCallByController( controller, funcName, parameter );
-
-    return QVariant();
+    return onCallByController(controller, funcName, parameter);
 }
-
 
 }
 

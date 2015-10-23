@@ -691,8 +691,8 @@ QPointF Viewer::mapToNative(const QPointF& ssPoint) const
 }
 
 void Viewer::paint()
-{
-    if(!window())
+{    
+    if(!window() || !isVisible())
         return;
 
     // compute the correct viewer position and size
