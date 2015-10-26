@@ -65,9 +65,29 @@ void Manipulator::setScale(const QVector3D& newScale)
     scaleChanged(newScale);
 }
 
+QVector3D Manipulator::quaternionToEulerAngles(const QQuaternion& quaternion)
+{
+    return quaternion.toEulerAngles();
+}
+
+QVariantList Manipulator::quaternionToAxisAngle(const QQuaternion& quaternion) // return [QVector3D axis, float angle];
+{
+    QVector3D axis;
+    float angle = 0.0f;
+
+    quaternion.getAxisAndAngle(&axis, &angle);
+
+    return QVariantList() << QVariant::fromValue(axis) << QVariant::fromValue(angle);
+}
+
 QQuaternion Manipulator::quaternionFromAxisAngle(const QVector3D& axis, float angle)
 {
     return QQuaternion::fromAxisAndAngle(axis, angle);
+}
+
+QQuaternion Manipulator::quaternionDifference(const QQuaternion& q0, const QQuaternion& q1)
+{
+    return q1 * q0.inverted();
 }
 
 QQuaternion Manipulator::quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1)

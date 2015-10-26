@@ -43,7 +43,10 @@ public:
     void setScale(const QVector3D& newScale);
 
 public:
+    Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion);
+    Q_INVOKABLE QVariantList quaternionToAxisAngle(const QQuaternion& quaternion); // return [QVector3D axis, float angle];
     Q_INVOKABLE QQuaternion quaternionFromAxisAngle(const QVector3D& axis, float angle);
+    Q_INVOKABLE QQuaternion quaternionDifference(const QQuaternion& q0, const QQuaternion& q1);
     Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1);
 
 public slots:
