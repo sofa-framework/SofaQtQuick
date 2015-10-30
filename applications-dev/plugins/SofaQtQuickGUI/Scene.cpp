@@ -14,6 +14,7 @@
 #include <sofa/simulation/graph/init.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
+#include <sofa/core/visual/VisualModel.h>
 #include <sofa/helper/system/glut.h>
 #include <SofaPython/SceneLoaderPY.h>
 #include <SofaBaseVisual/VisualStyle.h>
@@ -58,6 +59,7 @@ namespace qtquick
 
 using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
+using namespace sofa::core::visual;
 using namespace sofa::component::visualmodel;
 using namespace sofa::component::collision;
 using namespace sofa::simulation;
@@ -118,7 +120,6 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
 	connect(this, &Scene::sourceChanged, this, &Scene::open);
 	connect(this, &Scene::playChanged, myStepTimer, [&](bool newPlay) {newPlay ? myStepTimer->start() : myStepTimer->stop();});
     connect(this, &Scene::statusChanged, this, &Scene::handleStatusChange);
-    connect(this, &Scene::loaded, this, [&]() {addChild(0, mySofaSimulation->GetRoot().get());});
     connect(this, &Scene::aboutToUnload, this, [&]() {myBases.clear();});
 
     connect(myStepTimer, &QTimer::timeout, this, &Scene::step);
@@ -134,19 +135,19 @@ Scene::~Scene()
     sofa::simulation::graph::cleanup();
 }
 
-static bool LoaderProcess(sofa::simulation::Simulation* sofaSimulation, const QString& scenePath)
+static bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface)
 {
-	if(!sofaSimulation || scenePath.isEmpty())
+    if(!scene || !scene->sofaSimulation() || scenePath.isEmpty())
 		return false;
 
 	sofa::core::visual::VisualParams* vparams = sofa::core::visual::VisualParams::defaultInstance();
 	if(vparams)
 		vparams->displayFlags().setShowVisualModels(true);
 
-    if(sofaSimulation->load(scenePath.toLatin1().constData()))
-        if(sofaSimulation->GetRoot()) {
-            sofaSimulation->init(sofaSimulation->GetRoot().get());
-			return true;
+    if(scene->sofaSimulation()->load(scenePath.toLatin1().constData()))
+        if(scene->sofaSimulation()->GetRoot()) {
+            scene->init(surface);
+            return true;
         }
 
 	return false;
@@ -155,9 +156,10 @@ static bool LoaderProcess(sofa::simulation::Simulation* sofaSimulation, const QS
 class LoaderThread : public QThread
 {
 public:
-    LoaderThread(sofa::simulation::Simulation* sofaSimulation, const QString& scenePath) :
-		mySofaSimulation(sofaSimulation),
+    LoaderThread(Scene* scene, const QString& scenePath, QOffscreenSurface* offscreenSurface) :
+        myScene(scene),
 		myScenepath(scenePath),
+        myOffscreenSurface(offscreenSurface),
 		myIsLoaded(false)
 	{
 
@@ -165,14 +167,15 @@ public:
 
 	void run()
 	{
-        myIsLoaded = LoaderProcess(mySofaSimulation, myScenepath);
+        myIsLoaded = LoaderProcess(myScene, myScenepath, myOffscreenSurface);
 	}
 
 	bool isLoaded() const			{return myIsLoaded;}
 
 private:
-	sofa::simulation::Simulation*	mySofaSimulation;
+    Scene*                          myScene;
 	QString							myScenepath;
+    QOffscreenSurface*              myOffscreenSurface;
 	bool							myIsLoaded;
 
 };
@@ -281,32 +284,35 @@ void Scene::open()
 
     SceneLoaderPY::setHeader(finalHeader.toStdString());
 
+    QOffscreenSurface* offScreenSurface = new QOffscreenSurface();
+    offScreenSurface->create();
+
 	if(myAsynchronous)
 	{
-        LoaderThread* loaderThread = new LoaderThread(mySofaSimulation, finalFilename);
+        LoaderThread* loaderThread = new LoaderThread(this, finalFilename, offScreenSurface);
 
-        connect(loaderThread, &QThread::finished, this, [this, loaderThread, qmlFilepath]() {                    
+        connect(loaderThread, &QThread::finished, this, [this, loaderThread, qmlFilepath, offScreenSurface]() {
             if(!loaderThread->isLoaded())
                 setStatus(Status::Error);
             else
             {
                 setDt(mySofaSimulation->GetRoot()->getDt());
-                initGraphics();
             }
 
             loaderThread->deleteLater();
+            offScreenSurface->deleteLater();
         });
 
 		loaderThread->start();
 	}
     else
 	{
-        if(!LoaderProcess(mySofaSimulation, finalFilename))
+        if(!LoaderProcess(this, finalFilename, offScreenSurface))
             setStatus(Status::Error);
         else
         {
             setDt(mySofaSimulation->GetRoot()->getDt());
-            initGraphics();
+            offScreenSurface->deleteLater();
         }
 	}
 }
@@ -1077,7 +1083,7 @@ public:
         // init the highlight shader program
         if(!myScene.myHighlightShaderProgram)
         {
-            myScene.myHighlightShaderProgram = new QOpenGLShaderProgram(&myScene);
+            myScene.myHighlightShaderProgram = new QOpenGLShaderProgram();
 
             myScene.myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
                 "void main(void)\n"
@@ -1091,6 +1097,9 @@ public:
                 "}");
 
             myScene.myHighlightShaderProgram->link();
+
+            myScene.myHighlightShaderProgram->moveToThread(myScene.thread());
+            myScene.myHighlightShaderProgram->setParent(&myScene);
         }
 
         // init the picking shader program
@@ -1110,6 +1119,9 @@ public:
                 "   gl_FragColor = index;\n"
                 "}");
             myScene.myPickingShaderProgram->link();
+
+            myScene.myPickingShaderProgram->moveToThread(myScene.thread());
+            myScene.myPickingShaderProgram->setParent(&myScene);
         }
 
         // prepare the sofa visual params
@@ -1133,8 +1145,10 @@ public:
         }
     #endif
 
+        myScene.sofaSimulation()->init(myScene.sofaSimulation()->GetRoot().get());
+
         // need a valig OpenGL context for initTextures
-        myScene.mySofaSimulation->initTextures(myScene.mySofaSimulation->GetRoot().get());
+        myScene.sofaSimulation()->initTextures(myScene.sofaSimulation()->GetRoot().get());
 
         myFinished = true;
     }
@@ -1145,7 +1159,7 @@ private:
 
 };
 
-void Scene::initGraphics()
+void Scene::init(QOffscreenSurface* offscreenSurface)
 {
     if(!isLoading())
         return;
@@ -1156,60 +1170,41 @@ void Scene::initGraphics()
 		return;
     }
 
-    bool initDone = false;
+    // share the current context
+    QOpenGLContext* sharedOpenglContext = QOpenGLContext::currentContext();
 
-    // use the current opengl context if any
-    if(QOpenGLContext::currentContext())
-    {
-        bool finished = false;
-        InitGraphicsWorker(*this, finished).run();
-
-        initDone = true;
-    }
-
-    // or retrieve one from a window
-    if(!initDone && qGuiApp)
+    // or share a window context
+    if(!sharedOpenglContext && qGuiApp)
     {
         QWindowList windows = qGuiApp->allWindows();
         for(QWindow* window : windows)
         {
             QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-            if(quickWindow && quickWindow->isActive())
+            if(quickWindow && quickWindow->openglContext())
             {
-                bool finished = false;
-                InitGraphicsWorker* worker = new InitGraphicsWorker(*this, finished);
-                quickWindow->scheduleRenderJob(worker, QQuickWindow::BeforeRenderingStage);
-                quickWindow->update();
-
-                // TODO: add a timeout
-                while(!finished)
-                    qGuiApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
-
-                initDone = true;
+                sharedOpenglContext = quickWindow->openglContext();
                 break;
             }
         }
     }
 
-    // or create one if there is no window
-    if(!initDone)
-    {
-        QOpenGLContext* openglContext = new QOpenGLContext(this);
-        if(!openglContext->create())
-            qFatal("Cannot create an OpenGL Context needed to init sofa scenes");
+    // create the shared context
+    QOpenGLContext* openglContext = new QOpenGLContext();
+    if(sharedOpenglContext)
+        openglContext->setShareContext(sharedOpenglContext);
 
-        QOffscreenSurface* surface = new QOffscreenSurface();
-        surface->create();
-        if(!surface->isValid())
-            qFatal("Cannot create an OpenGL Surface needed to init sofa scenes");
+    if(!openglContext->create())
+        qFatal("Cannot create an OpenGL Context needed to init sofa scenes");
 
-        openglContext->makeCurrent(surface);
+    if(!offscreenSurface->isValid())
+        qFatal("Cannot create an OpenGL Surface needed to init sofa scenes");
 
-        bool finished = false;
-        InitGraphicsWorker(*this, finished).run();
+    openglContext->makeCurrent(offscreenSurface);
 
-        initDone = true;
-    }
+    bool finished = false;
+    InitGraphicsWorker(*this, finished).run();
+
+    addChild(0, sofaSimulation()->GetRoot().get());
 
     setStatus(Status::Ready);
 
@@ -1346,11 +1341,11 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
 
         myHighlightShaderProgram->bind();
         {
-            OglModel* oglModel = dynamic_cast<OglModel*>(selectedBase);
-            if(oglModel)
+            VisualModel* visualModel = dynamic_cast<VisualModel*>(selectedBase);
+            if(visualModel)
             {
                 VisualStyle* visualStyle = nullptr;
-                oglModel->getContext()->get(visualStyle);
+                visualModel->getContext()->get(visualStyle);
 
                 if(visualStyle)
                     visualStyle->fwdDraw(visualParams);
@@ -1358,7 +1353,7 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
                 sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
                 visualParams->displayFlags().setShowWireFrame(true);
 
-                oglModel->drawVisual(visualParams);
+                visualModel->drawVisual(visualParams);
 
                 visualParams->displayFlags().setShowWireFrame(state);
 
@@ -1461,13 +1456,13 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
     if(!root)
         root = sofaSimulation()->GetRoot().get();
 
-    sofa::helper::vector<OglModel*> oglModels;
-    root->getTreeObjects<OglModel>(&oglModels);
+    sofa::helper::vector<VisualModel*> visualModels;
+    root->getTreeObjects<VisualModel>(&visualModels);
 
     sofa::helper::vector<TriangleModel*> triangleModels;
     root->getTreeObjects<TriangleModel>(&triangleModels);
 
-    if(oglModels.empty() && triangleModels.empty() && myManipulators.empty())
+    if(visualModels.empty() && triangleModels.empty() && myManipulators.empty())
         return nullptr;
 
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
@@ -1483,12 +1478,12 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
     {
         int indexLocation = myPickingShaderProgram->uniformLocation("index");
 
-        for(OglModel* oglModel : oglModels)
+        for(VisualModel* visualModel : visualModels)
         {
-            if(oglModel)
+            if(visualModel)
             {
                 myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                oglModel->drawVisual(visualParams);
+                visualModel->drawVisual(visualParams);
             }
 
             index++;
@@ -1538,9 +1533,9 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
     {
         --index;
 
-        if((size_t) index < oglModels.size())
-            return new SelectableSceneComponent(SceneComponent(this, oglModels[index]));
-        index -= oglModels.size();
+        if((size_t) index < visualModels.size())
+            return new SelectableSceneComponent(SceneComponent(this, visualModels[index]));
+        index -= visualModels.size();
 
         if((size_t) index < triangleModels.size())
             return new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));

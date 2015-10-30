@@ -23,6 +23,7 @@
 
 class QTimer;
 class QOpenGLShaderProgram;
+class QOffscreenSurface;
 
 namespace sofa
 {
@@ -35,9 +36,12 @@ namespace simulation
 namespace qtquick
 {
 
+class Scene;
 class Viewer;
 class InitGraphicsWorker;
 class PickUsingRasterizationWorker;
+
+static bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface);
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
 class Scene : public QObject, private sofa::simulation::MutationListener
@@ -49,6 +53,7 @@ class Scene : public QObject, private sofa::simulation::MutationListener
     friend class PickUsingRasterizationWorker;
     friend class SceneComponent;
     friend class SceneData;
+    friend bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface);
 
 public:
     explicit Scene(QObject *parent = 0);
@@ -175,7 +180,7 @@ signals:
 
 private slots:
     void open();
-    void initGraphics();
+    void init(QOffscreenSurface* offscreenSurface);
     void handleStatusChange(Status newStatus);
 
 public:

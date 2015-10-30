@@ -71,7 +71,7 @@ const Base* SceneComponent::base() const
             return myBase;
 
     myBase = 0;
-    return myBase;
+    return 0;
 }
 
 const Scene* SceneComponent::scene() const

@@ -17,10 +17,6 @@
 #include <sofa/helper/io/ImageBMP.h>
 #endif
 
-
-
-class QOpenGLFramebufferObject;
-
 namespace sofa
 {
 
