@@ -211,29 +211,6 @@ void Scene::open()
 
     setStatus(Status::Loading);
 
-// TODO: we will need this to make the Scene class thread-safe, this block wait the end of all draw calls before releasing then loading the scene
-// this is not needed in mono-threaded mode because we are sure we are not in the middle of draw calls
-    if(qGuiApp)
-    {
-        bool finished = false;
-
-        QWindowList windows = qGuiApp->allWindows();
-        for(QWindow* window : windows)
-        {
-            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-
-            if(quickWindow && quickWindow->isActive() && quickWindow->openglContext() != QOpenGLContext::currentContext())
-            {
-                quickWindow->scheduleRenderJob(new WaitTillSwapWorker(finished), QQuickWindow::AfterSwapStage);
-                quickWindow->update();
-
-                // TODO: add a timeout
-                while(!finished && quickWindow->isActive())
-                    qGuiApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
-            }
-        }
-    }
-
     aboutToUnload();
 
     setSelectedComponent(nullptr);
