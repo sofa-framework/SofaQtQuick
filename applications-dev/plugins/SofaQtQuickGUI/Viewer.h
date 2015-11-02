@@ -5,7 +5,7 @@
 #include "Camera.h"
 #include "SelectableSceneParticle.h"
 
-#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickFramebufferObject>
 #include <QVector3D>
 #include <QVector4D>
 #include <QImage>
@@ -23,6 +23,7 @@ namespace sofa
 namespace qtquick
 {
 
+class SofaRenderer;
 class SceneComponent;
 class Scene;
 class Camera;
@@ -30,18 +31,19 @@ class Manipulator;
 
 class PickUsingRasterizationWorker;
 
-/// @class Display a Sofa Scene in a QQuickItem
+/// @class Display a Sofa Scene in a QQuickFramebufferObject
 /// @note Coordinate prefix meaning:
 /// ws  => world space
 /// vs  => view space
 /// cs  => clip space
 /// ndc => ndc space
 /// ss  => screen space (window space)
-class SOFA_SOFAQTQUICKGUI_API Viewer : public QQuickItem
+class SOFA_SOFAQTQUICKGUI_API Viewer : public QQuickFramebufferObject
 {
     Q_OBJECT
 
     friend class PickUsingRasterizationWorker;
+    friend class SofaRenderer;
 
 public:
     explicit Viewer(QQuickItem* parent = 0);
@@ -58,11 +60,15 @@ public:
     Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
     Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
     Q_PROPERTY(bool antialiasing READ antialiasing WRITE setAntialiasing NOTIFY antialiasingChanged)
+    Q_PROPERTY(bool mirroredHorizontally READ mirroredHorizontally WRITE setMirroredHorizontally NOTIFY mirroredHorizontallyChanged)
+    Q_PROPERTY(bool mirroredVertically READ mirroredVertically WRITE setMirroredVertically NOTIFY mirroredVerticallyChanged)
     Q_PROPERTY(bool drawNormals MEMBER myDrawNormals NOTIFY drawNormalsChanged)
     Q_PROPERTY(float normalsDrawLength MEMBER myNormalsDrawLength NOTIFY normalsDrawLengthChanged)
     Q_PROPERTY(bool saveVideo READ saveVideo WRITE setSaveVideo NOTIFY saveVideoChanged)
 
 public:
+    Renderer* createRenderer() const {return new SofaRenderer(const_cast<Viewer*>(this));}
+
     Scene* scene() const        {return myScene;}
     void setScene(Scene* newScene);
 
@@ -92,6 +98,12 @@ public:
 
     bool antialiasing() const        {return myAntialiasing;}
     void setAntialiasing(bool newAntialiasing);
+
+    bool mirroredHorizontally() const        {return myMirroredHorizontally;}
+    void setMirroredHorizontally(bool newMirroredHorizontally);
+
+    bool mirroredVertically() const        {return myMirroredVertically;}
+    void setMirroredVertically(bool newMirroredVertically);
 
     bool saveVideo() const        {return mySaveVideo;}
     void setSaveVideo(bool newSaveVideo);
@@ -130,6 +142,8 @@ signals:
     void cullingChanged(bool newCulling);
     void blendingChanged(bool newBlending);
     void antialiasingChanged(bool newAntialiasing);
+    void mirroredHorizontallyChanged(bool newMirroredHorizontally);
+    void mirroredVerticallyChanged(bool newMirroredVertically);
     void drawNormalsChanged(bool newDrawNormals);
     void normalsDrawLengthChanged(float newNormalsDrawLength);
     void saveVideoChanged(bool newSaveVideo);
@@ -138,20 +152,35 @@ signals:
     void postDraw();
 
 public slots:
-    void paint();
     void viewAll();
+
+protected:
+    QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);
 
 private:
     QRect glRect() const;
     QRect qtRect() const;
 
-    void internalDraw();
-
     QPointF mapToNative(const QPointF& ssPoint) const;
 
 private slots:
     void handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource);
-    void handleWindowChanged(QQuickWindow* window);
+
+private:
+    class SofaRenderer : public QQuickFramebufferObject::Renderer
+    {
+    public:
+        SofaRenderer(Viewer* viewer);
+
+    protected:
+        QOpenGLFramebufferObject *createFramebufferObject(const QSize &size);
+        void render();
+
+    private:
+        // TODO: not safe at all when we will use multithreaded rendering, use synchronize() instead
+        Viewer* myViewer;
+
+    };
 
 private:
 	Scene*						myScene;
@@ -166,6 +195,8 @@ private:
     bool                        myCulling;
     bool                        myBlending;
     bool                        myAntialiasing;
+    bool                        myMirroredHorizontally;
+    bool                        myMirroredVertically;
     bool                        myDrawNormals;
     float                       myNormalsDrawLength;
     bool                        mySaveVideo;

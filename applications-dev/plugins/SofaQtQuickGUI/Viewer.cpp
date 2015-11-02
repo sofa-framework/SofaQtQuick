@@ -17,6 +17,9 @@
 //#include <QPaintEngine>
 //#include <QPainter>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLFramebufferObject>
+#include <QSGTransformNode>
+#include <QSGSimpleTextureNode>
 #include <QVector>
 #include <QVector4D>
 #include <QTime>
@@ -38,7 +41,7 @@ namespace qtquick
 
 using namespace sofa::simulation;
 
-Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
+Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myScene(nullptr),
     myCamera(nullptr),
     mySubTree(nullptr),
@@ -51,6 +54,8 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     myCulling(true),
     myBlending(false),
     myAntialiasing(false),
+    myMirroredHorizontally(false),
+    myMirroredVertically(false),
     myDrawNormals(false),
     myNormalsDrawLength(1.0f),
     mySaveVideo(false),
@@ -59,7 +64,6 @@ Viewer::Viewer(QQuickItem* parent) : QQuickItem(parent),
     setFlag(QQuickItem::ItemHasContents);
 
     connect(this, &Viewer::backgroundImageSourceChanged, this, &Viewer::handleBackgroundImageSourceChanged);
-    connect(this, SIGNAL(windowChanged(QQuickWindow*)), this, SLOT(handleWindowChanged(QQuickWindow*)));
 }
 
 Viewer::~Viewer()
@@ -168,7 +172,6 @@ void Viewer::setBlending(bool newBlending)
     blendingChanged(newBlending);
 }
 
-
 void Viewer::setAntialiasing(bool newAntialiasing)
 {
     if(newAntialiasing == myAntialiasing)
@@ -177,6 +180,26 @@ void Viewer::setAntialiasing(bool newAntialiasing)
     myAntialiasing = newAntialiasing;
 
     antialiasingChanged(newAntialiasing);
+}
+
+void Viewer::setMirroredHorizontally(bool newMirroredHorizontally)
+{
+    if(newMirroredHorizontally == myMirroredHorizontally)
+        return;
+
+    myMirroredHorizontally = newMirroredHorizontally;
+
+    mirroredHorizontallyChanged(newMirroredHorizontally);
+}
+
+void Viewer::setMirroredVertically(bool newMirroredVertically)
+{
+    if(newMirroredVertically == myMirroredVertically)
+        return;
+
+    myMirroredVertically = newMirroredVertically;
+
+    mirroredVerticallyChanged(newMirroredVertically);
 }
 
 void Viewer::setSaveVideo(bool newSaveVideo)
@@ -205,6 +228,12 @@ QVector3D Viewer::mapFromWorld(const QVector3D& wsPoint) const
     QVector4D nsPosition = (myCamera->projection() * myCamera->view() * QVector4D(wsPoint, 1.0));
 	nsPosition /= nsPosition.w();
 
+    if(mirroredHorizontally())
+        nsPosition.setX(-nsPosition.x());
+
+    if(mirroredVertically())
+        nsPosition.setY(-nsPosition.y());
+
 	return QVector3D((nsPosition.x() * 0.5 + 0.5) * qCeil(width()) + 0.5, qCeil(height()) - (nsPosition.y() * 0.5 + 0.5) * qCeil(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
 }
 
@@ -214,6 +243,12 @@ QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z) const
 		return QVector3D();
 
     QVector3D nsPosition = QVector3D(ssPoint.x() / (double) qCeil(width()) * 2.0 - 1.0, (1.0 - ssPoint.y() / (double) qCeil(height())) * 2.0 - 1.0, z * 2.0 - 1.0);
+    if(mirroredHorizontally())
+        nsPosition.setX(-nsPosition.x());
+
+    if(mirroredVertically())
+        nsPosition.setY(-nsPosition.y());
+
 	QVector4D vsPosition = myCamera->projection().inverted() * QVector4D(nsPosition, 1.0);
 	vsPosition /= vsPosition.w();
 
@@ -471,15 +506,6 @@ void Viewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource)
     myBackgroundImage = QImage(path.replace("qrc:", ":"));
 }
 
-void Viewer::handleWindowChanged(QQuickWindow* window)
-{
-    if(window)
-    {
-        window->setClearBeforeRendering(false);
-        connect(window, SIGNAL(beforeRendering()), this, SLOT(paint()), Qt::DirectConnection);
-    }
-}
-
 void Viewer::takeViewerScreenshot()
 {
     QRect rect = qtRect();
@@ -579,7 +605,9 @@ QRect Viewer::glRect() const
 	if(!window())
 		return QRect();
 
-    QPointF realPos(mapToNative(QPointF(0.0, qCeil(height()))));
+    QPointF realPos = mapToScene(QPointF(0.0, qCeil(height())));
+    realPos.setX(realPos.x() * window()->devicePixelRatio());
+    realPos.setY((window()->height() - realPos.y()) * window()->devicePixelRatio());  // OpenGL has its Y coordinate inverted compared to Qt
 
     QPoint pos(qFloor(realPos.x()), qFloor(realPos.y()));
     QSize size((qCeil(width()) + qCeil(pos.x() - realPos.x())) * window()->devicePixelRatio(), (qCeil((height()) + qCeil(pos.y() - realPos.y())) * window()->devicePixelRatio()));
@@ -602,114 +630,72 @@ QRect Viewer::qtRect() const
     return QRect(pos, size);
 }
 
-void Viewer::internalDraw()
-{
-    if(!myScene || !myScene->isReady() || !myCamera)
-        return;
-
-    glDisable(GL_CULL_FACE);
-
-    QSize size = glRect().size();
-    myCamera->setAspectRatio(size.width() / (double) size.height());
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadMatrixf(myCamera->projection().constData());
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadMatrixf(myCamera->view().constData());
-
-     if(wireframe())
-        glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
-     else
-         glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-    if(culling())
-        glEnable(GL_CULL_FACE);
-
-//      if(antialiasing())
-//              glEnable(GL_MULTISAMPLE);
-
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_TEXTURE_2D);
-
-    // qt does not release its shader program and we do not use one so we have to release the current bound program
-    glUseProgram(0);
-
-    // prepare the sofa visual params
-    sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-    if(_vparams)
-    {
-        if(!_vparams->drawTool())
-        {
-            _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
-            _vparams->setSupported(sofa::core::visual::API_OpenGL);
-        }
-
-        GLint _viewport[4];
-        GLdouble _mvmatrix[16], _projmatrix[16];
-
-        glGetIntegerv (GL_VIEWPORT, _viewport);
-        glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
-        glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
-
-        _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-        _vparams->sceneBBox() = myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
-        _vparams->setProjectionMatrix(_projmatrix);
-        _vparams->setModelViewMatrix(_mvmatrix);
-    }
-
-    bool drawNormalBackup = myScene->drawNormals();
-    float normalDrawLengthBackup = myScene->normalsDrawLength();
-
-    myScene->setDrawNormals(myDrawNormals);
-    myScene->setNormalsDrawLength(myNormalsDrawLength);
-
-    myScene->draw(*this, mySubTree);
-
-    myScene->setDrawNormals(drawNormalBackup);
-    myScene->setNormalsDrawLength(normalDrawLengthBackup);
-
-    if(wireframe())
-        glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-}
-
 QPointF Viewer::mapToNative(const QPointF& ssPoint) const
 {
-    QPointF ssNativePoint = mapToScene(ssPoint);
+    QPointF ssCorrectedPoint(ssPoint);
+
+    if(mirroredHorizontally())
+        ssCorrectedPoint.setX(width() - ssPoint.x());
+
+    if(mirroredVertically())
+        ssCorrectedPoint.setY(height() - ssPoint.y());
+
+    QPointF ssNativePoint = mapToScene(ssCorrectedPoint);
     ssNativePoint.setX(ssNativePoint.x() * window()->devicePixelRatio());
     ssNativePoint.setY((window()->height() - ssNativePoint.y()) * window()->devicePixelRatio());  // OpenGL has its Y coordinate inverted compared to Qt
 
     return ssNativePoint;
 }
 
-void Viewer::paint()
-{    
-    if(!window() || !isVisible())
-        return;
+void Viewer::viewAll()
+{
+	if(!myCamera || !myScene || !myScene->isReady())
+		return;
 
-    // compute the correct viewer position and size
-    QRect rect = glRect();
+	QVector3D min, max;
+    myScene->computeBoundingBox(min, max);
 
-    QPoint pos = rect.topLeft();
-    QSize size = rect.size();
-    if(size.isEmpty())
-        return;
+	myCamera->fit(min, max);
+}
 
-    // clear the viewer rectangle and just its area, not the whole OpenGL buffer
-    glScissor(pos.x(), pos.y(), size.width(), size.height());
-    glEnable(GL_SCISSOR_TEST);
-	glClearColor(myBackgroundColor.redF(), myBackgroundColor.greenF(), myBackgroundColor.blueF(), myBackgroundColor.alphaF());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_SCISSOR_TEST);
+QSGNode* Viewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData)
+{
+    if(!inOutNode)
+    {
+        inOutNode = QQuickFramebufferObject::updatePaintNode(inOutNode, inOutData);
+        QSGSimpleTextureNode* textureNode = static_cast<QSGSimpleTextureNode*>(inOutNode);
+        if(textureNode)
+        {
+            QSGSimpleTextureNode::TextureCoordinatesTransformMode mirroredHorizontallyFlag = mirroredHorizontally() ? QSGSimpleTextureNode::MirrorHorizontally : QSGSimpleTextureNode::NoTransform;
+            QSGSimpleTextureNode::TextureCoordinatesTransformMode mirroredVerticallyFlag = mirroredVertically() ? QSGSimpleTextureNode::NoTransform : QSGSimpleTextureNode::MirrorVertically;
 
+            textureNode->setTextureCoordinatesTransform(mirroredHorizontallyFlag | mirroredVerticallyFlag);
+        }
+
+        return inOutNode;
+    }
+    return QQuickFramebufferObject::updatePaintNode(inOutNode, inOutData);
+}
+
+Viewer::SofaRenderer::SofaRenderer(Viewer* viewer) : QQuickFramebufferObject::Renderer(),
+    myViewer(viewer)
+{
+
+}
+
+QOpenGLFramebufferObject* Viewer::SofaRenderer::createFramebufferObject(const QSize &size)
+{
+    QOpenGLFramebufferObjectFormat format;
+    format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+    // TODO: multisampling with format.setSamples(4);
+
+    return new QOpenGLFramebufferObject(size, format);
+}
+
+void Viewer::SofaRenderer::render()
+{
+//    if(size.isEmpty())
+//        return;
 
 //    if(!myBackgroundImage.isNull())
 //    {
@@ -719,10 +705,12 @@ void Viewer::paint()
 //        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
 //    }
 
-    if(!myCamera)
-        return;
+//    glViewport(0.0f, 0.0f, qCeil(width()), qCeil(height()));
+    glClearColor(myViewer->myBackgroundColor.redF(), myViewer->myBackgroundColor.greenF(), myViewer->myBackgroundColor.blueF(), myViewer->myBackgroundColor.alphaF());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(pos.x(), pos.y(), size.width(), size.height());
+    if(!myViewer->myCamera)
+        return;
 
     // set default lights
     {
@@ -755,32 +743,94 @@ void Viewer::paint()
 
     glEnable(GL_LIGHTING);
 
-	if(blending())
-		glEnable(GL_BLEND);
-	else
-		glDisable(GL_BLEND);
+    if(myViewer->blending())
+        glEnable(GL_BLEND);
+    else
+        glDisable(GL_BLEND);
 
-    preDraw();
+    if(myViewer->myScene && myViewer->myScene->isReady())
+    {
+        glDisable(GL_CULL_FACE);
 
-	internalDraw();
+        myViewer->myCamera->setAspectRatio(myViewer->width() / myViewer->height());
 
-    postDraw();
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadMatrixf(myViewer->myCamera->projection().constData());
 
-	if(blending())
-		glDisable(GL_BLEND);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadMatrixf(myViewer->myCamera->view().constData());
 
-    window()->update();
-}
+        if(myViewer->wireframe())
+            glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
-void Viewer::viewAll()
-{
-	if(!myCamera || !myScene || !myScene->isReady())
-		return;
+        if(myViewer->culling())
+            glEnable(GL_CULL_FACE);
 
-	QVector3D min, max;
-    myScene->computeBoundingBox(min, max);
+        //      if(antialiasing())
+        //              glEnable(GL_MULTISAMPLE);
 
-	myCamera->fit(min, max);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_TEXTURE_2D);
+
+        // qt does not release its shader program and we do not use one so we have to release the current bound program
+        glUseProgram(0);
+
+        // prepare the sofa visual params
+        sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+        if(_vparams)
+        {
+            if(!_vparams->drawTool())
+            {
+                _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
+                _vparams->setSupported(sofa::core::visual::API_OpenGL);
+            }
+
+            GLint _viewport[4];
+            GLdouble _mvmatrix[16], _projmatrix[16];
+
+            glGetIntegerv (GL_VIEWPORT, _viewport);
+            glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
+            glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
+
+            _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+            _vparams->sceneBBox() = myViewer->myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
+            _vparams->setProjectionMatrix(_projmatrix);
+            _vparams->setModelViewMatrix(_mvmatrix);
+        }
+
+        bool drawNormalBackup = myViewer->myScene->drawNormals();
+        float normalDrawLengthBackup = myViewer->myScene->normalsDrawLength();
+
+        myViewer->myScene->setDrawNormals(myViewer->myDrawNormals);
+        myViewer->myScene->setNormalsDrawLength(myViewer->myNormalsDrawLength);
+
+        {
+            myViewer->preDraw();
+            myViewer->myScene->draw(*myViewer, myViewer->mySubTree);
+            myViewer->postDraw();
+        }
+
+        myViewer->myScene->setDrawNormals(drawNormalBackup);
+        myViewer->myScene->setNormalsDrawLength(normalDrawLengthBackup);
+
+        if(myViewer->wireframe())
+            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+    }
+
+    if(myViewer->blending())
+        glDisable(GL_BLEND);
+
+    update();
 }
 
 }

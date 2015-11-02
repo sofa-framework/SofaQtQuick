@@ -16,6 +16,8 @@ Viewer {
     clip: true
     backgroundColor: "#FF404040"
     backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
+    mirroredHorizontally: false
+    mirroredVertically: false
     wireframe: false
     culling: true
     blending: false

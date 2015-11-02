@@ -39,7 +39,7 @@ UserInteractor_MoveCamera {
             } else if(selectedComponent) {
                 if(!scene.areSameComponent(scene.selectedComponent, selectedComponent)) {
                     scene.selectedComponent = selectedComponent;
-                } else {
+                }/* else {
                     var sceneComponentParticle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
                     if(sceneComponentParticle) {
                         scene.particleInteractor.start(sceneComponentParticle.sceneComponent, sceneComponentParticle.particleIndex);
@@ -50,7 +50,7 @@ UserInteractor_MoveCamera {
                             scene.particleInteractor.update(position);
                         });
                     }
-                }
+                }*/
             } else {
                 scene.selectedManipulator = null;
                 scene.selectedComponent = null;
