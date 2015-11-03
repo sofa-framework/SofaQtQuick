@@ -135,7 +135,7 @@ Scene::~Scene()
     sofa::simulation::graph::cleanup();
 }
 
-static bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface)
+bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface)
 {
     if(!scene || !scene->sofaSimulation() || scenePath.isEmpty())
 		return false;

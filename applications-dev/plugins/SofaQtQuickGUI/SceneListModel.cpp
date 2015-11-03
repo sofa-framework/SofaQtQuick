@@ -97,7 +97,7 @@ SceneListModel::Item SceneListModel::buildNodeItem(SceneListModel::Item* parent,
     SceneListModel::Item item;
 
     item.parent = parent;
-    item.multiparent = node->getParents().size() > 1;
+    item.multiparent = node->getNbParents() > 1;
     item.depth = parent ? parent->depth + 1 : 0;
     item.visibility = !parent ? Visible : (((Hidden | Collapsed) & parent->visibility) ? Hidden : Visible);
     item.base = node;

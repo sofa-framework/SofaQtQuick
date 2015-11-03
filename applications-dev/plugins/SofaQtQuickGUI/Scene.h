@@ -41,7 +41,7 @@ class Viewer;
 class InitGraphicsWorker;
 class PickUsingRasterizationWorker;
 
-static bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface);
+bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface);
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
 class Scene : public QObject, private sofa::simulation::MutationListener
