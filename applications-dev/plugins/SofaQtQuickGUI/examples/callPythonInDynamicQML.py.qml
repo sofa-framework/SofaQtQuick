@@ -8,7 +8,7 @@ import SofaBasics 1.0
 SceneInterface {
     id: root
 
-    ColumnLayout {
+    toolpanel: ColumnLayout {
         enabled: scene.ready
         anchors.fill: parent
 

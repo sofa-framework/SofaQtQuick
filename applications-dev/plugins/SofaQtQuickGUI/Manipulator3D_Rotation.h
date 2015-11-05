@@ -28,6 +28,10 @@ public:
     QString axis() const {return myAxis;}
     void setAxis(QString newAxis);
 
+    bool displayMark() const    {return myDisplayMark;}
+    float fromMarkAngle() const {return myFromMarkAngle;}
+    float toMarkAngle() const   {return myToMarkAngle;}
+
 signals:
     void axisChanged(QString newAxis);
 

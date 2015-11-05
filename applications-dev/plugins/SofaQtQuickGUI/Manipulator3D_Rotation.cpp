@@ -240,7 +240,7 @@ void Manipulator3D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) 
                 float alpha = qSin(angle);
                 float beta  = qCos(angle);
 
-                glVertex3f(radius * alpha, radius * beta, 0.0);
+                glVertex3f(radius * alpha, radius * beta, 0.0f);
 
                 if(stop)
                     break;

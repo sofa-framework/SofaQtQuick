@@ -150,6 +150,8 @@ ToolBar {
                 text: "Save Screenshot"
                 tooltip: "Save screenshot"
 
+                Component.onCompleted: implicitWidth += 5
+
                 onClicked: {
                     if(scene)
                         scene.takeScreenshot();

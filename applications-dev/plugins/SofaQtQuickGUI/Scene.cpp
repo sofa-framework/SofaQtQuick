@@ -95,8 +95,6 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     sofa::component::initComponentAdvanced();
     sofa::component::initComponentMisc();
 
-
-
 	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
     sofa::core::ObjectFactory::ClassEntry::SPtr classVisualModel;
 	sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
@@ -1369,18 +1367,10 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
 
     glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
-    if(!myManipulators.isEmpty())
-    {
-        // since manipulator may use transparency, we order them by z
-        QVector<Manipulator*> zOrderedManipulators(QVector<Manipulator*>::fromList(myManipulators));
-        qSort(zOrderedManipulators.begin(), zOrderedManipulators.end(), [&](Manipulator* a, Manipulator* b) {
-            return viewer.computeDepth(a->position()) < viewer.computeDepth(b->position());
-        });
-
-        for(Manipulator* zOrderedManipulator : zOrderedManipulators)
-            if(zOrderedManipulator)
-                zOrderedManipulator->draw(viewer);
-    }
+    // draw manipulators
+    for(Manipulator* manipulator : myManipulators)
+        if(manipulator)
+            manipulator->draw(viewer);
 }
 
 SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, Node* subTree) const

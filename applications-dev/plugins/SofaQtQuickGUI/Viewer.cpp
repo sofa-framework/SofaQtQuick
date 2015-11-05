@@ -42,6 +42,7 @@ namespace qtquick
 using namespace sofa::simulation;
 
 Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
+    myFBO(nullptr),
     myScene(nullptr),
     myCamera(nullptr),
     mySubTree(nullptr),
@@ -258,7 +259,8 @@ QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z) const
 class ProjectOnGeometryWorker : public QRunnable
 {
 public:
-    ProjectOnGeometryWorker(QPointF position, float& z, bool& finished) :
+    ProjectOnGeometryWorker(QOpenGLFramebufferObject* fbo, QPointF position, float& z, bool& finished) :
+        myFBO(fbo),
         myPosition(position),
         myZ(z),
         myFinished(finished)
@@ -268,15 +270,21 @@ public:
 
     void run()
     {
+        if(!myFBO)
+            return;
+
+        myFBO->bind();
         glReadPixels(myPosition.x(), myPosition.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &myZ);
+        myFBO->release();
 
         myFinished = true;
     }
 
 private:
-    QPointF myPosition;
-    float&  myZ;
-    bool&   myFinished;
+    QOpenGLFramebufferObject*   myFBO;
+    QPointF                     myPosition;
+    float&                      myZ;
+    bool&                       myFinished;
 
 };
 
@@ -331,8 +339,8 @@ QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
     float z = 1.0;
     bool finished = false;
 
-    ProjectOnGeometryWorker* worker = new ProjectOnGeometryWorker(ssPointGL, z, finished);
-    window()->scheduleRenderJob(worker, QQuickWindow::BeforeRenderingStage);
+    ProjectOnGeometryWorker* worker = new ProjectOnGeometryWorker(myFBO, ssPointGL, z, finished);
+    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
     window()->update();
 
     // TODO: add a timeout
@@ -381,7 +389,6 @@ public:
     {
         QRect rect = myViewer->glRect();
 
-        QPoint pos = rect.topLeft();
         QSize size = rect.size();
         if(size.isEmpty())
             return;
@@ -390,17 +397,8 @@ public:
         if(!camera)
             return;
 
-        // clear the viewer rectangle and just its area, not the whole OpenGL buffer
-        glScissor(pos.x(), pos.y(), size.width(), size.height());
-        glEnable(GL_SCISSOR_TEST);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glDisable(GL_SCISSOR_TEST);
-
         glDisable(GL_BLEND);
         glDisable(GL_LIGHTING);
-
-        glViewport(pos.x(), pos.y(), size.width(), size.height());
 
         glDisable(GL_CULL_FACE);
 
@@ -422,10 +420,19 @@ public:
         if(myViewer->culling())
             glEnable(GL_CULL_FACE);
 
+        myViewer->myFBO->bind();
+
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glViewport(0.0f, 0.0f, size.width(), size.height());
+
         mySelectable = myScene->pickObject(*myViewer, myPosition);
 
         if(mySelectable)
             glReadPixels(myPosition.x(), myPosition.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &myZ);
+
+        myViewer->myFBO->release();
 
         if(myViewer->wireframe())
             glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
@@ -632,17 +639,16 @@ QRect Viewer::qtRect() const
 
 QPointF Viewer::mapToNative(const QPointF& ssPoint) const
 {
-    QPointF ssCorrectedPoint(ssPoint);
+    QPointF ssNativePoint(ssPoint);
 
     if(mirroredHorizontally())
-        ssCorrectedPoint.setX(width() - ssPoint.x());
+        ssNativePoint.setX(width() - ssPoint.x());
 
-    if(mirroredVertically())
-        ssCorrectedPoint.setY(height() - ssPoint.y());
+    if(!mirroredVertically())
+        ssNativePoint.setY(height() - ssPoint.y());
 
-    QPointF ssNativePoint = mapToScene(ssCorrectedPoint);
     ssNativePoint.setX(ssNativePoint.x() * window()->devicePixelRatio());
-    ssNativePoint.setY((window()->height() - ssNativePoint.y()) * window()->devicePixelRatio());  // OpenGL has its Y coordinate inverted compared to Qt
+    ssNativePoint.setY(ssNativePoint.y() * window()->devicePixelRatio());
 
     return ssNativePoint;
 }
@@ -655,7 +661,7 @@ void Viewer::viewAll()
 	QVector3D min, max;
     myScene->computeBoundingBox(min, max);
 
-	myCamera->fit(min, max);
+    myCamera->fit(min, max);
 }
 
 QSGNode* Viewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData)
@@ -689,13 +695,18 @@ QOpenGLFramebufferObject* Viewer::SofaRenderer::createFramebufferObject(const QS
     format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
     // TODO: multisampling with format.setSamples(4);
 
-    return new QOpenGLFramebufferObject(size, format);
+    myViewer->myFBO = new QOpenGLFramebufferObject(size, format);
+    return myViewer->myFBO;
 }
 
 void Viewer::SofaRenderer::render()
 {
-//    if(size.isEmpty())
-//        return;
+    if(!myViewer)
+        return;
+
+    QSize size(myViewer->width(), myViewer->height());
+    if(size.isEmpty())
+        return;
 
 //    if(!myBackgroundImage.isNull())
 //    {
@@ -705,7 +716,6 @@ void Viewer::SofaRenderer::render()
 //        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
 //    }
 
-//    glViewport(0.0f, 0.0f, qCeil(width()), qCeil(height()));
     glClearColor(myViewer->myBackgroundColor.redF(), myViewer->myBackgroundColor.greenF(), myViewer->myBackgroundColor.blueF(), myViewer->myBackgroundColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

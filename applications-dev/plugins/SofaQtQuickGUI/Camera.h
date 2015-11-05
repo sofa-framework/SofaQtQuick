@@ -50,6 +50,8 @@ public:
     Q_INVOKABLE double zNear() const                {return myZNear;}
     Q_INVOKABLE double zFar() const                 {return myZFar;}
 
+    Q_INVOKABLE double aspectRatio() const          {return myAspectRatio;}
+
     /// @return depth in normalized device coordinate (ndc) space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
 

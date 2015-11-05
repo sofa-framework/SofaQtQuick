@@ -4,6 +4,7 @@
 #include "SofaQtQuickGUI.h"
 
 #include <QObject>
+#include <QQmlListProperty>
 #include <QVector3D>
 #include <QQuaternion>
 
@@ -19,17 +20,31 @@ class SOFA_SOFAQTQUICKGUI_API Manipulator : public QObject
 {
     Q_OBJECT
 
+    friend void appendManipulators(QQmlListProperty<Manipulator>* property, Manipulator* manipulator);
+    friend int countManipulators(QQmlListProperty<Manipulator>* property);
+    friend Manipulator* atManipulators(QQmlListProperty<Manipulator>* property, int index);
+    friend void clearManipulators(QQmlListProperty<Manipulator>* property);
+
 public:
     explicit Manipulator(QObject* parent = 0);
     ~Manipulator();
 
 public:
+    Q_PROPERTY(sofa::qtquick::Manipulator* rootManipulator READ rootManipulator NOTIFY rootManipulatorChanged)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
     Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQuaternion orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_PROPERTY(QVector3D scale READ scale WRITE setScale NOTIFY scaleChanged)
 
+    Q_CLASSINFO("DefaultProperty", "manipulators")
+
 public:
+    Manipulator* rootManipulator() const {return myRootManipulator;}
+    void setRootManipulator(Manipulator* newRootManipulator);
+
+    QQmlListProperty<sofa::qtquick::Manipulator> manipulators();
+
     bool visible() const {return myVisible;}
     void setVisible(bool newVisible);
 
@@ -54,16 +69,19 @@ public slots:
     virtual void pick(const Viewer& viewer) const;
 
 signals:
+    void rootManipulatorChanged(Manipulator* newRootManipulator);
     void visibleChanged(bool newVisible);
     void positionChanged(const QVector3D& newPosition);
     void orientationChanged(const QQuaternion& newOrientation);
     void scaleChanged(const QVector3D& newScale);
 
 private:
-    bool        myVisible;
-    QVector3D   myPosition;
-    QQuaternion myOrientation;
-    QVector3D   myScale;
+    Manipulator*        myRootManipulator;
+    QList<Manipulator*> myManipulators;
+    bool                myVisible;
+    QVector3D           myPosition;
+    QQuaternion         myOrientation;
+    QVector3D           myScale;
 
 };
 

@@ -12,6 +12,8 @@ namespace qtquick
 {
 
 Manipulator::Manipulator(QObject* parent) : QObject(parent),
+    myRootManipulator(this),
+    myManipulators(),
     myVisible(true),
     myPosition(),
     myOrientation(),
@@ -23,6 +25,49 @@ Manipulator::Manipulator(QObject* parent) : QObject(parent),
 Manipulator::~Manipulator()
 {
 
+}
+
+void Manipulator::setRootManipulator(Manipulator* newRootManipulator)
+{
+    if(!newRootManipulator)
+        newRootManipulator = this;
+
+    if(newRootManipulator == myRootManipulator)
+        return;
+
+    myRootManipulator = newRootManipulator;
+
+    rootManipulatorChanged(newRootManipulator);
+}
+
+void appendManipulators(QQmlListProperty<Manipulator>* property, Manipulator* value)
+{
+    static_cast<QList<Manipulator*>*>(property->data)->append(value);
+    value->setRootManipulator(static_cast<Manipulator*>(property->object)->rootManipulator());
+}
+
+int countManipulators(QQmlListProperty<Manipulator>* property)
+{
+    return static_cast<QList<Manipulator*>*>(property->data)->size();
+}
+
+Manipulator* atManipulators(QQmlListProperty<Manipulator>* property, int index)
+{
+    return static_cast<QList<Manipulator*>*>(property->data)->at(index);
+}
+
+void clearManipulators(QQmlListProperty<Manipulator>* property)
+{
+    QList<Manipulator*>& manipulators = *static_cast<QList<Manipulator*>*>(property->data);
+    for(Manipulator* manipulator : manipulators)
+        manipulator->setRootManipulator(manipulator);
+
+    static_cast<QList<Manipulator*>*>(property->data)->clear();
+}
+
+QQmlListProperty<sofa::qtquick::Manipulator> Manipulator::manipulators()
+{
+    return QQmlListProperty<sofa::qtquick::Manipulator>(this, &myManipulators, appendManipulators, countManipulators, atManipulators, clearManipulators);
 }
 
 void Manipulator::setVisible(bool newVisible)

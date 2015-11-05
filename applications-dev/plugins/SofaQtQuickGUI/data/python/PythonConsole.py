@@ -8,8 +8,11 @@ class ConsoleLogger(object):
 
     def write(self, message):
         self.out.write(message)
-        self.out.flush()
+        self.flush()
         PythonConsole.write(message)
+
+    def flush(self):
+        self.out.flush()
 
 sys.stdout = ConsoleLogger(sys.stdout)
 sys.stderr = ConsoleLogger(sys.stderr)

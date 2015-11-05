@@ -183,6 +183,7 @@ private:
     };
 
 private:
+    QOpenGLFramebufferObject*   myFBO;
 	Scene*						myScene;
 	Camera*						myCamera;
     SceneComponent*				mySubTree;
