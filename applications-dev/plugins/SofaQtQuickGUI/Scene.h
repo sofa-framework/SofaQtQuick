@@ -114,12 +114,6 @@ public:
     sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
     void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
 
-    bool drawNormals() const                                    {return myDrawNormals;}
-    void setDrawNormals(bool newDrawNormals)                    {myDrawNormals = newDrawNormals;}
-
-    float normalsDrawLength() const                             {return myNormalsDrawLength;}
-    void setNormalsDrawLength(float newNormalDrawLength)        {myNormalsDrawLength = newNormalDrawLength;}
-
     QQmlListProperty<sofa::qtquick::Manipulator>    manipulators();
 
 signals:
@@ -217,8 +211,6 @@ private:
     QUrl                                        myScreenshotFilename;
     QString                                     myPathQML;
     mutable bool                                myVisualDirty;
-    bool                                        myDrawNormals;
-    float                                       myNormalsDrawLength;
     double                                      myDt;
     bool                                        myPlay;
     bool                                        myAsynchronous;

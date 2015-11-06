@@ -73,8 +73,6 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     myScreenshotFilename(),
     myPathQML(),
     myVisualDirty(false),
-    myDrawNormals(false),
-    myNormalsDrawLength(1.0f),
 	myDt(0.04),
 	myPlay(false),
     myAsynchronous(true),
@@ -1270,7 +1268,7 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
     mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
 
     // draw normals
-    if(myDrawNormals)
+    if(viewer.drawNormals())
     {
         Node* root = sofaSimulation()->GetRoot().get();
 
@@ -1295,7 +1293,7 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
                 glBegin(GL_LINES);
                 {
                     glVertex3f(vertex.x(), vertex.y(), vertex.z());
-                    glVertex3f(vertex.x() + normal.x() * myNormalsDrawLength, vertex.y() + normal.y() * myNormalsDrawLength, vertex.z() + normal.z() * myNormalsDrawLength);
+                    glVertex3f(vertex.x() + normal.x() * viewer.normalsDrawLength(), vertex.y() + normal.y() * viewer.normalsDrawLength(), vertex.z() + normal.z() * viewer.normalsDrawLength());
                 }
                 glEnd();
             }
@@ -1368,6 +1366,7 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
     glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
     // draw manipulators
+    if(viewer.drawManipulators())
     for(Manipulator* manipulator : myManipulators)
         if(manipulator)
             manipulator->draw(viewer);
@@ -1477,16 +1476,17 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
             index++;
         }
 
-        for(Manipulator* manipulator : myManipulators)
-        {
-            if(manipulator)
+        if(viewer.drawManipulators())
+            for(Manipulator* manipulator : myManipulators)
             {
-                myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                manipulator->pick(viewer);
-            }
+                if(manipulator)
+                {
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                    manipulator->pick(viewer);
+                }
 
-            index++;
-        }
+                index++;
+            }
     }
     myPickingShaderProgram->release();
 
@@ -1508,8 +1508,9 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
             return new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));
         index -= triangleModels.size();
 
-        if((int) index < myManipulators.size())
-            return new SelectableManipulator(*myManipulators[index]);
+        if(viewer.drawManipulators())
+            if((int) index < myManipulators.size())
+                return new SelectableManipulator(*myManipulators[index]);
     }
 
     return nullptr;

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 import SofaBasics 1.0
+import SofaApplication 1.0
 import SofaTools 1.0
 import Qt.labs.folderlistmodel 2.1
 
@@ -10,7 +11,7 @@ Rectangle {
     clip: true
     color: "lightgrey"
 
-    property var scene
+    property var scene: SofaApplication.scene
 
     FolderListModel {
         id: folderListModel

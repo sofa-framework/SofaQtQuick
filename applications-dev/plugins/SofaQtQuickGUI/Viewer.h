@@ -62,8 +62,9 @@ public:
     Q_PROPERTY(bool antialiasing READ antialiasing WRITE setAntialiasing NOTIFY antialiasingChanged)
     Q_PROPERTY(bool mirroredHorizontally READ mirroredHorizontally WRITE setMirroredHorizontally NOTIFY mirroredHorizontallyChanged)
     Q_PROPERTY(bool mirroredVertically READ mirroredVertically WRITE setMirroredVertically NOTIFY mirroredVerticallyChanged)
-    Q_PROPERTY(bool drawNormals MEMBER myDrawNormals NOTIFY drawNormalsChanged)
-    Q_PROPERTY(float normalsDrawLength MEMBER myNormalsDrawLength NOTIFY normalsDrawLengthChanged)
+    Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
+    Q_PROPERTY(bool drawNormals READ drawNormals WRITE setDrawNormals NOTIFY drawNormalsChanged)
+    Q_PROPERTY(float normalsDrawLength READ normalsDrawLength WRITE setNormalsDrawLength NOTIFY normalsDrawLengthChanged)
     Q_PROPERTY(bool saveVideo READ saveVideo WRITE setSaveVideo NOTIFY saveVideoChanged)
 
 public:
@@ -105,6 +106,15 @@ public:
     bool mirroredVertically() const        {return myMirroredVertically;}
     void setMirroredVertically(bool newMirroredVertically);
 
+    bool drawManipulators() const {return myDrawManipulators;}
+    void setDrawManipulators(bool newDrawManipulators);
+
+    bool drawNormals() const {return myDrawNormals;}
+    void setDrawNormals(bool newDrawNormals);
+
+    bool normalsDrawLength() const {return myNormalsDrawLength;}
+    void setNormalsDrawLength(bool newNormalsDrawLength);
+
     bool saveVideo() const        {return mySaveVideo;}
     void setSaveVideo(bool newSaveVideo);
 
@@ -144,6 +154,7 @@ signals:
     void antialiasingChanged(bool newAntialiasing);
     void mirroredHorizontallyChanged(bool newMirroredHorizontally);
     void mirroredVerticallyChanged(bool newMirroredVertically);
+    void drawManipulatorsChanged(bool newDrawManipulators);
     void drawNormalsChanged(bool newDrawNormals);
     void normalsDrawLengthChanged(float newNormalsDrawLength);
     void saveVideoChanged(bool newSaveVideo);
@@ -198,6 +209,7 @@ private:
     bool                        myAntialiasing;
     bool                        myMirroredHorizontally;
     bool                        myMirroredVertically;
+    bool                        myDrawManipulators;
     bool                        myDrawNormals;
     float                       myNormalsDrawLength;
     bool                        mySaveVideo;

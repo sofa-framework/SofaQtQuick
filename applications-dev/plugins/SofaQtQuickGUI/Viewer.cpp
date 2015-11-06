@@ -57,6 +57,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myAntialiasing(false),
     myMirroredHorizontally(false),
     myMirroredVertically(false),
+    myDrawManipulators(true),
     myDrawNormals(false),
     myNormalsDrawLength(1.0f),
     mySaveVideo(false),
@@ -201,6 +202,36 @@ void Viewer::setMirroredVertically(bool newMirroredVertically)
     myMirroredVertically = newMirroredVertically;
 
     mirroredVerticallyChanged(newMirroredVertically);
+}
+
+void Viewer::setDrawManipulators(bool newDrawManipulators)
+{
+    if(newDrawManipulators == myDrawManipulators)
+        return;
+
+    myDrawManipulators = newDrawManipulators;
+
+    drawManipulatorsChanged(newDrawManipulators);
+}
+
+void Viewer::setDrawNormals(bool newDrawNormals)
+{
+    if(newDrawNormals == myDrawNormals)
+        return;
+
+    myDrawNormals = newDrawNormals;
+
+    drawNormalsChanged(newDrawNormals);
+}
+
+void Viewer::setNormalsDrawLength(bool newNormalsDrawLength)
+{
+    if(newNormalsDrawLength == myNormalsDrawLength)
+        return;
+
+    myNormalsDrawLength = newNormalsDrawLength;
+
+    normalsDrawLengthChanged(newNormalsDrawLength);
 }
 
 void Viewer::setSaveVideo(bool newSaveVideo)
@@ -812,20 +843,12 @@ void Viewer::SofaRenderer::render()
             _vparams->setModelViewMatrix(_mvmatrix);
         }
 
-        bool drawNormalBackup = myViewer->myScene->drawNormals();
-        float normalDrawLengthBackup = myViewer->myScene->normalsDrawLength();
-
-        myViewer->myScene->setDrawNormals(myViewer->myDrawNormals);
-        myViewer->myScene->setNormalsDrawLength(myViewer->myNormalsDrawLength);
-
+        // draw the sofa scene
         {
             myViewer->preDraw();
             myViewer->myScene->draw(*myViewer, myViewer->mySubTree);
             myViewer->postDraw();
         }
-
-        myViewer->myScene->setDrawNormals(drawNormalBackup);
-        myViewer->myScene->setNormalsDrawLength(normalDrawLengthBackup);
 
         if(myViewer->wireframe())
             glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
