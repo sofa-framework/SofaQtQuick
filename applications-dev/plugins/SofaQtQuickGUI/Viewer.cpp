@@ -732,7 +732,9 @@ QOpenGLFramebufferObject* Viewer::SofaRenderer::createFramebufferObject(const QS
 
 void Viewer::SofaRenderer::render()
 {
-    if(!myViewer)
+    update();
+
+    if(!myViewer || !myViewer->isVisible())
         return;
 
     QSize size(myViewer->width(), myViewer->height());
@@ -862,8 +864,6 @@ void Viewer::SofaRenderer::render()
 
     if(myViewer->blending())
         glDisable(GL_BLEND);
-
-    update();
 }
 
 }
