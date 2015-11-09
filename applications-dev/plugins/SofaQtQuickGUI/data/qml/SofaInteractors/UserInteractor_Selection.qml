@@ -34,7 +34,7 @@ UserInteractor_MoveCamera {
                     selectedManipulator.mousePressed(mouse, viewer);
 
                 if(selectedManipulator.mouseMoved)
-                    setMouseMoveMapping(selectedManipulator.mouseMoved);
+                    setMouseMovedMapping(selectedManipulator.mouseMoved);
 
             } else if(selectedComponent) {
                 if(!scene.areSameComponent(scene.selectedComponent, selectedComponent)) {
@@ -44,7 +44,7 @@ UserInteractor_MoveCamera {
                     if(sceneComponentParticle) {
                         scene.particleInteractor.start(sceneComponentParticle.sceneComponent, sceneComponentParticle.particleIndex);
 
-                        setMouseMoveMapping(function(mouse, viewer) {
+                        setMouseMovedMapping(function(mouse, viewer) {
                             var z = viewer.computeDepth(scene.particleInteractor.particlePosition());
                             var position = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
                             scene.particleInteractor.update(position);

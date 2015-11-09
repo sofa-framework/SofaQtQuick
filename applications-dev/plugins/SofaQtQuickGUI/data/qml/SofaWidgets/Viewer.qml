@@ -158,43 +158,50 @@ Viewer {
             }
         }
 
+        Connections {
+            target: mouseArea.interactor ? mouseArea : null
+
+            onClicked:          mouseArea.interactor.mouseClicked(mouse, root);
+            onDoubleClicked:    mouseArea.interactor.mouseDoubleClicked(mouse, root);
+            onPressed:          mouseArea.interactor.mousePressed(mouse, root);
+            onReleased:         mouseArea.interactor.mouseReleased(mouse, root);
+            onWheel:            mouseArea.interactor.mouseWheel(wheel, root);
+            onPositionChanged:  mouseArea.interactor.mouseMoved(mouse, root);
+            Keys.onPressed:     mouseArea.interactor.keyPressed(event, root);
+            Keys.onReleased:    mouseArea.interactor.keyReleased(event, root);
+        }
+
         onClicked: {
             if(!activeFocus)
                 focus = true;
 
-            if(interactor)
-                interactor.mouseClicked(mouse, root);
+            mouse.accepted = true;
         }
 
         onDoubleClicked: {
             if(!activeFocus)
                 focus = true;
 
-            if(interactor)
-                interactor.mouseDoubleClicked(mouse, root);
+            mouse.accepted = true;
         }
 
         onPressed: {
             if(!activeFocus)
                 focus = true;
 
-            if(interactor)
-                interactor.mousePressed(mouse, root);
+            mouse.accepted = true;
         }
 
         onReleased: {
-            if(interactor)
-                interactor.mouseReleased(mouse, root);
+            mouse.accepted = true;
         }
 
         onWheel: {
-            if(interactor)
-                interactor.mouseWheel(wheel, root);
+            wheel.accepted();
         }
 
         onPositionChanged: {
-            if(interactor)
-                interactor.mouseMove(mouse, root);
+            mouse.accepted = true;
         }
 
         Keys.onPressed: {
@@ -205,9 +212,6 @@ Viewer {
 
             if(scene)
                 scene.keyPressed(event);
-
-            if(interactor)
-                interactor.keyPressed(event, root);
 
             event.accepted = true;
         }
@@ -220,9 +224,6 @@ Viewer {
 
             if(scene)
                 scene.keyReleased(event);
-
-            if(interactor)
-                interactor.keyReleased(event, root);
 
             event.accepted = true;
         }

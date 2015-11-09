@@ -30,7 +30,7 @@ UserInteractor {
             viewer.crosshairGizmo.show();
             SofaToolsScript.Tools.overrideCursorShape = Qt.ClosedHandCursor;
 
-            setMouseMoveMapping(function(mouse, viewer) {
+            setMouseMovedMapping(function(mouse, viewer) {
                 if(!viewer.camera)
                     return;
 
@@ -53,7 +53,7 @@ UserInteractor {
         });
 
         addMouseReleasedMapping(Qt.RightButton, function(mouse, viewer) {
-            setMouseMoveMapping(null);
+            setMouseMovedMapping(null);
 
             SofaToolsScript.Tools.overrideCursorShape = 0;
             viewer.crosshairGizmo.hide();
@@ -70,7 +70,7 @@ UserInteractor {
             viewer.crosshairGizmo.show();
             SofaToolsScript.Tools.overrideCursorShape = Qt.ClosedHandCursor;
 
-            setMouseMoveMapping(function(mouse) {
+            setMouseMovedMapping(function(mouse) {
                 if(!viewer.camera)
                     return;
 
@@ -86,7 +86,7 @@ UserInteractor {
         });
 
         addMouseReleasedMapping(Qt.MiddleButton, function(mouse, viewer) {
-            setMouseMoveMapping(null);
+            setMouseMovedMapping(null);
 
             SofaToolsScript.Tools.overrideCursorShape = 0;
             viewer.crosshairGizmo.hide();

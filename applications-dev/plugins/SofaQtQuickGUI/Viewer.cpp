@@ -29,6 +29,7 @@
 #include <QDir>
 #include <qqml.h>
 #include <qmath.h>
+#include <limits>
 
 #include <iomanip>
 #include <sstream>
@@ -295,8 +296,11 @@ private:
 
 };
 
-QVector3D Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal) const
+bool Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal, QVector3D& intersectionPoint) const
 {
+    if(0.0 == QVector3D::dotProduct(rayDirection, planeNormal))
+        return false;
+
     QVector3D normalizedRayDirection = rayDirection.normalized();
     QVector3D normalizedPlaneNormal = planeNormal.normalized();
 
@@ -304,36 +308,43 @@ QVector3D Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVecto
     double nDotP0 = QVector3D::dotProduct(normalizedPlaneNormal, rayOrigin);
     double nDotDir = QVector3D::dotProduct(normalizedPlaneNormal, normalizedRayDirection);
 
-    return rayOrigin + (((d - nDotP0) / nDotDir) * normalizedRayDirection);
+    intersectionPoint = QVector3D(rayOrigin + (((d - nDotP0) / nDotDir) * normalizedRayDirection));
+
+    return true;
 }
 
 QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const
 {
-    if(!window())
-        return QVector3D();
+    if(window())
+    {
+        QVector3D wsOrigin = mapToWorld(ssPoint, 0.0);
+        QVector3D wsDirection = mapToWorld(ssPoint, 1.0) - wsOrigin;
 
-    QVector3D wsOrigin = mapToWorld(ssPoint, 0.0);
-    QVector3D wsDirection = mapToWorld(ssPoint, 1.0) - wsOrigin;
+        QVector3D normalizedLineDirection = lineDirection.normalized();
+        QVector3D planAxis = QVector3D::normal(normalizedLineDirection, wsDirection);
+        QVector3D planNormal = QVector3D::normal(normalizedLineDirection, planAxis);
 
-    QVector3D normalizedLineDirection = lineDirection.normalized();
-    QVector3D planAxis = QVector3D::normal(normalizedLineDirection, wsDirection);
-    QVector3D planNormal = QVector3D::normal(normalizedLineDirection, planAxis);
+        QVector3D intersectionPoint;
+        if(intersectRayWithPlane(wsOrigin, wsDirection, lineOrigin, planNormal, intersectionPoint))
+            return lineOrigin + normalizedLineDirection * QVector3D::dotProduct(normalizedLineDirection, intersectionPoint - lineOrigin);
+    }
 
-    QVector3D intersectionPoint = intersectRayWithPlane(wsOrigin, wsDirection, lineOrigin, planNormal);
-    QVector3D projectedPoint = lineOrigin + normalizedLineDirection * QVector3D::dotProduct(normalizedLineDirection, intersectionPoint - lineOrigin);
-
-    return projectedPoint;
+    return QVector3D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 }
 
 QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const
 {
-    if(!window())
-        return QVector3D();
+    if(window())
+    {
+        QVector3D wsOrigin = mapToWorld(ssPoint, 0.0);
+        QVector3D wsDirection = mapToWorld(ssPoint, 1.0) - wsOrigin;
 
-    QVector3D wsOrigin = mapToWorld(ssPoint, 0.0);
-    QVector3D wsDirection = mapToWorld(ssPoint, 1.0) - wsOrigin;
+        QVector3D intersectionPoint;
+        if(intersectRayWithPlane(wsOrigin, wsDirection, planeOrigin, planeNormal, intersectionPoint))
+            return intersectionPoint;
+    }
 
-    return intersectRayWithPlane(wsOrigin, wsDirection, planeOrigin, planeNormal);
+    return QVector3D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 }
 
 QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
@@ -352,7 +363,7 @@ QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
 
     // TODO: add a timeout
     while(!finished)
-        qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
+        qApp->processEvents(QEventLoop::WaitForMoreEvents);
 
     return QVector4D(mapToWorld(ssPoint, z), qCeil(1.0f - z));
 }
@@ -479,7 +490,7 @@ Selectable* Viewer::pickObject(const QPointF& ssPoint)
 
     // TODO: add a timeout
     while(!finished)
-        qApp->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::ExcludeUserInputEvents);
+        qApp->processEvents(QEventLoop::WaitForMoreEvents);
 
     if(selectable)
         selectable->setPosition(mapToWorld(ssPoint, z));
@@ -528,8 +539,6 @@ void Viewer::saveScreenshot(const QString& path)
 
     if(!myFBO->toImage().save(path))
         qWarning() << "Screenshot could not be saved to" << path;
-    else
-        qDebug() << "Screenshot saved to" << path;
 }
 
 QRect Viewer::glRect() const

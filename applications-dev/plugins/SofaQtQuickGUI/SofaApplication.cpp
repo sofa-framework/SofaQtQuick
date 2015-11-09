@@ -39,7 +39,7 @@ void SofaApplication::saveScreenshot(const QString& path)
 {
     if(!qGuiApp)
     {
-        qWarning() << "Cannot take a screenshot of the whole application without a QGuiApplication";
+        qWarning() << "Cannot take a screenshot of the whole application without an instance of QGuiApplication";
         return;
     }
 
@@ -65,21 +65,21 @@ void SofaApplication::saveScreenshot(const QString& path)
     if(quickWindows.size() > 1)
         count = 0;
 
+    bool saved = false;
     for(QQuickWindow* quickWindow : quickWindows)
     {
         QString finalPath = newPath;
         if(-1 != count)
-        {
-            finalPath += "_" + QString::number(count);
-            ++count;
-        }
+            finalPath += "_" + QString::number(count++);
 
         finalPath += suffix;
 
-        qDebug() << finalPath;
-
-        quickWindow->grabWindow().save(finalPath);
+        if(quickWindow->grabWindow().save(finalPath))
+            saved = true;
     }
+
+    if(!saved)
+        qWarning() << "Screenshot could not be saved to" << path;
 }
 
 }

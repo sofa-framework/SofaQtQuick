@@ -12,7 +12,7 @@ QtObject {
     property var mousePressedMapping: Array()
     property var mouseReleasedMapping: Array()
     property var mouseWheelMapping: null
-    property var mouseMoveMapping: null
+    property var mouseMovedMapping: null
 
     property var keyPressedMapping: Array()
     property var keyReleasedMapping: Array()
@@ -38,8 +38,8 @@ QtObject {
         mouseWheelMapping = binding;
     }
 
-    function setMouseMoveMapping(binding) {
-        mouseMoveMapping = binding;
+    function setMouseMovedMapping(binding) {
+        mouseMovedMapping = binding;
     }
 
     function addKeyPressedMapping(key, binding) {
@@ -81,8 +81,8 @@ QtObject {
             binding(wheel, viewer);
     }
 
-    function mouseMove(mouse, viewer) {
-        var binding = mouseMoveMapping;
+    function mouseMoved(mouse, viewer) {
+        var binding = mouseMovedMapping;
         if(binding)
             binding(mouse, viewer);
     }

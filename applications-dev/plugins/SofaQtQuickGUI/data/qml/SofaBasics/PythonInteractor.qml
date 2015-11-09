@@ -5,6 +5,7 @@ PythonInteractor {
     id: root
 
     function call(scriptControllerName, funcName) {
+        //console.log(arguments.length);
         if(arguments.length == 2) {
             return onCall(scriptControllerName, funcName);
         } else if(arguments.length > 2) {
