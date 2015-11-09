@@ -55,7 +55,6 @@ public:
     Q_PROPERTY(sofa::qtquick::SceneComponent* subTree READ subTree WRITE setSubTree NOTIFY subTreeChanged)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QUrl backgroundImageSource READ backgroundImageSource WRITE setBackgroundImageSource NOTIFY backgroundImageSourceChanged)
-    Q_PROPERTY(QUrl folderToSaveVideo READ folderToSaveVideo WRITE setFolderToSaveVideo NOTIFY folderToSaveVideoChanged)
     Q_PROPERTY(bool wireframe READ wireframe WRITE setWireframe NOTIFY wireframeChanged)
     Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
     Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
@@ -65,7 +64,6 @@ public:
     Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
     Q_PROPERTY(bool drawNormals READ drawNormals WRITE setDrawNormals NOTIFY drawNormalsChanged)
     Q_PROPERTY(float normalsDrawLength READ normalsDrawLength WRITE setNormalsDrawLength NOTIFY normalsDrawLengthChanged)
-    Q_PROPERTY(bool saveVideo READ saveVideo WRITE setSaveVideo NOTIFY saveVideoChanged)
 
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<Viewer*>(this));}
@@ -84,9 +82,6 @@ public:
 
     QUrl backgroundImageSource() const	{return myBackgroundImageSource;}
     void setBackgroundImageSource(QUrl newBackgroundImageSource);
-
-    const QUrl& folderToSaveVideo() const	{return myFolderToSaveVideo;}
-    void setFolderToSaveVideo(const QUrl& newFolderToSaveVideo);
 
     bool wireframe() const      {return myWireframe;}
     void setWireframe(bool newWireframe);
@@ -115,9 +110,6 @@ public:
     bool normalsDrawLength() const {return myNormalsDrawLength;}
     void setNormalsDrawLength(bool newNormalsDrawLength);
 
-    bool saveVideo() const        {return mySaveVideo;}
-    void setSaveVideo(bool newSaveVideo);
-
     /// @return depth in screen space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
 
@@ -137,9 +129,7 @@ public:
     Q_INVOKABLE QVector3D boundingBoxMin() const;
     Q_INVOKABLE QVector3D boundingBoxMax() const;
 
-    Q_INVOKABLE void takeViewerScreenshot();
-    Q_INVOKABLE void saveScreenshotInFile();
-    Q_INVOKABLE void saveVideoInFile(QUrl folderPath, int viewerIndex);
+    Q_INVOKABLE void saveScreenshot(const QString& path);
 
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
@@ -147,7 +137,6 @@ signals:
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
     void backgroundImageSourceChanged(QUrl newBackgroundImageSource);
-    void folderToSaveVideoChanged(const QUrl& newFolderToSaveVideo);
     void wireframeChanged(bool newWireframe);
     void cullingChanged(bool newCulling);
     void blendingChanged(bool newBlending);
@@ -157,7 +146,6 @@ signals:
     void drawManipulatorsChanged(bool newDrawManipulators);
     void drawNormalsChanged(bool newDrawNormals);
     void normalsDrawLengthChanged(float newNormalsDrawLength);
-    void saveVideoChanged(bool newSaveVideo);
 
     void preDraw();
     void postDraw();
@@ -200,9 +188,7 @@ private:
     SceneComponent*				mySubTree;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
-    QUrl                        myFolderToSaveVideo;
     QImage                      myBackgroundImage;
-    QImage                      myScreenshotImage;
     bool                        myWireframe;
     bool                        myCulling;
     bool                        myBlending;
@@ -212,14 +198,6 @@ private:
     bool                        myDrawManipulators;
     bool                        myDrawNormals;
     float                       myNormalsDrawLength;
-    bool                        mySaveVideo;
-    int                         myVideoFrameCounter;
-
-#ifdef SOFA_HAVE_PNG
-    sofa::helper::io::ImagePNG myVideoFrame;
-#else
-    sofa::helper::io::ImageBMP myVideoFrame;
-#endif
 
 };
 

@@ -91,6 +91,37 @@ Viewer {
         }
     }
 
+    function formatDateForScreenshot() {
+        var today = new Date();
+        var day = today.getDate();
+        var month = today.getMonth();
+        var year = today.getFullYear();
+
+        var hour = today.getHours();
+        var min = today.getMinutes() + hour * 60;
+        var sec = today.getSeconds() + min * 60;
+        var msec = today.getMilliseconds() + sec * 1000;
+
+        return year + "-" + month + "-" + day + "_" + msec;
+    }
+
+    function takeScreenshot() {
+        root.saveScreenshot("Captured/Screen/" + formatDateForScreenshot + ".png");
+    }
+
+    property bool saveVideo: false
+    onSaveVideoChanged: {
+        videoFrameNumber = 0;
+        videoName = formatDateForScreenshot();
+    }
+
+    property int videoFrameNumber: 0
+    property string videoName: "movie"
+    Connections {
+        target: root.scene && root.saveVideo ? root.scene : null
+        onStepEnd: root.saveScreenshot("Captured/Movie/" + videoName + "/" + (root.videoFrameNumber++) + ".png");
+    }
+
     Image {
         id: handIcon
         source: "qrc:/icon/hand.png"
@@ -482,120 +513,51 @@ Viewer {
 
                             title: "Save"
 
-                                GridLayout {
-                                    anchors.fill: parent
-                                    columnSpacing: 0
-                                    rowSpacing: 2
-                                    columns: 2
+                            GridLayout {
+                                anchors.fill: parent
+                                columnSpacing: 0
+                                rowSpacing: 2
+                                columns: 2
+
+                                Item {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: screenshotButton.implicitHeight
 
                                     Button {
-                                        text: "Save Screenshot"
-                                        Layout.columnSpan: 2
-                                        onClicked: {
-                                            toolPanel.visible = false
-                                            root.takeViewerScreenshot();
-                                            saveScreenshotViewerFileDialog.open();
-                                            toolPanel.visible = true
-                                        }
-
-                                     FileDialog {
-                                         id: saveScreenshotViewerFileDialog
-                                         title: "Please select the file where you want to save the screenshot"
-                                         selectFolder: false
-                                         selectMultiple: false
-                                         selectExisting: false
-                                         nameFilters: ["Scene files (*.png *.bmp)"]
-                                         onAccepted: {
-                                             scene.screenshotFilename = fileUrl;
-                                             root.saveScreenshotInFile();
-                                         }
-                                     }
-                                    }
-
-                                    CheckBox {
-                                        id: saveVideoCheckBox
-                                        text: "Save video "
+                                        id: screenshotButton
+                                        anchors.fill: parent
+                                        text: "Screenshot"
                                         checked: false
+                                        checkable: false
 
-                                        onClicked: {// bool saveVideo to true
-                                                    root.saveVideo = checked
-                                                    // Close toolPanel
-//                                                    toolPanel.visible = false
-                                                    // Print message dialog
-//                                                    if(root.saveVideo)
-//                                                        saveViewerVideoDialog.open()
-                                        }
+                                        onClicked: root.takeScreenshot();
 
                                         ToolTip {
                                             anchors.fill: parent
-                                            description: "Save video for this viewer"
-                                        }
-
-                                        Dialog {
-                                            id: saveViewerVideoDialog
-                                            title: "Save video"
-                                            width: 300
-                                            Text {
-                                            text: "You have selected this viewer.<br>To start taking a video animate the scene."
-                                            }
+                                            description: "Save screenshot in Captured/Screen/"
                                         }
                                     }
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: movieButton.implicitHeight
 
                                     Button {
-                                        Layout.columnSpan: 1
-                                        Layout.fillWidth: true
-                                        text: "Video Folder"
+                                        id: movieButton
+                                        anchors.fill: parent
+                                        text: "Movie"
+                                        checked: false
+                                        checkable: true
 
-                                        onClicked: {
-                                            videoManagerDialog.open();
-                                        }
+                                        onClicked: root.saveVideo = checked
 
-                                    Dialog {
-                                        id: videoManagerDialog
-                                        visible: false
-                                        title: "Video Folder"
-                                        width: 500
-
-                                        ColumnLayout {
-
-                                        TextField {
-                                            id: folderPathTextField
-                                            placeholderText: qsTr("Select folder")
-                                            style: TextFieldStyle {
-                                                    textColor: "black"
-                                                    background: Rectangle {
-                                                        radius: 2
-                                                        implicitWidth: 500
-                                                        implicitHeight: 24
-                                                    }
-                                            }
-                                        }
-
-                                        Button{
-                                            Layout.columnSpan: 1
-                                            Layout.fillWidth: true
-                                            text: "Select Folder"
-
-                                            onClicked: {
-                                                openVideoFolderDialog.open();
-                                           }
-
-                                            FileDialog {
-                                                id: openVideoFolderDialog
-                                                title: "Please choose a folder"
-                                                selectFolder: true
-                                                selectMultiple: false
-                                                selectExisting: true
-                                                onAccepted: {
-                                                    folderPathTextField.placeholderText = folder.toString().replace("file:","").replace("///","/");
-                                                    root.folderToSaveVideo = folder;
-                                                }
-                                            }
-
-                                        }
+                                        ToolTip {
+                                            anchors.fill: parent
+                                            description: "Save video in Captured/Movie/"
                                         }
                                     }
-                                    }
+                                }
                             }
                         }
 

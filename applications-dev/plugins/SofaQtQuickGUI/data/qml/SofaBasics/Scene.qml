@@ -18,17 +18,6 @@ Scene {
 
     Component.onCompleted: {
         SofaApplication.scene = root;
-        // At the end of each step capture screenshot to take a video of the animated scene
-        root.stepEnd.connect(videoCapture);
-    }
-
-    function videoCapture()  {
-        // loop on viewer lists
-        var viewers = SofaApplication.viewers;
-        for(var i=0; i < viewers.length; i++)   {
-            if(viewers[i].saveVideo)
-                viewers[i].saveVideoInFile(viewers[i].folderToSaveVideo,i);
-        }
     }
 
     Component.onDestruction: {

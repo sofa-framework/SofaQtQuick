@@ -7,9 +7,9 @@ PythonInteractor {
     function call(scriptControllerName, funcName) {
         if(arguments.length == 2) {
             return onCall(scriptControllerName, funcName);
-        } else if(arguments.length > 2){
+        } else if(arguments.length > 2) {
             var packedArguments = [];
-            for(var i = 2; i < arguments.length; i++)
+            for(var i = 2; i < arguments.length; ++i)
                 packedArguments.push(arguments[i]);
 
             return onCall(scriptControllerName, funcName, packedArguments);

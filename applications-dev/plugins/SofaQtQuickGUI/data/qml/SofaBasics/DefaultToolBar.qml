@@ -137,7 +137,7 @@ ToolBar {
         }
 
         Row {
-            id: saveScreenshotTools
+            id: captureLayout
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             spacing: 5
@@ -152,11 +152,7 @@ ToolBar {
 
                 Component.onCompleted: implicitWidth += 5
 
-                onClicked: {
-                    if(scene)
-                        scene.takeScreenshot();
-                        saveSofaSceneScreenshotDialog.open();
-                }
+                onClicked: SofaApplication.takeScreenshot();
             }
         }
     }

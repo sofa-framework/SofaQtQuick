@@ -134,7 +134,26 @@ SofaApplication {
         }
     }
 
-//////////////////////////////////////////////////
+////////////////////////////////////////////////// SCREENSHOT
 
+    function formatDateForScreenshot() {
+        var today = new Date();
+        var day = today.getDate();
+        var month = today.getMonth();
+        var year = today.getFullYear();
+
+        var hour = today.getHours();
+        var min = today.getMinutes() + hour * 60;
+        var sec = today.getSeconds() + min * 60;
+        var msec = today.getMilliseconds() + sec * 1000;
+
+        return year + "-" + month + "-" + day + "_" + msec;
+    }
+
+    function takeScreenshot() {
+        root.saveScreenshot("Captured/Screen/" + formatDateForScreenshot() + ".png");
+    }
+
+//////////////////////////////////////////////////
 
 }

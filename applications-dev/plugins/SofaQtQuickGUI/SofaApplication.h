@@ -19,6 +19,7 @@ public:
     static SofaApplication* Instance();
 
     Q_INVOKABLE QString binaryDirectory() const;
+    Q_INVOKABLE void saveScreenshot(const QString& path);
 
 protected:
     SofaApplication(QObject* parent = 0);

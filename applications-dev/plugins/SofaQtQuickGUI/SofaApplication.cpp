@@ -1,7 +1,10 @@
 #include "SofaApplication.h"
 
-#include <QCoreApplication>
+#include <QGuiApplication>
+#include <QQuickWindow>
+#include <QScreen>
 #include <QDir>
+#include <QDebug>
 
 namespace sofa
 {
@@ -30,6 +33,53 @@ SofaApplication* SofaApplication::Instance()
 QString SofaApplication::binaryDirectory() const
 {
     return QCoreApplication::applicationDirPath();
+}
+
+void SofaApplication::saveScreenshot(const QString& path)
+{
+    if(!qGuiApp)
+    {
+        qWarning() << "Cannot take a screenshot of the whole application without a QGuiApplication";
+        return;
+    }
+
+    QFileInfo fileInfo(path);
+    QDir dir = fileInfo.dir();
+    if(!dir.exists())
+        dir.mkpath(".");
+
+    QString newPath = fileInfo.absoluteDir().absolutePath() + "/";
+    newPath += fileInfo.baseName();
+    QString suffix = "." + fileInfo.completeSuffix();
+
+    QWindowList windows = qGuiApp->allWindows();
+    QList<QQuickWindow*> quickWindows;
+    for(QWindow* window : windows)
+    {
+        QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
+        if(quickWindow)
+            quickWindows.append(quickWindow);
+    }
+
+    int count = -1;
+    if(quickWindows.size() > 1)
+        count = 0;
+
+    for(QQuickWindow* quickWindow : quickWindows)
+    {
+        QString finalPath = newPath;
+        if(-1 != count)
+        {
+            finalPath += "_" + QString::number(count);
+            ++count;
+        }
+
+        finalPath += suffix;
+
+        qDebug() << finalPath;
+
+        quickWindow->grabWindow().save(finalPath);
+    }
 }
 
 }

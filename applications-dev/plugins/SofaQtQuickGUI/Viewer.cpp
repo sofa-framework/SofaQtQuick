@@ -48,9 +48,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     mySubTree(nullptr),
     myBackgroundColor("#00404040"),
     myBackgroundImageSource(),
-    myFolderToSaveVideo(""),
     myBackgroundImage(),
-    myScreenshotImage(),
     myWireframe(false),
     myCulling(true),
     myBlending(false),
@@ -59,9 +57,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myMirroredVertically(false),
     myDrawManipulators(true),
     myDrawNormals(false),
-    myNormalsDrawLength(1.0f),
-    mySaveVideo(false),
-    myVideoFrameCounter(0)
+    myNormalsDrawLength(1.0f)
 {
     setFlag(QQuickItem::ItemHasContents);
 
@@ -132,16 +128,6 @@ void Viewer::setBackgroundImageSource(QUrl newBackgroundImageSource)
     myBackgroundImageSource = newBackgroundImageSource;
 
     backgroundImageSourceChanged(newBackgroundImageSource);
-}
-
-void Viewer::setFolderToSaveVideo(const QUrl& newFolderToSaveVideo)
-{
-    if(newFolderToSaveVideo == myFolderToSaveVideo)
-        return;
-
-    myFolderToSaveVideo = newFolderToSaveVideo;
-
-    folderToSaveVideoChanged(newFolderToSaveVideo);
 }
 
 void Viewer::setWireframe(bool newWireframe)
@@ -232,16 +218,6 @@ void Viewer::setNormalsDrawLength(bool newNormalsDrawLength)
     myNormalsDrawLength = newNormalsDrawLength;
 
     normalsDrawLengthChanged(newNormalsDrawLength);
-}
-
-void Viewer::setSaveVideo(bool newSaveVideo)
-{
-    if(newSaveVideo == mySaveVideo)
-        return;
-
-    mySaveVideo = newSaveVideo;
-
-    saveVideoChanged(newSaveVideo);
 }
 
 double Viewer::computeDepth(const QVector3D& wsPosition) const
@@ -544,98 +520,16 @@ void Viewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource)
     myBackgroundImage = QImage(path.replace("qrc:", ":"));
 }
 
-void Viewer::takeViewerScreenshot()
-{
-    QRect rect = qtRect();
-    QPoint pos = rect.topLeft();
-    QSize size = rect.size();
+void Viewer::saveScreenshot(const QString& path)
+{    
+    QDir dir = QFileInfo(path).dir();
+    if(!dir.exists())
+        dir.mkpath(".");
 
-    // Take window screenshot
-    QImage screenshot =  window()->grabWindow();
-
-    // Resize screenshot to the viewer
-    myScreenshotImage = screenshot.copy(pos.x(),pos.y()-size.height(),size.width(),size.height());
-}
-
-void Viewer::saveScreenshotInFile()
-{
-    QString finalFilename = myScene->screenshotFilename().toLocalFile();
-    if(finalFilename.isEmpty())
-    {
-        std::cerr << "File to save screenshot doesn't exist" << std::endl;
-        return;
-    }
-
-    if(myScreenshotImage.height()!=0)
-    {
-        #ifdef SOFA_HAVE_PNG
-            myScreenshotImage.save(finalFilename,"png");
-        #else
-            myScreenshotImage.save(finalFilename,"bmp");
-        #endif
-        std::cout << "Saved "<< myScreenshotImage.width() <<"x"<< myScreenshotImage.height() <<" viewer screen image to "<< finalFilename.toStdString() <<std::endl;
-    }
-}
-
-void Viewer::saveVideoInFile(QUrl folderPath, int viewerIndex)
-{
-    // Define folder path to save video
-    QString folderPathString = folderPath.toLocalFile();
-
-    // If no folder path is selected take by default screenshots folder in build directory
-    if(folderPathString.isEmpty())
-    {
-        QDir dir;
-
-        folderPathString = dir.currentPath().replace("/bin","")+"/screenshots";
-    }
-
-    // Check folder exists
-    QDir dirFolder (folderPathString);
-    if(!dirFolder.exists())
-    {
-        std::cout << "Folder = " << folderPathString.toStdString() << "doesn't exist" << std::endl;
-        return;
-    }
-
-    // Define file name to save the different video frames
-    QString finalFilename = folderPathString + "/"+ myScene->source().toString().replace("file:", "").remove( QRegExp( "(.*/)" ) ).replace(".scn","");
-
-    // Number of the frame
-    std::ostringstream ss;
-    ss << std::setw( 8 ) << std::setfill( '0' ) << myVideoFrameCounter;
-    std::string result = ss.str();
-    finalFilename = finalFilename + "Viewer" +  QString::fromStdString(std::to_string(viewerIndex)) +  QString::fromStdString("_" + result);
-
-    // Take frame screenshot
-    QRect rect = glRect();
-    QPoint pos = rect.topLeft();
-    QSize size = rect.size();
-
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    myVideoFrame.init(size.width(),size.height(), 1, 1, helper::io::Image::UNORM8, helper::io::Image::RGB);
-    glReadBuffer(GL_FRONT);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadPixels(pos.x(),pos.y(), size.width(), size.height(), GL_RGB, GL_UNSIGNED_BYTE, myVideoFrame.getPixels());
-
-    // Save frame image
-    if(myVideoFrame.getHeight()!=0)
-    {
-        #ifdef SOFA_HAVE_PNG
-            finalFilename = finalFilename + ".png";
-        #else
-            finalFilename = finalFilename + ".bmp";
-        #endif
-        std::string filepath = finalFilename.toLatin1().constData();
-        if (!myVideoFrame.save(filepath)) return;
-            std::cout << "Saved "<<myVideoFrame.getWidth()<<"x"<<myVideoFrame.getHeight()<<" screen image to "<<filepath<<std::endl;
-    }
-
-    glReadBuffer(GL_BACK);
-
-    // Frame counter
-    myVideoFrameCounter++;
+    if(!myFBO->toImage().save(path))
+        qWarning() << "Screenshot could not be saved to" << path;
+    else
+        qDebug() << "Screenshot saved to" << path;
 }
 
 QRect Viewer::glRect() const
