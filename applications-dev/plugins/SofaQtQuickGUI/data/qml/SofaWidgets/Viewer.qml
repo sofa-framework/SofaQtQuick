@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.3
-import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
@@ -141,6 +140,8 @@ Viewer {
     }
 
     property Component interactorComponent: SofaApplication.interactorComponent
+
+    property alias mouseArea: mouseArea
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -158,53 +159,49 @@ Viewer {
             }
         }
 
-        Connections {
-            target: mouseArea.interactor ? mouseArea : null
-
-            onClicked:          mouseArea.interactor.mouseClicked(mouse, root);
-            onDoubleClicked:    mouseArea.interactor.mouseDoubleClicked(mouse, root);
-            onPressed:          mouseArea.interactor.mousePressed(mouse, root);
-            onReleased:         mouseArea.interactor.mouseReleased(mouse, root);
-            onWheel:            mouseArea.interactor.mouseWheel(wheel, root);
-            onPositionChanged:  mouseArea.interactor.mouseMoved(mouse, root);
-            Keys.onPressed:     mouseArea.interactor.keyPressed(event, root);
-            Keys.onReleased:    mouseArea.interactor.keyReleased(event, root);
-        }
-
         onClicked: {
-            if(!activeFocus)
-                focus = true;
+            SofaApplication.setFocusedViewer(root);
 
-            mouse.accepted = true;
+            if(interactor)
+                interactor.mouseClicked(mouse, root);
         }
 
         onDoubleClicked: {
-            if(!activeFocus)
-                focus = true;
+            SofaApplication.setFocusedViewer(root);
 
-            mouse.accepted = true;
+            if(interactor)
+                interactor.mouseDoubleClicked(mouse, root);
         }
 
         onPressed: {
-            if(!activeFocus)
-                focus = true;
+            SofaApplication.setFocusedViewer(root);
 
-            mouse.accepted = true;
+            if(interactor)
+                interactor.mousePressed(mouse, root);
         }
 
         onReleased: {
-            mouse.accepted = true;
+            if(interactor)
+                interactor.mouseReleased(mouse, root);
         }
 
         onWheel: {
-            wheel.accepted();
+            SofaApplication.setFocusedViewer(root);
+
+            if(interactor)
+                interactor.mouseWheel(mouse, root);
+
+            wheel.accepted = true;
         }
 
         onPositionChanged: {
-            mouse.accepted = true;
+            if(interactor)
+                interactor.mouseMoved(mouse, root);
         }
 
         Keys.onPressed: {
+            console.log("key", root);
+
             if(event.isAutoRepeat) {
                 event.accepted = true;
                 return;
@@ -212,6 +209,9 @@ Viewer {
 
             if(scene)
                 scene.keyPressed(event);
+
+            if(interactor)
+                interactor.keyPressed(event, root);
 
             event.accepted = true;
         }
@@ -224,6 +224,9 @@ Viewer {
 
             if(scene)
                 scene.keyReleased(event);
+
+            if(interactor)
+                interactor.keyReleased(event, root);
 
             event.accepted = true;
         }

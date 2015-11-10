@@ -17,6 +17,8 @@ SofaApplication {
         id: d
 
         property var sceneListModel: null
+
+        property var focusedViewer: null
         property var viewers: []
 
     }
@@ -46,10 +48,15 @@ SofaApplication {
 
 ////////////////////////////////////////////////// VIEWER
 
+    readonly property alias focusedViewer: d.focusedViewer
     readonly property alias viewers: d.viewers
 
+    function setFocusedViewer(viewer) {
+        d.focusedViewer = viewer;
+    }
+
     function addViewer(viewer) {
-        viewers.push(viewer)
+        d.viewers.push(viewer)
     }
 
     function removeViewer(viewer) {
