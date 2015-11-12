@@ -66,7 +66,7 @@ UserInteractor_MoveCamera {
 
             scene.selectedManipulator = null;
 
-            setMouseMoveMapping(null);
+            setMouseMovedMapping(null);
         });
 
     }

@@ -298,17 +298,23 @@ private:
 
 bool Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal, QVector3D& intersectionPoint) const
 {
-    if(0.0 == QVector3D::dotProduct(rayDirection, planeNormal))
+    if(0.0 == QVector3D::dotProduct(rayDirection, planeNormal)) // ray and plane are orthogonal
         return false;
 
-    QVector3D normalizedRayDirection = rayDirection.normalized();
     QVector3D normalizedPlaneNormal = planeNormal.normalized();
 
-    double d = -QVector3D(0.0, 0.0, 0.0).distanceToPlane(planeOrigin, normalizedPlaneNormal);
-    double nDotP0 = QVector3D::dotProduct(normalizedPlaneNormal, rayOrigin);
+    double d = QVector3D(0.0, 0.0, 0.0).distanceToPlane(planeOrigin, normalizedPlaneNormal);
+
+    double nDotOrigin = QVector3D::dotProduct(normalizedPlaneNormal, rayOrigin);
+
+    QVector3D normalizedRayDirection = rayDirection.normalized();
     double nDotDir = QVector3D::dotProduct(normalizedPlaneNormal, normalizedRayDirection);
 
-    intersectionPoint = QVector3D(rayOrigin + (((d - nDotP0) / nDotDir) * normalizedRayDirection));
+    intersectionPoint = QVector3D(rayOrigin + ((-(nDotOrigin + d) / nDotDir) * normalizedRayDirection));
+
+    // line intersection but not ray intersection (the intersection happened 'behind' the ray)
+    if(QVector3D::dotProduct(rayDirection, intersectionPoint - rayOrigin) < 0.0)
+        return false;
 
     return true;
 }
