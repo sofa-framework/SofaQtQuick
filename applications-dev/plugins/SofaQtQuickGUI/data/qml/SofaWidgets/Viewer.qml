@@ -189,7 +189,7 @@ Viewer {
             SofaApplication.setFocusedViewer(root);
 
             if(interactor)
-                interactor.mouseWheel(mouse, root);
+                interactor.mouseWheel(wheel, root);
 
             wheel.accepted = true;
         }
