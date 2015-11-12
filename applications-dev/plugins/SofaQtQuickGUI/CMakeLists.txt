@@ -99,6 +99,7 @@ set(QML_FILES
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
     data/qml/SofaInteractors/UserInteractor_Selection.qml
+    data/qml/SofaInteractors/UserInteractor_ParticleInteractor.qml
     data/qml/SofaManipulators/qmldir
     data/qml/SofaManipulators/Manipulator.qml
     data/qml/SofaManipulators/Manipulator2D_Translation.qml

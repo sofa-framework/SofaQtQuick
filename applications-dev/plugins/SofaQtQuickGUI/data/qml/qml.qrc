@@ -59,5 +59,6 @@
         <file>SofaManipulators/Manipulator3D_Translation.qml</file>
         <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
         <file>SofaInteractors/UserInteractor_MoveCamera.qml</file>
+        <file>SofaInteractors/UserInteractor_ParticleInteractor.qml</file>
     </qresource>
 </RCC>
