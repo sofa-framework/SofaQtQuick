@@ -10,7 +10,9 @@ UserInteractor_ParticleInteractor {
     property var selectedComponent: null
 
     function init() {
+
         moveCamera_init();
+
         addMousePressedMapping(Qt.LeftButton, function(mouse, viewer) {
             selectedManipulator = scene.selectedManipulator;
             selectedComponent = scene.selectedComponent;
@@ -39,7 +41,7 @@ UserInteractor_ParticleInteractor {
             } else if(selectedComponent) {
                 if(!scene.areSameComponent(scene.selectedComponent, selectedComponent)) {
                     scene.selectedComponent = selectedComponent;
-                }/* else {
+                } else {
                     var sceneComponentParticle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
                     if(sceneComponentParticle) {
                         scene.particleInteractor.start(sceneComponentParticle.sceneComponent, sceneComponentParticle.particleIndex);
@@ -50,7 +52,7 @@ UserInteractor_ParticleInteractor {
                             scene.particleInteractor.update(position);
                         });
                     }
-                }*/
+                }
             } else {
                 scene.selectedManipulator = null;
                 scene.selectedComponent = null;
