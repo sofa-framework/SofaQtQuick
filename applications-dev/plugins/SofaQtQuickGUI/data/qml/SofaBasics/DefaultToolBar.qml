@@ -44,6 +44,8 @@ ToolBar {
                     property string interactorName
                     property Component interactorComponent
 
+                    width: implicitWidth + 10
+
                     text: interactorName
                     checkable: true
                     checked: false

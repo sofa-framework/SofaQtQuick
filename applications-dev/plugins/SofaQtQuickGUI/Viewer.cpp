@@ -53,7 +53,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myWireframe(false),
     myCulling(true),
     myBlending(false),
-    myAntialiasing(false),
+    myAntialiasingSamples(2),
     myMirroredHorizontally(false),
     myMirroredVertically(false),
     myDrawManipulators(true),
@@ -63,6 +63,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     setFlag(QQuickItem::ItemHasContents);
 
     connect(this, &Viewer::backgroundImageSourceChanged, this, &Viewer::handleBackgroundImageSourceChanged);
+    connect(this, SIGNAL(antialiasingSamplesChanged(int)), this, SLOT(update()));
 }
 
 Viewer::~Viewer()
@@ -161,14 +162,14 @@ void Viewer::setBlending(bool newBlending)
     blendingChanged(newBlending);
 }
 
-void Viewer::setAntialiasing(bool newAntialiasing)
+void Viewer::setAntialiasingSamples(int newAntialiasingSamples)
 {
-    if(newAntialiasing == myAntialiasing)
+    if(newAntialiasingSamples == myAntialiasingSamples)
         return;
 
-    myAntialiasing = newAntialiasing;
+    myAntialiasingSamples = newAntialiasingSamples;
 
-    antialiasingChanged(newAntialiasing);
+    antialiasingSamplesChanged(newAntialiasingSamples);
 }
 
 void Viewer::setMirroredHorizontally(bool newMirroredHorizontally)
@@ -211,7 +212,7 @@ void Viewer::setDrawNormals(bool newDrawNormals)
     drawNormalsChanged(newDrawNormals);
 }
 
-void Viewer::setNormalsDrawLength(bool newNormalsDrawLength)
+void Viewer::setNormalsDrawLength(float newNormalsDrawLength)
 {
     if(newNormalsDrawLength == myNormalsDrawLength)
         return;
@@ -624,7 +625,8 @@ QSGNode* Viewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutD
 }
 
 Viewer::SofaRenderer::SofaRenderer(Viewer* viewer) : QQuickFramebufferObject::Renderer(),
-    myViewer(viewer)
+    myViewer(viewer),
+    myAntialiasingSamples(0)
 {
 
 }
@@ -633,10 +635,23 @@ QOpenGLFramebufferObject* Viewer::SofaRenderer::createFramebufferObject(const QS
 {
     QOpenGLFramebufferObjectFormat format;
     format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
-    // TODO: multisampling with format.setSamples(4);
+    format.setSamples(myAntialiasingSamples);
 
     myViewer->myFBO = new QOpenGLFramebufferObject(size, format);
     return myViewer->myFBO;
+}
+
+void Viewer::SofaRenderer::synchronize(QQuickFramebufferObject* quickFramebufferObject)
+{
+    Viewer* viewer = qobject_cast<Viewer*>(quickFramebufferObject);
+    if(!viewer)
+        return;
+
+    if(myAntialiasingSamples != viewer->myAntialiasingSamples)
+    {
+        myAntialiasingSamples = viewer->myAntialiasingSamples;
+        invalidateFramebufferObject();
+    }
 }
 
 void Viewer::SofaRenderer::render()

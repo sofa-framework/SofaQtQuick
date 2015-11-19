@@ -2,7 +2,6 @@
 
 #include <qqml.h>
 #include <qmath.h>
-#include <QDebug>
 
 namespace sofa
 {

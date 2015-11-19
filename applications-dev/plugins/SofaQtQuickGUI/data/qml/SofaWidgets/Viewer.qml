@@ -20,7 +20,7 @@ Viewer {
     wireframe: false
     culling: true
     blending: false
-    antialiasing: false
+    antialiasingSamples: 2
     scene: SofaApplication.scene
     property bool defaultCameraOrthographic: false
 
@@ -200,8 +200,6 @@ Viewer {
         }
 
         Keys.onPressed: {
-            console.log("key", root);
-
             if(event.isAutoRepeat) {
                 event.accepted = true;
                 return;
@@ -428,24 +426,35 @@ Viewer {
                                     }
                                 }
 
-                                Slider {
+                                RowLayout {
+                                    id: normalsLayout
                                     Layout.alignment: Qt.AlignCenter
                                     Layout.columnSpan: 2
                                     visible: normalsSwitch.checked
 
-                                    Component.onCompleted: {
-                                        value = Math.sqrt(root.normalsDrawLength);
-                                        minimumValue = value * 0.1;
-                                        maximumValue = value * 2.0;
-                                        stepSize = minimumValue;
+                                    Slider {
+                                        id: normalsSlider
+                                        Layout.fillWidth: true
+
+                                        Component.onCompleted: {
+                                            value = Math.sqrt(root.normalsDrawLength);
+                                            minimumValue = value * 0.1;
+                                            maximumValue = value * 2.0;
+                                            stepSize = minimumValue;
+                                        }
+
+                                        onValueChanged: {
+                                            root.normalsDrawLength = value * value;
+                                        }
                                     }
-                                    onValueChanged: {
-                                        root.normalsDrawLength = value * value
+
+                                    TextField {
+                                        Layout.preferredWidth: 32
+                                        readOnly: true
+                                        text: normalsSlider.value.toFixed(1);
                                     }
                                 }
 
-/*
-                                // TODO: antialiasing not implemented yet
                                 Label {
                                     Layout.fillWidth: true
                                     text: "Antialiasing"
@@ -454,15 +463,68 @@ Viewer {
                                 Switch {
                                     id: antialiasingSwitch
                                     Layout.alignment: Qt.AlignCenter
-                                    Component.onCompleted: checked = root.antialiasing
-                                    onCheckedChanged: root.antialiasing = checked
+                                    Component.onCompleted: checked = (0 !== root.antialiasingSamples)
+                                    
+                                    onCheckedChanged: {
+                                        if(checked) {
+                                            antialiasingSlider.uploadValue(antialiasingSlider.minimumValue);
+                                            antialiasingLayout.visible = true;
+                                        } else {
+                                            antialiasingLayout.visible = false;
+                                            antialiasingSlider.uploadValue(0);
+                                        }
+                                    }
 
                                     ToolTip {
                                         anchors.fill: parent
-                                        description: "Enable Antialiasing"
+                                        description: "Enable / Disable Antialiasing\n\nNote : You must resize your window before the changes will take effect"
                                     }
                                 }
-*/
+
+                                RowLayout {
+                                    id: antialiasingLayout
+                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.columnSpan: 2
+
+                                    Slider {
+                                        id: antialiasingSlider
+                                        Layout.fillWidth: true
+                                        Component.onCompleted: downloadValue();
+                                        onValueChanged: if(visible) uploadValue(value);
+
+                                        stepSize: 1
+                                        minimumValue: 1
+                                        maximumValue: 4
+
+                                        function downloadValue() {
+                                            value = Math.min((root.antialiasingSamples >= 1 ? Math.log(root.antialiasingSamples) / Math.log(2.0) : minimumValue), maximumValue);
+                                        }
+
+                                        function uploadValue(newValue) {
+                                            if(undefined === newValue)
+                                                newValue = value;
+
+                                            root.antialiasingSamples = (newValue >= 1 ? Math.round(Math.pow(2.0, newValue)) : 0);
+                                        }
+
+                                        Connections {
+                                            target: root
+                                            onAntialiasingSamplesChanged: antialiasingSlider.downloadValue();
+                                        }
+
+                                        ToolTip {
+                                            anchors.fill: parent
+                                            description: "Change the number of samples used for antialiasing\n\nNote : You must resize your window before the changes will take effect"
+                                        }
+                                    }
+
+                                    TextField {
+                                        Layout.preferredWidth: 32
+                                        readOnly: true
+                                        text: root.antialiasingSamples;
+                                    }
+                                }
+
                                 Label {
                                     Layout.fillWidth: true
                                     text: "Background"

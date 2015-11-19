@@ -58,7 +58,7 @@ public:
     Q_PROPERTY(bool wireframe READ wireframe WRITE setWireframe NOTIFY wireframeChanged)
     Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
     Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
-    Q_PROPERTY(bool antialiasing READ antialiasing WRITE setAntialiasing NOTIFY antialiasingChanged)
+    Q_PROPERTY(int antialiasingSamples READ antialiasingSamples WRITE setAntialiasingSamples NOTIFY antialiasingSamplesChanged)
     Q_PROPERTY(bool mirroredHorizontally READ mirroredHorizontally WRITE setMirroredHorizontally NOTIFY mirroredHorizontallyChanged)
     Q_PROPERTY(bool mirroredVertically READ mirroredVertically WRITE setMirroredVertically NOTIFY mirroredVerticallyChanged)
     Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
@@ -92,8 +92,8 @@ public:
     bool blending() const        {return myBlending;}
     void setBlending(bool newBlending);
 
-    bool antialiasing() const        {return myAntialiasing;}
-    void setAntialiasing(bool newAntialiasing);
+    int antialiasingSamples() const        {return myAntialiasingSamples;}
+    void setAntialiasingSamples(int newAntialiasingSamples);
 
     bool mirroredHorizontally() const        {return myMirroredHorizontally;}
     void setMirroredHorizontally(bool newMirroredHorizontally);
@@ -107,8 +107,8 @@ public:
     bool drawNormals() const {return myDrawNormals;}
     void setDrawNormals(bool newDrawNormals);
 
-    bool normalsDrawLength() const {return myNormalsDrawLength;}
-    void setNormalsDrawLength(bool newNormalsDrawLength);
+    float normalsDrawLength() const {return myNormalsDrawLength;}
+    void setNormalsDrawLength(float newNormalsDrawLength);
 
     /// @return depth in screen space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
@@ -140,7 +140,7 @@ signals:
     void wireframeChanged(bool newWireframe);
     void cullingChanged(bool newCulling);
     void blendingChanged(bool newBlending);
-    void antialiasingChanged(bool newAntialiasing);
+    void antialiasingSamplesChanged(int newAntialiasingSamples);
     void mirroredHorizontallyChanged(bool newMirroredHorizontally);
     void mirroredVerticallyChanged(bool newMirroredVertically);
     void drawManipulatorsChanged(bool newDrawManipulators);
@@ -173,11 +173,13 @@ private:
 
     protected:
         QOpenGLFramebufferObject *createFramebufferObject(const QSize &size);
+        void synchronize(QQuickFramebufferObject* quickFramebufferObject);
         void render();
 
     private:
         // TODO: not safe at all when we will use multithreaded rendering, use synchronize() instead
         Viewer* myViewer;
+        int     myAntialiasingSamples;
 
     };
 
@@ -192,7 +194,7 @@ private:
     bool                        myWireframe;
     bool                        myCulling;
     bool                        myBlending;
-    bool                        myAntialiasing;
+    int                         myAntialiasingSamples;
     bool                        myMirroredHorizontally;
     bool                        myMirroredVertically;
     bool                        myDrawManipulators;
