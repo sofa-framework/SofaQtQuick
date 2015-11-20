@@ -6,6 +6,7 @@
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <SofaOpenglVisual/OglModel.h>
+#include <sofa/helper/cast.h>
 
 #include <QtQuick/qquickwindow.h>
 #include <QQmlEngine>
@@ -388,7 +389,7 @@ SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
 
     sofa::simulation::Node* root = nullptr;
     if(subTree())
-        root = dynamic_cast<Node*>(subTree()->base());
+        root = down_cast<Node>(subTree()->base()->toBaseNode());
 
     return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, root);
 }

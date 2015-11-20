@@ -9,6 +9,7 @@
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/PluginManager.h>
+#include <sofa/helper/cast.h>
 #include <sofa/simulation/graph/graph.h>
 #include <sofa/simulation/graph/DAGSimulation.h>
 #include <sofa/simulation/graph/init.h>
@@ -543,14 +544,14 @@ bool Scene::areInSameBranch(SceneComponent* sceneComponentA, SceneComponent* sce
     if(!sceneComponentA || !sceneComponentB)
         return false;
 
-    BaseObject* baseObjectA = dynamic_cast<BaseObject*>(sceneComponentA->base());
-    BaseObject* baseObjectB = dynamic_cast<BaseObject*>(sceneComponentB->base());
+    BaseObject* baseObjectA = sceneComponentA->base()->toBaseObject();
+    BaseObject* baseObjectB = sceneComponentB->base()->toBaseObject();
 
     if(!baseObjectA || !baseObjectB)
         return false;
 
-    BaseNode* baseNodeA = dynamic_cast<BaseNode*>(baseObjectA->getContext());
-    BaseNode* baseNodeB = dynamic_cast<BaseNode*>(baseObjectB->getContext());
+    BaseNode* baseNodeA = baseObjectA->getContext()->toBaseNode();
+    BaseNode* baseNodeB = baseObjectB->getContext()->toBaseNode();
 
     if(!baseNodeA || !baseNodeB)
         return false;
@@ -1314,7 +1315,7 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
 
         myHighlightShaderProgram->bind();
         {
-            VisualModel* visualModel = dynamic_cast<VisualModel*>(selectedBase);
+            VisualModel* visualModel = selectedBase->toVisualModel();
             if(visualModel)
             {
                 VisualStyle* visualStyle = nullptr;
@@ -1415,12 +1416,15 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
 
 Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
 {
-    Node* root = nullptr;
+    BaseNode* baseroot = nullptr;
     if(viewer.subTree())
-        root = dynamic_cast<Node*>(viewer.subTree()->base());
+        baseroot = viewer.subTree()->base()->toBaseNode();
 
-    if(!root)
+    Node* root;
+    if(!baseroot)
         root = sofaSimulation()->GetRoot().get();
+    else
+        root = down_cast<Node>(baseroot);
 
     sofa::helper::vector<VisualModel*> visualModels;
     root->getTreeObjects<VisualModel>(&visualModels);

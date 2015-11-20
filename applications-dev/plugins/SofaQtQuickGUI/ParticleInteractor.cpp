@@ -10,6 +10,7 @@
 #include <SofaBoundaryCondition/FixedConstraint.h>
 #include <SofaDeformable/StiffSpringForceField.h>
 #include <SofaOpenglVisual/OglModel.h>
+#include <sofa/helper/cast.h>
 
 #include <qqml.h>
 #include <QDebug>
@@ -113,7 +114,7 @@ bool ParticleInteractor::start(SceneComponent* sceneComponent, int particleIndex
     node->init(sofa::core::ExecParams::defaultInstance());
     myNode = node.get();
 
-    Node* particleNode = dynamic_cast<Node*>(stiffSpringForcefield->getMState2()->getContext());
+    Node* particleNode = down_cast<Node>(stiffSpringForcefield->getMState2()->getContext());
     particleNode->moveObject(stiffSpringForcefield);
 
     interactorPositionChanged(position);
