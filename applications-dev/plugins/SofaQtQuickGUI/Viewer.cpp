@@ -400,12 +400,10 @@ using sofa::component::visualmodel::OglModel;
 class PickUsingRasterizationWorker : public QRunnable
 {
 public:
-    PickUsingRasterizationWorker(Scene* scene, Viewer* viewer, QPointF nativePoint, Selectable*& selectable, float& z, bool& finished) :
-        myScene(scene),
+    PickUsingRasterizationWorker(Viewer* viewer, QPointF ssPoint, Selectable*& selectable, bool& finished) :
         myViewer(viewer),
-        myPosition(nativePoint),
+        mySSPoint(ssPoint),
         mySelectable(selectable),
-        myZ(z),
         myFinished(finished)
     {
 
@@ -413,7 +411,7 @@ public:
 
     void run()
     {
-        QRect rect = myViewer->glRect();
+        QRect rect = myViewer->nativeRect();
 
         QSize size = rect.size();
         if(size.isEmpty())
@@ -423,10 +421,16 @@ public:
         if(!camera)
             return;
 
+        Scene* scene = myViewer->scene();
+        if(!scene)
+            return;
+
         glDisable(GL_BLEND);
         glDisable(GL_LIGHTING);
 
         glDisable(GL_CULL_FACE);
+
+        glViewport(0.0f, 0.0f, size.width(), size.height());
 
         camera->setAspectRatio(size.width() / (double) size.height());
 
@@ -446,19 +450,7 @@ public:
         if(myViewer->culling())
             glEnable(GL_CULL_FACE);
 
-        myViewer->myFBO->bind();
-
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glViewport(0.0f, 0.0f, size.width(), size.height());
-
-        mySelectable = myScene->pickObject(*myViewer, myPosition);
-
-        if(mySelectable)
-            glReadPixels(myPosition.x(), myPosition.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &myZ);
-
-        myViewer->myFBO->release();
+        mySelectable = scene->pickObject(*myViewer, mySSPoint);
 
         if(myViewer->wireframe())
             glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
@@ -473,11 +465,9 @@ public:
     }
 
 private:
-    Scene*              myScene;
     Viewer*             myViewer;
-    QPointF             myPosition;
+    QPointF             mySSPoint;
     Selectable*&        mySelectable;
-    float&              myZ;
     bool&               myFinished;
 
 };
@@ -489,19 +479,15 @@ Selectable* Viewer::pickObject(const QPointF& ssPoint)
     if(!window() || !window()->isActive())
         return selectable;
 
-    float z = 1.0;
     bool finished = false;
 
-    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(myScene, this, mapToNative(ssPoint), selectable, z, finished);
+    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, selectable, finished);
     window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
     window()->update();
 
     // TODO: add a timeout
     while(!finished)
         qApp->processEvents(QEventLoop::WaitForMoreEvents);
-
-    if(selectable)
-        selectable->setPosition(mapToWorld(ssPoint, z));
 
     return selectable;
 }
@@ -549,7 +535,12 @@ void Viewer::saveScreenshot(const QString& path)
         qWarning() << "Screenshot could not be saved to" << path;
 }
 
-QRect Viewer::glRect() const
+QSize Viewer::nativeSize() const
+{
+    return nativeRect().size();
+}
+
+QRect Viewer::nativeRect() const
 {
 	if(!window())
 		return QRect();

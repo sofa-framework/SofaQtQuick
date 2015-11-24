@@ -116,6 +116,11 @@ public:
     Q_INVOKABLE QVector3D mapFromWorld(const QVector3D& wsPoint) const;
     Q_INVOKABLE QVector3D mapToWorld(const QPointF& ssPoint, double z) const;
 
+    /// @brief map screen coordinates to opengl coordinates
+    QPointF mapToNative(const QPointF& ssPoint) const;
+
+    QSize nativeSize() const;
+
     bool intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal, QVector3D& intersectionPoint) const;
 
     Q_INVOKABLE QVector3D projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const;
@@ -157,10 +162,8 @@ protected:
     QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);
 
 private:
-    QRect glRect() const;
+    QRect nativeRect() const;
     QRect qtRect() const;
-
-    QPointF mapToNative(const QPointF& ssPoint) const;
 
 private slots:
     void handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource);

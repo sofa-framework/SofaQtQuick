@@ -74,7 +74,7 @@ SofaApplication {
 
 ////////////////////////////////////////////////// INTERACTOR
 
-    property string defaultInteractorName: "Selection"
+    property string defaultInteractorName: "ParticleInteractor"
     readonly property string interactorName: {
         if(interactorComponent)
             for(var key in interactorComponentMap)

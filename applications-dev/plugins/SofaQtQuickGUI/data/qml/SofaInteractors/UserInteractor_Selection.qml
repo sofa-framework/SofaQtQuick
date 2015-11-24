@@ -11,6 +11,7 @@ UserInteractor_MoveCamera {
 
     function init() {
         moveCamera_init();
+
         addMousePressedMapping(Qt.LeftButton, function(mouse, viewer) {
             selectedManipulator = scene.selectedManipulator;
             selectedComponent = scene.selectedComponent;

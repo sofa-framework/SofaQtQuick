@@ -46,6 +46,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLFramebufferObject>
 #include <QOpenGLContext>
 #include <QQuickWindow>
 #include <QRunnable>
@@ -84,7 +85,8 @@ Scene::Scene(QObject *parent) : QObject(parent), MutationListener(),
     mySelectedManipulator(nullptr),
     mySelectedComponent(nullptr),
     myHighlightShaderProgram(nullptr),
-    myPickingShaderProgram(nullptr)
+    myPickingShaderProgram(nullptr),
+    myPickingFBO(nullptr)
 {
 
     sofa::simulation::graph::init();
@@ -132,21 +134,138 @@ Scene::~Scene()
     sofa::simulation::graph::cleanup();
 }
 
-bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface)
+bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* offscreenSurface)
 {
     if(!scene || !scene->sofaSimulation() || scenePath.isEmpty())
-		return false;
+        return false;
+
+    // share the current context
+    QOpenGLContext* sharedOpenglContext = QOpenGLContext::currentContext();
+
+    // or share a window context
+    if(!sharedOpenglContext && qGuiApp)
+    {
+        QWindowList windows = qGuiApp->allWindows();
+        for(QWindow* window : windows)
+        {
+            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
+            if(quickWindow && quickWindow->openglContext())
+            {
+                sharedOpenglContext = quickWindow->openglContext();
+                break;
+            }
+        }
+    }
+
+    // create the shared context
+    QOpenGLContext* openglContext = new QOpenGLContext();
+    if(sharedOpenglContext)
+        openglContext->setShareContext(sharedOpenglContext);
+
+    if(!openglContext->create())
+        qFatal("Cannot create an OpenGL Context needed to init sofa scenes");
+
+    if(!offscreenSurface->isValid())
+        qFatal("Cannot create an OpenGL Surface needed to init sofa scenes");
+
+    openglContext->makeCurrent(offscreenSurface);
+
+    GLenum err = glewInit();
+    if(0 != err)
+        qWarning() << "GLEW Initialization failed with error code:" << err;
+
+    #ifdef __linux__
+        static bool glutInited = false;
+        if(!glutInited)
+        {
+            int argc = 0;
+            glutInit(&argc, NULL);
+            glutInited = true;
+        }
+    #endif
+
+    // init the highlight shader program
+    if(!scene->myHighlightShaderProgram)
+    {
+        scene->myHighlightShaderProgram = new QOpenGLShaderProgram();
+
+        scene->myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        scene->myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
+            "}");
+
+        scene->myHighlightShaderProgram->link();
+
+        scene->myHighlightShaderProgram->moveToThread(scene->thread());
+        scene->myHighlightShaderProgram->setParent(scene);
+    }
+
+    // init the picking shader program
+    if(!scene->myPickingShaderProgram)
+    {
+        scene->myPickingShaderProgram = new QOpenGLShaderProgram();
+        scene->myPickingShaderProgram->create();
+        scene->myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        scene->myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "uniform highp vec4 index;\n"
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = index;\n"
+            "}");
+        scene->myPickingShaderProgram->link();
+
+        scene->myPickingShaderProgram->moveToThread(scene->thread());
+        scene->myPickingShaderProgram->setParent(scene);
+    }
+
+    // prepare the sofa visual params
+    sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+    if(visualParams)
+    {
+        if(!visualParams->drawTool())
+        {
+            visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
+            visualParams->setSupported(sofa::core::visual::API_OpenGL);
+        }
+    }
 
 	sofa::core::visual::VisualParams* vparams = sofa::core::visual::VisualParams::defaultInstance();
 	if(vparams)
 		vparams->displayFlags().setShowVisualModels(true);
 
     if(scene->sofaSimulation()->load(scenePath.toLatin1().constData()))
-        if(scene->sofaSimulation()->GetRoot()) {
-            scene->init(surface);
-            return true;
+    {
+        if(!scene->sofaSimulation()->GetRoot())
+        {
+            scene->setStatus(Scene::Status::Error);
+            return false;
         }
 
+        scene->sofaSimulation()->init(scene->sofaSimulation()->GetRoot().get());
+
+        scene->sofaSimulation()->initTextures(scene->sofaSimulation()->GetRoot().get());
+
+        scene->addChild(0, scene->sofaSimulation()->GetRoot().get());
+
+        scene->setStatus(Scene::Status::Ready);
+
+        if(!scene->myPathQML.isEmpty())
+            scene->setSourceQML(QUrl::fromLocalFile(scene->myPathQML));
+
+        return true;
+    }
+
+    scene->setStatus(Scene::Status::Error);
 	return false;
 }
 
@@ -1038,154 +1157,6 @@ void Scene::onSetDataValue(const QString& path, const QVariant& value)
     }
 }
 
-class InitGraphicsWorker : public QRunnable
-{
-public:
-    InitGraphicsWorker(Scene& scene, bool& finished) :
-        myScene(scene),
-        myFinished(finished)
-    {
-
-    }
-
-    void run()
-    {
-        GLenum err = glewInit();
-        if(0 != err)
-            qWarning() << "GLEW Initialization failed with error code:" << err;
-
-        // init the highlight shader program
-        if(!myScene.myHighlightShaderProgram)
-        {
-            myScene.myHighlightShaderProgram = new QOpenGLShaderProgram();
-
-            myScene.myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                "void main(void)\n"
-                "{\n"
-                "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-                "}");
-            myScene.myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-                "void main(void)\n"
-                "{\n"
-                "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
-                "}");
-
-            myScene.myHighlightShaderProgram->link();
-
-            myScene.myHighlightShaderProgram->moveToThread(myScene.thread());
-            myScene.myHighlightShaderProgram->setParent(&myScene);
-        }
-
-        // init the picking shader program
-        if(!myScene.myPickingShaderProgram)
-        {
-            myScene.myPickingShaderProgram = new QOpenGLShaderProgram();
-            myScene.myPickingShaderProgram->create();
-            myScene.myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                "void main(void)\n"
-                "{\n"
-                "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-                "}");
-            myScene.myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-                "uniform highp vec4 index;\n"
-                "void main(void)\n"
-                "{\n"
-                "   gl_FragColor = index;\n"
-                "}");
-            myScene.myPickingShaderProgram->link();
-
-            myScene.myPickingShaderProgram->moveToThread(myScene.thread());
-            myScene.myPickingShaderProgram->setParent(&myScene);
-        }
-
-        // prepare the sofa visual params
-        sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
-        if(visualParams)
-        {
-            if(!visualParams->drawTool())
-            {
-                visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
-                visualParams->setSupported(sofa::core::visual::API_OpenGL);
-            }
-        }
-
-    #ifdef __linux__
-        static bool glutInited = false;
-        if(!glutInited)
-        {
-            int argc = 0;
-            glutInit(&argc, NULL);
-            glutInited = true;
-        }
-    #endif
-
-        myScene.sofaSimulation()->init(myScene.sofaSimulation()->GetRoot().get());
-
-        // need a valig OpenGL context for initTextures
-        myScene.sofaSimulation()->initTextures(myScene.sofaSimulation()->GetRoot().get());
-
-        myFinished = true;
-    }
-
-private:
-    Scene&  myScene;
-    bool&   myFinished;
-
-};
-
-void Scene::init(QOffscreenSurface* offscreenSurface)
-{
-    if(!isLoading())
-        return;
-
-    if(!mySofaSimulation->GetRoot())
-    {
-        setStatus(Status::Error);
-		return;
-    }
-
-    // share the current context
-    QOpenGLContext* sharedOpenglContext = QOpenGLContext::currentContext();
-
-    // or share a window context
-    if(!sharedOpenglContext && qGuiApp)
-    {
-        QWindowList windows = qGuiApp->allWindows();
-        for(QWindow* window : windows)
-        {
-            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-            if(quickWindow && quickWindow->openglContext())
-            {
-                sharedOpenglContext = quickWindow->openglContext();
-                break;
-            }
-        }
-    }
-
-    // create the shared context
-    QOpenGLContext* openglContext = new QOpenGLContext();
-    if(sharedOpenglContext)
-        openglContext->setShareContext(sharedOpenglContext);
-
-    if(!openglContext->create())
-        qFatal("Cannot create an OpenGL Context needed to init sofa scenes");
-
-    if(!offscreenSurface->isValid())
-        qFatal("Cannot create an OpenGL Surface needed to init sofa scenes");
-
-    openglContext->makeCurrent(offscreenSurface);
-
-    bool finished = false;
-    InitGraphicsWorker(*this, finished).run();
-
-    addChild(0, sofaSimulation()->GetRoot().get());
-
-    setStatus(Status::Ready);
-
-    if(!myPathQML.isEmpty())
-        setSourceQML(QUrl::fromLocalFile(myPathQML));
-}
-
 void Scene::reload()
 {
     // TODO: ! NEED CURRENT OPENGL CONTEXT while releasing the old sofa scene
@@ -1414,8 +1385,10 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
     return (i[0] | (i[1] << 8) | (i[2] << 16));
 }
 
-Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
+Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& ssPoint)
 {
+    Selectable* selectable = nullptr;
+
     BaseNode* baseroot = nullptr;
     if(viewer.subTree())
         baseroot = viewer.subTree()->base()->toBaseNode();
@@ -1433,16 +1406,28 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
     root->getTreeObjects<TriangleModel>(&triangleModels);
 
     if(visualModels.empty() && triangleModels.empty() && myManipulators.empty())
-        return nullptr;
+        return selectable;
 
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
 
-    unsigned int index = 1;
+    int index = 1;
 
-    // write index
+// write index
 
     glDisable(GL_ALPHA_TEST);
     glDisable(GL_BLEND);
+
+    QSize nativeSize = viewer.nativeSize();
+    if(!myPickingFBO || nativeSize != myPickingFBO->size())
+    {
+        delete myPickingFBO;
+        myPickingFBO = new QOpenGLFramebufferObject(nativeSize, QOpenGLFramebufferObject::CombinedDepthStencil);
+    }
+
+    myPickingFBO->bind();
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     myPickingShaderProgram->bind();
     {
@@ -1494,30 +1479,54 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& nativePoint)
     }
     myPickingShaderProgram->release();
 
-    // read index
+    unsigned int maxIndex = index;
 
+// read index
+
+    QPointF nativePoint = viewer.mapToNative(ssPoint);
     std::array<unsigned char, 4> indexComponents;
     glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
 
-    index = unpackPickingIndex(indexComponents);
-    if(0 != index)
+    index = unpackPickingIndex(indexComponents) - 1;
+    if(-1 != index)
     {
-        --index;
-
         if((size_t) index < visualModels.size())
-            return new SelectableSceneComponent(SceneComponent(this, visualModels[index]));
-        index -= visualModels.size();
+        {
+            selectable = new SelectableSceneComponent(SceneComponent(this, visualModels[index]));
+        }
+        else
+        {
+            index -= visualModels.size();
 
-        if((size_t) index < triangleModels.size())
-            return new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));
-        index -= triangleModels.size();
+            if((size_t) index < triangleModels.size())
+            {
+                selectable = new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));
+            }
+            else
+            {
+                index -= triangleModels.size();
 
-        if(viewer.drawManipulators())
-            if((int) index < myManipulators.size())
-                return new SelectableManipulator(*myManipulators[index]);
+                if(viewer.drawManipulators())
+                    if((int) index < myManipulators.size())
+                        selectable = new SelectableManipulator(*myManipulators[index]);
+            }
+        }
     }
 
-    return nullptr;
+    if(selectable)
+    {
+        float z = 1.0;
+        glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+        selectable->setPosition(viewer.mapToWorld(ssPoint, z));
+    }
+    else if(-1 != index)
+    {
+        qWarning() << "Scene::pickObject(...) return an incorrect object index";
+    }
+
+    myPickingFBO->release();
+
+    return selectable;
 }
 
 void Scene::onKeyPressed(char key)

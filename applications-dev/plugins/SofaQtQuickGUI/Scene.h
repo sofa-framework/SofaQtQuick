@@ -23,6 +23,7 @@
 
 class QTimer;
 class QOpenGLShaderProgram;
+class QOpenGLFramebufferObject;
 class QOffscreenSurface;
 
 namespace sofa
@@ -38,7 +39,6 @@ namespace qtquick
 
 class Scene;
 class Viewer;
-class InitGraphicsWorker;
 class PickUsingRasterizationWorker;
 
 bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface);
@@ -49,7 +49,6 @@ class Scene : public QObject, private sofa::simulation::MutationListener
     Q_OBJECT
 
     friend class Viewer;
-    friend class InitGraphicsWorker;
     friend class PickUsingRasterizationWorker;
     friend class SceneComponent;
     friend class SceneData;
@@ -174,7 +173,6 @@ signals:
 
 private slots:
     void open();
-    void init(QOffscreenSurface* offscreenSurface);
     void handleStatusChange(Status newStatus);
 
 public:
@@ -195,7 +193,7 @@ protected:
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to pick an object is to use a Viewer instead of directly call this function
     /// \return     A 'Selectable' containing the picked object
-    Selectable* pickObject(const Viewer& viewer, const QPointF& nativePoint);
+    Selectable* pickObject(const Viewer& viewer, const QPointF& ssPoint);
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
@@ -225,6 +223,7 @@ private:
 
     QOpenGLShaderProgram*                       myHighlightShaderProgram;
     QOpenGLShaderProgram*                       myPickingShaderProgram;
+    QOpenGLFramebufferObject*                   myPickingFBO;
 
     #ifdef SOFA_HAVE_PNG
         sofa::helper::io::ImagePNG screenshot;
