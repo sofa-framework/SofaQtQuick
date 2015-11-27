@@ -10,6 +10,7 @@
 #include <QVector4D>
 #include <QImage>
 #include <QColor>
+#include <QList>
 
 #ifdef SOFA_HAVE_PNG
 #include <sofa/helper/io/ImagePNG.h>
@@ -52,7 +53,7 @@ public:
 public:
     Q_PROPERTY(sofa::qtquick::Scene* scene READ scene WRITE setScene NOTIFY sceneChanged)
     Q_PROPERTY(sofa::qtquick::Camera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
-    Q_PROPERTY(sofa::qtquick::SceneComponent* subTree READ subTree WRITE setSubTree NOTIFY subTreeChanged)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::SceneComponent> roots READ rootsListProperty)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QUrl backgroundImageSource READ backgroundImageSource WRITE setBackgroundImageSource NOTIFY backgroundImageSourceChanged)
     Q_PROPERTY(bool wireframe READ wireframe WRITE setWireframe NOTIFY wireframeChanged)
@@ -74,8 +75,9 @@ public:
     Camera* camera() const      {return myCamera;}
     void setCamera(Camera* newCamera);
 
-    SceneComponent* subTree() const      {return mySubTree;}
-    void setSubTree(SceneComponent* newSubTree);
+    QList<SceneComponent*> roots() const;
+    QQmlListProperty<SceneComponent> rootsListProperty();
+    void clearRoots();
 
     QColor backgroundColor() const	{return myBackgroundColor;}
     void setBackgroundColor(QColor newBackgroundColor);
@@ -138,7 +140,7 @@ public:
 
 signals:
     void sceneChanged(sofa::qtquick::Scene* newScene);
-    void subTreeChanged(sofa::qtquick::SceneComponent* newSubTree);
+    void rootsChanged(QList<sofa::qtquick::SceneComponent> newRoots);
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
     void backgroundImageSourceChanged(QUrl newBackgroundImageSource);
@@ -190,7 +192,7 @@ private:
     QOpenGLFramebufferObject*   myFBO;
 	Scene*						myScene;
 	Camera*						myCamera;
-    SceneComponent*				mySubTree;
+    QList<SceneComponent*>      myRoots;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
     QImage                      myBackgroundImage;

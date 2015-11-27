@@ -47,7 +47,7 @@ Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myFBO(nullptr),
     myScene(nullptr),
     myCamera(nullptr),
-    mySubTree(nullptr),
+    myRoots(),
     myBackgroundColor("#00404040"),
     myBackgroundImageSource(),
     myBackgroundImage(),
@@ -76,7 +76,7 @@ Viewer::~Viewer()
 		_vparams->drawTool() = 0;
 	}*/
 
-    setSubTree(nullptr);
+    clearRoots();
 }
 
 void Viewer::setScene(Scene* newScene)
@@ -99,18 +99,45 @@ void Viewer::setCamera(Camera* newCamera)
 	cameraChanged(newCamera);
 }
 
-void Viewer::setSubTree(SceneComponent* newSubTree)
+static void appendRoot(QQmlListProperty<SceneComponent> *property, SceneComponent *value)
 {
-    if(newSubTree == mySubTree)
-        return;
+    if(value)
+        static_cast<QList<SceneComponent*>*>(property->data)->append(new SceneComponent(*value));
+}
 
-    delete mySubTree;
-    mySubTree = nullptr;
+static SceneComponent* atRoot(QQmlListProperty<SceneComponent> *property, int index)
+{
+    return static_cast<QList<SceneComponent*>*>(property->data)->at(index);
+}
 
-    if(newSubTree)
-        mySubTree = new SceneComponent(*newSubTree);
+static void clearRoot(QQmlListProperty<SceneComponent> *property)
+{
+    QList<SceneComponent*>& roots = *static_cast<QList<SceneComponent*>*>(property->data);
 
-    subTreeChanged(newSubTree);
+    for(SceneComponent* sceneComponent : roots)
+        delete sceneComponent;
+
+    roots.clear();
+}
+
+static int countRoot(QQmlListProperty<SceneComponent> *property)
+{
+    return static_cast<QList<SceneComponent*>*>(property->data)->size();
+}
+
+QList<SceneComponent*> Viewer::roots() const
+{
+    return myRoots;
+}
+
+QQmlListProperty<SceneComponent> Viewer::rootsListProperty()
+{
+    return QQmlListProperty<SceneComponent>(this, &myRoots, appendRoot, countRoot, atRoot, clearRoot);
+}
+
+void Viewer::clearRoots()
+{
+    myRoots.clear();
 }
 
 void Viewer::setBackgroundColor(QColor newBackgroundColor)
@@ -387,11 +414,7 @@ SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
     double distanceToRay = myScene->radius() / 76.0;
     double distanceToRayGrowth = 0.001;
 
-    sofa::simulation::Node* root = nullptr;
-    if(subTree())
-        root = down_cast<Node>(subTree()->base()->toBaseNode());
-
-    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, root);
+    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, roots());
 }
 
 using sofa::simulation::Node;
@@ -450,7 +473,7 @@ public:
         if(myViewer->culling())
             glEnable(GL_CULL_FACE);
 
-        mySelectable = scene->pickObject(*myViewer, mySSPoint);
+        mySelectable = scene->pickObject(*myViewer, mySSPoint, myViewer->roots());
 
         if(myViewer->wireframe())
             glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
@@ -764,7 +787,7 @@ void Viewer::SofaRenderer::render()
         // draw the sofa scene
         {
             myViewer->preDraw();
-            myViewer->myScene->draw(*myViewer, myViewer->mySubTree);
+            myViewer->myScene->draw(*myViewer, myViewer->roots());
             myViewer->postDraw();
         }
 

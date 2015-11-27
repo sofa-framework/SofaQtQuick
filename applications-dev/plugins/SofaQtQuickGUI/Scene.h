@@ -69,7 +69,7 @@ public:
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(sofa::qtquick::SceneComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators DESIGNABLE false FINAL)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
 
     Q_ENUMS(Status)
     enum Status {
@@ -182,18 +182,18 @@ protected:
     /// \brief      Low-level drawing function
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
-    void draw(const Viewer& viewer, SceneComponent* subTree = nullptr) const;
+    void draw(const Viewer& viewer, const QList<SceneComponent*>& roots = QList<SceneComponent*>()) const;
 
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
     /// \return     A 'SelectableSceneParticle' containing the picked particle and the SceneComponent where it belongs
-    SelectableSceneParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, sofa::simulation::Node* subTree = nullptr) const;
+    SelectableSceneParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QList<SceneComponent*>& roots = QList<SceneComponent*>()) const;
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to pick an object is to use a Viewer instead of directly call this function
     /// \return     A 'Selectable' containing the picked object
-    Selectable* pickObject(const Viewer& viewer, const QPointF& ssPoint);
+    Selectable* pickObject(const Viewer& viewer, const QPointF& ssPoint, const QList<SceneComponent*>& roots = QList<SceneComponent*>());
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);

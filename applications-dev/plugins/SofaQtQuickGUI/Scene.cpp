@@ -1200,10 +1200,22 @@ void Scene::reset()
     emit reseted();
 }
 
-void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
+void Scene::draw(const Viewer& viewer, const QList<SceneComponent*>& roots) const
 {
     if(!isReady())
         return;
+
+    QList<sofa::simulation::Node*> nodes;
+    nodes.reserve(roots.size());
+    for(SceneComponent* sceneComponent : roots)
+    {
+        sofa::core::objectmodel::Base* base = sceneComponent->base();
+        if(base)
+            nodes.append(down_cast<Node>(base->toBaseNode()));
+    }
+
+    if(nodes.isEmpty())
+        nodes.append(mySofaSimulation->GetRoot().get());
 
     // prepare the sofa visual params
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
@@ -1222,55 +1234,49 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
 //        visualParams->setModelViewMatrix(_mvmatrix);
     }
 
-    if(myVisualDirty)
+    for(sofa::simulation::Node* root : nodes)
     {
-        mySofaSimulation->updateVisual(mySofaSimulation->GetRoot().get());
-        myVisualDirty = false;
-    }
+        if(!root)
+            continue;
 
-    sofa::simulation::Node* root = nullptr;
-    if(nullptr != subTree)
-        root = dynamic_cast<sofa::simulation::Node*>(subTree->base());
+        if(myVisualDirty)
+            mySofaSimulation->updateVisual(mySofaSimulation->GetRoot().get());
 
-    if(!root)
-        root = mySofaSimulation->GetRoot().get();
+        mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
 
-    //qDebug() << root << QString::fromStdString(root->getName());
-
-    mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
-
-    // draw normals
-    if(viewer.drawNormals())
-    {
-        Node* root = sofaSimulation()->GetRoot().get();
-
-        sofa::helper::vector<OglModel*> oglModels;
-        root->getTreeObjects<OglModel>(&oglModels);
-
-        for(OglModel* oglModel : oglModels)
+        // draw normals
+        if(viewer.drawNormals())
         {
-            const ResizableExtVector<ExtVec3fTypes::Coord>& vertices = oglModel->getVertices();
-            const ResizableExtVector<ExtVec3fTypes::Deriv>& normals = oglModel->getVnormals();
+            sofa::helper::vector<OglModel*> oglModels;
+            root->getTreeObjects<OglModel>(&oglModels);
 
-            if(vertices.size() != normals.size())
-                continue;
-
-            for(size_t i = 0; i < vertices.size(); ++i)
+            for(OglModel* oglModel : oglModels)
             {
-                ExtVec3fTypes::Coord vertex = vertices[i];
-                ExtVec3fTypes::Deriv normal = normals[i];
-                float length = qBound(0.0f, normal.norm(), 1.0f);
+                const ResizableExtVector<ExtVec3fTypes::Coord>& vertices = oglModel->getVertices();
+                const ResizableExtVector<ExtVec3fTypes::Deriv>& normals = oglModel->getVnormals();
 
-                glColor3f(1.0f - length, length, length * length);
-                glBegin(GL_LINES);
+                if(vertices.size() != normals.size())
+                    continue;
+
+                for(size_t i = 0; i < vertices.size(); ++i)
                 {
-                    glVertex3f(vertex.x(), vertex.y(), vertex.z());
-                    glVertex3f(vertex.x() + normal.x() * viewer.normalsDrawLength(), vertex.y() + normal.y() * viewer.normalsDrawLength(), vertex.z() + normal.z() * viewer.normalsDrawLength());
+                    ExtVec3fTypes::Coord vertex = vertices[i];
+                    ExtVec3fTypes::Deriv normal = normals[i];
+                    float length = qBound(0.0f, normal.norm(), 1.0f);
+
+                    glColor3f(1.0f - length, length, length * length);
+                    glBegin(GL_LINES);
+                    {
+                        glVertex3f(vertex.x(), vertex.y(), vertex.z());
+                        glVertex3f(vertex.x() + normal.x() * viewer.normalsDrawLength(), vertex.y() + normal.y() * viewer.normalsDrawLength(), vertex.z() + normal.z() * viewer.normalsDrawLength());
+                    }
+                    glEnd();
                 }
-                glEnd();
             }
         }
     }
+
+    myVisualDirty = false;
 
     // highlight selected components using a specific shader
     Base* selectedBase = nullptr;
@@ -1339,12 +1345,12 @@ void Scene::draw(const Viewer& viewer, SceneComponent* subTree) const
 
     // draw manipulators
     if(viewer.drawManipulators())
-    for(Manipulator* manipulator : myManipulators)
-        if(manipulator)
-            manipulator->draw(viewer);
+        for(Manipulator* manipulator : myManipulators)
+            if(manipulator)
+                manipulator->draw(viewer);
 }
 
-SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, Node* subTree) const
+SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QList<SceneComponent*>& roots) const
 {
     SelectableSceneParticle* selectableSceneParticle = nullptr;
 
@@ -1354,22 +1360,37 @@ SelectableSceneParticle* Scene::pickParticle(const QVector3D& origin, const QVec
                                                                  distanceToRay,
                                                                  distanceToRayGrowth);
 
-    Node* root = nullptr;
-    if(subTree)
-        root = subTree;
-
-    if(!root)
-        root = sofaSimulation()->GetRoot().get();
-
-    pickVisitor.execute(root->getContext());
-
-    if(!pickVisitor.particles.empty())
+    QList<sofa::simulation::Node*> nodes;
+    nodes.reserve(roots.size());
+    for(SceneComponent* sceneComponent : roots)
     {
-        MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(pickVisitor.particles.begin()->second.first);
-        int index = pickVisitor.particles.begin()->second.second;
+        sofa::core::objectmodel::Base* base = sceneComponent->base();
+        if(base)
+            nodes.append(down_cast<Node>(base->toBaseNode()));
+    }
 
-        if(mechanicalObject && -1 != index)
-            selectableSceneParticle = new SelectableSceneParticle(SceneComponent(this, mechanicalObject), index);
+    if(nodes.isEmpty())
+        nodes.append(sofaSimulation()->GetRoot().get());
+
+    for(sofa::simulation::Node* root : nodes)
+    {
+        if(!root)
+            continue;
+
+        pickVisitor.execute(root->getContext());
+
+        if(!pickVisitor.particles.empty())
+        {
+            MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(pickVisitor.particles.begin()->second.first);
+            int index = pickVisitor.particles.begin()->second.second;
+
+            if(mechanicalObject && -1 != index)
+            {
+                selectableSceneParticle = new SelectableSceneParticle(SceneComponent(this, mechanicalObject), index);
+                break;
+            }
+        }
+
     }
 
     return selectableSceneParticle;
@@ -1385,37 +1406,21 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
     return (i[0] | (i[1] << 8) | (i[2] << 16));
 }
 
-Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& ssPoint)
+Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& ssPoint, const QList<SceneComponent*>& roots)
 {
     Selectable* selectable = nullptr;
 
-    BaseNode* baseroot = nullptr;
-    if(viewer.subTree())
-        baseroot = viewer.subTree()->base()->toBaseNode();
+    QList<sofa::simulation::Node*> nodes;
+    nodes.reserve(roots.size());
+    for(SceneComponent* sceneComponent : roots)
+    {
+        sofa::core::objectmodel::Base* base = sceneComponent->base();
+        if(base)
+            nodes.append(down_cast<Node>(base->toBaseNode()));
+    }
 
-    Node* root;
-    if(!baseroot)
-        root = sofaSimulation()->GetRoot().get();
-    else
-        root = down_cast<Node>(baseroot);
-
-    sofa::helper::vector<VisualModel*> visualModels;
-    root->getTreeObjects<VisualModel>(&visualModels);
-
-    sofa::helper::vector<TriangleModel*> triangleModels;
-    root->getTreeObjects<TriangleModel>(&triangleModels);
-
-    if(visualModels.empty() && triangleModels.empty() && myManipulators.empty())
-        return selectable;
-
-    sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
-
-    int index = 1;
-
-// write index
-
-    glDisable(GL_ALPHA_TEST);
-    glDisable(GL_BLEND);
+    if(nodes.isEmpty())
+        nodes.append(mySofaSimulation->GetRoot().get());
 
     QSize nativeSize = viewer.nativeSize();
     if(!myPickingFBO || nativeSize != myPickingFBO->size())
@@ -1425,105 +1430,147 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& ssPoint)
     }
 
     myPickingFBO->bind();
-
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    myPickingShaderProgram->bind();
     {
-        int indexLocation = myPickingShaderProgram->uniformLocation("index");
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for(VisualModel* visualModel : visualModels)
+        glDisable(GL_ALPHA_TEST);
+        glDisable(GL_BLEND);
+
+        sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+        QVector<VisualModel*> visualModels;
+        QVector<TriangleModel*> triangleModels;
+
+// write object index
+
+        int index = 1;
+
+        myPickingShaderProgram->bind();
         {
-            if(visualModel)
+            int indexLocation = myPickingShaderProgram->uniformLocation("index");
+
+            if(nodes.isEmpty())
+                nodes.append(sofaSimulation()->GetRoot().get());
+
+            // visual models
+
+            for(sofa::simulation::Node* root : nodes)
             {
-                myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                visualModel->drawVisual(visualParams);
-            }
+                if(!root)
+                    continue;
 
-            index++;
-        }
+                sofa::helper::vector<VisualModel*> currentVisualModels;
+                root->getTreeObjects<VisualModel>(&currentVisualModels);
 
-        for(TriangleModel* triangleModel : triangleModels)
-        {
-            if(triangleModel)
-            {
-                VisualStyle* visualStyle = nullptr;
-                triangleModel->getContext()->get(visualStyle);
+                if(currentVisualModels.empty())
+                    continue;
 
-                myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-
-                if(visualStyle)
-                    visualStyle->fwdDraw(visualParams);
-
-                triangleModel->draw(visualParams);
-
-                if(visualStyle)
-                    visualStyle->bwdDraw(visualParams);
-            }
-
-            index++;
-        }
-
-        if(viewer.drawManipulators())
-            for(Manipulator* manipulator : myManipulators)
-            {
-                if(manipulator)
+                for(VisualModel* visualModel : currentVisualModels)
                 {
-                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                    manipulator->pick(viewer);
+                    if(visualModel)
+                    {
+                        myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                        visualModel->drawVisual(visualParams);
+
+                        visualModels.append(visualModel);
+                        index++;
+                    }
                 }
-
-                index++;
             }
-    }
-    myPickingShaderProgram->release();
 
-    unsigned int maxIndex = index;
+            // triangle models
 
-// read index
-
-    QPointF nativePoint = viewer.mapToNative(ssPoint);
-    std::array<unsigned char, 4> indexComponents;
-    glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
-
-    index = unpackPickingIndex(indexComponents) - 1;
-    if(-1 != index)
-    {
-        if((size_t) index < visualModels.size())
-        {
-            selectable = new SelectableSceneComponent(SceneComponent(this, visualModels[index]));
-        }
-        else
-        {
-            index -= visualModels.size();
-
-            if((size_t) index < triangleModels.size())
+            for(sofa::simulation::Node* root : nodes)
             {
-                selectable = new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));
+                if(!root)
+                    continue;
+
+                sofa::helper::vector<TriangleModel*> currentTriangleModels;
+                root->getTreeObjects<TriangleModel>(&currentTriangleModels);
+
+                if(currentTriangleModels.empty())
+                    continue;
+
+                for(TriangleModel* triangleModel : currentTriangleModels)
+                {
+                    if(triangleModel)
+                    {
+                        VisualStyle* visualStyle = nullptr;
+                        triangleModel->getContext()->get(visualStyle);
+
+                        myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+
+                        if(visualStyle)
+                            visualStyle->fwdDraw(visualParams);
+
+                        triangleModel->draw(visualParams);
+
+                        if(visualStyle)
+                            visualStyle->bwdDraw(visualParams);
+
+                        triangleModels.append(triangleModel);
+                        index++;
+                    }
+                }
+            }
+
+            if(viewer.drawManipulators())
+                for(Manipulator* manipulator : myManipulators)
+                {
+                    if(manipulator)
+                    {
+                        myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                        manipulator->pick(viewer);
+                    }
+
+                    index++;
+                }
+        }
+        myPickingShaderProgram->release();
+
+// read object index
+
+        QPointF nativePoint = viewer.mapToNative(ssPoint);
+        std::array<unsigned char, 4> indexComponents;
+        glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
+
+        index = unpackPickingIndex(indexComponents) - 1;
+        if(-1 != index)
+        {
+            if((size_t) index < visualModels.size())
+            {
+                selectable = new SelectableSceneComponent(SceneComponent(this, visualModels[index]));
             }
             else
             {
-                index -= triangleModels.size();
+                index -= visualModels.size();
 
-                if(viewer.drawManipulators())
-                    if((int) index < myManipulators.size())
-                        selectable = new SelectableManipulator(*myManipulators[index]);
+                if((size_t) index < triangleModels.size())
+                {
+                    selectable = new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));
+                }
+                else
+                {
+                    index -= triangleModels.size();
+
+                    if(viewer.drawManipulators())
+                        if((int) index < myManipulators.size())
+                            selectable = new SelectableManipulator(*myManipulators[index]);
+                }
             }
         }
-    }
 
-    if(selectable)
-    {
-        float z = 1.0;
-        glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
-        selectable->setPosition(viewer.mapToWorld(ssPoint, z));
+        if(selectable)
+        {
+            float z = 1.0;
+            glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+            selectable->setPosition(viewer.mapToWorld(ssPoint, z));
+        }
+        else if(-1 != index)
+        {
+            qWarning() << "Scene::pickObject(...) return an incorrect object index";
+        }
     }
-    else if(-1 != index)
-    {
-        qWarning() << "Scene::pickObject(...) return an incorrect object index";
-    }
-
     myPickingFBO->release();
 
     return selectable;
