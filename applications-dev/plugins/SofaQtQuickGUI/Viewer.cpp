@@ -293,37 +293,6 @@ QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z) const
 	return (myCamera->model() * vsPosition).toVector3D();
 }
 
-class ProjectOnGeometryWorker : public QRunnable
-{
-public:
-    ProjectOnGeometryWorker(QOpenGLFramebufferObject* fbo, QPointF position, float& z, bool& finished) :
-        myFBO(fbo),
-        myPosition(position),
-        myZ(z),
-        myFinished(finished)
-    {
-
-    }
-
-    void run()
-    {
-        if(!myFBO)
-            return;
-
-        myFBO->bind();
-        glReadPixels(myPosition.x(), myPosition.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &myZ);
-        myFBO->release();
-
-        myFinished = true;
-    }
-
-private:
-    QOpenGLFramebufferObject*   myFBO;
-    QPointF                     myPosition;
-    float&                      myZ;
-    bool&                       myFinished;
-
-};
 
 bool Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal, QVector3D& intersectionPoint) const
 {
@@ -382,48 +351,13 @@ QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeO
     return QVector3D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 }
 
-QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
-{
-    if(!window() || !window()->isActive())
-        return QVector4D();
-
-    QPointF ssPointGL = mapToNative(ssPoint);
-
-    float z = 1.0;
-    bool finished = false;
-
-    ProjectOnGeometryWorker* worker = new ProjectOnGeometryWorker(myFBO, ssPointGL, z, finished);
-    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
-    window()->update();
-
-    // TODO: add a timeout
-    while(!finished)
-        qApp->processEvents(QEventLoop::WaitForMoreEvents);
-
-    return QVector4D(mapToWorld(ssPoint, z), qCeil(1.0f - z));
-}
-
-SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
-{
-    QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
-    QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
-
-    QVector3D origin = nearPosition;
-    QVector3D direction = (farPosition - nearPosition).normalized();
-
-    double distanceToRay = myScene->radius() / 76.0;
-    double distanceToRayGrowth = 0.001;
-
-    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, roots());
-}
-
 using sofa::simulation::Node;
 using sofa::component::visualmodel::OglModel;
 
 class PickUsingRasterizationWorker : public QRunnable
 {
 public:
-    PickUsingRasterizationWorker(Viewer* viewer, QPointF ssPoint, Selectable*& selectable, bool& finished) :
+    PickUsingRasterizationWorker(const Viewer* viewer, const QPointF& ssPoint, Selectable*& selectable, bool& finished) :
         myViewer(viewer),
         mySSPoint(ssPoint),
         mySelectable(selectable),
@@ -488,12 +422,48 @@ public:
     }
 
 private:
-    Viewer*             myViewer;
+    const Viewer*       myViewer;
     QPointF             mySSPoint;
     Selectable*&        mySelectable;
     bool&               myFinished;
 
 };
+
+QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
+{
+    if(!window() || !window()->isActive())
+        return QVector4D();
+
+    bool finished = false;
+    Selectable* selectable = nullptr;
+
+    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, selectable, finished);
+    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+    window()->update();
+
+    // TODO: add a timeout
+    while(!finished)
+        qApp->processEvents(QEventLoop::WaitForMoreEvents);
+
+    if(selectable)
+        return QVector4D(selectable->position(), 1.0f);
+
+    return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
+}
+
+SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
+{
+    QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
+    QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
+
+    QVector3D origin = nearPosition;
+    QVector3D direction = (farPosition - nearPosition).normalized();
+
+    double distanceToRay = myScene->radius() / 76.0;
+    double distanceToRayGrowth = 0.001;
+
+    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, roots());
+}
 
 Selectable* Viewer::pickObject(const QPointF& ssPoint)
 {
@@ -751,9 +721,6 @@ void Viewer::SofaRenderer::render()
 
         if(myViewer->culling())
             glEnable(GL_CULL_FACE);
-
-        //      if(antialiasing())
-        //              glEnable(GL_MULTISAMPLE);
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_TEXTURE_2D);
