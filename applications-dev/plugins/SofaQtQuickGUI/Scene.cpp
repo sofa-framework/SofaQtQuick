@@ -1537,7 +1537,7 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& ssPoint, cons
         index = unpackPickingIndex(indexComponents) - 1;
         if(-1 != index)
         {
-            if((size_t) index < visualModels.size())
+            if(index < visualModels.size())
             {
                 selectable = new SelectableSceneComponent(SceneComponent(this, visualModels[index]));
             }
@@ -1545,7 +1545,7 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& ssPoint, cons
             {
                 index -= visualModels.size();
 
-                if((size_t) index < triangleModels.size())
+                if(index < triangleModels.size())
                 {
                     selectable = new SelectableSceneComponent(SceneComponent(this, triangleModels[index]));
                 }
