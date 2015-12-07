@@ -247,6 +247,13 @@ void Tools::CopySettings(const QSettings& src, QSettings& dst)
     SettingsCopyGroupsHelper(src, dst);
 }
 
+bool Tools::initialization()
+{
+	QGuiApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
+	return true;
+}
+
 bool Tools::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe

@@ -68,6 +68,11 @@ public:
     static void UseDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath = QString());
     static void CopySettings(const QSettings& src, QSettings& dst);
 
+	/// Centralized prerequisite for most sofaqtquick applications.
+	/// Every applications will be updated when modifying this code.
+	/// IMPORTANT NOTE: To be called in the main function BEFORE the QApplication object creation
+	static bool initialization();
+
     /// Centralized common settings for most sofaqtquick applications.
     /// Every applications will be updated when modifying this code.
     /// To be called in the main function.
