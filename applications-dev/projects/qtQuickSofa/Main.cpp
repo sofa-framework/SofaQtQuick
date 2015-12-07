@@ -23,6 +23,8 @@ using namespace sofa::qtquick;
 
 int main(int argc, char **argv)
 {
+	QGuiApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
     QApplication app(argc, argv);
     QQmlApplicationEngine applicationEngine;
 

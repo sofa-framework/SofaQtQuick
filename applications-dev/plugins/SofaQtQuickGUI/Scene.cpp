@@ -158,36 +158,24 @@ bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* of
     if(!scene || !scene->sofaSimulation() || scenePath.isEmpty())
         return false;
 
-    // share the current context
-    QOpenGLContext* sharedOpenglContext = QOpenGLContext::currentContext();
+	if(!QOpenGLContext::currentContext())
+	{
+		// create an opengl context
+		QOpenGLContext* openglContext = new QOpenGLContext();
 
-    // or share a window context
-    if(!sharedOpenglContext && qGuiApp)
-    {
-        QWindowList windows = qGuiApp->allWindows();
-        for(QWindow* window : windows)
-        {
-            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-            if(quickWindow && quickWindow->openglContext())
-            {
-                sharedOpenglContext = quickWindow->openglContext();
-                break;
-            }
-        }
-    }
+		// share its resources with the global context
+		QOpenGLContext* sharedOpenglContext = QOpenGLContext::globalShareContext();
+		if(sharedOpenglContext)
+			openglContext->setShareContext(sharedOpenglContext);
 
-    // create the shared context
-    QOpenGLContext* openglContext = new QOpenGLContext();
-    if(sharedOpenglContext)
-        openglContext->setShareContext(sharedOpenglContext);
+		if(!openglContext->create())
+			qFatal("Cannot create an OpenGL Context needed to init sofa scenes");
 
-    if(!openglContext->create())
-        qFatal("Cannot create an OpenGL Context needed to init sofa scenes");
+		if(!offscreenSurface->isValid())
+			qFatal("Cannot create an OpenGL Surface needed to init sofa scenes");
 
-    if(!offscreenSurface->isValid())
-        qFatal("Cannot create an OpenGL Surface needed to init sofa scenes");
-
-    openglContext->makeCurrent(offscreenSurface);
+		openglContext->makeCurrent(offscreenSurface);
+	}
 
     GLenum err = glewInit();
     if(0 != err)
@@ -271,8 +259,9 @@ bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* of
         }
 
         scene->sofaSimulation()->init(scene->sofaSimulation()->GetRoot().get());
-
         scene->sofaSimulation()->initTextures(scene->sofaSimulation()->GetRoot().get());
+
+		glFinish();
 
         scene->addChild(0, scene->sofaSimulation()->GetRoot().get());
 
@@ -285,6 +274,7 @@ bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* of
     }
 
     scene->setStatus(Scene::Status::Error);
+
 	return false;
 }
 
@@ -402,7 +392,7 @@ void Scene::open()
 	if(myAsynchronous)
 	{
         LoaderThread* loaderThread = new LoaderThread(this, finalFilename, offScreenSurface);
-
+		
         connect(loaderThread, &QThread::finished, this, [this, loaderThread, qmlFilepath, offScreenSurface]() {
             if(!loaderThread->isLoaded())
                 setStatus(Status::Error);
@@ -416,6 +406,24 @@ void Scene::open()
         });
 
 		loaderThread->start();
+
+		/*
+		QWindowList windows = qGuiApp->topLevelWindows();
+		for(QWindow* window : windows)
+		{
+			QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
+			if(quickWindow)
+			{
+				window()->scheduleRenderJob(loaderThread, QQuickWindow::AfterSynchronizingStage);
+				window()->update();
+				break;
+			}			
+		}		
+
+		// TODO: add a timeout
+		while(!finished)
+			qApp->processEvents(QEventLoop::WaitForMoreEvents);
+		*/
 	}
     else
 	{
