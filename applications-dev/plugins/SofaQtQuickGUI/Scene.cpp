@@ -1562,6 +1562,7 @@ Selectable* Scene::pickObject(const Viewer& viewer, const QPointF& ssPoint, cons
         glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());
 
         index = unpackPickingIndex(indexComponents) - 1;
+
         if(-1 != index)
         {
             if(index < visualModels.size())

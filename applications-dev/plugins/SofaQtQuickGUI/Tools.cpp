@@ -259,6 +259,9 @@ bool Tools::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEng
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
     qputenv("QSG_RENDER_LOOP", "basic");
 
+    if(!app.testAttribute(Qt::AA_ShareOpenGLContexts))
+        qCritical() << "CRITICAL: Tools::initialization() must be called before QApplication instanciation";
+
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");
 
