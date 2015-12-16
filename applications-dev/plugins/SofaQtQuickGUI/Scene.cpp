@@ -1261,13 +1261,17 @@ void Scene::draw(const Viewer& viewer, const QList<SceneComponent*>& roots) cons
 //        visualParams->setModelViewMatrix(_mvmatrix);
     }
 
+    if(myVisualDirty)
+    {
+        myVisualDirty = false;
+
+        mySofaSimulation->updateVisual(mySofaSimulation->GetRoot().get());
+    }
+
     for(sofa::simulation::Node* root : nodes)
     {
         if(!root)
             continue;
-
-        if(myVisualDirty)
-            mySofaSimulation->updateVisual(mySofaSimulation->GetRoot().get());
 
         mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
 
@@ -1302,8 +1306,6 @@ void Scene::draw(const Viewer& viewer, const QList<SceneComponent*>& roots) cons
             }
         }
     }
-
-    myVisualDirty = false;
 
     // highlight selected components using a specific shader
     Base* selectedBase = nullptr;
