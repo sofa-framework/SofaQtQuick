@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SceneListModel.h"
+#include "SofaSceneListModel.h"
 
 #include <QStack>
 #include <iostream>
@@ -32,7 +32,7 @@ using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
 using namespace sofa::simulation;
 
-SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), MutationListener(),
+SofaSceneListModel::SofaSceneListModel(QObject* parent) : QAbstractListModel(parent), MutationListener(),
     myItems(),
     myUpdatedCount(0),
     myIsDirty(true),
@@ -41,12 +41,12 @@ SceneListModel::SceneListModel(QObject* parent) : QAbstractListModel(parent), Mu
 
 }
 
-SceneListModel::~SceneListModel()
+SofaSceneListModel::~SofaSceneListModel()
 {
     clear();
 }
 
-void SceneListModel::update()
+void SofaSceneListModel::update()
 {
     if(!myIsDirty)
         return;
@@ -70,7 +70,7 @@ void SceneListModel::update()
     myIsDirty = false;
 }
 
-void SceneListModel::handleSceneChange(Scene* /*newScene*/)
+void SofaSceneListModel::handleSceneChange(SofaScene* /*newScene*/)
 {
     clear();
     if(myScene)
@@ -81,10 +81,10 @@ void SceneListModel::handleSceneChange(Scene* /*newScene*/)
             update();
         }
 
-        connect(myScene, &Scene::statusChanged, this, [this]() {
+        connect(myScene, &SofaScene::statusChanged, this, [this]() {
             clear();
 
-            if(Scene::Ready == myScene->status())
+            if(SofaScene::Ready == myScene->status())
                 addChild(0, myScene->sofaSimulation()->GetRoot().get());
 
             update();
@@ -92,7 +92,7 @@ void SceneListModel::handleSceneChange(Scene* /*newScene*/)
     }
 }
 
-void SceneListModel::clear()
+void SofaSceneListModel::clear()
 {
     if(myItems.isEmpty())
         return;
@@ -111,9 +111,9 @@ void SceneListModel::clear()
     update();
 }
 
-SceneListModel::Item SceneListModel::buildNodeItem(SceneListModel::Item* parent, BaseNode* node) const
+SofaSceneListModel::Item SofaSceneListModel::buildNodeItem(SofaSceneListModel::Item* parent, BaseNode* node) const
 {
-    SceneListModel::Item item;
+    SofaSceneListModel::Item item;
 
     item.parent = parent;
     item.multiparent = node->getNbParents() > 1;
@@ -126,9 +126,9 @@ SceneListModel::Item SceneListModel::buildNodeItem(SceneListModel::Item* parent,
     return item;
 }
 
-SceneListModel::Item SceneListModel::buildObjectItem(SceneListModel::Item* parent, BaseObject* object) const
+SofaSceneListModel::Item SofaSceneListModel::buildObjectItem(SofaSceneListModel::Item* parent, BaseObject* object) const
 {
-    SceneListModel::Item item;
+    SofaSceneListModel::Item item;
 
     item.parent = parent;
     item.multiparent = false;
@@ -141,7 +141,7 @@ SceneListModel::Item SceneListModel::buildObjectItem(SceneListModel::Item* paren
     return item;
 }
 
-void SceneListModel::setScene(Scene* newScene)
+void SofaSceneListModel::setScene(SofaScene* newScene)
 {
     if(newScene == myScene)
         return;
@@ -156,12 +156,12 @@ void SceneListModel::setScene(Scene* newScene)
     sceneChanged(newScene);
 }
 
-int SceneListModel::rowCount(const QModelIndex & /*parent*/) const
+int SofaSceneListModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return myItems.size();
 }
 
-QVariant SceneListModel::data(const QModelIndex& index, int role) const
+QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
 {
     if(!myScene || !myScene->isReady())
         return QVariant("");
@@ -214,7 +214,7 @@ QVariant SceneListModel::data(const QModelIndex& index, int role) const
     return QVariant("");
 }
 
-QHash<int,QByteArray> SceneListModel::roleNames() const
+QHash<int,QByteArray> SofaSceneListModel::roleNames() const
 {
     QHash<int,QByteArray> roles;
 
@@ -229,7 +229,7 @@ QHash<int,QByteArray> SceneListModel::roleNames() const
     return roles;
 }
 
-QVariant SceneListModel::get(int row) const
+QVariant SofaSceneListModel::get(int row) const
 {
     QVariantMap object;
 
@@ -249,7 +249,7 @@ QVariant SceneListModel::get(int row) const
     return object;
 }
 
-void SceneListModel::setCollapsed(int row, bool collapsed)
+void SofaSceneListModel::setCollapsed(int row, bool collapsed)
 {
     if(-1 == row)
     {
@@ -289,15 +289,15 @@ void SceneListModel::setCollapsed(int row, bool collapsed)
     update();
 }
 
-SceneComponent* SceneListModel::getComponentById(int row) const
+SofaComponent* SofaSceneListModel::getComponentById(int row) const
 {
     if(row < 0 || row >= myItems.size())
         return 0;
 
-    return new SceneComponent(myScene, myItems.at(row).base);
+    return new SofaComponent(myScene, myItems.at(row).base);
 }
 
-int SceneListModel::getComponentId(SceneComponent* sceneComponent) const
+int SofaSceneListModel::getComponentId(SofaComponent* sceneComponent) const
 {
     Base* base = nullptr;
     if(sceneComponent)
@@ -312,7 +312,7 @@ int SceneListModel::getComponentId(SceneComponent* sceneComponent) const
 }
 
 
-bool SceneListModel::isAncestor(SceneListModel::Item* ancestor, SceneListModel::Item* child)
+bool SofaSceneListModel::isAncestor(SofaSceneListModel::Item* ancestor, SofaSceneListModel::Item* child)
 {
     if(!child)
         return false;
@@ -328,7 +328,7 @@ bool SceneListModel::isAncestor(SceneListModel::Item* ancestor, SceneListModel::
     return false;
 }
 
-void SceneListModel::addChild(Node* parent, Node* child)
+void SofaSceneListModel::addChild(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -383,7 +383,7 @@ void SceneListModel::addChild(Node* parent, Node* child)
     markDirty();
 }
 
-void SceneListModel::removeChild(Node* parent, Node* child)
+void SofaSceneListModel::removeChild(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -429,7 +429,7 @@ void SceneListModel::removeChild(Node* parent, Node* child)
 
 //}
 
-void SceneListModel::addObject(Node* parent, BaseObject* object)
+void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
@@ -474,7 +474,7 @@ void SceneListModel::addObject(Node* parent, BaseObject* object)
     MutationListener::addObject(parent, object);
 }
 
-void SceneListModel::removeObject(Node* parent, BaseObject* object)
+void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
@@ -520,14 +520,14 @@ void SceneListModel::removeObject(Node* parent, BaseObject* object)
 //	markDirty();
 //}
 
-void SceneListModel::addSlave(BaseObject* master, BaseObject* slave)
+void SofaSceneListModel::addSlave(BaseObject* master, BaseObject* slave)
 {
     MutationListener::addSlave(master, slave);
 
 	markDirty();
 }
 
-void SceneListModel::removeSlave(BaseObject* master, BaseObject* slave)
+void SofaSceneListModel::removeSlave(BaseObject* master, BaseObject* slave)
 {
     MutationListener::removeSlave(master, slave);
 

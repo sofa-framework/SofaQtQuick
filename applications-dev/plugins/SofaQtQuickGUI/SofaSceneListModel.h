@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCENELISTMODEL_H
-#define SCENELISTMODEL_H
+#ifndef SOFASCENELISTMODEL_H
+#define SOFASCENELISTMODEL_H
 
 #include "SofaQtQuickGUI.h"
-#include "Scene.h"
+#include "SofaScene.h"
 
 #include <sofa/simulation/common/MutationListener.h>
 
@@ -34,13 +34,13 @@ namespace sofa
 namespace qtquick
 {
 
-class SceneListModel : public QAbstractListModel, private sofa::simulation::MutationListener
+class SofaSceneListModel : public QAbstractListModel, private sofa::simulation::MutationListener
 {
     Q_OBJECT
 
 public:
-    SceneListModel(QObject* parent = 0);
-    ~SceneListModel();
+    SofaSceneListModel(QObject* parent = 0);
+    ~SofaSceneListModel();
 
     Q_INVOKABLE void update();
 
@@ -55,11 +55,11 @@ public slots:
     void clear();
 
 public:
-    Q_PROPERTY(sofa::qtquick::Scene* scene READ scene WRITE setScene NOTIFY sceneChanged)
+    Q_PROPERTY(sofa::qtquick::SofaScene* scene READ scene WRITE setScene NOTIFY sceneChanged)
 
 public:
-    Scene* scene() const		{return myScene;}
-    void setScene(Scene* newScene);
+    SofaScene* scene() const		{return myScene;}
+    void setScene(SofaScene* newScene);
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
@@ -70,13 +70,13 @@ protected:
     Q_INVOKABLE void setCollapsed(int row, bool value);
     Q_INVOKABLE void markDirty() {myIsDirty = true;}
 
-    Q_INVOKABLE sofa::qtquick::SceneComponent* getComponentById(int row) const;
-    Q_INVOKABLE int getComponentId(sofa::qtquick::SceneComponent*) const;
+    Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentById(int row) const;
+    Q_INVOKABLE int getComponentId(sofa::qtquick::SofaComponent*) const;
 
-    void handleSceneChange(Scene* newScene);
+    void handleSceneChange(SofaScene* newScene);
 
 signals:
-    void sceneChanged(sofa::qtquick::Scene* newScene);
+    void sceneChanged(sofa::qtquick::SofaScene* newScene);
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
@@ -139,7 +139,7 @@ private:
     QList<Item>                     myItems;
     int                             myUpdatedCount;
 	bool							myIsDirty;
-    Scene*                          myScene;
+    SofaScene*                          myScene;
 
 };
 
@@ -147,4 +147,4 @@ private:
 
 }
 
-#endif // SCENELISTMODEL_H
+#endif // SOFASCENELISTMODEL_H

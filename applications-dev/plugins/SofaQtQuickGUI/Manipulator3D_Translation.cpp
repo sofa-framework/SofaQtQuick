@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Manipulator3D_Translation.h"
-#include "Viewer.h"
+#include "SofaViewer.h"
 
 #include <QApplication>
 #include <GL/glew.h>
@@ -52,17 +52,17 @@ void Manipulator3D_Translation::setAxis(QString newAxis)
     axisChanged(newAxis);
 }
 
-void Manipulator3D_Translation::draw(const Viewer& viewer) const
+void Manipulator3D_Translation::draw(const SofaViewer& viewer) const
 {
     internalDraw(viewer, false);
 }
 
-void Manipulator3D_Translation::pick(const Viewer& viewer) const
+void Manipulator3D_Translation::pick(const SofaViewer& viewer) const
 {
     internalDraw(viewer, true);
 }
 
-void Manipulator3D_Translation::internalDraw(const Viewer& viewer, bool isPicking) const
+void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPicking) const
 {
     if(!visible())
         return;

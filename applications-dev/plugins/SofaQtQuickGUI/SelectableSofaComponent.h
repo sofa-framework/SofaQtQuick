@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SELECTABLE_SCENE_COMPONENT_H
-#define SELECTABLE_SCENE_COMPONENT_H
+#ifndef SELECTABLE_SOFA_COMPONENT_H
+#define SELECTABLE_SOFA_COMPONENT_H
 
 #include "SofaQtQuickGUI.h"
 #include "Selectable.h"
-#include "SceneComponent.h"
+#include "SofaComponent.h"
 
 namespace sofa
 {
@@ -31,22 +31,22 @@ namespace qtquick
 {
 
 /// QtQuick wrapper for a selectable object representing a SceneComponent
-class SOFA_SOFAQTQUICKGUI_API SelectableSceneComponent : public Selectable
+class SOFA_SOFAQTQUICKGUI_API SelectableSofaComponent : public Selectable
 {
     Q_OBJECT
 
 public:
-    SelectableSceneComponent(const SceneComponent& sceneComponent);
-    ~SelectableSceneComponent();
+    SelectableSofaComponent(const SofaComponent& sceneComponent);
+    ~SelectableSofaComponent();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SceneComponent* sceneComponent READ sceneComponent)
+    Q_PROPERTY(sofa::qtquick::SofaComponent* sceneComponent READ sceneComponent)
 
 public:
-    SceneComponent* sceneComponent() const {return mySceneComponent;}
+    SofaComponent* sceneComponent() const {return mySceneComponent;}
 
 private:
-    SceneComponent* mySceneComponent;
+    SofaComponent* mySceneComponent;
 
 };
 
@@ -54,4 +54,4 @@ private:
 
 }
 
-#endif // SELECTABLE_SCENE_COMPONENT_H
+#endif // SELECTABLE_SOFA_COMPONENT_H

@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DataListModel.h"
+#include "SofaDataListModel.h"
 
 #include <QStack>
 #include <QDebug>
@@ -32,20 +32,20 @@ using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
 using namespace sofa::simulation;
 
-DataListModel::DataListModel(QObject* parent) : QAbstractListModel(parent),
+SofaDataListModel::SofaDataListModel(QObject* parent) : QAbstractListModel(parent),
     myItems(),
     myUpdatedCount(0),
     mySceneComponent(0)
 {
-    connect(this, &DataListModel::sceneComponentChanged, &DataListModel::update);
+    connect(this, &SofaDataListModel::sceneComponentChanged, &SofaDataListModel::update);
 }
 
-DataListModel::~DataListModel()
+SofaDataListModel::~SofaDataListModel()
 {
 
 }
 
-void DataListModel::update()
+void SofaDataListModel::update()
 {
     myItems.clear();
 
@@ -91,16 +91,16 @@ void DataListModel::update()
     myUpdatedCount = myItems.size();
 }
 
-DataListModel::Item DataListModel::buildDataItem(BaseData* data) const
+SofaDataListModel::Item SofaDataListModel::buildDataItem(BaseData* data) const
 {
-    DataListModel::Item item;
+    SofaDataListModel::Item item;
 
     item.data = data;
 
     return item;
 }
 
-void DataListModel::setSceneComponent(SceneComponent* newSceneComponent)
+void SofaDataListModel::setSceneComponent(SofaComponent* newSceneComponent)
 {
     if(newSceneComponent == mySceneComponent)
         return;
@@ -110,12 +110,12 @@ void DataListModel::setSceneComponent(SceneComponent* newSceneComponent)
     sceneComponentChanged(newSceneComponent);
 }
 
-int	DataListModel::rowCount(const QModelIndex & /*parent*/) const
+int	SofaDataListModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return myItems.size();
 }
 
-QVariant DataListModel::data(const QModelIndex& index, int role) const
+QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
 {
     if(!index.isValid())
     {
@@ -151,7 +151,7 @@ QVariant DataListModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(group);
     }
     case ValueRole:
-        return QVariant::fromValue(Scene::dataValue(data));
+        return QVariant::fromValue(SofaScene::dataValue(data));
     default:
         qWarning("Role unknown");
     }
@@ -159,7 +159,7 @@ QVariant DataListModel::data(const QModelIndex& index, int role) const
     return QVariant("");
 }
 
-QHash<int,QByteArray> DataListModel::roleNames() const
+QHash<int,QByteArray> SofaDataListModel::roleNames() const
 {
     QHash<int,QByteArray> roles;
 
@@ -170,12 +170,12 @@ QHash<int,QByteArray> DataListModel::roleNames() const
     return roles;
 }
 
-SceneData* DataListModel::getDataById(int row) const
+SofaData* SofaDataListModel::getDataById(int row) const
 {
     if(row < 0 || row >= myItems.size())
         return 0;
 
-    return new SceneData(mySceneComponent, myItems.at(row).data);
+    return new SofaData(mySceneComponent, myItems.at(row).data);
 }
 
 }

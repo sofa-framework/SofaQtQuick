@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Viewer.h"
-#include "Scene.h"
+#include "SofaViewer.h"
+#include "SofaScene.h"
 #include "Manipulator.h"
 
 #include <sofa/simulation/common/Node.h>
@@ -62,7 +62,7 @@ namespace qtquick
 
 using namespace sofa::simulation;
 
-Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
+SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myFBO(nullptr),
     myScene(nullptr),
     myCamera(nullptr),
@@ -82,11 +82,11 @@ Viewer::Viewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
 {
     setFlag(QQuickItem::ItemHasContents);
 
-    connect(this, &Viewer::backgroundImageSourceChanged, this, &Viewer::handleBackgroundImageSourceChanged);
+    connect(this, &SofaViewer::backgroundImageSourceChanged, this, &SofaViewer::handleBackgroundImageSourceChanged);
     connect(this, SIGNAL(antialiasingSamplesChanged(int)), this, SLOT(update()));
 }
 
-Viewer::~Viewer()
+SofaViewer::~SofaViewer()
 {
 	/*sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
 	if(_vparams && _vparams->drawTool())
@@ -98,7 +98,7 @@ Viewer::~Viewer()
     clearRoots();
 }
 
-void Viewer::setScene(Scene* newScene)
+void SofaViewer::setScene(SofaScene* newScene)
 {
 	if(newScene == myScene)
 		return;
@@ -108,7 +108,7 @@ void Viewer::setScene(Scene* newScene)
 	sceneChanged(newScene);
 }
 
-void Viewer::setCamera(Camera* newCamera)
+void SofaViewer::setCamera(Camera* newCamera)
 {
 	if(newCamera == myCamera)
 		return;
@@ -118,48 +118,48 @@ void Viewer::setCamera(Camera* newCamera)
 	cameraChanged(newCamera);
 }
 
-static void appendRoot(QQmlListProperty<SceneComponent> *property, SceneComponent *value)
+static void appendRoot(QQmlListProperty<SofaComponent> *property, SofaComponent *value)
 {
     if(value)
-        static_cast<QList<SceneComponent*>*>(property->data)->append(new SceneComponent(*value));
+        static_cast<QList<SofaComponent*>*>(property->data)->append(new SofaComponent(*value));
 }
 
-static SceneComponent* atRoot(QQmlListProperty<SceneComponent> *property, int index)
+static SofaComponent* atRoot(QQmlListProperty<SofaComponent> *property, int index)
 {
-    return static_cast<QList<SceneComponent*>*>(property->data)->at(index);
+    return static_cast<QList<SofaComponent*>*>(property->data)->at(index);
 }
 
-static void clearRoot(QQmlListProperty<SceneComponent> *property)
+static void clearRoot(QQmlListProperty<SofaComponent> *property)
 {
-    QList<SceneComponent*>& roots = *static_cast<QList<SceneComponent*>*>(property->data);
+    QList<SofaComponent*>& roots = *static_cast<QList<SofaComponent*>*>(property->data);
 
-    for(SceneComponent* sceneComponent : roots)
+    for(SofaComponent* sceneComponent : roots)
         delete sceneComponent;
 
     roots.clear();
 }
 
-static int countRoot(QQmlListProperty<SceneComponent> *property)
+static int countRoot(QQmlListProperty<SofaComponent> *property)
 {
-    return static_cast<QList<SceneComponent*>*>(property->data)->size();
+    return static_cast<QList<SofaComponent*>*>(property->data)->size();
 }
 
-QList<SceneComponent*> Viewer::roots() const
+QList<SofaComponent*> SofaViewer::roots() const
 {
     return myRoots;
 }
 
-QQmlListProperty<SceneComponent> Viewer::rootsListProperty()
+QQmlListProperty<SofaComponent> SofaViewer::rootsListProperty()
 {
-    return QQmlListProperty<SceneComponent>(this, &myRoots, appendRoot, countRoot, atRoot, clearRoot);
+    return QQmlListProperty<SofaComponent>(this, &myRoots, appendRoot, countRoot, atRoot, clearRoot);
 }
 
-void Viewer::clearRoots()
+void SofaViewer::clearRoots()
 {
     myRoots.clear();
 }
 
-void Viewer::setBackgroundColor(QColor newBackgroundColor)
+void SofaViewer::setBackgroundColor(QColor newBackgroundColor)
 {
     if(newBackgroundColor == myBackgroundColor)
         return;
@@ -169,7 +169,7 @@ void Viewer::setBackgroundColor(QColor newBackgroundColor)
     backgroundColorChanged(newBackgroundColor);
 }
 
-void Viewer::setBackgroundImageSource(QUrl newBackgroundImageSource)
+void SofaViewer::setBackgroundImageSource(QUrl newBackgroundImageSource)
 {
     if(newBackgroundImageSource == myBackgroundImageSource)
         return;
@@ -179,7 +179,7 @@ void Viewer::setBackgroundImageSource(QUrl newBackgroundImageSource)
     backgroundImageSourceChanged(newBackgroundImageSource);
 }
 
-void Viewer::setWireframe(bool newWireframe)
+void SofaViewer::setWireframe(bool newWireframe)
 {
     if(newWireframe == myWireframe)
         return;
@@ -189,7 +189,7 @@ void Viewer::setWireframe(bool newWireframe)
     wireframeChanged(newWireframe);
 }
 
-void Viewer::setCulling(bool newCulling)
+void SofaViewer::setCulling(bool newCulling)
 {
     if(newCulling == myCulling)
         return;
@@ -199,7 +199,7 @@ void Viewer::setCulling(bool newCulling)
     cullingChanged(newCulling);
 }
 
-void Viewer::setBlending(bool newBlending)
+void SofaViewer::setBlending(bool newBlending)
 {
     if(newBlending == myBlending)
         return;
@@ -209,7 +209,7 @@ void Viewer::setBlending(bool newBlending)
     blendingChanged(newBlending);
 }
 
-void Viewer::setAntialiasingSamples(int newAntialiasingSamples)
+void SofaViewer::setAntialiasingSamples(int newAntialiasingSamples)
 {
     if(newAntialiasingSamples == myAntialiasingSamples)
         return;
@@ -219,7 +219,7 @@ void Viewer::setAntialiasingSamples(int newAntialiasingSamples)
     antialiasingSamplesChanged(newAntialiasingSamples);
 }
 
-void Viewer::setMirroredHorizontally(bool newMirroredHorizontally)
+void SofaViewer::setMirroredHorizontally(bool newMirroredHorizontally)
 {
     if(newMirroredHorizontally == myMirroredHorizontally)
         return;
@@ -229,7 +229,7 @@ void Viewer::setMirroredHorizontally(bool newMirroredHorizontally)
     mirroredHorizontallyChanged(newMirroredHorizontally);
 }
 
-void Viewer::setMirroredVertically(bool newMirroredVertically)
+void SofaViewer::setMirroredVertically(bool newMirroredVertically)
 {
     if(newMirroredVertically == myMirroredVertically)
         return;
@@ -239,7 +239,7 @@ void Viewer::setMirroredVertically(bool newMirroredVertically)
     mirroredVerticallyChanged(newMirroredVertically);
 }
 
-void Viewer::setDrawManipulators(bool newDrawManipulators)
+void SofaViewer::setDrawManipulators(bool newDrawManipulators)
 {
     if(newDrawManipulators == myDrawManipulators)
         return;
@@ -249,7 +249,7 @@ void Viewer::setDrawManipulators(bool newDrawManipulators)
     drawManipulatorsChanged(newDrawManipulators);
 }
 
-void Viewer::setDrawNormals(bool newDrawNormals)
+void SofaViewer::setDrawNormals(bool newDrawNormals)
 {
     if(newDrawNormals == myDrawNormals)
         return;
@@ -259,7 +259,7 @@ void Viewer::setDrawNormals(bool newDrawNormals)
     drawNormalsChanged(newDrawNormals);
 }
 
-void Viewer::setNormalsDrawLength(float newNormalsDrawLength)
+void SofaViewer::setNormalsDrawLength(float newNormalsDrawLength)
 {
     if(newNormalsDrawLength == myNormalsDrawLength)
         return;
@@ -269,7 +269,7 @@ void Viewer::setNormalsDrawLength(float newNormalsDrawLength)
     normalsDrawLengthChanged(newNormalsDrawLength);
 }
 
-double Viewer::computeDepth(const QVector3D& wsPosition) const
+double SofaViewer::computeDepth(const QVector3D& wsPosition) const
 {
     if(!myCamera)
         return 1.0;
@@ -277,7 +277,7 @@ double Viewer::computeDepth(const QVector3D& wsPosition) const
     return myCamera->computeDepth(wsPosition) * 0.5 + 0.5;
 }
 
-QVector3D Viewer::mapFromWorld(const QVector3D& wsPoint) const
+QVector3D SofaViewer::mapFromWorld(const QVector3D& wsPoint) const
 {
 	if(!myCamera)
 		return QVector3D();
@@ -294,7 +294,7 @@ QVector3D Viewer::mapFromWorld(const QVector3D& wsPoint) const
 	return QVector3D((nsPosition.x() * 0.5 + 0.5) * qCeil(width()) + 0.5, qCeil(height()) - (nsPosition.y() * 0.5 + 0.5) * qCeil(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
 }
 
-QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z) const
+QVector3D SofaViewer::mapToWorld(const QPointF& ssPoint, double z) const
 {
 	if(!myCamera)
 		return QVector3D();
@@ -313,7 +313,7 @@ QVector3D Viewer::mapToWorld(const QPointF& ssPoint, double z) const
 }
 
 
-bool Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal, QVector3D& intersectionPoint) const
+bool SofaViewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal, QVector3D& intersectionPoint) const
 {
     if(0.0 == QVector3D::dotProduct(rayDirection, planeNormal)) // ray and plane are orthogonal
         return false;
@@ -336,7 +336,7 @@ bool Viewer::intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& 
     return true;
 }
 
-QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const
+QVector3D SofaViewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const
 {
     if(window())
     {
@@ -355,7 +355,7 @@ QVector3D Viewer::projectOnLine(const QPointF& ssPoint, const QVector3D& lineOri
     return QVector3D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 }
 
-QVector3D Viewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const
+QVector3D SofaViewer::projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const
 {
     if(window())
     {
@@ -376,7 +376,7 @@ using sofa::component::visualmodel::OglModel;
 class PickUsingRasterizationWorker : public QRunnable
 {
 public:
-    PickUsingRasterizationWorker(const Viewer* viewer, const QPointF& ssPoint, Selectable*& selectable, bool& finished) :
+    PickUsingRasterizationWorker(const SofaViewer* viewer, const QPointF& ssPoint, Selectable*& selectable, bool& finished) :
         myViewer(viewer),
         mySSPoint(ssPoint),
         mySelectable(selectable),
@@ -397,7 +397,7 @@ public:
         if(!camera)
             return;
 
-        Scene* scene = myViewer->scene();
+        SofaScene* scene = myViewer->scene();
         if(!scene)
             return;
 
@@ -441,14 +441,14 @@ public:
     }
 
 private:
-    const Viewer*       myViewer;
+    const SofaViewer*       myViewer;
     QPointF             mySSPoint;
     Selectable*&        mySelectable;
     bool&               myFinished;
 
 };
 
-QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
+QVector4D SofaViewer::projectOnGeometry(const QPointF& ssPoint) const
 {
     if(!window() || !window()->isActive())
         return QVector4D();
@@ -470,7 +470,7 @@ QVector4D Viewer::projectOnGeometry(const QPointF& ssPoint) const
     return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
 }
 
-SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
+SelectableSofaParticle* SofaViewer::pickParticle(const QPointF& ssPoint) const
 {
     QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
     QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
@@ -484,7 +484,7 @@ SelectableSceneParticle* Viewer::pickParticle(const QPointF& ssPoint) const
     return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, roots());
 }
 
-Selectable* Viewer::pickObject(const QPointF& ssPoint)
+Selectable* SofaViewer::pickObject(const QPointF& ssPoint)
 {
     Selectable* selectable = nullptr;
 
@@ -504,7 +504,7 @@ Selectable* Viewer::pickObject(const QPointF& ssPoint)
     return selectable;
 }
 
-QPair<QVector3D, QVector3D> Viewer::boundingBox() const
+QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
 {
     QVector3D min, max;
     myScene->computeBoundingBox(min, max);
@@ -512,7 +512,7 @@ QPair<QVector3D, QVector3D> Viewer::boundingBox() const
     return QPair<QVector3D, QVector3D>(min, max);
 }
 
-QVector3D Viewer::boundingBoxMin() const
+QVector3D SofaViewer::boundingBoxMin() const
 {
     QVector3D min, max;
     myScene->computeBoundingBox(min, max);
@@ -520,7 +520,7 @@ QVector3D Viewer::boundingBoxMin() const
     return min;
 }
 
-QVector3D Viewer::boundingBoxMax() const
+QVector3D SofaViewer::boundingBoxMax() const
 {
     QVector3D min, max;
     myScene->computeBoundingBox(min, max);
@@ -528,7 +528,7 @@ QVector3D Viewer::boundingBoxMax() const
     return max;
 }
 
-void Viewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource)
+void SofaViewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource)
 {
     QString path = newBackgroundImageSource.toEncoded();
     if(path.isEmpty())
@@ -537,7 +537,7 @@ void Viewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource)
     myBackgroundImage = QImage(path.replace("qrc:", ":"));
 }
 
-void Viewer::saveScreenshot(const QString& path)
+void SofaViewer::saveScreenshot(const QString& path)
 {    
     QDir dir = QFileInfo(path).dir();
     if(!dir.exists())
@@ -547,12 +547,12 @@ void Viewer::saveScreenshot(const QString& path)
         qWarning() << "Screenshot could not be saved to" << path;
 }
 
-QSize Viewer::nativeSize() const
+QSize SofaViewer::nativeSize() const
 {
     return nativeRect().size();
 }
 
-QRect Viewer::nativeRect() const
+QRect SofaViewer::nativeRect() const
 {
 	if(!window())
 		return QRect();
@@ -567,7 +567,7 @@ QRect Viewer::nativeRect() const
 	return QRect(pos, size);
 }
 
-QRect Viewer::qtRect() const
+QRect SofaViewer::qtRect() const
 {
     if(!window())
         return QRect();
@@ -582,7 +582,7 @@ QRect Viewer::qtRect() const
     return QRect(pos, size);
 }
 
-QPointF Viewer::mapToNative(const QPointF& ssPoint) const
+QPointF SofaViewer::mapToNative(const QPointF& ssPoint) const
 {
     QPointF ssNativePoint(ssPoint);
 
@@ -598,7 +598,7 @@ QPointF Viewer::mapToNative(const QPointF& ssPoint) const
     return ssNativePoint;
 }
 
-void Viewer::viewAll()
+void SofaViewer::viewAll()
 {
 	if(!myCamera || !myScene || !myScene->isReady())
 		return;
@@ -609,7 +609,7 @@ void Viewer::viewAll()
     myCamera->fit(min, max);
 }
 
-QSGNode* Viewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData)
+QSGNode* SofaViewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData)
 {
     if(!inOutNode)
     {
@@ -628,14 +628,14 @@ QSGNode* Viewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutD
     return QQuickFramebufferObject::updatePaintNode(inOutNode, inOutData);
 }
 
-Viewer::SofaRenderer::SofaRenderer(Viewer* viewer) : QQuickFramebufferObject::Renderer(),
+SofaViewer::SofaRenderer::SofaRenderer(SofaViewer* viewer) : QQuickFramebufferObject::Renderer(),
     myViewer(viewer),
     myAntialiasingSamples(0)
 {
 
 }
 
-QOpenGLFramebufferObject* Viewer::SofaRenderer::createFramebufferObject(const QSize &size)
+QOpenGLFramebufferObject* SofaViewer::SofaRenderer::createFramebufferObject(const QSize &size)
 {
     QOpenGLFramebufferObjectFormat format;
     format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
@@ -645,9 +645,9 @@ QOpenGLFramebufferObject* Viewer::SofaRenderer::createFramebufferObject(const QS
     return myViewer->myFBO;
 }
 
-void Viewer::SofaRenderer::synchronize(QQuickFramebufferObject* quickFramebufferObject)
+void SofaViewer::SofaRenderer::synchronize(QQuickFramebufferObject* quickFramebufferObject)
 {
-    Viewer* viewer = qobject_cast<Viewer*>(quickFramebufferObject);
+    SofaViewer* viewer = qobject_cast<SofaViewer*>(quickFramebufferObject);
     if(!viewer)
         return;
 
@@ -658,7 +658,7 @@ void Viewer::SofaRenderer::synchronize(QQuickFramebufferObject* quickFramebuffer
     }
 }
 
-void Viewer::SofaRenderer::render()
+void SofaViewer::SofaRenderer::render()
 {
     update();
 

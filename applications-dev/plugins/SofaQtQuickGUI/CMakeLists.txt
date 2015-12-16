@@ -9,20 +9,20 @@ set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
     Tools.cpp
-    Viewer.cpp
+    SofaViewer.cpp
     Camera.cpp
-    Scene.cpp
-    SceneComponent.cpp
-    SceneData.cpp
-    SceneListModel.cpp
+    SofaScene.cpp
+    SofaComponent.cpp
+    SofaData.cpp
+    SofaSceneListModel.cpp
     Selectable.cpp
     SelectableManipulator.cpp
-    SelectableSceneComponent.cpp
-    SelectableSceneParticle.cpp
-    DataListModel.cpp
+    SelectableSofaComponent.cpp
+    SelectableSofaParticle.cpp
+    SofaDataListModel.cpp
     PythonInteractor.cpp
     PythonConsole.cpp
-    ParticleInteractor.cpp
+    SofaParticleInteractor.cpp
     Manipulator.cpp
     Manipulator2D_Translation.cpp
     Manipulator2D_Rotation.cpp
@@ -34,20 +34,20 @@ set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
     Tools.h
-    Viewer.h
+    SofaViewer.h
     Camera.h
-    Scene.h
-    SceneComponent.h
-    SceneData.h
-    SceneListModel.h
+    SofaScene.h
+    SofaComponent.h
+    SofaData.h
+    SofaSceneListModel.h
     Selectable.h
     SelectableManipulator.h
-    SelectableSceneComponent.h
-    SelectableSceneParticle.h
-    DataListModel.h
+    SelectableSofaComponent.h
+    SelectableSofaParticle.h
+    SofaDataListModel.h
     PythonInteractor.h
     PythonConsole.h
-    ParticleInteractor.h
+    SofaParticleInteractor.h
     Manipulator.h
     Manipulator2D_Translation.h
     Manipulator2D_Rotation.h

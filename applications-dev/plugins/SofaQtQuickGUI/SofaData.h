@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCENE_DATA_H
-#define SCENE_DATA_H
+#ifndef SOFA_DATA_H
+#define SOFA_DATA_H
 
 #include "SofaQtQuickGUI.h"
 
@@ -34,17 +34,17 @@ namespace sofa
 namespace qtquick
 {
 
-class Scene;
-class SceneComponent;
+class SofaScene;
+class SofaComponent;
 
 /// QtQuick wrapper for a Sofa base data, allowing us to share a component data in a QML context
-class SOFA_SOFAQTQUICKGUI_API SceneData : public QObject
+class SOFA_SOFAQTQUICKGUI_API SofaData : public QObject
 {
     Q_OBJECT
 
 public:
-    SceneData(const SceneComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data);
-    SceneData(const Scene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
+    SofaData(const SofaComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data);
+    SofaData(const SofaScene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
 //    SceneData(const SceneData& sceneData);
 
     Q_INVOKABLE QVariantMap object() const;
@@ -57,7 +57,7 @@ public:
     const sofa::core::objectmodel::BaseData* data() const;
 
 private:
-    const Scene*                                        myScene;
+    const SofaScene*                                        myScene;
     mutable const sofa::core::objectmodel::Base*        myBase;
     mutable const sofa::core::objectmodel::BaseData*    myData;
 
@@ -67,4 +67,4 @@ private:
 
 }
 
-#endif // SCENE_DATA_H
+#endif // SOFA_DATA_H

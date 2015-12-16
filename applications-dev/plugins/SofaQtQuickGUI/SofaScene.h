@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SOFASCENE_H
+#define SOFASCENE_H
 
 #include "SofaQtQuickGUI.h"
-#include "SceneComponent.h"
-#include "SceneData.h"
+#include "SofaComponent.h"
+#include "SofaData.h"
 #include "Manipulator.h"
-#include "SelectableSceneParticle.h"
+#include "SelectableSofaParticle.h"
 
 #include <sofa/simulation/common/Simulation.h>
 #include <sofa/simulation/common/MutationListener.h>
@@ -56,29 +56,29 @@ namespace simulation
 namespace qtquick
 {
 
-class Scene;
-class Viewer;
+class SofaScene;
+class SofaViewer;
 class PickUsingRasterizationWorker;
 
-bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface);
+bool LoaderProcess(SofaScene* scene, const QString& scenePath, QOffscreenSurface* surface);
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
-class Scene : public QObject, private sofa::simulation::MutationListener
+class SofaScene : public QObject, private sofa::simulation::MutationListener
 {
     Q_OBJECT
 
-    friend class Viewer;
+    friend class SofaViewer;
     friend class PickUsingRasterizationWorker;
-    friend class SceneComponent;
-    friend class SceneData;
-    friend bool LoaderProcess(Scene* scene, const QString& scenePath, QOffscreenSurface* surface);
+    friend class SofaComponent;
+    friend class SofaData;
+    friend bool LoaderProcess(SofaScene* scene, const QString& scenePath, QOffscreenSurface* surface);
 
 public:
-    explicit Scene(QObject *parent = 0);
-	~Scene();
+    explicit SofaScene(QObject *parent = 0);
+    ~SofaScene();
 
 public:
-    Q_PROPERTY(sofa::qtquick::Scene::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(sofa::qtquick::SofaScene::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
@@ -86,7 +86,7 @@ public:
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
     Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
-    Q_PROPERTY(sofa::qtquick::SceneComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
+    Q_PROPERTY(sofa::qtquick::SofaComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
 
@@ -99,8 +99,8 @@ public:
 	};
 
 public:
-    sofa::qtquick::Scene::Status status()	const               {return myStatus;}
-    void setStatus(sofa::qtquick::Scene::Status newStatus);
+    sofa::qtquick::SofaScene::Status status()	const               {return myStatus;}
+    void setStatus(sofa::qtquick::SofaScene::Status newStatus);
 
     bool isLoading() const                                      {return Status::Loading == myStatus;}
     bool isReady() const                                        {return Status::Ready == myStatus;}
@@ -126,8 +126,8 @@ public:
     bool asynchronous() const                                   {return myAsynchronous;}
     void setAsynchronous(bool newPlay);
 
-    sofa::qtquick::SceneComponent* selectedComponent() const    {return mySelectedComponent;}
-    void setSelectedComponent(sofa::qtquick::SceneComponent* newSelectedComponent);
+    sofa::qtquick::SofaComponent* selectedComponent() const    {return mySelectedComponent;}
+    void setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedComponent);
 
     sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
     void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
@@ -145,7 +145,7 @@ signals:
 	void dtChanged(double newDt);
 	void playChanged(bool newPlay);
     void asynchronousChanged(bool newAsynchronous);
-    void selectedComponentChanged(sofa::qtquick::SceneComponent* newSelectedComponent);
+    void selectedComponentChanged(sofa::qtquick::SofaComponent* newSelectedComponent);
     void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
 public:
@@ -153,8 +153,8 @@ public:
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE void reinitComponent(const QString& path);
-    Q_INVOKABLE bool areSameComponent(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB);
-    Q_INVOKABLE bool areInSameBranch(SceneComponent* sceneComponentA, SceneComponent* sceneComponentB);
+    Q_INVOKABLE bool areSameComponent(SofaComponent* sceneComponentA, SofaComponent* sceneComponentB);
+    Q_INVOKABLE bool areInSameBranch(SofaComponent* sceneComponentA, SofaComponent* sceneComponentB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
 
 public:
@@ -166,8 +166,8 @@ public:
     QVariant dataValue(const QString& path) const;
     void setDataValue(const QString& path, const QVariant& value);
 
-    Q_INVOKABLE sofa::qtquick::SceneData* data(const QString& path) const;
-    Q_INVOKABLE sofa::qtquick::SceneComponent* component(const QString& path) const;
+    Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path) const;
+    Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path) const;
 
 protected:
     Q_INVOKABLE QVariant onDataValue(const QString& path) const;
@@ -201,18 +201,18 @@ protected:
     /// \brief      Low-level drawing function
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
-    void draw(const Viewer& viewer, const QList<SceneComponent*>& roots = QList<SceneComponent*>()) const;
+    void draw(const SofaViewer& viewer, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
 
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
     /// \return     A 'SelectableSceneParticle' containing the picked particle and the SceneComponent where it belongs
-    SelectableSceneParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QList<SceneComponent*>& roots = QList<SceneComponent*>()) const;
+    SelectableSofaParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to pick an object is to use a Viewer instead of directly call this function
     /// \return     A 'Selectable' containing the picked object
-    Selectable* pickObject(const Viewer& viewer, const QPointF& ssPoint, const QList<SceneComponent*>& roots = QList<SceneComponent*>());
+    Selectable* pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
@@ -238,7 +238,7 @@ private:
 
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
-    SceneComponent*                             mySelectedComponent;
+    SofaComponent*                             mySelectedComponent;
 
     QOpenGLShaderProgram*                       myHighlightShaderProgram;
     QOpenGLShaderProgram*                       myPickingShaderProgram;
@@ -255,4 +255,4 @@ private:
 
 }
 
-#endif // SCENE_H
+#endif // SOFASCENE_H

@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include "SelectableSceneParticle.h"
+#include "SelectableSofaParticle.h"
 
 namespace sofa
 {
@@ -26,13 +26,13 @@ namespace sofa
 namespace qtquick
 {
 
-SelectableSceneParticle::SelectableSceneParticle(const SceneComponent& sceneComponent, int particleIndex) : SelectableSceneComponent(sceneComponent),
+SelectableSofaParticle::SelectableSofaParticle(const SofaComponent& sofaComponent, int particleIndex) : SelectableSofaComponent(sofaComponent),
     myParticleIndex(particleIndex)
 {
 
 }
 
-SelectableSceneParticle::~SelectableSceneParticle()
+SelectableSofaParticle::~SelectableSofaParticle()
 {
 
 }

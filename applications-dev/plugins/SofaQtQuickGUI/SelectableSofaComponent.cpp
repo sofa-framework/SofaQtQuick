@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include "SelectableSceneComponent.h"
+#include "SelectableSofaComponent.h"
 
 namespace sofa
 {
@@ -26,13 +26,13 @@ namespace sofa
 namespace qtquick
 {
 
-SelectableSceneComponent::SelectableSceneComponent(const SceneComponent& sceneComponent) : Selectable(),
-    mySceneComponent(new SceneComponent(sceneComponent))
+SelectableSofaComponent::SelectableSofaComponent(const SofaComponent& sceneComponent) : Selectable(),
+    mySceneComponent(new SofaComponent(sceneComponent))
 {
 
 }
 
-SelectableSceneComponent::~SelectableSceneComponent()
+SelectableSofaComponent::~SelectableSofaComponent()
 {
     delete mySceneComponent;
 }

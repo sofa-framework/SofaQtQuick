@@ -49,7 +49,7 @@ namespace controller
 namespace qtquick
 {
 
-class Scene;
+class SofaScene;
 
 
 /// call a PythonScriptController function from qml
@@ -68,10 +68,10 @@ public:
 	void componentComplete();
 	
 public:
-    Q_PROPERTY(sofa::qtquick::Scene* scene READ scene WRITE setScene /*NOTIFY sceneChanged*/)
+    Q_PROPERTY(sofa::qtquick::SofaScene* scene READ scene WRITE setScene /*NOTIFY sceneChanged*/)
 
-    Scene* scene() const	{return myScene;}
-    void setScene(Scene* newScene);
+    SofaScene* scene() const	{return myScene;}
+    void setScene(SofaScene* newScene);
 
 	
 //signals:
@@ -95,7 +95,7 @@ protected:
 
 private:
 
-    Scene* myScene;
+    SofaScene* myScene;
 	
 };
 

@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ParticleInteractor.h"
-#include "Scene.h"
-#include "Viewer.h"
+#include "SofaParticleInteractor.h"
+#include "SofaScene.h"
+#include "SofaViewer.h"
 #include "Manipulator.h"
 
 #include <sofa/simulation/common/MechanicalVisitor.h>
@@ -45,7 +45,7 @@ typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Type
 typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3Types> FixedConstraint3;
 typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceField3;
 
-ParticleInteractor::ParticleInteractor(QObject *parent) : QObject(parent),
+SofaParticleInteractor::SofaParticleInteractor(QObject *parent) : QObject(parent),
     mySceneComponent(nullptr),
     myParticleIndex(-1),
     myStiffness(100),
@@ -56,12 +56,12 @@ ParticleInteractor::ParticleInteractor(QObject *parent) : QObject(parent),
 
 }
 
-ParticleInteractor::~ParticleInteractor()
+SofaParticleInteractor::~SofaParticleInteractor()
 {
 	release();
 }
 
-QVector3D ParticleInteractor::particlePosition() const
+QVector3D SofaParticleInteractor::particlePosition() const
 {
     QVector3D particlePosition(std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN());
     if(!mySceneComponent)
@@ -73,7 +73,7 @@ QVector3D ParticleInteractor::particlePosition() const
     return QVector3D(position.x(), position.y(), position.z());
 }
 
-QVector3D ParticleInteractor::interactorPosition() const
+QVector3D SofaParticleInteractor::interactorPosition() const
 {
     QVector3D interactorPosition(std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN());
 	if(!myMechanicalState)
@@ -85,12 +85,12 @@ QVector3D ParticleInteractor::interactorPosition() const
 	return QVector3D(position.x(), position.y(), position.z());
 }
 
-bool ParticleInteractor::interacting() const
+bool SofaParticleInteractor::interacting() const
 {
     return mySceneComponent && mySceneComponent->base() && -1 != myParticleIndex;
 }
 
-bool ParticleInteractor::start(SceneComponent* sceneComponent, int particleIndex)
+bool SofaParticleInteractor::start(SofaComponent* sceneComponent, int particleIndex)
 {
     release();
 
@@ -100,13 +100,13 @@ bool ParticleInteractor::start(SceneComponent* sceneComponent, int particleIndex
     if(!sceneComponent)
         return false;
 
-    const Scene* scene = sceneComponent->scene();
+    const SofaScene* scene = sceneComponent->scene();
     MechanicalObject3* particleMechanicalObject = dynamic_cast<MechanicalObject3*>(sceneComponent->base());
 
     if(!scene || !particleMechanicalObject)
         return false;
 
-    mySceneComponent = new SceneComponent(*sceneComponent);
+    mySceneComponent = new SofaComponent(*sceneComponent);
     myParticleIndex = particleIndex;
 
     QVector3D position = QVector3D(particleMechanicalObject->getPX(myParticleIndex),
@@ -142,7 +142,7 @@ bool ParticleInteractor::start(SceneComponent* sceneComponent, int particleIndex
     return true;
 }
 
-bool ParticleInteractor::update(const QVector3D& position)
+bool SofaParticleInteractor::update(const QVector3D& position)
 {
     if(!myMechanicalState)
         return false;
@@ -154,7 +154,7 @@ bool ParticleInteractor::update(const QVector3D& position)
     return true;
 }
 
-void ParticleInteractor::release()
+void SofaParticleInteractor::release()
 {
     if(myNode)
     {

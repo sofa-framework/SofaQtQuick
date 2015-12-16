@@ -18,8 +18,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include "SceneComponent.h"
-#include "Scene.h"
+#include "SofaComponent.h"
+#include "SofaScene.h"
 
 namespace sofa
 {
@@ -29,30 +29,30 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SceneComponent::SceneComponent(const Scene* scene, const sofa::core::objectmodel::Base* base) : QObject(),
+SofaComponent::SofaComponent(const SofaScene* scene, const sofa::core::objectmodel::Base* base) : QObject(),
     myScene(scene),
     myBase(base)
 {
 
 }
 
-SceneComponent::SceneComponent(const SceneComponent& sceneComponent) : QObject(),
+SofaComponent::SofaComponent(const SofaComponent& sceneComponent) : QObject(),
     myScene(sceneComponent.scene()),
     myBase(sceneComponent.base())
 {
 
 }
 
-QString SceneComponent::name() const
+QString SofaComponent::name() const
 {
-    const Base* base = SceneComponent::base();
+    const Base* base = SofaComponent::base();
     if(!base)
-        return QString("Invalid SceneComponent");
+        return QString("Invalid SofaComponent");
 
     return QString::fromStdString(base->getName());
 }
 
-bool SceneComponent::isSame(SceneComponent* sceneComponent)
+bool SofaComponent::isSame(SofaComponent* sceneComponent)
 {
     if(!sceneComponent)
         return false;
@@ -68,21 +68,21 @@ bool SceneComponent::isSame(SceneComponent* sceneComponent)
     return false;
 }
 
-SceneData* SceneComponent::getComponentData(const QString& name) const
+SofaData* SofaComponent::getComponentData(const QString& name) const
 {
     sofa::core::objectmodel::BaseData* data = myBase->findData(name.toStdString());
     if(!data)
         return 0;
 
-    return new SceneData(this, data);
+    return new SofaData(this, data);
 }
 
-Base* SceneComponent::base()
+Base* SofaComponent::base()
 {
-    return const_cast<Base*>(static_cast<const SceneComponent*>(this)->base());
+    return const_cast<Base*>(static_cast<const SofaComponent*>(this)->base());
 }
 
-const Base* SceneComponent::base() const
+const Base* SofaComponent::base() const
 {
     // check object existence
     if(myScene && myBase)
@@ -93,7 +93,7 @@ const Base* SceneComponent::base() const
     return 0;
 }
 
-const Scene* SceneComponent::scene() const
+const SofaScene* SofaComponent::scene() const
 {
     return myScene;
 }

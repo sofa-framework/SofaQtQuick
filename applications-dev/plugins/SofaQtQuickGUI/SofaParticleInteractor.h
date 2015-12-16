@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PARTICLEINTERACTOR_H
-#define PARTICLEINTERACTOR_H
+#ifndef SOFAPARTICLEINTERACTOR_H
+#define SOFAPARTICLEINTERACTOR_H
 
 #include "SofaQtQuickGUI.h"
-#include "Viewer.h"
-#include "SceneComponent.h"
+#include "SofaViewer.h"
+#include "SofaComponent.h"
 
 #include <QObject>
 #include <QVector3D>
@@ -59,11 +59,11 @@ namespace visualmodel
 namespace qtquick
 {
 
-class SceneComponent;
-class Scene;
+class SofaComponent;
+class SofaScene;
 class Manipulator;
 
-class SOFA_SOFAQTQUICKGUI_API ParticleInteractor : public QObject
+class SOFA_SOFAQTQUICKGUI_API SofaParticleInteractor : public QObject
 {
     Q_OBJECT
 
@@ -73,24 +73,24 @@ class SOFA_SOFAQTQUICKGUI_API ParticleInteractor : public QObject
     typedef sofa::component::visualmodel::OglModel              OglModel;
 
 public:
-    ParticleInteractor(QObject *parent = 0);
-    ~ParticleInteractor();
+    SofaParticleInteractor(QObject *parent = 0);
+    ~SofaParticleInteractor();
 	
 public:
-    Q_PROPERTY(sofa::qtquick::SceneComponent* sceneComponent MEMBER mySceneComponent NOTIFY sceneComponentChanged)
+    Q_PROPERTY(sofa::qtquick::SofaComponent* sceneComponent MEMBER mySceneComponent NOTIFY sceneComponentChanged)
     Q_PROPERTY(int particleIndex MEMBER myParticleIndex NOTIFY particleIndexChanged)
     Q_PROPERTY(double stiffness MEMBER myStiffness NOTIFY stiffnessChanged)
     Q_PROPERTY(QVector3D interactorPosition READ interactorPosition NOTIFY interactorPositionChanged)
     Q_PROPERTY(bool interacting READ interacting NOTIFY interactingChanged)
 
 public:
-    SceneComponent* sceneComponent() const      {return mySceneComponent;}
+    SofaComponent* sceneComponent() const      {return mySceneComponent;}
     double stiffness() const                    {return myStiffness;}
     QVector3D interactorPosition() const;
     bool interacting() const;
 
 signals:
-    void sceneComponentChanged(sofa::qtquick::SceneComponent* newSceneComponent);
+    void sceneComponentChanged(sofa::qtquick::SofaComponent* newSceneComponent);
     void particleIndexChanged(double newParticleIndex);
 	void stiffnessChanged(double newStiffness);
     void interactorPositionChanged(const QVector3D& newInteractorPosition);
@@ -100,12 +100,12 @@ public:
     Q_INVOKABLE QVector3D particlePosition() const;
 	
 public slots:
-    bool start(SceneComponent* sceneComponent, int particleIndex);
+    bool start(SofaComponent* sceneComponent, int particleIndex);
     bool update(const QVector3D& interactorNewPosition);
     void release();
 
 private:
-    SceneComponent*                         mySceneComponent;
+    SofaComponent*                         mySceneComponent;
     int                                     myParticleIndex;
     double									myStiffness;
 
@@ -118,4 +118,4 @@ private:
 
 }
 
-#endif // PARTICLEINTERACTOR_H
+#endif // SOFAPARTICLEINTERACTOR_H

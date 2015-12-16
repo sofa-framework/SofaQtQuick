@@ -18,9 +18,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include "SceneData.h"
-#include "SceneComponent.h"
-#include "Scene.h"
+#include "SofaData.h"
+#include "SofaComponent.h"
+#include "SofaScene.h"
 
 #include <QString>
 
@@ -32,7 +32,7 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SceneData::SceneData(const SceneComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
+SofaData::SofaData(const SofaComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
     myScene(sceneComponent->scene()),
     myBase(sceneComponent->base()),
     myData(data)
@@ -40,7 +40,7 @@ SceneData::SceneData(const SceneComponent* sceneComponent, const sofa::core::obj
 
 }
 
-SceneData::SceneData(const Scene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
+SofaData::SofaData(const SofaScene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
     myScene(scene),
     myBase(base),
     myData(data)
@@ -58,43 +58,43 @@ SceneData::SceneData(const Scene* scene, const sofa::core::objectmodel::Base* ba
 //        myBase = sceneData.myBase;
 //}
 
-QVariantMap SceneData::object() const
+QVariantMap SofaData::object() const
 {
-    const BaseData* data = SceneData::data();
+    const BaseData* data = SofaData::data();
     if(data)
-        return Scene::dataObject(data);
+        return SofaScene::dataObject(data);
 
     return QVariantMap();
 }
 
-QVariant SceneData::value()
+QVariant SofaData::value()
 {
-    BaseData* data = SceneData::data();
+    BaseData* data = SofaData::data();
     if(data)
-        return Scene::dataValue(data);
+        return SofaScene::dataValue(data);
 
     return QVariant();
 }
 
-bool SceneData::setValue(const QVariant& value)
+bool SofaData::setValue(const QVariant& value)
 {
-    BaseData* data = SceneData::data();
+    BaseData* data = SofaData::data();
     if(data)
-        return Scene::setDataValue(data, value);
+        return SofaScene::setDataValue(data, value);
 
     return false;
 }
 
-bool SceneData::setLink(const QString& path)
+bool SofaData::setLink(const QString& path)
 {
-    BaseData* data = SceneData::data();
+    BaseData* data = SofaData::data();
     if(data)
     {
         std::streambuf* backup(std::cerr.rdbuf());
 
         std::ostringstream stream;
         std::cerr.rdbuf(stream.rdbuf());
-        bool status = Scene::setDataLink(data, path);
+        bool status = SofaScene::setDataLink(data, path);
         std::cerr.rdbuf(backup);
 
         return status;
@@ -103,12 +103,12 @@ bool SceneData::setLink(const QString& path)
     return false;
 }
 
-BaseData* SceneData::data()
+BaseData* SofaData::data()
 {
-    return const_cast<BaseData*>(static_cast<const SceneData*>(this)->data());
+    return const_cast<BaseData*>(static_cast<const SofaData*>(this)->data());
 }
 
-const BaseData* SceneData::data() const
+const BaseData* SofaData::data() const
 {
     // check if the base still exists hence if the data is still valid
     const Base* base = 0;

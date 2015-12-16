@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DATALISTMODEL_H
-#define DATALISTMODEL_H
+#ifndef SOFADATALISTMODEL_H
+#define SOFADATALISTMODEL_H
 
 #include "SofaQtQuickGUI.h"
-#include "Scene.h"
-#include "SceneListModel.h"
+#include "SofaScene.h"
+#include "SofaSceneListModel.h"
 
 #include <sofa/core/objectmodel/Base.h>
 
@@ -38,31 +38,31 @@ namespace sofa
 namespace qtquick
 {
 
-class DataListModel : public QAbstractListModel
+class SofaDataListModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
-    DataListModel(QObject* parent = 0);
-    ~DataListModel();
+    SofaDataListModel(QObject* parent = 0);
+    ~SofaDataListModel();
 
     Q_INVOKABLE void update();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SceneComponent* sceneComponent READ sceneComponent WRITE setSceneComponent NOTIFY sceneComponentChanged)
+    Q_PROPERTY(sofa::qtquick::SofaComponent* sceneComponent READ sceneComponent WRITE setSceneComponent NOTIFY sceneComponentChanged)
 
 public:
-    SceneComponent* sceneComponent() const		{return mySceneComponent;}
-    void setSceneComponent(SceneComponent* newSceneComponent);
+    SofaComponent* sceneComponent() const		{return mySceneComponent;}
+    void setSceneComponent(SofaComponent* newSceneComponent);
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     QHash<int,QByteArray> roleNames() const;
 
-    Q_INVOKABLE sofa::qtquick::SceneData* getDataById(int row) const;
+    Q_INVOKABLE sofa::qtquick::SofaData* getDataById(int row) const;
 signals:
-    void sceneComponentChanged(SceneComponent* newSceneComponent) const;
+    void sceneComponentChanged(SofaComponent* newSceneComponent) const;
 
 private:
     enum {
@@ -87,7 +87,7 @@ private:
 private:
     QList<Item>             myItems;
     int                     myUpdatedCount;
-    mutable SceneComponent* mySceneComponent;
+    mutable SofaComponent* mySceneComponent;
 
 };
 
@@ -95,4 +95,4 @@ private:
 
 }
 
-#endif // DATALISTMODEL_H
+#endif // SOFADATALISTMODEL_H

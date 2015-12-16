@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Manipulator2D_Rotation.h"
-#include "Viewer.h"
+#include "SofaViewer.h"
 
 #include <QApplication>
 #include <GL/glew.h>
@@ -67,17 +67,17 @@ void Manipulator2D_Rotation::unsetMark()
     myToMarkAngle = 0.0f;
 }
 
-void Manipulator2D_Rotation::draw(const Viewer& viewer) const
+void Manipulator2D_Rotation::draw(const SofaViewer& viewer) const
 {
     internalDraw(viewer, false);
 }
 
-void Manipulator2D_Rotation::pick(const Viewer& viewer) const
+void Manipulator2D_Rotation::pick(const SofaViewer& viewer) const
 {
     internalDraw(viewer, true);
 }
 
-void Manipulator2D_Rotation::internalDraw(const Viewer& viewer, bool isPicking) const
+void Manipulator2D_Rotation::internalDraw(const SofaViewer& viewer, bool isPicking) const
 {
     if(!visible())
         return;

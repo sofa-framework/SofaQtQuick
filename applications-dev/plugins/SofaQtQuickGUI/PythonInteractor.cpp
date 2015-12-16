@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PythonInteractor.h"
-#include "Scene.h"
+#include "SofaScene.h"
 #include "PythonConsole.h"
 
 #include <SofaPython/PythonCommon.h>
@@ -59,10 +59,10 @@ void PythonInteractor::classBegin()
 void PythonInteractor::componentComplete()
 {
 	if(!myScene)
-		setScene(qobject_cast<Scene*>(parent()));
+		setScene(qobject_cast<SofaScene*>(parent()));
 }
 
-void PythonInteractor::setScene(Scene* newScene)
+void PythonInteractor::setScene(SofaScene* newScene)
 {
     if(newScene != myScene)
     {

@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Manipulator.h"
-#include "Viewer.h"
+#include "SofaViewer.h"
 
 #include <GL/glew.h>
 #include <QMatrix4x4>
@@ -159,12 +159,12 @@ QQuaternion Manipulator::quaternionMultiply(const QQuaternion& q0, const QQuater
     return q0 * q1;
 }
 
-void Manipulator::draw(const Viewer& /*viewer*/) const
+void Manipulator::draw(const SofaViewer& /*viewer*/) const
 {
     // a base manipulator has no visual representation
 }
 
-void Manipulator::pick(const Viewer& viewer) const
+void Manipulator::pick(const SofaViewer& viewer) const
 {
     draw(viewer);
 }
