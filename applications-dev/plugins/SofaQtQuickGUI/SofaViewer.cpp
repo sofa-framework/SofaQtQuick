@@ -64,7 +64,7 @@ using namespace sofa::simulation;
 
 SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myFBO(nullptr),
-    myScene(nullptr),
+    mySofaScene(nullptr),
     myCamera(nullptr),
     myRoots(),
     myBackgroundColor("#00404040"),
@@ -98,14 +98,14 @@ SofaViewer::~SofaViewer()
     clearRoots();
 }
 
-void SofaViewer::setScene(SofaScene* newScene)
+void SofaViewer::setSofaScene(SofaScene* newSofaScene)
 {
-	if(newScene == myScene)
+    if(newSofaScene == mySofaScene)
 		return;
 
-	myScene = newScene;
+    mySofaScene = newSofaScene;
 
-	sceneChanged(newScene);
+    sofaSceneChanged(newSofaScene);
 }
 
 void SofaViewer::setCamera(Camera* newCamera)
@@ -133,8 +133,8 @@ static void clearRoot(QQmlListProperty<SofaComponent> *property)
 {
     QList<SofaComponent*>& roots = *static_cast<QList<SofaComponent*>*>(property->data);
 
-    for(SofaComponent* sceneComponent : roots)
-        delete sceneComponent;
+    for(SofaComponent* sofaComponent : roots)
+        delete sofaComponent;
 
     roots.clear();
 }
@@ -397,8 +397,8 @@ public:
         if(!camera)
             return;
 
-        SofaScene* scene = myViewer->scene();
-        if(!scene)
+        SofaScene* sofaScene = myViewer->sofaScene();
+        if(!sofaScene)
             return;
 
         glDisable(GL_BLEND);
@@ -426,7 +426,7 @@ public:
         if(myViewer->culling())
             glEnable(GL_CULL_FACE);
 
-        mySelectable = scene->pickObject(*myViewer, mySSPoint, myViewer->roots());
+        mySelectable = sofaScene->pickObject(*myViewer, mySSPoint, myViewer->roots());
 
         if(myViewer->wireframe())
             glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
@@ -478,10 +478,10 @@ SelectableSofaParticle* SofaViewer::pickParticle(const QPointF& ssPoint) const
     QVector3D origin = nearPosition;
     QVector3D direction = (farPosition - nearPosition).normalized();
 
-    double distanceToRay = myScene->radius() / 76.0;
+    double distanceToRay = mySofaScene->radius() / 76.0;
     double distanceToRayGrowth = 0.001;
 
-    return myScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, roots());
+    return mySofaScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, roots());
 }
 
 Selectable* SofaViewer::pickObject(const QPointF& ssPoint)
@@ -507,7 +507,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint)
 QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
 {
     QVector3D min, max;
-    myScene->computeBoundingBox(min, max);
+    mySofaScene->computeBoundingBox(min, max);
 
     return QPair<QVector3D, QVector3D>(min, max);
 }
@@ -515,7 +515,7 @@ QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
 QVector3D SofaViewer::boundingBoxMin() const
 {
     QVector3D min, max;
-    myScene->computeBoundingBox(min, max);
+    mySofaScene->computeBoundingBox(min, max);
 
     return min;
 }
@@ -523,7 +523,7 @@ QVector3D SofaViewer::boundingBoxMin() const
 QVector3D SofaViewer::boundingBoxMax() const
 {
     QVector3D min, max;
-    myScene->computeBoundingBox(min, max);
+    mySofaScene->computeBoundingBox(min, max);
 
     return max;
 }
@@ -600,11 +600,11 @@ QPointF SofaViewer::mapToNative(const QPointF& ssPoint) const
 
 void SofaViewer::viewAll()
 {
-	if(!myCamera || !myScene || !myScene->isReady())
+    if(!myCamera || !mySofaScene || !mySofaScene->isReady())
 		return;
 
 	QVector3D min, max;
-    myScene->computeBoundingBox(min, max);
+    mySofaScene->computeBoundingBox(min, max);
 
     myCamera->fit(min, max);
 }
@@ -719,7 +719,7 @@ void SofaViewer::SofaRenderer::render()
     else
         glDisable(GL_BLEND);
 
-    if(myViewer->myScene && myViewer->myScene->isReady())
+    if(myViewer->mySofaScene && myViewer->mySofaScene->isReady())
     {
         glDisable(GL_CULL_FACE);
 
@@ -765,15 +765,15 @@ void SofaViewer::SofaRenderer::render()
             glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
 
             _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-            _vparams->sceneBBox() = myViewer->myScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
+            _vparams->sceneBBox() = myViewer->mySofaScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
             _vparams->setProjectionMatrix(_projmatrix);
             _vparams->setModelViewMatrix(_mvmatrix);
         }
 
-        // draw the sofa scene
+        // draw the SofaScene
         {
             myViewer->preDraw();
-            myViewer->myScene->draw(*myViewer, myViewer->roots());
+            myViewer->mySofaScene->draw(*myViewer, myViewer->roots());
             myViewer->postDraw();
         }
 

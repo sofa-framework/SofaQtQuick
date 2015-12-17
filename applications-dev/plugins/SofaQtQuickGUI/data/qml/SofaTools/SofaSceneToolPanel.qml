@@ -26,12 +26,12 @@ CollapsibleGroupBox {
     id: root
 
     visible: interfaceToolPanel ? Loader.Error === interfaceToolPanel.status || Loader.Ready === interfaceToolPanel.status : false
-    title: "Scene ToolPanel"
+    title: "Sofa Scene ToolPanel"
 
     property int priority: 95
-    property var scene: null
+    property var sofaScene: null
 
-    readonly property Loader interfaceLoader: scene ? scene.interfaceLoader : null
+    readonly property Loader interfaceLoader: sofaScene ? sofaScene.interfaceLoader : null
     readonly property QtObject interfaceObject: interfaceLoader ? interfaceLoader.item : null
     readonly property Component interfaceToolPanel: interfaceObject ? interfaceObject.toolpanel : null
 
@@ -60,7 +60,7 @@ CollapsibleGroupBox {
             Layout.preferredHeight: implicitHeight
             textFormat: Text.RichText
 
-            text: "<b><font color='darkred'>Error loading scene toolpanel, take a look in the console for error log</font></b>"
+            text: "<b><font color='darkred'>Error loading sofa scene toolpanel, take a look in the console for error log</font></b>"
         }
     }
 
@@ -139,7 +139,7 @@ CollapsibleGroupBox {
             Layout.fillWidth: true
             implicitWidth: 0
             visible: Loader.Error === status
-            title: "Error Loading Scene GUI"
+            title: "Error Loading SofaScene GUI"
 
             ColumnLayout {
                 anchors.fill: parent

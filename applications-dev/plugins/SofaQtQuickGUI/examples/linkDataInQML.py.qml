@@ -4,11 +4,11 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
 
-SceneInterface {
+SofaSceneInterface {
     id: root
 
     toolpanel: ColumnLayout {
-        enabled: scene.ready
+        enabled: sofaScene.ready
 
         GroupBox {
             Layout.fillWidth: true
@@ -28,7 +28,7 @@ SceneInterface {
 
                         wrapMode: Text.WordWrap
                         text: "<b>About ?</b><br />
-                            The goal of this example is to show you how to get / set Sofa data directly from the Scene QML object.<br />"
+                            The goal of this example is to show you how to get / set Sofa data directly from the Sofa Scene QML object.<br />"
                     }
                 }
 
@@ -79,11 +79,11 @@ SceneInterface {
                     stepSize:0.01
 
                     function update() {
-                        scene.setDataValue("@.gravity", [[vx, vy, vz]])
+                        sofaScene.setDataValue("@.gravity", [[vx, vy, vz]])
                     }
 
                     Component.onCompleted: {
-                        setValueFromArray(scene.dataValue("@.gravity")[0]);
+                        setValueFromArray(sofaScene.dataValue("@.gravity")[0]);
 
                         onVxChanged.connect(update);
                         onVyChanged.connect(update);
@@ -91,8 +91,8 @@ SceneInterface {
                     }
 
                     Connections {
-                        target: scene
-                        onStepEnd: gravity.setValueFromArray(scene.dataValue("@.gravity")[0]);
+                        target: sofaScene
+                        onStepEnd: gravity.setValueFromArray(sofaScene.dataValue("@.gravity")[0]);
                     }
                 }
 
@@ -110,17 +110,17 @@ SceneInterface {
                     enabled: false
 
                     Connections {
-                        target: scene
-                        onStepEnd: if(scene.ready) pointLocation.update()
-                        onReseted: if(scene.ready) pointLocation.update()
-                        Component.onCompleted: if(scene.ready) pointLocation.update()
+                        target: sofaScene
+                        onStepEnd: if(sofaScene.ready) pointLocation.update()
+                        onReseted: if(sofaScene.ready) pointLocation.update()
+                        Component.onCompleted: if(sofaScene.ready) pointLocation.update()
                     }
 
                     function update() {
-                        setValueFromArray(scene.dataValue("@P1/M1.position")[0]);
+                        setValueFromArray(sofaScene.dataValue("@P1/M1.position")[0]);
 
                         // this is how to set new positions:
-                        //scene.setDataValue("@P1/M1.position", [[3, 2, 1]]);
+                        //sofaScene.setDataValue("@P1/M1.position", [[3, 2, 1]]);
                     }
                 }
             }

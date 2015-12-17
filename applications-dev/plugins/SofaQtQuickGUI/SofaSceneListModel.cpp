@@ -36,7 +36,7 @@ SofaSceneListModel::SofaSceneListModel(QObject* parent) : QAbstractListModel(par
     myItems(),
     myUpdatedCount(0),
     myIsDirty(true),
-    myScene(nullptr)
+    mySofaScene(nullptr)
 {
 
 }
@@ -70,22 +70,22 @@ void SofaSceneListModel::update()
     myIsDirty = false;
 }
 
-void SofaSceneListModel::handleSceneChange(SofaScene* /*newScene*/)
+void SofaSceneListModel::handleSceneChange(SofaScene*)
 {
     clear();
-    if(myScene)
+    if(mySofaScene)
     {
-        if(myScene->isReady())
+        if(mySofaScene->isReady())
         {
-            addChild(0, myScene->sofaSimulation()->GetRoot().get());
+            addChild(0, mySofaScene->sofaSimulation()->GetRoot().get());
             update();
         }
 
-        connect(myScene, &SofaScene::statusChanged, this, [this]() {
+        connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
             clear();
 
-            if(SofaScene::Ready == myScene->status())
-                addChild(0, myScene->sofaSimulation()->GetRoot().get());
+            if(SofaScene::Ready == mySofaScene->status())
+                addChild(0, mySofaScene->sofaSimulation()->GetRoot().get());
 
             update();
         });
@@ -141,19 +141,19 @@ SofaSceneListModel::Item SofaSceneListModel::buildObjectItem(SofaSceneListModel:
     return item;
 }
 
-void SofaSceneListModel::setScene(SofaScene* newScene)
+void SofaSceneListModel::setSofaScene(SofaScene* newSofaScene)
 {
-    if(newScene == myScene)
+    if(newSofaScene == mySofaScene)
         return;
 
-    if(myScene)
-        disconnect(myScene);
+    if(mySofaScene)
+        disconnect(mySofaScene);
 
-    myScene = newScene;
+    mySofaScene = newSofaScene;
 
-    handleSceneChange(myScene);
+    handleSceneChange(mySofaScene);
 
-    sceneChanged(newScene);
+    sofaSceneChanged(newSofaScene);
 }
 
 int SofaSceneListModel::rowCount(const QModelIndex & /*parent*/) const
@@ -163,7 +163,7 @@ int SofaSceneListModel::rowCount(const QModelIndex & /*parent*/) const
 
 QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
 {
-    if(!myScene || !myScene->isReady())
+    if(!mySofaScene || !mySofaScene->isReady())
         return QVariant("");
 
     if(!index.isValid())
@@ -294,14 +294,14 @@ SofaComponent* SofaSceneListModel::getComponentById(int row) const
     if(row < 0 || row >= myItems.size())
         return 0;
 
-    return new SofaComponent(myScene, myItems.at(row).base);
+    return new SofaComponent(mySofaScene, myItems.at(row).base);
 }
 
-int SofaSceneListModel::getComponentId(SofaComponent* sceneComponent) const
+int SofaSceneListModel::getComponentId(SofaComponent* sofaComponent) const
 {
     Base* base = nullptr;
-    if(sceneComponent)
-        base = sceneComponent->base();
+    if(sofaComponent)
+        base = sofaComponent->base();
 
     if(base)
         for(int i = 0; i < myItems.size(); ++i)

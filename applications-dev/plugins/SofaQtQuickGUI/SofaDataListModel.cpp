@@ -35,9 +35,9 @@ using namespace sofa::simulation;
 SofaDataListModel::SofaDataListModel(QObject* parent) : QAbstractListModel(parent),
     myItems(),
     myUpdatedCount(0),
-    mySceneComponent(0)
+    mySofaComponent(0)
 {
-    connect(this, &SofaDataListModel::sceneComponentChanged, &SofaDataListModel::update);
+    connect(this, &SofaDataListModel::sofaComponentChanged, &SofaDataListModel::update);
 }
 
 SofaDataListModel::~SofaDataListModel()
@@ -49,20 +49,20 @@ void SofaDataListModel::update()
 {
     myItems.clear();
 
-    if(mySceneComponent)
+    if(mySofaComponent)
     {
-        const Base* base = mySceneComponent->base();
+        const Base* base = mySofaComponent->base();
         if(base)
         {
             sofa::helper::vector<BaseData*> dataFields = base->getDataFields();
             for(unsigned int i = 0; i < dataFields.size(); ++i)
-                myItems.append(buildDataItem(dataFields[i]));
+                myItems.append(buildSofaDataItem(dataFields[i]));
 
             qStableSort(myItems.begin(), myItems.end(), [](const Item& a, const Item& b) {return QString::compare(a.data->getGroup(), b.data->getGroup()) < 0;});
         }
         else
         {
-            setSceneComponent(0);
+            setSofaComponent(0);
         }
     }
 
@@ -91,7 +91,7 @@ void SofaDataListModel::update()
     myUpdatedCount = myItems.size();
 }
 
-SofaDataListModel::Item SofaDataListModel::buildDataItem(BaseData* data) const
+SofaDataListModel::Item SofaDataListModel::buildSofaDataItem(BaseData* data) const
 {
     SofaDataListModel::Item item;
 
@@ -100,14 +100,14 @@ SofaDataListModel::Item SofaDataListModel::buildDataItem(BaseData* data) const
     return item;
 }
 
-void SofaDataListModel::setSceneComponent(SofaComponent* newSceneComponent)
+void SofaDataListModel::setSofaComponent(SofaComponent* newSofaComponent)
 {
-    if(newSceneComponent == mySceneComponent)
+    if(newSofaComponent == mySofaComponent)
         return;
 
-    mySceneComponent = newSceneComponent;
+    mySofaComponent = newSofaComponent;
 
-    sceneComponentChanged(newSceneComponent);
+    sofaComponentChanged(newSofaComponent);
 }
 
 int	SofaDataListModel::rowCount(const QModelIndex & /*parent*/) const
@@ -126,11 +126,11 @@ QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
     if(index.row() >= myItems.size())
         return QVariant("");
 
-    if(!mySceneComponent->base())
+    if(!mySofaComponent->base())
     {
         //the base is not valid anymore, neither is its data
-        mySceneComponent = 0;
-        sceneComponentChanged(0);
+        mySofaComponent = 0;
+        sofaComponentChanged(0);
 
         return QVariant("");
     }
@@ -175,7 +175,7 @@ SofaData* SofaDataListModel::getDataById(int row) const
     if(row < 0 || row >= myItems.size())
         return 0;
 
-    return new SofaData(mySceneComponent, myItems.at(row).data);
+    return new SofaData(mySofaComponent, myItems.at(row).data);
 }
 
 }

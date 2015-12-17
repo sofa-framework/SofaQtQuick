@@ -32,30 +32,30 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SofaData::SofaData(const SofaComponent* sceneComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    myScene(sceneComponent->scene()),
-    myBase(sceneComponent->base()),
+SofaData::SofaData(const SofaComponent* sofaComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
+    mySofaScene(sofaComponent->sofaScene()),
+    myBase(sofaComponent->base()),
     myData(data)
 {
 
 }
 
-SofaData::SofaData(const SofaScene* scene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    myScene(scene),
+SofaData::SofaData(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
+    mySofaScene(sofaScene),
     myBase(base),
     myData(data)
 {
 
 }
 
-//SceneData::SceneData(const SceneData& sceneData) :
-//    myScene(sceneData.myScene),
+//SofaData::SofaData(const SofaData& sofaData) :
+//    myScene(sofaData.myScene),
 //    myBase(),
-//    myData(sceneData.data())
+//    myData(sofaData.data())
 //{
 //    // if the data exists, its base is valid
 //    if(myData)
-//        myBase = sceneData.myBase;
+//        myBase = sofaData.myBase;
 //}
 
 QVariantMap SofaData::object() const
@@ -112,8 +112,8 @@ const BaseData* SofaData::data() const
 {
     // check if the base still exists hence if the data is still valid
     const Base* base = 0;
-    if(myScene && myBase)
-        if(myScene->myBases.contains(myBase))
+    if(mySofaScene && myBase)
+        if(mySofaScene->myBases.contains(myBase))
             base = myBase;
 
     myBase = base;

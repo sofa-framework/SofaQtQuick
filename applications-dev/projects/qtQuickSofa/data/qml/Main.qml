@@ -32,24 +32,24 @@ ApplicationWindow {
     id: root
     width: 1280
     height: 720
-    title: Qt.application.name + " - \"" + scenePath + "\""
+    title: Qt.application.name + " - \"" + sofaScenePath + "\""
 
-    property var scene: Scene {
+    property var sofaScene: SofaScene {
         Component.onCompleted: {
             if(Qt.application.arguments.length > 1) {
-                scene.source = "file:" + Qt.application.arguments[1];
+                sofaScene.source = "file:" + Qt.application.arguments[1];
             }
             else {
-                if(0 !== SofaSettingsScript.Recent.scenes.length)
-                    scene.source = SofaSettingsScript.Recent.mostRecent();
+                if(0 !== SofaSettingsScript.Recent.sofaScenes.length)
+                    sofaScene.source = SofaSettingsScript.Recent.mostRecent();
                 else
-                    scene.source = "file:Demos/caduceus.scn";
+                    sofaScene.source = "file:Demos/caduceus.scn";
             }
-            scenePath = scene.source.toString().replace("///", "/").replace("file:", "");
+            sofaScenePath = sofaScene.source.toString().replace("///", "/").replace("file:", "");
         }
     }
 
-    property string scenePath: ""
+    property string sofaScenePath: ""
 
     style: ApplicationWindowStyle {
         background: null
@@ -64,10 +64,10 @@ ApplicationWindow {
     property FileDialog openSofaSceneDialog: openSofaSceneDialog
     FileDialog {
         id: openSofaSceneDialog
-        nameFilters: ["Scene files (*.xml *.scn *.pscn *.py *.simu *)"]
+        nameFilters: ["SofaScene files (*.xml *.scn *.pscn *.py *.simu *)"]
         onAccepted: {
-            scene.source = fileUrl;
-            scenePath = scene.source.toString().replace("///", "/").replace("file:", "");
+            sofaScene.source = fileUrl;
+            sofaScenePath = sofaScene.source.toString().replace("///", "/").replace("file:", "");
         }
     }
 
@@ -75,20 +75,20 @@ ApplicationWindow {
     FileDialog {
         id: saveSofaSceneDialog
         selectExisting: false
-        nameFilters: ["Scene files (*.scn)"]
+        nameFilters: ["SofaScene files (*.scn)"]
         onAccepted: {
-            scene.save(fileUrl);
+            sofaScene.save(fileUrl);
         }
     }
 
     menuBar: DefaultMenuBar {
         id: menuBar
-        scene: root.scene
+        sofaScene: root.sofaScene
     }
 
     toolBar: DefaultToolBar {
         id: toolBar
-        scene: root.scene
+        sofaScene: root.sofaScene
     }
 
     DynamicSplitView {
@@ -97,15 +97,15 @@ ApplicationWindow {
         uiId: 1
         sourceComponent: Component {
             DynamicContent {
-                defaultContentName: "Viewer"
+                defaultContentName: "SofaViewer"
                 sourceDir: "qrc:/SofaWidgets"
-                properties: {"scene": root.scene}
+                properties: {"sofaScene": root.sofaScene}
             }
         }
     }
 
     statusBar: DefaultStatusBar {
         id: statusBar
-        scene: root.scene
+        sofaScene: root.sofaScene
     }
 }

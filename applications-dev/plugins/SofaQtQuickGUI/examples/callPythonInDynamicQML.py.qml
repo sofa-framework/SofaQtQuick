@@ -5,11 +5,11 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
 
-SceneInterface {
+SofaSceneInterface {
     id: root
 
     toolpanel: ColumnLayout {
-        enabled: scene.ready
+        enabled: sofaScene.ready
         anchors.fill: parent
 
         property var sliderNum: 0
@@ -93,7 +93,7 @@ SceneInterface {
                                     value: 0.0
                                     stepSize: 0.01
 
-                                    onValueChanged: scene.pythonInteractor.call("PythonScript", "setValueAtIndex", index, value)
+                                    onValueChanged: sofaScene.pythonInteractor.call("PythonScript", "setValueAtIndex", index, value)
                                 }
                                 TextField {
                                     Layout.preferredWidth: 100

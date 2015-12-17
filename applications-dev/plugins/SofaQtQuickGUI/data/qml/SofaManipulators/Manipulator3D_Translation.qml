@@ -25,7 +25,7 @@ Manipulator3D_Translation {
 
     property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
 
-    function mousePressed(mouse, viewer) {
+    function mousePressed(mouse, sofaViewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
         var yAxis = -1 !== axis.indexOf("y") ? true : false;
         var zAxis = -1 !== axis.indexOf("z") ? true : false;
@@ -33,14 +33,14 @@ Manipulator3D_Translation {
 
         if(2 === axisNum) { // project on a specific plane
             var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
-            startVector = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
+            startVector = sofaViewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
         } else if(1 === axisNum) {
             var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
-            startVector = viewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
+            startVector = sofaViewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
         }
     }
 
-    function mouseMoved(mouse, viewer) {
+    function mouseMoved(mouse, sofaViewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;
         var yAxis = -1 !== axis.indexOf("y") ? true : false;
         var zAxis = -1 !== axis.indexOf("z") ? true : false;
@@ -48,13 +48,13 @@ Manipulator3D_Translation {
 
         if(2 === axisNum) { // project on a specific plane
             var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
-            var direction = viewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
+            var direction = sofaViewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
             var position = root.position.plus(direction).minus(startVector);
 
             root.position = position;
         } else if(1 === axisNum) { // project on a specific axis
             var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
-            var direction = viewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
+            var direction = sofaViewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
             var position = root.position.plus(direction).minus(startVector);
 
             root.position = position;

@@ -28,7 +28,7 @@ ToolBar {
     anchors.margins: 0
     anchors.leftMargin: 0
 
-    property var    scene: null
+    property var    sofaScene: null
     property string statusMessage: ""
     property int    statusDuration: 5000
 
@@ -45,8 +45,8 @@ ToolBar {
     }
 
     Connections {
-        target: root.scene
-        onStatusMessageChanged: statusMessage = root.scene.statusMessage;
+        target: root.sofaScene
+        onStatusMessageChanged: statusMessage = root.sofaScene.statusMessage;
     }
 
     RowLayout {

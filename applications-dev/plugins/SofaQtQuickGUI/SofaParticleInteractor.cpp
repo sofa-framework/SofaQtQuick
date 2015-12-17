@@ -46,7 +46,7 @@ typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaultt
 typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceField3;
 
 SofaParticleInteractor::SofaParticleInteractor(QObject *parent) : QObject(parent),
-    mySceneComponent(nullptr),
+    mySofaComponent(nullptr),
     myParticleIndex(-1),
     myStiffness(100),
     myNode(nullptr),
@@ -64,7 +64,7 @@ SofaParticleInteractor::~SofaParticleInteractor()
 QVector3D SofaParticleInteractor::particlePosition() const
 {
     QVector3D particlePosition(std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN());
-    if(!mySceneComponent)
+    if(!mySofaComponent)
         return particlePosition;
 
     MechanicalObject3* mechanicalObject = static_cast<MechanicalObject3*>(myMechanicalState);
@@ -87,26 +87,26 @@ QVector3D SofaParticleInteractor::interactorPosition() const
 
 bool SofaParticleInteractor::interacting() const
 {
-    return mySceneComponent && mySceneComponent->base() && -1 != myParticleIndex;
+    return mySofaComponent && mySofaComponent->base() && -1 != myParticleIndex;
 }
 
-bool SofaParticleInteractor::start(SofaComponent* sceneComponent, int particleIndex)
+bool SofaParticleInteractor::start(SofaComponent* sofaComponent, int particleIndex)
 {
     release();
 
     if(-1 == particleIndex)
         return false;
 
-    if(!sceneComponent)
+    if(!sofaComponent)
         return false;
 
-    const SofaScene* scene = sceneComponent->scene();
-    MechanicalObject3* particleMechanicalObject = dynamic_cast<MechanicalObject3*>(sceneComponent->base());
+    const SofaScene* sofaScene = sofaComponent->sofaScene();
+    MechanicalObject3* particleMechanicalObject = dynamic_cast<MechanicalObject3*>(sofaComponent->base());
 
-    if(!scene || !particleMechanicalObject)
+    if(!sofaScene || !particleMechanicalObject)
         return false;
 
-    mySceneComponent = new SofaComponent(*sceneComponent);
+    mySofaComponent = new SofaComponent(*sofaComponent);
     myParticleIndex = particleIndex;
 
     QVector3D position = QVector3D(particleMechanicalObject->getPX(myParticleIndex),
@@ -126,7 +126,7 @@ bool SofaParticleInteractor::start(SofaComponent* sceneComponent, int particleIn
     stiffSpringForcefield->addSpring(0, myParticleIndex, myStiffness, 0.1, 0.0);
     myForcefield = stiffSpringForcefield.get();
 
-    Node::SPtr node = scene->sofaSimulation()->GetRoot()->createChild("Interactor");
+    Node::SPtr node = sofaScene->sofaSimulation()->GetRoot()->createChild("Interactor");
     node->addObject(mechanicalObject);
     node->addObject(fixedConstraint);
     node->addObject(stiffSpringForcefield);
@@ -173,8 +173,8 @@ void SofaParticleInteractor::release()
 
     myParticleIndex = -1;
 
-    delete mySceneComponent;
-    mySceneComponent = nullptr;
+    delete mySofaComponent;
+    mySofaComponent = nullptr;
 
     interactingChanged(false);
 }

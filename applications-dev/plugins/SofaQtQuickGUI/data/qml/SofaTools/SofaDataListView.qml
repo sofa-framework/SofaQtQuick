@@ -22,8 +22,8 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
-import SceneComponent 1.0
-import DataListModel 1.0
+import SofaComponent 1.0
+import SofaDataListModel 1.0
 
 CollapsibleGroupBox {
     id: root
@@ -33,10 +33,10 @@ CollapsibleGroupBox {
     property int priority: 80
     contentMargin: 0
 
-    property var scene: null
-    property var sceneComponent: scene ? scene.selectedComponent : null
+    property var sofaScene: null
+    property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
 
-    enabled: scene ? scene.ready : false
+    enabled: sofaScene ? sofaScene.ready : false
 
     GridLayout {
         id: layout
@@ -52,11 +52,11 @@ CollapsibleGroupBox {
 
             property int nameLabelImplicitWidth : 16
 
-            model: DataListModel {
-                id: dataListModel
-                sceneComponent: root.sceneComponent
+            model: SofaDataListModel {
+                id: sofaDataListModel
+                sofaComponent: root.sofaComponent
 
-                onSceneComponentChanged: listView.nameLabelImplicitWidth = 16;
+                onSofaComponentChanged: listView.nameLabelImplicitWidth = 16;
             }
 
             section.property: "group"
@@ -80,23 +80,23 @@ CollapsibleGroupBox {
             delegate: Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: dataItem.height
+                height: sofaDataItem.height
                 color: index % 2 ? Qt.rgba(0.85, 0.85, 0.85, 1.0) : Qt.rgba(0.9, 0.9, 0.9, 1.0)
 
                 Rectangle {
-                    visible: dataItem.modified
-                    anchors.fill: dataItem
+                    visible: sofaDataItem.modified
+                    anchors.fill: sofaDataItem
                     color: "lightsteelblue"
                     radius: 5
                 }
 
-                DataItem {
-                    id: dataItem
+                SofaDataItem {
+                    id: sofaDataItem
                     anchors.left: parent.left
                     anchors.right: parent.right
 
-                    scene: root.scene
-                    sceneData: dataListModel.getDataById(index)
+                    sofaScene: root.sofaScene
+                    sofaData: sofaDataListModel.getDataById(index)
 
                     nameLabelWidth: listView.nameLabelImplicitWidth
                     Component.onCompleted: updateNameLabelWidth();

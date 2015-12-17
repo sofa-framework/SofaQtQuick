@@ -40,8 +40,8 @@ class SOFA_SOFAQTQUICKGUI_API SofaComponent : public QObject
     friend class SofaData;
 
 public:
-    SofaComponent(const SofaScene* scene, const sofa::core::objectmodel::Base* base);
-    SofaComponent(const SofaComponent& sceneComponent);
+    SofaComponent(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base);
+    SofaComponent(const SofaComponent& sofaComponent);
 
 public:
     Q_PROPERTY(QString name READ name)
@@ -50,17 +50,17 @@ public:
     QString name() const;
 
 public:
-    Q_INVOKABLE bool isSame(SofaComponent* sceneComponent);
+    Q_INVOKABLE bool isSame(SofaComponent* sofaComponent);
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;
 
 public:
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;
 
-    const SofaScene* scene() const;
+    const SofaScene* sofaScene() const;
 
 private:
-    const SofaScene*                                    myScene;
+    const SofaScene*                                mySofaScene;
     mutable const sofa::core::objectmodel::Base*    myBase;
 };
 

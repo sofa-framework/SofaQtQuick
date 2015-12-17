@@ -25,10 +25,10 @@ import QtGraphicalEffects 1.0
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaInteractors 1.0
-import Viewer 1.0
-import Scene 1.0
+import SofaViewer 1.0
+import SofaScene 1.0
 
-Viewer {
+SofaViewer {
     id: root
 
     clip: true
@@ -40,19 +40,19 @@ Viewer {
     culling: true
     blending: false
     antialiasingSamples: 2
-    scene: SofaApplication.scene
+    sofaScene: SofaApplication.sofaScene
     property bool defaultCameraOrthographic: false
 
     property alias interactor: interactorLoader.item
 
     Component.onCompleted: {
-        SofaApplication.addViewer(root)
+        SofaApplication.addSofaViewer(root)
 
         recreateCamera();
     }
 
     Component.onDestruction: {
-        SofaApplication.removeViewer(root)
+        SofaApplication.removeSofaViewer(root)
     }
 
 	Action{
@@ -65,19 +65,19 @@ Viewer {
         anchors.centerIn: parent
         width: 100
         height: width
-        running: scene ? scene.status === Scene.Loading : false;
+        running: sofaScene ? sofaScene.status === SofaScene.Loading : false;
     }
 
     Label {
         anchors.fill: parent
-        visible: scene ? scene.status === Scene.Error : false
+        visible: sofaScene ? sofaScene.status === SofaScene.Error : false
         color: "red"
         wrapMode: Text.WordWrap
         font.bold: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
 
-        text: scene ? "Error during scene loading\n" + scene.source.toString().replace("///", "/").replace("file:", "") : "No scene object"
+        text: sofaScene ? "Error during sofa scene loading\n" + sofaScene.source.toString().replace("///", "/").replace("file:", "") : "No sofa scene object"
     }
 
     Component {
@@ -102,9 +102,9 @@ Viewer {
     }
 
     Connections {
-        target: root.scene
+        target: root.sofaScene
         onStatusChanged: {
-            if(Scene.Ready === root.scene.status)
+            if(SofaScene.Ready === root.sofaScene.status)
                 root.recreateCamera();
         }
     }
@@ -136,20 +136,20 @@ Viewer {
     property int videoFrameNumber: 0
     property string videoName: "movie"
     Connections {
-        target: root.scene && root.saveVideo ? root.scene : null
+        target: root.sofaScene && root.saveVideo ? root.sofaScene : null
         onStepEnd: root.saveScreenshot("Captured/Movie/" + videoName + "/" + (root.videoFrameNumber++) + ".png");
     }
 
     Image {
         id: handIcon
         source: "qrc:/icon/hand.png"
-        visible: scene ? scene.particleInteractor.interacting : false
+        visible: sofaScene ? sofaScene.particleInteractor.interacting : false
         antialiasing: true
 
         Connections {
-            target: scene ? scene.particleInteractor : null
+            target: sofaScene ? sofaScene.particleInteractor : null
             onInteractorPositionChanged: {
-                var position = root.mapFromWorld(scene.particleInteractor.interactorPosition)
+                var position = root.mapFromWorld(sofaScene.particleInteractor.interactorPosition)
                 if(position.z > 0.0 && position.z < 1.0) {
                     handIcon.x = position.x - 6;
                     handIcon.y = position.y - 2;
@@ -165,7 +165,7 @@ Viewer {
         id: mouseArea
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
-        enabled: scene && scene.ready
+        enabled: sofaScene && sofaScene.ready
 
         property alias interactor: interactorLoader.item
         Loader {
@@ -179,21 +179,21 @@ Viewer {
         }
 
         onClicked: {
-            SofaApplication.setFocusedViewer(root);
+            SofaApplication.setFocusedSofaViewer(root);
 
             if(interactor)
                 interactor.mouseClicked(mouse, root);
         }
 
         onDoubleClicked: {
-            SofaApplication.setFocusedViewer(root);
+            SofaApplication.setFocusedSofaViewer(root);
 
             if(interactor)
                 interactor.mouseDoubleClicked(mouse, root);
         }
 
         onPressed: {
-            SofaApplication.setFocusedViewer(root);
+            SofaApplication.setFocusedSofaViewer(root);
 
             if(interactor)
                 interactor.mousePressed(mouse, root);
@@ -205,7 +205,7 @@ Viewer {
         }
 
         onWheel: {
-            SofaApplication.setFocusedViewer(root);
+            SofaApplication.setFocusedSofaViewer(root);
 
             if(interactor)
                 interactor.mouseWheel(wheel, root);
@@ -224,8 +224,8 @@ Viewer {
                 return;
             }
 
-            if(scene)
-                scene.keyPressed(event);
+            if(sofaScene)
+                sofaScene.keyPressed(event);
 
             if(interactor)
                 interactor.keyPressed(event, root);
@@ -239,8 +239,8 @@ Viewer {
                 return;
             }
 
-            if(scene)
-                scene.keyReleased(event);
+            if(sofaScene)
+                sofaScene.keyReleased(event);
 
             if(interactor)
                 interactor.keyReleased(event, root);
@@ -333,7 +333,7 @@ Viewer {
         visible: false
         opacity: 0.9
 
-        // avoid mouse event propagation through the toolpanel to the viewer
+        // avoid mouse event propagation through the toolpanel to the sofa viewer
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.AllButtons
@@ -348,7 +348,7 @@ Viewer {
 
             Text {
                 Layout.fillWidth: true
-                text: "Viewer parameters"
+                text: "SofaViewer parameters"
                 font.bold: true
                 color: "darkblue"
             }

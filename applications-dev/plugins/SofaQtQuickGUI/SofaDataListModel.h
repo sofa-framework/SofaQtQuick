@@ -49,11 +49,11 @@ public:
     Q_INVOKABLE void update();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaComponent* sceneComponent READ sceneComponent WRITE setSceneComponent NOTIFY sceneComponentChanged)
+    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaComponent READ sofaComponent WRITE setSofaComponent NOTIFY sofaComponentChanged)
 
 public:
-    SofaComponent* sceneComponent() const		{return mySceneComponent;}
-    void setSceneComponent(SofaComponent* newSceneComponent);
+    SofaComponent* sofaComponent() const		{return mySofaComponent;}
+    void setSofaComponent(SofaComponent* newSofaComponent);
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
@@ -62,7 +62,7 @@ protected:
 
     Q_INVOKABLE sofa::qtquick::SofaData* getDataById(int row) const;
 signals:
-    void sceneComponentChanged(SofaComponent* newSceneComponent) const;
+    void sofaComponentChanged(SofaComponent* newSofaComponent) const;
 
 private:
     enum {
@@ -82,12 +82,12 @@ private:
         sofa::core::objectmodel::BaseData*      data;
     };
 
-    Item buildDataItem(sofa::core::objectmodel::BaseData* data) const;
+    Item buildSofaDataItem(sofa::core::objectmodel::BaseData* data) const;
 
 private:
     QList<Item>             myItems;
     int                     myUpdatedCount;
-    mutable SofaComponent* mySceneComponent;
+    mutable SofaComponent*  mySofaComponent;
 
 };
 

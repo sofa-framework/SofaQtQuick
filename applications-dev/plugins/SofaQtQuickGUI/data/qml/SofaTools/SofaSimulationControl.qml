@@ -30,9 +30,9 @@ CollapsibleGroupBox {
     title: "Simulation Control"
     property int priority: 100
 
-    property var scene
+    property var sofaScene
 
-    enabled: scene ? scene.ready : false
+    enabled: sofaScene ? sofaScene.ready : false
 
     GridLayout {
         anchors.fill: parent
@@ -50,8 +50,8 @@ CollapsibleGroupBox {
             prefix: value <= 0 ? "Real-time " : ""
             suffix: " seconds"
             stepSize: 0.001
-            value: scene ? scene.dt : 0.04
-            onValueChanged: if(scene) scene.dt = value
+            value: sofaScene ? sofaScene.dt : 0.04
+            onValueChanged: if(sofaScene) sofaScene.dt = value
 
             Component.onCompleted: {
                 valueChanged();
@@ -66,8 +66,8 @@ CollapsibleGroupBox {
             id: interactionStiffnessSlider
             Layout.fillWidth: true
             maximumValue: 1000
-            value: scene ? scene.particleInteractor.stiffness : 100
-            onValueChanged: if(scene) scene.particleInteractor.stiffness = value
+            value: sofaScene ? sofaScene.particleInteractor.stiffness : 100
+            onValueChanged: if(sofaScene) sofaScene.particleInteractor.stiffness = value
             stepSize: 1
 
             Component.onCompleted: {
@@ -84,16 +84,16 @@ CollapsibleGroupBox {
             id: displayGraphButton
             Layout.columnSpan: 3
             Layout.fillWidth: true
-            text: "Display scene graph"
+            text: "Display SofaScene graph"
             tooltip: ""
             onClicked: {
-                displayGraphText.text = scene ? scene.dumpGraph() : ""
+                displayGraphText.text = sofaScene ? sofaScene.dumpGraph() : ""
                 displayGraphDialog.open();
             }
 
             Dialog {
                 id: displayGraphDialog
-                title: "Simulation Scene Graph"
+                title: "Simulation SofaScene Graph"
                 width: 800
                 height: 600
 

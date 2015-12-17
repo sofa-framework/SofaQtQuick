@@ -55,11 +55,11 @@ public slots:
     void clear();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene* scene READ scene WRITE setScene NOTIFY sceneChanged)
+    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
 
 public:
-    SofaScene* scene() const		{return myScene;}
-    void setScene(SofaScene* newScene);
+    SofaScene* sofaScene() const		{return mySofaScene;}
+    void setSofaScene(SofaScene* newScene);
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
@@ -76,7 +76,7 @@ protected:
     void handleSceneChange(SofaScene* newScene);
 
 signals:
-    void sceneChanged(sofa::qtquick::SofaScene* newScene);
+    void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
@@ -139,7 +139,7 @@ private:
     QList<Item>                     myItems;
     int                             myUpdatedCount;
 	bool							myIsDirty;
-    SofaScene*                          myScene;
+    SofaScene*                      mySofaScene;
 
 };
 

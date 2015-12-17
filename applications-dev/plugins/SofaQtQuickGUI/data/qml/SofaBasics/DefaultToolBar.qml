@@ -22,7 +22,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import SceneComponent 1.0
+import SofaComponent 1.0
 import "qrc:/SofaCommon/SofaCommonScript.js" as SofaCommonScript
 import SofaApplication 1.0
 
@@ -30,11 +30,11 @@ ToolBar {
     id: root
     implicitHeight: 25
 
-    property var scene
+    property var sofaScene
 
     Component.onCompleted: SofaApplication.toolBar = root
 
-    enabled: scene ? scene.ready : false
+    enabled: sofaScene ? sofaScene.ready : false
 
     Row {
         anchors.top: parent.top
@@ -117,13 +117,13 @@ ToolBar {
                 tooltip: animateButton.checked ? "Stop" : "Animate"
                 checkable: true
                 checked: false
-                onCheckedChanged: if(scene) scene.play = animateButton.checked
+                onCheckedChanged: if(sofaScene) sofaScene.play = animateButton.checked
 
                 Connections {
-                    target: scene
+                    target: sofaScene
                     ignoreUnknownSignals: true
                     onPlayChanged: {
-                        animateButton.checked = scene.play;
+                        animateButton.checked = sofaScene.play;
                     }
                 }
             }
@@ -137,8 +137,8 @@ ToolBar {
                 tooltip: "Step"
 
                 onClicked: {
-                    if(scene)
-                        scene.step();
+                    if(sofaScene)
+                        sofaScene.step();
                 }
             }
 
@@ -148,11 +148,11 @@ ToolBar {
                 anchors.bottom: parent.bottom
 
                 iconSource: "qrc:/icon/resetButton.png"
-                tooltip: "Reset the scene"
+                tooltip: "Reset the sofa scene"
 
                 onClicked: {
-                    if(scene)
-                        scene.reset();
+                    if(sofaScene)
+                        sofaScene.reset();
                 }
             }
         }

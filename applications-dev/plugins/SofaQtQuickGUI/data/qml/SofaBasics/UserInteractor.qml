@@ -68,52 +68,52 @@ QtObject {
     }
 
     // event
-    function mouseClicked(mouse, viewer) {
+    function mouseClicked(mouse, sofaViewer) {
         var binding = mouseClickedMapping[mouse.button];
         if(binding)
-            binding(mouse, viewer);
+            binding(mouse, sofaViewer);
     }
 
-    function mouseDoubleClicked(mouse, viewer) {
+    function mouseDoubleClicked(mouse, sofaViewer) {
         var binding = mouseDoubleClickedMapping[mouse.button];
         if(binding)
-            binding(mouse, viewer);
+            binding(mouse, sofaViewer);
     }
 
-    function mousePressed(mouse, viewer) {
+    function mousePressed(mouse, sofaViewer) {
         var binding = mousePressedMapping[mouse.button];
         if(binding)
-            binding(mouse, viewer);
+            binding(mouse, sofaViewer);
     }
 
-    function mouseReleased(mouse, viewer) {
+    function mouseReleased(mouse, sofaViewer) {
         var binding = mouseReleasedMapping[mouse.button];
         if(binding)
-            binding(mouse, viewer);
+            binding(mouse, sofaViewer);
     }
 
-    function mouseWheel(wheel, viewer) {
+    function mouseWheel(wheel, sofaViewer) {
         var binding = mouseWheelMapping;
         if(binding)
-            binding(wheel, viewer);
+            binding(wheel, sofaViewer);
     }
 
-    function mouseMoved(mouse, viewer) {
+    function mouseMoved(mouse, sofaViewer) {
         var binding = mouseMovedMapping;
         if(binding)
-            binding(mouse, viewer);
+            binding(mouse, sofaViewer);
     }
 
-    function keyPressed(event, viewer) {
+    function keyPressed(event, sofaViewer) {
         var binding = keyPressedMapping[event.key];
         if(binding)
-            binding(event, viewer);
+            binding(event, sofaViewer);
     }
 
-    function keyReleased(event, viewer) {
+    function keyReleased(event, sofaViewer) {
         var binding = keyReleasedMapping[event.key];
         if(binding)
-            binding(event, viewer);
+            binding(event, sofaViewer);
     }
 
     function init() {

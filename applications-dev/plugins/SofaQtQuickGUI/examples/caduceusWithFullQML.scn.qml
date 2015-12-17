@@ -2,7 +2,7 @@ import QtQuick 2.2
 import QtQuick.Controls 1.0
 import SofaBasics 1.0
 
-SceneInterface {
+SofaSceneInterface {
     id: root
 
     toolbar: Rectangle {

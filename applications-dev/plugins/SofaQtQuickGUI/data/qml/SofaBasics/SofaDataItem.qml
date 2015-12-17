@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
-import SceneData 1.0
+import SofaData 1.0
 
 GridLayout {
     id: root
@@ -30,9 +30,9 @@ GridLayout {
     columnSpacing: 1
     rowSpacing: 1
 
-    property var scene
-    property QtObject sceneData
-    onSceneDataChanged: updateObject();
+    property var sofaScene
+    property QtObject sofaData
+    onSofaDataChanged: updateObject();
 
     readonly property alias name:       dataObject.name
     readonly property alias description:dataObject.description
@@ -72,14 +72,14 @@ GridLayout {
     readonly property int nameLabelImplicitWidth: nameLabel.implicitWidth
 
     function updateObject() {
-        if(!sceneData)
+        if(!sofaData)
             return;
 
-        var object              = sceneData.object();
+        var object              = sofaData.object();
 
         dataObject.initing      = true;
 
-        dataObject.data         = sceneData;
+        dataObject.data         = sofaData;
         dataObject.name         = object.name;
         dataObject.description  = object.description;
         dataObject.type         = object.type;
@@ -94,18 +94,18 @@ GridLayout {
     }
 
     function updateData() {
-        if(!sceneData)
+        if(!sofaData)
             return;
 
-        sceneData.setValue(dataObject.value);
+        sofaData.setValue(dataObject.value);
         updateObject();
     }
 
     function updateLink() {
-        if(!sceneData)
+        if(!sofaData)
             return;
 
-        sceneData.setLink(linkTextField.visible ? linkTextField.text : "");
+        sofaData.setLink(linkTextField.visible ? linkTextField.text : "");
         updateObject();
     }
 
@@ -158,8 +158,8 @@ GridLayout {
             Component.onCompleted: createItem();
             Connections {
                 target: root
-                onSceneDataChanged: {
-                    if(root.sceneData)
+                onSofaDataChanged: {
+                    if(root.sofaData)
                         loader.createItem();
                     else
                         loader.destroyItem();
@@ -184,9 +184,9 @@ GridLayout {
                     loader.source = "";
                     console.warn("Type unknown for data: " + name);
                 } else {
-                    loader.setSource("qrc:/SofaDataTypes/DataType_" + type + ".qml", {"dataObject": dataObject, "scene": scene, "sceneData": sceneData});
+                    loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaScene": sofaScene, "sofaData": sofaData});
                     if(Loader.Ready !== loader.status)
-                        loader.sourceComponent = dataTypeNotSupportedComponent;
+                        loader.sourceComponent = sofaDataTypeNotSupportedComponent;
                 }
 
                 dataObject.modified = false;
@@ -292,7 +292,7 @@ GridLayout {
     }*/
 
     Component {
-        id: dataTypeNotSupportedComponent
+        id: sofaDataTypeNotSupportedComponent
         TextField {
             readOnly: true
             enabled: !readOnly

@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import SofaBasics 1.0
-import SceneComponent 1.0
+import SofaComponent 1.0
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 
 UserInteractor_MoveCamera {
@@ -31,16 +31,16 @@ UserInteractor_MoveCamera {
     function init() {
         moveCamera_init();
 
-        addMousePressedMapping(Qt.LeftButton, function(mouse, viewer) {
-            selectedManipulator = scene.selectedManipulator;
-            selectedComponent = scene.selectedComponent;
+        addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
+            selectedManipulator = sofaScene.selectedManipulator;
+            selectedComponent = sofaScene.selectedComponent;
 
-            var selectable = viewer.pickObject(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+            var selectable = sofaViewer.pickObject(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
             if(selectable) {
                 if(selectable.manipulator) {
                     selectedManipulator = selectable.manipulator;
-                } else if(selectable.sceneComponent) {
-                    selectedComponent = selectable.sceneComponent;
+                } else if(selectable.sofaComponent) {
+                    selectedComponent = selectable.sofaComponent;
                 }
             } else {
                 selectedManipulator = null;
@@ -48,43 +48,43 @@ UserInteractor_MoveCamera {
             }
 
             if(selectedManipulator) {
-                scene.selectedManipulator = selectedManipulator;
+                sofaScene.selectedManipulator = selectedManipulator;
 
                 if(selectedManipulator.mousePressed)
-                    selectedManipulator.mousePressed(mouse, viewer);
+                    selectedManipulator.mousePressed(mouse, sofaViewer);
 
                 if(selectedManipulator.mouseMoved)
                     setMouseMovedMapping(selectedManipulator.mouseMoved);
 
             } else if(selectedComponent) {
-                if(!scene.areSameComponent(scene.selectedComponent, selectedComponent)) {
-                    scene.selectedComponent = selectedComponent;
+                if(!sofaScene.areSameComponent(sofaScene.selectedComponent, selectedComponent)) {
+                    sofaScene.selectedComponent = selectedComponent;
                 }/* else {
-                    var sceneComponentParticle = viewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
-                    if(sceneComponentParticle) {
-                        scene.particleInteractor.start(sceneComponentParticle.sceneComponent, sceneComponentParticle.particleIndex);
+                    var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+                    if(sofaComponentParticle) {
+                        sofaScene.particleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
 
-                        setMouseMovedMapping(function(mouse, viewer) {
-                            var z = viewer.computeDepth(scene.particleInteractor.particlePosition());
-                            var position = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
-                            scene.particleInteractor.update(position);
+                        setMouseMovedMapping(function(mouse, sofaViewer) {
+                            var z = sofaViewer.computeDepth(sofaScene.particleInteractor.particlePosition());
+                            var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+                            sofaScene.particleInteractor.update(position);
                         });
                     }
                 }*/
             } else {
-                scene.selectedManipulator = null;
-                scene.selectedComponent = null;
+                sofaScene.selectedManipulator = null;
+                sofaScene.selectedComponent = null;
             }
         });
 
-        addMouseReleasedMapping(Qt.LeftButton, function(mouse, viewer) {
-            if(scene.particleInteractor)
-                scene.particleInteractor.release();
+        addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
+            if(sofaScene.particleInteractor)
+                sofaScene.particleInteractor.release();
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
-                selectedManipulator.mouseReleased(mouse, viewer);
+                selectedManipulator.mouseReleased(mouse, sofaViewer);
 
-            scene.selectedManipulator = null;
+            sofaScene.selectedManipulator = null;
 
             setMouseMovedMapping(null);
         });

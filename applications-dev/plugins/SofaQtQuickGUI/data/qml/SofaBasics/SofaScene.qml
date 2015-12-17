@@ -21,12 +21,12 @@ import QtQuick 2.0
 import QtQuick.Controls 1.0
 import Qt.labs.settings 1.0
 import ParticleInteractor 1.0
-import Scene 1.0
+import SofaScene 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 import SofaApplication 1.0
 
-Scene {
+SofaScene {
     id: root
 
     asynchronous: true
@@ -36,37 +36,37 @@ Scene {
     property string statusMessage: ""
 
     Component.onCompleted: {
-        SofaApplication.scene = root;
+        SofaApplication.sofaScene = root;
     }
 
     Component.onDestruction: {
-        if(root === SofaApplication.scene)
-            SofaApplication.scene = null;
+        if(root === SofaApplication.sofaScene)
+            SofaApplication.sofaScene = null;
     }
 
     onStatusChanged: {
         var path = source.toString().replace("///", "/").replace("file:", "");
         switch(status) {
-        case Scene.Loading:
-            statusMessage = 'Loading "' + path + '" please wait';
+        case SofaScene.Loading:
+            statusMessage = 'SofaScene loading "' + path + '" please wait';
             break;
-        case Scene.Error:
-            statusMessage = 'Scene "' + path + '" issued an error during loading';
+        case SofaScene.Error:
+            statusMessage = 'SofaScene "' + path + '" issued an error during loading';
             break;
-        case Scene.Ready:
-            statusMessage = 'Scene "' + path + '" loaded successfully';
+        case SofaScene.Ready:
+            statusMessage = 'SofaScene "' + path + '" loaded successfully';
             SofaSettingsScript.Recent.add(path);
             break;
         }
     }
 
     // convenience
-    readonly property bool ready: status === Scene.Ready
+    readonly property bool ready: status === SofaScene.Ready
 
     // allow us to interact with the python script controller
-    property var pythonInteractor: PythonInteractor {scene: root}
+    property var pythonInteractor: PythonInteractor {sofaScene: root}
 
-    // allow us to interact with the scene particles
+    // allow us to interact with the sofa scene particles
     property var particleInteractor: ParticleInteractor {
         stiffness: 100
 
@@ -97,7 +97,7 @@ Scene {
             return onDataValue(dataName);
         }
 
-        console.debug("ERROR: Scene - using dataValue with an invalid number of arguments:", arguments.length);
+        console.debug("ERROR: SofaScene - using dataValue with an invalid number of arguments:", arguments.length);
     }
 
     function setDataValue(dataName) {
@@ -109,7 +109,7 @@ Scene {
             return onSetDataValue(dataName, packedArguments);
         }
 
-        console.debug("ERROR: Scene - using setDataValue with an invalid number of arguments:", arguments.length);
+        console.debug("ERROR: SofaScene - using setDataValue with an invalid number of arguments:", arguments.length);
     }
 
     ///// MANIPULATOR
@@ -148,6 +148,6 @@ Scene {
         asynchronous: true
         source: root.sourceQML
 
-        property var scene: root
+        property var sofaScene: root
     }
 }

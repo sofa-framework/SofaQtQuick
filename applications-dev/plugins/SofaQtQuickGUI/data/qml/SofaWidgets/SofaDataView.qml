@@ -23,7 +23,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import SofaBasics 1.0
-import Scene 1.0
+import SofaScene 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 
 Rectangle {
@@ -42,21 +42,21 @@ Rectangle {
         id: uiSettings
         category: 0 !== root.uiId ? "ui_" + root.uiId : "dummy"
 
-        property string sceneSource
-        property string sceneDataPath
+        property string sofaSceneSource
+        property string sofaDataPath
     }
 
     function init() {
-        uiSettings.sceneSource      = Qt.binding(function() {return sceneSource;});
-        uiSettings.sceneDataPath    = Qt.binding(function() {return sceneDataPath;});
+        uiSettings.sofaSceneSource      = Qt.binding(function() {return sofaSceneSource;});
+        uiSettings.sofaDataPath    = Qt.binding(function() {return sofaDataPath;});
     }
 
     function load() {
         if(0 === uiId)
             return;
 
-        sceneSource     = uiSettings.sceneSource;
-        sceneDataPath   = uiSettings.sceneDataPath;
+        sofaSceneSource     = uiSettings.sofaSceneSource;
+        sofaDataPath   = uiSettings.sofaDataPath;
     }
 
     function setNoSettings() {
@@ -73,13 +73,13 @@ Rectangle {
         init();
     }
 
-    property Scene  scene
-    property string sceneSource: ""     // TODO: use this
-    property alias sceneDataPath: dataPathTextField
+    property SofaScene sofaScene
+    property string sofaSceneSource: ""     // TODO: use this
+    property alias sofaDataPath: dataPathTextField
     property bool showControl: true
 
     Connections {
-        target: scene
+        target: sofaScene
         onAboutToUnload:
         {
             dataPathTextField.text = "";
@@ -90,7 +90,7 @@ Rectangle {
     QtObject {
         id : d
 
-        property QtObject sceneData
+        property QtObject sofaData
     }
 
     ColumnLayout {
@@ -101,8 +101,8 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            DataItem {
-                id: dataItem
+            SofaDataItem {
+                id: sofaDataItem
                 anchors.fill: parent
                 anchors.margins: 2
 
@@ -111,14 +111,14 @@ Rectangle {
                 showLinkButton: false
                 showTrackButton: false
 
-                scene: root.scene
-                sceneData: d.sceneData
+                sofaScene: root.sofaScene
+                sofaData: d.sofaData
             }
 
             Text {
                 anchors.fill: parent
                 anchors.margins: 2
-                visible: d.sceneData ? false : true
+                visible: d.sofaData ? false : true
                 text: "No data at this path"
                 color: "darkred"
                 font.bold: true
@@ -150,15 +150,15 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.preferredWidth: toolBarFlickable.width / 2.0
                         placeholderText: "@./dataPath from root node"
-                        textColor: d.sceneData ? "green" : "black"
+                        textColor: d.sofaData ? "green" : "black"
 
-                        onTextChanged: d.sceneData = root.scene.data(dataPathTextField.text)
+                        onTextChanged: d.sofaData = root.sofaScene.data(dataPathTextField.text)
                     }
 
                     Image {
                         Layout.preferredWidth: 16
                         Layout.preferredHeight: Layout.preferredWidth
-                        source: !d.sceneData ? "qrc:/icon/invalid.png" : "qrc:/icon/correct.png"
+                        source: !d.sofaData ? "qrc:/icon/invalid.png" : "qrc:/icon/correct.png"
                     }
 
                     CheckBox {
@@ -166,9 +166,9 @@ Rectangle {
                         Layout.preferredWidth: 20
                         Layout.preferredHeight: Layout.preferredWidth
                         checked: false
-                        enabled: d.sceneData
+                        enabled: d.sofaData
 
-                        onClicked: dataItem.updateObject();
+                        onClicked: sofaDataItem.updateObject();
 
                         ToolTip {
                             anchors.fill: parent
@@ -180,8 +180,8 @@ Rectangle {
                             repeat: true
                             running: trackButton.checked
 
-                            onRunningChanged: dataItem.updateObject();
-                            onTriggered: dataItem.updateObject();
+                            onRunningChanged: sofaDataItem.updateObject();
+                            onTriggered: sofaDataItem.updateObject();
                         }
                     }
                 }

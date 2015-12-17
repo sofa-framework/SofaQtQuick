@@ -57,19 +57,19 @@ set(HEADER_FILES
 
 set(QML_FILES
     data/qml/SofaDataTypes/qmldir
-    data/qml/SofaDataTypes/DataType_boolean.qml
-    data/qml/SofaDataTypes/DataType_0to1RatioWidget.qml
-    data/qml/SofaDataTypes/DataType_array.qml
-    data/qml/SofaDataTypes/DataType_boolean.qml
-    data/qml/SofaDataTypes/DataType_BoundingBox.qml
-    data/qml/SofaDataTypes/DataType_Material.qml
-    data/qml/SofaDataTypes/DataType_OptionsGroup.qml
-    data/qml/SofaDataTypes/DataType_graph_linear.qml
-    data/qml/SofaDataTypes/DataType_graph.qml
-    data/qml/SofaDataTypes/DataType_number.qml
-    data/qml/SofaDataTypes/DataType_poissonRatio.qml
-    data/qml/SofaDataTypes/DataType_string.qml
-    data/qml/SofaDataTypes/DataType_widget_displayFlags.qml
+    data/qml/SofaDataTypes/SofaDataType_boolean.qml
+    data/qml/SofaDataTypes/SofaDataType_0to1RatioWidget.qml
+    data/qml/SofaDataTypes/SofaDataType_array.qml
+    data/qml/SofaDataTypes/SofaDataType_boolean.qml
+    data/qml/SofaDataTypes/SofaDataType_BoundingBox.qml
+    data/qml/SofaDataTypes/SofaDataType_Material.qml
+    data/qml/SofaDataTypes/SofaDataType_OptionsGroup.qml
+    data/qml/SofaDataTypes/SofaDataType_graph_linear.qml
+    data/qml/SofaDataTypes/SofaDataType_graph.qml
+    data/qml/SofaDataTypes/SofaDataType_number.qml
+    data/qml/SofaDataTypes/SofaDataType_poissonRatio.qml
+    data/qml/SofaDataTypes/SofaDataType_string.qml
+    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
     data/qml/SofaCommon/SofaCommonScript.js
     data/qml/SofaCommon/SofaToolsScript.js
     data/qml/SofaCommon/SofaSettingsScript.js
@@ -83,10 +83,9 @@ set(QML_FILES
     data/qml/SofaBasics/DefaultStatusBar.qml
     data/qml/SofaBasics/DefaultToolBar.qml
     data/qml/SofaBasics/DefaultMenuBar.qml
-    data/qml/SofaBasics/Scene.qml
-    data/qml/SofaBasics/SceneInterface.qml
-    data/qml/SofaBasics/DataItem.qml
-    data/qml/SofaBasics/DataListModel.qml
+    data/qml/SofaBasics/SofaScene.qml
+    data/qml/SofaBasics/SofaSceneInterface.qml
+    data/qml/SofaBasics/SofaDataItem.qml
     data/qml/SofaBasics/PythonInteractor.qml
     data/qml/SofaBasics/UserInteractor.qml
     data/qml/SofaBasics/Camera.qml
@@ -107,13 +106,13 @@ set(QML_FILES
     data/qml/SofaManipulators/Manipulator3D_Translation.qml
     data/qml/SofaManipulators/Manipulator3D_Rotation.qml
     data/qml/SofaTools/qmldir
-    data/qml/SofaTools/SimulationControl.qml
-    data/qml/SofaTools/SceneGraphView.qml
-    data/qml/SofaTools/DataListView.qml
-    data/qml/SofaTools/SceneToolPanel.qml
+    data/qml/SofaTools/SofaSimulationControl.qml
+    data/qml/SofaTools/SofaSceneGraphView.qml
+    data/qml/SofaTools/SofaDataListView.qml
+    data/qml/SofaTools/SofaSceneToolPanel.qml
     data/qml/SofaWidgets/qmldir
-    data/qml/SofaWidgets/Viewer.qml
-    data/qml/SofaWidgets/DataView.qml
+    data/qml/SofaWidgets/SofaViewer.qml
+    data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
     data/qml/SofaWidgets/ToolPanel.qml
     data/qml/SofaWidgets/PythonConsole.qml

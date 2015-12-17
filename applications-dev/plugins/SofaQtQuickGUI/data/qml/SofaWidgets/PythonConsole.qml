@@ -23,7 +23,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import SofaBasics 1.0
-import Scene 1.0
+import SofaScene 1.0
 import PythonConsole 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 
@@ -32,7 +32,7 @@ Rectangle {
     clip: true
     color: "lightgrey"
 
-    property var scene
+    property var sofaScene
 
     ColumnLayout {
         anchors.fill: parent
@@ -47,7 +47,7 @@ Rectangle {
             onTextChanged: cursorPosition = Math.max(0, text.length - 1)
 
             Connections {
-                target: scene
+                target: sofaScene
                 onAboutToUnload: consoleTextArea.text = ""
             }
 
@@ -108,7 +108,7 @@ Rectangle {
                         if(0 === text.length)
                             return;
 
-                        scene.pythonInteractor.run(text);
+                        sofaScene.pythonInteractor.run(text);
 
                         if(0 !== text.localeCompare(commandHistory[1])) {
                             commandHistory[0] = text;

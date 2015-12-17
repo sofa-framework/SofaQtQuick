@@ -26,15 +26,15 @@ namespace sofa
 namespace qtquick
 {
 
-SelectableSofaComponent::SelectableSofaComponent(const SofaComponent& sceneComponent) : Selectable(),
-    mySceneComponent(new SofaComponent(sceneComponent))
+SelectableSofaComponent::SelectableSofaComponent(const SofaComponent& sofaComponent) : Selectable(),
+    mySofaComponent(new SofaComponent(sofaComponent))
 {
 
 }
 
 SelectableSofaComponent::~SelectableSofaComponent()
 {
-    delete mySceneComponent;
+    delete mySofaComponent;
 }
 
 }

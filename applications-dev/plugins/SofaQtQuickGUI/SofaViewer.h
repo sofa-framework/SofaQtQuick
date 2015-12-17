@@ -70,7 +70,7 @@ public:
     ~SofaViewer();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene* scene READ scene WRITE setScene NOTIFY sceneChanged)
+    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
     Q_PROPERTY(sofa::qtquick::Camera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::SofaComponent> roots READ rootsListProperty)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
@@ -88,8 +88,8 @@ public:
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
 
-    SofaScene* scene() const        {return myScene;}
-    void setScene(SofaScene* newScene);
+    SofaScene* sofaScene() const        {return mySofaScene;}
+    void setSofaScene(SofaScene* newScene);
 
     Camera* camera() const      {return myCamera;}
     void setCamera(Camera* newCamera);
@@ -158,7 +158,7 @@ public:
     Q_INVOKABLE void saveScreenshot(const QString& path);
 
 signals:
-    void sceneChanged(sofa::qtquick::SofaScene* newScene);
+    void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
     void rootsChanged(QList<sofa::qtquick::SofaComponent> newRoots);
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
@@ -209,9 +209,9 @@ private:
 
 private:
     QOpenGLFramebufferObject*   myFBO;
-	SofaScene*						myScene;
+    SofaScene*                  mySofaScene;
 	Camera*						myCamera;
-    QList<SofaComponent*>      myRoots;
+    QList<SofaComponent*>       myRoots;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
     QImage                      myBackgroundImage;

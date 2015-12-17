@@ -22,20 +22,20 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
-import SceneListModel 1.0
+import SofaSceneListModel 1.0
 
 CollapsibleGroupBox {
     id: root
     implicitWidth: 0
 
-    title: "Scene Graph"
+    title: "Sofa Scene Graph"
     property int priority: 90
 
-    property var scene: null
+    property var sofaScene: null
     property bool activatedData: true
     property real rowHeight: 16
 
-    enabled: scene ? scene.ready : false
+    enabled: sofaScene ? sofaScene.ready : false
 
     ScrollView {
         anchors.fill: parent
@@ -46,20 +46,20 @@ CollapsibleGroupBox {
             implicitHeight: 400
             clip: true
 
-            model: SceneListModel {
+            model: SofaSceneListModel {
                 id: listModel
-                scene: root.scene
+                sofaScene: root.sofaScene
 
                 property bool dirty: true
             }
 
             Connections {
-                target: root.scene
+                target: root.sofaScene
                 onStatusChanged: {
                     listView.currentIndex = -1;
                 }
                 onStepEnd: {
-                    if(root.scene.play)
+                    if(root.sofaScene.play)
                         listModel.dirty = true;
                     else if(listModel)
                         listModel.update();
@@ -69,12 +69,12 @@ CollapsibleGroupBox {
                         listModel.update();
                 }
                 onSelectedComponentChanged: {
-                    listView.currentIndex = listModel.getComponentId(scene.selectedComponent);
+                    listView.currentIndex = listModel.getComponentId(sofaScene.selectedComponent);
                 }
             }
 
             Timer {
-                running: root.scene.play ? true : false
+                running: root.sofaScene.play ? true : false
                 repeat: true
                 interval: 200
                 onTriggered: {
@@ -88,7 +88,7 @@ CollapsibleGroupBox {
             focus: true
 
             onCurrentIndexChanged: {
-                scene.selectedComponent = listModel.getComponentById(listView.currentIndex);
+                sofaScene.selectedComponent = listModel.getComponentById(listView.currentIndex);
             }
 
             onCountChanged: {
@@ -107,7 +107,7 @@ CollapsibleGroupBox {
                 anchors.right: parent.right
                 anchors.leftMargin: depth * rowHeight
                 height: visible ? rowHeight : 0
-                visible: !(SceneListModel.Hidden & visibility)
+                visible: !(SofaSceneListModel.Hidden & visibility)
 
                 RowLayout {
                     anchors.fill: parent
@@ -120,12 +120,12 @@ CollapsibleGroupBox {
                         Image {
                             anchors.fill: parent
                             visible: collapsible
-                            source: !(SceneListModel.Collapsed & visibility) ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
+                            source: !(SofaSceneListModel.Collapsed & visibility) ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
 
                             MouseArea {
                                 anchors.fill: parent
                                 enabled: collapsible
-                                onClicked: listView.model.setCollapsed(index, !(SceneListModel.Collapsed & visibility))
+                                onClicked: listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
                             }
                         }
                     }
@@ -146,10 +146,10 @@ CollapsibleGroupBox {
                                     activatedData ? "Desactivate" :"Activate"
                                 }
                                 onTriggered: {
-                                    activatedData ? d.sceneData.setValue(0) : d.sceneData.setValue(1)
-                                    activatedData = d.sceneData.value()
+                                    activatedData ? d.sofaData.setValue(0) : d.sofaData.setValue(1)
+                                    activatedData = d.sofaData.value()
                                     // Hide/Show children of desactivated/activated node
-                                    listView.model.setCollapsed(index, !(SceneListModel.Collapsed & visibility))
+                                    listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
                                     // Change color of current item
                                     activatedData ? listView.currentItem.opacity = 1 : listView.currentItem.opacity = 0.2
                                 }
@@ -164,8 +164,8 @@ CollapsibleGroupBox {
                                 }
                                 else if (mouse.button == Qt.RightButton && isNode) {
                                     listView.currentIndex = index
-                                    d.sceneData = scene.selectedComponent.getComponentData("activated")
-                                    activatedData = d.sceneData.value()
+                                    d.sofaData = sofaScene.selectedComponent.getComponentData("activated")
+                                    activatedData = d.sofaData.value()
                                     nodeMenu.popup()
                                 }
                             }
@@ -179,6 +179,6 @@ CollapsibleGroupBox {
     QtObject {
         id : d
 
-        property QtObject sceneData
+        property QtObject sofaData
     }
 }

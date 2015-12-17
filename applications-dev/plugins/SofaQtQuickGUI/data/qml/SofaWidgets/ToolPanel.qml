@@ -30,7 +30,7 @@ Rectangle {
     clip: true
     color: "lightgrey"
 
-    property var scene: SofaApplication.scene
+    property var sofaScene: SofaApplication.sofaScene
 
     FolderListModel {
         id: folderListModel
@@ -56,7 +56,7 @@ Rectangle {
             if(contentComponent.status === Component.Error) {
                 console.error("LOADING ERROR:", contentComponent.errorString());
             } else {
-                contentList.push(contentComponent.createObject(root, {"Layout.fillWidth": true, "scene": scene}));
+                contentList.push(contentComponent.createObject(root, {"Layout.fillWidth": true, "sofaScene": sofaScene}));
             }
         }
 

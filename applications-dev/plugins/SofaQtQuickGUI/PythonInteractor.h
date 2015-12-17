@@ -68,14 +68,14 @@ public:
 	void componentComplete();
 	
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene* scene READ scene WRITE setScene /*NOTIFY sceneChanged*/)
+    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene /*NOTIFY sofaSceneChanged*/)
 
-    SofaScene* scene() const	{return myScene;}
-    void setScene(SofaScene* newScene);
+    SofaScene* sofaScene() const	{return mySofaScene;}
+    void setSofaScene(SofaScene* newScene);
 
 	
 //signals:
-//    void sceneChanged(sofa::qtquick::Scene* newScene);
+//    void sofaSceneChanged(sofa::qtquick::SofaScene* newSofaScene);
 	
 public:
     Q_INVOKABLE bool run(const QString& script);
@@ -95,7 +95,7 @@ protected:
 
 private:
 
-    SofaScene* myScene;
+    SofaScene* mySofaScene;
 	
 };
 

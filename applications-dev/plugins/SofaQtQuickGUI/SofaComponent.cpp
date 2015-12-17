@@ -29,16 +29,16 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SofaComponent::SofaComponent(const SofaScene* scene, const sofa::core::objectmodel::Base* base) : QObject(),
-    myScene(scene),
+SofaComponent::SofaComponent(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base) : QObject(),
+    mySofaScene(sofaScene),
     myBase(base)
 {
 
 }
 
-SofaComponent::SofaComponent(const SofaComponent& sceneComponent) : QObject(),
-    myScene(sceneComponent.scene()),
-    myBase(sceneComponent.base())
+SofaComponent::SofaComponent(const SofaComponent& sofaComponent) : QObject(),
+    mySofaScene(sofaComponent.sofaScene()),
+    myBase(sofaComponent.base())
 {
 
 }
@@ -52,17 +52,17 @@ QString SofaComponent::name() const
     return QString::fromStdString(base->getName());
 }
 
-bool SofaComponent::isSame(SofaComponent* sceneComponent)
+bool SofaComponent::isSame(SofaComponent* sofaComponent)
 {
-    if(!sceneComponent)
+    if(!sofaComponent)
         return false;
 
     // same wrapper => same component
-    if(this == sceneComponent)
+    if(this == sofaComponent)
         return true;
 
     // same base object => same component
-    if(base() == sceneComponent->base())
+    if(base() == sofaComponent->base())
         return true;
 
     return false;
@@ -85,17 +85,17 @@ Base* SofaComponent::base()
 const Base* SofaComponent::base() const
 {
     // check object existence
-    if(myScene && myBase)
-        if(myScene->myBases.contains(myBase))
+    if(mySofaScene && myBase)
+        if(mySofaScene->myBases.contains(myBase))
             return myBase;
 
     myBase = 0;
     return 0;
 }
 
-const SofaScene* SofaComponent::scene() const
+const SofaScene* SofaComponent::sofaScene() const
 {
-    return myScene;
+    return mySofaScene;
 }
 
 }

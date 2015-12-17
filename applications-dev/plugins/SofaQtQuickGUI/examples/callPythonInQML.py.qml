@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
 
-SceneInterface {
+SofaSceneInterface {
     id: root
 
     toolpanel: ColumnLayout {
@@ -26,7 +26,7 @@ SceneInterface {
 
                         wrapMode: Text.WordWrap
                         text: "<b>About ?</b><br />
-                            The goal of this example is to show you how to call Python functions defined in your scene to get / set data using the PythonInteractor QML object.<br />"
+                            The goal of this example is to show you how to call Python functions defined in your sofa scene to get / set data using the PythonInteractor QML object.<br />"
                     }
                 }
 
@@ -83,7 +83,7 @@ SceneInterface {
                         // the component can be moved
                         // or even be removed (this will generate a warning but no crash)
                         
-                        scene.pythonInteractor.call("script", "setGravity", vx, vy, vz);
+                        sofaScene.pythonInteractor.call("script", "setGravity", vx, vy, vz);
                     }
 
                     Component.onCompleted: {
@@ -91,7 +91,7 @@ SceneInterface {
                         // PythonScriptController given by PATH
                         // faster method for "static" component
                         
-                        setValueFromArray(scene.pythonInteractor.call("/script", "getGravity"));
+                        setValueFromArray(sofaScene.pythonInteractor.call("/script", "getGravity"));
 
                         onVxChanged.connect(update);
                         onVyChanged.connect(update);
@@ -99,12 +99,12 @@ SceneInterface {
                     }
 
                     Connections {
-                        target: scene
+                        target: sofaScene
                         
                         // PythonScriptController given by PATH
                         // faster method for "static" component
                         
-                        onStepEnd: gravity.setValueFromArray(scene.pythonInteractor.call("/script", "getGravity"));
+                        onStepEnd: gravity.setValueFromArray(sofaScene.pythonInteractor.call("/script", "getGravity"));
                     }
                 }
 
@@ -122,14 +122,14 @@ SceneInterface {
                     enabled: false
 
                     Connections {
-                        target: scene
-                        onStepEnd: if(scene.ready) pointLocation.update()
-                        onReseted: if(scene.ready) pointLocation.update()
-                        Component.onCompleted: if(scene.ready) pointLocation.update()
+                        target: sofaScene
+                        onStepEnd: if(sofaScene.ready) pointLocation.update()
+                        onReseted: if(sofaScene.ready) pointLocation.update()
+                        Component.onCompleted: if(sofaScene.ready) pointLocation.update()
                     }
 
                     function update() {
-                        setValueFromArray(scene.pythonInteractor.call("/script", "getPointLocation"));
+                        setValueFromArray(sofaScene.pythonInteractor.call("/script", "getPointLocation"));
                     }
                 }
             }

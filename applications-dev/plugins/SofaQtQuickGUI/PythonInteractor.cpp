@@ -41,7 +41,7 @@ namespace qtquick
 {
 
 PythonInteractor::PythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus()
-    , myScene(0)
+    , mySofaScene(0)
 {
 
 }
@@ -58,16 +58,16 @@ void PythonInteractor::classBegin()
 
 void PythonInteractor::componentComplete()
 {
-	if(!myScene)
-		setScene(qobject_cast<SofaScene*>(parent()));
+    if(!mySofaScene)
+        setSofaScene(qobject_cast<SofaScene*>(parent()));
 }
 
-void PythonInteractor::setScene(SofaScene* newScene)
+void PythonInteractor::setSofaScene(SofaScene* newSofaScene)
 {
-    if(newScene != myScene)
+    if(newSofaScene != mySofaScene)
     {
-        myScene = newScene;
-        //	sceneChanged(newScene); // do we really need to send a signal?
+        mySofaScene = newSofaScene;
+        //	sofaSceneChanged(newSofaScene); // do we really need to send a signal?
     }
 }
 
@@ -238,9 +238,9 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
 
 bool PythonInteractor::run(const QString& script)
 {
-    if(!myScene)
+    if(!mySofaScene)
     {
-        qWarning() << "ERROR: cannot run Python script on a null scene";
+        qWarning() << "ERROR: cannot run Python script on a null SofaScene";
         return false;
     }
 
@@ -259,15 +259,15 @@ QVariant PythonInteractor::call(const QString& pythonScriptControllerName, const
 
 bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& /*parameter*/)
 {
-    if(!myScene)
+    if(!mySofaScene)
     {
-        qWarning() << "ERROR: cannot call Python function on a null scene";
+        qWarning() << "ERROR: cannot call Python function on a null SofaScene";
         return false;
     }
 
-    if(!myScene->isReady())
+    if(!mySofaScene->isReady())
     {
-        qWarning() << "ERROR: cannot call Python function on a scene that is still loading";
+        qWarning() << "ERROR: cannot call Python function on a SofaScene that is still loading";
         return false;
     }
 
@@ -315,12 +315,12 @@ QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, con
     PythonScriptController* controller = nullptr;
 
     // try to find by path (faster)
-    void* rawController = myScene->sofaSimulation()->GetRoot()->getObject(classid(PythonScriptController), path);
+    void* rawController = mySofaScene->sofaSimulation()->GetRoot()->getObject(classid(PythonScriptController), path);
 
     if(rawController) // found by path
        controller = reinterpret_cast<PythonScriptController*>(rawController);
     else // try to find by name in the root node (slower but more generic)
-        controller = dynamic_cast<PythonScriptController*>(myScene->sofaSimulation()->GetRoot()->getObject( path ));
+        controller = dynamic_cast<PythonScriptController*>(mySofaScene->sofaSimulation()->GetRoot()->getObject( path ));
 
     if(!controller)
     {

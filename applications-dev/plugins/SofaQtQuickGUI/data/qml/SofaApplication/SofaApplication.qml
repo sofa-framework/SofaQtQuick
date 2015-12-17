@@ -35,26 +35,26 @@ SofaApplication {
     property QtObject d: QtObject {
         id: d
 
-        property var sceneListModel: null
+        property var sofaSceneListModel: null
 
-        property var focusedViewer: null
-        property var viewers: []
+        property var focusedSofaViewer: null
+        property var sofaViewers: []
 
     }
 
-////////////////////////////////////////////////// SCENE
+////////////////////////////////////////////////// SOFASCENE
 
-    property var scene: null
+    property var sofaScene: null
 
-//    // create a sceneListModel only if needed
-//    function sceneListModel() {
-//        if(null === d.sceneListModel) {
+//    // create a sofaSceneListModel only if needed
+//    function sofaSceneListModel() {
+//        if(null === d.sofaSceneListModel) {
 //            console.log("+");
-//            d.sceneListModel = SofaCommonScript.InstanciateComponent(SceneListModel, root, {"scene": root.scene});
+//            d.sofaSceneListModel = SofaCommonScript.InstanciateComponent(SofaSceneListModel, root, {"sofaScene": root.sofaScene});
 //            console.log("-");
 //        }
 
-//        return d.sceneListModel;
+//        return d.sofaSceneListModel;
 //    }
 
 ////////////////////////////////////////////////// TOOLBAR
@@ -65,25 +65,25 @@ SofaApplication {
 
     property var statusBar: null
 
-////////////////////////////////////////////////// VIEWER
+////////////////////////////////////////////////// SOFAVIEWER
 
-    readonly property alias focusedViewer: d.focusedViewer
-    readonly property alias viewers: d.viewers
+    readonly property alias focusedSofaViewer: d.focusedSofaViewer
+    readonly property alias sofaViewers: d.sofaViewers
 
-    function setFocusedViewer(viewer) {
-        d.focusedViewer = viewer;
+    function setFocusedSofaViewer(sofaViewer) {
+        d.focusedSofaViewer = sofaViewer;
     }
 
-    function addViewer(viewer) {
-        d.viewers.push(viewer)
+    function addSofaViewer(sofaViewer) {
+        d.sofaViewers.push(sofaViewer)
     }
 
-    function removeViewer(viewer) {
-        var index = d.viewers.indexOf(viewer);
+    function removeSofaViewer(sofaViewer) {
+        var index = d.sofaViewers.indexOf(sofaViewer);
         if(-1 === index)
             return;
 
-        d.viewers.splice(index, 1);
+        d.sofaViewers.splice(index, 1);
     }
 
 ////////////////////////////////////////////////// SETTINGS
@@ -116,8 +116,8 @@ SofaApplication {
         Component.onCompleted: refresh();
         onCountChanged: update();
 
-        property var refreshOnSceneLoaded: Connections {
-            target: root.scene
+        property var refreshOnSofaSceneLoaded: Connections {
+            target: root.sofaScene
             onLoaded: interactorFolderListModel.refresh();
         }
 
