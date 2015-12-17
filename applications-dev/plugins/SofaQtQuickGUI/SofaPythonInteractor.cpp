@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PythonInteractor.h"
+#include "SofaPythonInteractor.h"
 #include "SofaScene.h"
 #include "PythonConsole.h"
 
@@ -40,29 +40,29 @@ namespace sofa
 namespace qtquick
 {
 
-PythonInteractor::PythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus()
+SofaPythonInteractor::SofaPythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus()
     , mySofaScene(0)
 {
 
 }
 
-PythonInteractor::~PythonInteractor()
+SofaPythonInteractor::~SofaPythonInteractor()
 {
 	
 }
 
-void PythonInteractor::classBegin()
+void SofaPythonInteractor::classBegin()
 {
 
 }
 
-void PythonInteractor::componentComplete()
+void SofaPythonInteractor::componentComplete()
 {
     if(!mySofaScene)
         setSofaScene(qobject_cast<SofaScene*>(parent()));
 }
 
-void PythonInteractor::setSofaScene(SofaScene* newSofaScene)
+void SofaPythonInteractor::setSofaScene(SofaScene* newSofaScene)
 {
     if(newSofaScene != mySofaScene)
     {
@@ -236,7 +236,7 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
 	return value;
 }
 
-bool PythonInteractor::run(const QString& script)
+bool SofaPythonInteractor::run(const QString& script)
 {
     if(!mySofaScene)
     {
@@ -250,14 +250,14 @@ bool PythonInteractor::run(const QString& script)
 }
 
 
-QVariant PythonInteractor::call(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
+QVariant SofaPythonInteractor::call(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
     return onCall(pythonScriptControllerName, funcName, parameter);
 }
 
 
 
-bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& /*parameter*/)
+bool SofaPythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& /*parameter*/)
 {
     if(!mySofaScene)
     {
@@ -281,7 +281,7 @@ bool PythonInteractor::onCallBasicVerifications(const QString& funcName, const Q
 }
 
 
-QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScriptController, const QString& funcName, const QVariant& parameter)
+QVariant SofaPythonInteractor::onCallByController(PythonScriptController* pythonScriptController, const QString& funcName, const QVariant& parameter)
 {
     PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
     if(!pyCallableObject)
@@ -300,7 +300,7 @@ QVariant PythonInteractor::onCallByController(PythonScriptController* pythonScri
 }
 
 
-QVariant PythonInteractor::onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
+QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
     if(!onCallBasicVerifications(funcName, parameter))
         return QVariant();

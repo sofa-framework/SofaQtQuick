@@ -32,6 +32,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class An object or world space manipulator allowing us to translate things along X, Y and / or the Z axis
 class SOFA_SOFAQTQUICKGUI_API Manipulator3D_Translation : public Manipulator
 {
     Q_OBJECT

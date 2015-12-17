@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import Qt.labs.settings 1.0
-import ParticleInteractor 1.0
+import SofaParticleInteractor 1.0
 import SofaScene 1.0
 import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
@@ -64,10 +64,10 @@ SofaScene {
     readonly property bool ready: status === SofaScene.Ready
 
     // allow us to interact with the python script controller
-    property var pythonInteractor: PythonInteractor {sofaScene: root}
+    property var sofaPythonInteractor: SofaPythonInteractor {sofaScene: root}
 
     // allow us to interact with the sofa scene particles
-    property var particleInteractor: ParticleInteractor {
+    property var sofaParticleInteractor: SofaParticleInteractor {
         stiffness: 100
 
         onInteractingChanged: SofaToolsScript.Tools.overrideCursorShape = interacting ? Qt.BlankCursor : 0

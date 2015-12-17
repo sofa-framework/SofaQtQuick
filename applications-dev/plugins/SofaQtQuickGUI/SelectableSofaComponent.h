@@ -30,7 +30,7 @@ namespace sofa
 namespace qtquick
 {
 
-/// QtQuick wrapper for a selectable object representing a SceneComponent
+/// QtQuick wrapper for a selectable object representing a sofa component
 class SOFA_SOFAQTQUICKGUI_API SelectableSofaComponent : public Selectable
 {
     Q_OBJECT

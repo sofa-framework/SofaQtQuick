@@ -63,6 +63,7 @@ class SofaComponent;
 class SofaScene;
 class Manipulator;
 
+/// \class Allow us to interact with a sofa particle, typically a degree of freedom (dof) in a sofa MechanicalObject
 class SOFA_SOFAQTQUICKGUI_API SofaParticleInteractor : public QObject
 {
     Q_OBJECT

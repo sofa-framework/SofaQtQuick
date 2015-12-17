@@ -66,8 +66,8 @@ CollapsibleGroupBox {
             id: interactionStiffnessSlider
             Layout.fillWidth: true
             maximumValue: 1000
-            value: sofaScene ? sofaScene.particleInteractor.stiffness : 100
-            onValueChanged: if(sofaScene) sofaScene.particleInteractor.stiffness = value
+            value: sofaScene ? sofaScene.sofaParticleInteractor.stiffness : 100
+            onValueChanged: if(sofaScene) sofaScene.sofaParticleInteractor.stiffness = value
             stepSize: 1
 
             Component.onCompleted: {

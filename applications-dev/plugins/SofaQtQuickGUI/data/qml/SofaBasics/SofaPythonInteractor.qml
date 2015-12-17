@@ -18,9 +18,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import PythonInteractor 1.0
+import SofaPythonInteractor 1.0
 
-PythonInteractor {
+SofaPythonInteractor {
     id: root
 
     function call(scriptControllerName, funcName) {
@@ -35,6 +35,6 @@ PythonInteractor {
             return onCall(scriptControllerName, funcName, packedArguments);
         }
 
-        console.debug("ERROR: PythonInteractor - using call with an invalid number of arguments:", arguments.length);
+        console.debug("ERROR: SofaPythonInteractor - using call with an invalid number of arguments:", arguments.length);
     }
 }

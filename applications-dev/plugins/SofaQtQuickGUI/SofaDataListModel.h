@@ -38,6 +38,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class A Model allowing us to show a list of sofa data belonging to a specific sofa component in a ListView
 class SofaDataListModel : public QAbstractListModel
 {
     Q_OBJECT

@@ -29,7 +29,7 @@ namespace sofa
 namespace qtquick
 {
 
-/// QtQuick wrapper for a selectable object representing a SceneComponent particle (a dof)
+/// QtQuick wrapper for a selectable object representing a sofa particle (a dof)
 class SOFA_SOFAQTQUICKGUI_API SelectableSofaParticle : public SelectableSofaComponent
 {
     Q_OBJECT

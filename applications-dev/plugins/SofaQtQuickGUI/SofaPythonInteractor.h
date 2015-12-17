@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PYTHONINTERACTOR_H
-#define PYTHONINTERACTOR_H
+#ifndef SOFAPYTHONINTERACTOR_H
+#define SOFAPYTHONINTERACTOR_H
 
 #include "SofaQtQuickGUI.h"
 #include <QObject>
@@ -52,8 +52,8 @@ namespace qtquick
 class SofaScene;
 
 
-/// call a PythonScriptController function from qml
-class SOFA_SOFAQTQUICKGUI_API PythonInteractor : public QObject, public QQmlParserStatus
+/// \class Allow us to call a sofa PythonScriptController function from QML/JS
+class SOFA_SOFAQTQUICKGUI_API SofaPythonInteractor : public QObject, public QQmlParserStatus
 {
 	Q_OBJECT
 	Q_INTERFACES(QQmlParserStatus)
@@ -61,8 +61,8 @@ class SOFA_SOFAQTQUICKGUI_API PythonInteractor : public QObject, public QQmlPars
     typedef sofa::component::controller::PythonScriptController PythonScriptController;
 
 public:
-	PythonInteractor(QObject *parent = 0);
-	~PythonInteractor();
+    SofaPythonInteractor(QObject *parent = 0);
+    ~SofaPythonInteractor();
 
 	void classBegin();
 	void componentComplete();
@@ -103,7 +103,7 @@ private:
 
 }
 
-#endif // PYTHONINTERACTOR_H
+#endif // SOFAPYTHONINTERACTOR_H
 
 /*
 

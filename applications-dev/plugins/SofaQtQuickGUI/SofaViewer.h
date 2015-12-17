@@ -51,8 +51,8 @@ class Manipulator;
 
 class PickUsingRasterizationWorker;
 
-/// @class Display a Sofa Scene in a QQuickFramebufferObject
-/// @note Coordinate prefix meaning:
+/// \class Display a Sofa Scene in a QQuickFramebufferObject
+/// \note Coordinate prefix meaning:
 /// ws  => world space
 /// vs  => view space
 /// cs  => clip space

@@ -33,6 +33,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class A basic Python console to be able to communicate with our sofa python scene using text commands
 class SOFA_SOFAQTQUICKGUI_API PythonConsole : public QObject
 {
     Q_OBJECT

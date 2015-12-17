@@ -108,7 +108,7 @@ Rectangle {
                         if(0 === text.length)
                             return;
 
-                        sofaScene.pythonInteractor.run(text);
+                        sofaScene\.sofaPythonInteractor.run(text);
 
                         if(0 !== text.localeCompare(commandHistory[1])) {
                             commandHistory[0] = text;

@@ -37,7 +37,7 @@ namespace qtquick
 class SofaScene;
 class SofaComponent;
 
-/// QtQuick wrapper for a Sofa base data, allowing us to share a component data in a QML context
+/// QtQuick wrapper for a sofa data (i.e baseData), allowing us to share a component data in a QML context
 class SOFA_SOFAQTQUICKGUI_API SofaData : public QObject
 {
     Q_OBJECT

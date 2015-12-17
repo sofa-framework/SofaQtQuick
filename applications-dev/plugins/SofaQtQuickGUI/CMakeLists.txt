@@ -20,7 +20,7 @@ set(SOURCE_FILES
     SelectableSofaComponent.cpp
     SelectableSofaParticle.cpp
     SofaDataListModel.cpp
-    PythonInteractor.cpp
+    SofaPythonInteractor.cpp
     PythonConsole.cpp
     SofaParticleInteractor.cpp
     Manipulator.cpp
@@ -45,7 +45,7 @@ set(HEADER_FILES
     SelectableSofaComponent.h
     SelectableSofaParticle.h
     SofaDataListModel.h
-    PythonInteractor.h
+    SofaPythonInteractor.h
     PythonConsole.h
     SofaParticleInteractor.h
     Manipulator.h
@@ -86,7 +86,7 @@ set(QML_FILES
     data/qml/SofaBasics/SofaScene.qml
     data/qml/SofaBasics/SofaSceneInterface.qml
     data/qml/SofaBasics/SofaDataItem.qml
-    data/qml/SofaBasics/PythonInteractor.qml
+    data/qml/SofaBasics/SofaPythonInteractor.qml
     data/qml/SofaBasics/UserInteractor.qml
     data/qml/SofaBasics/Camera.qml
     data/qml/SofaBasics/FPSDisplay.qml
@@ -98,7 +98,7 @@ set(QML_FILES
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
     data/qml/SofaInteractors/UserInteractor_Selection.qml
-    data/qml/SofaInteractors/UserInteractor_ParticleInteractor.qml
+    data/qml/SofaInteractors/UserInteractor_SofaParticleInteractor.qml
     data/qml/SofaManipulators/qmldir
     data/qml/SofaManipulators/Manipulator.qml
     data/qml/SofaManipulators/Manipulator2D_Translation.qml

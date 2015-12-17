@@ -35,6 +35,7 @@ namespace qtquick
 
 class SofaViewer;
 
+/// \class An abstract manipulator allowing us to apply transformation on things
 class SOFA_SOFAQTQUICKGUI_API Manipulator : public QObject
 {
     Q_OBJECT

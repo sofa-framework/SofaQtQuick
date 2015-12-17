@@ -30,6 +30,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QQmlExtensionPlugin>
 
+/// \class A tool class useful to init the SofaQtQuickGUI plugin as a Qt plugin
 class SOFA_SOFAQTQUICKGUI_API SofaQtQuickGUI : public QQmlExtensionPlugin
 {
     Q_OBJECT

@@ -34,6 +34,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class A Model of the sofa scene graph allowing us to show the graph in a ListView
 class SofaSceneListModel : public QAbstractListModel, private sofa::simulation::MutationListener
 {
     Q_OBJECT

@@ -26,7 +26,7 @@ SofaSceneInterface {
 
                         wrapMode: Text.WordWrap
                         text: "<b>About ?</b><br />
-                            The goal of this example is to show you how to call Python functions defined in your sofa scene to get / set data using the PythonInteractor QML object.<br />"
+                            The goal of this example is to show you how to call Python functions defined in your sofa scene to get / set data using the sofaPythonInteractor QML object.<br />"
                     }
                 }
 
@@ -83,7 +83,7 @@ SofaSceneInterface {
                         // the component can be moved
                         // or even be removed (this will generate a warning but no crash)
                         
-                        sofaScene.pythonInteractor.call("script", "setGravity", vx, vy, vz);
+                        sofaScene.sofaPythonInteractor.call("script", "setGravity", vx, vy, vz);
                     }
 
                     Component.onCompleted: {
@@ -91,7 +91,7 @@ SofaSceneInterface {
                         // PythonScriptController given by PATH
                         // faster method for "static" component
                         
-                        setValueFromArray(sofaScene.pythonInteractor.call("/script", "getGravity"));
+                        setValueFromArray(sofaScene.sofaPythonInteractor.call("/script", "getGravity"));
 
                         onVxChanged.connect(update);
                         onVyChanged.connect(update);
@@ -104,7 +104,7 @@ SofaSceneInterface {
                         // PythonScriptController given by PATH
                         // faster method for "static" component
                         
-                        onStepEnd: gravity.setValueFromArray(sofaScene.pythonInteractor.call("/script", "getGravity"));
+                        onStepEnd: gravity.setValueFromArray(sofaScene.sofaPythonInteractor.call("/script", "getGravity"));
                     }
                 }
 
@@ -129,7 +129,7 @@ SofaSceneInterface {
                     }
 
                     function update() {
-                        setValueFromArray(sofaScene.pythonInteractor.call("/script", "getPointLocation"));
+                        setValueFromArray(sofaScene.sofaPythonInteractor.call("/script", "getPointLocation"));
                     }
                 }
             }

@@ -93,7 +93,7 @@ SofaSceneInterface {
                                     value: 0.0
                                     stepSize: 0.01
 
-                                    onValueChanged: sofaScene.pythonInteractor.call("PythonScript", "setValueAtIndex", index, value)
+                                    onValueChanged: sofaScene.sofaPythonInteractor.call("PythonScript", "setValueAtIndex", index, value)
                                 }
                                 TextField {
                                     Layout.preferredWidth: 100

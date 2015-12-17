@@ -63,7 +63,7 @@ SofaSceneInterface {
                 if(-1 === index)
                     return;
 
-                var transformationArray = sofaScene.pythonInteractor.call("moveController", "getTransformation", index);
+                var transformationArray = sofaScene.sofaPythonInteractor.call("moveController", "getTransformation", index);
                 position = Qt.vector3d(transformationArray[0], transformationArray[1], transformationArray[2]);
                 orientation = Qt.quaternion(transformationArray[6], transformationArray[3], transformationArray[4], transformationArray[5]);
             }
@@ -72,7 +72,7 @@ SofaSceneInterface {
                 if(-1 === index)
                     return;
 
-                sofaScene.pythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
+                sofaScene.sofaPythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
             }
         }
     }
@@ -174,13 +174,13 @@ SofaSceneInterface {
             onOrientationChanged: setTransformation()
 
             function getTransformation() {
-                var transformationArray = sofaScene.pythonInteractor.call("moveController", "getTransformation", index);
+                var transformationArray = sofaScene.sofaPythonInteractor.call("moveController", "getTransformation", index);
                 position = Qt.vector3d(transformationArray[0], transformationArray[1], transformationArray[2]);
                 orientation = Qt.quaternion(transformationArray[6], transformationArray[3], transformationArray[4], transformationArray[5]);
             }
 
             function setTransformation() {
-                sofaScene.pythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
+                sofaScene.sofaPythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
             }
         }
     }

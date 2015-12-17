@@ -38,19 +38,19 @@ UserInteractor_MoveCamera {
 
             var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
             if(sofaComponentParticle) {
-                sofaScene.particleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
+                sofaScene.sofaParticleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
 
                 setMouseMovedMapping(function(mouse, sofaViewer) {
-                    var z = sofaViewer.computeDepth(sofaScene.particleInteractor.particlePosition());
+                    var z = sofaViewer.computeDepth(sofaScene.sofaParticleInteractor.particlePosition());
                     var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
-                    sofaScene.particleInteractor.update(position);
+                    sofaScene.sofaParticleInteractor.update(position);
                 });
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            if(sofaScene.particleInteractor)
-                sofaScene.particleInteractor.release();
+            if(sofaScene.sofaParticleInteractor)
+                sofaScene.sofaParticleInteractor.release();
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, sofaViewer);

@@ -32,6 +32,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class An object or world space manipulator allowing us to rotate things around X, Y or the Z axis
 class SOFA_SOFAQTQUICKGUI_API Manipulator3D_Rotation : public Manipulator
 {
     Q_OBJECT

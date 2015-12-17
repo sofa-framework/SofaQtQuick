@@ -143,13 +143,13 @@ SofaViewer {
     Image {
         id: handIcon
         source: "qrc:/icon/hand.png"
-        visible: sofaScene ? sofaScene.particleInteractor.interacting : false
+        visible: sofaScene ? sofaScene.sofaParticleInteractor.interacting : false
         antialiasing: true
 
         Connections {
-            target: sofaScene ? sofaScene.particleInteractor : null
+            target: sofaScene ? sofaScene.sofaParticleInteractor : null
             onInteractorPositionChanged: {
-                var position = root.mapFromWorld(sofaScene.particleInteractor.interactorPosition)
+                var position = root.mapFromWorld(sofaScene.sofaParticleInteractor.interactorPosition)
                 if(position.z > 0.0 && position.z < 1.0) {
                     handIcon.x = position.x - 6;
                     handIcon.y = position.y - 2;
