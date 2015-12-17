@@ -34,6 +34,8 @@ ApplicationWindow {
     height: 720
     title: Qt.application.name + " - \"" + sofaScenePath + "\""
 
+    onClosing: Qt.quit()
+
     property var sofaScene: SofaScene {
         Component.onCompleted: {
             if(Qt.application.arguments.length > 1) {
