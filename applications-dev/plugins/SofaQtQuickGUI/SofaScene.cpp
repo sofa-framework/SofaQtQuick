@@ -751,7 +751,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
     {
         type = "number";
         properties.insert("step", 0.1);
-        properties.insert("decimals", 6);
+        properties.insert("decimals", 8);
     }
     else if(typeinfo->Integer())
     {

@@ -20,23 +20,47 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 
-SpinBox {
+TextField {
     id: root
 
     property var dataObject
 
     enabled: !dataObject.readOnly
-    value: dataObject.value
-    minimumValue: undefined !== dataObject.properties.min ? dataObject.properties.min : -Number.MAX_VALUE
-    maximumValue: undefined !== dataObject.properties.max ? dataObject.properties.max :  Number.MAX_VALUE
-    stepSize: undefined !== dataObject.properties.step ? dataObject.properties.step : 1
-    decimals: undefined !== dataObject.properties.decimals ? dataObject.properties.decimals : 0
+    property int decimals: dataObject.properties["decimals"]
 
-    Binding {
+    Component.onCompleted: download();
+    onTextChanged: upload();
+    onAccepted: dataObject.upload();
+
+    property var intValidator: IntValidator {
+        Component.onCompleted: {
+            var min = dataObject.properties["min"];
+            if(undefined !== min)
+                bottom = min;
+        }
+    }
+
+    property var doubleValidator: DoubleValidator {
+        decimals: root.decimals
+    }
+
+    validator: decimals > 0 ? doubleValidator : intValidator
+
+    Connections {
         target: dataObject
-        property: "value"
-        value: root.value
-        when: !dataObject.readOnly
+        onUpdated: root.download();
+    }
+
+    function download() {
+        root.text = Number(Number(dataObject.value).toFixed(decimals)).toString();
+        cursorPosition = 0;
+    }
+
+    function upload() {
+        var oldValue = Number(Number(dataObject.value).toFixed(decimals));
+        var newValue = Number(Number(root.text).toFixed(decimals));
+
+        if(oldValue !== newValue)
+            dataObject.value = newValue;
     }
 }
-

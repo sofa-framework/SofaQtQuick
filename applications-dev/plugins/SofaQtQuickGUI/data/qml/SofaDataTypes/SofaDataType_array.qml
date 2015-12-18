@@ -120,7 +120,7 @@ Loader {
                         for(var i = previousCount; i < dataObject.properties.cols; ++i)
                             values["c" + i.toString()] = dataObject.value[j][i];
 
-                            set(j, values);
+                        set(j, values);
                     }
                 }
             }
@@ -141,16 +141,11 @@ Loader {
                 readOnly: -1 === styleData.row || dataObject.readOnly || 0 === styleData.column
                 color: styleData.textColor
                 horizontalAlignment: TextEdit.AlignHCenter
-                inputMethodHints: Qt.ImhFormattedNumbersOnly
                 text: {
                     if (styleData.column === 0)
                         return styleData.row;
                     else if(-1 !== styleData.row && styleData.column !== 0) {
-                        var value = dataObject.value[styleData.row][styleData.column - 1];
-                        if("string" === typeof(value))
-                            return value;
-                        else
-                            return value.toFixed(3);
+                        return dataObject.value[styleData.row][styleData.column - 1];
                     }
 
                     return "";
@@ -165,15 +160,14 @@ Loader {
                         return;
                     }
 
-                    if(styleData.column !== 0)
+                    if(styleData.column !== 0) {
                         var oldValue = dataObject.value[styleData.row][styleData.column - 1];
-                        if("string" !== typeof(oldValue))
-                            oldValue = oldValue.toFixed(3);
 
                         var value = text;
                         if(value !== oldValue) {
                             dataObject.value[styleData.row][styleData.column - 1] = value;
                             dataObject.modified = true;
+                        }
                     }
                 }
             }
@@ -190,7 +184,6 @@ Loader {
 
             property var fields: []
             property bool innerArray: false
-            property bool useSpinBox: false
 
             Component.onCompleted: populate();
 
@@ -202,16 +195,9 @@ Loader {
                     innerArray = true;
                 }
 
-                useSpinBox = false;
-                if(values.length <= 4 && "string" !== typeof(values[0])) // TODO: WARNING : could be mixed types array (string, number, etc.)
-                    useSpinBox = true;
-
                 fields = [];
                 for(var i = 0; i < values.length; ++i)
-                    if(useSpinBox)
-                        fields[i] = spinBoxComponent.createObject(rowLayout, {index: i});
-                    else
-                        fields[i] = textFieldComponent.createObject(rowLayout, {index: i});
+                    fields[i] = textFieldComponent.createObject(rowLayout, {index: i});
 
                 update();
             }
@@ -222,10 +208,7 @@ Loader {
                     values = dataObject.value[0];
 
                 for(var i = 0; i < values.length; ++i) {
-                    if(useSpinBox)
-                        fields[i].value = values[i];
-                    else
-                        fields[i].text = values[i];
+                    fields[i].text = values[i].toString();
                 }
             }
 
@@ -246,29 +229,6 @@ Loader {
 
                         dataObject.modified = true;
                     }
-                }
-            }
-
-            Component {
-                id: spinBoxComponent
-
-                SpinBox {
-                    Layout.fillWidth: true
-                    enabled: !dataObject.readOnly
-
-                    property int index
-                    onValueChanged: {
-                        if(rowLayout.innerArray)
-                            dataObject.value[0][index] = value;
-                        else
-                            dataObject.value[index] = value;
-
-                        dataObject.modified = true;
-                    }
-
-                    decimals: 3
-                    minimumValue: -Number.MAX_VALUE
-                    maximumValue:  Number.MAX_VALUE
                 }
             }
 
