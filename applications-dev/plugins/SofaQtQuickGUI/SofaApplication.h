@@ -28,6 +28,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class Represents the whole application
 class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
 {
     Q_OBJECT

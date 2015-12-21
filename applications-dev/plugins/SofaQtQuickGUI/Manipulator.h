@@ -33,8 +33,9 @@ namespace sofa
 namespace qtquick
 {
 
-class Viewer;
+class SofaViewer;
 
+/// \class An abstract manipulator allowing us to apply transformation on things
 class SOFA_SOFAQTQUICKGUI_API Manipulator : public QObject
 {
     Q_OBJECT
@@ -84,8 +85,8 @@ public:
     Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1);
 
 public slots:
-    virtual void draw(const Viewer& viewer) const;
-    virtual void pick(const Viewer& viewer) const;
+    virtual void draw(const SofaViewer& viewer) const;
+    virtual void pick(const SofaViewer& viewer) const;
 
 signals:
     void rootManipulatorChanged(Manipulator* newRootManipulator);

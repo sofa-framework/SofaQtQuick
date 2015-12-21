@@ -32,6 +32,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class A view space manipulator allowing us to translate things along X and / or Y axis
 class SOFA_SOFAQTQUICKGUI_API Manipulator2D_Translation : public Manipulator
 {
     Q_OBJECT
@@ -51,11 +52,11 @@ signals:
     void axisChanged(QString newAxis);
 
 public slots:
-    virtual void draw(const Viewer& viewer) const;
-    virtual void pick(const Viewer& viewer) const;
+    virtual void draw(const SofaViewer& viewer) const;
+    virtual void pick(const SofaViewer& viewer) const;
 
 private:
-    void internalDraw(const Viewer& viewer, bool isPicking = false) const;
+    void internalDraw(const SofaViewer& viewer, bool isPicking = false) const;
 
 private:
     QString myAxis;

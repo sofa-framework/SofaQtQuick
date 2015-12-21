@@ -9,20 +9,20 @@ set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
     Tools.cpp
-    Viewer.cpp
+    SofaViewer.cpp
     Camera.cpp
-    Scene.cpp
-    SceneComponent.cpp
-    SceneData.cpp
-    SceneListModel.cpp
+    SofaScene.cpp
+    SofaComponent.cpp
+    SofaData.cpp
+    SofaSceneListModel.cpp
     Selectable.cpp
     SelectableManipulator.cpp
-    SelectableSceneComponent.cpp
-    SelectableSceneParticle.cpp
-    DataListModel.cpp
-    PythonInteractor.cpp
+    SelectableSofaComponent.cpp
+    SelectableSofaParticle.cpp
+    SofaDataListModel.cpp
+    SofaPythonInteractor.cpp
     PythonConsole.cpp
-    ParticleInteractor.cpp
+    SofaParticleInteractor.cpp
     Manipulator.cpp
     Manipulator2D_Translation.cpp
     Manipulator2D_Rotation.cpp
@@ -34,20 +34,20 @@ set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
     Tools.h
-    Viewer.h
+    SofaViewer.h
     Camera.h
-    Scene.h
-    SceneComponent.h
-    SceneData.h
-    SceneListModel.h
+    SofaScene.h
+    SofaComponent.h
+    SofaData.h
+    SofaSceneListModel.h
     Selectable.h
     SelectableManipulator.h
-    SelectableSceneComponent.h
-    SelectableSceneParticle.h
-    DataListModel.h
-    PythonInteractor.h
+    SelectableSofaComponent.h
+    SelectableSofaParticle.h
+    SofaDataListModel.h
+    SofaPythonInteractor.h
     PythonConsole.h
-    ParticleInteractor.h
+    SofaParticleInteractor.h
     Manipulator.h
     Manipulator2D_Translation.h
     Manipulator2D_Rotation.h
@@ -57,19 +57,19 @@ set(HEADER_FILES
 
 set(QML_FILES
     data/qml/SofaDataTypes/qmldir
-    data/qml/SofaDataTypes/DataType_boolean.qml
-    data/qml/SofaDataTypes/DataType_0to1RatioWidget.qml
-    data/qml/SofaDataTypes/DataType_array.qml
-    data/qml/SofaDataTypes/DataType_boolean.qml
-    data/qml/SofaDataTypes/DataType_BoundingBox.qml
-    data/qml/SofaDataTypes/DataType_Material.qml
-    data/qml/SofaDataTypes/DataType_OptionsGroup.qml
-    data/qml/SofaDataTypes/DataType_graph_linear.qml
-    data/qml/SofaDataTypes/DataType_graph.qml
-    data/qml/SofaDataTypes/DataType_number.qml
-    data/qml/SofaDataTypes/DataType_poissonRatio.qml
-    data/qml/SofaDataTypes/DataType_string.qml
-    data/qml/SofaDataTypes/DataType_widget_displayFlags.qml
+    data/qml/SofaDataTypes/SofaDataType_boolean.qml
+    data/qml/SofaDataTypes/SofaDataType_0to1RatioWidget.qml
+    data/qml/SofaDataTypes/SofaDataType_array.qml
+    data/qml/SofaDataTypes/SofaDataType_boolean.qml
+    data/qml/SofaDataTypes/SofaDataType_BoundingBox.qml
+    data/qml/SofaDataTypes/SofaDataType_Material.qml
+    data/qml/SofaDataTypes/SofaDataType_OptionsGroup.qml
+    data/qml/SofaDataTypes/SofaDataType_graph_linear.qml
+    data/qml/SofaDataTypes/SofaDataType_graph.qml
+    data/qml/SofaDataTypes/SofaDataType_number.qml
+    data/qml/SofaDataTypes/SofaDataType_poissonRatio.qml
+    data/qml/SofaDataTypes/SofaDataType_string.qml
+    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
     data/qml/SofaCommon/SofaCommonScript.js
     data/qml/SofaCommon/SofaToolsScript.js
     data/qml/SofaCommon/SofaSettingsScript.js
@@ -83,11 +83,10 @@ set(QML_FILES
     data/qml/SofaBasics/DefaultStatusBar.qml
     data/qml/SofaBasics/DefaultToolBar.qml
     data/qml/SofaBasics/DefaultMenuBar.qml
-    data/qml/SofaBasics/Scene.qml
-    data/qml/SofaBasics/SceneInterface.qml
-    data/qml/SofaBasics/DataItem.qml
-    data/qml/SofaBasics/DataListModel.qml
-    data/qml/SofaBasics/PythonInteractor.qml
+    data/qml/SofaBasics/SofaScene.qml
+    data/qml/SofaBasics/SofaSceneInterface.qml
+    data/qml/SofaBasics/SofaDataItem.qml
+    data/qml/SofaBasics/SofaPythonInteractor.qml
     data/qml/SofaBasics/UserInteractor.qml
     data/qml/SofaBasics/Camera.qml
     data/qml/SofaBasics/FPSDisplay.qml
@@ -99,7 +98,7 @@ set(QML_FILES
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
     data/qml/SofaInteractors/UserInteractor_Selection.qml
-    data/qml/SofaInteractors/UserInteractor_ParticleInteractor.qml
+    data/qml/SofaInteractors/UserInteractor_SofaParticleInteractor.qml
     data/qml/SofaManipulators/qmldir
     data/qml/SofaManipulators/Manipulator.qml
     data/qml/SofaManipulators/Manipulator2D_Translation.qml
@@ -107,13 +106,13 @@ set(QML_FILES
     data/qml/SofaManipulators/Manipulator3D_Translation.qml
     data/qml/SofaManipulators/Manipulator3D_Rotation.qml
     data/qml/SofaTools/qmldir
-    data/qml/SofaTools/SimulationControl.qml
-    data/qml/SofaTools/SceneGraphView.qml
-    data/qml/SofaTools/DataListView.qml
-    data/qml/SofaTools/SceneToolPanel.qml
+    data/qml/SofaTools/SofaSimulationControl.qml
+    data/qml/SofaTools/SofaSceneGraphView.qml
+    data/qml/SofaTools/SofaDataListView.qml
+    data/qml/SofaTools/SofaSceneToolPanel.qml
     data/qml/SofaWidgets/qmldir
-    data/qml/SofaWidgets/Viewer.qml
-    data/qml/SofaWidgets/DataView.qml
+    data/qml/SofaWidgets/SofaViewer.qml
+    data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
     data/qml/SofaWidgets/ToolPanel.qml
     data/qml/SofaWidgets/PythonConsole.qml

@@ -32,6 +32,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class An object or world space manipulator allowing us to rotate things around X, Y or the Z axis
 class SOFA_SOFAQTQUICKGUI_API Manipulator3D_Rotation : public Manipulator
 {
     Q_OBJECT
@@ -59,11 +60,11 @@ public:
     Q_INVOKABLE void unsetMark();
 
 public slots:
-    virtual void draw(const Viewer& viewer) const;
-    virtual void pick(const Viewer& viewer) const;
+    virtual void draw(const SofaViewer& viewer) const;
+    virtual void pick(const SofaViewer& viewer) const;
 
 private:
-    void internalDraw(const Viewer& viewer, bool isPicking = false) const;
+    void internalDraw(const SofaViewer& viewer, bool isPicking = false) const;
 
 private:
     QString myAxis;

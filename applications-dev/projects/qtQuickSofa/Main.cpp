@@ -21,8 +21,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 int main(int argc, char **argv)
 {
-	// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load sofa scene containing calls to OpenGL functions (e.g. containing OglModel)
-	sofa::qtquick::Tools::initialization();
+    // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
+    sofa::qtquick::Tools::Initialization();
 
     QApplication app(argc, argv);
     QQmlApplicationEngine applicationEngine;

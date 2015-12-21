@@ -28,7 +28,7 @@ import SofaApplication 1.0
 MenuBar {
     id: menuBar
 
-    property var scene: null
+    property var sofaScene: null
 
     property list<QtObject> objects: [
 
@@ -38,7 +38,7 @@ MenuBar {
             text: "&Open..."
             shortcut: "Ctrl+O"
             onTriggered: openSofaSceneDialog.open();
-            tooltip: "Open a Sofa Scene"
+            tooltip: "Open a SofaScene"
         },
 
         Action {
@@ -46,8 +46,8 @@ MenuBar {
             onTriggered: {
                 var title = source.text.toString();
                 var source = title.replace(/^.*"(.*)"$/m, "$1");
-                scenePath = source;
-                scene.source = "file:" + source
+                sofaScenePath = source;
+                sofaScene.source = "file:" + source
             }
         },
 
@@ -62,7 +62,7 @@ MenuBar {
             id: reloadAction
             text: "&Reload"
             shortcut: "Ctrl+R"
-            onTriggered: scene.reload();
+            onTriggered: sofaScene.reload();
             tooltip: "Reload the Sofa Scene"
         },
 
@@ -70,7 +70,7 @@ MenuBar {
 //            id: saveAction
 //            text: "&Save"
 //            shortcut: "Ctrl+S"
-//            onTriggered: if(0 == filePath.length) saveSofaSceneDialog.open(); else scene.save(filePath);
+//            onTriggered: if(0 == filePath.length) saveSofaSceneDialog.open(); else sofaScene.save(filePath);
 //            tooltip: "Save the Sofa Scene"
 //        },
 
@@ -80,7 +80,7 @@ MenuBar {
             shortcut: "s"
             onTriggered:
             {
-                scene.takeScreenshot();
+                sofaScene.takeScreenshot();
                 saveSofaSceneScreenshotDialog.open();
             }
             tooltip: "Save the Sofa Scene"
@@ -108,11 +108,11 @@ MenuBar {
             tooltip: "Open a Sofa Scene"
             checkable: true
             checked: false
-            onTriggered: if(scene) scene.play = checked
+            onTriggered: if(sofaScene) sofaScene.play = checked
 
-            property var sceneConnection: Connections {
-                target: scene
-                onPlayChanged: simulateAction.checked = scene.play
+            property var sofaSceneConnection: Connections {
+                target: sofaScene
+                onPlayChanged: simulateAction.checked = sofaScene.play
             }
         },
 
@@ -139,23 +139,23 @@ MenuBar {
         MenuItem {action: openAction}
         Menu {
             id: recentMenu
-            title: "Recent scenes"
+            title: "Recent sofa scenes"
 
             visible: 0 !== items.length
 
             function update() {
                 recentMenu.clear();
-                var sceneList = SofaSettingsScript.Recent.sceneList();
-                if(0 === sceneList.length)
+                var sofaSceneList = SofaSettingsScript.Recent.sofaSceneList();
+                if(0 === sofaSceneList.length)
                     return;
 
-                for(var j = 0; j < sceneList.length; ++j) {
-                    var sceneSource = sceneList[j];
-                    if(0 === sceneSource.length)
+                for(var j = 0; j < sofaSceneList.length; ++j) {
+                    var sofaSceneSource = sofaSceneList[j];
+                    if(0 === sofaSceneSource.length)
                         continue;
 
-                    var sceneName = sceneSource.replace(/^.*[//\\]/m, "");
-                    var title = j.toString() + " - " + sceneName + " - \"" + sceneSource + "\"";
+                    var sofaSceneName = sofaSceneSource.replace(/^.*[//\\]/m, "");
+                    var title = j.toString() + " - " + sofaSceneName + " - \"" + sofaSceneSource + "\"";
 
                     var openRecentItem = recentMenu.addItem(title);
                     openRecentItem.action = openRecentAction;
@@ -176,7 +176,7 @@ MenuBar {
 
             Connections {
                 target: SofaSettingsScript.Recent
-                onScenesChanged: recentMenu.update()
+                onSofaScenesChanged: recentMenu.update()
             }
         }
 
@@ -191,7 +191,7 @@ MenuBar {
     Menu {
         title: "&Simulation"
         visible: true
-        enabled: scene && scene.ready
+        enabled: sofaScene && sofaScene.ready
 
         MenuItem {action: simulateAction}
     }

@@ -22,21 +22,21 @@ import Qt.labs.settings 1.0
 Settings {
     category: "recent"
 
-    property string scenes      // recently opened scenes
+    property string sofaScenes      // recently opened sofa scenes
 
     function add(path) {
-        scenes = path + ";" + scenes.replace(path + ";", "");
+        sofaScenes = path + ";" + sofaScenes.replace(path + ";", "");
     }
 
     function mostRecent() {
-        return "file:" + scenes.replace(/;.*$/m, "");
+        return "file:" + sofaScenes.replace(/;.*$/m, "");
     }
 
-    function sceneList() {
-        return scenes.split(';');
+    function sofaSceneList() {
+        return sofaScenes.split(';');
     }
 
     function clear() {
-        scenes = "";
+        sofaScenes = "";
     }
 }

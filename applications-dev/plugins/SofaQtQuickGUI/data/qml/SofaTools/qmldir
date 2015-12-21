@@ -1,4 +1,4 @@
-SceneGraphView 1.0 SceneGraphView.qml
-DataListView 1.0 DataListView.qml
-SimulationControl 1.0 SimulationControl.qml
-SceneToolPanel 1.0 SceneToolPanel.qml
+SofaSceneGraphView 1.0 SofaSceneGraphView.qml
+SofaDataListView 1.0 SofaDataListView.qml
+SofaSimulationControl 1.0 SofaSimulationControl.qml
+SofaSceneToolPanel 1.0 SofaSceneToolPanel.qml

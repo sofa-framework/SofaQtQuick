@@ -26,36 +26,36 @@ Manipulator2D_Rotation {
     property real startAngle: 0.0
     property var  startOrientation
 
-    function mousePressed(mouse, viewer) {
+    function mousePressed(mouse, sofaViewer) {
         // project on a specific plane parallel to our view plane
-        var z = viewer.computeDepth(root.position);
-        var position = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+        var z = sofaViewer.computeDepth(root.position);
+        var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
 
         var direction = position.minus(root.position).normalized();
-        startAngle = Math.acos(viewer.camera.up().dotProduct(direction));
-        if(viewer.camera.right().dotProduct(direction) < 0.0)
+        startAngle = Math.acos(sofaViewer.camera.up().dotProduct(direction));
+        if(sofaViewer.camera.right().dotProduct(direction) < 0.0)
             startAngle = -startAngle;
 
         startOrientation = Qt.quaternion(root.orientation.scalar, root.orientation.x, root.orientation.y, root.orientation.z);
     }
 
-    function mouseMoved(mouse, viewer) {
+    function mouseMoved(mouse, sofaViewer) {
         // project on a specific plane parallel to our view plane
-        var z = viewer.computeDepth(root.position);
-        var position = viewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+        var z = sofaViewer.computeDepth(root.position);
+        var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
 
         var direction = position.minus(root.position).normalized();
-        var angle = Math.acos(viewer.camera.up().dotProduct(direction));
-        if(viewer.camera.right().dotProduct(direction) < 0.0)
+        var angle = Math.acos(sofaViewer.camera.up().dotProduct(direction));
+        if(sofaViewer.camera.right().dotProduct(direction) < 0.0)
             angle = -angle;
 
         setMark(startAngle, angle);
 
-        var orientation = quaternionFromAxisAngle(viewer.camera.direction().normalized(), (angle - startAngle) / Math.PI * 180.0);
+        var orientation = quaternionFromAxisAngle(sofaViewer.camera.direction().normalized(), (angle - startAngle) / Math.PI * 180.0);
         root.orientation = quaternionMultiply(orientation, startOrientation);
     }
 
-    function mouseReleased(mouse, viewer) {
+    function mouseReleased(mouse, sofaViewer) {
         unsetMark();
     }
 }

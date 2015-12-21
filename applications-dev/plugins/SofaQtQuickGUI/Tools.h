@@ -36,6 +36,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class a set of useful functions
 class SOFA_SOFAQTQUICKGUI_API Tools : public QObject
 {
     Q_OBJECT
@@ -71,7 +72,7 @@ public:
 	/// Centralized prerequisite for most sofaqtquick applications.
 	/// Every applications will be updated when modifying this code.
 	/// IMPORTANT NOTE: To be called in the main function BEFORE the QApplication object creation
-	static bool initialization();
+    static bool Initialization();
 
     /// Centralized common settings for most sofaqtquick applications.
     /// Every applications will be updated when modifying this code.

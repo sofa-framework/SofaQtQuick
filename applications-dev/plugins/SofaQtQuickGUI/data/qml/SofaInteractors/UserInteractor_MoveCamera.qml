@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import SofaBasics 1.0
-import SceneComponent 1.0
+import SofaComponent 1.0
 import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 
 UserInteractor {
@@ -34,23 +34,23 @@ UserInteractor {
 
     function moveCamera_init() {
 
-        addMouseDoubleClickedMapping(Qt.LeftButton, function(mouse, viewer) {
-            var position = viewer.projectOnGeometry(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+        addMouseDoubleClickedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
+            var position = sofaViewer.projectOnGeometry(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
             if(1.0 === position.w) {
-                viewer.camera.target = position.toVector3d();
-                viewer.crosshairGizmo.pop();
+                sofaViewer.camera.target = position.toVector3d();
+                sofaViewer.crosshairGizmo.pop();
             }
         });
 
-        addMousePressedMapping(Qt.RightButton, function(mouse, viewer) {
+        addMousePressedMapping(Qt.RightButton, function(mouse, sofaViewer) {
             previousX = mouse.x;
             previousY = mouse.y;
 
-            viewer.crosshairGizmo.show();
+            sofaViewer.crosshairGizmo.show();
             SofaToolsScript.Tools.overrideCursorShape = Qt.ClosedHandCursor;
 
-            setMouseMovedMapping(function(mouse, viewer) {
-                if(!viewer.camera)
+            setMouseMovedMapping(function(mouse, sofaViewer) {
+                if(!sofaViewer.camera)
                     return;
 
                 var angleAroundX = 0.0;
@@ -64,56 +64,56 @@ UserInteractor {
                     angleAroundY = (previousX - mouse.x) / 180.0 * Math.PI * turnSpeed;
                 }
 
-                viewer.camera.turn(angleAroundX, angleAroundY, angleAroundZ);
+                sofaViewer.camera.turn(angleAroundX, angleAroundY, angleAroundZ);
 
                 previousX = mouse.x;
                 previousY = mouse.y;
             });
         });
 
-        addMouseReleasedMapping(Qt.RightButton, function(mouse, viewer) {
+        addMouseReleasedMapping(Qt.RightButton, function(mouse, sofaViewer) {
             setMouseMovedMapping(null);
 
             SofaToolsScript.Tools.overrideCursorShape = 0;
-            viewer.crosshairGizmo.hide();
+            sofaViewer.crosshairGizmo.hide();
         });
 
-        addMouseDoubleClickedMapping(Qt.RightButton, function(mouse, viewer) {
-            viewer.camera.alignCameraAxis();
+        addMouseDoubleClickedMapping(Qt.RightButton, function(mouse, sofaViewer) {
+            sofaViewer.camera.alignCameraAxis();
         });
 
-        addMousePressedMapping(Qt.MiddleButton, function(mouse, viewer) {
+        addMousePressedMapping(Qt.MiddleButton, function(mouse, sofaViewer) {
             previousX = mouse.x;
             previousY = mouse.y;
 
-            viewer.crosshairGizmo.show();
+            sofaViewer.crosshairGizmo.show();
             SofaToolsScript.Tools.overrideCursorShape = Qt.ClosedHandCursor;
 
             setMouseMovedMapping(function(mouse) {
-                if(!viewer.camera)
+                if(!sofaViewer.camera)
                     return;
 
-                var screenToScene = viewer.camera.target.minus(viewer.camera.eye()).length();
+                var screenToScene = sofaViewer.camera.target.minus(sofaViewer.camera.eye()).length();
 
                 var moveX = (mouse.x - previousX) * screenToScene * moveSpeed;
                 var moveY = (mouse.y - previousY) * screenToScene * moveSpeed;
-                viewer.camera.move(-moveX, moveY, 0.0);
+                sofaViewer.camera.move(-moveX, moveY, 0.0);
 
                 previousX = mouse.x;
                 previousY = mouse.y;
             });
         });
 
-        addMouseReleasedMapping(Qt.MiddleButton, function(mouse, viewer) {
+        addMouseReleasedMapping(Qt.MiddleButton, function(mouse, sofaViewer) {
             setMouseMovedMapping(null);
 
             SofaToolsScript.Tools.overrideCursorShape = 0;
-            viewer.crosshairGizmo.hide();
+            sofaViewer.crosshairGizmo.hide();
         });
 
-        setMouseWheelMapping(function(wheel, viewer) {
+        setMouseWheelMapping(function(wheel, sofaViewer) {
             
-            if(!viewer.camera)
+            if(!sofaViewer.camera)
                 return;
 
             if(0 === wheel.angleDelta.y)
@@ -130,7 +130,7 @@ UserInteractor {
                 factor *= zoomSpeed;
             }
 
-            viewer.camera.zoom(factor);
+            sofaViewer.camera.zoom(factor);
 
             wheel.accepted = true;
         });

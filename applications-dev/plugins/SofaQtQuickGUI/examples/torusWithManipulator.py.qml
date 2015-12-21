@@ -6,7 +6,7 @@ import Qt.labs.settings 1.0
 import SofaBasics 1.0
 import SofaManipulators 1.0
 
-SceneInterface {
+SofaSceneInterface {
     id: root
 
     // define a view space manipulator component
@@ -16,7 +16,7 @@ SceneInterface {
         Manipulator {
             id: manipulator
 
-            property var scene
+            property var sofaScene
             property int index: -1
 
             Manipulator2D_Translation {
@@ -63,7 +63,7 @@ SceneInterface {
                 if(-1 === index)
                     return;
 
-                var transformationArray = scene.pythonInteractor.call("moveController", "getTransformation", index);
+                var transformationArray = sofaScene.sofaPythonInteractor.call("moveController", "getTransformation", index);
                 position = Qt.vector3d(transformationArray[0], transformationArray[1], transformationArray[2]);
                 orientation = Qt.quaternion(transformationArray[6], transformationArray[3], transformationArray[4], transformationArray[5]);
             }
@@ -72,7 +72,7 @@ SceneInterface {
                 if(-1 === index)
                     return;
 
-                scene.pythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
+                sofaScene.sofaPythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
             }
         }
     }
@@ -84,7 +84,7 @@ SceneInterface {
         Manipulator {
             id: manipulator
 
-            property var scene
+            property var sofaScene
             property int index: -1
 
             Manipulator3D_Translation {
@@ -174,25 +174,25 @@ SceneInterface {
             onOrientationChanged: setTransformation()
 
             function getTransformation() {
-                var transformationArray = scene.pythonInteractor.call("moveController", "getTransformation", index);
+                var transformationArray = sofaScene.sofaPythonInteractor.call("moveController", "getTransformation", index);
                 position = Qt.vector3d(transformationArray[0], transformationArray[1], transformationArray[2]);
                 orientation = Qt.quaternion(transformationArray[6], transformationArray[3], transformationArray[4], transformationArray[5]);
             }
 
             function setTransformation() {
-                scene.pythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
+                sofaScene.sofaPythonInteractor.call("moveController", "setTransformation", index, [position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.scalar]);
             }
         }
     }
 
-    // retrieve the selected component in the scene
+    // retrieve the selected component in the sofa scene
     property int currentIndex: -1
     Connections {
-        target: scene
+        target: sofaScene
         onSelectedComponentChanged: {
-            var selectedComponent = scene.selectedComponent;
+            var selectedComponent = sofaScene.selectedComponent;
             if(selectedComponent) {
-                var selectedComponentName = scene.selectedComponent.name;
+                var selectedComponentName = sofaScene.selectedComponent.name;
 
                 // deduce the component index from its name
                 currentIndex = Number(selectedComponentName.slice(selectedComponentName.lastIndexOf("_") + 1));
@@ -209,9 +209,9 @@ SceneInterface {
         // in this way, we only see manipulators of the selected component
 
         for(var i = 0; i < 5; ++i)
-            scene.addManipulator(manipulator2DComponent.createObject(root, {scene: scene, index: i, visible: Qt.binding(function () {return this.index == root.currentIndex;})}));
+            sofaScene.addManipulator(manipulator2DComponent.createObject(root, {sofaScene: sofaScene, index: i, visible: Qt.binding(function () {return this.index == root.currentIndex;})}));
 
         for(var i = 5; i < 10; ++i)
-            scene.addManipulator(manipulator3DComponent.createObject(root, {scene: scene, index: i, visible: Qt.binding(function () {return this.index == root.currentIndex;})}));
+            sofaScene.addManipulator(manipulator3DComponent.createObject(root, {sofaScene: sofaScene, index: i, visible: Qt.binding(function () {return this.index == root.currentIndex;})}));
     }
 }

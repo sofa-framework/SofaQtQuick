@@ -247,7 +247,7 @@ void Tools::CopySettings(const QSettings& src, QSettings& dst)
     SettingsCopyGroupsHelper(src, dst);
 }
 
-bool Tools::initialization()
+bool Tools::Initialization()
 {
 	QGuiApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 

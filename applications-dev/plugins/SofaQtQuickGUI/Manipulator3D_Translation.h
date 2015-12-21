@@ -32,6 +32,7 @@ namespace sofa
 namespace qtquick
 {
 
+/// \class An object or world space manipulator allowing us to translate things along X, Y and / or the Z axis
 class SOFA_SOFAQTQUICKGUI_API Manipulator3D_Translation : public Manipulator
 {
     Q_OBJECT
@@ -51,11 +52,11 @@ signals:
     void axisChanged(QString newAxis);
 
 public slots:
-    virtual void draw(const Viewer& viewer) const;
-    virtual void pick(const Viewer& viewer) const;
+    virtual void draw(const SofaViewer& viewer) const;
+    virtual void pick(const SofaViewer& viewer) const;
 
 private:
-    void internalDraw(const Viewer& viewer, bool isPicking = false) const;
+    void internalDraw(const SofaViewer& viewer, bool isPicking = false) const;
 
 private:
     QString myAxis;
