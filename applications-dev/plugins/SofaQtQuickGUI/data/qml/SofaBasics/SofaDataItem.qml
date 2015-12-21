@@ -64,14 +64,8 @@ GridLayout {
 
         property bool readOnly: initing || root.readOnly || properties.readOnly || trackButton.checked || linkButton.checked
 
-        signal updated;
-
-        onValueChanged: modified = true;
-        onModifiedChanged: if(modified && properties.autoUpdate) upload();
-
-        function upload() {
-            root.updateData();
-        }
+        onValueChanged: modified = true
+        onModifiedChanged: if(modified && properties.autoUpdate) root.updateData();
     }
 
     property int nameLabelWidth: -1
@@ -97,8 +91,6 @@ GridLayout {
         dataObject.initing      = false;
 
         dataObject.modified     = false;
-
-        dataObject.updated();
     }
 
     function updateData() {
