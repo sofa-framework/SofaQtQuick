@@ -20,5 +20,6 @@
         <file>icon/resetButton.png</file>
         <file>icon/stepButton.png</file>
         <file>icon/stopButton.png</file>
+        <file>icon/subWindow.png</file>
     </qresource>
 </RCC>
