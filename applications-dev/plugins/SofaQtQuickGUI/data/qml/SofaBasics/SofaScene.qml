@@ -29,7 +29,7 @@ import SofaApplication 1.0
 SofaScene {
     id: root
 
-    asynchronous: true
+    asynchronous: false
     header: ""
     source: ""
     sourceQML: ""
