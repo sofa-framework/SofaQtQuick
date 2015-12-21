@@ -27,7 +27,6 @@ import SofaSceneListModel 1.0
 CollapsibleGroupBox {
     id: root
     implicitWidth: 0
-    //implicitHeight: listView.contentHeight + 10
 
     title: "Sofa Scene Graph"
     property int priority: 90
@@ -38,132 +37,137 @@ CollapsibleGroupBox {
 
     enabled: sofaScene ? sofaScene.ready : false
 
-    ListView {
-        id: listView
+    ScrollView {
         anchors.fill: parent
-        //clip: true
+        implicitHeight: Math.min(listView.implicitHeight, listView.contentHeight)
 
-        model: SofaSceneListModel {
-            id: listModel
-            sofaScene: root.sofaScene
+        ListView {
+            id: listView
+            implicitHeight: 400
+            clip: true
 
-            property bool dirty: true
-        }
+            model: SofaSceneListModel {
+                id: listModel
+                sofaScene: root.sofaScene
 
-        Connections {
-            target: root.sofaScene
-            onStatusChanged: {
-                listView.currentIndex = -1;
+                property bool dirty: true
             }
-            onStepEnd: {
-                if(root.sofaScene.play)
-                    listModel.dirty = true;
-                else if(listModel)
-                    listModel.update();
-            }
-            onReseted: {
-                if(listModel)
-                    listModel.update();
-            }
-            onSelectedComponentChanged: {
-                listView.currentIndex = listModel.getComponentId(sofaScene.selectedComponent);
-            }
-        }
 
-        Timer {
-            running: root.sofaScene.play ? true : false
-            repeat: true
-            interval: 200
-            onTriggered: {
-                if(listModel.dirty) {
-                    listModel.update()
-                    listModel.dirty = false;
+            Connections {
+                target: root.sofaScene
+                onStatusChanged: {
+                    listView.currentIndex = -1;
+                }
+                onStepEnd: {
+                    if(root.sofaScene.play)
+                        listModel.dirty = true;
+                    else if(listModel)
+                        listModel.update();
+                }
+                onReseted: {
+                    if(listModel)
+                        listModel.update();
+                }
+                onSelectedComponentChanged: {
+                    listView.currentIndex = listModel.getComponentId(sofaScene.selectedComponent);
                 }
             }
-        }
 
-        focus: true
+            Timer {
+                running: root.sofaScene.play ? true : false
+                repeat: true
+                interval: 200
+                onTriggered: {
+                    if(listModel.dirty) {
+                        listModel.update()
+                        listModel.dirty = false;
+                    }
+                }
+            }
 
-        onCurrentIndexChanged: {
-            sofaScene.selectedComponent = listModel.getComponentById(listView.currentIndex);
-        }
+            focus: true
 
-        onCountChanged: {
-            if(currentIndex >= count)
-                currentIndex = -1;
-        }
+            onCurrentIndexChanged: {
+                sofaScene.selectedComponent = listModel.getComponentById(listView.currentIndex);
+            }
 
-        highlightMoveDuration: 0
-        highlight: Rectangle {
-            color: "lightsteelblue";
-            radius: 5
-        }
+            onCountChanged: {
+                if(currentIndex >= count)
+                    currentIndex = -1;
+            }
 
-        delegate: Item {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.leftMargin: depth * rowHeight
-            height: visible ? rowHeight : 0
-            visible: !(SofaSceneListModel.Hidden & visibility)
+            highlightMoveDuration: 0
+            highlight: Rectangle {
+                color: "lightsteelblue";
+                radius: 5
+            }
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 0
+            delegate: Item {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: depth * rowHeight
+                height: visible ? rowHeight : 0
+                visible: !(SofaSceneListModel.Hidden & visibility)
 
-                Item {
-                    Layout.preferredHeight: rowHeight
-                    Layout.preferredWidth: Layout.preferredHeight
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 0
 
-                    Image {
-                        anchors.fill: parent
-                        visible: collapsible
-                        source: !(SofaSceneListModel.Collapsed & visibility) ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
+                    Item {
+                        Layout.preferredHeight: rowHeight
+                        Layout.preferredWidth: Layout.preferredHeight
 
+                        Image {
+                            anchors.fill: parent
+                            visible: collapsible
+                            source: !(SofaSceneListModel.Collapsed & visibility) ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
+
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: collapsible
+                                onClicked: listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: (multiparent ? "Multi" : "") + (0 !== type.length || 0 !== name.length ? type + " - " + name : "")
+                        color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
+                        font.bold: isNode
+
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: rowHeight
+
+                        // Menu to activate or desactivate a node
+                        Menu {
+                            id: nodeMenu
+                            MenuItem {
+                                text: {
+                                    activatedData ? "Desactivate" :"Activate"
+                                }
+                                onTriggered: {
+                                    activatedData ? d.sofaData.setValue(0) : d.sofaData.setValue(1)
+                                    activatedData = d.sofaData.value()
+                                    // Hide/Show children of desactivated/activated node
+                                    listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
+                                    // Change color of current item
+                                    activatedData ? listView.currentItem.opacity = 1 : listView.currentItem.opacity = 0.2
+                                }
+                            }
+                        }
                         MouseArea {
                             anchors.fill: parent
-                            enabled: collapsible
-                            onClicked: listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
-                        }
-                    }
-                }
-
-                Text {
-                    text: (multiparent ? "Multi" : "") + (0 !== type.length || 0 !== name.length ? type + " - " + name : "")
-                    color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
-                    font.bold: isNode
-
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: rowHeight
-
-                    // Menu to activate or desactivate a node
-                    Menu {
-                        id: nodeMenu
-                        MenuItem {
-                            text: {
-                                activatedData ? "Desactivate" :"Activate"
-                            }
-                            onTriggered: {
-                                activatedData ? d.sofaData.setValue(0) : d.sofaData.setValue(1)
-                                activatedData = d.sofaData.value()
-                                // Hide/Show children of desactivated/activated node
-                                listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
-                                // Change color of current item
-                                activatedData ? listView.currentItem.opacity = 1 : listView.currentItem.opacity = 0.2
-                            }
-                        }
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-                        onClicked: {
-                            if (mouse.button == Qt.LeftButton) {
-                                listView.currentIndex = index
-                            }
-                            else if (mouse.button == Qt.RightButton && isNode) {
-                                listView.currentIndex = index
-                                d.sofaData = sofaScene.selectedComponent.getComponentData("activated")
-                                activatedData = d.sofaData.value()
-                                nodeMenu.popup()
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                            onClicked: {
+                                if (mouse.button == Qt.LeftButton) {
+                                    listView.currentIndex = index
+                                }
+                                else if (mouse.button == Qt.RightButton && isNode) {
+                                    listView.currentIndex = index
+                                    d.sofaData = sofaScene.selectedComponent.getComponentData("activated")
+                                    activatedData = d.sofaData.value()
+                                    nodeMenu.popup()
+                                }
                             }
                         }
                     }

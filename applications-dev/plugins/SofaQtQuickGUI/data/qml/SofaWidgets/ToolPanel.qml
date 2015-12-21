@@ -56,7 +56,7 @@ Rectangle {
             if(contentComponent.status === Component.Error) {
                 console.error("LOADING ERROR:", contentComponent.errorString());
             } else {
-                contentList.push(contentComponent.createObject(root, {"Layout.fillWidth": true, "Layout.maximumHeight": 400, "sofaScene": sofaScene}));
+                contentList.push(contentComponent.createObject(root, {"Layout.fillWidth": true, "sofaScene": sofaScene}));
             }
         }
 
@@ -94,7 +94,7 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.RightButton           
+        acceptedButtons: Qt.RightButton
         onClicked: if(contextMenu) contextMenu.popup()
     }
 
