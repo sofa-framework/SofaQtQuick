@@ -33,32 +33,46 @@ Item {
         anchors.centerIn: parent
         enabled: !dataObject.readOnly
         style: SwitchStyle {
-            groove: Rectangle {
+            groove: Item {
                 implicitWidth: 60
                 implicitHeight: 20
                 Rectangle {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
-                    width: parent.width/2
-                    height: parent.height
-                    color: "#468bb7"
+                    implicitWidth: parent.width * 0.5
+                    implicitHeight: parent.height
+                    radius: 5
+                    color: control.enabled ? "#468bb7" : Qt.darker("lightgrey", 1.25)
                     Text {
-                        color: "white"
+                        color: Qt.darker("white", control.enabled ? 1.0 : 1.25)
                         anchors.centerIn: parent
                         text: "ON"
                     }
                 }
                 Rectangle {
-                    width: parent.width/2
-                    height: parent.height
                     anchors.right: parent.right
-                    color: "#D3D3D3"
+                    implicitWidth: parent.width * 0.5
+                    implicitHeight: parent.height
+                    radius: 5
+                    color: Qt.darker("#D3D3D3", control.enabled ? 1.0 : 1.25)
                     Text {
-                        color: "white"
+                        color: Qt.darker("white", control.enabled ? 1.0 : 1.25)
                         anchors.centerIn: parent
                         text: "OFF"
                     }
+                }
+            }
+
+            handle: Rectangle {
+                implicitWidth: 30
+                implicitHeight: 20
+                radius: 5
+                border.width: 1
+                border.color: Qt.darker("grey", control.enabled ? 1.0 : 1.1)
+                gradient: Gradient {
+                    GradientStop {position: 0.0; color: Qt.darker("white", control.enabled ? 1.0 : 1.1)}
+                    GradientStop {position: 1.0; color: Qt.darker("lightgrey", control.enabled ? 1.0 : 1.1)}
                 }
             }
         }
