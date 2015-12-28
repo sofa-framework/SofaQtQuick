@@ -21,6 +21,7 @@
         <file>SofaBasics/Tools.qml</file>
         <file>SofaBasics/RecentSettings.qml</file>
         <file>SofaBasics/SofaDataItem.qml</file>
+        <file>SofaBasics/SofaDataListViewWindow.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaTools/qmldir</file>
         <file>SofaTools/SofaSimulationControl.qml</file>

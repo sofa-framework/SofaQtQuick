@@ -184,6 +184,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     int visibility = item.visibility;
     Base* base = item.base;
     BaseObject* object = item.object;
+    BaseContext* baseContext = item.node->getContext();
 
     if(0 == base)
     {
@@ -200,7 +201,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     case DepthRole:
         return QVariant::fromValue(depth);
     case VisibilityRole:
-        return QVariant::fromValue(visibility);
+        return Visible == visibility && !baseContext->isActive() ? QVariant::fromValue((int) Collapsed | Disabled) : QVariant::fromValue(visibility);
     case TypeRole:
         return QVariant::fromValue(QString(base->getClass()->className.c_str()));
     case IsNodeRole:
@@ -262,11 +263,15 @@ void SofaSceneListModel::setCollapsed(int row, bool collapsed)
 
     Item& item = myItems[row];
 
-    int collapsedFlag = collapsed ? Collapsed : Visible;
-    if(collapsedFlag == item.visibility)
-        return;
-
-    item.visibility = collapsed;
+    BaseContext* baseContext = item.node->getContext();
+    if(!baseContext->isActive())
+    {
+        collapsed = true;
+    }
+    else
+    {
+        item.visibility = collapsed;
+    }
 
     QStack<Item*> children;
     for(int i = 0; i < item.children.size(); ++i)
@@ -275,7 +280,7 @@ void SofaSceneListModel::setCollapsed(int row, bool collapsed)
     while(!children.isEmpty())
     {
         Item* child = children.pop();
-        if(1 == collapsed)
+        if(collapsed)
             child->visibility |= Hidden;
         else
             child->visibility ^= Hidden;

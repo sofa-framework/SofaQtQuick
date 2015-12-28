@@ -44,12 +44,7 @@ public:
     SofaComponent(const SofaComponent& sofaComponent);
 
 public:
-    Q_PROPERTY(QString name READ name)
-
-public:
-    QString name() const;
-
-public:
+    Q_INVOKABLE QString name() const;
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent);
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;
 

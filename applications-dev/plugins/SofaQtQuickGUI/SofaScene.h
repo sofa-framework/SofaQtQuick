@@ -152,9 +152,10 @@ public:
     Q_INVOKABLE double radius() const;
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
     Q_INVOKABLE QString dumpGraph() const;
-    Q_INVOKABLE void reinitComponent(const QString& path);
-    Q_INVOKABLE bool areSameComponent(SofaComponent* sceneComponentA, SofaComponent* sceneComponentB);
-    Q_INVOKABLE bool areInSameBranch(SofaComponent* sceneComponentA, SofaComponent* sceneComponentB);
+    Q_INVOKABLE bool reinitComponent(const QString& path);
+    Q_INVOKABLE bool removeComponent(SofaComponent* sofaComponent);
+    Q_INVOKABLE bool areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
+    Q_INVOKABLE bool areInSameBranch(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
 
 public:
@@ -205,7 +206,7 @@ protected:
 
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
-    /// \return     A 'SelectableSceneParticle' containing the picked particle and the SceneComponent where it belongs
+    /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaComponent where it belongs
     SelectableSofaParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
 
     /// \brief      Low-level function for color index picking
@@ -234,7 +235,7 @@ private:
 
     sofa::simulation::Simulation*               mySofaSimulation;
     QTimer*                                     myStepTimer;
-    QSet<const sofa::core::objectmodel::Base*>  myBases;                        /// \todo For each base, reference a unique SceneComponent and use it in QML as a wrapper
+    QSet<const sofa::core::objectmodel::Base*>  myBases;                        /// \todo For each base, reference a unique SofaComponent and use it in QML as a wrapper
 
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;

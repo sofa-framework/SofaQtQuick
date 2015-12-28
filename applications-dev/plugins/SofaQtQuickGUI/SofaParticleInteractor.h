@@ -78,20 +78,20 @@ public:
     ~SofaParticleInteractor();
 	
 public:
-    Q_PROPERTY(sofa::qtquick::SofaComponent* sceneComponent MEMBER mySofaComponent NOTIFY sceneComponentChanged)
+    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaComponent MEMBER mySofaComponent NOTIFY sofaComponentChanged)
     Q_PROPERTY(int particleIndex MEMBER myParticleIndex NOTIFY particleIndexChanged)
     Q_PROPERTY(double stiffness MEMBER myStiffness NOTIFY stiffnessChanged)
     Q_PROPERTY(QVector3D interactorPosition READ interactorPosition NOTIFY interactorPositionChanged)
     Q_PROPERTY(bool interacting READ interacting NOTIFY interactingChanged)
 
 public:
-    SofaComponent* sceneComponent() const      {return mySofaComponent;}
+    SofaComponent* sofaComponent() const        {return mySofaComponent;}
     double stiffness() const                    {return myStiffness;}
     QVector3D interactorPosition() const;
     bool interacting() const;
 
 signals:
-    void sceneComponentChanged(sofa::qtquick::SofaComponent* newSceneComponent);
+    void sofaComponentChanged(sofa::qtquick::SofaComponent* newSofaComponent);
     void particleIndexChanged(double newParticleIndex);
 	void stiffnessChanged(double newStiffness);
     void interactorPositionChanged(const QVector3D& newInteractorPosition);
@@ -101,7 +101,7 @@ public:
     Q_INVOKABLE QVector3D particlePosition() const;
 	
 public slots:
-    bool start(SofaComponent* sceneComponent, int particleIndex);
+    bool start(SofaComponent* sofaComponent, int particleIndex);
     bool update(const QVector3D& interactorNewPosition);
     void release();
 

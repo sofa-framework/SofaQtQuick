@@ -49,7 +49,8 @@ public:
     enum Visibility {
         Visible     = 0,
         Collapsed   = 1,
-        Hidden      = 2
+        Hidden      = 2,
+        Disabled    = 4
     };
 
 public slots:
@@ -112,7 +113,6 @@ private:
             visibility(0),
             base(0),
             object(0),
-            context(0),
             node(0)
         {
 
@@ -126,7 +126,6 @@ private:
 
         sofa::core::objectmodel::Base*          base;
         sofa::core::objectmodel::BaseObject*    object;
-        sofa::core::objectmodel::BaseContext*   context;
         sofa::core::objectmodel::BaseNode*      node;
     };
 

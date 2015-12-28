@@ -650,7 +650,7 @@ QString SofaScene::dumpGraph() const
 	return dump;
 }
 
-void SofaScene::reinitComponent(const QString& path)
+bool SofaScene::reinitComponent(const QString& path)
 {
     QStringList pathComponents = path.split("/");
 
@@ -665,16 +665,49 @@ void SofaScene::reinitComponent(const QString& path)
         node = node->getChild(pathComponents[i].toStdString());
         if (!node) {
             qWarning() << "Object path unknown:" << path;
-            return;
+            return false;
         }
         ++i;
     }
     BaseObject* object = node->get<BaseObject>(pathComponents[i].toStdString());
     if(!object) {
         qWarning() << "Object path unknown:" << path;
-        return;
+        return false;
     }
+
     object->reinit();
+
+    return true;
+}
+
+bool SofaScene::removeComponent(SofaComponent* sofaComponent)
+{
+    if(!sofaComponent)
+        return false;
+
+    // if component is an object
+    BaseObject* baseObject = sofaComponent->base()->toBaseObject();
+    if(baseObject)
+    {
+        BaseContext* baseContext = baseObject->getContext();
+        baseContext->removeObject(baseObject);
+
+        return true;
+    }
+
+    // if component is a node
+    BaseNode* baseNode = sofaComponent->base()->toBaseNode();
+    if(baseNode)
+    {
+//        BaseNode::Parents parents = baseNode->getParents();
+//        for(BaseNode* parent : parents)
+//            parent->removeChild(baseNode);
+        baseNode->detachFromGraph();
+
+        return true;
+    }
+
+    return false;
 }
 
 bool SofaScene::areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB)
