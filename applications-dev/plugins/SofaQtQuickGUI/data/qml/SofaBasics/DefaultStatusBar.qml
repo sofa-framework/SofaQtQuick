@@ -28,7 +28,7 @@ ToolBar {
     anchors.margins: 0
     anchors.leftMargin: 0
 
-    property var    sofaScene: null
+    property var    sofaScene: SofaApplication.sofaScene
     property string statusMessage: ""
     property int    statusDuration: 5000
 
@@ -65,6 +65,37 @@ ToolBar {
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Rectangle {
+            Layout.fillHeight: true
+            Layout.preferredWidth: timeDisplay.implicitWidth + 10
+            color: "transparent"
+            border.width: 1
+            border.color: "grey"
+            radius: 2
+
+            Label {
+                id: timeDisplay
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
+                text: "Time: " + timer.sceneTime.toFixed(2)
+
+                Timer {
+                    id: timer
+                    running: sofaScene
+                    repeat: true
+                    interval: 1
+                    onTriggered: sceneTime = sofaScene.dataValue("@.time");
+
+                    property real sceneTime: 0.0
+
+                    readonly property var sofaScene: root.sofaScene
+                    onSofaSceneChanged: sceneTime = 0.0;
+                }
             }
         }
 

@@ -78,18 +78,14 @@ MenuBar {
             id: saveScreenshotAction
             text: "&Save Screenshot"
             shortcut: "s"
-            onTriggered:
-            {
-                sofaScene.takeScreenshot();
-                saveSofaSceneScreenshotDialog.open();
-            }
-            tooltip: "Save the Sofa Scene"
+            onTriggered: sofaScene.takeScreenshot();
+            tooltip: "Save a screenshot of the current Sofa Scene"
         },
 
         Action {
-            id: saveAsAction
-            text: "&Save As..."
-            tooltip: "Save the Sofa Scene at a specific location"
+            id: saveScreenshotAsAction
+            text: "&Save Screenshot As..."
+            tooltip: "Save a screenshot of the current Sofa Scene at a specific location"
             onTriggered: saveSofaSceneDialog.open();
         },
 

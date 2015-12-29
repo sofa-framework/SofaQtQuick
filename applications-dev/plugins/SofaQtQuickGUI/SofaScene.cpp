@@ -463,6 +463,7 @@ void SofaScene::takeScreenshot()
     glReadBuffer(GL_FRONT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(viewport[0], viewport[1], viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE, screenshot.getPixels());
+    glReadBuffer(GL_BACK);
 }
 
 void SofaScene::saveScreenshotInFile()
@@ -474,11 +475,10 @@ void SofaScene::saveScreenshotInFile()
         return;
     }
 
-    std::string filepath = finalFilename.toLatin1().constData();
+    if(!screenshot.save(finalFilename.toStdString()))
+        return;
 
-    if (!screenshot.save(filepath)) return;
-        std::cout << "Saved "<<screenshot.getWidth()<<"x"<<screenshot.getHeight()<<" screen image to "<<filepath<<std::endl;
-    glReadBuffer(GL_BACK);
+    qDebug() << "Saved screenshot (" << screenshot.getWidth() << "x" << screenshot.getHeight() << ") to" << finalFilename;
 }
 
 void SofaScene::setStatus(Status newStatus)

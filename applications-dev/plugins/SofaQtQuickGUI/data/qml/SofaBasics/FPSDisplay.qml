@@ -23,6 +23,7 @@ import QtQuick.Controls 1.0
 Label {
     id: root
     text: "FPS: " + d.timer.fps
+
     onEnabledChanged: {
         d.timer.running=enabled;
         if (!enabled) {
