@@ -245,11 +245,9 @@ bool LoaderProcess(SofaScene* sofaScene, const QString& sofaScenePath, QOffscree
             visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
             visualParams->setSupported(sofa::core::visual::API_OpenGL);
         }
-    }
 
-	sofa::core::visual::VisualParams* vparams = sofa::core::visual::VisualParams::defaultInstance();
-	if(vparams)
-		vparams->displayFlags().setShowVisualModels(true);
+        visualParams->displayFlags().setShowVisualModels(true);
+    }
 
     if(sofaScene->sofaSimulation()->load(sofaScenePath.toLatin1().constData()))
     {

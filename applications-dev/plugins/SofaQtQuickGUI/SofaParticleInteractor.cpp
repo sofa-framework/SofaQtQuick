@@ -22,6 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaViewer.h"
 #include "Manipulator.h"
 
+#include <sofa/core/visual/VisualParams.h>
 #include <sofa/simulation/common/MechanicalVisitor.h>
 #include <sofa/simulation/common/CleanupVisitor.h>
 #include <sofa/simulation/common/DeleteVisitor.h>
@@ -29,6 +30,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaBoundaryCondition/FixedConstraint.h>
 #include <SofaDeformable/StiffSpringForceField.h>
 #include <SofaOpenglVisual/OglModel.h>
+#include <SofaBaseVisual/VisualStyle.h>
 #include <sofa/helper/cast.h>
 
 #include <qqml.h>
@@ -37,13 +39,59 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofa
 {
 
-namespace qtquick
+typedef sofa::simulation::Node Node;
+typedef sofa::core::visual::DisplayFlags DisplayFlags;
+typedef sofa::core::visual::VisualParams VisualParams;
+typedef sofa::core::visual::VisualModel VisualModel;
+typedef sofa::component::visualmodel::VisualStyle VisualStyle;
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject;
+typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3Types> FixedConstraint;
+typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceField;
+
+namespace core
 {
 
-typedef sofa::simulation::Node Node;
-typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
-typedef sofa::component::projectiveconstraintset::FixedConstraint<sofa::defaulttype::Vec3Types> FixedConstraint3;
-typedef sofa::component::interactionforcefield::StiffSpringForceField<sofa::defaulttype::Vec3Types> StiffSpringForceField3;
+namespace visual
+{
+
+class StiffSpringForcefieldPainter : public VisualModel
+{
+public:
+    SOFA_CLASS(StiffSpringForcefieldPainter, VisualModel);
+
+    StiffSpringForcefieldPainter(StiffSpringForceField* forcefield) : VisualModel(),
+        myForcefield(forcefield)
+    {
+
+    }
+
+    virtual void drawVisual(const VisualParams* vparams)
+    {
+        const DisplayFlags backupDisplayFlags = vparams->displayFlags();
+
+        DisplayFlags displayFlags;
+        displayFlags.setShowAll(true);
+        const_cast<VisualParams*>(vparams)->displayFlags() = displayFlags;
+
+        if(myForcefield)
+            myForcefield->draw(vparams);
+
+        const_cast<VisualParams*>(vparams)->displayFlags() = backupDisplayFlags;
+    }
+
+private:
+    StiffSpringForceField* myForcefield;
+
+};
+
+} // namespace visual
+
+} // namespace core
+
+typedef sofa::core::visual::StiffSpringForcefieldPainter StiffSpringForcefieldPainter;
+
+namespace qtquick
+{
 
 SofaParticleInteractor::SofaParticleInteractor(QObject *parent) : QObject(parent),
     mySofaComponent(nullptr),
@@ -67,7 +115,7 @@ QVector3D SofaParticleInteractor::particlePosition() const
     if(!mySofaComponent)
         return particlePosition;
 
-    MechanicalObject3* mechanicalObject = static_cast<MechanicalObject3*>(myMechanicalState);
+    MechanicalObject* mechanicalObject = static_cast<MechanicalObject*>(myMechanicalState);
     sofa::defaulttype::Vector3 position = mechanicalObject->readPositions()[0];
 
     return QVector3D(position.x(), position.y(), position.z());
@@ -79,7 +127,7 @@ QVector3D SofaParticleInteractor::interactorPosition() const
 	if(!myMechanicalState)
         return interactorPosition;
 
-    MechanicalObject3* mechanicalObject = static_cast<MechanicalObject3*>(myMechanicalState);
+    MechanicalObject* mechanicalObject = static_cast<MechanicalObject*>(myMechanicalState);
 	sofa::defaulttype::Vector3 position = mechanicalObject->readPositions()[0];
 
 	return QVector3D(position.x(), position.y(), position.z());
@@ -101,7 +149,7 @@ bool SofaParticleInteractor::start(SofaComponent* sofaComponent, int particleInd
         return false;
 
     const SofaScene* sofaScene = sofaComponent->sofaScene();
-    MechanicalObject3* particleMechanicalObject = dynamic_cast<MechanicalObject3*>(sofaComponent->base());
+    MechanicalObject* particleMechanicalObject = dynamic_cast<MechanicalObject*>(sofaComponent->base());
 
     if(!sofaScene || !particleMechanicalObject)
         return false;
@@ -113,23 +161,33 @@ bool SofaParticleInteractor::start(SofaComponent* sofaComponent, int particleInd
                                    particleMechanicalObject->getPY(myParticleIndex),
                                    particleMechanicalObject->getPZ(myParticleIndex));
 
-    MechanicalObject3::SPtr mechanicalObject = sofa::core::objectmodel::New<MechanicalObject3>();
+    VisualStyle::SPtr visualStyle = sofa::core::objectmodel::New<VisualStyle>();
+    DisplayFlags displayFlags;
+    displayFlags.setShowAll(true);
+    visualStyle->displayFlags.setValue(displayFlags);
+
+    MechanicalObject::SPtr mechanicalObject = sofa::core::objectmodel::New<MechanicalObject>();
     mechanicalObject->setName("Attractor");
     mechanicalObject->resize(1);
     mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
     myMechanicalState = mechanicalObject.get();
 
-    FixedConstraint3::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraint3>();
+    FixedConstraint::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraint>();
 
-    StiffSpringForceField3::SPtr stiffSpringForcefield = sofa::core::objectmodel::New<StiffSpringForceField3>(mechanicalObject.get(), particleMechanicalObject);
+    StiffSpringForceField::SPtr stiffSpringForcefield = sofa::core::objectmodel::New<StiffSpringForceField>(mechanicalObject.get(), particleMechanicalObject);
     stiffSpringForcefield->setName("Spring");
+    stiffSpringForcefield->setDrawMode(0);
     stiffSpringForcefield->addSpring(0, myParticleIndex, myStiffness, 0.1, 0.0);
     myForcefield = stiffSpringForcefield.get();
 
+    StiffSpringForcefieldPainter::SPtr forcefieldPainter = sofa::core::objectmodel::New<StiffSpringForcefieldPainter>(stiffSpringForcefield.get());
+
     Node::SPtr node = sofaScene->sofaSimulation()->GetRoot()->createChild("Interactor");
+    node->addObject(visualStyle);
     node->addObject(mechanicalObject);
     node->addObject(fixedConstraint);
     node->addObject(stiffSpringForcefield);
+    node->addObject(forcefieldPainter);
     node->init(sofa::core::ExecParams::defaultInstance());
     myNode = node.get();
 
@@ -147,7 +205,7 @@ bool SofaParticleInteractor::update(const QVector3D& position)
     if(!myMechanicalState)
         return false;
 
-    MechanicalObject3* mechanicalObject = static_cast<MechanicalObject3*>(myMechanicalState);
+    MechanicalObject* mechanicalObject = static_cast<MechanicalObject*>(myMechanicalState);
     mechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
     interactorPositionChanged(position);
 
@@ -158,7 +216,7 @@ void SofaParticleInteractor::release()
 {
     if(myNode)
     {
-        StiffSpringForceField3::SPtr stiffSpringForcefield = static_cast<StiffSpringForceField3*>(myForcefield);
+        StiffSpringForceField::SPtr stiffSpringForcefield = static_cast<StiffSpringForceField*>(myForcefield);
         myNode->moveObject(stiffSpringForcefield);
 
         Node::SPtr node = static_cast<Node*>(myNode);

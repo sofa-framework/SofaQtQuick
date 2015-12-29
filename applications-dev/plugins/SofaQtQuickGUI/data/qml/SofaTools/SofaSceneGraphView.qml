@@ -148,7 +148,7 @@ CollapsibleGroupBox {
 
                                 radius: isNode ? Layout.preferredWidth * 0.5 : 0
 
-                                color: Qt.lighter("#FF" + Qt.md5(type).slice(4, 10), 1.5)
+                                color: isNode ? "black" : Qt.lighter("#FF" + Qt.md5(type).slice(4, 10), 1.5)
                                 border.width: 1
                                 border.color: "black"
                             }
