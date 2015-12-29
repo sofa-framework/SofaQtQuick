@@ -47,6 +47,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaComponentMisc/initComponentMisc.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <sofa/simulation/common/MechanicalVisitor.h>
+#include <sofa/simulation/common/DeleteVisitor.h>
 
 #include <array>
 #include <sstream>
@@ -699,10 +700,9 @@ bool SofaScene::removeComponent(SofaComponent* sofaComponent)
     BaseNode* baseNode = sofaComponent->base()->toBaseNode();
     if(baseNode)
     {
-//        BaseNode::Parents parents = baseNode->getParents();
-//        for(BaseNode* parent : parents)
-//            parent->removeChild(baseNode);
-        baseNode->detachFromGraph();
+        Node::SPtr node = static_cast<Node*>(baseNode);
+        node->detachFromGraph();
+        node->execute<simulation::DeleteVisitor>(sofa::core::ExecParams::defaultInstance());
 
         return true;
     }

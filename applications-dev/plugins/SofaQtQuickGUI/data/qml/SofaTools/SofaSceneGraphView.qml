@@ -131,95 +131,130 @@ CollapsibleGroupBox {
                         }
                     }
 
-                    Text {
-                        text: (multiparent ? "Multi" : "") + (0 !== type.length || 0 !== name.length ? type + " - " + name : "")
-                        color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
-                        font.bold: isNode
-
+                    RowLayout {
                         Layout.fillWidth: true
                         Layout.preferredHeight: rowHeight
+                        spacing: 4
 
-                        Menu {
-                            id: nodeMenu
+                        RowLayout {
+                            Layout.fillHeight: true
+                            spacing: 0
 
-                            property QtObject sofaData: null
-                            property bool nodeActivated: true
+                            Rectangle {
+                                id: colorIcon
 
-                            MenuItem {
-                                text: {
-                                    nodeMenu.nodeActivated ? "Desactivate node" : "Activate node"
-                                }
-                                onTriggered: {
-                                    nodeMenu.nodeActivated ? nodeMenu.sofaData.setValue(false) : nodeMenu.sofaData.setValue(true);
-                                    nodeMenu.nodeActivated = nodeMenu.sofaData.value();
-                                    listView.model.setCollapsed(index, visibility); // update the collapse property
-                                }
+                                Layout.preferredWidth: rowHeight * 0.5
+                                Layout.preferredHeight: Layout.preferredWidth
+
+                                radius: isNode ? Layout.preferredWidth * 0.5 : 0
+
+                                color: Qt.lighter("#FF" + Qt.md5(type).slice(4, 10), 1.5)
+                                border.width: 1
+                                border.color: "black"
                             }
+                            Rectangle {
+                                visible: multiparent
+                                Layout.preferredWidth: rowHeight * 0.5
+                                Layout.preferredHeight: Layout.preferredWidth
 
-                            MenuSeparator {}
+                                radius: isNode ? Layout.preferredWidth * 0.5 : 0
 
-                            MenuItem {
-                                text: {
-                                    "Delete node"
-                                }
-                                onTriggered: {
-                                    if(listView.currentIndex === index)
-                                        listView.currentIndex = -1;
-
-                                    sofaScene.removeComponent(listModel.getComponentById(index));
-                                    listModel.update();
-                                }
+                                color: colorIcon.color
+                                border.width: 1
+                                border.color: "black"
                             }
                         }
 
-                        Menu {
-                            id: objectMenu
+                        Text {
+                            text: (multiparent ? "Multi" : "") + (0 !== type.length || 0 !== name.length ? type + " - " + name : "")
+                            color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
+                            font.bold: isNode
 
-                            property QtObject sofaData: null
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
 
-                            MenuItem {
-                                text: {
-                                    "Delete object"
-                                }
-                                onTriggered: {
-                                    if(listView.currentIndex === index)
-                                        listView.currentIndex = -1;
+                            Menu {
+                                id: nodeMenu
 
-                                    sofaScene.removeComponent(listModel.getComponentById(index));
-                                    listModel.update();
-                                }
-                            }
-                        }
+                                property QtObject sofaData: null
+                                property bool nodeActivated: true
 
-                        MouseArea {
-                            anchors.fill: parent
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            onClicked: {
-                                if(mouse.button === Qt.LeftButton) {
-                                    listView.currentIndex = index;
-                                } else if(mouse.button === Qt.RightButton) {
-                                    var component = listModel.getComponentById(index);
-
-                                    if(isNode) {
-                                        nodeMenu.sofaData = component.getComponentData("activated");
+                                MenuItem {
+                                    text: {
+                                        nodeMenu.nodeActivated ? "Desactivate node" : "Activate node"
+                                    }
+                                    onTriggered: {
+                                        nodeMenu.nodeActivated ? nodeMenu.sofaData.setValue(false) : nodeMenu.sofaData.setValue(true);
                                         nodeMenu.nodeActivated = nodeMenu.sofaData.value();
-                                        nodeMenu.popup();
-                                    } else {
-                                        objectMenu.popup();
+                                        listView.model.setCollapsed(index, visibility); // update the collapse property
+                                    }
+                                }
+
+                                MenuSeparator {}
+
+                                MenuItem {
+                                    text: {
+                                        "Delete node"
+                                    }
+                                    onTriggered: {
+                                        if(listView.currentIndex === index)
+                                            listView.currentIndex = -1;
+
+                                        sofaScene.removeComponent(listModel.getComponentById(index));
+                                        listModel.update();
                                     }
                                 }
                             }
 
-                            onDoubleClicked: {
-                                if(mouse.button === Qt.LeftButton)
-                                    sofaDataListViewWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": listModel.getComponentById(index)});
+                            Menu {
+                                id: objectMenu
+
+                                property QtObject sofaData: null
+
+                                MenuItem {
+                                    text: {
+                                        "Delete object"
+                                    }
+                                    onTriggered: {
+                                        if(listView.currentIndex === index)
+                                            listView.currentIndex = -1;
+
+                                        sofaScene.removeComponent(listModel.getComponentById(index));
+                                        listModel.update();
+                                    }
+                                }
                             }
 
-                            Component {
-                                id: sofaDataListViewWindowComponent
+                            MouseArea {
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                onClicked: {
+                                    if(mouse.button === Qt.LeftButton) {
+                                        listView.currentIndex = index;
+                                    } else if(mouse.button === Qt.RightButton) {
+                                        var component = listModel.getComponentById(index);
 
-                                SofaDataListViewWindow {
-                                    sofaScene: root.sofaScene
+                                        if(isNode) {
+                                            nodeMenu.sofaData = component.getComponentData("activated");
+                                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
+                                            nodeMenu.popup();
+                                        } else {
+                                            objectMenu.popup();
+                                        }
+                                    }
+                                }
+
+                                onDoubleClicked: {
+                                    if(mouse.button === Qt.LeftButton)
+                                        sofaDataListViewWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": listModel.getComponentById(index)});
+                                }
+
+                                Component {
+                                    id: sofaDataListViewWindowComponent
+
+                                    SofaDataListViewWindow {
+                                        sofaScene: root.sofaScene
+                                    }
                                 }
                             }
                         }
