@@ -53,33 +53,6 @@ Camera::~Camera()
 
 }
 
-void Camera::setOrthographic(bool orthographic)
-{
-    if(orthographic == myOrthographic)
-        return;
-
-    myOrthographic = orthographic;
-
-    if(myOrthographic)
-        computeOrthographic();
-
-    myProjectionDirty = true;
-
-    orthographicChanged();
-}
-
-void Camera::setTarget(const QVector3D& target)
-{
-    if(target == myTarget)
-        return;
-
-    myTarget = target;
-
-    computeModel();
-
-    targetChanged();
-}
-
 const QMatrix4x4& Camera::projection() const
 {
 	if(myProjectionDirty) // update projection if needed
@@ -302,26 +275,6 @@ void Camera::setAspectRatio(double aspectRatio)
         computeOrthographic();
 }
 
-void Camera::setZNear(double zNear)
-{
-	if(zNear == myZNear)
-		return;
-
-	myZNear = zNear;
-
-	myProjectionDirty = true;
-}
-
-void Camera::setZFar(double zFar)
-{
-	if(zFar == myZFar)
-		return;
-
-	myZFar = zFar;
-
-	myProjectionDirty = true;
-}
-
 void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up)
 {
     myView.setToIdentity();
@@ -375,6 +328,44 @@ void Camera::alignCameraAxis()
     // Update lookAt
     QVector3D eye = myTarget + QVector3D::crossProduct(rightRef,upRef) * (myTarget - Camera::eye()).length();
     lookAt(eye, myTarget, upRef);
+}
+
+void Camera::computeOrthographic()
+{
+    if(!orthographic())
+        return;
+
+    myOrthographic = false;
+    myProjectionDirty = true;
+
+    // compute the orthographic projection from the perspective one
+    QMatrix4x4 perspectiveProj = Camera::projection();
+    QMatrix4x4 perspectiveProjInv = perspectiveProj.inverted();
+
+    myOrthographic = true;
+    myProjectionDirty = true;
+
+    QVector4D projectedTarget = perspectiveProj.map(view().map(QVector4D(target(), 1.0)));
+    projectedTarget /= projectedTarget.w();
+
+    QVector4D trCorner = perspectiveProjInv.map(QVector4D(1.0, 1.0, projectedTarget.z(), 1.0));
+    trCorner /= trCorner.w();
+
+    setOrthoLeft    (-trCorner.x());
+    setOrthoRight   ( trCorner.x());
+    setOrthoBottom  (-trCorner.y());
+    setOrthoTop     ( trCorner.y());
+
+    myProjectionDirty = true;
+}
+
+void Camera::computeModel()
+{
+    myView.setToIdentity();
+    myView.lookAt(eye(), myTarget, up());
+    myModel = myView.inverted();
+
+    myViewDirty = false;
 }
 
 QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int caseTested)
@@ -441,44 +432,6 @@ QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int cas
       axisRef[nearAxisIndex] = -1;
 
     return axisRef;
-}
-
-void Camera::computeOrthographic()
-{
-    if(!orthographic())
-        return;
-
-    myOrthographic = false;
-    myProjectionDirty = true;
-
-    // compute the orthographic projection from the perspective one
-    QMatrix4x4 perspectiveProj = Camera::projection();
-    QMatrix4x4 perspectiveProjInv = perspectiveProj.inverted();
-
-    myOrthographic = true;
-    myProjectionDirty = true;
-
-    QVector4D projectedTarget = perspectiveProj.map(view().map(QVector4D(target(), 1.0)));
-    projectedTarget /= projectedTarget.w();
-
-    QVector4D trCorner = perspectiveProjInv.map(QVector4D(1.0, 1.0, projectedTarget.z(), 1.0));
-    trCorner /= trCorner.w();
-
-    setOrthoLeft    (-trCorner.x());
-    setOrthoRight   ( trCorner.x());
-    setOrthoBottom  (-trCorner.y());
-    setOrthoTop     ( trCorner.y());
-
-    myProjectionDirty = true;
-}
-
-void Camera::computeModel()
-{
-    myView.setToIdentity();
-    myView.lookAt(eye(), myTarget, up());
-    myModel = myView.inverted();
-
-    myViewDirty = false;
 }
 
 }

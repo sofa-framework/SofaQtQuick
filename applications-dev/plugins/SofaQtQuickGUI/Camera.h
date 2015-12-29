@@ -42,10 +42,18 @@ public:
 	~Camera();
 
 public:
+    Q_PROPERTY(double zNear READ zNear WRITE setZNear NOTIFY zNearChanged)
+    Q_PROPERTY(double zFar READ zFar WRITE setZFar NOTIFY zFarChanged)
     Q_PROPERTY(bool orthographic READ orthographic WRITE setOrthographic NOTIFY orthographicChanged)
     Q_PROPERTY(QVector3D target READ target WRITE setTarget NOTIFY targetChanged)
 
 public:
+    double zNear() const;
+    void setZNear(double newZNear);
+
+    double zFar() const;
+    void setZFar(double newZFar);
+
     bool orthographic() const {return myOrthographic;}
     void setOrthographic(bool orthographic);
 
@@ -53,8 +61,10 @@ public:
     void setTarget(const QVector3D& target);
 
 signals:
-    void orthographicChanged();
-    void targetChanged();
+    void zNearChanged(double);
+    void zFarChanged(double);
+    void orthographicChanged(bool);
+    void targetChanged(const QVector3D&);
 
 public:
 	const QMatrix4x4& projection() const;
@@ -66,9 +76,6 @@ public:
     Q_INVOKABLE QVector3D direction() const			{return -model().column(2).toVector3D().normalized();}
     Q_INVOKABLE QVector3D up() const				{return  model().column(1).toVector3D().normalized();}
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
-
-    Q_INVOKABLE double zNear() const                {return myZNear;}
-    Q_INVOKABLE double zFar() const                 {return myZFar;}
 
     Q_INVOKABLE double aspectRatio() const          {return myAspectRatio;}
 
@@ -106,12 +113,11 @@ public:
 
     void setPerspectiveFovY(double fovY);
     void setAspectRatio(double aspectRatio);
-	void setZNear(double zNear);
-	void setZFar(double zFar);
 
 private:
     void computeOrthographic();
     void computeModel();
+
     QVector3D computeNearestAxis(QVector3D axis,int& nearAxisIndex, int caseTested = -1);
 
 private:
@@ -134,6 +140,92 @@ private:
 	mutable bool		myProjectionDirty;
     mutable bool		myViewDirty;
 };
+
+inline double Camera::zNear() const
+{
+    return myZNear;
+}
+
+inline void Camera::setZNear(double newZNear)
+{
+    if(newZNear == myZNear)
+        return;
+
+    if(!myOrthographic && newZNear <= 0.0)
+        return;
+
+    myZNear = newZNear;
+
+    myProjectionDirty = true;
+
+    zNearChanged(newZNear);
+}
+
+inline double Camera::zFar() const
+{
+    return myZFar;
+}
+
+inline void Camera::setZFar(double newZFar)
+{
+    if(newZFar == myZFar)
+        return;
+
+    if(!myOrthographic && newZFar <= 0.0)
+        return;
+
+    myZFar = newZFar;
+
+    myProjectionDirty = true;
+
+    zFarChanged(newZFar);
+}
+
+inline void Camera::setOrthographic(bool newOrthographic)
+{
+    if(newOrthographic == myOrthographic)
+        return;
+
+    myOrthographic = newOrthographic;
+
+    if(!myOrthographic)
+    {
+        if(myZNear < 0.0)
+            setZNear(-1.0 / myZNear);
+
+        if(myZFar < 0.0)
+            setZNear(-1.0 / myZFar);
+
+        if(0.0 == myZNear && 0.0 == myZFar)
+        {
+            setZNear(0.1);
+            setZFar(1000.0);
+        }
+        else if(0.0 == myZNear)
+            setZNear(myZFar * 0.0001);
+        else if(0.0 == myZFar)
+            setZFar(myZNear * 10000.0);
+    }
+
+    if(myOrthographic)
+        computeOrthographic();
+
+    myProjectionDirty = true;
+
+    orthographicChanged(newOrthographic);
+}
+
+inline void Camera::setTarget(const QVector3D& newTarget)
+{
+    if(newTarget == myTarget)
+        return;
+
+    myTarget = newTarget;
+
+    computeModel();
+
+    targetChanged(newTarget);
+}
 
 }
 

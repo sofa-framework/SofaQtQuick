@@ -319,6 +319,8 @@ SofaViewer {
         }
     }*/
 
+// toolpanel
+
     Rectangle {
         id: toolPanel
         color: "lightgrey"
@@ -377,6 +379,8 @@ SofaViewer {
                                 rowSpacing: 2
                                 columns: 2
 
+    // wireframe
+
                                 Label {
                                     Layout.fillWidth: true
                                     text: "Wireframe"
@@ -393,6 +397,8 @@ SofaViewer {
                                         description: "Draw in wireframe mode"
                                     }
                                 }
+
+    // culling
 
                                 Label {
                                     Layout.fillWidth: true
@@ -411,6 +417,8 @@ SofaViewer {
                                     }
                                 }
 
+    // blending
+
                                 Label {
                                     Layout.fillWidth: true
                                     text: "Blending"
@@ -427,6 +435,8 @@ SofaViewer {
                                         description: "Enable blending"
                                     }
                                 }
+
+    // normals
 
                                 Label {
                                     Layout.fillWidth: true
@@ -473,6 +483,8 @@ SofaViewer {
                                         text: normalsSlider.value.toFixed(1);
                                     }
                                 }
+
+    // antialiasing
 
                                 Label {
                                     Layout.fillWidth: true
@@ -544,6 +556,8 @@ SofaViewer {
                                     }
                                 }
 
+    // background
+
                                 Label {
                                     Layout.fillWidth: true
                                     text: "Background"
@@ -592,6 +606,8 @@ SofaViewer {
                             }
                         }
 
+    // save screenshot / movie
+
                         GroupBox {
                             id: savePanel
                             implicitWidth: parent.width
@@ -603,6 +619,8 @@ SofaViewer {
                                 columnSpacing: 0
                                 rowSpacing: 2
                                 columns: 2
+
+        // screenshot
 
                                 Item {
                                     Layout.fillWidth: true
@@ -623,6 +641,8 @@ SofaViewer {
                                         }
                                     }
                                 }
+
+        // movie
 
                                 Item {
                                     Layout.fillWidth: true
@@ -646,6 +666,8 @@ SofaViewer {
                             }
                         }
 
+    // camera
+
                         GroupBox {
                             id: cameraPanel
                             implicitWidth: parent.width
@@ -665,6 +687,8 @@ SofaViewer {
                                         anchors.fill: parent
                                         spacing: 0
 
+        // orthographic
+
                                         Button {
                                             id: orthoButton
                                             Layout.fillWidth: true
@@ -673,10 +697,26 @@ SofaViewer {
                                             text: "Orthographic"
                                             checkable: true
                                             checked: root.defaultCameraOrthographic
-                                            onCheckedChanged: root.camera.orthographic = checked
-                                            onClicked: {
-                                                checked = true;
-                                                perspectiveButton.checked = false;
+                                            onCheckedChanged: if(root.camera) root.camera.orthographic = checked
+
+                                            Connections {
+                                                target: root
+                                                onCameraChanged: orthoButton.update();
+                                            }
+
+                                            Connections {
+                                                target: root.camera
+                                                onOrthographicChanged: orthoButton.update();
+                                            }
+
+                                            function update() {
+                                                if(!root.camera) {
+                                                    checked = false;
+                                                    return;
+                                                }
+
+                                                if(orthoButton.checked !== root.camera.orthographic)
+                                                    orthoButton.checked = root.camera.orthographic;
                                             }
 
                                             ToolTip {
@@ -684,6 +724,8 @@ SofaViewer {
                                                 description: "Orthographic Mode"
                                             }
                                         }
+
+        // perspective
 
                                         Button {
                                             id: perspectiveButton
@@ -694,14 +736,152 @@ SofaViewer {
                                             checkable: true
                                             checked: !root.defaultCameraOrthographic
                                             onCheckedChanged: if(root.camera) root.camera.orthographic = !checked
-                                            onClicked: {
-                                                checked = true;
-                                                orthoButton.checked = false;
+
+                                            Connections {
+                                                target: root
+                                                onCameraChanged: perspectiveButton.update();
+                                            }
+
+                                            Connections {
+                                                target: root.camera
+                                                onOrthographicChanged: perspectiveButton.update();
+                                            }
+
+                                            function update() {
+                                                if(!root.camera) {
+                                                    checked = false;
+                                                    return;
+                                                }
+
+                                                if(perspectiveButton.checked !== !root.camera.orthographic)
+                                                    perspectiveButton.checked = !root.camera.orthographic;
                                             }
 
                                             ToolTip {
                                                 anchors.fill: parent
                                                 description: "Perspective Mode"
+                                            }
+                                        }
+                                    }
+                                }
+
+                                GroupBox {
+                                    implicitWidth: parent.width
+                                    title: "Depth"
+                                    flat: true
+
+                                    RowLayout {
+                                        anchors.fill: parent
+
+        // near
+
+                                        Item {
+                                            Layout.fillWidth: true
+                                            Layout.preferredHeight: zNearLayout.implicitHeight
+
+                                            RowLayout {
+                                                id: zNearLayout
+                                                anchors.fill: parent
+
+                                                Label {
+                                                    text: "Near"
+                                                    Layout.preferredWidth: 30
+                                                }
+
+                                                TextField {
+                                                    id: zNearTextField
+                                                    Layout.fillWidth: true
+                                                    implicitWidth: 200
+
+                                                    enabled: root.camera
+
+                                                    Component.onCompleted: download();
+                                                    onAccepted: {
+                                                        upload();
+                                                        download();
+                                                    }
+
+                                                    validator: DoubleValidator {}
+
+                                                    Connections {
+                                                        target: root.camera
+                                                        onZNearChanged: zNearTextField.download();
+                                                    }
+
+                                                    function download() {
+                                                        zNearTextField.text = Number(root.camera.zNear).toString();
+                                                        cursorPosition = 0;
+                                                    }
+
+                                                    function upload() {
+                                                        var oldValue = Number(root.camera.zNear);
+                                                        var newValue = Number(zNearTextField.text);
+
+                                                        if(oldValue !== newValue)
+                                                            root.camera.zNear = newValue;
+                                                    }
+
+                                                    ToolTip {
+                                                        anchors.fill: parent
+                                                        description: "Depth of the camera near plane"
+                                                    }
+                                                }
+                                            }
+                                        }
+
+        // far
+
+                                        Item {
+                                            Layout.fillWidth: true
+                                            Layout.preferredHeight: zFarLayout.implicitHeight
+
+                                            RowLayout {
+                                                id: zFarLayout
+                                                anchors.fill: parent
+
+                                                TextField {
+                                                    id: zFarTextField
+                                                    Layout.fillWidth: true
+                                                    implicitWidth: 200
+
+                                                    enabled: root.camera
+
+                                                    Component.onCompleted: download();
+                                                    onAccepted: {
+                                                        upload();
+                                                        download();
+                                                    }
+
+                                                    validator: DoubleValidator {}
+
+                                                    Connections {
+                                                        target: root.camera
+                                                        onZFarChanged: zFarTextField.download();
+                                                    }
+
+                                                    function download() {
+                                                        zFarTextField.text = Number(root.camera.zFar).toString();
+                                                        cursorPosition = 0;
+                                                    }
+
+                                                    function upload() {
+                                                        var oldValue = Number(root.camera.zFar);
+                                                        var newValue = Number(zFarTextField.text);
+
+                                                        if(oldValue !== newValue)
+                                                            root.camera.zFar = newValue;
+                                                    }
+
+                                                    ToolTip {
+                                                        anchors.fill: parent
+                                                        description: "Depth of the camera far plane"
+                                                    }
+                                                }
+
+                                                Label {
+                                                    text: "Far"
+                                                    Layout.preferredWidth: 30
+                                                }
                                             }
                                         }
                                     }
@@ -745,6 +925,8 @@ SofaViewer {
                                 //                                        }
                                 //                                    }
                                 //                                }
+
+    // view
 
                                 GroupBox {
                                     implicitWidth: parent.width
