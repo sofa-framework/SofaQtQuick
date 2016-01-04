@@ -73,16 +73,6 @@ ApplicationWindow {
         }
     }
 
-    property FileDialog saveSofaSceneDialog: saveSofaSceneDialog
-    FileDialog {
-        id: saveSofaSceneDialog
-        selectExisting: false
-        nameFilters: ["SofaScene files (*.scn)"]
-        onAccepted: {
-            sofaScene.save(fileUrl);
-        }
-    }
-
     menuBar: DefaultMenuBar {
         id: menuBar
         sofaScene: root.sofaScene

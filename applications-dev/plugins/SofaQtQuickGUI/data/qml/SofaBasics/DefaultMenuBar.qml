@@ -64,29 +64,6 @@ MenuBar {
             tooltip: "Reload the Sofa Scene"
         },
 
-//        Action {
-//            id: saveAction
-//            text: "&Save"
-//            shortcut: "Ctrl+S"
-//            onTriggered: if(0 == filePath.length) saveSofaSceneDialog.open(); else sofaScene.save(filePath);
-//            tooltip: "Save the Sofa Scene"
-//        },
-
-        Action {
-            id: saveScreenshotAction
-            text: "&Save Screenshot"
-            shortcut: "s"
-            onTriggered: sofaScene.takeScreenshot();
-            tooltip: "Save a screenshot of the current Sofa Scene"
-        },
-
-        Action {
-            id: saveScreenshotAsAction
-            text: "&Save Screenshot As..."
-            tooltip: "Save a screenshot of the current Sofa Scene at a specific location"
-            onTriggered: saveSofaSceneDialog.open();
-        },
-
         Action
         {
             id: exitAction
@@ -177,7 +154,6 @@ MenuBar {
         MenuItem {action: reloadAction}
         //MenuItem {action: saveAction}
         //MenuItem {action: saveAsAction}
-        MenuItem {action:saveScreenshotAction }
         MenuSeparator {}
         MenuItem {action: exitAction}
     }

@@ -29,7 +29,7 @@ GridLayout {
     id: root
     columns: 2
 
-    property var dataObject
+    property var dataObject: null
 
     ImagePlaneModel {
         id: imagePlane

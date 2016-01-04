@@ -172,7 +172,10 @@ ToolBar {
 
             ToolButton {
                 id: screenshotButton
-                text: "Screenshot"
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                iconSource: "qrc:/icon/screenshot.png"
+
                 checked: false
                 checkable: false
 
@@ -190,6 +193,14 @@ ToolBar {
                     }
                 }
 
+                Rectangle {
+                    anchors.fill: parent
+                    visible: screenshotButton.checked
+                    z: -1
+                    radius: 5
+                    color: "white"
+                }
+
                 ToolTip {
                     anchors.fill: parent
                     description: "Save screenshot"
@@ -198,7 +209,10 @@ ToolBar {
 
             ToolButton {
                 id: movieButton
-                text: "Movie"
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                iconSource: "qrc:/icon/movieRecording.png"
+
                 checked: false
                 checkable: true
 
@@ -222,6 +236,14 @@ ToolBar {
                     onRejected: {
                         movieButton.checked = false;
                     }
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    visible: movieButton.checked
+                    z: -1
+                    radius: 5
+                    color: "white"
                 }
 
                 ToolTip {

@@ -52,6 +52,11 @@ SofaViewer {
         SofaApplication.removeSofaViewer(root)
     }
 
+    onActiveFocusChanged: {
+        if(activeFocus)
+            SofaApplication.setFocusedSofaViewer(root);
+    }
+
 	Action{
 		shortcut: "F5"
 		onTriggered: root.viewAll()
@@ -77,7 +82,7 @@ SofaViewer {
         text: sofaScene ? "Error during sofa scene loading\n" + sofaScene.source.toString().replace("///", "/").replace("file:", "") : "No sofa scene object"
     }
 
-///// camera
+// camera
 
     Component {
         id: cameraComponent
@@ -109,7 +114,7 @@ SofaViewer {
         }
     }
 
-///// screenshot / video
+// screenshot / video
 
     function takeScreenshot(savePath) {
         if(undefined === savePath)
@@ -167,7 +172,7 @@ SofaViewer {
         }
     }
 
-///// interactor
+// interactor
 
     property alias interactor: interactorLoader.item
     property Component interactorComponent: SofaApplication.interactorComponent
@@ -200,7 +205,7 @@ SofaViewer {
         }
     }
 
-/////
+// mouse interaction
 
     property alias mouseArea: mouseArea
     MouseArea {
@@ -209,78 +214,78 @@ SofaViewer {
         acceptedButtons: Qt.AllButtons
         enabled: sofaScene && sofaScene.ready
 
-        readonly property alias interactor: root.interactor
-
         onClicked: {
-            SofaApplication.setFocusedSofaViewer(root);
+            root.forceActiveFocus();
 
-            if(interactor)
-                interactor.mouseClicked(mouse, root);
+            if(root.interactor)
+                root.interactor.mouseClicked(mouse, root);
         }
 
         onDoubleClicked: {
-            SofaApplication.setFocusedSofaViewer(root);
+            root.forceActiveFocus();
 
-            if(interactor)
-                interactor.mouseDoubleClicked(mouse, root);
+            if(root.interactor)
+                root.interactor.mouseDoubleClicked(mouse, root);
         }
 
         onPressed: {
-            SofaApplication.setFocusedSofaViewer(root);
+            root.forceActiveFocus();
 
-            if(interactor)
-                interactor.mousePressed(mouse, root);
+            if(root.interactor)
+                root.interactor.mousePressed(mouse, root);
         }
 
         onReleased: {
-            if(interactor)
-                interactor.mouseReleased(mouse, root);
+            if(root.interactor)
+                root.interactor.mouseReleased(mouse, root);
         }
 
         onWheel: {
-            SofaApplication.setFocusedSofaViewer(root);
-
-            if(interactor)
-                interactor.mouseWheel(wheel, root);
+            if(root.interactor)
+                root.interactor.mouseWheel(wheel, root);
 
             wheel.accepted = true;
         }
 
         onPositionChanged: {
-            if(interactor)
-                interactor.mouseMoved(mouse, root);
-        }
-
-        Keys.onPressed: {
-            if(event.isAutoRepeat) {
-                event.accepted = true;
-                return;
-            }
-
-            if(sofaScene)
-                sofaScene.keyPressed(event);
-
-            if(interactor)
-                interactor.keyPressed(event, root);
-
-            event.accepted = true;
-        }
-
-        Keys.onReleased: {
-            if(event.isAutoRepeat) {
-                event.accepted = true;
-                return;
-            }
-
-            if(sofaScene)
-                sofaScene.keyReleased(event);
-
-            if(interactor)
-                interactor.keyReleased(event, root);
-
-            event.accepted = true;
+            if(root.interactor)
+                root.interactor.mouseMoved(mouse, root);
         }
     }
+
+// keyboard interaction
+
+    Keys.onPressed: {
+        if(event.isAutoRepeat) {
+            event.accepted = true;
+            return;
+        }
+
+        if(root.sofaScene)
+            root.sofaScene.keyPressed(event);
+
+        if(root.interactor)
+            root.interactor.keyPressed(event, root);
+
+        event.accepted = true;
+    }
+
+    Keys.onReleased: {
+        if(event.isAutoRepeat) {
+            event.accepted = true;
+            return;
+        }
+
+        if(root.sofaScene)
+            root.sofaScene.keyReleased(event);
+
+        if(root.interactor)
+            root.interactor.keyReleased(event, root);
+
+        event.accepted = true;
+    }
+
+// crosshair
 
     readonly property alias crosshairGizmo: crosshairGizmo
     Item {

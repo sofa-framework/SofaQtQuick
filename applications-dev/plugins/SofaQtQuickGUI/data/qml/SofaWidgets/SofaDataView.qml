@@ -42,21 +42,18 @@ Rectangle {
         id: uiSettings
         category: 0 !== root.uiId ? "ui_" + root.uiId : "dummy"
 
-        property string sofaSceneSource
-        property string sofaDataPath
+
     }
 
     function init() {
-        uiSettings.sofaSceneSource      = Qt.binding(function() {return sofaSceneSource;});
-        uiSettings.sofaDataPath    = Qt.binding(function() {return sofaDataPath;});
+
     }
 
     function load() {
         if(0 === uiId)
             return;
 
-        sofaSceneSource     = uiSettings.sofaSceneSource;
-        sofaDataPath   = uiSettings.sofaDataPath;
+
     }
 
     function setNoSettings() {
@@ -73,8 +70,7 @@ Rectangle {
         init();
     }
 
-    property SofaScene sofaScene
-    property string sofaSceneSource: ""     // TODO: use this
+    property SofaScene sofaScene: SofaApplication.sofaScene
     property alias sofaDataPath: dataPathTextField
     property bool showControl: true
 

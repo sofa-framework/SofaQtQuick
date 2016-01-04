@@ -25,7 +25,7 @@ ColumnLayout {
     id: root
     spacing: 0
 
-    property var dataObject
+    property var dataObject: null
 
     property var values: undefined !== dataObject.value ? dataObject.value.split(' ') : []
 

@@ -23,7 +23,7 @@ import QtQuick.Controls 1.3
 TextField {
     id: root
 
-    property var dataObject
+    property var dataObject: null
 
     readOnly: dataObject.readOnly
     enabled: !dataObject.readOnly

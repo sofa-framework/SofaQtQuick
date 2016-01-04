@@ -26,7 +26,7 @@ Item {
     implicitWidth: control.implicitWidth
     implicitHeight: control.implicitHeight
 
-    property var dataObject
+    property var dataObject: null
 
     Switch {
         id: control

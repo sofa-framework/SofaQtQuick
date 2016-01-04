@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
+import SofaApplication 1.0
 import SofaData 1.0
 
 GridLayout {
@@ -30,9 +31,12 @@ GridLayout {
     columnSpacing: 1
     rowSpacing: 1
 
-    property var sofaScene
-    property QtObject sofaData
-    onSofaDataChanged: updateObject();
+    property var sofaScene: SofaApplication.sofaScene
+    property QtObject sofaData: null
+    onSofaDataChanged: {
+        updateObject();
+        loader.updateItem();
+    }
 
     readonly property alias name:       dataObject.name
     readonly property alias description:dataObject.description
@@ -162,46 +166,41 @@ GridLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             asynchronous: false
+            active: false
 
-            Component.onCompleted: createItem();
-            Connections {
-                target: root
-                onSofaDataChanged: {
-                    if(root.sofaData)
-                        loader.createItem();
-                    else
-                        loader.destroyItem();
-                }
-            }
+            Component.onCompleted: active = true;
+            onActiveChanged: updateItem();
 
-            function createItem() {
-                var type = root.type;
-                var properties = root.properties;
+            function updateItem() {
+                if(!active)
+                    return;
 
-                if(0 === type.length) {
-                    type = typeof(root.value);
+                if(root.sofaData) {
+                    var type = root.type;
+                    var properties = root.properties;
 
-                    if("object" === type)
-                        if(Array.isArray(value))
-                            type = "array";
-                }
+                    if(0 === type.length) {
+                        type = typeof(root.value);
 
-                //console.log(type, name);
+                        if("object" === type)
+                            if(Array.isArray(value))
+                                type = "array";
+                    }
 
-                if("undefined" === type) {
-                    loader.source = "";
-                    console.warn("Type unknown for data: " + name);
+                    if("undefined" === type) {
+                        loader.source = "";
+                        if(0 === root.name.length)
+                            console.warn("Trying to display a null data");
+                        else
+                            console.warn("Type unknown for data: " + root.name);
+                    } else {
+                        loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
+                        if(Loader.Ready !== loader.status)
+                            loader.sourceComponent = sofaDataTypeNotSupportedComponent;
+                    }
                 } else {
-                    loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaScene": sofaScene, "sofaData": sofaData});
-                    if(Loader.Ready !== loader.status)
-                        loader.sourceComponent = sofaDataTypeNotSupportedComponent;
+                    loader.setSource("");
                 }
-
-                dataObject.modified = false;
-            }
-
-            function destroyItem() {
-                loader.setSource("");
 
                 dataObject.modified = false;
             }

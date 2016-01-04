@@ -21,6 +21,8 @@
         <file>icon/stepButton.png</file>
         <file>icon/stopButton.png</file>
         <file>icon/disabled.png</file>
+        <file>icon/screenshot.png</file>
+        <file>icon/movieRecording.png</file>
         <file>icon/subWindow.png</file>
     </qresource>
 </RCC>

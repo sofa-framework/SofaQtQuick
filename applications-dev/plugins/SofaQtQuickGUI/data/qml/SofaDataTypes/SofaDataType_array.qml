@@ -24,7 +24,7 @@ import QtQuick.Layouts 1.0
 Loader {
     id: root
 
-    property var dataObject
+    property var dataObject: null
 
     sourceComponent: {
         if(dataObject.properties.static) {
