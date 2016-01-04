@@ -21,11 +21,9 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import Qt.labs.settings 1.0
 import SofaBasics 1.0
 import SofaScene 1.0
 import PythonConsole 1.0
-import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 
 Rectangle {
     id: root

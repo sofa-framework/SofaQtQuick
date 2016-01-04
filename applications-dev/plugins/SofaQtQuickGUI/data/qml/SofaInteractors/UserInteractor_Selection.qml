@@ -20,7 +20,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import SofaBasics 1.0
 import SofaComponent 1.0
-import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
 
 UserInteractor_MoveCamera {
     id: root

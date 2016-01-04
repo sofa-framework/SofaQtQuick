@@ -26,13 +26,12 @@ import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
-import "qrc:/SofaCommon/SofaCommonScript.js" as SofaCommonScript
 
 SofaApplication {
     id: root
 
 ////////////////////////////////////////////////// PRIVATE
-    property QtObject d: QtObject {
+    property QtObject _d: QtObject {
         id: d
 
         property var sofaSceneListModel: null
@@ -46,16 +45,31 @@ SofaApplication {
 
     property var sofaScene: null
 
-//    // create a sofaSceneListModel only if needed
-//    function sofaSceneListModel() {
-//        if(null === d.sofaSceneListModel) {
-//            console.log("+");
-//            d.sofaSceneListModel = SofaCommonScript.InstanciateComponent(SofaSceneListModel, root, {"sofaScene": root.sofaScene});
-//            console.log("-");
-//        }
+    property var sceneSettings: Settings {
+        category: "scene"
 
-//        return d.sofaSceneListModel;
-//    }
+        property string sofaSceneRecents      // recently opened sofa scenes
+
+        function addRecent(path) {
+            sofaSceneRecents = path + ";" + sofaSceneRecents.replace(path + ";", "");
+        }
+
+        function mostRecent() {
+            var recent = sofaSceneRecents.replace(/;.*$/m, "");
+            if(0 === recent.length)
+                return "";
+
+            return "file:" + recent;
+        }
+
+        function recentsList() {
+            return sofaSceneRecents.split(';');
+        }
+
+        function clearRecents() {
+            sofaSceneRecents = "";
+        }
+    }
 
 ////////////////////////////////////////////////// TOOLBAR
 
@@ -88,8 +102,75 @@ SofaApplication {
 
 ////////////////////////////////////////////////// SETTINGS
 
-    //property UISettings uiSettings: UISettings {}
-    //property RecentSettings uiSettings: RecentSettings {}
+    property var uiSettings: Settings {
+        category: "ui"
+
+        property string uiIds: ";"
+
+        function generate() {
+            var uiId = 1;
+            var uiIdList = uiIds.split(";");
+
+            var previousId = 0;
+            for(var i = 0; i < uiIdList.length; ++i) {
+                if(0 === uiIdList[i].length)
+                    continue;
+
+                uiId = Number(uiIdList[i]);
+
+                if(previousId + 1 !== uiId) {
+                    uiId = previousId + 1;
+                    break;
+                }
+
+                previousId = uiId;
+                ++uiId;
+            }
+
+            return uiId;
+        }
+
+        function add(uiId) {
+            if(0 === uiId)
+                return;
+
+            if(-1 === uiIds.search(";" + uiId.toString() + ";")) {
+                uiIds += uiId.toString() + ";";
+                update();
+            }
+        }
+
+        function remove(uiId) {
+            if(0 === uiId)
+                return;
+
+            uiIds = uiIds.replace(";" + uiId.toString() + ";", ";");
+
+            root.clearSettingGroup("ui_" + uiId.toString());
+        }
+
+        function replace(previousUiId, uiId) {
+            if(0 === uiId)
+                return;
+
+            uiIds = uiIds.replace(";" + uiId.toString() + ";", ";");
+
+            if(-1 === uiIds.search(";" + uiId.toString() + ";")) {
+                uiIds += uiId.toString() + ";";
+                update();
+            }
+        }
+
+        function update() {
+            var uiIdList = uiIds.split(";");
+            uiIdList.sort(function(a, b) {return Number(a) - Number(b);});
+
+            uiIds = ";";
+            for(var i = 0; i < uiIdList.length; ++i)
+                if(0 !== uiIdList[i].length)
+                    uiIds += uiIdList[i] + ";";
+        }
+    }
 
 ////////////////////////////////////////////////// INTERACTOR
 
@@ -176,8 +257,60 @@ SofaApplication {
         return year + "-" + month + "-" + day + "_" + msec;
     }
 
-    function takeScreenshot() {
-        root.saveScreenshot("Captured/Screen/" + formatDateForScreenshot() + ".png");
+    function takeScreenshot(savePath) {
+        if(undefined === savePath)
+            savePath = "Captured/Screen/" + root.formatDateForScreenshot() + ".png";
+
+        if(-1 === savePath.lastIndexOf("."))
+            savePath += ".png";
+
+        root.saveScreenshot(savePath);
+    }
+
+    function startVideoRecording(savePath) {
+        videoRecordingPrivate.videoPath = savePath;
+        videoRecordingPrivate.saveVideo = true;
+    }
+
+    function stopVideoRecording() {
+        videoRecordingPrivate.saveVideo = false;
+    }
+
+    property var _videoRecordingPrivate: QtObject {
+        id: videoRecordingPrivate
+
+        property string videoPath: ""
+        property bool saveVideo: false
+        onSaveVideoChanged: {
+            if(!saveVideo)
+                return;
+
+            videoFrameNumber = 0;
+
+            saveVideoFrame();
+        }
+
+        property int videoFrameNumber: 0
+        property var sceneConnections: Connections {
+            target: root.sofaScene && videoRecordingPrivate.saveVideo ? root.sofaScene : null
+            onStepEnd: videoRecordingPrivate.saveVideoFrame();
+        }
+
+        function saveVideoFrame() {
+            var savePath = videoRecordingPrivate.videoPath;
+            if(0 === savePath.length)
+                savePath = "Captured/Movie/" + root.formatDateForScreenshot() + "/movie.png";
+
+            var dotIndex = savePath.lastIndexOf(".");
+            if(-1 === dotIndex) {
+                savePath += ".png"
+                dotIndex = savePath.lastIndexOf(".");
+            }
+
+            savePath = savePath.slice(0, dotIndex) + "_" + (videoRecordingPrivate.videoFrameNumber++).toString() + savePath.slice(dotIndex);
+
+            root.saveScreenshot(savePath);
+        }
     }
 
 //////////////////////////////////////////////////

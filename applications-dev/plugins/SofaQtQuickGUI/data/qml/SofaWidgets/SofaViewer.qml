@@ -41,9 +41,6 @@ SofaViewer {
     blending: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
-    property bool defaultCameraOrthographic: false
-
-    property alias interactor: interactorLoader.item
 
     Component.onCompleted: {
         SofaApplication.addSofaViewer(root)
@@ -80,6 +77,8 @@ SofaViewer {
         text: sofaScene ? "Error during sofa scene loading\n" + sofaScene.source.toString().replace("///", "/").replace("file:", "") : "No sofa scene object"
     }
 
+///// camera
+
     Component {
         id: cameraComponent
 
@@ -87,6 +86,7 @@ SofaViewer {
         }
     }
 
+    property bool defaultCameraOrthographic: false
     property bool keepCamera: false
     function recreateCamera() {
         if(camera && !keepCamera) {
@@ -109,35 +109,77 @@ SofaViewer {
         }
     }
 
-    function formatDateForScreenshot() {
-        var today = new Date();
-        var day = today.getDate();
-        var month = today.getMonth();
-        var year = today.getFullYear();
+///// screenshot / video
 
-        var hour = today.getHours();
-        var min = today.getMinutes() + hour * 60;
-        var sec = today.getSeconds() + min * 60;
-        var msec = today.getMilliseconds() + sec * 1000;
+    function takeScreenshot(savePath) {
+        if(undefined === savePath)
+            savePath = "Captured/Screen/" + root.formatDateForScreenshot() + ".png";
 
-        return year + "-" + month + "-" + day + "_" + msec;
+        if(-1 === savePath.lastIndexOf("."))
+            savePath += ".png";
+
+        root.saveScreenshot(savePath);
     }
 
-    function takeScreenshot() {
-        root.saveScreenshot("Captured/Screen/" + formatDateForScreenshot + ".png");
+    function startVideoRecording(savePath) {
+        videoRecordingPrivate.videoPath = savePath;
+        videoRecordingPrivate.saveVideo = true;
     }
 
-    property bool saveVideo: false
-    onSaveVideoChanged: {
-        videoFrameNumber = 0;
-        videoName = formatDateForScreenshot();
+    function stopVideoRecording() {
+        videoRecordingPrivate.saveVideo = false;
     }
 
-    property int videoFrameNumber: 0
-    property string videoName: "movie"
-    Connections {
-        target: root.sofaScene && root.saveVideo ? root.sofaScene : null
-        onStepEnd: root.saveScreenshot("Captured/Movie/" + videoName + "/" + (root.videoFrameNumber++) + ".png");
+    property var _videoRecordingPrivate: QtObject {
+        id: videoRecordingPrivate
+
+        property string videoPath: ""
+        property bool saveVideo: false
+        onSaveVideoChanged: {
+            if(!saveVideo)
+                return;
+
+            videoFrameNumber = 0;
+
+            saveVideoFrame();
+        }
+
+        property int videoFrameNumber: 0
+        property var sceneConnections: Connections {
+            target: root.sofaScene && videoRecordingPrivate.saveVideo ? root.sofaScene : null
+            onStepEnd: videoRecordingPrivate.saveVideoFrame();
+        }
+
+        function saveVideoFrame() {
+            var savePath = videoRecordingPrivate.videoPath;
+            if(0 === savePath.length)
+                savePath = "Captured/Movie/" + SofaApplication.formatDateForScreenshot() + "/movie.png";
+
+            var dotIndex = savePath.lastIndexOf(".");
+            if(-1 === dotIndex) {
+                savePath += ".png"
+                dotIndex = savePath.lastIndexOf(".");
+            }
+
+            savePath = savePath.slice(0, dotIndex) + "_" + (videoRecordingPrivate.videoFrameNumber++).toString() + savePath.slice(dotIndex);
+
+            root.saveScreenshot(savePath);
+        }
+    }
+
+///// interactor
+
+    property alias interactor: interactorLoader.item
+    property Component interactorComponent: SofaApplication.interactorComponent
+
+    Loader {
+        id: interactorLoader
+        sourceComponent: root.interactorComponent
+//            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
+        onLoaded: {
+            var interactor = item;
+            interactor.init();
+        }
     }
 
     Image {
@@ -158,7 +200,7 @@ SofaViewer {
         }
     }
 
-    property Component interactorComponent: SofaApplication.interactorComponent
+/////
 
     property alias mouseArea: mouseArea
     MouseArea {
@@ -167,16 +209,7 @@ SofaViewer {
         acceptedButtons: Qt.AllButtons
         enabled: sofaScene && sofaScene.ready
 
-        property alias interactor: interactorLoader.item
-        Loader {
-            id: interactorLoader
-            sourceComponent: root.interactorComponent
-//            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
-            onLoaded: {
-                var interactor = item;
-                interactor.init();
-            }
-        }
+        readonly property alias interactor: root.interactor
 
         onClicked: {
             SofaApplication.setFocusedSofaViewer(root);
@@ -633,11 +666,23 @@ SofaViewer {
                                         checked: false
                                         checkable: false
 
-                                        onClicked: root.takeScreenshot();
+                                        onClicked: saveScreenshotDialog.open();
+
+                                        FileDialog {
+                                            id: saveScreenshotDialog
+                                            folder: "Captured/Screen/"
+                                            selectExisting: false
+                                            title: "Path to the screenshot to save"
+
+                                            onAccepted: {
+                                                var path = fileUrl.toString().replace("file://", "");
+                                                root.takeScreenshot(path);
+                                            }
+                                        }
 
                                         ToolTip {
                                             anchors.fill: parent
-                                            description: "Save screenshot in Captured/Screen/"
+                                            description: "Save screenshot"
                                         }
                                     }
                                 }
@@ -655,11 +700,31 @@ SofaViewer {
                                         checked: false
                                         checkable: true
 
-                                        onClicked: root.saveVideo = checked
+                                        onClicked: {
+                                            if(checked)
+                                                saveVideoDialog.open();
+                                            else
+                                                root.stopVideoRecording();
+                                        }
+
+                                        FileDialog {
+                                            id: saveVideoDialog
+                                            folder: "Captured/Movie/"
+                                            selectExisting: false
+                                            title: "Path to the movie to save"
+
+                                            onAccepted: {
+                                                root.startVideoRecording(fileUrl.toString().replace("file://", ""));
+                                            }
+
+                                            onRejected: {
+                                                movieButton.checked = false;
+                                            }
+                                        }
 
                                         ToolTip {
                                             anchors.fill: parent
-                                            description: "Save video in Captured/Movie/"
+                                            description: "Save video"
                                         }
                                     }
                                 }

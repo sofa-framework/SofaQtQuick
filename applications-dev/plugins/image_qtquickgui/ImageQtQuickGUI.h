@@ -17,8 +17,18 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-.pragma library
+#ifndef IMAGE_QTQUICKGUI_INIT_H
+#define IMAGE_QTQUICKGUI_INIT_H
 
-Qt.include("SofaCommonScript.js")
+#include <sofa/helper/system/config.h>
 
-var Tools = new InstanciateURLComponent("qrc:/SofaBasics/Tools.qml");
+#define BUILD_ALL_IMAGE_TYPES // comment to reduce compilation time
+
+#ifdef SOFA_BUILD_IMAGE_QTQUICKGUI
+#define SOFA_IMAGE_QTQUICKGUI_API SOFA_EXPORT_DYNAMIC_LIBRARY
+#else
+#define SOFA_IMAGE_QTQUICKGUI_API SOFA_IMPORT_DYNAMIC_LIBRARY
+#endif
+
+#endif //IMAGE_QTQUICKGUI_INIT_H
+

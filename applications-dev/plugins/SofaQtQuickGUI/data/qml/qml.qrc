@@ -17,9 +17,6 @@
         <file>SofaBasics/Vector3DSpinBox.qml</file>
         <file>SofaBasics/DynamicSplitView.qml</file>
         <file>SofaBasics/DynamicContent.qml</file>
-        <file>SofaBasics/UISettings.qml</file>
-        <file>SofaBasics/Tools.qml</file>
-        <file>SofaBasics/RecentSettings.qml</file>
         <file>SofaBasics/SofaDataItem.qml</file>
         <file>SofaBasics/SofaDataListViewWindow.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
@@ -34,9 +31,6 @@
         <file>SofaWidgets/ToolPanel.qml</file>
         <file>SofaWidgets/SofaDataView.qml</file>
         <file>SofaWidgets/PythonConsole.qml</file>
-        <file>SofaCommon/SofaCommonScript.js</file>
-        <file>SofaCommon/SofaToolsScript.js</file>
-        <file>SofaCommon/SofaSettingsScript.js</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
         <file>SofaDataTypes/SofaDataType_boolean.qml</file>

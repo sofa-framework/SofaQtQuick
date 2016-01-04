@@ -21,6 +21,16 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #define SOFAAPPLICATION_H
 
 #include "SofaQtQuickGUI.h"
+#include <QApplication>
+#include <QQmlApplicationEngine>
+#include <QPointF>
+
+class QApplication;
+class QQmlApplicationEngine;
+class QOpenGLDebugLogger;
+class QQuickWindow;
+class QQuickItem;
+class QSettings;
 
 namespace sofa
 {
@@ -33,19 +43,51 @@ class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
 {
     Q_OBJECT
 
-public:
-
-public:
-    static SofaApplication* Instance();
-
-    Q_INVOKABLE QString binaryDirectory() const;
-    Q_INVOKABLE void saveScreenshot(const QString& path);
-
 protected:
     SofaApplication(QObject* parent = 0);
 
 public:
     ~SofaApplication();
+
+    static SofaApplication* Instance();
+
+public:
+    Q_PROPERTY(int overrideCursorShape READ overrideCursorShape WRITE setOverrideCursorShape NOTIFY overrideCursorShapeChanged)
+
+public:
+    int overrideCursorShape() const;
+    void setOverrideCursorShape(int newCursorShape);
+
+signals:
+    void overrideCursorShapeChanged();
+
+public:
+    Q_INVOKABLE QString binaryDirectory() const;
+    Q_INVOKABLE void saveScreenshot(const QString& path);
+
+    Q_INVOKABLE QPointF mapItemToScene(QQuickItem* item, const QPointF& point) const;
+    Q_INVOKABLE bool isAncestorItem(QQuickItem* item, QQuickItem* ancestorItem) const;
+    Q_INVOKABLE QQuickWindow* itemWindow(QQuickItem* item) const;
+    Q_INVOKABLE void trimComponentCache(QObject* object = 0);
+    Q_INVOKABLE void clearSettingGroup(const QString& group);
+
+public:
+    static void SetOpenGLDebugContext();    // must be call before the window has been shown
+    static void UseOpenGLDebugLogger();     // must be call after a valid opengl debug context has been made current
+
+    static void UseDefaultSofaPath();
+    static void UseDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath = QString());
+    static void CopySettings(const QSettings& src, QSettings& dst);
+
+    /// Centralized prerequisite for most sofaqtquick applications.
+    /// Every applications will be updated when modifying this code.
+    /// IMPORTANT NOTE: To be called in the main function BEFORE the QApplication object creation
+    static bool Initialization();
+
+    /// Centralized common settings for most sofaqtquick applications.
+    /// Every applications will be updated when modifying this code.
+    /// To be called in the main function.
+    static bool DefaultMain(QApplication& app, QQmlApplicationEngine& applicationEngine , const QString &mainScript);
 
 private:
     static SofaApplication* OurInstance;

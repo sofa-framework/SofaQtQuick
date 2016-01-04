@@ -23,8 +23,8 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import SofaBasics 1.0
+import SofaApplication 1.0
 import SofaScene 1.0
-import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 
 Rectangle {
     id: root
@@ -35,7 +35,7 @@ Rectangle {
     property int uiId: 0
     property int previousUiId: uiId
     onUiIdChanged: {
-        SofaSettingsScript.Ui.replace(previousUiId, uiId);
+        SofaApplication.uiSettings.replace(previousUiId, uiId);
     }
 
     Settings {
@@ -60,13 +60,13 @@ Rectangle {
     }
 
     function setNoSettings() {
-        SofaSettingsScript.Ui.remove(uiId);
+        SofaApplication.uiSettings.remove(uiId);
         uiId = 0;
     }
 
     Component.onCompleted: {
         if(0 === uiId)
-            uiId = SofaSettingsScript.Ui.generate();
+            uiId = SofaApplication.uiSettings.generate();
         else
             load();
 

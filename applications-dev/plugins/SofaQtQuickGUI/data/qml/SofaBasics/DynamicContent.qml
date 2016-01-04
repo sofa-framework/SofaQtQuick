@@ -24,7 +24,7 @@ import QtQuick.Dialogs 1.1
 import QtQuick.Controls.Styles 1.2
 import Qt.labs.folderlistmodel 2.1
 import Qt.labs.settings 1.0
-import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
+import SofaApplication 1.0
 
 Item {
     id: root
@@ -35,7 +35,7 @@ Item {
     property int uiId: 0
     property int previousUiId: uiId
     onUiIdChanged: {
-        SofaSettingsScript.Ui.replace(previousUiId, uiId);
+        SofaApplication.uiSettings.replace(previousUiId, uiId);
     }
 
     QtObject {
@@ -77,7 +77,7 @@ Item {
     }
 
     function setNoSettings() {
-        SofaSettingsScript.Ui.remove(uiId);
+        SofaApplication.uiSettings.remove(uiId);
         uiId = 0;
     }
 
@@ -97,7 +97,7 @@ Item {
                 load();
             }
             else
-                root.uiId = SofaSettingsScript.Ui.generate();
+                root.uiId = SofaApplication.uiSettings.generate();
         }
         else
             load();
@@ -208,7 +208,7 @@ Item {
                             refreshStandbyItem();
                         } else {
                             if(0 === root.contentUiId)
-                                root.contentUiId = SofaSettingsScript.Ui.generate();
+                                root.contentUiId = SofaApplication.uiSettings.generate();
 
                             var contentProperties = root.properties;
                             if(!contentProperties)
@@ -222,7 +222,7 @@ Item {
                                 root.contentUiId = Qt.binding(function() {return content.uiId;});
                             else
                             {
-                                SofaSettingsScript.Ui.remove(root.contentUiId);
+                                SofaApplication.uiSettings.remove(root.contentUiId);
                                 root.contentUiId = 0;
                             }
 

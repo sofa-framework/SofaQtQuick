@@ -92,7 +92,6 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
 	myStatus(Status::Null),
 	mySource(),
     mySourceQML(),
-    myScreenshotFilename(),
     myPathQML(),
     myVisualDirty(false),
 	myDt(0.04),
@@ -455,32 +454,6 @@ void SofaScene::handleStatusChange(SofaScene::Status newStatus)
     }
 }
 
-void SofaScene::takeScreenshot()
-{
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    screenshot.init(viewport[2], viewport[3], 1, 1, helper::io::Image::UNORM8, helper::io::Image::RGB);
-    glReadBuffer(GL_FRONT);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadPixels(viewport[0], viewport[1], viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE, screenshot.getPixels());
-    glReadBuffer(GL_BACK);
-}
-
-void SofaScene::saveScreenshotInFile()
-{
-    QString finalFilename = myScreenshotFilename.toLocalFile();
-    if(finalFilename.isEmpty())
-    {
-        std::cerr << "File to save screenshot doesn't exist" << std::endl;
-        return;
-    }
-
-    if(!screenshot.save(finalFilename.toStdString()))
-        return;
-
-    qDebug() << "Saved screenshot (" << screenshot.getWidth() << "x" << screenshot.getHeight() << ") to" << finalFilename;
-}
-
 void SofaScene::setStatus(Status newStatus)
 {
 	if(newStatus == myStatus)
@@ -521,16 +494,6 @@ void SofaScene::setSourceQML(const QUrl& newSourceQML)
 	mySourceQML = newSourceQML;
 
 	sourceQMLChanged(newSourceQML);
-}
-
-void SofaScene::setScreenshotFilename(const QUrl& newScreenshotFilename)
-{
-    if(newScreenshotFilename == myScreenshotFilename)
-        return;
-
-    myScreenshotFilename = newScreenshotFilename;
-
-    screenshotFilenameChanged(newScreenshotFilename);
 }
 
 void SofaScene::setDt(double newDt)

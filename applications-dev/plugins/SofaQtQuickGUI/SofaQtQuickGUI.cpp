@@ -19,7 +19,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaQtQuickGUI.h"
 #include "SofaApplication.h"
-#include "Tools.h"
 #include "Camera.h"
 #include "SofaParticleInteractor.h"
 #include "SofaPythonInteractor.h"
@@ -68,7 +67,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qRegisterMetaType<SofaScene::Status>("Status");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
-    qmlRegisterType<Tools>                                          ("Tools"                                , versionMajor, versionMinor, "Tools");
+    qmlRegisterType<SofaApplication>                                          ("Tools"                                , versionMajor, versionMinor, "Tools");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");

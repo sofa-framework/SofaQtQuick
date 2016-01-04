@@ -82,7 +82,7 @@ CollapsibleGroupBox {
                 errorLabel.text = "";
 
                 // use a fresh version of the gui if it's a reload by removing the old version of the cache
-                SofaToolsScript.Tools.trimCache();
+                SofaApplication.trimComponentCache();
 
                 if(0 !== root.source.toString().length) {
                     var componentFactory = Qt.createComponent(root.source);

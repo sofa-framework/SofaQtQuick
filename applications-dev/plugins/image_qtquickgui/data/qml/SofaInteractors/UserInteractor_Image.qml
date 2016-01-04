@@ -111,7 +111,7 @@ UserInteractor {
         });
 
         setMouseWheelMapping(function(wheel, sofaViewer) {
-            
+
             if(!sofaViewer.camera)
                 return;
 
@@ -133,7 +133,7 @@ UserInteractor {
 
             wheel.accepted = true;
         });
-        
+
     }
 
     function init() {

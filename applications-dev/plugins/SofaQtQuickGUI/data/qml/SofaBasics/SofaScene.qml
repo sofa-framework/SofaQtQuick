@@ -19,17 +19,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import QtQuick.Controls 1.0
-import Qt.labs.settings 1.0
+import SofaApplication 1.0
 import SofaParticleInteractor 1.0
 import SofaScene 1.0
-import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
-import "qrc:/SofaCommon/SofaToolsScript.js" as SofaToolsScript
-import SofaApplication 1.0
 
 SofaScene {
     id: root
 
-    asynchronous: true
+    asynchronous: false
     header: ""
     source: ""
     sourceQML: ""
@@ -55,7 +52,7 @@ SofaScene {
             break;
         case SofaScene.Ready:
             statusMessage = 'SofaScene "' + path + '" loaded successfully';
-            SofaSettingsScript.Recent.add(path);
+            SofaApplication.sceneSettings.addRecent(path);
             break;
         }
     }
@@ -70,7 +67,7 @@ SofaScene {
     property var sofaParticleInteractor: SofaParticleInteractor {
         stiffness: 100
 
-        onInteractingChanged: SofaToolsScript.Tools.overrideCursorShape = interacting ? Qt.BlankCursor : 0
+        onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
     }
 
     function keyPressed(event) {

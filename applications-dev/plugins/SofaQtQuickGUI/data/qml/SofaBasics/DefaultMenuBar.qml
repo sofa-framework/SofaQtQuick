@@ -21,8 +21,6 @@ import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
-import Qt.labs.settings 1.0
-import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 import SofaApplication 1.0
 
 MenuBar {
@@ -54,7 +52,7 @@ MenuBar {
         Action {
             id: clearRecentAction
             text: "&Clear"
-            onTriggered: SofaSettingsScript.Recent.clear();
+            onTriggered: SofaApplication.sceneSettings.clearRecents();
             tooltip: "Clear history"
         },
 
@@ -141,12 +139,12 @@ MenuBar {
 
             function update() {
                 recentMenu.clear();
-                var sofaSceneList = SofaSettingsScript.Recent.sofaSceneList();
-                if(0 === sofaSceneList.length)
+                var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
+                if(0 === sofaSceneRecentsList.length)
                     return;
 
-                for(var j = 0; j < sofaSceneList.length; ++j) {
-                    var sofaSceneSource = sofaSceneList[j];
+                for(var j = 0; j < sofaSceneRecentsList.length; ++j) {
+                    var sofaSceneSource = sofaSceneRecentsList[j];
                     if(0 === sofaSceneSource.length)
                         continue;
 
@@ -171,8 +169,8 @@ MenuBar {
             Component.onCompleted: recentMenu.update()
 
             Connections {
-                target: SofaSettingsScript.Recent
-                onSofaScenesChanged: recentMenu.update()
+                target: SofaApplication.sceneSettings
+                onSofaSceneRecentsChanged: recentMenu.update()
             }
         }
 

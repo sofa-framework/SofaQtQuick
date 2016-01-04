@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <SofaQtQuickGUI/Tools.h>
+#include <SofaQtQuickGUI/SofaApplication.h>
 
 int main(int argc, char **argv)
 {
     // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
-    sofa::qtquick::Tools::Initialization();
+    sofa::qtquick::SofaApplication::Initialization();
 
     QApplication app(argc, argv);
     QQmlApplicationEngine applicationEngine;
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     app.setApplicationName("qtQuickSofa");
 
     // common settings for most sofaqtquick applications
-    if(!sofa::qtquick::Tools::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
+    if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
 
     return app.exec();

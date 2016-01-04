@@ -8,7 +8,6 @@ set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINO
 set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
-    Tools.cpp
     SofaViewer.cpp
     Camera.cpp
     SofaScene.cpp
@@ -33,7 +32,6 @@ set(SOURCE_FILES
 set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
-    Tools.h
     SofaViewer.h
     Camera.h
     SofaScene.h
@@ -70,15 +68,9 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_poissonRatio.qml
     data/qml/SofaDataTypes/SofaDataType_string.qml
     data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
-    data/qml/SofaCommon/SofaCommonScript.js
-    data/qml/SofaCommon/SofaToolsScript.js
-    data/qml/SofaCommon/SofaSettingsScript.js
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
     data/qml/SofaBasics/qmldir
-    data/qml/SofaBasics/RecentSettings.qml
-    data/qml/SofaBasics/UISettings.qml
-    data/qml/SofaBasics/Tools.qml
     data/qml/SofaBasics/ToolTip.qml
     data/qml/SofaBasics/DefaultStatusBar.qml
     data/qml/SofaBasics/DefaultToolBar.qml

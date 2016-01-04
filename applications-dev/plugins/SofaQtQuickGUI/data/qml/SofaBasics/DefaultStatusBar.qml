@@ -86,7 +86,7 @@ ToolBar {
 
                 Timer {
                     id: timer
-                    running: sofaScene
+                    running: sofaScene && sofaScene.ready
                     repeat: true
                     interval: 1
                     onTriggered: sceneTime = sofaScene.dataValue("@.time");

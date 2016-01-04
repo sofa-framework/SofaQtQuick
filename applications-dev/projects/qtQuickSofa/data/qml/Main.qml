@@ -26,7 +26,6 @@ import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaTools 1.0
 import SofaWidgets 1.0
-import "qrc:/SofaCommon/SofaSettingsScript.js" as SofaSettingsScript
 
 ApplicationWindow {
     id: root
@@ -42,10 +41,11 @@ ApplicationWindow {
                 sofaScene.source = "file:" + Qt.application.arguments[1];
             }
             else {
-                if(0 !== SofaSettingsScript.Recent.sofaScenes.length)
-                    sofaScene.source = SofaSettingsScript.Recent.mostRecent();
-                else
-                    sofaScene.source = "file:Demos/caduceus.scn";
+                var source = SofaApplication.sceneSettings.mostRecent();
+                if(0 === source.length)
+                    source = "file:Demos/caduceus.scn";
+
+                sofaScene.source = source;
             }
             sofaScenePath = sofaScene.source.toString().replace("///", "/").replace("file:", "");
         }

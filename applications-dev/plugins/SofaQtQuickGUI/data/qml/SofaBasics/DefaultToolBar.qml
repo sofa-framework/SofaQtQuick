@@ -22,17 +22,22 @@ import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import SofaComponent 1.0
-import "qrc:/SofaCommon/SofaCommonScript.js" as SofaCommonScript
 import SofaApplication 1.0
 
 ToolBar {
     id: root
     implicitHeight: 25
 
-    property var sofaScene
+    property var sofaScene: SofaApplication.sofaScene
 
-    Component.onCompleted: SofaApplication.toolBar = root
+    Component.onCompleted: {
+        SofaApplication.toolBar = root;
+    }
+
+    Component.onDestruction: {
+        if(root === SofaApplication.toolBar)
+            SofaApplication.toolBar = null;
+    }
 
     enabled: sofaScene ? sofaScene.ready : false
 
@@ -97,8 +102,10 @@ ToolBar {
 
                 var interactorComponentMap = SofaApplication.interactorComponentMap;
                 for(var key in interactorComponentMap)
-                    if(interactorComponentMap.hasOwnProperty(key))
-                        SofaCommonScript.InstanciateComponent(interactorButtonComponent, interactorPositioner, {interactorName: key, interactorComponent: interactorComponentMap[key]});
+                    if(interactorComponentMap.hasOwnProperty(key)) {
+                        var incubator = interactorButtonComponent.incubateObject(interactorPositioner, {interactorName: key, interactorComponent: interactorComponentMap[key]});
+                        incubator.forceCompletion();
+                    }
             }
         }
 
@@ -164,75 +171,64 @@ ToolBar {
             spacing: 5
 
             ToolButton {
-                id: saveScreenshotButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                id: screenshotButton
+                text: "Screenshot"
+                checked: false
+                checkable: false
 
-                text: "Save Screenshot"
-                tooltip: "Save screenshot"
+                onClicked: saveScreenshotDialog.open();
 
-                Component.onCompleted: implicitWidth += 5
+                FileDialog {
+                    id: saveScreenshotDialog
+                    folder: "Captured/Screen/"
+                    selectExisting: false
+                    title: "Path to the screenshot to save"
 
-                onClicked: SofaApplication.takeScreenshot();
+                    onAccepted: {
+                        var path = fileUrl.toString().replace("file://", "");
+                        SofaApplication.takeScreenshot(path);
+                    }
+                }
+
+                ToolTip {
+                    anchors.fill: parent
+                    description: "Save screenshot"
+                }
+            }
+
+            ToolButton {
+                id: movieButton
+                text: "Movie"
+                checked: false
+                checkable: true
+
+                onClicked: {
+                    if(checked)
+                        saveVideoDialog.open();
+                    else
+                        SofaApplication.stopVideoRecording();
+                }
+
+                FileDialog {
+                    id: saveVideoDialog
+                    folder: "Captured/Movie/"
+                    selectExisting: false
+                    title: "Path to the movie to save"
+
+                    onAccepted: {
+                        SofaApplication.startVideoRecording(fileUrl.toString().replace("file://", ""));
+                    }
+
+                    onRejected: {
+                        movieButton.checked = false;
+                    }
+                }
+
+                ToolTip {
+                    anchors.fill: parent
+                    description: "Save video"
+                }
             }
         }
     }
-
-/*
-    TabView {
-        Tab {
-            title: "Interaction"
-
-            Row {
-
-            }
-        }
-
-        Tab {
-            title: "Misc"
-
-            Row {
-
-                ToolButton {
-                    text: "A"
-                }
-
-                ToolButton {
-                    text: "B"
-                }
-
-                ToolButton {
-                    text: "C"
-                }
-            }
-        }
-
-        style: TabViewStyle {
-            frameOverlap: 0
-            tabOverlap: -5
-
-            tab: Rectangle {
-                implicitWidth: Math.max(text.implicitWidth + 4, 80)
-                implicitHeight: 20
-
-                radius: 5
-                gradient: Gradient {
-                    GradientStop {color: "#EEE"; position: 0.0}
-                    GradientStop {color: "#DDD"; position: 0.5}
-                    GradientStop {color: styleData.selected ? "#BBB" : "#CCC" ; position: 1.0}
-                }
-
-                Text {
-                    id: text
-                    anchors.centerIn: parent
-                    text: styleData.title
-                    color: styleData.selected ? "black" : "grey"
-                    font.bold: styleData.selected
-                }
-            }
-
-            frame: null
-        }
-    }
-*/
 }
