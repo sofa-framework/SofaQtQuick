@@ -261,19 +261,19 @@ bool SofaPythonInteractor::onCallBasicVerifications(const QString& funcName, con
 {
     if(!mySofaScene)
     {
-        qWarning() << "ERROR: cannot call Python function on a null SofaScene";
+        qWarning() << "ERROR: cannot call Python function on a null SofaScene (" << funcName << ")";
         return false;
     }
 
     if(!mySofaScene->isReady())
     {
-        qWarning() << "ERROR: cannot call Python function on a SofaScene that is still loading";
+        qWarning() << "ERROR: cannot call Python function on a SofaScene that is still loading (" << funcName << ")";
         return false;
     }
 
     if(funcName.isEmpty())
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python function name";
+        qWarning() << "ERROR: cannot call Python function without a valid python function name (" << funcName << ")";
         return false;
     }
 
