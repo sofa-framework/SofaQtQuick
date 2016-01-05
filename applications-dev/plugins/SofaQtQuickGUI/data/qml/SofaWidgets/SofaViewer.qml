@@ -43,18 +43,29 @@ SofaViewer {
     sofaScene: SofaApplication.sofaScene
 
     Component.onCompleted: {
-        SofaApplication.addSofaViewer(root)
+        SofaApplication.addSofaViewer(root);
+
+        if(!SofaApplication.focusedSofaViewer)
+            forceActiveFocus();
 
         recreateCamera();
     }
 
     Component.onDestruction: {
-        SofaApplication.removeSofaViewer(root)
+        SofaApplication.removeSofaViewer(root);
     }
 
     onActiveFocusChanged: {
-        if(activeFocus)
+        if(root && activeFocus)
             SofaApplication.setFocusedSofaViewer(root);
+    }
+
+    Connections {
+        target: SofaApplication
+        onFocusedSofaViewerChanged: {
+            if((root === SofaApplication.focusedSofaViewer || !SofaApplication.focusedSofaViewer) && !root.activeFocus)
+                root.forceActiveFocus();
+        }
     }
 
 	Action{
@@ -285,7 +296,7 @@ SofaViewer {
         event.accepted = true;
     }
 
-// crosshair
+// visual info
 
     readonly property alias crosshairGizmo: crosshairGizmo
     Item {
@@ -333,6 +344,44 @@ SofaViewer {
             color: crosshairGizmo.color
             width: crosshairGizmo.thickness
             height: crosshairGizmo.size
+        }
+    }
+
+    property bool highlightIfFocused: true
+    Rectangle {
+        id: borderHighlighting
+        anchors.fill: parent
+
+        color: "transparent"
+        border.width: 2
+        border.color: "red"
+
+        enabled: root.highlightIfFocused && root.activeFocus
+        onEnabledChanged: {
+            if(enabled)
+                visible = true;
+            else
+                visible = false;
+        }
+
+        onVisibleChanged: if(!visible) opacity = 0.0
+
+        SequentialAnimation {
+            running: borderHighlighting.visible
+
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                to: 1.0
+                duration: 200
+            }
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                from: 1.0
+                to: 0.5
+                duration: 800
+            }
         }
     }
 
