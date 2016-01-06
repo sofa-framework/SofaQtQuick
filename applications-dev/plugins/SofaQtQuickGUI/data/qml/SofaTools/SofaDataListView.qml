@@ -29,6 +29,7 @@ CollapsibleGroupBox {
     id: root
     implicitWidth: 0
 
+    contentRightMargin: 9
     title: "Data"
     property int priority: 80
     contentMargin: 0

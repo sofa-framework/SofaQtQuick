@@ -28,7 +28,12 @@ FocusScope {
 
     property string title
     property bool collapsed: false
-    property int contentMargin: 5
+
+    property int contentMargin: 0
+    property int contentTopMargin: -1
+    property int contentBottomMargin: -1
+    property int contentLeftMargin: -1
+    property int contentRightMargin: -1
 
     /*! \internal */
     default property alias __content: container.data
@@ -83,10 +88,10 @@ FocusScope {
                     Item {
                         id: container
                         anchors.fill: parent
-                        anchors.topMargin: root.contentMargin
-                        anchors.leftMargin: root.contentMargin
-                        anchors.rightMargin: root.contentMargin
-                        anchors.bottomMargin: root.contentMargin
+                        anchors.topMargin: -1 === root.contentTopMargin ? root.contentMargin : root.contentTopMargin
+                        anchors.leftMargin: -1 === root.contentLeftMargin ? root.contentMargin : root.contentLeftMargin
+                        anchors.rightMargin: -1 === root.contentRightMargin ? root.contentMargin : root.contentRightMargin
+                        anchors.bottomMargin: -1 === root.contentBottomMargin ? root.contentMargin : root.contentBottomMargin
 
                         property Item layoutItem: container.children.length === 1 ? container.children[0] : null
                         function calcWidth () { return container.anchors.leftMargin + container.anchors.rightMargin + (layoutItem ? (layoutItem.implicitWidth) +

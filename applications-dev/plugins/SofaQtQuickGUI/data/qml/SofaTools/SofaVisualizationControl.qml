@@ -37,11 +37,13 @@ CollapsibleGroupBox {
 
     enabled: sofaScene ? sofaScene.ready : false
 
-    implicitHeight: treeView.flickableItem.contentHeight + 47
-
     TreeView {
         id: treeView
         anchors.fill: parent
+        implicitHeight: flickableItem.contentHeight
+
+        frameVisible: false
+        headerVisible: false
 
         TableViewColumn {
             title: "Name"
@@ -152,133 +154,4 @@ CollapsibleGroupBox {
             }
         }
     }
-
-//    Loader {
-//        anchors.fill: parent
-//        sourceComponent: displayFlagsComponent
-//    }
-
-//    Component {
-//        id: displayFlagsComponent
-
-//        TreeView {
-//            TableViewColumn {
-//                title: "Name"
-//                role: "Name"
-//                //width: 300
-//            }
-
-//            model: SofaDisplayFlagsTreeModel {}
-
-//            Component.onCompleted: {
-//                var rowCount = model.rowCount();
-//                console.log("rowCount", rowCount);
-//                for(var i = 0; i < rowCount; ++i)
-//                    expand(model.index(i, 0));
-
-//                resizeColumnsToContents();
-//            }
-
-//            itemDelegate: Item {
-//                Text {
-//                    anchors.verticalCenter: parent.verticalCenter
-//                    color: styleData.textColor
-//                    elide: styleData.elideMode
-//                    text: styleData.value
-//                }
-//            }
-//        }
-
-////        SofaDataType_widget_displayFlags {
-
-////        }
-//    }
-
-//    GridLayout {
-//        anchors.fill: parent
-//        columns: 3
-
-//        Label {
-//            Layout.preferredWidth: implicitWidth
-//            text: "DT"
-//        }
-//        SpinBox {
-//            id: dtSpinBox
-//            Layout.columnSpan: 2
-//            Layout.fillWidth: true
-//            decimals: 3
-//            prefix: value <= 0 ? "Real-time " : ""
-//            suffix: " seconds"
-//            stepSize: 0.001
-//            value: sofaScene ? sofaScene.dt : 0.04
-//            onValueChanged: if(sofaScene) sofaScene.dt = value
-
-//            Component.onCompleted: {
-//                valueChanged();
-//            }
-//        }
-
-//        Label {
-//            Layout.preferredWidth: implicitWidth
-//            text: "Interaction stiffness"
-//        }
-//        Slider {
-//            id: interactionStiffnessSlider
-//            Layout.fillWidth: true
-//            maximumValue: 1000
-//            value: sofaScene ? sofaScene.sofaParticleInteractor.stiffness : 100
-//            onValueChanged: if(sofaScene) sofaScene.sofaParticleInteractor.stiffness = value
-//            stepSize: 1
-
-//            Component.onCompleted: {
-//                minimumValue = 1;
-//            }
-//        }
-//        TextField {
-//            Layout.preferredWidth: 40
-//            enabled: false
-//            text: interactionStiffnessSlider.value
-//        }
-
-//        Button {
-//            id: displayGraphButton
-//            Layout.columnSpan: 3
-//            Layout.fillWidth: true
-//            text: "Display SofaScene graph"
-//            tooltip: ""
-//            onClicked: {
-//                displayGraphText.text = sofaScene ? sofaScene.dumpGraph() : ""
-//                displayGraphDialog.open();
-//            }
-
-//            Dialog {
-//                id: displayGraphDialog
-//                title: "Simulation SofaScene Graph"
-//                width: 800
-//                height: 600
-
-//                contentItem: Item {
-//                    ColumnLayout {
-//                        anchors.fill: parent
-//                        anchors.margins: 5
-//                        TextArea {
-//                            id: displayGraphText
-//                            Layout.fillWidth: true
-//                            Layout.fillHeight: true
-//                            readOnly: true
-
-//                            Component.onCompleted: {
-//                                wrapMode = TextEdit.NoWrap;
-//                            }
-//                        }
-//                        Button {
-//                            Layout.fillWidth: true
-//                            text: "Hide"
-//                            onClicked: displayGraphDialog.close()
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 }

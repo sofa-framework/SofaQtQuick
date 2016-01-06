@@ -29,6 +29,7 @@ CollapsibleGroupBox {
     id: root
     implicitWidth: 0
 
+    contentRightMargin: 9
     title: "Sofa Scene Graph"
     property int priority: 90
 

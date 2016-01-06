@@ -27,6 +27,7 @@ CollapsibleGroupBox {
     id: root
     implicitWidth: 0
 
+    contentRightMargin: 9
     title: "Simulation Control"
     property int priority: 100
 
