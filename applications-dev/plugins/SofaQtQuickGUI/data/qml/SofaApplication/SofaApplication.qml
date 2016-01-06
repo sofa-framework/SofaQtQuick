@@ -30,17 +30,6 @@ import SofaApplicationSingleton 1.0
 SofaApplication {
     id: root
 
-////////////////////////////////////////////////// PRIVATE
-    property QtObject _d: QtObject {
-        id: d
-
-        property var sofaSceneListModel: null
-
-        property var focusedSofaViewer: null
-        property var sofaViewers: []
-
-    }
-
 ////////////////////////////////////////////////// SOFASCENE
 
     property var sofaScene: null
@@ -81,23 +70,31 @@ SofaApplication {
 
 ////////////////////////////////////////////////// SOFAVIEWER
 
-    readonly property alias focusedSofaViewer: d.focusedSofaViewer
-    readonly property alias sofaViewers: d.sofaViewers
+    readonly property alias focusedSofaViewer: viewerPrivate.focusedSofaViewer
+    readonly property alias sofaViewers: viewerPrivate.sofaViewers
 
     function setFocusedSofaViewer(sofaViewer) {
-        d.focusedSofaViewer = sofaViewer;
+        viewerPrivate.focusedSofaViewer = sofaViewer;
     }
 
     function addSofaViewer(sofaViewer) {
-        d.sofaViewers.push(sofaViewer)
+        viewerPrivate.sofaViewers.push(sofaViewer)
     }
 
     function removeSofaViewer(sofaViewer) {
-        var index = d.sofaViewers.indexOf(sofaViewer);
+        var index = viewerPrivate.sofaViewers.indexOf(sofaViewer);
         if(-1 === index)
             return;
 
-        d.sofaViewers.splice(index, 1);
+        viewerPrivate.sofaViewers.splice(index, 1);
+    }
+
+    property QtObject _viewerPrivate: QtObject {
+        id: viewerPrivate
+
+        property var focusedSofaViewer: null
+        property var sofaViewers: []
+
     }
 
 ////////////////////////////////////////////////// SETTINGS

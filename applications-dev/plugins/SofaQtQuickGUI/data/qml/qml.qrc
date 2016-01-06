@@ -22,6 +22,7 @@
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaTools/qmldir</file>
         <file>SofaTools/SofaSimulationControl.qml</file>
+        <file>SofaTools/SofaVisualizationControl.qml</file>
         <file>SofaTools/SofaSceneToolPanel.qml</file>
         <file>SofaTools/SofaSceneGraphView.qml</file>
         <file>SofaTools/SofaDataListView.qml</file>

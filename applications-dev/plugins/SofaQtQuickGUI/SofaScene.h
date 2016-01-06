@@ -161,6 +161,8 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path) const;
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path) const;
 
+    Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent() const;
+
 protected:
     Q_INVOKABLE QVariant onDataValue(const QString& path) const;
     Q_INVOKABLE void onSetDataValue(const QString& path, const QVariant& value);

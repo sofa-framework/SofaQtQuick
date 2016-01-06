@@ -1136,6 +1136,20 @@ SofaComponent* SofaScene::component(const QString& path) const
     return new SofaComponent(this, base);
 }
 
+SofaComponent* SofaScene::visualStyleComponent() const
+{
+    if(mySofaSimulation->GetRoot())
+    {
+        sofa::component::visualmodel::VisualStyle* visualStyle = nullptr;
+
+        mySofaSimulation->GetRoot()->get(visualStyle);
+        if(visualStyle)
+            return new SofaComponent(this, visualStyle);
+    }
+
+    return nullptr;
+}
+
 QVariant SofaScene::onDataValue(const QString& path) const
 {
     BaseData* data = FindDataHelper(mySofaSimulation->GetRoot().get(), path);

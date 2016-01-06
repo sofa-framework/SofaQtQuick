@@ -19,6 +19,7 @@ set(SOURCE_FILES
     SelectableSofaComponent.cpp
     SelectableSofaParticle.cpp
     SofaDataListModel.cpp
+    SofaDisplayFlagsTreeModel.cpp
     SofaPythonInteractor.cpp
     PythonConsole.cpp
     SofaParticleInteractor.cpp
@@ -43,6 +44,7 @@ set(HEADER_FILES
     SelectableSofaComponent.h
     SelectableSofaParticle.h
     SofaDataListModel.h
+    SofaDisplayFlagsTreeModel.h
     SofaPythonInteractor.h
     PythonConsole.h
     SofaParticleInteractor.h
@@ -100,6 +102,7 @@ set(QML_FILES
     data/qml/SofaManipulators/Manipulator3D_Rotation.qml
     data/qml/SofaTools/qmldir
     data/qml/SofaTools/SofaSimulationControl.qml
+    data/qml/SofaTools/SofaVisualizationControl.qml
     data/qml/SofaTools/SofaSceneGraphView.qml
     data/qml/SofaTools/SofaDataListView.qml
     data/qml/SofaTools/SofaSceneToolPanel.qml
