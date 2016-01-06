@@ -137,10 +137,6 @@ if(WIN32)
     endif()
 endif()
 
-if(NOT MSVC)
-    add_definitions(-std=gnu++11)
-endif()
-
 find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
 # make sure to use QT > 5.2
 
@@ -179,6 +175,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CUR
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${SOFAQTQUICKGUI_VERSION})
 
 add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
+
+
+if(NOT MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:-std=c++11>")
+endif()
+
 
 ## Install rules for the library; CMake package configurations files
 sofa_create_package(${PROJECT_NAME} ${SOFAQTQUICKGUI_VERSION} ${PROJECT_NAME} ${PROJECT_NAME})
