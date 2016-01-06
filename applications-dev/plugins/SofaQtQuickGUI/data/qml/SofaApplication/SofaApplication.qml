@@ -78,7 +78,9 @@ SofaApplication {
     }
 
     function addSofaViewer(sofaViewer) {
-        viewerPrivate.sofaViewers.push(sofaViewer)
+        viewerPrivate.sofaViewers.push(sofaViewer);
+
+        viewerPrivate.sofaViewersChanged(viewerPrivate.sofaViewers);
     }
 
     function removeSofaViewer(sofaViewer) {
@@ -87,6 +89,8 @@ SofaApplication {
             return;
 
         viewerPrivate.sofaViewers.splice(index, 1);
+
+        viewerPrivate.sofaViewersChanged(viewerPrivate.sofaViewers);
     }
 
     property QtObject _viewerPrivate: QtObject {

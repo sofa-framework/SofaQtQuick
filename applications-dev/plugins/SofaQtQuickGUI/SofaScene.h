@@ -81,6 +81,7 @@ public:
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
     Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
+    Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtSynchronous NOTIFY pyQtSynchronousChanged)
     Q_PROPERTY(sofa::qtquick::SofaComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
@@ -118,7 +119,10 @@ public:
     bool asynchronous() const                                   {return myAsynchronous;}
     void setAsynchronous(bool newPlay);
 
-    sofa::qtquick::SofaComponent* selectedComponent() const    {return mySelectedComponent;}
+    bool pyQtSynchronous() const                                {return myPyQtSynchronous;}
+    void setPyQtSynchronous(bool newPyQtSynchronous);
+
+    sofa::qtquick::SofaComponent* selectedComponent() const     {return mySelectedComponent;}
     void setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedComponent);
 
     sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
@@ -136,6 +140,7 @@ signals:
 	void dtChanged(double newDt);
 	void playChanged(bool newPlay);
     void asynchronousChanged(bool newAsynchronous);
+    void pyQtSynchronousChanged(bool newPyQtSynchronous);
     void selectedComponentChanged(sofa::qtquick::SofaComponent* newSelectedComponent);
     void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
@@ -223,6 +228,7 @@ private:
     double                                      myDt;
     bool                                        myPlay;
     bool                                        myAsynchronous;
+    bool                                        myPyQtSynchronous;
 
     sofa::simulation::Simulation*               mySofaSimulation;
     QTimer*                                     myStepTimer;
@@ -230,7 +236,7 @@ private:
 
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
-    SofaComponent*                             mySelectedComponent;
+    SofaComponent*                              mySelectedComponent;
 
     QOpenGLShaderProgram*                       myHighlightShaderProgram;
     QOpenGLShaderProgram*                       myPickingShaderProgram;

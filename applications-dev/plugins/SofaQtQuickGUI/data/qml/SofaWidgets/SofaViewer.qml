@@ -347,7 +347,7 @@ SofaViewer {
         }
     }
 
-    property bool highlightIfFocused: true
+    property bool highlightIfFocused: SofaApplication.sofaViewers.length > 1
     Rectangle {
         id: borderHighlighting
         anchors.fill: parent

@@ -97,6 +97,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
 	myDt(0.04),
 	myPlay(false),
     myAsynchronous(true),
+    myPyQtSynchronous(true),
     mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
     myBases(),
@@ -362,6 +363,21 @@ void SofaScene::open()
         return;
     }
 
+    bool currentAsynchronous = myAsynchronous;
+    if(myPyQtSynchronous && currentAsynchronous)
+    {
+        QFile file(QString::fromStdString(filepath));
+        if(file.open(QIODevice::ReadOnly))
+        {
+            QTextStream in(&file);
+            QString content = in.readAll();
+            if(-1 != content.indexOf("PyQt", 0, Qt::CaseInsensitive)) {
+                currentAsynchronous = false;
+                qDebug() << "This scene seems to contain PyQt and will be loaded synchronously";
+            }
+        }
+    }
+
     std::string qmlFilepath = (finalFilename + ".qml").toLatin1().constData();
     if(!sofa::helper::system::DataRepository.findFile(qmlFilepath))
         qmlFilepath.clear();
@@ -387,7 +403,7 @@ void SofaScene::open()
     QOffscreenSurface* offScreenSurface = new QOffscreenSurface();
     offScreenSurface->create();
 
-	if(myAsynchronous)
+    if(currentAsynchronous)
 	{
         LoaderThread* loaderThread = new LoaderThread(this, finalFilename, offScreenSurface);
 		
@@ -524,6 +540,16 @@ void SofaScene::setAsynchronous(bool newAsynchronous)
     myAsynchronous = newAsynchronous;
 
     asynchronousChanged(newAsynchronous);
+}
+
+void SofaScene::setPyQtSynchronous(bool newPyQtSynchronous)
+{
+    if(newPyQtSynchronous == myPyQtSynchronous)
+        return;
+
+    myPyQtSynchronous = newPyQtSynchronous;
+
+    pyQtSynchronousChanged(newPyQtSynchronous);
 }
 
 void SofaScene::setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedComponent)
