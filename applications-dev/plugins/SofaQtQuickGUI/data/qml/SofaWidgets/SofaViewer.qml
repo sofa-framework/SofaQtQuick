@@ -99,6 +99,7 @@ SofaViewer {
         id: cameraComponent
 
         Camera {
+
         }
     }
 
@@ -815,8 +816,8 @@ SofaViewer {
 
                                             text: "Orthographic"
                                             checkable: true
-                                            checked: root.defaultCameraOrthographic
-                                            onCheckedChanged: if(root.camera) root.camera.orthographic = checked
+                                            checked: camera.orthographic
+                                            onCheckedChanged: if(root.camera && checked !== root.camera.orthographic) root.camera.orthographic = checked;
 
                                             Connections {
                                                 target: root
@@ -853,8 +854,8 @@ SofaViewer {
 
                                             text: "Perspective"
                                             checkable: true
-                                            checked: !root.defaultCameraOrthographic
-                                            onCheckedChanged: if(root.camera) root.camera.orthographic = !checked
+                                            checked: !camera.orthographic
+                                            onCheckedChanged: if(root.camera && checked === root.camera.orthographic) root.camera.orthographic = !checked;
 
                                             Connections {
                                                 target: root

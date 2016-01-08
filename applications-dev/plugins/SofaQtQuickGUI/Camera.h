@@ -106,6 +106,11 @@ public slots:
     void alignCameraAxis();
 
 public:
+    double orthoLeft() const    {return myOrthoLeft;}
+    double orthoRight() const   {return myOrthoRight;}
+    double orthoBottom() const  {return myOrthoBottom;}
+    double orthoTop() const     {return myOrthoTop;}
+
     void setOrthoLeft(double left);
     void setOrthoRight(double right);
     void setOrthoBottom(double bottom);

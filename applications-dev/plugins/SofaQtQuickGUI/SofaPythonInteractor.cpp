@@ -249,13 +249,10 @@ bool SofaPythonInteractor::run(const QString& script)
     return sofa::simulation::PythonEnvironment::runString(script.toStdString());
 }
 
-
 QVariant SofaPythonInteractor::call(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
     return onCall(pythonScriptControllerName, funcName, parameter);
 }
-
-
 
 bool SofaPythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& /*parameter*/)
 {
@@ -280,7 +277,6 @@ bool SofaPythonInteractor::onCallBasicVerifications(const QString& funcName, con
     return true;
 }
 
-
 QVariant SofaPythonInteractor::onCallByController(PythonScriptController* pythonScriptController, const QString& funcName, const QVariant& parameter)
 {
     PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
@@ -298,7 +294,6 @@ QVariant SofaPythonInteractor::onCallByController(PythonScriptController* python
 
     return ExtractPythonTupleHelper(pythonScriptResult.data());
 }
-
 
 QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {

@@ -78,7 +78,7 @@ CollapsibleGroupBox {
         function executeVisitor(visitor) {
             var rowCount = model.rowCount();
 
-            var stack = new Array();
+            var stack = [];
             for(var i = 0; i < rowCount; ++i)
                 stack.push(model.index(i, 0));
 

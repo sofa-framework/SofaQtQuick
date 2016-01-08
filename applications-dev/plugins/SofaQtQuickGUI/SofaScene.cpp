@@ -97,7 +97,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
 	myDt(0.04),
 	myPlay(false),
     myAsynchronous(true),
-    myPyQtSynchronous(true),
+    myPyQtForceSynchronous(true),
     mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
     myBases(),
@@ -364,7 +364,7 @@ void SofaScene::open()
     }
 
     bool currentAsynchronous = myAsynchronous;
-    if(myPyQtSynchronous && currentAsynchronous)
+    if(myPyQtForceSynchronous && currentAsynchronous)
     {
         QFile file(QString::fromStdString(filepath));
         if(file.open(QIODevice::ReadOnly))
@@ -542,14 +542,14 @@ void SofaScene::setAsynchronous(bool newAsynchronous)
     asynchronousChanged(newAsynchronous);
 }
 
-void SofaScene::setPyQtSynchronous(bool newPyQtSynchronous)
+void SofaScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
 {
-    if(newPyQtSynchronous == myPyQtSynchronous)
+    if(newPyQtForceSynchronous == myPyQtForceSynchronous)
         return;
 
-    myPyQtSynchronous = newPyQtSynchronous;
+    myPyQtForceSynchronous = newPyQtForceSynchronous;
 
-    pyQtSynchronousChanged(newPyQtSynchronous);
+    pyQtForceSynchronousChanged(newPyQtForceSynchronous);
 }
 
 void SofaScene::setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedComponent)
