@@ -1444,12 +1444,19 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
 
         if(!pickVisitor.particles.empty())
         {
-            MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(pickVisitor.particles.begin()->second.first);
-            int index = pickVisitor.particles.begin()->second.second;
 
-            if(mechanicalObject && -1 != index)
+            core::behavior::BaseMechanicalState* mstate;
+            unsigned int indexCollisionElement;
+            defaulttype::Vector3 point;
+            SReal rayLength;
+            pickVisitor.getClosestParticle( mstate, indexCollisionElement, point, rayLength );
+
+
+            MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(mstate);
+
+            if(mechanicalObject && -1 != indexCollisionElement)
             {
-                selectableSofaParticle = new SelectableSofaParticle(SofaComponent(this, mechanicalObject), index);
+                selectableSofaParticle = new SelectableSofaParticle(SofaComponent(this, mechanicalObject), indexCollisionElement);
                 break;
             }
         }
