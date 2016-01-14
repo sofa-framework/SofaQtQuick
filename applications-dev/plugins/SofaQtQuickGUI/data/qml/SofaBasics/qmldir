@@ -2,6 +2,7 @@ UserInteractor 1.0 UserInteractor.qml
 Camera 1.0 Camera.qml
 CollapsibleGroupBox 1.0 CollapsibleGroupBox.qml
 ContentItem 1.0 ContentItem.qml
+ExplicitSwitch 1.0 ExplicitSwitch.qml
 ToolTip 1.0 ToolTip.qml
 SofaDataItem 1.0 SofaDataItem.qml
 SofaDataListViewWindow 1.0 SofaDataListViewWindow.qml
