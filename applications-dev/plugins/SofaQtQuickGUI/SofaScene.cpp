@@ -1454,7 +1454,7 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
 
             MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(mstate);
 
-            if(mechanicalObject && -1 != indexCollisionElement)
+            if(mechanicalObject)
             {
                 selectableSofaParticle = new SelectableSofaParticle(SofaComponent(this, mechanicalObject), indexCollisionElement);
                 break;
