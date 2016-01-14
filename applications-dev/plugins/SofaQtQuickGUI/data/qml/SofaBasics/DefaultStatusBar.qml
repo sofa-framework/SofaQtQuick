@@ -54,14 +54,14 @@ ToolBar {
 
         Rectangle {
             Layout.fillHeight: true
-            Layout.preferredWidth: fpsDisplay.implicitWidth + 10
+            Layout.preferredWidth: fpsItem.implicitWidth + 10
             color: "transparent"
             border.width: 1
             border.color: "grey"
             radius: 2
 
-            FPSDisplay {
-                id: fpsDisplay
+            FPSItem {
+                id: fpsItem
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -70,32 +70,17 @@ ToolBar {
 
         Rectangle {
             Layout.fillHeight: true
-            Layout.preferredWidth: timeDisplay.implicitWidth + 10
+            Layout.preferredWidth: sofaTimeItem.implicitWidth + 10
             color: "transparent"
             border.width: 1
             border.color: "grey"
             radius: 2
 
-            Label {
-                id: timeDisplay
+            SofaTimeItem {
+                id: sofaTimeItem
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-
-                text: "Time: " + timer.sceneTime.toFixed(2)
-
-                Timer {
-                    id: timer
-                    running: sofaScene && sofaScene.ready
-                    repeat: true
-                    interval: 1
-                    onTriggered: sceneTime = sofaScene.dataValue("@.time");
-
-                    property real sceneTime: 0.0
-
-                    readonly property var sofaScene: root.sofaScene
-                    onSofaSceneChanged: sceneTime = 0.0;
-                }
             }
         }
 

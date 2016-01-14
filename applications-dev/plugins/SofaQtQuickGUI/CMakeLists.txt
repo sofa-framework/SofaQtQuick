@@ -84,7 +84,8 @@ set(QML_FILES
     data/qml/SofaBasics/SofaPythonInteractor.qml
     data/qml/SofaBasics/UserInteractor.qml
     data/qml/SofaBasics/Camera.qml
-    data/qml/SofaBasics/FPSDisplay.qml
+    data/qml/SofaBasics/FPSItem.qml
+    data/qml/SofaBasics/SofaTimeItem.qml
     data/qml/SofaBasics/ContentItem.qml
     data/qml/SofaBasics/CollapsibleGroupBox.qml
     data/qml/SofaBasics/Vector3DSpinBox.qml
