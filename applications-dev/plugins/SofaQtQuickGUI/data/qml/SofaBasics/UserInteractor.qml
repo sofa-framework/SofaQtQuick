@@ -24,6 +24,8 @@ QtObject {
 
     property string name: ""
 
+    property bool hoverEnabled: false
+
     property var mouseClickedMapping: Array()
     property var mouseDoubleClickedMapping: Array()
     property var mousePressedMapping: Array()

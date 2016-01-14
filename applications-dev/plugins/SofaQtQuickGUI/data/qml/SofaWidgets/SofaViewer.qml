@@ -225,6 +225,7 @@ SofaViewer {
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
         enabled: sofaScene && sofaScene.ready
+        hoverEnabled: root.interactor ? root.interactor.hoverEnabled : false
 
         onClicked: {
             root.forceActiveFocus();
