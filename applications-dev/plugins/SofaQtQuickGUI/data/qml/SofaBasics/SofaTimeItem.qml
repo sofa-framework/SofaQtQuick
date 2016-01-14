@@ -26,7 +26,7 @@ Label {
 
     property var sofaScene: SofaApplication.sofaScene
 
-    text: "Time: " + timer.sceneTime.toString()
+    text: "Time: " + timer.sceneTimeString
 
     Timer {
         id: timer
@@ -34,11 +34,15 @@ Label {
         repeat: true
         interval: 1
         triggeredOnStart: true
-        onTriggered: sceneTime = Number(sofaScene.dataValue("@.time")).toFixed(2);
+        onTriggered: sceneTimeString = format(sofaScene.dataValue("@.time"));
 
-        property real sceneTime: 0.0
+        property string sceneTimeString: format(value);
 
         readonly property alias sofaScene: root.sofaScene
-        onSofaSceneChanged: sceneTime = 0.0;
+        onSofaSceneChanged: sceneTimeString = format(0.0);
+
+        function format(value) {
+            return Number(value).toFixed(2);
+        }
     }
 }

@@ -24,9 +24,13 @@ import QtQuick.Controls.Styles 1.1
 Switch {
     id: root
 
+    property string checkedString: "ON"
+    property string notCheckedString: "OFF"
+
     style: SwitchStyle {
         groove: Item {
-            implicitWidth: 60
+            id: groove
+            implicitWidth: 10 + 2 * Math.max(checkedText.implicitWidth, notCheckedText.implicitWidth)
             implicitHeight: 20
 
             Rectangle {
@@ -38,9 +42,10 @@ Switch {
                 radius: 5
                 color: root.enabled ? "#468bb7" : Qt.darker("lightgrey", 1.25)
                 Text {
+                    id: checkedText
                     color: Qt.darker("white", root.enabled ? 1.0 : 1.25)
                     anchors.centerIn: parent
-                    text: "ON"
+                    text: root.checkedString
                 }
             }
             Rectangle {
@@ -50,16 +55,17 @@ Switch {
                 radius: 5
                 color: Qt.darker("#C3C3C3", root.enabled ? 1.0 : 1.25)
                 Text {
+                    id: notCheckedText
                     color: Qt.darker("white", root.enabled ? 1.0 : 1.25)
                     anchors.centerIn: parent
-                    text: "OFF"
+                    text: root.notCheckedString
                 }
             }
         }
 
         handle: Rectangle {
-            implicitWidth: 30
-            implicitHeight: 20
+            implicitWidth: root.implicitWidth * 0.5
+            implicitHeight: root.implicitHeight
             radius: 5
             border.width: 1
             border.color: Qt.darker("grey", root.enabled ? 1.0 : 1.1)
