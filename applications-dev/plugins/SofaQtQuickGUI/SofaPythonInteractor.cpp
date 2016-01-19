@@ -319,7 +319,7 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
 
     if(!controller)
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python controller path/name " << pythonScriptControllerName;
+        qWarning() << "ERROR: cannot call Python function (" << funcName << ") without a valid python controller path/name" << pythonScriptControllerName;
         return QVariant();
     }
 
