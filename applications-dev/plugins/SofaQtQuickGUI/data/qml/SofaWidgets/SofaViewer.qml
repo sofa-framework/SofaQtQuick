@@ -78,7 +78,7 @@ SofaViewer {
         anchors.centerIn: parent
         width: 100
         height: width
-        running: sofaScene ? sofaScene.status === SofaScene.Loading : false;
+        running: !hideBusyIndicator && (sofaScene ? sofaScene.status === SofaScene.Loading : false);
     }
 
     Label {
@@ -105,6 +105,8 @@ SofaViewer {
 
     property bool defaultCameraOrthographic: false
     property bool keepCamera: false
+    property bool hideBusyIndicator: false
+
     function recreateCamera() {
         if(camera && !keepCamera) {
             camera.destroy();
