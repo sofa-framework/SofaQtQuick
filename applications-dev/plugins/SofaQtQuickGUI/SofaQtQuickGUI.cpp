@@ -68,7 +68,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qRegisterMetaType<SofaScene::Status>("Status");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
-    qmlRegisterType<SofaApplication>                                          ("Tools"                                , versionMajor, versionMinor, "Tools");
+    qmlRegisterType<SofaApplication>                                ("Tools"                                , versionMajor, versionMinor, "Tools");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
@@ -86,7 +86,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterUncreatableType<SelectableSofaParticle>              ("SelectableSofaParticle.h"             , versionMajor, versionMinor, "SelectableSofaParticle", "SelectableSofaParticle is not instantiable");
     qmlRegisterType<SofaSceneListModel>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaDataListModel>                              ("SofaDataListModel"                    , versionMajor, versionMinor, "SofaDataListModel");
-    qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"                    , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
+    qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
 }
