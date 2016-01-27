@@ -21,10 +21,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaScene.h"
 #include "PythonConsole.h"
 
-#include <SofaPython/PythonCommon.h>
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/ScriptEnvironment.h>
-#include <SofaPython/PythonMacros.h>
 #include <SofaPython/PythonScriptFunction.h>
 #include <SofaPython/PythonScriptController.h>
 
