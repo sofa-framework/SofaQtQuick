@@ -35,6 +35,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QDir>
 #include <QDebug>
 
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#include <signal.h>
+#endif
+
 namespace sofa
 {
 
@@ -340,6 +344,11 @@ bool SofaApplication::Initialization()
     return true;
 }
 
+void SofaApplication::Destruction()
+{
+    qApp->quit();
+}
+
 bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
     // color console
@@ -350,6 +359,11 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 
     if(!app.testAttribute(Qt::AA_ShareOpenGLContexts))
         qCritical() << "CRITICAL: SofaApplication::initialization() must be called before QApplication instanciation";
+
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+    // quit on Ctrl-C
+    signal(SIGINT, [](int) {SofaApplication::Destruction();});
+#endif
 
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");

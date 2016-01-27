@@ -84,6 +84,8 @@ public:
     /// IMPORTANT NOTE: To be called in the main function BEFORE the QApplication object creation
     static bool Initialization();
 
+    static void Destruction();
+
     /// Centralized common settings for most sofaqtquick applications.
     /// Every applications will be updated when modifying this code.
     /// To be called in the main function.
