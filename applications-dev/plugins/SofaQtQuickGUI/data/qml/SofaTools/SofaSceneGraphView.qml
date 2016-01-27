@@ -167,7 +167,7 @@ CollapsibleGroupBox {
                         }
 
                         Text {
-                            text: (multiparent ? "Multi" : "") + (0 !== type.length || 0 !== name.length ? type + " - " + name : "")
+                            text: (!isNode && 0 !== type.length ? type + " - ": "") + (0 !== name.length ? name : "")
                             color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
                             font.bold: isNode
 
