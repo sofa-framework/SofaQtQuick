@@ -1,0 +1,12 @@
+# CMake package configuration file for the image_qtquickgui "plugin"
+
+@PACKAGE_INIT@
+
+find_package(image REQUIRED)
+find_package(SofaQtQuickGUI REQUIRED)
+
+if(NOT TARGET image_qtquickgui)
+    include("${CMAKE_CURRENT_LIST_DIR}/image_qtquickguiTargets.cmake")
+endif()
+
+check_required_components(image_qtquickgui)

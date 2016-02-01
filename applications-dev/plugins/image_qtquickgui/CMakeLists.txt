@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(image_qtquickgui)
 
+set(image_qtquickgui_MAJOR_VERSION 0)
+set(image_qtquickgui_MINOR_VERSION 1)
+set(image_qtquickgui_VERSION ${image_qtquickgui_MAJOR_VERSION}.${image_qtquickgui_MINOR_VERSION})
+
 set(SOURCE_FILES
     ImagePlaneModel.cpp
     ImagePlaneView.cpp
@@ -89,4 +93,5 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_IMA
 
 target_link_libraries(${PROJECT_NAME} image SofaQtQuickGUI)
 
-sofa_install_targets(SofaGui ${PROJECT_NAME} "")
+## Install rules for the library; CMake package configurations files
+sofa_create_package(${PROJECT_NAME} ${image_qtquickgui_VERSION} ${PROJECT_NAME} ${PROJECT_NAME})
