@@ -8,7 +8,8 @@ sofa_add_application(applications-dev/projects/qtQuickSofa qtQuickSofa)
 
 
 find_package(image QUIET)
-if(image_FOUND)
+find_package(SofaQtQuickGUI QUIET)
+if(image_FOUND AND SofaQtQuickGUI_FOUND)
     add_subdirectory(applications-dev/plugins/image_qtquickgui)
 endif()
 
