@@ -89,7 +89,9 @@ set(QML_FILES
     data/qml/SofaBasics/ContentItem.qml
     data/qml/SofaBasics/ExplicitSwitch.qml
     data/qml/SofaBasics/CollapsibleGroupBox.qml
+    data/qml/SofaBasics/Vector2DSpinBox.qml
     data/qml/SofaBasics/Vector3DSpinBox.qml
+    data/qml/SofaBasics/Vector4DSpinBox.qml
     data/qml/SofaBasics/DynamicSplitView.qml
     data/qml/SofaBasics/DynamicContent.qml
     data/qml/SofaInteractors/qmldir

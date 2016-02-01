@@ -17,4 +17,6 @@ SofaPythonInteractor 1.0 SofaPythonInteractor.qml
 SofaScene 1.0 SofaScene.qml
 SofaSceneInterface 1.0 SofaSceneInterface.qml
 SofaSceneListModel 1.0 SofaSceneListModel.qml
+Vector2DSpinBox 1.0 Vector2DSpinBox.qml
 Vector3DSpinBox 1.0 Vector3DSpinBox.qml
+Vector4DSpinBox 1.0 Vector4DSpinBox.qml
