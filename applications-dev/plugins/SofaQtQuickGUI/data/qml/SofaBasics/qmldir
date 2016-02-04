@@ -5,6 +5,7 @@ ContentItem 1.0 ContentItem.qml
 ExplicitSwitch 1.0 ExplicitSwitch.qml
 ToolTip 1.0 ToolTip.qml
 SofaDataItem 1.0 SofaDataItem.qml
+SofaDataListViewItem 1.0 SofaDataListViewItem.qml
 SofaDataListViewWindow 1.0 SofaDataListViewWindow.qml
 DefaultMenuBar 1.0 DefaultMenuBar.qml
 DefaultToolBar 1.0 DefaultToolBar.qml

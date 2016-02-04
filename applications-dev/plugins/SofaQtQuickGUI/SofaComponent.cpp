@@ -21,6 +21,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaComponent.h"
 #include "SofaScene.h"
 
+#include <sofa/core/ObjectFactory.h>
+
 namespace sofa
 {
 
@@ -46,10 +48,68 @@ SofaComponent::SofaComponent(const SofaComponent& sofaComponent) : QObject(),
 QString SofaComponent::name() const
 {
     const Base* base = SofaComponent::base();
-    if(!base)
-        return QString("Invalid SofaComponent");
+    if(base)
+        return QString::fromStdString(base->getName());
 
-    return QString::fromStdString(base->getName());
+    return QString("Invalid SofaComponent");
+}
+
+QString SofaComponent::className() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+        return QString::fromStdString(base->getClassName());
+
+    return "";
+}
+
+QString SofaComponent::namespaceName() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+        return QString::fromStdString(core::objectmodel::BaseClass::decodeNamespaceName(typeid(*base)));
+
+    return "";
+}
+
+QString SofaComponent::templateName() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+        return QString::fromStdString(base->getTemplateName());
+
+    return "";
+}
+
+QString SofaComponent::description() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+    {
+        core::ObjectFactory::ClassEntry entry = core::ObjectFactory::getInstance()->getEntry(base->getClassName());
+        if(!entry.creatorMap.empty())
+            if(!entry.description.empty() && std::string("TODO") != entry.description)
+                return QString::fromStdString(entry.description);
+    }
+
+    return "";
+}
+
+QString SofaComponent::providerName() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+    {
+        core::ObjectFactory::ClassEntry entry = core::ObjectFactory::getInstance()->getEntry(base->getClassName());
+        if(!entry.creatorMap.empty())
+        {
+            core::ObjectFactory::CreatorMap::iterator it = entry.creatorMap.find(base->getTemplateName());
+            if(entry.creatorMap.end() != it && *it->second->getTarget())
+                return QString::fromStdString(it->second->getTarget());
+        }
+    }
+
+    return "";
 }
 
 bool SofaComponent::isSame(SofaComponent* sofaComponent)

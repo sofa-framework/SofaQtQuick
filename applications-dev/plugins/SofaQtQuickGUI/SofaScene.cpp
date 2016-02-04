@@ -740,6 +740,18 @@ void SofaScene::sendGUIEvent(const QString& controlID, const QString& valueName,
     mySofaSimulation->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
 }
 
+QVariant SofaScene::linkValue(const sofa::core::objectmodel::BaseLink* link)
+{
+    QVariant value;
+
+    if(!link)
+        return value;
+
+    value = QVariant::fromValue(QString::fromStdString(link->getValueString()));
+
+    return value;
+}
+
 QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
 {
     QVariantMap object;

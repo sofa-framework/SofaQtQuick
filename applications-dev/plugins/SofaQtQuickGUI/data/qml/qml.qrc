@@ -20,6 +20,7 @@
         <file>SofaBasics/DynamicSplitView.qml</file>
         <file>SofaBasics/DynamicContent.qml</file>
         <file>SofaBasics/SofaDataItem.qml</file>
+        <file>SofaBasics/SofaDataListViewItem.qml</file>
         <file>SofaBasics/SofaDataListViewWindow.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaTools/qmldir</file>

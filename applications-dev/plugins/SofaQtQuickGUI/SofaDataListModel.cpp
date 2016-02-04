@@ -19,6 +19,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaDataListModel.h"
 
+#include <sofa/core/ObjectFactory.h>
+
 #include <QStack>
 #include <QDebug>
 
@@ -54,11 +56,44 @@ void SofaDataListModel::update()
         const Base* base = mySofaComponent->base();
         if(base)
         {
-            sofa::helper::vector<BaseData*> dataFields = base->getDataFields();
+            // SofaData
+            Base::VecData dataFields = base->getDataFields();
             for(unsigned int i = 0; i < dataFields.size(); ++i)
-                myItems.append(buildSofaDataItem(dataFields[i]));
+                myItems.append(buildItem(dataFields[i]));
 
-            qStableSort(myItems.begin(), myItems.end(), [](const Item& a, const Item& b) {return QString::compare(a.data->getGroup(), b.data->getGroup()) < 0;});
+            // Links
+            Base::VecLink linkFields = base->getLinks();
+            for(unsigned int i = 0; i < linkFields.size(); ++i)
+                myItems.append(buildItem(linkFields[i]));
+
+            // Logs & Warnings
+            // TODO
+
+            // Info
+            QString infoGroup = "Info";
+            myItems.append(buildItem("name", infoGroup, QString::fromStdString(base->getName())));
+            myItems.append(buildItem("class", infoGroup,QString::fromStdString(base->getClassName())));
+
+            std::string namespaceName = core::objectmodel::BaseClass::decodeNamespaceName(typeid(*base));
+            if(!namespaceName.empty())
+                myItems.append(buildItem("namespace", infoGroup,QString::fromStdString(namespaceName)));
+
+            std::string templateName = base->getTemplateName();
+            if(!templateName.empty())
+                myItems.append(buildItem("template", infoGroup,QString::fromStdString(templateName)));
+
+            core::ObjectFactory::ClassEntry entry = core::ObjectFactory::getInstance()->getEntry(base->getClassName());
+            if(!entry.creatorMap.empty())
+            {
+                if(!entry.description.empty() && std::string("TODO") != entry.description)
+                    myItems.append(buildItem("description", infoGroup,QString::fromStdString(entry.description)));
+
+                core::ObjectFactory::CreatorMap::iterator it = entry.creatorMap.find(base->getTemplateName());
+                if(entry.creatorMap.end() != it && *it->second->getTarget())
+                    myItems.append(buildItem("provided by", infoGroup,QString::fromStdString(it->second->getTarget())));
+            }
+
+            qStableSort(myItems.begin(), myItems.end(), [](const Item& a, const Item& b) {return QString::compare(a.group, b.group) < 0;});
         }
         else
         {
@@ -91,11 +126,38 @@ void SofaDataListModel::update()
     myUpdatedCount = myItems.size();
 }
 
-SofaDataListModel::Item SofaDataListModel::buildSofaDataItem(BaseData* data) const
+SofaDataListModel::Item SofaDataListModel::buildItem(BaseData* data) const
 {
     SofaDataListModel::Item item;
 
-    item.data = data;
+    item.name = QString::fromStdString(data->getName());
+    item.group = data->getGroup();
+    item.type = SofaDataType;
+    item.data = QVariant::fromValue((void*) data);
+
+    return item;
+}
+
+SofaDataListModel::Item SofaDataListModel::buildItem(BaseLink* link) const
+{
+    SofaDataListModel::Item item;
+
+    item.name = QString::fromStdString(link->getName());
+    item.group = "Links";
+    item.type = SofaLinkType;
+    item.data = QVariant::fromValue((void*) link);
+
+    return item;
+}
+
+SofaDataListModel::Item SofaDataListModel::buildItem(const QString& name, const QString& group, const QString& value) const
+{
+    SofaDataListModel::Item item;
+
+    item.name = name;
+    item.group = group;
+    item.type = StringType;
+    item.data = QVariant::fromValue(value);
 
     return item;
 }
@@ -136,24 +198,43 @@ QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
     }
 
     const Item& item = myItems[index.row()];
-    BaseData* data = item.data;
 
     switch(role)
     {
     case NameRole:
-        return QVariant::fromValue(QString(data->getName().c_str()));
+        return QVariant::fromValue(item.name);
     case GroupRole:
     {
-        QString group = data->getGroup();
+        QString group = item.group;
         if(group.isEmpty())
             group = "Base";
 
         return QVariant::fromValue(group);
     }
+    case TypeRole:
+        return item.type;
     case ValueRole:
-        return QVariant::fromValue(SofaScene::dataValue(data));
+    {
+        if(SofaDataType == item.type)
+        {
+            BaseData* data = (sofa::core::objectmodel::BaseData*) item.data.value<void*>();
+
+            return QVariant::fromValue(SofaScene::dataValue(data));
+        }
+        else if(SofaLinkType == item.type)
+        {
+            BaseLink* link = (sofa::core::objectmodel::BaseLink*) item.data.value<void*>();
+
+            return QVariant::fromValue(SofaScene::linkValue(link));
+        }
+        else if(StringType == item.type)
+        {
+            return QVariant::fromValue(item.data.toString());
+        }
+    }
     default:
-        qWarning("Role unknown");
+        qWarning() << "Role unknown:" << role;
+        break;
     }
 
     return QVariant("");
@@ -165,6 +246,7 @@ QHash<int,QByteArray> SofaDataListModel::roleNames() const
 
     roles[NameRole]         = "name";
     roles[GroupRole]        = "group";
+    roles[TypeRole]         = "type";
     roles[ValueRole]        = "value";
 
     return roles;
@@ -175,7 +257,11 @@ SofaData* SofaDataListModel::getDataById(int row) const
     if(row < 0 || row >= myItems.size())
         return 0;
 
-    return new SofaData(mySofaComponent, myItems.at(row).data);
+    const QVariant& data = myItems.at(row).data;
+    if(QVariant::String != data.type())
+        return new SofaData(mySofaComponent, (sofa::core::objectmodel::BaseData*) data.value<void*>());
+
+    return nullptr;
 }
 
 }

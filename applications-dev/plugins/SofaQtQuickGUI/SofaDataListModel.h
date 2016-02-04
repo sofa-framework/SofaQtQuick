@@ -52,6 +52,13 @@ public:
 public:
     Q_PROPERTY(sofa::qtquick::SofaComponent* sofaComponent READ sofaComponent WRITE setSofaComponent NOTIFY sofaComponentChanged)
 
+    enum Type {
+        SofaDataType = 0,
+        SofaLinkType,
+        StringType,
+    };
+    Q_ENUMS(Type);
+
 public:
     SofaComponent* sofaComponent() const		{return mySofaComponent;}
     void setSofaComponent(SofaComponent* newSofaComponent);
@@ -69,21 +76,30 @@ private:
     enum {
         NameRole = Qt::UserRole + 1,
         GroupRole,
+        TypeRole,
         ValueRole
     };
 
     struct Item
     {
         Item() :
+            name(),
+            group(),
+            type(),
             data(0)
         {
 
         }
 
-        sofa::core::objectmodel::BaseData*      data;
+        QString     name;
+        QString     group;
+        int         type;
+        QVariant    data;
     };
 
-    Item buildSofaDataItem(sofa::core::objectmodel::BaseData* data) const;
+    Item buildItem(sofa::core::objectmodel::BaseData* data) const;
+    Item buildItem(sofa::core::objectmodel::BaseLink* link) const;
+    Item buildItem(const QString& name, const QString& group, const QString& value) const; // readonly
 
 private:
     QList<Item>             myItems;

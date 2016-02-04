@@ -155,6 +155,8 @@ public:
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
 
 public:
+    static QVariant linkValue(const sofa::core::objectmodel::BaseLink* link);
+
     static QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data);
     static QVariant dataValue(const sofa::core::objectmodel::BaseData* data);
     static bool setDataValue(sofa::core::objectmodel::BaseData* data, const QVariant& value);

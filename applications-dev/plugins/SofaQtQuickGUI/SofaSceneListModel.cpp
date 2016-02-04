@@ -195,7 +195,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     switch(role)
     {
     case NameRole:
-        return QVariant::fromValue(QString(base->name.getValue().c_str()));
+        return QVariant::fromValue(QString::fromStdString(base->getName()));
     case MultiParentRole:
         return QVariant::fromValue(multiparent);
     case DepthRole:
@@ -203,7 +203,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     case VisibilityRole:
         return Visible == visibility && !baseContext->isActive() ? QVariant::fromValue((int) Collapsed | Disabled) : QVariant::fromValue(visibility);
     case TypeRole:
-        return QVariant::fromValue(QString(base->getClass()->className.c_str()));
+        return QVariant::fromValue(QString::fromStdString(base->getClass()->className));
     case IsNodeRole:
         return QVariant::fromValue(0 == object);
     case CollapsibleRole:
