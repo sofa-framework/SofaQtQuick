@@ -80,10 +80,10 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<SofaScene>                                      ("SofaScene"                            , versionMajor, versionMinor, "SofaScene");
     qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
     qmlRegisterUncreatableType<SofaData>                            ("SofaData"                             , versionMajor, versionMinor, "SofaData", "SofaData is not instantiable");
-    qmlRegisterUncreatableType<Selectable>                          ("Selectable.h"                         , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
-    qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator.h"              , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
-    qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent.h"            , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");
-    qmlRegisterUncreatableType<SelectableSofaParticle>              ("SelectableSofaParticle.h"             , versionMajor, versionMinor, "SelectableSofaParticle", "SelectableSofaParticle is not instantiable");
+    qmlRegisterUncreatableType<Selectable>                          ("Selectable"                         , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
+    qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator"              , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
+    qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"            , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");
+    qmlRegisterUncreatableType<SelectableSofaParticle>              ("SelectableSofaParticle"             , versionMajor, versionMinor, "SelectableSofaParticle", "SelectableSofaParticle is not instantiable");
     qmlRegisterType<SofaSceneListModel>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaDataListModel>                              ("SofaDataListModel"                    , versionMajor, versionMinor, "SofaDataListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
