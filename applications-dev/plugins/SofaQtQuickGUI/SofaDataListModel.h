@@ -55,7 +55,8 @@ public:
     enum Type {
         SofaDataType = 0,
         SofaLinkType,
-        StringType,
+		LogType,
+        InfoType,
     };
     Q_ENUMS(Type);
 

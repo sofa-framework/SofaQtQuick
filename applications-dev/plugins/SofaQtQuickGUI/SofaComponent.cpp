@@ -137,6 +137,42 @@ SofaData* SofaComponent::getComponentData(const QString& name) const
     return new SofaData(this, data);
 }
 
+QString SofaComponent::output() const
+{
+	const Base* base = SofaComponent::base();
+	if(base)
+		return QString::fromStdString(base->getOutputs());
+
+	return QString();
+}
+
+QString SofaComponent::warning() const
+{
+	const Base* base = SofaComponent::base();
+	if(base)
+		return QString::fromStdString(base->getWarnings());
+
+	return QString();
+}
+
+void SofaComponent::clearOutput()
+{
+	Base* base = SofaComponent::base();
+	if(base)
+	{
+		base->clearOutputs();
+	}
+}
+
+void SofaComponent::clearWarning()
+{
+	Base* base = SofaComponent::base();
+	if(base)
+	{
+		base->clearWarnings();
+	}
+}
+
 Base* SofaComponent::base()
 {
     return const_cast<Base*>(static_cast<const SofaComponent*>(this)->base());

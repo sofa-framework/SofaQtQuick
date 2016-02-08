@@ -134,7 +134,7 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
     }
     else // draw quad
     {
-        height *= 0.33;
+        height *= 0.33f;
         if(isPicking)
             height *= 1.25f;
 

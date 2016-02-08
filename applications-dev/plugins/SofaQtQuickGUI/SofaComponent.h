@@ -54,6 +54,13 @@ public:
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent);
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;
 
+	Q_INVOKABLE QString output() const;
+	Q_INVOKABLE QString warning() const;
+
+public slots:
+	void clearOutput();
+	void clearWarning();
+
 public:
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;

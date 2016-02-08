@@ -67,7 +67,9 @@ void SofaDataListModel::update()
                 myItems.append(buildItem(linkFields[i]));
 
             // Logs & Warnings
-            // TODO
+			QString logGroup = "Log";
+			myItems.append(buildItem("output", logGroup, QString::fromStdString(base->getOutputs())));
+			myItems.append(buildItem("warning", logGroup, QString::fromStdString(base->getWarnings())));
 
             // Info
             QString infoGroup = "Info";
@@ -93,6 +95,7 @@ void SofaDataListModel::update()
                     myItems.append(buildItem("provided by", infoGroup,QString::fromStdString(it->second->getTarget())));
             }
 
+			// Sort attributes by group
             qStableSort(myItems.begin(), myItems.end(), [](const Item& a, const Item& b) {return QString::compare(a.group, b.group) < 0;});
         }
         else
@@ -156,7 +159,7 @@ SofaDataListModel::Item SofaDataListModel::buildItem(const QString& name, const 
 
     item.name = name;
     item.group = group;
-    item.type = StringType;
+    item.type = "Log" == group ? LogType : InfoType;
     item.data = QVariant::fromValue(value);
 
     return item;
@@ -227,7 +230,11 @@ QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
 
             return QVariant::fromValue(SofaScene::linkValue(link));
         }
-        else if(StringType == item.type)
+		else if(LogType == item.type)
+		{
+			return QVariant::fromValue(item.data.toString());
+		}
+        else if(InfoType == item.type)
         {
             return QVariant::fromValue(item.data.toString());
         }

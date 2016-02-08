@@ -69,9 +69,9 @@ ListView {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            sourceComponent: type === SofaDataListModel.SofaDataType ? sofaDataItemComponent : (type === SofaDataListModel.SofaLinkType ? linkItem : infoItem)
+            sourceComponent: type === SofaDataListModel.SofaDataType ? sofaDataItem : (type === SofaDataListModel.SofaLinkType ? linkItem : (type === SofaDataListModel.LogType ? logItem : infoItem))
 
-            property Component sofaDataItemComponent: SofaDataItem {
+            property Component sofaDataItem: SofaDataItem {
                 id: sofaDataItem
 
                 sofaScene: root.sofaScene
@@ -118,6 +118,54 @@ ListView {
                 }
             }
 
+            property Component logItem: GridLayout {
+                columnSpacing: 1
+                rowSpacing: 1
+                columns: 2
+
+                Text {
+                    id: logNameLabel
+                    Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
+                    Layout.preferredHeight: 20
+                    Layout.alignment: Qt.AlignTop
+
+                    text: name
+                    font.italic: true
+                }
+                TextArea {
+                    id: logTextArea
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Math.min(implicitHeight, 400)
+
+                    text: value.toString().trim()
+                    onTextChanged: cursorPosition = 0;
+
+                    wrapMode: Text.WordWrap
+                    readOnly: true
+                }
+                Button {
+                    Layout.columnSpan: 2
+                    Layout.fillWidth: true
+
+                    text: "Clear"
+                    onClicked: {
+                        if(name === "output") root.sofaComponent.clearOutput();
+                        if(name === "warning") root.sofaComponent.clearWarning();
+                        logTextArea.text = ""
+                    }
+                }
+
+                property int nameLabelWidth: root.nameLabelImplicitWidth
+                readonly property int nameLabelImplicitWidth: logNameLabel.implicitWidth
+
+                Component.onCompleted: updateNameLabelWidth();
+                onNameLabelImplicitWidthChanged: updateNameLabelWidth();
+
+                function updateNameLabelWidth() {
+                    root.nameLabelImplicitWidth = Math.max(root.nameLabelImplicitWidth, nameLabelImplicitWidth);
+                }
+            }
+
             property Component infoItem: RowLayout {
                 spacing: 1
 
@@ -132,10 +180,9 @@ ListView {
                 }
                 Text {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: implicitHeight
 
                     text: value.toString().trim()
-                    wrapMode: Text.WordWrap
-
                 }
 
                 property int nameLabelWidth: root.nameLabelImplicitWidth
