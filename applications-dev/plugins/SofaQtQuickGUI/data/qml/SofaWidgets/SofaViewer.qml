@@ -137,7 +137,10 @@ SofaViewer {
         if(-1 === savePath.lastIndexOf("."))
             savePath += ".png";
 
-        root.saveScreenshot(savePath);
+        if(root.width.toFixed(0) == captureWidthTextField.text && root.height.toFixed(0) == captureHeightTextField.text)
+            root.saveScreenshot(savePath);
+        else
+            root.saveScreenshotWithResolution(savePath, Number(captureWidthTextField.text), Number(captureHeightTextField.text));
     }
 
     function startVideoRecording(savePath) {
@@ -707,7 +710,7 @@ SofaViewer {
 
                             GridLayout {
                                 anchors.fill: parent
-                                columnSpacing: 0
+                                columnSpacing: 2
                                 rowSpacing: 2
                                 columns: 2
 
@@ -733,7 +736,7 @@ SofaViewer {
                                             title: "Path to the screenshot to save"
 
                                             onAccepted: {
-                                                var path = fileUrl.toString().replace("file://", "");
+                                                var path = fileUrl.toString().replace(/file\:[\/]*/, "");
                                                 root.takeScreenshot(path);
                                             }
                                         }
@@ -784,6 +787,56 @@ SofaViewer {
                                             anchors.fill: parent
                                             description: "Save video"
                                         }
+                                    }
+                                }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    Layout.columnSpan: 2
+
+                                    text: "Resolution"
+                                }
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+
+                                    Label {
+                                        text: "X"
+                                    }
+
+                                    TextField {
+                                        id: captureWidthTextField
+                                        Layout.fillWidth: true
+                                        validator: IntValidator {bottom: 1}
+
+                                        text: "1"
+                                    }
+                                }
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+
+                                    Label {
+                                        text: " Y"
+                                    }
+
+                                    TextField {
+                                        id: captureHeightTextField
+                                        Layout.fillWidth: true
+                                        validator: IntValidator {bottom: 1}
+
+                                        text: "1"
+                                    }
+                                }
+
+                                Connections {
+                                    target: root
+                                    onWidthChanged: updateResolutionTextFields();
+                                    onHeightChanged: updateResolutionTextFields();
+
+                                    function updateResolutionTextFields() {
+                                        captureWidthTextField.text = root.width.toFixed(0);
+                                        captureHeightTextField.text = root.height.toFixed(0);
                                     }
                                 }
                             }

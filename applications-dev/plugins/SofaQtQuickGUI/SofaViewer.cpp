@@ -406,7 +406,7 @@ public:
 
         glDisable(GL_CULL_FACE);
 
-        glViewport(0.0f, 0.0f, size.width(), size.height());
+        glViewport(0.0, 0.0, size.width(), size.height());
 
         camera->setAspectRatio(size.width() / (double) size.height());
 
@@ -547,6 +547,63 @@ void SofaViewer::saveScreenshot(const QString& path)
         qWarning() << "Screenshot could not be saved to" << path;
 }
 
+class ScreenshotWorker : public QRunnable
+{
+public:
+	ScreenshotWorker(const SofaViewer* viewer, const QString& path, int width, int height) :
+		myViewer(viewer),
+		myPath(path),
+		myWidth(width),
+		myHeight(height)
+	{
+
+	}
+
+	void run()
+	{
+		QSize size(myWidth, myHeight);
+		if(size.isEmpty())
+			return;
+
+		QOpenGLFramebufferObjectFormat format;
+		format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+		format.setSamples(myViewer->antialiasingSamples());
+
+		glViewport(0.0, 0.0, myWidth, myHeight);
+
+		QOpenGLFramebufferObject fbo(myWidth, myHeight, format);
+		fbo.bind();
+
+		myViewer->internalRender(myWidth, myHeight);
+
+		fbo.release();
+
+		if(!fbo.toImage().save(myPath))
+			qWarning() << "Screenshot could not be saved to" << myPath;
+	}
+
+private:
+	const SofaViewer*	myViewer;
+	QString				myPath;
+	int					myWidth;
+	int					myHeight;
+
+};
+
+void SofaViewer::saveScreenshotWithResolution(const QString& path, int width, int height)
+{
+	if(!window())
+		return;
+
+	QDir dir = QFileInfo(path).dir();
+    if(!dir.exists())
+        dir.mkpath(".");
+
+	ScreenshotWorker* worker = new ScreenshotWorker(this, path, width, height);
+	window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+	window()->update();
+}
+
 QSize SofaViewer::nativeSize() const
 {
     return nativeRect().size();
@@ -628,6 +685,134 @@ QSGNode* SofaViewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* in
     return QQuickFramebufferObject::updatePaintNode(inOutNode, inOutData);
 }
 
+void SofaViewer::internalRender(int width, int height) const
+{
+	QSize size(width, height);
+	if(size.isEmpty())
+		return;
+
+	//    if(!myBackgroundImage.isNull())
+	//    {
+	//        // TODO: warning: disable lights, but why ?
+	//        QOpenGLPaintDevice device(size);
+	//        QPainter painter(&device);
+	//        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
+	//    }
+
+	glClearColor(myBackgroundColor.redF(), myBackgroundColor.greenF(), myBackgroundColor.blueF(), myBackgroundColor.alphaF());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if(!myCamera)
+		return;
+
+	// set default lights
+	{
+		glEnable(GL_LIGHT0);
+		{
+			float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
+			float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
+			float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
+			float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
+
+			glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+			glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
+			glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
+			glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+		}
+
+		glEnable(GL_LIGHT1);
+		{
+			float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
+			float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
+			float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
+			float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
+
+			glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+			glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
+			glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
+			glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
+		}
+	}
+
+	glEnable(GL_LIGHTING);
+
+	if(blending())
+		glEnable(GL_BLEND);
+	else
+		glDisable(GL_BLEND);
+
+	if(mySofaScene && mySofaScene->isReady())
+	{
+		glDisable(GL_CULL_FACE);
+
+		myCamera->setAspectRatio(width / (double) height);
+
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadMatrixf(myCamera->projection().constData());
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadMatrixf(myCamera->view().constData());
+
+		if(wireframe())
+			glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
+		if(culling())
+			glEnable(GL_CULL_FACE);
+
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_TEXTURE_2D);
+
+		// qt does not release its shader program and we do not use one so we have to release the current bound program
+		glUseProgram(0);
+
+		// prepare the sofa visual params
+		sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+		if(_vparams)
+		{
+			if(!_vparams->drawTool())
+			{
+				_vparams->drawTool() = new sofa::core::visual::DrawToolGL();
+				_vparams->setSupported(sofa::core::visual::API_OpenGL);
+			}
+
+			GLint _viewport[4];
+			GLdouble _mvmatrix[16], _projmatrix[16];
+
+			glGetIntegerv (GL_VIEWPORT, _viewport);
+			glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
+			glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
+
+			_vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+			_vparams->sceneBBox() = mySofaScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
+			_vparams->setProjectionMatrix(_projmatrix);
+			_vparams->setModelViewMatrix(_mvmatrix);
+		}
+
+		// draw the SofaScene
+		{
+			preDraw();
+			mySofaScene->draw(*this, roots());
+			postDraw();
+		}
+
+		if(wireframe())
+			glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+	}
+
+	if(blending())
+		glDisable(GL_BLEND);
+}
+
 SofaViewer::SofaRenderer::SofaRenderer(SofaViewer* viewer) : QQuickFramebufferObject::Renderer(),
     myViewer(viewer),
     myAntialiasingSamples(0)
@@ -665,130 +850,7 @@ void SofaViewer::SofaRenderer::render()
     if(!myViewer || !myViewer->isVisible())
         return;
 
-    QSize size(myViewer->width(), myViewer->height());
-    if(size.isEmpty())
-        return;
-
-//    if(!myBackgroundImage.isNull())
-//    {
-//        // TODO: warning: disable lights, but why ?
-//        QOpenGLPaintDevice device(size);
-//        QPainter painter(&device);
-//        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
-//    }
-
-    glClearColor(myViewer->myBackgroundColor.redF(), myViewer->myBackgroundColor.greenF(), myViewer->myBackgroundColor.blueF(), myViewer->myBackgroundColor.alphaF());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if(!myViewer->myCamera)
-        return;
-
-    // set default lights
-    {
-        glEnable(GL_LIGHT0);
-        {
-            float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
-            float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
-            float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
-            float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
-
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-            glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
-            glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
-            glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-        }
-
-        glEnable(GL_LIGHT1);
-        {
-            float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
-            float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
-            float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
-            float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
-
-            glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
-            glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
-            glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
-            glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
-        }
-    }
-
-    glEnable(GL_LIGHTING);
-
-    if(myViewer->blending())
-        glEnable(GL_BLEND);
-    else
-        glDisable(GL_BLEND);
-
-    if(myViewer->mySofaScene && myViewer->mySofaScene->isReady())
-    {
-        glDisable(GL_CULL_FACE);
-
-        myViewer->myCamera->setAspectRatio(myViewer->width() / myViewer->height());
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadMatrixf(myViewer->myCamera->projection().constData());
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadMatrixf(myViewer->myCamera->view().constData());
-
-        if(myViewer->wireframe())
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
-        else
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-        if(myViewer->culling())
-            glEnable(GL_CULL_FACE);
-
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_TEXTURE_2D);
-
-        // qt does not release its shader program and we do not use one so we have to release the current bound program
-        glUseProgram(0);
-
-        // prepare the sofa visual params
-        sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-        if(_vparams)
-        {
-            if(!_vparams->drawTool())
-            {
-                _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
-                _vparams->setSupported(sofa::core::visual::API_OpenGL);
-            }
-
-            GLint _viewport[4];
-            GLdouble _mvmatrix[16], _projmatrix[16];
-
-            glGetIntegerv (GL_VIEWPORT, _viewport);
-            glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
-            glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
-
-            _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-            _vparams->sceneBBox() = myViewer->mySofaScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
-            _vparams->setProjectionMatrix(_projmatrix);
-            _vparams->setModelViewMatrix(_mvmatrix);
-        }
-
-        // draw the SofaScene
-        {
-            myViewer->preDraw();
-            myViewer->mySofaScene->draw(*myViewer, myViewer->roots());
-            myViewer->postDraw();
-        }
-
-        if(myViewer->wireframe())
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-    }
-
-    if(myViewer->blending())
-        glDisable(GL_BLEND);
+	myViewer->internalRender(myViewer->width(), myViewer->height());
 }
 
 }

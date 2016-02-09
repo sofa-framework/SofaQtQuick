@@ -50,6 +50,7 @@ class Camera;
 class Manipulator;
 
 class PickUsingRasterizationWorker;
+class ScreenshotWorker;
 
 /// \class Display a Sofa Scene in a QQuickFramebufferObject
 /// \note Coordinate prefix meaning:
@@ -63,6 +64,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaViewer : public QQuickFramebufferObject
     Q_OBJECT
 
     friend class PickUsingRasterizationWorker;
+	friend class ScreenshotWorker;
     friend class SofaRenderer;
 
 public:
@@ -156,6 +158,7 @@ public:
     Q_INVOKABLE QVector3D boundingBoxMax() const;
 
     Q_INVOKABLE void saveScreenshot(const QString& path);
+	Q_INVOKABLE void saveScreenshotWithResolution(const QString& path, int width, int height);
 
 signals:
     void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
@@ -173,14 +176,15 @@ signals:
     void drawNormalsChanged(bool newDrawNormals);
     void normalsDrawLengthChanged(float newNormalsDrawLength);
 
-    void preDraw();
-    void postDraw();
+    void preDraw() const;
+    void postDraw() const;
 
 public slots:
     void viewAll();
 
 protected:
     QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);
+	void internalRender(int width, int height) const;
 
 private:
     QRect nativeRect() const;
