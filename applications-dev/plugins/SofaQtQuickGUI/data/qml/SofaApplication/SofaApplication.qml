@@ -188,6 +188,15 @@ SofaApplication {
     property Component interactorComponent: null
     property var interactorComponentMap: []
 
+    function getInteractorName(component) {
+        for(var key in interactorComponentMap) {
+            if(interactorComponentMap.hasOwnProperty(key)) {
+                if(component === interactorComponentMap[key])
+                    return key;
+
+        return "";
+    }
+
     function addInteractor(name, component) {
         interactorComponentMap[name] = component;
 
