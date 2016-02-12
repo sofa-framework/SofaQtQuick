@@ -87,23 +87,30 @@ SofaScene {
         tooltip: "Reset the simulation"
     }
 
-    // GET AND SET SOFA DATA VALUE
+    // SOFACOMPONENT
 
-    function dataValue(dataName) {
-        if(arguments.length == 1) {
-            return onDataValue(dataName);
-        }
+    /// \note you can use data with a SofaComponent and fill the name of the data or directly put the data path in the data field and not use the name parameter
+    function dataValue(data, name) {
+        if(!Qt.isQtObject(data))
+            return onDataValueByPath(data);
+        else
+            return onDataValueByComponent(data, name);
 
         console.debug("ERROR: SofaScene - using dataValue with an invalid number of arguments:", arguments.length);
     }
 
-    function setDataValue(dataName) {
-        if(arguments.length > 1){
+    /// \note you can use data with a SofaComponent and fill the name of the data or directly put the data path in the data field and not use the name parameter (just ignore it), the other parameters will be taken as the values to set
+    function setDataValue(data, name) {
+        var argumentBegin = Qt.isQtObject(data) ? 2 : 1;
+        if(arguments.length > argumentBegin){
             var packedArguments = [];
-            for(var i = 1; i < arguments.length; i++)
+            for(var i = argumentBegin; i < arguments.length; i++)
                 packedArguments.push(arguments[i]);
 
-            return onSetDataValue(dataName, packedArguments);
+            if(1 === argumentBegin)
+                return onSetDataValueByPath(data, packedArguments);
+            else
+                return onSetDataValueByComponent(data, name, packedArguments);
         }
 
         console.debug("ERROR: SofaScene - using setDataValue with an invalid number of arguments:", arguments.length);

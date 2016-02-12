@@ -101,7 +101,7 @@ public slots:
     void zoom(double factor);
 
     void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
-    void fit(const QVector3D& min, const QVector3D& max);
+    void fit(QVector3D min, QVector3D max);
 
     void alignCameraAxis();
 

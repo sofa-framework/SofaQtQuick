@@ -22,6 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SelectableManipulator.h"
 
 #include <sofa/core/ObjectFactory.h>
+#include <sofa/core/objectmodel/Tag.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
 #include <sofa/core/objectmodel/KeyreleasedEvent.h>
 #include <sofa/core/objectmodel/GUIEvent.h>
@@ -373,7 +374,7 @@ void SofaScene::open()
             QString content = in.readAll();
             if(-1 != content.indexOf("PyQt", 0, Qt::CaseInsensitive)) {
                 currentAsynchronous = false;
-                qDebug() << "This scene seems to contain PyQt and will be loaded synchronously";
+                qWarning() << "This scene seems to contain PyQt and will be loaded synchronously";
             }
         }
     }
@@ -979,7 +980,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
                     return false;
                 }
 
-                typeinfo->setSize(data, valueIterable.size());
+                //typeinfo->setSize(data, valueIterable.size()); // CRASH and does not seems to be necessary since we call data->read, but maybe it will be necessary someday
             }
 
             if(typeinfo->Scalar())
@@ -1012,7 +1013,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
                     if(valueIterable.size() - 1 != i)
                         dataString += ' ';
                 }
-
+				
                 data->read(dataString.toStdString());
             }
             else if(typeinfo->Integer())
@@ -1122,15 +1123,41 @@ bool SofaScene::setDataLink(BaseData* data, const QString& link)
 
 QVariant SofaScene::dataValue(const QString& path) const
 {
-    return onDataValue(path);
+    return onDataValueByPath(path);
+}
+
+QVariant SofaScene::dataValue(const SofaComponent* sofaComponent, const QString& name) const
+{
+	if(!sofaComponent)
+		return QVariant();
+
+	const Base* base = sofaComponent->base();
+	if(!base)
+		return QVariant();
+
+	BaseData* data = base->findData(name.toStdString());
+	return dataValue(data);
 }
 
 void SofaScene::setDataValue(const QString& path, const QVariant& value)
 {
-    onSetDataValue(path, value);
+    onSetDataValueByPath(path, value);
 }
 
-static BaseData* FindDataHelper(BaseNode* node, const QString& path)
+void SofaScene::setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value)
+{
+	if(!sofaComponent)
+		return;
+
+	Base* base = sofaComponent->base();
+	if(!base)
+		return;
+
+	BaseData* data = base->findData(name.toStdString());
+	setDataValue(data, value);
+}
+
+static BaseData* FindData_Helper(BaseNode* node, const QString& path)
 {
     BaseData* data = 0;
 
@@ -1149,7 +1176,7 @@ static BaseData* FindDataHelper(BaseNode* node, const QString& path)
 
 SofaData* SofaScene::data(const QString& path) const
 {
-    BaseData* data = FindDataHelper(mySofaSimulation->GetRoot().get(), path);
+    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
     if(!data)
         return 0;
 
@@ -1162,7 +1189,7 @@ SofaData* SofaScene::data(const QString& path) const
 
 SofaComponent* SofaScene::component(const QString& path) const
 {
-    BaseData* data = FindDataHelper(mySofaSimulation->GetRoot().get(), path + ".name"); // search for the "name" data of the component (this data is always present if the component exist)
+    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path + ".name"); // search for the "name" data of the component (this data is always present if the component exist)
 
     if(!data)
         return 0;
@@ -1188,9 +1215,9 @@ SofaComponent* SofaScene::visualStyleComponent() const
     return nullptr;
 }
 
-QVariant SofaScene::onDataValue(const QString& path) const
+QVariant SofaScene::onDataValueByPath(const QString& path) const
 {
-    BaseData* data = FindDataHelper(mySofaSimulation->GetRoot().get(), path);
+    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
 
     if(!data)
     {
@@ -1201,9 +1228,31 @@ QVariant SofaScene::onDataValue(const QString& path) const
     return dataValue(data);
 }
 
-void SofaScene::onSetDataValue(const QString& path, const QVariant& value)
+QVariant SofaScene::onDataValueByComponent(SofaComponent* sofaComponent, const QString& name) const
 {
-    BaseData* data = FindDataHelper(mySofaSimulation->GetRoot().get(), path);
+	return dataValue((const SofaComponent*) sofaComponent, name);
+}
+
+// arguments from JS have been packed in an array, we have to unpack them
+static QVariant UnpackParameters_Helper(const QVariant& value)
+{
+	QVariant finalValue = value;
+	if(finalValue.userType() == qMetaTypeId<QJSValue>())
+		finalValue = finalValue.value<QJSValue>().toVariant();
+
+	if(QVariant::List == finalValue.type())
+	{
+		QSequentialIterable valueIterable = finalValue.value<QSequentialIterable>();
+		if(1 == valueIterable.size())
+			finalValue = valueIterable.at(0);
+	}
+
+	return finalValue;
+}
+
+void SofaScene::onSetDataValueByPath(const QString& path, const QVariant& value)
+{
+    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
 
     if(!data)
     {
@@ -1212,22 +1261,13 @@ void SofaScene::onSetDataValue(const QString& path, const QVariant& value)
     else
     {
         if(!value.isNull())
-        {
-            QVariant finalValue = value;
-            if(finalValue.userType() == qMetaTypeId<QJSValue>())
-                finalValue = finalValue.value<QJSValue>().toVariant();
-
-            // arguments from JS are packed in an array, we have to unpack it
-            if(QVariant::List == finalValue.type())
-            {
-                QSequentialIterable valueIterable = finalValue.value<QSequentialIterable>();
-                if(1 == valueIterable.size())
-                    finalValue = valueIterable.at(0);
-            }
-
-            setDataValue(data, finalValue);
-        }
+            setDataValue(data, UnpackParameters_Helper(value));
     }
+}
+
+void SofaScene::onSetDataValueByComponent(SofaComponent* sofaComponent, const QString& name, const QVariant& value)
+{
+	return setDataValue(sofaComponent, name, UnpackParameters_Helper(value));
 }
 
 void SofaScene::reload()
@@ -1425,15 +1465,20 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
                 manipulator->draw(viewer);
 }
 
-SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QList<SofaComponent*>& roots) const
+SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots) const
 {
     SelectableSofaParticle* selectableSofaParticle = nullptr;
 
-    sofa::simulation::MechanicalPickParticlesVisitor pickVisitor(sofa::core::ExecParams::defaultInstance(),
-                                                                 sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
-                                                                 sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
-                                                                 distanceToRay,
-                                                                 distanceToRayGrowth);
+	std::list<Tag> tagList(tags.size());
+	std::transform(tags.constBegin(), tags.constEnd(), tagList.begin(), [](const QString& tag) {return Tag(tag.toStdString());});
+
+    sofa::simulation::MechanicalPickParticlesWithTagsVisitor pickVisitor(sofa::core::ExecParams::defaultInstance(),
+																		sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
+																		sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
+																		distanceToRay,
+																		distanceToRayGrowth,
+																		tagList,
+																		false);
 
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
@@ -1456,13 +1501,11 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
 
         if(!pickVisitor.particles.empty())
         {
-
             core::behavior::BaseMechanicalState* mstate;
             unsigned int indexCollisionElement;
             defaulttype::Vector3 point;
             SReal rayLength;
             pickVisitor.getClosestParticle( mstate, indexCollisionElement, point, rayLength );
-
 
             MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(mstate);
 
@@ -1472,7 +1515,6 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
                 break;
             }
         }
-
     }
 
     return selectableSofaParticle;
@@ -1488,7 +1530,22 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
     return (i[0] | (i[1] << 8) | (i[2] << 16));
 }
 
-Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QList<SofaComponent*>& roots)
+static bool HasTag_Helper(Base* base, const QStringList& tags)
+{
+	if(!base)
+		return false;
+
+	if(tags.isEmpty())
+		return true;
+
+	for(const QString& tag : tags)
+		if(base->hasTag(Tag(tag.toStdString())))
+			return true;
+
+	return false;
+}
+
+Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QStringList& tags, const QList<SofaComponent*>& roots)
 {
     Selectable* selectable = nullptr;
 
@@ -1549,7 +1606,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
 
                 for(VisualModel* visualModel : currentVisualModels)
                 {
-                    if(visualModel)
+                    if(HasTag_Helper(visualModel, tags))
                     {
                         myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
                         visualModel->drawVisual(visualParams);
@@ -1575,7 +1632,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
 
                 for(TriangleModel* triangleModel : currentTriangleModels)
                 {
-                    if(triangleModel)
+                    if(HasTag_Helper(triangleModel, tags))
                     {
                         VisualStyle* visualStyle = nullptr;
                         triangleModel->getContext()->get(visualStyle);
@@ -1596,7 +1653,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
                 }
             }
 
-            if(viewer.drawManipulators())
+            if(viewer.drawManipulators() && (tags.isEmpty() || tags.contains("manipulator", Qt::CaseInsensitive)))
                 for(Manipulator* manipulator : myManipulators)
                 {
                     if(manipulator)

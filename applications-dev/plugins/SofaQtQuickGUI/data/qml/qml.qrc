@@ -6,7 +6,7 @@
         <file>SofaBasics/DefaultStatusBar.qml</file>
         <file>SofaBasics/DefaultToolBar.qml</file>
         <file>SofaBasics/DefaultMenuBar.qml</file>
-        <file>SofaBasics/SofaScene.qml</file>
+		<file>SofaBasics/SofaScene.qml</file>
         <file>SofaBasics/SofaSceneInterface.qml</file>
         <file>SofaBasics/SofaPythonInteractor.qml</file>
         <file>SofaBasics/FPSItem.qml</file>
@@ -35,28 +35,28 @@
         <file>SofaWidgets/ToolPanel.qml</file>
         <file>SofaWidgets/SofaDataView.qml</file>
         <file>SofaWidgets/PythonConsole.qml</file>
-        <file>SofaDataTypes/SofaDataType_0to1RatioWidget.qml</file>
+        <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
         <file>SofaDataTypes/SofaDataType_boolean.qml</file>
-        <file>SofaDataTypes/SofaDataType_graph_linear.qml</file>
-        <file>SofaDataTypes/SofaDataType_graph.qml</file>
+        <file>SofaDataTypes/SofaDataType_graph_linear.notimplementedyet.qml</file>
+        <file>SofaDataTypes/SofaDataType_graph.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_number.qml</file>
-        <file>SofaDataTypes/SofaDataType_poissonRatio.qml</file>
+        <file>SofaDataTypes/SofaDataType_poissonRatio.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_string.qml</file>
-        <file>SofaDataTypes/SofaDataType_widget_displayFlags.qml</file>
+        <file>SofaDataTypes/SofaDataType_widget_displayFlags.notimplementedyet.qml</file>
         <file>SofaDataTypes/qmldir</file>
         <file>SofaDataTypes/SofaDataType_BoundingBox.qml</file>
         <file>SofaDataTypes/SofaDataType_Material.qml</file>
         <file>SofaDataTypes/SofaDataType_OptionsGroup.qml</file>
         <file>SofaInteractors/qmldir</file>
-        <file>SofaInteractors/UserInteractor_Selection.qml</file>
+		<file>SofaInteractors/UserInteractor_MoveCamera.qml</file>
+		<file>SofaInteractors/UserInteractor_Selection.qml</file>
+        <file>SofaInteractors/UserInteractor_SofaParticleInteractor.qml</file>
         <file>SofaManipulators/qmldir</file>
         <file>SofaManipulators/Manipulator.qml</file>
         <file>SofaManipulators/Manipulator2D_Translation.qml</file>
         <file>SofaManipulators/Manipulator2D_Rotation.qml</file>
         <file>SofaManipulators/Manipulator3D_Translation.qml</file>
         <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
-        <file>SofaInteractors/UserInteractor_MoveCamera.qml</file>
-        <file>SofaInteractors/UserInteractor_SofaParticleInteractor.qml</file>
     </qresource>
 </RCC>

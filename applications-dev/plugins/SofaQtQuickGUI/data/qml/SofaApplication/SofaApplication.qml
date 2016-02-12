@@ -186,8 +186,43 @@ SofaApplication {
     }
 
     property Component interactorComponent: null
-    property var interactorComponentMap: null
+    property var interactorComponentMap: []
 
+    function addInteractor(name, component) {
+        interactorComponentMap[name] = component;
+
+        interactorComponentMapChanged(interactorComponentMap);
+    }
+
+    function removeInteractor(component) {
+        for(var key in interactorComponentMap) {
+            if(interactorComponentMap.hasOwnProperty(key)) {
+                if(component === interactorComponentMap[key]) {
+                    delete interactorComponentMap[key];
+
+                    interactorComponentMapChanged(interactorComponentMap);
+
+                    return;
+                }
+            }
+        }
+    }
+
+    function removeInteractorByName(name) {
+        var component = interactorComponentMap[name];
+        if(!component)
+            return;
+
+        delete interactorComponentMap[name];
+
+        interactorComponentMapChanged(interactorComponentMap);
+    }
+
+    function clearInteractors() {
+        interactorComponentMap = [];
+    }
+
+    // init interactorComponentMap at startup
     property var interactorFolderListModel: FolderListModel {
         id: interactorFolderListModel
         nameFilters: ["*.qml"]
@@ -198,10 +233,10 @@ SofaApplication {
         Component.onCompleted: refresh();
         onCountChanged: update();
 
-        property var refreshOnSofaSceneLoaded: Connections {
-            target: root.sofaScene
-            onLoaded: interactorFolderListModel.refresh();
-        }
+//        property var refreshOnSofaSceneLoaded: Connections {
+//            target: root.sofaScene
+//            onLoaded: interactorFolderListModel.refresh();
+//        }
 
         function refresh() {
             folder = "";
@@ -209,10 +244,7 @@ SofaApplication {
         }
 
         function update() {
-            if(root.interactorComponentMap)
-                for(var key in root.interactorComponentMap)
-                    if(root.interactorComponentMap.hasOwnProperty(key))
-                        root.interactorComponentMap[key].destroy();
+            root.clearInteractors();
 
             var interactorComponentMap = [];
             for(var i = 0; i < count; ++i)

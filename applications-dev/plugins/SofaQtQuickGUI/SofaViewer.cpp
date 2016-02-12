@@ -376,9 +376,10 @@ using sofa::component::visualmodel::OglModel;
 class PickUsingRasterizationWorker : public QRunnable
 {
 public:
-    PickUsingRasterizationWorker(const SofaViewer* viewer, const QPointF& ssPoint, Selectable*& selectable, bool& finished) :
+    PickUsingRasterizationWorker(const SofaViewer* viewer, const QPointF& ssPoint, const QStringList& tags, Selectable*& selectable, bool& finished) :
         myViewer(viewer),
         mySSPoint(ssPoint),
+		myTags(tags),
         mySelectable(selectable),
         myFinished(finished)
     {
@@ -426,7 +427,7 @@ public:
         if(myViewer->culling())
             glEnable(GL_CULL_FACE);
 
-        mySelectable = sofaScene->pickObject(*myViewer, mySSPoint, myViewer->roots());
+        mySelectable = sofaScene->pickObject(*myViewer, mySSPoint, myTags, myViewer->roots());
 
         if(myViewer->wireframe())
             glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
@@ -441,8 +442,9 @@ public:
     }
 
 private:
-    const SofaViewer*       myViewer;
+    const SofaViewer*   myViewer;
     QPointF             mySSPoint;
+	QStringList			myTags;
     Selectable*&        mySelectable;
     bool&               myFinished;
 
@@ -450,58 +452,73 @@ private:
 
 QVector4D SofaViewer::projectOnGeometry(const QPointF& ssPoint) const
 {
-    if(!window() || !window()->isActive())
-        return QVector4D();
+    return projectOnGeometryWithTags(ssPoint, QStringList());
+}
 
-    bool finished = false;
-    Selectable* selectable = nullptr;
+QVector4D SofaViewer::projectOnGeometryWithTags(const QPointF& ssPoint, const QStringList& tags) const
+{
+	if(!window() || !window()->isActive())
+		return QVector4D();
 
-    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, selectable, finished);
-    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
-    window()->update();
+	bool finished = false;
+	Selectable* selectable = nullptr;
 
-    // TODO: add a timeout
-    while(!finished)
-        qApp->processEvents(QEventLoop::WaitForMoreEvents);
+	PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, tags, selectable, finished);
+	window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+	window()->update();
 
-    if(selectable)
-        return QVector4D(selectable->position(), 1.0f);
+	// TODO: add a timeout
+	while(!finished)
+		qApp->processEvents(QEventLoop::WaitForMoreEvents);
 
-    return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
+	if(selectable)
+		return QVector4D(selectable->position(), 1.0f);
+
+	return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
 }
 
 SelectableSofaParticle* SofaViewer::pickParticle(const QPointF& ssPoint) const
 {
-    QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
-    QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
+    return pickParticleWithTags(ssPoint, QStringList());
+}
 
-    QVector3D origin = nearPosition;
-    QVector3D direction = (farPosition - nearPosition).normalized();
+SelectableSofaParticle* SofaViewer::pickParticleWithTags(const QPointF& ssPoint, const QStringList& tags) const
+{
+	QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
+	QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
 
-    double distanceToRay = mySofaScene->radius() / 76.0;
-    double distanceToRayGrowth = 0.001;
+	QVector3D origin = nearPosition;
+	QVector3D direction = (farPosition - nearPosition).normalized();
 
-    return mySofaScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, roots());
+	double distanceToRay = mySofaScene->radius() / 76.0;
+	double distanceToRayGrowth = 0.001;
+
+	return mySofaScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, tags, roots());
 }
 
 Selectable* SofaViewer::pickObject(const QPointF& ssPoint)
 {
-    Selectable* selectable = nullptr;
+    return pickObjectWithTags(ssPoint, QStringList());
+}
 
-    if(!window() || !window()->isActive())
-        return selectable;
+Selectable* SofaViewer::pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags)
+{
+	Selectable* selectable = nullptr;
 
-    bool finished = false;
+	if(!window() || !window()->isActive())
+		return selectable;
 
-    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, selectable, finished);
-    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
-    window()->update();
+	bool finished = false;
 
-    // TODO: add a timeout
-    while(!finished)
-        qApp->processEvents(QEventLoop::WaitForMoreEvents);
+	PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, tags, selectable, finished);
+	window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+	window()->update();
 
-    return selectable;
+	// TODO: add a timeout
+	while(!finished)
+		qApp->processEvents(QEventLoop::WaitForMoreEvents);
+
+	return selectable;
 }
 
 QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const

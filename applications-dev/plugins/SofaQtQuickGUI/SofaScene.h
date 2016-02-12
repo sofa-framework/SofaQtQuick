@@ -163,7 +163,10 @@ public:
     static bool setDataLink(sofa::core::objectmodel::BaseData* data, const QString& link);
 
     QVariant dataValue(const QString& path) const;
+	QVariant dataValue(const SofaComponent* sofaComponent, const QString& name) const;
+
     void setDataValue(const QString& path, const QVariant& value);
+	void setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value);
 
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path) const;
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path) const;
@@ -171,8 +174,11 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent() const;
 
 protected:
-    Q_INVOKABLE QVariant onDataValue(const QString& path) const;
-    Q_INVOKABLE void onSetDataValue(const QString& path, const QVariant& value);
+    Q_INVOKABLE QVariant onDataValueByPath(const QString& path) const; /// \note From QML: directly call 'dataValue'
+	Q_INVOKABLE QVariant onDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name) const; /// \note From QML: directly call 'dataValue'
+
+    Q_INVOKABLE void onSetDataValueByPath(const QString& path, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
+	Q_INVOKABLE void onSetDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
 
 public slots:
 	void reload();
@@ -206,13 +212,13 @@ protected:
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
     /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaComponent where it belongs
-    SelectableSofaParticle*  pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
+	SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to pick an object is to use a Viewer instead of directly call this function
     /// \return     A 'Selectable' containing the picked object
-    Selectable* pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
+    Selectable* pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QStringList& tagList, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);

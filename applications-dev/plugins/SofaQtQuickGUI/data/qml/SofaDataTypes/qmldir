@@ -1,12 +1,12 @@
-SofaDataType_0to1RatioWidget 1.0 SofaDataType_0to1RatioWidget.qml
+SofaDataType_0to1RatioWidget.notimplementedyet 1.0 SofaDataType_0to1RatioWidget.notimplementedyet.qml
 SofaDataType_array 1.0 SofaDataType_array.qml
 SofaDataType_boolean 1.0 SofaDataType_boolean.qml
-SofaDataType_graph_linear 1.0 SofaDataType_graph_linear.qml
-SofaDataType_graph 1.0 SofaDataType_graph.qml
+SofaDataType_graph_linear.notimplementedyet 1.0 SofaDataType_graph_linear.notimplementedyet.qml
+SofaDataType_graph.notimplementedyet 1.0 SofaDataType_graph.notimplementedyet.qml
 SofaDataType_number 1.0 SofaDataType_number.qml
 SofaDataType_BoundingBox 1.0 SofaDataType_BoundingBox.qml
 SofaDataType_OptionsGroup 1.0 SofaDataType_OptionsGroup.qml
 SofaDataType_Material 1.0 SofaDataType_Material.qml
-SofaDataType_poissonRatio 1.0 SofaDataType_poissonRatio.qml
+SofaDataType_poissonRatio.notimplementedyet 1.0 SofaDataType_poissonRatio.notimplementedyet.qml
 SofaDataType_string 1.0 SofaDataType_string.qml
-SofaDataType_widget_displayFlags 1.0 SofaDataType_widget_displayFlags.qml
+SofaDataType_widget_displayFlags.notimplementedyet 1.0 SofaDataType_widget_displayFlags.notimplementedyet.qml

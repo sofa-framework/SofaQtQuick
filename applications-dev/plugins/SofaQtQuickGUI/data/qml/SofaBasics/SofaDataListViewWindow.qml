@@ -29,11 +29,15 @@ import SofaDataListModel 1.0
 Window {
     id: root
     width: 400
-    height: Math.min(600, listView.contentHeight)
+    height: 600
     modality: Qt.NonModal
-    flags: Qt.Dialog | Qt.WindowStaysOnTopHint
+    flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
     visible: true
     color: "lightgrey"
+
+    Component.onCompleted: {
+        height = Math.min(height, listView.contentHeight);
+    }
 
     title: sofaComponent ? ("Data of component: " + sofaComponent.name()) : "No component to visualize"
 

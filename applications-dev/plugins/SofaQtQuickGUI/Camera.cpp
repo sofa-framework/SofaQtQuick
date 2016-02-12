@@ -286,8 +286,14 @@ void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector
     myViewDirty = false;
 }
 
-void Camera::fit(const QVector3D& min, const QVector3D& max)
+void Camera::fit(QVector3D min, QVector3D max)
 {
+	if(min == max)
+	{
+		min -= QVector3D(0.5f, 0.5f, 0.5f);
+		max += QVector3D(0.5f, 0.5f, 0.5f);
+	}
+
     myTarget = (min + max) * 0.5;
 	QVector3D diagonal = max - min;
 	double radius = diagonal.length();

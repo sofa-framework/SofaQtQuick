@@ -57,6 +57,8 @@ public:
 	Q_INVOKABLE QString output() const;
 	Q_INVOKABLE QString warning() const;
 
+	Q_INVOKABLE void reinit();
+
 public slots:
 	void clearOutput();
 	void clearWarning();

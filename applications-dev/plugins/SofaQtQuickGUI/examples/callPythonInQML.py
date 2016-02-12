@@ -1,6 +1,6 @@
 import Sofa
 import os
-__file = __file__.replace('\\', '/')  # windows compatible filename 
+__file = __file__.replace('\\', '/')  # windows compatible filename
 currentdir = os.path.dirname(os.path.realpath(__file__))+'/'
 currentdir = currentdir.replace('\\', '/')
 datadir = currentdir + '/data/'
@@ -22,7 +22,7 @@ def createScene(root):
     p0.createObject('StiffSpringForceField',    template="Vec3d", name="S0", spring="0 1 100 0.1 1", object1="@./", object2="@./")
 
     p1 = root.createChild('P1')
-    m1 = p1.createObject('MechanicalObject',    template="Vec3d", name="M1", position="2 0 0", showObject="1")
+    m1 = p1.createObject('MechanicalObject',    template="Vec3d", name="M1", position="2 0 0", showObject="1", drawMode='2')
     p1.createObject('UniformMass',              template="Vec3d", name="U1")
 
     root.createObject('StiffSpringForceField',  template="Vec3d", name="S0", spring="1 0 10 0.1 1", object1="@./P0", object2="@./P1")

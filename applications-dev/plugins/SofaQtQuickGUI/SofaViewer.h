@@ -149,9 +149,13 @@ public:
     Q_INVOKABLE QVector3D projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const;
     Q_INVOKABLE QVector3D projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const;
     Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint) const;    // .w == 0 => background hit ; .w == 1 => geometry hit
+	Q_INVOKABLE QVector4D projectOnGeometryWithTags(const QPointF& ssPoint, const QStringList& tags) const;    // .w == 0 => background hit ; .w == 1 => geometry hit
 
     Q_INVOKABLE sofa::qtquick::SelectableSofaParticle*    pickParticle(const QPointF& ssPoint) const;
-    Q_INVOKABLE sofa::qtquick::Selectable*                 pickObject(const QPointF& ssPoint);
+	Q_INVOKABLE sofa::qtquick::SelectableSofaParticle*    pickParticleWithTags(const QPointF& ssPoint, const QStringList& tags) const;
+
+    Q_INVOKABLE sofa::qtquick::Selectable*                pickObject(const QPointF& ssPoint);
+	Q_INVOKABLE sofa::qtquick::Selectable*                pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags);
 
     Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;
     Q_INVOKABLE QVector3D boundingBoxMin() const;

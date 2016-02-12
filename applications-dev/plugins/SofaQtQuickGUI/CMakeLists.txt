@@ -58,18 +58,18 @@ set(HEADER_FILES
 set(QML_FILES
     data/qml/SofaDataTypes/qmldir
     data/qml/SofaDataTypes/SofaDataType_boolean.qml
-    data/qml/SofaDataTypes/SofaDataType_0to1RatioWidget.qml
+    data/qml/SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_array.qml
     data/qml/SofaDataTypes/SofaDataType_boolean.qml
     data/qml/SofaDataTypes/SofaDataType_BoundingBox.qml
     data/qml/SofaDataTypes/SofaDataType_Material.qml
     data/qml/SofaDataTypes/SofaDataType_OptionsGroup.qml
-    data/qml/SofaDataTypes/SofaDataType_graph_linear.qml
-    data/qml/SofaDataTypes/SofaDataType_graph.qml
+    data/qml/SofaDataTypes/SofaDataType_graph_linear.notimplementedyet.qml
+    data/qml/SofaDataTypes/SofaDataType_graph.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_number.qml
-    data/qml/SofaDataTypes/SofaDataType_poissonRatio.qml
+    data/qml/SofaDataTypes/SofaDataType_poissonRatio.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_string.qml
-    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
+    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.notimplementedyet.qml
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
     data/qml/SofaBasics/qmldir

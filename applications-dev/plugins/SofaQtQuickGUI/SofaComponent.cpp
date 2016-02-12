@@ -173,6 +173,19 @@ void SofaComponent::clearWarning()
 	}
 }
 
+void SofaComponent::reinit()
+{
+	Base* base = SofaComponent::base();
+	if(!base)
+		return;
+
+	BaseObject* baseObject = dynamic_cast<BaseObject*>(base);
+	if(!baseObject)
+		return;
+
+	baseObject->reinit();
+}
+
 Base* SofaComponent::base()
 {
     return const_cast<Base*>(static_cast<const SofaComponent*>(this)->base());
