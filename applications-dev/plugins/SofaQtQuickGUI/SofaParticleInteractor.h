@@ -20,9 +20,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAPARTICLEINTERACTOR_H
 #define SOFAPARTICLEINTERACTOR_H
 
+#include <QObject>
 #include "SofaQtQuickGUI.h"
 #include "SofaViewer.h"
 #include "SofaComponent.h"
+
+#include <sofa/core/visual/VisualParams.h>
+#include <SofaBaseMechanics/MechanicalObject.h>
 
 #include <QObject>
 #include <QVector3D>
@@ -44,17 +48,42 @@ namespace objectmodel
 	class BaseNode;
 }
 
-}
-
-namespace component
+namespace visual
 {
 
-namespace visualmodel
+class InteractionForceFieldPainter : public VisualModel
 {
-    class OglModel;
-}
+public:
+    SOFA_CLASS(InteractionForceFieldPainter, VisualModel);
 
-}
+    InteractionForceFieldPainter(sofa::core::behavior::BaseInteractionForceField* forcefield) : VisualModel(),
+        myForcefield(forcefield)
+    {
+
+    }
+
+    virtual void drawVisual(const VisualParams* vparams)
+    {
+        const DisplayFlags backupDisplayFlags = vparams->displayFlags();
+
+        DisplayFlags displayFlags;
+        displayFlags.setShowAll(true);
+        const_cast<VisualParams*>(vparams)->displayFlags() = displayFlags;
+
+        if(myForcefield)
+            myForcefield->draw(vparams);
+
+        const_cast<VisualParams*>(vparams)->displayFlags() = backupDisplayFlags;
+    }
+
+private:
+    sofa::core::behavior::BaseInteractionForceField* myForcefield;
+
+};
+
+} // namespace visual
+
+} // namespace core
 
 namespace qtquick
 {
@@ -63,56 +92,100 @@ class SofaComponent;
 class SofaScene;
 class Manipulator;
 
+class SofaBaseParticleInteraction
+{
+protected:
+	SofaBaseParticleInteraction() {}
+
+public:
+	virtual ~SofaBaseParticleInteraction() {}
+
+	virtual void start() = 0;
+	virtual void update(const QVector3D& position) = 0;
+	virtual void release() = 0;
+
+	virtual QVector3D position() const = 0;
+	virtual SofaComponent* sofaComponent() const = 0;
+	virtual int particleIndex() const = 0;
+
+};
+
+template<class Types>
+class SofaParticleInteraction : public SofaBaseParticleInteraction
+{
+public:
+	SofaParticleInteraction<Types>(const SofaComponent* sofaComponent, int particleIndex, double stiffness) : SofaBaseParticleInteraction(),
+		mySofaComponent(new SofaComponent(*sofaComponent)),
+		myParticleIndex(particleIndex),
+		myStiffness(stiffness)
+	{
+		myInteractedMechanicalObject = dynamic_cast<MechanicalObject*>(mySofaComponent->base());
+	}
+
+public:
+	typedef sofa::component::container::MechanicalObject<Types> MechanicalObject;
+
+	virtual void start();
+	virtual void update(const QVector3D& position);
+	virtual void release();
+
+	virtual QVector3D position() const;
+	virtual SofaComponent* sofaComponent() const;
+	virtual int particleIndex() const;
+
+private:
+	sofa::core::behavior::BaseInteractionForceField::SPtr SofaParticleInteraction<Types>::createInteractionForceField() const;
+
+private:
+	SofaComponent*										mySofaComponent;
+	int													myParticleIndex;
+	double												myStiffness;
+
+	MechanicalObject*									myInteractedMechanicalObject;
+	MechanicalObject*									myInteractorMechanicalState;
+	sofa::core::objectmodel::BaseNode*					myNode;
+	sofa::core::behavior::BaseInteractionForceField*	myInteractionForceField;
+
+};
+
 /// \class Allow us to interact with a sofa particle, typically a degree of freedom (dof) in a sofa MechanicalObject
 class SOFA_SOFAQTQUICKGUI_API SofaParticleInteractor : public QObject
 {
     Q_OBJECT
-
-	typedef sofa::core::behavior::BaseMechanicalState			BaseMechanicalState;
-	typedef sofa::core::behavior::BaseInteractionForceField		BaseInteractionForceField;
-	typedef sofa::core::objectmodel::BaseNode					BaseNode;
-    typedef sofa::component::visualmodel::OglModel              OglModel;
 
 public:
     SofaParticleInteractor(QObject *parent = 0);
     ~SofaParticleInteractor();
 	
 public:
-    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaComponent MEMBER mySofaComponent NOTIFY sofaComponentChanged)
-    Q_PROPERTY(int particleIndex MEMBER myParticleIndex NOTIFY particleIndexChanged)
-    Q_PROPERTY(double stiffness MEMBER myStiffness NOTIFY stiffnessChanged)
+    Q_PROPERTY(double stiffness READ stiffness WRITE setStiffness NOTIFY stiffnessChanged)
     Q_PROPERTY(QVector3D interactorPosition READ interactorPosition NOTIFY interactorPositionChanged)
     Q_PROPERTY(bool interacting READ interacting NOTIFY interactingChanged)
 
 public:
-    SofaComponent* sofaComponent() const        {return mySofaComponent;}
-    double stiffness() const                    {return myStiffness;}
+	double stiffness() const;
+	void setStiffness(double stiffness);
+
     QVector3D interactorPosition() const;
     bool interacting() const;
 
-signals:
-    void sofaComponentChanged(sofa::qtquick::SofaComponent* newSofaComponent);
-    void particleIndexChanged(double newParticleIndex);
-	void stiffnessChanged(double newStiffness);
-    void interactorPositionChanged(const QVector3D& newInteractorPosition);
-    void interactingChanged(bool newInteracting);
+	Q_INVOKABLE sofa::qtquick::SofaComponent* sofaComponent() const;
 
-public:
-    Q_INVOKABLE QVector3D particlePosition() const;
-	
+signals:
+	void stiffnessChanged(double);
+    void interactorPositionChanged(const QVector3D&);
+    void interactingChanged(bool);
+
 public slots:
     bool start(SofaComponent* sofaComponent, int particleIndex);
     bool update(const QVector3D& interactorNewPosition);
     void release();
 
 private:
-    SofaComponent*                         mySofaComponent;
-    int                                     myParticleIndex;
     double									myStiffness;
 
-	BaseNode*								myNode;
-	BaseMechanicalState*					myMechanicalState;
-    BaseInteractionForceField*				myForcefield;
+	SofaBaseParticleInteraction*			myParticleInteraction;
+
 };
 
 }

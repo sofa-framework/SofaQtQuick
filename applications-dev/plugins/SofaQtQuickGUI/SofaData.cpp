@@ -113,7 +113,7 @@ const BaseData* SofaData::data() const
     // check if the base still exists hence if the data is still valid
     const Base* base = 0;
     if(mySofaScene && myBase)
-        if(mySofaScene->myBases.contains(myBase))
+        if(mySofaScene->componentExists(myBase))
             base = myBase;
 
     myBase = base;

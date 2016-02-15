@@ -64,6 +64,9 @@ public slots:
 	void clearWarning();
 
 public:
+	/// \brief check if the sofa component still exists, if you need to access the component it is recommended to directly call SofaComponent::base() because it already check the object existence
+	bool isValid() const;
+
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;
 
@@ -72,6 +75,7 @@ public:
 private:
     const SofaScene*                                mySofaScene;
     mutable const sofa::core::objectmodel::Base*    myBase;
+
 };
 
 }

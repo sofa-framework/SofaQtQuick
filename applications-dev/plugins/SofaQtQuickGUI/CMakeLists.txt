@@ -48,6 +48,7 @@ set(HEADER_FILES
     SofaPythonInteractor.h
     PythonConsole.h
     SofaParticleInteractor.h
+	SofaParticleInteractor.inl
     Manipulator.h
     Manipulator2D_Translation.h
     Manipulator2D_Rotation.h

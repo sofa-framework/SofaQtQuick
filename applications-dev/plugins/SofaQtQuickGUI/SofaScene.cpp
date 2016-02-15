@@ -1201,6 +1201,11 @@ SofaComponent* SofaScene::component(const QString& path) const
     return new SofaComponent(this, base);
 }
 
+bool SofaScene::componentExists(const sofa::core::objectmodel::Base* base) const
+{
+	return myBases.contains(base);
+}
+
 SofaComponent* SofaScene::visualStyleComponent() const
 {
     if(mySofaSimulation->GetRoot())

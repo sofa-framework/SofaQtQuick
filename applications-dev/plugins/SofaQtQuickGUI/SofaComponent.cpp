@@ -186,6 +186,11 @@ void SofaComponent::reinit()
 	baseObject->reinit();
 }
 
+bool SofaComponent::isValid() const
+{
+	return base();
+}
+
 Base* SofaComponent::base()
 {
     return const_cast<Base*>(static_cast<const SofaComponent*>(this)->base());
@@ -195,7 +200,7 @@ const Base* SofaComponent::base() const
 {
     // check object existence
     if(mySofaScene && myBase)
-        if(mySofaScene->myBases.contains(myBase))
+        if(mySofaScene->componentExists(myBase))
             return myBase;
 
     myBase = 0;

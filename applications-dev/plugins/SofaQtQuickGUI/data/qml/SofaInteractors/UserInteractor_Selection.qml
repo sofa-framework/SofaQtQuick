@@ -64,7 +64,7 @@ UserInteractor_MoveCamera {
                         sofaScene.sofaParticleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
 
                         setMouseMovedMapping(function(mouse, sofaViewer) {
-                            var z = sofaViewer.computeDepth(sofaScene.sofaParticleInteractor.particlePosition());
+                            var z = sofaViewer.computeDepth(sofaScene.sofaParticleInteractor.interactorPosition);
                             var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
                             sofaScene.sofaParticleInteractor.update(position);
                         });

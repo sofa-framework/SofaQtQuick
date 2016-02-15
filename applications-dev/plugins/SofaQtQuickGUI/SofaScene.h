@@ -65,8 +65,6 @@ class SofaScene : public QObject, private sofa::simulation::MutationListener
 
     friend class SofaViewer;
     friend class PickUsingRasterizationWorker;
-    friend class SofaComponent;
-    friend class SofaData;
     friend bool LoaderProcess(SofaScene* scene, const QString& scenePath, QOffscreenSurface* surface);
 
 public:
@@ -170,6 +168,7 @@ public:
 
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path) const;
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path) const;
+	bool componentExists(const sofa::core::objectmodel::Base* base) const;
 
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent() const;
 
