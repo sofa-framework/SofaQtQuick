@@ -266,6 +266,8 @@ void SofaApplication::UseDefaultSofaPath()
        sofa::helper::system::DataRepository.addFirstPath(QCoreApplication::applicationDirPath().toStdString());
 #else
        sofa::helper::system::DataRepository.addFirstPath("./");
+	   sofa::helper::system::DataRepository.addFirstPath("../");
+	   sofa::helper::system::DataRepository.addFirstPath(QCoreApplication::applicationDirPath().toStdString() + "/../");
 #endif
 }
 
