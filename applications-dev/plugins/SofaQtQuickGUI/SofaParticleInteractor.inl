@@ -54,14 +54,14 @@ inline void SofaParticleInteraction<Types>::start()
 	displayFlags.setShowAll(true);
 	visualStyle->displayFlags.setValue(displayFlags);
 
-	MechanicalObject::SPtr interactorMechanicalObject = sofa::core::objectmodel::New<MechanicalObject>();
+        typename MechanicalObject::SPtr interactorMechanicalObject = sofa::core::objectmodel::New<MechanicalObject>();
 	interactorMechanicalObject->setName("Attractor");
 	interactorMechanicalObject->resize(1);
 	interactorMechanicalObject->writePositions()[0] = sofa::defaulttype::Vector3(position.x(), position.y(), position.z());
 	myInteractorMechanicalState = interactorMechanicalObject.get();
 
-	typedef sofa::component::projectiveconstraintset::FixedConstraint<Types> FixedConstraint;
-	FixedConstraint::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraint>();
+        typedef sofa::component::projectiveconstraintset::FixedConstraint<Types> FixedConstraint;
+        typename FixedConstraint::SPtr fixedConstraint = sofa::core::objectmodel::New<FixedConstraint>();
 
 	sofa::core::behavior::BaseInteractionForceField::SPtr interactionForceField = createInteractionForceField();
 	myInteractionForceField = interactionForceField.get();
@@ -69,7 +69,6 @@ inline void SofaParticleInteraction<Types>::start()
 	typedef sofa::core::visual::InteractionForceFieldPainter InteractionForceFieldPainter;
 	InteractionForceFieldPainter::SPtr forcefieldPainter = sofa::core::objectmodel::New<InteractionForceFieldPainter>(interactionForceField.get());
 
-	typedef sofa::simulation::Node Node;
 	Node::SPtr node = mySofaComponent->sofaScene()->sofaSimulation()->GetRoot()->createChild("Interactor");
 	node->addObject(visualStyle);
 	node->addObject(interactorMechanicalObject);
@@ -97,7 +96,7 @@ inline void SofaParticleInteraction<Types>::release()
 	{
 		myNode->moveObject(myInteractionForceField);
 
-		Node::SPtr node = static_cast<Node*>(myNode);
+                Node::SPtr node = static_cast<Node*>(myNode);
 		node->detachFromGraph();
 		node->execute<sofa::simulation::CleanupVisitor>(sofa::core::ExecParams::defaultInstance());
 		node->execute<sofa::simulation::DeleteVisitor>(sofa::core::ExecParams::defaultInstance());
@@ -135,7 +134,7 @@ template<class Types>
 inline sofa::core::behavior::BaseInteractionForceField::SPtr SofaParticleInteraction<Types>::createInteractionForceField() const
 {
 	typedef sofa::component::interactionforcefield::StiffSpringForceField<Types> StiffSpringForceField;
-	StiffSpringForceField::SPtr interactionForceField = sofa::core::objectmodel::New<StiffSpringForceField>(myInteractorMechanicalState, myInteractedMechanicalObject);
+        typename StiffSpringForceField::SPtr interactionForceField = sofa::core::objectmodel::New<StiffSpringForceField>(myInteractorMechanicalState, myInteractedMechanicalObject);
 	interactionForceField->setName("Spring");
 	interactionForceField->setDrawMode(0);
 	interactionForceField->addSpring(0, myParticleIndex, myStiffness, 0.1, 0.0);

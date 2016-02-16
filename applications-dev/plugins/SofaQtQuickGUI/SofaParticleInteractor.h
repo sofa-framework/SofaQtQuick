@@ -123,6 +123,7 @@ public:
 	}
 
 public:
+    typedef sofa::simulation::Node Node;
 	typedef sofa::component::container::MechanicalObject<Types> MechanicalObject;
 
 	virtual void start();
@@ -134,7 +135,7 @@ public:
 	virtual int particleIndex() const;
 
 private:
-	sofa::core::behavior::BaseInteractionForceField::SPtr SofaParticleInteraction<Types>::createInteractionForceField() const;
+    sofa::core::behavior::BaseInteractionForceField::SPtr createInteractionForceField() const;
 
 private:
 	SofaComponent*										mySofaComponent;

@@ -48,7 +48,6 @@ set(HEADER_FILES
     SofaPythonInteractor.h
     PythonConsole.h
     SofaParticleInteractor.h
-	SofaParticleInteractor.inl
     Manipulator.h
     Manipulator2D_Translation.h
     Manipulator2D_Rotation.h
@@ -166,6 +165,10 @@ endif()
 
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
+
+set(HEADER_FILES ${HEADER_FILES}
+    SofaParticleInteractor.inl
+)
 
 add_definitions(-DQT_PLUGIN)
 
