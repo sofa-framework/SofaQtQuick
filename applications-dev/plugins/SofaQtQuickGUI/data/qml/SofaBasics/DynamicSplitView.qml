@@ -99,29 +99,8 @@ Item {
         }
 
         // use the default settings if there is no saved one
-        if(0 === children.length) {
+        if(0 === children.length)
             var view = createView();
-
-            /*width = 100;
-            height = 100;
-
-            var splitter = splitView(view, Qt.Horizontal, Qt.point(0, 0));
-            splitter.relativeX = 0.75;
-
-            for(var i = 0; i < root.children.length; ++i) {
-                var item = root.children[i];
-                if(!item.isSplitter && !item.isView)
-                    continue;
-
-                if(item.isView) {
-                    var loaderItem = item.item;
-                    if(loaderItem.isDynamicContent) {
-                        loaderItem.defaultContentName = "ToolPanel";
-                        break;
-                    }
-                }
-            }*/
-        }
     }
 
     onChildrenChanged: {
@@ -775,7 +754,10 @@ Item {
     }
 
     function updateSplitters() {
-        // try to merge splitters that should be
+        if(width < splitterMagnetizeThreshold || height < splitterMagnetizeThreshold)
+            return;
+
+        // try to merge splitters that should
         for(var j = 0; j < root.children.length; ++j) {
             var item = root.children[j];
             if(!item.isSplitter || item.isDestroying)
@@ -1017,7 +999,7 @@ Item {
             }
 
             function init() {
-                uiSettings.topLeftEdgeUiId          = Qt.binding(function() {return splitter.topLeftEdge     ? splitter.topLeftEdge.uiId : 0;});
+                uiSettings.topLeftEdgeUiId          = Qt.binding(function() {return splitter.topLeftEdge ? splitter.topLeftEdge.uiId : 0;});
                 uiSettings.bottomRightEdgeUiId      = Qt.binding(function() {return splitter.bottomRightEdge ? splitter.bottomRightEdge.uiId : 0;});
                 uiSettings.relativeX                = Qt.binding(function() {return splitter.relativeX;});
                 uiSettings.relativeY                = Qt.binding(function() {return splitter.relativeY;});

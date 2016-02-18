@@ -76,7 +76,11 @@ public:
     static void UseOpenGLDebugLogger();     // must be call after a valid opengl debug context has been made current
 
     static void UseDefaultSofaPath();
-    static void UseDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath = QString());
+    static void ApplySettings(const QString& defaultSettingsPath = QString(), const QString& backupSettingsPath = QString());
+    static void FinalizeSettings();
+    static void MakeBackupSettings(const QString& backupSettingsPath = QString());
+    static void ApplyBackupSettings(const QString& backupSettingsPath = QString());
+    static void ApplyDefaultSettings(const QString& defaultSettingsPath = QString(), const QString& backupSettingsPath = QString());
     static void CopySettings(const QSettings& src, QSettings& dst);
 
     /// Centralized prerequisite for most sofaqtquick applications.

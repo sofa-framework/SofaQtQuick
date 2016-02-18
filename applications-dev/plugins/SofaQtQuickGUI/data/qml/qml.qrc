@@ -6,7 +6,7 @@
         <file>SofaBasics/DefaultStatusBar.qml</file>
         <file>SofaBasics/DefaultToolBar.qml</file>
         <file>SofaBasics/DefaultMenuBar.qml</file>
-		<file>SofaBasics/SofaScene.qml</file>
+        <file>SofaBasics/SofaScene.qml</file>
         <file>SofaBasics/SofaSceneInterface.qml</file>
         <file>SofaBasics/SofaPythonInteractor.qml</file>
         <file>SofaBasics/FPSItem.qml</file>
@@ -20,21 +20,18 @@
         <file>SofaBasics/DynamicSplitView.qml</file>
         <file>SofaBasics/DynamicContent.qml</file>
         <file>SofaBasics/SofaDataItem.qml</file>
-        <file>SofaBasics/SofaDataListViewItem.qml</file>
         <file>SofaBasics/SofaDataListViewWindow.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
-        <file>SofaTools/qmldir</file>
-        <file>SofaTools/SofaSimulationControl.qml</file>
-        <file>SofaTools/SofaVisualizationControl.qml</file>
-        <file>SofaTools/SofaSceneToolPanel.qml</file>
-        <file>SofaTools/SofaSceneGraphView.qml</file>
-        <file>SofaTools/SofaDataListView.qml</file>
         <file>SofaWidgets/qmldir</file>
         <file>SofaWidgets/SofaViewer.qml</file>
         <file>SofaWidgets/ImageViewer.qml</file>
-        <file>SofaWidgets/ToolPanel.qml</file>
         <file>SofaWidgets/SofaDataView.qml</file>
         <file>SofaWidgets/PythonConsole.qml</file>
+        <file>SofaWidgets/SofaSimulationControl.qml</file>
+        <file>SofaWidgets/SofaVisualizationControl.qml</file>
+        <file>SofaWidgets/SofaSceneToolPanel.qml</file>
+        <file>SofaWidgets/SofaSceneGraphView.qml</file>
+        <file>SofaWidgets/SofaDataListView.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
         <file>SofaDataTypes/SofaDataType_boolean.qml</file>
@@ -49,8 +46,8 @@
         <file>SofaDataTypes/SofaDataType_Material.qml</file>
         <file>SofaDataTypes/SofaDataType_OptionsGroup.qml</file>
         <file>SofaInteractors/qmldir</file>
-		<file>SofaInteractors/UserInteractor_MoveCamera.qml</file>
-		<file>SofaInteractors/UserInteractor_Selection.qml</file>
+        <file>SofaInteractors/UserInteractor_MoveCamera.qml</file>
+        <file>SofaInteractors/UserInteractor_Selection.qml</file>
         <file>SofaInteractors/UserInteractor_SofaParticleInteractor.qml</file>
         <file>SofaManipulators/qmldir</file>
         <file>SofaManipulators/Manipulator.qml</file>

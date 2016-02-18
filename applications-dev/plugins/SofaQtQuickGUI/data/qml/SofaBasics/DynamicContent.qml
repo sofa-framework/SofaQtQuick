@@ -22,6 +22,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import QtQuick.Controls.Styles 1.2
+import QtQuick.Window 2.2
 import Qt.labs.folderlistmodel 2.1
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
@@ -248,14 +249,15 @@ Item {
                 color: "lightgrey"
                 visible: false
 
-                MouseArea {
+                Flickable {
                     anchors.fill: parent
-                    acceptedButtons: Qt.AllButtons
-                    onWheel: wheel.accepted = true
+                    anchors.leftMargin: 32
+                    contentWidth: toolBarLayout.implicitWidth
 
                     RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 32
+                        id: toolBarLayout
+                        height: parent.height
+                        spacing: 2
 
                         ComboBox {
                             id: comboBox
@@ -270,6 +272,43 @@ Item {
 
                             onCurrentIndexChanged: {
                                 loaderLocation.refresh();
+                            }
+                        }
+
+                        Button {
+                            iconSource: "qrc:/icon/subWindow.png"
+                            Layout.preferredWidth: Layout.preferredHeight
+                            Layout.preferredHeight: 20
+
+                            onClicked: windowComponent.createObject(SofaApplication, {"source": listModel.get(comboBox.currentIndex).filePath});
+
+                            Component {
+                                id: windowComponent
+
+                                Window {
+                                    id: window
+                                    width: 400
+                                    height: 600
+
+                                    modality: Qt.NonModal
+                                    flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                                    visible: true
+                                    color: "lightgrey"
+
+                                    Component.onCompleted: {
+                                        width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
+                                        height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
+                                    }
+
+                                    property url source
+
+                                    Loader {
+                                        id: loader
+                                        anchors.fill: parent
+
+                                        source: window.source
+                                    }
+                                }
                             }
                         }
                     }

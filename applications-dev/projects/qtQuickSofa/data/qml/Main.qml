@@ -24,7 +24,6 @@ import QtQuick.Dialogs 1.1
 import QtQuick.Controls.Styles 1.3
 import SofaBasics 1.0
 import SofaApplication 1.0
-import SofaTools 1.0
 import SofaWidgets 1.0
 
 ApplicationWindow {
@@ -53,9 +52,9 @@ ApplicationWindow {
 
     property string sofaScenePath: ""
 
-    style: ApplicationWindowStyle {
-        background: null
-    }
+//    style: ApplicationWindowStyle {
+//        background: null
+//    }
 
     Component.onCompleted: {
         showNormal();

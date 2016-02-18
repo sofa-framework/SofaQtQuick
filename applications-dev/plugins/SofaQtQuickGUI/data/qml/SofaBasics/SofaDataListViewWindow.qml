@@ -25,6 +25,7 @@ import QtQuick.Window 2.2
 import SofaApplication 1.0
 import SofaComponent 1.0
 import SofaDataListModel 1.0
+import SofaWidgets 1.0
 
 Window {
     id: root
@@ -48,16 +49,16 @@ Window {
         id: scrollView
         anchors.fill: parent
         enabled: sofaScene && sofaComponent ? sofaScene.ready : false
-        frameVisible: true
 
-        SofaDataListViewItem {
-            id: listView
-            anchors.fill: parent
-            anchors.rightMargin: 8
-            focus: true
+        Loader {
+            width: scrollView.width
 
-            sofaScene: root.sofaScene
-            sofaComponent: root.sofaComponent
+            sourceComponent: SofaDataListView {
+                id: listView
+
+                sofaScene: root.sofaScene
+                sofaComponent: root.sofaComponent
+            }
         }
     }
 }

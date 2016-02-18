@@ -26,10 +26,9 @@ import Qt.labs.folderlistmodel 2.1
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
 
-Item {
+ColumnLayout {
     id: root
-    width: 256
-    height: 256
+    spacing: 0
 
     property int uiId: 0
     property int previousUiId: uiId
@@ -111,127 +110,124 @@ Item {
         id: imageListModel
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
+    Rectangle {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.minimumHeight: 64
+        color: "black"
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            color: "black"
+        Flickable {
+            id: imageContainer
+            anchors.fill: parent
+            clip: true
+            contentWidth: image.width
+            contentHeight: image.height
+            leftMargin: Math.max(0.0, (width - contentWidth) / 2.0)
+            topMargin: Math.max(0.0, (height - contentHeight) / 2.0)
 
-            Flickable {
-                id: imageContainer
-                anchors.fill: parent
-                contentWidth: image.width
-                contentHeight: image.height
-                leftMargin: Math.max(0.0, (width - contentWidth) / 2.0)
-                topMargin: Math.max(0.0, (height - contentHeight) / 2.0)
-
-                Image {
-                    id: image
-                    source: -1 !== imageComboBox.currentIndex && imageComboBox.currentIndex < imageListModel.count ? imageListModel.get(imageComboBox.currentIndex).path : ""
-                    fillMode: Image.PreserveAspectFit
-                }
-            }
-
-            BusyIndicator {
-                anchors.fill: parent
-                anchors.margins: parent.width / 4
-                running: Image.Loading === image.status
-            }
-
-            Text {
-                anchors.fill: parent
-                visible: Image.Null === image.status || Image.Error === image.status
-                text: Image.Null === image.status ? "No image to display" : "ERROR: image could not be loaded"
-                color: "darkred"
-                font.bold: true
-                font.pixelSize: 22
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+            Image {
+                id: image
+                source: -1 !== imageComboBox.currentIndex && imageComboBox.currentIndex < imageListModel.count ? imageListModel.get(imageComboBox.currentIndex).path : ""
+                fillMode: Image.PreserveAspectFit
             }
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 22
-            color: "lightgrey"
+        BusyIndicator {
+            anchors.fill: parent
+            anchors.margins: parent.width / 4
+            running: Image.Loading === image.status
+        }
 
-            Flickable {
-                anchors.fill: parent
-                contentWidth: toolBarLayout.implicitWidth
-                leftMargin: 32
+        Text {
+            anchors.fill: parent
+            visible: Image.Null === image.status || Image.Error === image.status
+            text: Image.Null === image.status ? "No image to display" : "ERROR: image could not be loaded"
+            color: "darkred"
+            font.bold: true
+            font.pixelSize: 22
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
 
-                RowLayout {
-                    id: toolBarLayout
-                    height: parent.height
-                    spacing: 2
+    Rectangle {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 22
+        color: "lightgrey"
 
-                    Item {
-                        Layout.preferredWidth: 151
-                        Layout.preferredHeight: 20
+        Flickable {
+            anchors.fill: parent
+            anchors.leftMargin: 32
+            contentWidth: toolBarLayout.implicitWidth
 
-                        ComboBox {
-                            id: imageComboBox
-                            anchors.fill: parent
-                            anchors.rightMargin: 1
-                            textRole: "title"
-                            model: imageListModel
-                            style: ComboBoxStyle {}
-                        }
+            RowLayout {
+                id: toolBarLayout
+                height: parent.height
+                spacing: 2
+
+                Item {
+                    Layout.preferredWidth: 151
+                    Layout.preferredHeight: 20
+
+                    ComboBox {
+                        id: imageComboBox
+                        anchors.fill: parent
+                        anchors.rightMargin: 1
+                        textRole: "title"
+                        model: imageListModel
+                        style: ComboBoxStyle {}
                     }
+                }
 
-                    Button {
-                        Layout.preferredWidth: 25
-                        Layout.fillHeight: true
-                        iconSource: "qrc:/icon/open.png"
+                Button {
+                    Layout.preferredWidth: 25
+                    Layout.fillHeight: true
+                    iconSource: "qrc:/icon/open.png"
 
-                        onClicked: openFolderDialog.open()
+                    onClicked: openFolderDialog.open()
+                }
+
+                Button {
+                    Layout.preferredWidth: 55
+                    Layout.fillHeight: true
+                    text: "50%"
+
+                    onClicked: {
+                        image.width  = image.sourceSize.width  * 0.5;
+                        image.height = image.sourceSize.height * 0.5;
                     }
+                }
 
-                    Button {
-                        Layout.preferredWidth: 55
-                        Layout.fillHeight: true
-                        text: "50%"
+                Button {
+                    Layout.preferredWidth: 55
+                    Layout.fillHeight: true
+                    text: "100%"
 
-                        onClicked: {
-                            image.width  = image.sourceSize.width  * 0.5;
-                            image.height = image.sourceSize.height * 0.5;
-                        }
+                    onClicked: {
+                        image.width  = image.sourceSize.width;
+                        image.height = image.sourceSize.height;
                     }
+                }
 
-                    Button {
-                        Layout.preferredWidth: 55
-                        Layout.fillHeight: true
-                        text: "100%"
+                Button {
+                    Layout.preferredWidth: 55
+                    Layout.fillHeight: true
+                    text: "200%"
 
-                        onClicked: {
-                            image.width  = image.sourceSize.width;
-                            image.height = image.sourceSize.height;
-                        }
+                    onClicked: {
+                        image.width  = image.sourceSize.width  * 2.0;
+                        image.height = image.sourceSize.height * 2.0;
                     }
+                }
 
-                    Button {
-                        Layout.preferredWidth: 55
-                        Layout.fillHeight: true
-                        text: "200%"
+                Button {
+                    Layout.preferredWidth: 55
+                    Layout.fillHeight: true
+                    text: "Fit"
 
-                        onClicked: {
-                            image.width  = image.sourceSize.width  * 2.0;
-                            image.height = image.sourceSize.height * 2.0;
-                        }
-                    }
-
-                    Button {
-                        Layout.preferredWidth: 55
-                        Layout.fillHeight: true
-                        text: "Fit"
-
-                        onClicked: {
-                            image.width  = Qt.binding(function() {return imageContainer.width;});
-                            image.height = Qt.binding(function() {return imageContainer.height;});
-                        }
+                    onClicked: {
+                        image.width  = Qt.binding(function() {return imageContainer.width;});
+                        image.height = Qt.binding(function() {return imageContainer.height;});
                     }
                 }
             }

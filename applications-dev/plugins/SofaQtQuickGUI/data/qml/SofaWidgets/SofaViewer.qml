@@ -42,6 +42,9 @@ SofaViewer {
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
 
+    implicitWidth: 800
+    implicitHeight: 600
+
     Component.onCompleted: {
         SofaApplication.addSofaViewer(root);
 
@@ -56,7 +59,7 @@ SofaViewer {
     }
 
     onActiveFocusChanged: {
-        if(root && activeFocus)
+        if(activeFocus)
             SofaApplication.setFocusedSofaViewer(root);
     }
 
@@ -65,6 +68,8 @@ SofaViewer {
         onFocusedSofaViewerChanged: {
             if((root === SofaApplication.focusedSofaViewer || !SofaApplication.focusedSofaViewer) && !root.activeFocus)
                 root.forceActiveFocus();
+            else
+                focus = false;
         }
     }
 
@@ -363,7 +368,7 @@ SofaViewer {
         border.width: 2
         border.color: "red"
 
-        enabled: root.highlightIfFocused && root.activeFocus
+        enabled: root.highlightIfFocused && root === SofaApplication.focusedSofaViewer
         onEnabledChanged: {
             if(enabled)
                 visible = true;
@@ -736,7 +741,7 @@ SofaViewer {
                                             title: "Path to the screenshot to save"
 
                                             onAccepted: {
-                                                var path = fileUrl.toString().replace(/file\:[\/]*/, "");
+                                                var path = fileUrl.toString().replace("file://", "");
                                                 root.takeScreenshot(path);
                                             }
                                         }

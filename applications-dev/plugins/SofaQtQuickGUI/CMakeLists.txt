@@ -80,7 +80,6 @@ set(QML_FILES
     data/qml/SofaBasics/SofaScene.qml
     data/qml/SofaBasics/SofaSceneInterface.qml
     data/qml/SofaBasics/SofaDataItem.qml
-    data/qml/SofaBasics/SofaDataListViewItem.qml
     data/qml/SofaBasics/SofaDataListViewWindow.qml
     data/qml/SofaBasics/SofaPythonInteractor.qml
     data/qml/SofaBasics/UserInteractor.qml
@@ -105,18 +104,16 @@ set(QML_FILES
     data/qml/SofaManipulators/Manipulator2D_Rotation.qml
     data/qml/SofaManipulators/Manipulator3D_Translation.qml
     data/qml/SofaManipulators/Manipulator3D_Rotation.qml
-    data/qml/SofaTools/qmldir
-    data/qml/SofaTools/SofaSimulationControl.qml
-    data/qml/SofaTools/SofaVisualizationControl.qml
-    data/qml/SofaTools/SofaSceneGraphView.qml
-    data/qml/SofaTools/SofaDataListView.qml
-    data/qml/SofaTools/SofaSceneToolPanel.qml
     data/qml/SofaWidgets/qmldir
     data/qml/SofaWidgets/SofaViewer.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
-    data/qml/SofaWidgets/ToolPanel.qml
     data/qml/SofaWidgets/PythonConsole.qml
+    data/qml/SofaWidgets/SofaDataListView.qml
+    data/qml/SofaWidgets/SofaSceneGraphView.qml
+    data/qml/SofaWidgets/SofaSceneToolPanel.qml
+    data/qml/SofaWidgets/SofaSimulationControl.qml
+    data/qml/SofaWidgets/SofaVisualizationControl.qml
 )
 
 set(CONFIG_FILES

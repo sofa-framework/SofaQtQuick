@@ -22,108 +22,103 @@ import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaBasics 1.0
+import SofaApplication 1.0
 import SofaScene 1.0
 import PythonConsole 1.0
 
-Rectangle {
+ColumnLayout {
     id: root
-    clip: true
-    color: "lightgrey"
+    spacing: 0
 
-    property var sofaScene
+    property var sofaScene: SofaApplication.sofaScene
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
+    TextArea {
+        id: consoleTextArea
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        readOnly: true
 
-        TextArea {
-            id: consoleTextArea
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            readOnly: true
+        onTextChanged: cursorPosition = Math.max(0, text.length - 1)
 
-            onTextChanged: cursorPosition = Math.max(0, text.length - 1)
-
-            Connections {
-                target: sofaScene
-                onAboutToUnload: consoleTextArea.text = ""
-            }
-
-            PythonConsole {
-                onTextAdded: consoleTextArea.text += text
-            }
+        Connections {
+            target: root.sofaScene
+            onAboutToUnload: consoleTextArea.text = ""
         }
 
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 24
+        PythonConsole {
+            onTextAdded: consoleTextArea.text += text
+        }
+    }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 32
-                spacing: 0
+    Item {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 24
 
-                TextField {
-                    id: scriptTextField
-                    Layout.fillWidth: true
-                    onAccepted: run();
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 32
+            spacing: 0
 
-                    property int indexHistory: 0
-                    property int maxHistory: 100
-                    property var commandHistory: ["", ""]
-                    property bool lock: false
+            TextField {
+                id: scriptTextField
+                Layout.fillWidth: true
+                onAccepted: run();
 
-                    onTextChanged: {
-                        if(0 === indexHistory || !lock)
-                            commandHistory[0] = text;
+                property int indexHistory: 0
+                property int maxHistory: 100
+                property var commandHistory: ["", ""]
+                property bool lock: false
 
-                        if(!lock)
-                            indexHistory = 0;
-                    }
+                onTextChanged: {
+                    if(0 === indexHistory || !lock)
+                        commandHistory[0] = text;
 
-                    Keys.onUpPressed: {
-                        if(commandHistory.length - 1 === indexHistory)
-                            return;
-
-                        indexHistory = Math.min(++indexHistory, commandHistory.length - 1);
-
-                        lock = true;
-                        text = commandHistory[indexHistory];
-                        lock = false;
-                    }
-
-                    Keys.onDownPressed: {
-                        if(0 === indexHistory)
-                            return;
-
-                        indexHistory = Math.max(--indexHistory, 0);
-                        lock = true;
-                        text = commandHistory[indexHistory];
-                        lock = false;
-                    }
-
-                    function run() {
-                        if(0 === text.length)
-                            return;
-
-                        sofaScene.sofaPythonInteractor.run(text);
-
-                        if(0 !== text.localeCompare(commandHistory[1])) {
-                            commandHistory[0] = text;
-                            commandHistory.splice(0, 0, "");
-                            if(commandHistory.length > maxHistory)
-                                commandHistory.length = maxHistory;
-                        }
-
+                    if(!lock)
                         indexHistory = 0;
-                        text = "";
-                    }
                 }
 
-                Button {
-                    text: "Run"
-                    onClicked: scriptTextField.run();
+                Keys.onUpPressed: {
+                    if(commandHistory.length - 1 === indexHistory)
+                        return;
+
+                    indexHistory = Math.min(++indexHistory, commandHistory.length - 1);
+
+                    lock = true;
+                    text = commandHistory[indexHistory];
+                    lock = false;
                 }
+
+                Keys.onDownPressed: {
+                    if(0 === indexHistory)
+                        return;
+
+                    indexHistory = Math.max(--indexHistory, 0);
+                    lock = true;
+                    text = commandHistory[indexHistory];
+                    lock = false;
+                }
+
+                function run() {
+                    if(0 === text.length)
+                        return;
+
+                    sofaScene.sofaPythonInteractor.run(text);
+
+                    if(0 !== text.localeCompare(commandHistory[1])) {
+                        commandHistory[0] = text;
+                        commandHistory.splice(0, 0, "");
+                        if(commandHistory.length > maxHistory)
+                            commandHistory.length = maxHistory;
+                    }
+
+                    indexHistory = 0;
+                    text = "";
+                }
+            }
+
+            Button {
+                text: "Run"
+                onClicked: scriptTextField.run();
             }
         }
     }

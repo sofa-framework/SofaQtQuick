@@ -25,27 +25,30 @@ import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneListModel 1.0
 
-CollapsibleGroupBox {
+
+ColumnLayout {
     id: root
-    implicitWidth: 0
-
-    contentRightMargin: 9
-    title: "Sofa Scene Graph"
-    property int priority: 90
-
-    property var sofaScene: SofaApplication.sofaScene
-    property real rowHeight: 16
-
+    spacing: 0
     enabled: sofaScene ? sofaScene.ready : false
 
+    width: 300
+    height: listView.contentHeight
+
+    property var sofaScene: SofaApplication.sofaScene
+
     ScrollView {
-        anchors.fill: parent
-        implicitHeight: Math.min(listView.implicitHeight, listView.contentHeight)
+        id: scrollView
+        Layout.fillWidth: true
+        Layout.preferredHeight: Math.min(root.height, listView.contentHeight)
+
+        property real rowHeight: 16
 
         ListView {
             id: listView
-            implicitHeight: 400
-            clip: true
+            implicitWidth: scrollView.width
+            currentIndex: root.sofaScene ? listModel.getComponentId(sofaScene.selectedComponent) : - 1
+
+            Component.onCompleted: currentIndex = root.sofaScene ? listModel.getComponentId(sofaScene.selectedComponent) : - 1
 
             model: SofaSceneListModel {
                 id: listModel
@@ -75,7 +78,7 @@ CollapsibleGroupBox {
             }
 
             Timer {
-                running: root.sofaScene.play ? true : false
+                running: root.sofaScene ? root.sofaScene.play : false
                 repeat: true
                 interval: 200
                 onTriggered: {
@@ -106,8 +109,8 @@ CollapsibleGroupBox {
             delegate: Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: depth * rowHeight
-                height: visible ? rowHeight : 0
+                anchors.leftMargin: depth * scrollView.rowHeight
+                height: visible ? scrollView.rowHeight : 0
                 visible: !(SofaSceneListModel.Hidden & visibility)
                 opacity: !(SofaSceneListModel.Disabled & visibility) ? 1.0 : 0.5
 
@@ -116,7 +119,7 @@ CollapsibleGroupBox {
                     spacing: 0
 
                     Item {
-                        Layout.preferredHeight: rowHeight
+                        Layout.preferredHeight: scrollView.rowHeight
                         Layout.preferredWidth: Layout.preferredHeight
 
                         Image {
@@ -134,7 +137,7 @@ CollapsibleGroupBox {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: rowHeight
+                        Layout.preferredHeight: scrollView.rowHeight
                         spacing: 4
 
                         RowLayout {
@@ -144,7 +147,7 @@ CollapsibleGroupBox {
                             Rectangle {
                                 id: colorIcon
 
-                                Layout.preferredWidth: rowHeight * 0.5
+                                Layout.preferredWidth: scrollView.rowHeight * 0.5
                                 Layout.preferredHeight: Layout.preferredWidth
 
                                 radius: isNode ? Layout.preferredWidth * 0.5 : 0
@@ -155,7 +158,7 @@ CollapsibleGroupBox {
                             }
                             Rectangle {
                                 visible: multiparent
-                                Layout.preferredWidth: rowHeight * 0.5
+                                Layout.preferredWidth: scrollView.rowHeight * 0.5
                                 Layout.preferredHeight: Layout.preferredWidth
 
                                 radius: isNode ? Layout.preferredWidth * 0.5 : 0
@@ -263,5 +266,10 @@ CollapsibleGroupBox {
                 }
             }
         }
+    }
+
+    Item {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
     }
 }

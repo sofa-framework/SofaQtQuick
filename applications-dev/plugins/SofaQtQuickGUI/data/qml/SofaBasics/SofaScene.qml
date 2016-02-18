@@ -150,7 +150,27 @@ SofaScene {
     readonly property Loader interfaceLoader: Loader {
         id: interfaceLoader
         asynchronous: true
-        source: root.sourceQML
+
+        // delay the load of the interface to one frame to let the cache be trimmed in order to load the scene interface from scratch without reusing the previous loaded one in case of a scene reloading
+        Timer {
+            id: loadInterfaceTimer
+            interval: 1
+            repeat: false
+            running: root.ready
+            onTriggered: {
+                interfaceLoader.source = root.sourceQML;
+            }
+        }
+
+        Connections {
+            target: root
+            onReadyChanged: {
+                if(!ready)
+                    interfaceLoader.source = "";
+
+                SofaApplication.trimComponentCache();
+            }
+        }
 
         property var sofaScene: root
     }

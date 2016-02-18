@@ -36,6 +36,11 @@ MouseArea {
         mouse.accepted = false;
     }
 
+    onWheel: {
+        d.release();
+        wheel.accepted = false;
+    }
+
     onEntered: d.init();
     onExited: d.release();
 

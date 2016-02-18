@@ -271,43 +271,109 @@ void SofaApplication::UseDefaultSofaPath()
 #endif
 }
 
-void SofaApplication::UseDefaultSettingsAtFirstLaunch(const QString& defaultSettingsPath)
+static QString ExitedNormallyKey()
 {
+    return "SofaApplication/ExitedNormally";
+}
+
+static QString CorruptedKey()
+{
+    return "SofaApplication/Corrupted";
+}
+
+void SofaApplication::ApplySettings(const QString& defaultSettingsPath, const QString& backupSettingsPath)
+{
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
+    connect(qApp, &QApplication::aboutToQuit, &SofaApplication::FinalizeSettings); // maybe too early ?
+
     QSettings settings;
-    bool notFirstLaunch = settings.value("notFirstLaunch", false).toBool();
-    if(notFirstLaunch)
-        return;
-
-    // copy default.ini into the current directory to be able to open it with QSettings
-    QString defaultConfigFilePath = "default.ini";
-
-    QFileInfo fileInfo(defaultConfigFilePath);
-    if(!fileInfo.isFile())
+    if(QFileInfo(settings.fileName()).exists())
     {
-        QString finalDefaultSettingsPath = defaultSettingsPath;
-        if(finalDefaultSettingsPath.isEmpty())
-            finalDefaultSettingsPath = ":/config/default.ini";
-
-        QFile file(finalDefaultSettingsPath);
-        if(!file.open(QFile::OpenModeFlag::ReadOnly))
+        bool exitedNormally = settings.value(ExitedNormallyKey(), false).toBool();
+        if(exitedNormally && !settings.value(CorruptedKey(), false).toBool())
         {
-            qWarning() << "ERROR: the default config file has not been found!";
+            MakeBackupSettings(backupSettingsPath);
+            settings.remove(ExitedNormallyKey());
         }
         else
         {
-            if(!file.copy(defaultConfigFilePath))
-                qWarning() << "ERROR: the config file could not be created!";
-            else
-                if(!QFile::setPermissions(defaultConfigFilePath, QFile::ReadOwner | QFile::ReadUser | QFile::ReadGroup))
-                    qWarning() << "ERROR: cannot set permission on the config file!";
+            if(settings.value(CorruptedKey(), false).toBool())
+                qCritical() << "Current settings has been corrupted, falling back on backup settings";
+
+            ApplyBackupSettings(backupSettingsPath);
         }
+
+        if(!settings.value(CorruptedKey(), false).toBool())
+            return;
     }
 
-    // copy properties of default.ini into the current settings
-    QSettings defaultSettings(defaultConfigFilePath, QSettings::IniFormat);
-    CopySettings(defaultSettings, settings);
+    if(settings.value(CorruptedKey(), false).toBool())
+        qCritical() << "Backup Settings file has been corrupted, falling back on default settings";
 
-    settings.setValue("notFirstLaunch", true);
+    ApplyDefaultSettings(defaultSettingsPath, backupSettingsPath);
+}
+
+void SofaApplication::FinalizeSettings()
+{
+    QSettings settings;
+    if(!QFileInfo(settings.fileName()).exists())
+    {
+        qCritical("Cannot finalize settings, the application will use the backup settings at next launch");
+        return;
+    }
+
+    settings.setValue(ExitedNormallyKey(), true);
+}
+
+static QString DefaultBackupSettingsPath()
+{
+    QSettings settings;
+    return settings.fileName() + ".backup";
+}
+
+void SofaApplication::MakeBackupSettings(const QString& backupSettingsPath)
+{
+    QSettings settings;
+
+    QString finalBackupSettingsPath = backupSettingsPath;
+    if(finalBackupSettingsPath.isEmpty())
+        finalBackupSettingsPath = DefaultBackupSettingsPath();
+
+    QSettings backupSettings(finalBackupSettingsPath, QSettings::IniFormat);
+    backupSettings.clear();
+
+    CopySettings(settings, backupSettings);
+}
+
+void SofaApplication::ApplyBackupSettings(const QString& backupSettingsPath)
+{
+    qDebug() << "ApplyBackupSettings";
+
+    QString finalBackupSettingsPath = backupSettingsPath;
+    if(finalBackupSettingsPath.isEmpty())
+        finalBackupSettingsPath = DefaultBackupSettingsPath();
+
+    QSettings backupSettings(finalBackupSettingsPath, QSettings::IniFormat);
+    QSettings settings;
+    settings.clear();
+
+    CopySettings(backupSettings, settings);
+}
+
+void SofaApplication::ApplyDefaultSettings(const QString& defaultSettingsPath, const QString& backupSettingsPath)
+{
+    QString finalDefaultSettingsPath = ":/config/default.ini";
+    if(!defaultSettingsPath.isEmpty())
+        finalDefaultSettingsPath = defaultSettingsPath;
+
+    // copy properties of default.ini into the backup and current settings if the settings file does not exist
+    QSettings defaultSettings(finalDefaultSettingsPath, QSettings::IniFormat);
+    QSettings settings;
+    settings.clear();
+
+    CopySettings(defaultSettings, settings);
+    MakeBackupSettings(backupSettingsPath);
 }
 
 static void SettingsCopyValuesHelper(const QSettings& src, QSettings& dst)
@@ -371,13 +437,12 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");
 
     QSettings::setPath(QSettings::Format::IniFormat, QSettings::Scope::UserScope, QCoreApplication::applicationDirPath() + "/config/");
-    QSettings::setDefaultFormat(QSettings::Format::IniFormat);
 
     // initialise paths
     SofaApplication::UseDefaultSofaPath();
 
-    // use the default.ini settings if it is the first time the user launch the application
-    SofaApplication::UseDefaultSettingsAtFirstLaunch();
+    // use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
+    SofaApplication::ApplySettings();
 
     // plugin initialization
     QString pluginName("SofaQtQuickGUI");
