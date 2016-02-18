@@ -348,7 +348,7 @@ void SofaApplication::MakeBackupSettings(const QString& backupSettingsPath)
 
 void SofaApplication::ApplyBackupSettings(const QString& backupSettingsPath)
 {
-    qDebug() << "ApplyBackupSettings";
+    qWarning() << "The previous instance of the application did not exit cleanly, falling back on the backup settings";
 
     QString finalBackupSettingsPath = backupSettingsPath;
     if(finalBackupSettingsPath.isEmpty())
