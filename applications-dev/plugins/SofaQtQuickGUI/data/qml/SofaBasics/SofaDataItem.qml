@@ -87,7 +87,7 @@ Item {
 
         dataObject.initing      = true;
 
-        dataObject.data         = sofaData;
+        dataObject.data         = object.sofaData;
         dataObject.name         = object.name;
         dataObject.description  = object.description;
         dataObject.type         = object.type;
@@ -315,10 +315,29 @@ Item {
 
         Component {
             id: sofaDataTypeNotSupportedComponent
-            TextField {
-                readOnly: true
-                enabled: !readOnly
-                text: "Data type not supported: " + (0 != root.type.length ? root.type : "Unknown")
+            ColumnLayout {
+                Label {
+                    Layout.fillWidth: true
+
+                    text: "Data widget not implemented yet: " + (0 != root.type.length ? root.type : "Unknown")
+                }
+                TextField {
+                    id: textField
+                    Layout.fillWidth: true
+
+                    property var dataObject: null
+
+                    readOnly: dataObject.readOnly
+                    enabled: !dataObject.readOnly
+                    text: undefined !== dataObject.value ? dataObject.value.toString() : ""
+
+                    Binding {
+                        target: dataObject
+                        property: "value"
+                        value: textField.text
+                        when: !dataObject.readOnly
+                    }
+                }
             }
         }
     }

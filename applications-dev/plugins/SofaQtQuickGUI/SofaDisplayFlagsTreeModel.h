@@ -44,7 +44,7 @@ public:
     SofaDisplayFlagsTreeModel(QObject* parent = 0);
     ~SofaDisplayFlagsTreeModel();
 
-    Q_PROPERTY(sofa::qtquick::SofaComponent* visualStyleComponent READ visualStyleComponent WRITE setVisualStyleComponent NOTIFY visualStyleComponentChanged)
+    Q_PROPERTY(sofa::qtquick::SofaData* displayFlagsData READ displayFlagsData WRITE setDisplayFlagsData NOTIFY displayFlagsDataChanged)
 
     Q_INVOKABLE int state(const QModelIndex &index);
     Q_INVOKABLE void setEnabled(const QModelIndex &index);
@@ -55,11 +55,11 @@ public slots:
     void upload();
 
 public:
-    SofaComponent* visualStyleComponent() const;
-    void setVisualStyleComponent(SofaComponent* newVisualStyleComponent);
+    SofaData* displayFlagsData() const;
+    void setDisplayFlagsData(SofaData* newDisplayFlagsData);
 
 signals:
-    void visualStyleComponentChanged(SofaComponent*);
+    void displayFlagsDataChanged(SofaData*);
 
 protected:
     void setupTree();
@@ -300,11 +300,14 @@ private:
         ShowCollisionModels             = 1 << 4,
         ShowBoundingCollisionsModels    = 1 << 5,
         ShowMappings                    = 1 << 6,
-        ShowMechanicalMappings          = 1 << 7
+        ShowMechanicalMappings          = 1 << 7,
+        ShowAdvancedRendering           = 1 << 8,
+        ShowWireframe                   = 1 << 9,
+        ShowNormals                     = 1 << 10
     };
 
 private:
-    SofaComponent*  myVisualStyleComponent;
+    SofaData*       myDisplayFlagsData;
     int             myFlags;
 
     TreeItem*       myRootItem;

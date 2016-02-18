@@ -69,7 +69,7 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_number.qml
     data/qml/SofaDataTypes/SofaDataType_poissonRatio.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_string.qml
-    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.notimplementedyet.qml
+    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
     data/qml/SofaBasics/qmldir

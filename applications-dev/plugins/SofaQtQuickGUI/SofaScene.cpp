@@ -759,6 +759,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
 
     if(!data)
     {
+        object.insert("sofaData", QVariant::fromValue(nullptr));
         object.insert("name", "Invalid");
         object.insert("description", "");
         object.insert("type", "");
@@ -826,6 +827,12 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
 
     properties.insert("readOnly", false);
 
+    SofaData* sofaData = new SofaData(this, data->getOwner(), data);
+//    QQmlEngine* engine = qmlEngine(this);
+//    if(engine)
+//        engine->setObjectOwnership(sofaData, QQmlEngine::JavaScriptOwnership);
+
+    object.insert("sofaData", QVariant::fromValue(sofaData));
     object.insert("name", data->getName().c_str());
     object.insert("description", data->getHelp());
     object.insert("type", type);

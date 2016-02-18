@@ -170,6 +170,7 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path) const;
 	bool componentExists(const sofa::core::objectmodel::Base* base) const;
 
+    // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent() const;
 
 protected:

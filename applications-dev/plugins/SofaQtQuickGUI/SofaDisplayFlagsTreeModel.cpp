@@ -38,13 +38,13 @@ using namespace sofa::core::objectmodel;
 using namespace sofa::component::visualmodel;
 
 SofaDisplayFlagsTreeModel::SofaDisplayFlagsTreeModel(QObject* parent) : QAbstractItemModel(parent),
-    myVisualStyleComponent(nullptr),
+    myDisplayFlagsData(nullptr),
     myFlags(HideAll),
     myRootItem(nullptr)
 {
     setupTree();
 
-    connect(this, SIGNAL(visualStyleComponentChanged(SofaComponent*)), this, SLOT(download()));
+    connect(this, SIGNAL(displayFlagsDataChanged(SofaData*)), this, SLOT(download()));
     connect(this, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(upload()));
 }
 
@@ -92,14 +92,14 @@ void SofaDisplayFlagsTreeModel::setDisabled(const QModelIndex &index)
 
 void SofaDisplayFlagsTreeModel::download()
 {
-    if(!myVisualStyleComponent)
+    if(!myDisplayFlagsData)
         return;
 
-    sofa::component::visualmodel::VisualStyle* visualStyle = dynamic_cast<sofa::component::visualmodel::VisualStyle*>(myVisualStyleComponent->base());
-    if(!visualStyle)
+    const Data<DisplayFlags>* displayFlags = dynamic_cast<Data<DisplayFlags>*>(myDisplayFlagsData->data());
+    if(!displayFlags)
         return;
 
-    WriteAccessor<Data<DisplayFlags> > displayFlagsAccessor(visualStyle->displayFlags);
+    ReadAccessor<Data<DisplayFlags> > displayFlagsAccessor(displayFlags);
     myFlags = HideAll;
 
     myFlags |= displayFlagsAccessor->getShowVisualModels() ? ShowVisualModels : 0;
@@ -110,6 +110,9 @@ void SofaDisplayFlagsTreeModel::download()
     myFlags |= displayFlagsAccessor->getShowBoundingCollisionModels() ? ShowBoundingCollisionsModels : 0;
     myFlags |= displayFlagsAccessor->getShowMappings() ? ShowMappings : 0;
     myFlags |= displayFlagsAccessor->getShowMechanicalMappings() ? ShowMechanicalMappings : 0;
+    myFlags |= displayFlagsAccessor->getShowRendering() ? ShowAdvancedRendering : 0;
+    myFlags |= displayFlagsAccessor->getShowWireFrame() ? ShowWireframe : 0;
+    myFlags |= displayFlagsAccessor->getShowNormals() ? ShowNormals : 0;
 
     myRootItem->download();
 
@@ -118,14 +121,14 @@ void SofaDisplayFlagsTreeModel::download()
 
 void SofaDisplayFlagsTreeModel::upload()
 {
-    if(!myVisualStyleComponent)
+    if(!myDisplayFlagsData)
         return;
 
-    sofa::component::visualmodel::VisualStyle* visualStyle = dynamic_cast<sofa::component::visualmodel::VisualStyle*>(myVisualStyleComponent->base());
-    if(!visualStyle)
+    Data<DisplayFlags>* displayFlags = dynamic_cast<Data<DisplayFlags>*>(myDisplayFlagsData->data());
+    if(!displayFlags)
         return;
 
-    WriteAccessor<Data<DisplayFlags> > displayFlagsAccessor(visualStyle->displayFlags);
+    WriteAccessor<Data<DisplayFlags> > displayFlagsAccessor(*displayFlags);
     displayFlagsAccessor->setShowAll(false);
 
     displayFlagsAccessor->setShowVisualModels(myFlags & ShowVisualModels);
@@ -136,23 +139,27 @@ void SofaDisplayFlagsTreeModel::upload()
     displayFlagsAccessor->setShowBoundingCollisionModels(myFlags & ShowBoundingCollisionsModels);
     displayFlagsAccessor->setShowMappings(myFlags & ShowMappings);
     displayFlagsAccessor->setShowMechanicalMappings(myFlags & ShowMechanicalMappings);
+
+    displayFlagsAccessor->setShowRendering(myFlags & ShowAdvancedRendering);
+    displayFlagsAccessor->setShowWireFrame(myFlags & ShowWireframe);
+    displayFlagsAccessor->setShowNormals(myFlags & ShowNormals);
 }
 
-SofaComponent* SofaDisplayFlagsTreeModel::visualStyleComponent() const
+SofaData* SofaDisplayFlagsTreeModel::displayFlagsData() const
 {
-    return myVisualStyleComponent;
+    return myDisplayFlagsData;
 }
 
-void SofaDisplayFlagsTreeModel::setVisualStyleComponent(SofaComponent* newVisualStyleComponent)
+void SofaDisplayFlagsTreeModel::setDisplayFlagsData(SofaData* newDisplayFlagsData)
 {
-    if(newVisualStyleComponent == myVisualStyleComponent)
+    if(newDisplayFlagsData == myDisplayFlagsData)
         return;
 
-    myVisualStyleComponent = nullptr;
-    if(newVisualStyleComponent)
-        myVisualStyleComponent = new SofaComponent(*newVisualStyleComponent);
+    myDisplayFlagsData = nullptr;
+    if(newDisplayFlagsData)
+        myDisplayFlagsData = new SofaData(*newDisplayFlagsData);
 
-    visualStyleComponentChanged(newVisualStyleComponent);
+    displayFlagsDataChanged(newDisplayFlagsData);
 }
 
 void SofaDisplayFlagsTreeModel::setupTree()
@@ -185,6 +192,13 @@ void SofaDisplayFlagsTreeModel::setupTree()
             {
                 mappingItem->createChild("Visual Mappings", this, ShowMappings);
                 mappingItem->createChild("Mechanical Mappings", this, ShowMechanicalMappings);
+            }
+
+            TreeItem* optionsItem = allItem->createChild("Options");
+            {
+                optionsItem->createChild("Advanced Rendering", this, ShowAdvancedRendering);
+                optionsItem->createChild("Wireframe", this, ShowWireframe);
+                optionsItem->createChild("Normals", this, ShowNormals);
             }
         }
     }

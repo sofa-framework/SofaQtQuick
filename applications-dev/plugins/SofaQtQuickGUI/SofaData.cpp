@@ -48,6 +48,14 @@ SofaData::SofaData(const SofaScene* sofaScene, const sofa::core::objectmodel::Ba
 
 }
 
+SofaData::SofaData(const SofaData& sofaData) : QObject(),
+    mySofaScene(sofaData.mySofaScene),
+    myBase(sofaData.myBase),
+    myData(sofaData.myData)
+{
+
+}
+
 //SofaData::SofaData(const SofaData& sofaData) :
 //    myScene(sofaData.myScene),
 //    myBase(),

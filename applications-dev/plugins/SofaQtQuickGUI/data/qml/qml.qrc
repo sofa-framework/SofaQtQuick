@@ -40,7 +40,7 @@
         <file>SofaDataTypes/SofaDataType_number.qml</file>
         <file>SofaDataTypes/SofaDataType_poissonRatio.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_string.qml</file>
-        <file>SofaDataTypes/SofaDataType_widget_displayFlags.notimplementedyet.qml</file>
+        <file>SofaDataTypes/SofaDataType_widget_displayFlags.qml</file>
         <file>SofaDataTypes/qmldir</file>
         <file>SofaDataTypes/SofaDataType_BoundingBox.qml</file>
         <file>SofaDataTypes/SofaDataType_Material.qml</file>
