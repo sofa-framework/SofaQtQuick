@@ -47,14 +47,14 @@ ColumnLayout {
             Component.onCompleted: updateVisualStyle();
             onSceneReadyChanged: updateVisualStyle();
 
-            property bool sceneReady: root.scene && root.scene.ready
+            property bool sceneReady: root.sofaScene && root.sofaScene.ready
 
             function updateVisualStyle() {
-                displayFlagsData = null;
+                dataObject = null;
                 if(sceneReady) {
                     var visualStyleComponent = root.sofaScene.visualStyleComponent();
                     if(visualStyleComponent)
-                        displayFlagDatas = visualStyleComponent.getComponentData("displayFlags");
+                        dataObject = visualStyleComponent.getComponentData("displayFlags").object();
                 }
             }
         }

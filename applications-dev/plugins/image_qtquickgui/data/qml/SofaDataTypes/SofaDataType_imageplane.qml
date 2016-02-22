@@ -34,7 +34,7 @@ GridLayout {
     ImagePlaneModel {
         id: imagePlane
 
-        sofaData: root.dataObject.data
+        sofaData: root.dataObject.sofaData
     }
 
     Component {

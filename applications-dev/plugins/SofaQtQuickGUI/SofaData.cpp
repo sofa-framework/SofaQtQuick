@@ -70,7 +70,7 @@ QVariantMap SofaData::object() const
 {
     const BaseData* data = SofaData::data();
     if(data)
-        return SofaScene::dataObject(data);
+        return mySofaScene->dataObject(data);
 
     return QVariantMap();
 }

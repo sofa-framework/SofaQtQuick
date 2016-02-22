@@ -154,11 +154,11 @@ public:
 
 public:
     static QVariant linkValue(const sofa::core::objectmodel::BaseLink* link);
-
-    static QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data);
     static QVariant dataValue(const sofa::core::objectmodel::BaseData* data);
     static bool setDataValue(sofa::core::objectmodel::BaseData* data, const QVariant& value);
     static bool setDataLink(sofa::core::objectmodel::BaseData* data, const QString& link);
+
+    QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data) const;
 
     QVariant dataValue(const QString& path) const;
 	QVariant dataValue(const SofaComponent* sofaComponent, const QString& name) const;

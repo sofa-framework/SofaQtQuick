@@ -46,7 +46,7 @@ Item {
             interval: 200
             running: false
             repeat: false
-            onTriggered: standbyItem.visible = true
+            onTriggered: errorLabel.visible = true
         }
     }
 
@@ -174,6 +174,7 @@ Item {
                 id: loaderLocation
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                visible: contentItem
 
                 property Item contentItem
 
@@ -235,10 +236,30 @@ Item {
                 function refreshStandbyItem() {
                     if(contentItem) {
                         d.timer.stop();
-                        standbyItem.visible = false;
+                        errorLabel.visible = false;
                     } else {
                         d.timer.start();
                     }
+                }
+            }
+
+            Rectangle {
+                id: errorLabel
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: "#555555"
+                visible: false
+
+                Label {
+                    anchors.fill: parent
+                    color: "red"
+                    visible: 0 !== loaderLocation.errorMessage.length
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+
+                    text: "An error occurred, the content could not be loaded ! Reason: " + loaderLocation.errorMessage
+                    wrapMode: Text.WordWrap
+                    font.bold: true
                 }
             }
 
@@ -328,25 +349,6 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: toolBar.visible = !toolBar.visible
-            }
-        }
-
-        Rectangle {
-            id: standbyItem
-            anchors.fill: parent
-            color: "#555555"
-            visible: false
-
-            Label {
-                anchors.fill: parent
-                color: "red"
-                visible: 0 !== loaderLocation.errorMessage.length
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-
-                text: "An error occurred, the content could not be loaded ! Reason: " + loaderLocation.errorMessage
-                wrapMode: Text.WordWrap
-                font.bold: true
             }
         }
     }

@@ -27,7 +27,7 @@ import SofaDataTypes 1.0
 import SofaDisplayFlagsTreeModel 1.0
 
 TreeView {
-    id: treeView
+    id: root
 
     implicitWidth: 300
     implicitHeight: flickableItem.contentHeight
@@ -40,13 +40,13 @@ TreeView {
     TableViewColumn {
         title: "Name"
         role: "Name"
-        width: treeView.width - 20
+        width: root.width - 20
     }
 
     model: SofaDisplayFlagsTreeModel {
         id: displayFlagsModel
 
-        displayFlagData: treeView.dataObject ? treeView.dataObject.sofaData : null
+        displayFlagsData: root.dataObject ? root.dataObject.sofaData : null
     }
 
     Component.onCompleted: expandAll();

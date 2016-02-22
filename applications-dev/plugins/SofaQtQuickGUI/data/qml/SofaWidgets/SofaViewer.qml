@@ -535,54 +535,6 @@ SofaViewer {
                                     }
                                 }
 
-    // normals
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Normals"
-                                }
-
-                                Switch {
-                                    id: normalsSwitch
-                                    Layout.alignment: Qt.AlignCenter
-                                    Component.onCompleted: checked = root.blending
-                                    onCheckedChanged: root.drawNormals = checked
-
-                                    ToolTip {
-                                        anchors.fill: parent
-                                        description: "Display normals"
-                                    }
-                                }
-
-                                RowLayout {
-                                    id: normalsLayout
-                                    Layout.alignment: Qt.AlignCenter
-                                    Layout.columnSpan: 2
-                                    visible: normalsSwitch.checked
-
-                                    Slider {
-                                        id: normalsSlider
-                                        Layout.fillWidth: true
-
-                                        Component.onCompleted: {
-                                            value = Math.sqrt(root.normalsDrawLength);
-                                            minimumValue = value * 0.1;
-                                            maximumValue = value * 2.0;
-                                            stepSize = minimumValue;
-                                        }
-
-                                        onValueChanged: {
-                                            root.normalsDrawLength = value * value;
-                                        }
-                                    }
-
-                                    TextField {
-                                        Layout.preferredWidth: 32
-                                        readOnly: true
-                                        text: normalsSlider.value.toFixed(1);
-                                    }
-                                }
-
     // antialiasing
 
                                 Label {

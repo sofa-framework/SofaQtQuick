@@ -57,7 +57,7 @@ Item {
         id: dataObject
 
         property bool initing: true
-        property QtObject data
+        property QtObject sofaData
         property string name
         property string description
         property string type
@@ -87,7 +87,7 @@ Item {
 
         dataObject.initing      = true;
 
-        dataObject.data         = object.sofaData;
+        dataObject.sofaData     = object.sofaData;
         dataObject.name         = object.name;
         dataObject.description  = object.description;
         dataObject.type         = object.type;

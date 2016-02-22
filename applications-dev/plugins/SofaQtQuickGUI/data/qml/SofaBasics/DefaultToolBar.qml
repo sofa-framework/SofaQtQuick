@@ -162,6 +162,24 @@ ToolBar {
                         sofaScene.reset();
                 }
             }
+
+            RowLayout {
+                Label {
+                    text: "DT (s)"
+                }
+                TextField {
+                    id: dtSpinBox
+                    Layout.preferredWidth: 68
+                    validator: DoubleValidator {bottom: 0}
+                    text: root.sofaScene ? root.sofaScene.dt.toString() : Number(0.04).toString()
+
+                    onAccepted: {
+                        if(root.sofaScene) root.sofaScene.dt = Number(text);
+                        if(0 === Number(text))
+                            text = "Real-time";
+                    }
+                }
+            }
         }
 
         Row {

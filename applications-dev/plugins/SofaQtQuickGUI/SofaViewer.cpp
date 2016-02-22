@@ -76,9 +76,7 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myAntialiasingSamples(2),
     myMirroredHorizontally(false),
     myMirroredVertically(false),
-    myDrawManipulators(true),
-    myDrawNormals(false),
-    myNormalsDrawLength(1.0f)
+    myDrawManipulators(true)
 {
     setFlag(QQuickItem::ItemHasContents);
 
@@ -247,26 +245,6 @@ void SofaViewer::setDrawManipulators(bool newDrawManipulators)
     myDrawManipulators = newDrawManipulators;
 
     drawManipulatorsChanged(newDrawManipulators);
-}
-
-void SofaViewer::setDrawNormals(bool newDrawNormals)
-{
-    if(newDrawNormals == myDrawNormals)
-        return;
-
-    myDrawNormals = newDrawNormals;
-
-    drawNormalsChanged(newDrawNormals);
-}
-
-void SofaViewer::setNormalsDrawLength(float newNormalsDrawLength)
-{
-    if(newNormalsDrawLength == myNormalsDrawLength)
-        return;
-
-    myNormalsDrawLength = newNormalsDrawLength;
-
-    normalsDrawLengthChanged(newNormalsDrawLength);
 }
 
 double SofaViewer::computeDepth(const QVector3D& wsPosition) const

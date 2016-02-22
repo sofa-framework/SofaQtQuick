@@ -209,6 +209,13 @@ private:
                     if(myParent)
                         myParent->checkState();
                 }
+                else if(!myTree->flagEnabled(myFlag) && Disabled != myState)
+                {
+                    myState = Disabled;
+
+                    if(myParent)
+                        myParent->checkState();
+                }
             }
         }
 

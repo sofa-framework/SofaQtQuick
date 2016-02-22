@@ -41,26 +41,24 @@ ColumnLayout {
 
         GridLayout {
             id: gridLayout
-            width: scrollView.width
+            width: scrollView.width - 9
             columns: 3
 
             Label {
                 Layout.preferredWidth: implicitWidth
-                text: "DT"
+                text: "DT (s)"
             }
-            SpinBox {
+            TextField {
                 id: dtSpinBox
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
-                decimals: 3
-                prefix: value <= 0 ? "Real-time " : ""
-                suffix: " seconds"
-                stepSize: 0.001
-                value: sofaScene ? sofaScene.dt : 0.04
-                onValueChanged: if(sofaScene) sofaScene.dt = value
+                validator: DoubleValidator {bottom: 0}
+                text: root.sofaScene ? root.sofaScene.dt.toString() : Number(0.04).toString()
 
-                Component.onCompleted: {
-                    valueChanged();
+                onAccepted: {
+                    if(root.sofaScene) root.sofaScene.dt = Number(text);
+                    if(0 === Number(text))
+                        text = "Real-time";
                 }
             }
 

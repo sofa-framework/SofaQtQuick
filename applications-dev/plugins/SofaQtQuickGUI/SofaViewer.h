@@ -84,8 +84,6 @@ public:
     Q_PROPERTY(bool mirroredHorizontally READ mirroredHorizontally WRITE setMirroredHorizontally NOTIFY mirroredHorizontallyChanged)
     Q_PROPERTY(bool mirroredVertically READ mirroredVertically WRITE setMirroredVertically NOTIFY mirroredVerticallyChanged)
     Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
-    Q_PROPERTY(bool drawNormals READ drawNormals WRITE setDrawNormals NOTIFY drawNormalsChanged)
-    Q_PROPERTY(float normalsDrawLength READ normalsDrawLength WRITE setNormalsDrawLength NOTIFY normalsDrawLengthChanged)
 
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
@@ -126,12 +124,6 @@ public:
 
     bool drawManipulators() const {return myDrawManipulators;}
     void setDrawManipulators(bool newDrawManipulators);
-
-    bool drawNormals() const {return myDrawNormals;}
-    void setDrawNormals(bool newDrawNormals);
-
-    float normalsDrawLength() const {return myNormalsDrawLength;}
-    void setNormalsDrawLength(float newNormalsDrawLength);
 
     /// @return depth in screen space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
@@ -177,8 +169,6 @@ signals:
     void mirroredHorizontallyChanged(bool newMirroredHorizontally);
     void mirroredVerticallyChanged(bool newMirroredVertically);
     void drawManipulatorsChanged(bool newDrawManipulators);
-    void drawNormalsChanged(bool newDrawNormals);
-    void normalsDrawLengthChanged(float newNormalsDrawLength);
 
     void preDraw() const;
     void postDraw() const;
@@ -230,8 +220,6 @@ private:
     bool                        myMirroredHorizontally;
     bool                        myMirroredVertically;
     bool                        myDrawManipulators;
-    bool                        myDrawNormals;
-    float                       myNormalsDrawLength;
 
 };
 

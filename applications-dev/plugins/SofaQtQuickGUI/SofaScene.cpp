@@ -265,6 +265,8 @@ bool LoaderProcess(SofaScene* sofaScene, const QString& sofaScenePath, QOffscree
 
         sofaScene->addChild(0, sofaScene->sofaSimulation()->GetRoot().get());
 
+        sofaScene->setPlay(sofaScene->sofaSimulation()->GetRoot()->getAnimate());
+
         sofaScene->setStatus(SofaScene::Status::Ready);
 
         if(!sofaScene->myPathQML.isEmpty())
@@ -529,6 +531,8 @@ void SofaScene::setPlay(bool newPlay)
 		return;
 
 	myPlay = newPlay;
+    if(sofaSimulation() && sofaSimulation()->GetRoot())
+        sofaSimulation()->GetRoot()->setAnimate(myPlay);
 
 	playChanged(newPlay);
 }
@@ -753,13 +757,13 @@ QVariant SofaScene::linkValue(const sofa::core::objectmodel::BaseLink* link)
     return value;
 }
 
-QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
+QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data) const
 {
     QVariantMap object;
 
     if(!data)
     {
-        object.insert("sofaData", QVariant::fromValue(nullptr));
+        object.insert("sofaData", QVariant::fromValue((SofaData*) nullptr));
         object.insert("name", "Invalid");
         object.insert("description", "");
         object.insert("type", "");
@@ -828,10 +832,6 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
     properties.insert("readOnly", false);
 
     SofaData* sofaData = new SofaData(this, data->getOwner(), data);
-//    QQmlEngine* engine = qmlEngine(this);
-//    if(engine)
-//        engine->setObjectOwnership(sofaData, QQmlEngine::JavaScriptOwnership);
-
     object.insert("sofaData", QVariant::fromValue(sofaData));
     object.insert("name", data->getName().c_str());
     object.insert("description", data->getHelp());
@@ -1306,6 +1306,9 @@ void SofaScene::step()
 	emit stepBegin();
     mySofaSimulation->animate(mySofaSimulation->GetRoot().get(), myDt);
     myVisualDirty = true;
+
+    setPlay(sofaSimulation()->GetRoot()->getAnimate());
+
     emit stepEnd();
 }
 
@@ -1372,37 +1375,6 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
             continue;
 
         mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
-
-        // draw normals
-        if(viewer.drawNormals())
-        {
-            sofa::helper::vector<OglModel*> oglModels;
-            root->getTreeObjects<OglModel>(&oglModels);
-
-            for(OglModel* oglModel : oglModels)
-            {
-                const ResizableExtVector<ExtVec3fTypes::Coord>& vertices = oglModel->getVertices();
-                const ResizableExtVector<ExtVec3fTypes::Deriv>& normals = oglModel->getVnormals();
-
-                if(vertices.size() != normals.size())
-                    continue;
-
-                for(size_t i = 0; i < vertices.size(); ++i)
-                {
-                    ExtVec3fTypes::Coord vertex = vertices[i];
-                    ExtVec3fTypes::Deriv normal = normals[i];
-                    float length = qBound(0.0f, normal.norm(), 1.0f);
-
-                    glColor3f(1.0f - length, length, length * length);
-                    glBegin(GL_LINES);
-                    {
-                        glVertex3f(vertex.x(), vertex.y(), vertex.z());
-                        glVertex3f(vertex.x() + normal.x() * viewer.normalsDrawLength(), vertex.y() + normal.y() * viewer.normalsDrawLength(), vertex.z() + normal.z() * viewer.normalsDrawLength());
-                    }
-                    glEnd();
-                }
-            }
-        }
     }
 
     // highlight selected components using a specific shader
