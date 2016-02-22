@@ -57,6 +57,7 @@ set(HEADER_FILES
 
 set(QML_FILES
     data/qml/SofaDataTypes/qmldir
+    data/qml/SofaDataTypes/SofaDataType_notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_boolean.qml
     data/qml/SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_array.qml

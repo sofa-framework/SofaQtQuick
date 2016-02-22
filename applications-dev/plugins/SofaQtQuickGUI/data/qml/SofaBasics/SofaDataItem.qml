@@ -211,7 +211,7 @@ Item {
                         } else {
                             loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
                             if(Loader.Ready !== loader.status)
-                                loader.sourceComponent = sofaDataTypeNotSupportedComponent;
+                                loader.setSource("qrc:/SofaDataTypes/SofaDataType_notimplementedyet.qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
                         }
                     } else {
                         loader.setSource("");
@@ -312,33 +312,5 @@ Item {
                 onClicked: root.updateData();
             }
         }*/
-
-        Component {
-            id: sofaDataTypeNotSupportedComponent
-            ColumnLayout {
-                Label {
-                    Layout.fillWidth: true
-
-                    text: "Data widget not implemented yet: " + (0 != root.type.length ? root.type : "Unknown")
-                }
-                TextField {
-                    id: textField
-                    Layout.fillWidth: true
-
-                    property var dataObject: null
-
-                    readOnly: dataObject.readOnly
-                    enabled: !dataObject.readOnly
-                    text: undefined !== dataObject.value ? dataObject.value.toString() : ""
-
-                    Binding {
-                        target: dataObject
-                        property: "value"
-                        value: textField.text
-                        when: !dataObject.readOnly
-                    }
-                }
-            }
-        }
     }
 }

@@ -32,6 +32,7 @@
         <file>SofaWidgets/SofaSceneToolPanel.qml</file>
         <file>SofaWidgets/SofaSceneGraphView.qml</file>
         <file>SofaWidgets/SofaDataListView.qml</file>
+        <file>SofaDataTypes/SofaDataType_notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
         <file>SofaDataTypes/SofaDataType_boolean.qml</file>
