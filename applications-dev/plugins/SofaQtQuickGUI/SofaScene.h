@@ -77,7 +77,8 @@ public:
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
-    Q_PROPERTY(bool play READ playing WRITE setPlay NOTIFY playChanged)
+    Q_PROPERTY(bool animate READ animate WRITE setAnimate NOTIFY animateChanged)
+    Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
     Q_PROPERTY(sofa::qtquick::SofaComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
@@ -111,11 +112,14 @@ public:
     double dt() const                                           {return myDt;}
 	void setDt(double newDt);
 	
-    bool playing() const                                        {return myPlay;}
-	void setPlay(bool newPlay);
+    bool animate() const                                        {return myAnimate;}
+    void setAnimate(bool newAnimate);
+
+    bool defaultAnimate() const                                 {return myDefaultAnimate;}
+    void setDefaultAnimate(bool newDefaultAnimate);
 
     bool asynchronous() const                                   {return myAsynchronous;}
-    void setAsynchronous(bool newPlay);
+    void setAsynchronous(bool newAsynchronous);
 
     bool pyQtSynchronous() const                                {return myPyQtForceSynchronous;}
     void setPyQtForceSynchronous(bool newPyQtSynchronous);
@@ -126,7 +130,7 @@ public:
     sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
     void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
 
-    QQmlListProperty<sofa::qtquick::Manipulator>    manipulators();
+    QQmlListProperty<sofa::qtquick::Manipulator> manipulators();
 
 signals:
     void loaded();                                      /// scene has been loaded and is ready
@@ -136,7 +140,8 @@ signals:
 	void sourceChanged(const QUrl& newSource);
 	void sourceQMLChanged(const QUrl& newSourceQML);
 	void dtChanged(double newDt);
-	void playChanged(bool newPlay);
+    void animateChanged(bool newAnimate);
+    void defaultAnimateChanged(bool newDefaultAnimate);
     void asynchronousChanged(bool newAsynchronous);
     void pyQtForceSynchronousChanged(bool newPyQtSynchronous);
     void selectedComponentChanged(sofa::qtquick::SofaComponent* newSelectedComponent);
@@ -182,7 +187,6 @@ protected:
 
 public slots:
 	void reload();
-    void animate(bool play);
 	void step();
     void markVisualDirty(); // useful when you move objects without stepping (with manipulators for instance)
 	void reset();
@@ -234,7 +238,8 @@ private:
     QString                                     myPathQML;
     mutable bool                                myVisualDirty;
     double                                      myDt;
-    bool                                        myPlay;
+    bool                                        myAnimate;
+    bool                                        myDefaultAnimate;
     bool                                        myAsynchronous;
     bool                                        myPyQtForceSynchronous;
 

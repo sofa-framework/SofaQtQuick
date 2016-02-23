@@ -43,9 +43,8 @@ MenuBar {
             id: openRecentAction
             onTriggered: {
                 var title = source.text.toString();
-                var source = title.replace(/^.*"(.*)"$/m, "$1");
-                sofaScenePath = source;
-                sofaScene.source = "file:" + source
+                var sceneSource = title.replace(/^.*"(.*)"$/m, "$1");
+                sofaScene.source = "file:" + sceneSource
             }
         },
 
@@ -79,11 +78,11 @@ MenuBar {
             tooltip: "Open a Sofa Scene"
             checkable: true
             checked: false
-            onTriggered: if(sofaScene) sofaScene.play = checked
+            onTriggered: if(sofaScene) sofaScene.animate = checked
 
             property var sofaSceneConnection: Connections {
                 target: sofaScene
-                onPlayChanged: simulateAction.checked = sofaScene.play
+                onAnimateChanged: simulateAction.checked = sofaScene.animate
             }
         },
 

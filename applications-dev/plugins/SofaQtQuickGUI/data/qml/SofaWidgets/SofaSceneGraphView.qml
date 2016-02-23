@@ -63,7 +63,7 @@ ColumnLayout {
                     listView.currentIndex = -1;
                 }
                 onStepEnd: {
-                    if(root.sofaScene.play)
+                    if(root.sofaScene.animate)
                         listModel.dirty = true;
                     else if(listModel)
                         listModel.update();
@@ -78,7 +78,7 @@ ColumnLayout {
             }
 
             Timer {
-                running: root.sofaScene ? root.sofaScene.play : false
+                running: root.sofaScene ? root.sofaScene.animate : false
                 repeat: true
                 interval: 200
                 onTriggered: {

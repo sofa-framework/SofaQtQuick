@@ -49,14 +49,15 @@ ColumnLayout {
 
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: loader.implicitHeight
+                Layout.preferredHeight: loader.height
 
                 Loader {
                     id: loader
                     asynchronous: true
                     sourceComponent: root.interfaceToolPanel
                     width: parent.width
-                    height: implicitHeight
+                    height: Loader.Ready === status ? implicitHeight : 0
+                    visible: Loader.Ready === status
                 }
             }
 
@@ -83,12 +84,11 @@ ColumnLayout {
                 verticalAlignment: Qt.AlignVCenter
             }
 
-            // used only if the scene interface is loaded asynchronously
             BusyIndicator {
                 id: busyIndicator
                 visible: running
-                Layout.preferredWidth: parent.width * 0.5
-                Layout.preferredHeight: width
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 running: Loader.Loading === loader.status
             }
         }

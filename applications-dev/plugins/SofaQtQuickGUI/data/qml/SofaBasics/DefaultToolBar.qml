@@ -124,13 +124,13 @@ ToolBar {
                 tooltip: animateButton.checked ? "Stop" : "Animate"
                 checkable: true
                 checked: false
-                onCheckedChanged: if(sofaScene) sofaScene.play = animateButton.checked
+                onCheckedChanged: if(sofaScene) sofaScene.animate = animateButton.checked
 
                 Connections {
                     target: sofaScene
                     ignoreUnknownSignals: true
-                    onPlayChanged: {
-                        animateButton.checked = sofaScene.play;
+                    onAnimateChanged: {
+                        animateButton.checked = sofaScene.animate;
                     }
                 }
             }

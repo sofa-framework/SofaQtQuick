@@ -22,6 +22,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import QtQuick.Controls.Styles 1.3
+import SofaScene 1.0
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaWidgets 1.0
@@ -30,27 +31,31 @@ ApplicationWindow {
     id: root
     width: 1280
     height: 720
-    title: Qt.application.name + " - \"" + sofaScenePath + "\""
+    title: Qt.application.name + " - \"" + sofaScene.source.toString().replace("///", "/").replace("file:", "") + "\""
 
     onClosing: Qt.quit()
 
     property var sofaScene: SofaScene {
-        Component.onCompleted: {
-            if(Qt.application.arguments.length > 1) {
-                sofaScene.source = "file:" + Qt.application.arguments[1];
-            }
-            else {
+        id: sofaScene
+
+        // delay the opening of the previous scene to the next frame to let a chance to parse command line arguments specifying another scene
+        property var openPreviousTimer: Timer {
+            running: true
+            repeat: false
+            interval: 1
+
+            onTriggered: {
+                if(SofaScene.Null !== sofaScene.status)
+                    return;
+
                 var source = SofaApplication.sceneSettings.mostRecent();
                 if(0 === source.length)
                     source = "file:Demos/caduceus.scn";
 
                 sofaScene.source = source;
             }
-            sofaScenePath = sofaScene.source.toString().replace("///", "/").replace("file:", "");
         }
     }
-
-    property string sofaScenePath: ""
 
 //    style: ApplicationWindowStyle {
 //        background: null
@@ -66,10 +71,7 @@ ApplicationWindow {
     FileDialog {
         id: openSofaSceneDialog
         nameFilters: ["SofaScene files (*.xml *.scn *.pscn *.py *.simu *)"]
-        onAccepted: {
-            sofaScene.source = fileUrl;
-            sofaScenePath = sofaScene.source.toString().replace("///", "/").replace("file:", "");
-        }
+        onAccepted: sofaScene.source = fileUrl;
     }
 
     menuBar: DefaultMenuBar {

@@ -96,7 +96,8 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     myPathQML(),
     myVisualDirty(false),
 	myDt(0.04),
-	myPlay(false),
+    myAnimate(false),
+    myDefaultAnimate(false),
     myAsynchronous(true),
     myPyQtForceSynchronous(true),
     mySofaSimulation(nullptr),
@@ -138,7 +139,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
 
 	// connections
 	connect(this, &SofaScene::sourceChanged, this, &SofaScene::open);
-	connect(this, &SofaScene::playChanged, myStepTimer, [&](bool newPlay) {newPlay ? myStepTimer->start() : myStepTimer->stop();});
+    connect(this, &SofaScene::animateChanged, myStepTimer, [&](bool newAnimate) {newAnimate ? myStepTimer->start() : myStepTimer->stop();});
     connect(this, &SofaScene::statusChanged, this, &SofaScene::handleStatusChange);
     connect(this, &SofaScene::aboutToUnload, this, [&]() {myBases.clear();});
 
@@ -265,7 +266,8 @@ bool LoaderProcess(SofaScene* sofaScene, const QString& sofaScenePath, QOffscree
 
         sofaScene->addChild(0, sofaScene->sofaSimulation()->GetRoot().get());
 
-        sofaScene->setPlay(sofaScene->sofaSimulation()->GetRoot()->getAnimate());
+        if(sofaScene->sofaSimulation()->GetRoot()->getAnimate() || sofaScene->defaultAnimate())
+            sofaScene->setAnimate(true);
 
         sofaScene->setStatus(SofaScene::Status::Ready);
 
@@ -334,7 +336,7 @@ void SofaScene::open()
     if(Status::Loading == myStatus) // return now if a SofaScene is already loading
         return;
 
-    setPlay(false);
+    setAnimate(false);
 
     setStatus(Status::Loading);
 
@@ -525,16 +527,26 @@ void SofaScene::setDt(double newDt)
 	dtChanged(newDt);
 }
 
-void SofaScene::setPlay(bool newPlay)
+void SofaScene::setAnimate(bool newAnimate)
 {
-	if(newPlay == myPlay)
-		return;
+    if(newAnimate == myAnimate)
+        return;
 
-	myPlay = newPlay;
+    myAnimate = newAnimate;
     if(sofaSimulation() && sofaSimulation()->GetRoot())
-        sofaSimulation()->GetRoot()->setAnimate(myPlay);
+        sofaSimulation()->GetRoot()->setAnimate(myAnimate);
 
-	playChanged(newPlay);
+    animateChanged(newAnimate);
+}
+
+void SofaScene::setDefaultAnimate(bool newDefaultAnimate)
+{
+    if(newDefaultAnimate == myDefaultAnimate)
+        return;
+
+    myDefaultAnimate = newDefaultAnimate;
+
+    defaultAnimateChanged(newDefaultAnimate);
 }
 
 void SofaScene::setAsynchronous(bool newAsynchronous)
@@ -1290,14 +1302,6 @@ void SofaScene::reload()
     open();
 }
 
-void SofaScene::animate(bool play)
-{
-    if(!isReady())
-        return;
-
-    setPlay(play);
-}
-
 void SofaScene::step()
 {
     if(!isReady())
@@ -1307,7 +1311,7 @@ void SofaScene::step()
     mySofaSimulation->animate(mySofaSimulation->GetRoot().get(), myDt);
     myVisualDirty = true;
 
-    setPlay(sofaSimulation()->GetRoot()->getAnimate());
+    setAnimate(sofaSimulation()->GetRoot()->getAnimate());
 
     emit stepEnd();
 }

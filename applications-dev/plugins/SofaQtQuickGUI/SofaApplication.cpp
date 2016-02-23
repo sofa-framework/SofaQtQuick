@@ -18,6 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "SofaApplication.h"
+#include "SofaScene.h"
 
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/FileRepository.h>
@@ -34,6 +35,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QScreen>
 #include <QDir>
 #include <QDebug>
+#include <QCommandLineParser>
+#include <QWindow>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -462,18 +465,45 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
     applicationEngine.load(QUrl(mainScript));
 
-    //    QList<QObject*> objects = applicationEngine.rootObjects();
-    //    foreach(QObject* object, objects)
-    //    {
-    //        QQuickWindow* window = qobject_cast<QQuickWindow*>(object);
-    //        if(!window)
-    //            continue;
+    // use command line arguments
+    QCommandLineParser parser;
 
-    //        window->connect(window, &QQuickWindow::openglContextCreated, [](QOpenGLContext *context) {
-    //            qDebug() << "opengl context creation";
-    //        });
-    //        window->show();
-    //    }
+    QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Start the application with this scene", "file");
+    QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start the application in animate mode");
+    QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Start the application in fullscreen mode");
+
+    parser.addOption(sceneOption);
+    parser.addOption(animateOption);
+    parser.addOption(fullscreenOption);
+
+    parser.parse(app.arguments());
+
+    QList<QObject*> objects = applicationEngine.rootObjects();
+    foreach(QObject* object, objects)
+    {
+        QWindow* window = qobject_cast<QWindow*>(object);
+        if(!window)
+            continue;
+
+        if(parser.isSet(animateOption) || parser.isSet(sceneOption))
+        {
+            SofaScene* sofaScene = object->findChild<SofaScene*>();
+            if(parser.isSet(sceneOption))
+            {
+                qDebug() << "set scene:" << parser.value(sceneOption);
+                sofaScene->setSource("file:" + parser.value(sceneOption));
+            }
+            if(parser.isSet(animateOption))
+            {
+                sofaScene->setDefaultAnimate(true);
+                if(sofaScene->isReady())
+                    sofaScene->setAnimate(true);
+            }
+        }
+
+        if(parser.isSet(fullscreenOption))
+            window->setVisibility(QWindow::FullScreen);
+    }
 
     return true;
 }
