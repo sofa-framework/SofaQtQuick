@@ -101,6 +101,18 @@ SofaApplication {
 
     }
 
+////////////////////////////////////////////////// CAMERA
+
+    function retrieveAllSofaViewerCameras() {
+        var cameras = [];
+
+        for (var i = 0; i < sofaViewers.length; i++) {
+            cameras.push(sofaViewers[i].camera);
+        }
+
+        return cameras;
+    }
+
 ////////////////////////////////////////////////// SETTINGS
 
     property var uiSettings: Settings {

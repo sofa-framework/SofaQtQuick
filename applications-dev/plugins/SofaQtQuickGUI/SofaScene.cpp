@@ -330,11 +330,17 @@ private:
 
 void SofaScene::open()
 {
+// clear the qml interface
+
     myPathQML.clear();
     setSourceQML(QUrl());
 
-    if(Status::Loading == myStatus) // return now if a SofaScene is already loading
+// return now if a scene is already loading
+
+    if(Status::Loading == myStatus)
         return;
+
+// reset properties
 
     setAnimate(false);
 
@@ -368,6 +374,8 @@ void SofaScene::open()
         return;
     }
 
+// does scene contain PyQt ? if so, load it synchronously to avoid instantiation of a QApplication outside of the main thread
+
     bool currentAsynchronous = myAsynchronous;
     if(myPyQtForceSynchronous && currentAsynchronous)
     {
@@ -383,14 +391,32 @@ void SofaScene::open()
         }
     }
 
-    std::string qmlFilepath = (finalFilename + ".qml").toLatin1().constData();
-    if(!sofa::helper::system::DataRepository.findFile(qmlFilepath))
-        qmlFilepath.clear();
+// set the qml interface
 
-    myPathQML = QString::fromStdString(qmlFilepath);
+    QString qmlFilepath = finalFilename;
+    int extensionIndex = qmlFilepath.lastIndexOf('.');
+    if(-1 != extensionIndex)
+        qmlFilepath = qmlFilepath.left(extensionIndex);
+
+    qmlFilepath += ".qml";
+
+    std::string finalQmlFilepath = qmlFilepath.toLatin1().constData();
+    if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath))
+    {
+        // TODO: for backward compatibility only, we try to load the file myscene.ext.qml instead of juste myscene.qml
+        qmlFilepath = (finalFilename + ".qml").toLatin1().constData();
+
+        finalQmlFilepath = qmlFilepath.toLatin1().constData();
+        if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath))
+            qmlFilepath.clear();
+        else
+            qWarning() << "(Deprecated) The extension format of your scene qml interface is deprecated, use directly ***.qml instead of ***.py.qml";
+    }
+    myPathQML = QString::fromStdString(finalQmlFilepath);
+
+// python header
 
     QString finalHeader;
-
     QFile baseHeaderFile(":/python/BaseHeader.py");
     if(!baseHeaderFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -404,6 +430,8 @@ void SofaScene::open()
     finalHeader += myHeader;
 
     SceneLoaderPY::setHeader(finalHeader.toStdString());
+
+// load the requested scene synchronously / asynchronously
 
     QOffscreenSurface* offScreenSurface = new QOffscreenSurface();
     offScreenSurface->create();
