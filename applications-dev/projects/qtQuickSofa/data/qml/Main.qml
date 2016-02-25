@@ -31,7 +31,7 @@ ApplicationWindow {
     id: root
     width: 1280
     height: 720
-    title: Qt.application.name + " - \"" + sofaScene.source.toString().replace("///", "/").replace("file:", "") + "\""
+    title: Qt.application.name + " - \"" + sofaScene.path + "\""
 
     onClosing: Qt.quit()
 

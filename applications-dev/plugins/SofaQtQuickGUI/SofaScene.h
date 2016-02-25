@@ -56,8 +56,6 @@ class SofaScene;
 class SofaViewer;
 class PickUsingRasterizationWorker;
 
-bool LoaderProcess(SofaScene* scene, const QString& scenePath, QOffscreenSurface* surface);
-
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
 class SofaScene : public QObject, private sofa::simulation::MutationListener
 {
@@ -65,7 +63,7 @@ class SofaScene : public QObject, private sofa::simulation::MutationListener
 
     friend class SofaViewer;
     friend class PickUsingRasterizationWorker;
-    friend bool LoaderProcess(SofaScene* scene, const QString& scenePath, QOffscreenSurface* surface);
+    friend bool LoaderProcess(SofaScene* scene, QOffscreenSurface* surface);
 
 public:
     explicit SofaScene(QObject *parent = 0);
@@ -76,6 +74,8 @@ public:
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
+    Q_PROPERTY(QString path READ path NOTIFY pathChanged)
+    Q_PROPERTY(QString pathQML READ pathQML NOTIFY pathQMLChanged)
     Q_PROPERTY(double dt READ dt WRITE setDt NOTIFY dtChanged)
     Q_PROPERTY(bool animate READ animate WRITE setAnimate NOTIFY animateChanged)
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
@@ -109,6 +109,12 @@ public:
     const QUrl& sourceQML() const                               {return mySourceQML;}
 	void setSourceQML(const QUrl& newSourceQML);
 
+    const QString& path() const                                 {return myPath;}
+    void setPath(const QString& newPath);
+
+    const QString& pathQML() const                              {return myPathQML;}
+    void setPathQML(const QString& newPathQML);
+
     double dt() const                                           {return myDt;}
 	void setDt(double newDt);
 	
@@ -139,6 +145,8 @@ signals:
     void headerChanged(const QString& newHeader);
 	void sourceChanged(const QUrl& newSource);
 	void sourceQMLChanged(const QUrl& newSourceQML);
+    void pathChanged(const QString& newPath);
+    void pathQMLChanged(const QString& newPathQML);
 	void dtChanged(double newDt);
     void animateChanged(bool newAnimate);
     void defaultAnimateChanged(bool newDefaultAnimate);
@@ -235,6 +243,7 @@ private:
     QString                                     myHeader;
     QUrl                                        mySource;
     QUrl                                        mySourceQML;
+    QString                                     myPath;
     QString                                     myPathQML;
     mutable bool                                myVisualDirty;
     double                                      myDt;

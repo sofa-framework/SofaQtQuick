@@ -59,7 +59,11 @@ void SofaDataListModel::update()
             // SofaData
             Base::VecData dataFields = base->getDataFields();
             for(unsigned int i = 0; i < dataFields.size(); ++i)
-                myItems.append(buildItem(dataFields[i]));
+            {
+                BaseData* data = dataFields[i];
+                if(data->isDisplayed())
+                    myItems.append(buildItem(dataFields[i]));
+            }
 
             // Links
             Base::VecLink linkFields = base->getLinks();

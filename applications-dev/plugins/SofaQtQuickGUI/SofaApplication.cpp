@@ -206,27 +206,27 @@ void SofaApplication::UseOpenGLDebugLogger()
         return;
     }
 
-    qDebug() << "OpenGL Context" << (QString::number(ctx->format().majorVersion()) + "." + QString::number(ctx->format().minorVersion())).toLatin1().constData();
-    qDebug() << "Graphics Card Vendor:" << (char*) glGetString(GL_VENDOR);
-    qDebug() << "Graphics Card Model:" << (char*) glGetString(GL_RENDERER);
-    qDebug() << "Graphics Card Drivers:" << (char*) glGetString(GL_VERSION);
+    qInfo() << "OpenGL Context" << (QString::number(ctx->format().majorVersion()) + "." + QString::number(ctx->format().minorVersion())).toLatin1().constData();
+    qInfo() << "Graphics Card Vendor:" << (char*) glGetString(GL_VENDOR);
+    qInfo() << "Graphics Card Model:" << (char*) glGetString(GL_RENDERER);
+    qInfo() << "Graphics Card Drivers:" << (char*) glGetString(GL_VERSION);
 
     if(ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
     {
         QOpenGLDebugLogger* openglDebugLogger = new QOpenGLDebugLogger();
         if(!openglDebugLogger->initialize())
-            qDebug() << "OpenGL debug logging disabled: error - the logger could not be initialized";
+            qWarning() << "OpenGL debug logging disabled: error - the logger could not be initialized";
         else
-            qDebug() << "OpenGL debug logging enabled";
+            qInfo() << "OpenGL debug logging enabled";
 
-        connect(openglDebugLogger, &QOpenGLDebugLogger::messageLogged, [](const QOpenGLDebugMessage &debugMessage) {qDebug() << "OpenGL" << debugMessage.type() << "-" << "Severity;" << debugMessage.severity() << "- Source:" << debugMessage.source() <<  "- Message:" << debugMessage.message();});
+        connect(openglDebugLogger, &QOpenGLDebugLogger::messageLogged, [](const QOpenGLDebugMessage &debugMessage) {qInfo() << "OpenGL" << debugMessage.type() << "-" << "Severity;" << debugMessage.severity() << "- Source:" << debugMessage.source() <<  "- Message:" << debugMessage.message();});
         openglDebugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
 
         connect(ctx, &QOpenGLContext::aboutToBeDestroyed, [=]() {delete openglDebugLogger;});
     }
     else
     {
-        qDebug() << "OpenGL debug logging disabled: your graphics card does not support this functionality";
+        qWarning() << "OpenGL debug logging disabled: your graphics card does not support this functionality";
     }
 }
 
@@ -490,8 +490,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
             SofaScene* sofaScene = object->findChild<SofaScene*>();
             if(parser.isSet(sceneOption))
             {
-                qDebug() << "set scene:" << parser.value(sceneOption);
-                sofaScene->setSource("file:" + parser.value(sceneOption));
+                sofaScene->setSource(parser.value(sceneOption));
             }
             if(parser.isSet(animateOption))
             {

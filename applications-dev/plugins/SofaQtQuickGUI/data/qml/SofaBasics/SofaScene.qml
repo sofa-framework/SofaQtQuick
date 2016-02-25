@@ -42,17 +42,16 @@ SofaScene {
     }
 
     onStatusChanged: {
-        var path = source.toString().replace("///", "/").replace("file:", "");
         switch(status) {
         case SofaScene.Loading:
-            statusMessage = 'SofaScene loading "' + path + '" please wait';
+            statusMessage = 'SofaScene loading "' + root.path + '" please wait';
             break;
         case SofaScene.Error:
-            statusMessage = 'SofaScene "' + path + '" issued an error during loading';
+            statusMessage = 'SofaScene "' + root.path + '" issued an error during loading';
             break;
         case SofaScene.Ready:
-            statusMessage = 'SofaScene "' + path + '" loaded successfully';
-            SofaApplication.sceneSettings.addRecent(path);
+            statusMessage = 'SofaScene "' + root.path + '" loaded successfully';
+            SofaApplication.sceneSettings.addRecent(root.path);
             break;
         }
     }

@@ -92,7 +92,6 @@ ColumnLayout {
         showDirs: false
         nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.tga", "*.bmp", "*.ico", "*.pbm", "*.pgm", "*.ppm"]
 
-        Component.onCompleted: update()
         onFolderChanged: update()
         onCountChanged: update()
 

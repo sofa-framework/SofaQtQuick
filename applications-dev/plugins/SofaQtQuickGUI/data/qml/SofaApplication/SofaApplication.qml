@@ -250,19 +250,9 @@ SofaApplication {
         showDirs: false
         showFiles: true
         sortField: FolderListModel.Name
+        folder: "qrc:/SofaInteractors"
 
-        Component.onCompleted: refresh();
         onCountChanged: update();
-
-//        property var refreshOnSofaSceneLoaded: Connections {
-//            target: root.sofaScene
-//            onLoaded: interactorFolderListModel.refresh();
-//        }
-
-        function refresh() {
-            folder = "";
-            folder = "qrc:/SofaInteractors";
-        }
 
         function update() {
             root.clearInteractors();

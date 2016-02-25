@@ -89,8 +89,7 @@ Item {
 
     property var    properties
 
-    onSourceDirChanged: update()
-    onCurrentContentNameChanged: update()
+    onCurrentContentNameChanged: folderListModel.update()
     Component.onCompleted: {
         if(0 === root.uiId) {
             if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId) {
@@ -104,13 +103,6 @@ Item {
             load();
 
         init();
-
-        update();
-    }
-
-    function update() {
-        folderListModel.folder = ""; // we must reset the folder property
-        folderListModel.folder = sourceDir;
     }
 
     FolderListModel {
@@ -119,6 +111,9 @@ Item {
         showDirs: false
         showFiles: true
         sortField: FolderListModel.Name
+        folder: root.sourceDir
+
+        onCountChanged: update();
 
         function update() {
             listModel.clear();
@@ -155,10 +150,6 @@ Item {
 
             if(count > 0 && previousIndex === comboBox.currentIndex)
                 loaderLocation.refresh();
-        }
-
-        onCountChanged: {
-            update();
         }
     }
 

@@ -28,6 +28,12 @@ GridLayout {
     property alias  vy:                 vySpinBox.value
     property alias  vz:                 vzSpinBox.value
 
+    function setValues(vx, vy, vz) {
+        root.vx = vx;
+        root.vy = vy;
+        root.vz = vz;
+    }
+
     function setValueFromArray(array) {
         if(undefined === array)
             return;

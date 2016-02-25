@@ -93,6 +93,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
 	myStatus(Status::Null),
 	mySource(),
     mySourceQML(),
+    myPath(),
     myPathQML(),
     myVisualDirty(false),
 	myDt(0.04),
@@ -156,9 +157,9 @@ SofaScene::~SofaScene()
     sofa::simulation::graph::cleanup();
 }
 
-bool LoaderProcess(SofaScene* sofaScene, const QString& sofaScenePath, QOffscreenSurface* offscreenSurface)
+bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
 {
-    if(!sofaScene || !sofaScene->sofaSimulation() || sofaScenePath.isEmpty())
+    if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
 
 	if(!QOpenGLContext::currentContext())
@@ -251,7 +252,7 @@ bool LoaderProcess(SofaScene* sofaScene, const QString& sofaScenePath, QOffscree
         visualParams->displayFlags().setShowVisualModels(true);
     }
 
-    if(sofaScene->sofaSimulation()->load(sofaScenePath.toLatin1().constData()))
+    if(sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData()))
     {
         if(!sofaScene->sofaSimulation()->GetRoot())
         {
@@ -271,8 +272,8 @@ bool LoaderProcess(SofaScene* sofaScene, const QString& sofaScenePath, QOffscree
 
         sofaScene->setStatus(SofaScene::Status::Ready);
 
-        if(!sofaScene->myPathQML.isEmpty())
-            sofaScene->setSourceQML(QUrl::fromLocalFile(sofaScene->myPathQML));
+        if(!sofaScene->pathQML().isEmpty())
+            sofaScene->setSourceQML(QUrl::fromLocalFile(sofaScene->pathQML()));
 
         return true;
     }
@@ -285,9 +286,8 @@ bool LoaderProcess(SofaScene* sofaScene, const QString& sofaScenePath, QOffscree
 class LoaderThread : public QThread
 {
 public:
-    LoaderThread(SofaScene* sofaScene, const QString& sofaScenePath, QOffscreenSurface* offscreenSurface) :
+    LoaderThread(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface) :
         mySofaScene(sofaScene),
-        mySofaScenePath(sofaScenePath),
         myOffscreenSurface(offscreenSurface),
 		myIsLoaded(false)
 	{
@@ -296,14 +296,13 @@ public:
 
 	void run()
 	{
-        myIsLoaded = LoaderProcess(mySofaScene, mySofaScenePath, myOffscreenSurface);
+        myIsLoaded = LoaderProcess(mySofaScene, myOffscreenSurface);
 	}
 
 	bool isLoaded() const			{return myIsLoaded;}
 
 private:
     SofaScene*                      mySofaScene;
-    QString							mySofaScenePath;
     QOffscreenSurface*              myOffscreenSurface;
 	bool							myIsLoaded;
 
@@ -332,7 +331,8 @@ void SofaScene::open()
 {
 // clear the qml interface
 
-    myPathQML.clear();
+    setPath("");
+    setPathQML("");
     setSourceQML(QUrl());
 
 // return now if a scene is already loading
@@ -354,7 +354,8 @@ void SofaScene::open()
 
     mySofaSimulation->unload(mySofaSimulation->GetRoot());
 
-	QString finalFilename = mySource.toLocalFile();
+    // TODO: error right here !
+    QString finalFilename = mySource.path();
 	if(finalFilename.isEmpty())
     {
 		setStatus(Status::Error);
@@ -373,6 +374,8 @@ void SofaScene::open()
         setStatus(Status::Error);
         return;
     }
+
+    setPath(finalFilename);
 
 // does scene contain PyQt ? if so, load it synchronously to avoid instantiation of a QApplication outside of the main thread
 
@@ -401,18 +404,16 @@ void SofaScene::open()
     qmlFilepath += ".qml";
 
     std::string finalQmlFilepath = qmlFilepath.toLatin1().constData();
-    if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath))
+    if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath, "", nullptr))
     {
         // TODO: for backward compatibility only, we try to load the file myscene.ext.qml instead of juste myscene.qml
-        qmlFilepath = (finalFilename + ".qml").toLatin1().constData();
-
-        finalQmlFilepath = qmlFilepath.toLatin1().constData();
-        if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath))
-            qmlFilepath.clear();
+        finalQmlFilepath = (finalFilename + ".qml").toLatin1().constData();
+        if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath, "", nullptr))
+            finalQmlFilepath.clear();
         else
             qWarning() << "(Deprecated) The extension format of your scene qml interface is deprecated, use directly ***.qml instead of ***.py.qml";
     }
-    myPathQML = QString::fromStdString(finalQmlFilepath);
+    setPathQML(QString::fromStdString(finalQmlFilepath));
 
 // python header
 
@@ -438,9 +439,9 @@ void SofaScene::open()
 
     if(currentAsynchronous)
 	{
-        LoaderThread* loaderThread = new LoaderThread(this, finalFilename, offScreenSurface);
+        LoaderThread* loaderThread = new LoaderThread(this, offScreenSurface);
 		
-        connect(loaderThread, &QThread::finished, this, [this, loaderThread, qmlFilepath, offScreenSurface]() {
+        connect(loaderThread, &QThread::finished, this, [this, loaderThread, offScreenSurface]() {
             if(!loaderThread->isLoaded())
                 setStatus(Status::Error);
             else
@@ -474,7 +475,7 @@ void SofaScene::open()
 	}
     else
 	{
-        if(!LoaderProcess(this, finalFilename, offScreenSurface))
+        if(!LoaderProcess(this, offScreenSurface))
             setStatus(Status::Error);
         else
         {
@@ -543,6 +544,26 @@ void SofaScene::setSourceQML(const QUrl& newSourceQML)
 	mySourceQML = newSourceQML;
 
 	sourceQMLChanged(newSourceQML);
+}
+
+void SofaScene::setPath(const QString& newPath)
+{
+    if(newPath == myPath)
+        return;
+
+    myPath = newPath;
+
+    pathChanged(newPath);
+}
+
+void SofaScene::setPathQML(const QString& newPathQML)
+{
+    if(newPathQML == myPathQML)
+        return;
+
+    myPathQML = newPathQML;
+
+    pathQMLChanged(newPathQML);
 }
 
 void SofaScene::setDt(double newDt)
@@ -869,7 +890,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
     if(!widget.isEmpty())
         type = widget;
 
-    properties.insert("readOnly", false);
+    properties.insert("readOnly", data->isReadOnly());
 
     SofaData* sofaData = new SofaData(this, data->getOwner(), data);
     object.insert("sofaData", QVariant::fromValue(sofaData));
@@ -1324,9 +1345,6 @@ void SofaScene::onSetDataValueByComponent(SofaComponent* sofaComponent, const QS
 
 void SofaScene::reload()
 {
-    // TODO: ! NEED CURRENT OPENGL CONTEXT while releasing the old SofaScene
-    //qDebug() << "reload - thread" << QThread::currentThread() << QOpenGLContext::currentContext() << (void*) &glLightfv;
-
     open();
 }
 
