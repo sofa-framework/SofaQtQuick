@@ -3,6 +3,7 @@
         <file>SofaApplication/qmldir</file>
         <file>SofaApplication/SofaApplication.qml</file>
         <file>SofaBasics/qmldir</file>
+        <file>SofaBasics/IconButton.qml</file>
         <file>SofaBasics/DefaultStatusBar.qml</file>
         <file>SofaBasics/DefaultToolBar.qml</file>
         <file>SofaBasics/DefaultMenuBar.qml</file>

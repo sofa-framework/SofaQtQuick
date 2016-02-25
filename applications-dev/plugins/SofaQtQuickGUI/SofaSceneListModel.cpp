@@ -316,6 +316,22 @@ int SofaSceneListModel::getComponentId(SofaComponent* sofaComponent) const
     return -1;
 }
 
+QList<int> SofaSceneListModel::computeFilteredRows(const QString& filter) const
+{
+    QList<int> filteredRows;
+
+    if(!filter.isEmpty())
+        for(int i = 0; i < myItems.size(); ++i)
+        {
+            const Item& item = myItems[i];
+
+            QString name = QString::fromStdString(item.base->getName());
+            if(-1 != name.indexOf(filter, 0, Qt::CaseInsensitive))
+                filteredRows.append(i);
+        }
+
+    return filteredRows;
+}
 
 bool SofaSceneListModel::isAncestor(SofaSceneListModel::Item* ancestor, SofaSceneListModel::Item* child)
 {

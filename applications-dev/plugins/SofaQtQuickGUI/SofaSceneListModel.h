@@ -75,6 +75,8 @@ protected:
     Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentById(int row) const;
     Q_INVOKABLE int getComponentId(sofa::qtquick::SofaComponent*) const;
 
+    Q_INVOKABLE QList<int> computeFilteredRows(const QString& filter) const;
+
     void handleSceneChange(SofaScene* newScene);
 
 signals:

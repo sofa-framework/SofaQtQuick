@@ -24,5 +24,7 @@
         <file>icon/screenshot.png</file>
         <file>icon/movieRecording.png</file>
         <file>icon/subWindow.png</file>
+        <file>icon/previous.png</file>
+        <file>icon/next.png</file>
     </qresource>
 </RCC>
