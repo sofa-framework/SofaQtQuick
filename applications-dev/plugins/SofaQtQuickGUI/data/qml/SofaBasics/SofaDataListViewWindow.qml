@@ -45,20 +45,14 @@ Window {
     property var sofaScene: SofaApplication.sofaScene
     property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
 
-    ScrollView {
-        id: scrollView
+    Loader {
         anchors.fill: parent
-        enabled: sofaScene && sofaComponent ? sofaScene.ready : false
 
-        Loader {
-            width: scrollView.width
+        sourceComponent: SofaDataListView {
+            id: listView
 
-            sourceComponent: SofaDataListView {
-                id: listView
-
-                sofaScene: root.sofaScene
-                sofaComponent: root.sofaComponent
-            }
+            sofaScene: root.sofaScene
+            sofaComponent: root.sofaComponent
         }
     }
 }

@@ -109,10 +109,11 @@ Item {
         id: folderListModel
         nameFilters: ["*.qml"]
         showDirs: false
-        showFiles: true
+        showFiles: false
         sortField: FolderListModel.Name
         folder: root.sourceDir
 
+        Component.onCompleted: showFiles = true
         onCountChanged: update();
 
         function update() {

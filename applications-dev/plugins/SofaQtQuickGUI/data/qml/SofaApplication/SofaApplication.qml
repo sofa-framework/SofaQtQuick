@@ -248,10 +248,11 @@ SofaApplication {
         id: interactorFolderListModel
         nameFilters: ["*.qml"]
         showDirs: false
-        showFiles: true
+        showFiles: false
         sortField: FolderListModel.Name
         folder: "qrc:/SofaInteractors"
 
+        Component.onCompleted: showFiles = true;
         onCountChanged: update();
 
         function update() {

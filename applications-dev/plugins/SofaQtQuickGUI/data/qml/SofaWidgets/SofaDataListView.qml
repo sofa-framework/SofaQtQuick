@@ -31,27 +31,26 @@ ColumnLayout {
     spacing: 0
     enabled: sofaScene ? sofaScene.ready : false
 
-    width: 300
-    height: columnLayout.implicitHeight
+    implicitWidth: 300
+    implicitHeight: columnLayout.implicitHeight + reinitButton.implicitHeight
 
     property var sofaScene: SofaApplication.sofaScene
-    property var sofaComponent: !root.collapsed && sofaScene ? sofaScene.selectedComponent : null
+    property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
 
     ScrollView {
         id: scrollView
         Layout.fillWidth: true
-        Layout.preferredHeight: Math.min(root.height, columnLayout.implicitHeight)
+        Layout.preferredHeight: Math.min(root.height - reinitButton.implicitHeight, columnLayout.implicitHeight)
 
         ColumnLayout {
             id: columnLayout
-            width: scrollView.width
+            width: scrollView.width - 9
             spacing: 0
 
             ListView {
                 id: listView
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
-                Layout.rightMargin: 9
                 clip: true
 
                 property int nameLabelImplicitWidth : 16
@@ -231,6 +230,15 @@ ColumnLayout {
                 verticalAlignment: Qt.AlignVCenter
             }
         }
+    }
+
+    Button {
+        id: reinitButton
+        Layout.fillWidth: true
+        visible: root.sofaComponent
+
+        text: "Reinit"
+        onClicked: root.sofaComponent.reinit();
     }
 
     Item {

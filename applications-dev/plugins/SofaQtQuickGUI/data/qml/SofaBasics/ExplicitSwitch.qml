@@ -64,8 +64,8 @@ Switch {
         }
 
         handle: Rectangle {
-            implicitWidth: root.implicitWidth * 0.5
-            implicitHeight: root.implicitHeight
+            implicitWidth: Math.round((parent.parent.width - padding.left - padding.right)/2)
+            implicitHeight: control.height - padding.top - padding.bottom
             radius: 5
             border.width: 1
             border.color: Qt.darker("grey", root.enabled ? 1.0 : 1.1)

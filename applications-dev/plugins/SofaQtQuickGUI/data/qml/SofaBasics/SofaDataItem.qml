@@ -165,6 +165,7 @@ Item {
                     Layout.fillWidth: true
                     placeholderText: "Link: @./path/component." + dataObject.name
                     textColor: 0 === dataObject.link.length ? "black" : "green"
+                    text: dataObject.link
 
                     onTextChanged: updateLink();
                 }
@@ -233,6 +234,7 @@ Item {
                 anchors.fill: parent
                 anchors.margins: 3
                 checkable: true
+                checked: 0 !== dataObject.link.length
 
                 ToolTip {
                     anchors.fill: parent
