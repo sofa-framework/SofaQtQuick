@@ -44,7 +44,7 @@ MenuBar {
             onTriggered: {
                 var title = source.text.toString();
                 var sceneSource = title.replace(/^.*"(.*)"$/m, "$1");
-                sofaScene.source = "file:" + sceneSource
+                sofaScene.source = source;
             }
         },
 

@@ -356,6 +356,9 @@ void SofaScene::open()
 
     // TODO: error right here !
     QString finalFilename = mySource.path();
+	if(mySource.isLocalFile())
+		finalFilename = mySource.toLocalFile();
+
 	if(finalFilename.isEmpty())
     {
 		setStatus(Status::Error);
@@ -363,17 +366,14 @@ void SofaScene::open()
     }
 
     std::string filepath = finalFilename.toLatin1().constData();
-    if(sofa::helper::system::DataRepository.findFile(filepath))
-    {
-        finalFilename = filepath.c_str();
-        finalFilename.replace("\\", "/");
-    }
-
-    if(finalFilename.isEmpty())
-    {
+    if(!sofa::helper::system::DataRepository.findFile(filepath))
+	{
         setStatus(Status::Error);
         return;
     }
+
+	finalFilename = filepath.c_str();
+	finalFilename.replace("\\", "/");
 
     setPath(finalFilename);
 
