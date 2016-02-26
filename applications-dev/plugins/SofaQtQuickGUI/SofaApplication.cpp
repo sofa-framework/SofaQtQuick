@@ -444,9 +444,6 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     // initialise paths
     SofaApplication::UseDefaultSofaPath();
 
-    // use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
-    SofaApplication::ApplySettings();
-
     // plugin initialization
     QString pluginName("SofaQtQuickGUI");
 #ifndef NDEBUG
@@ -460,12 +457,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
         return false;
     }
 
-    // launch the main script
-    applicationEngine.addImportPath("qrc:/");
-    applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
-    applicationEngine.load(QUrl(mainScript));
-
-    // use command line arguments
+    // compute command line arguments
     QCommandLineParser parser;
 
     QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Start the application with this scene", "file");
@@ -476,7 +468,33 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     parser.addOption(animateOption);
     parser.addOption(fullscreenOption);
 
+    parser.addVersionOption();
+    parser.addHelpOption();
+
     parser.parse(app.arguments());
+
+    if(parser.isSet("version"))
+    {
+        parser.showVersion();
+        return true;
+    }
+
+    if(parser.isSet("help"))
+    {
+        parser.showHelp();
+        return true;
+    }
+
+// apply the app settings or use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
+    SofaApplication::ApplySettings();
+
+// launch the main script
+
+    applicationEngine.addImportPath("qrc:/");
+    applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
+    applicationEngine.load(QUrl(mainScript));
+
+    // apply command line arguments
 
     QList<QObject*> objects = applicationEngine.rootObjects();
     foreach(QObject* object, objects)
