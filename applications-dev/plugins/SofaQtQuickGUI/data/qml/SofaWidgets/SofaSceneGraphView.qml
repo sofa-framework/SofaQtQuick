@@ -86,21 +86,31 @@ ColumnLayout {
 
             onAccepted: searchBar.nextFilteredRow();
         }
-        IconButton {
-            id: previousSearchButton
-            iconSource: "qrc:/icon/previous.png"
+        Item {
             Layout.preferredWidth: Layout.preferredHeight
-            Layout.preferredHeight: 22
+            Layout.preferredHeight: searchBarTextField.implicitHeight
 
-            onClicked: searchBar.previousFilteredRow();
+            IconButton {
+                id: previousSearchButton
+                anchors.fill: parent
+                anchors.margins: 2
+                iconSource: "qrc:/icon/previous.png"
+
+                onClicked: searchBar.previousFilteredRow();
+            }
         }
-        IconButton {
-            id: nextSearchButton
-            iconSource: "qrc:/icon/next.png"
+        Item {
             Layout.preferredWidth: Layout.preferredHeight
-            Layout.preferredHeight: 22
+            Layout.preferredHeight: searchBarTextField.implicitHeight
 
-            onClicked: searchBar.nextFilteredRow();
+            IconButton {
+                id: nextSearchButton
+                anchors.fill: parent
+                anchors.margins: 2
+                iconSource: "qrc:/icon/next.png"
+
+                onClicked: searchBar.nextFilteredRow();
+            }
         }
     }
 

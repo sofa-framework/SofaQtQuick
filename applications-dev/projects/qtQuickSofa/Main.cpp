@@ -30,6 +30,7 @@ int main(int argc, char **argv)
     // application specific settings
     app.setOrganizationName("Sofa");
     app.setApplicationName("qtQuickSofa");
+    app.setApplicationVersion("v1.0");
 
     // common settings for most sofaqtquick applications
     if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
