@@ -354,7 +354,6 @@ void SofaScene::open()
 
     mySofaSimulation->unload(mySofaSimulation->GetRoot());
 
-    // TODO: error right here !
     QString finalFilename = mySource.path();
 	if(mySource.isLocalFile())
 		finalFilename = mySource.toLocalFile();
