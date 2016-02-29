@@ -29,6 +29,8 @@ Item {
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
 
+    signal doubleClickedOnLabel;
+
     property var sofaScene: SofaApplication.sofaScene
     property QtObject sofaData: null
     onSofaDataChanged: {
@@ -139,10 +141,16 @@ Item {
         Text {
             id: nameLabel
             Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
+            Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
             visible: root.showName
             text: dataObject.name + " "
             font.italic: true
+
+            MouseArea {
+                anchors.fill: parent
+                onDoubleClicked: root.doubleClickedOnLabel();
+            }
 
             ToolTip {
                 anchors.fill: parent
@@ -221,6 +229,11 @@ Item {
                     dataObject.modified = false;
                 }
             }
+
+//            Item {
+//                Layout.fillWidth: true
+//                Layout.fillHeight: true
+//            }
         }
 
         Item {

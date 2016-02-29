@@ -38,6 +38,7 @@ ColumnLayout {
     TextField {
         id: textField
         Layout.fillWidth: true
+        Layout.fillHeight: true
 
         readOnly: root.dataObject.readOnly
         enabled: !root.dataObject.readOnly

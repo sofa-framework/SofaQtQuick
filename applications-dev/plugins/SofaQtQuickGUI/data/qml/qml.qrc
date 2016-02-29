@@ -21,7 +21,6 @@
         <file>SofaBasics/DynamicSplitView.qml</file>
         <file>SofaBasics/DynamicContent.qml</file>
         <file>SofaBasics/SofaDataItem.qml</file>
-        <file>SofaBasics/SofaDataListViewWindow.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaWidgets/qmldir</file>
         <file>SofaWidgets/SofaViewer.qml</file>

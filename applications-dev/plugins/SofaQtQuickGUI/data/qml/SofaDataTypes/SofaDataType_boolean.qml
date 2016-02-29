@@ -18,30 +18,41 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import SofaBasics 1.0
 
-Item {
+ColumnLayout {
     id: root
-    implicitWidth: control.implicitWidth
-    implicitHeight: control.implicitHeight
+    spacing: 0
 
     property var dataObject: null
 
-    ExplicitSwitch {
-        id: control
-        anchors.centerIn: parent
-        enabled: !dataObject.readOnly
+    Item {
+        Layout.fillWidth: true
+        Layout.minimumWidth: control.implicitWidth
+        Layout.preferredHeight: control.implicitHeight
 
-        onCheckedChanged: {
-            if(checked !== dataObject.value)
-                dataObject.value = checked;
-        }
+        ExplicitSwitch {
+            id: control
+            anchors.centerIn: parent
+            enabled: !dataObject.readOnly
 
-        Binding {
-            target: control
-            property: "checked"
-            value: dataObject.value
-            //when: !dataObject.readOnly
+            onCheckedChanged: {
+                if(checked !== dataObject.value)
+                    dataObject.value = checked;
+            }
+
+            Binding {
+                target: control
+                property: "checked"
+                value: dataObject.value
+                //when: !dataObject.readOnly
+            }
         }
+    }
+
+    Item {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
     }
 }

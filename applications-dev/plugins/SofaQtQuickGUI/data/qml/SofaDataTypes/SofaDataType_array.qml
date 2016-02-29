@@ -21,317 +21,332 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
 
-Loader {
+ColumnLayout {
     id: root
+    spacing: 0
 
     property var dataObject: null
 
-    sourceComponent: {
-        if(dataObject.properties.static) {
-            if((!dataObject.properties.innerStatic && dataObject.value.length <= 7) ||
-               (dataObject.properties.innerStatic && 1 === dataObject.value.length && dataObject.properties.cols <= 7))
-                return staticSmallArrayView;
-            else if(dataObject.properties.innerStatic && dataObject.properties.cols <= 7)
-                return staticInStaticTableView;
-            else
-                return staticArrayView;
-        }
-        else {
-            if(dataObject.properties.innerStatic) {
-                if(dataObject.properties.cols <= 7 || dataObject.properties.cols === 12) // Case of Affine type
-                    return staticInDynamicTableView;
+    Loader {
+        id: loader
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        sourceComponent: {
+            if(root.dataObject.properties.static) {
+                if((!root.dataObject.properties.innerStatic && root.dataObject.value.length <= 7) ||
+                   (root.dataObject.properties.innerStatic && 1 === root.dataObject.value.length && root.dataObject.properties.cols <= 7))
+                    return staticSmallArrayView;
+                else if(root.dataObject.properties.innerStatic && root.dataObject.properties.cols <= 7)
+                    return staticInStaticTableView;
                 else
-                    return dynamicArrayView;
+                    return staticArrayView;
             }
+            else {
+                if(root.dataObject.properties.innerStatic) {
+                    if(root.dataObject.properties.cols <= 7 || root.dataObject.properties.cols === 12) // Case of Affine type
+                        return staticInDynamicTableView;
+                    else
+                        return dynamicArrayView;
+                }
+            }
+
+            return dynamicArrayView;
         }
 
-        return dynamicArrayView;
-    }
+        Component {
+            id: staticInStaticTableView
+            TableView {
+                id: tableView
 
-    Component {
-        id: staticInStaticTableView
-        TableView {
-            id: tableView
-
-            Component {
-                id: columnComponent
-                TableViewColumn {
-                    movable: false
-                    resizable: false
-                    horizontalAlignment: Text.AlignHCenter
-                    width: (tableView.width - 58) / (tableView.columnCount - 1)
+                Component {
+                    id: columnComponent
+                    TableViewColumn {
+                        movable: false
+                        resizable: false
+                        horizontalAlignment: Text.AlignHCenter
+                        width: (tableView.width - 58) / (tableView.columnCount - 1)
+                    }
                 }
-            }
 
-            Component {
-                id: columnLines
-                TableViewColumn {
-                    movable: false
-                    resizable: false
-                    horizontalAlignment: Text.AlignHCenter
-                    width: 58
+                Component {
+                    id: columnLines
+                    TableViewColumn {
+                        movable: false
+                        resizable: false
+                        horizontalAlignment: Text.AlignHCenter
+                        width: 58
+                    }
                 }
-            }
 
-            Component.onCompleted: {
-                addColumn(columnLines.createObject(tableView, {"title": "", "role": "printLinesNumber"}));
-                for(var i = 0; i < dataObject.properties.cols; ++i)
-                    addColumn(columnComponent.createObject(tableView, {"title": i.toString(), "role": "c" + i.toString()}));
-            }
-
-            Connections {
-                target: dataObject
-                onValueChanged: {
-                    listModel.update();
-
-                    dataObject.modified = false;
+                Component.onCompleted: {
+                    addColumn(columnLines.createObject(tableView, {"title": "", "role": "printLinesNumber"}));
+                    for(var i = 0; i < root.dataObject.properties.cols; ++i)
+                        addColumn(columnComponent.createObject(tableView, {"title": i.toString(), "role": "c" + i.toString()}));
                 }
-            }
 
-            model: ListModel {
-                id: listModel
+                Connections {
+                    target: root.dataObject
+                    onValueChanged: {
+                        listModel.update();
 
-                Component.onCompleted: populate();
+                        root.dataObject.modified = false;
+                    }
+                }
 
-                property int previousCount: 0
+                model: ListModel {
+                    id: listModel
+
+                    Component.onCompleted: populate();
+
+                    property int previousCount: 0
+
+                    function populate() {
+                        var newCount = root.dataObject.value.length;
+                        if(previousCount < newCount)
+                            for(var j = previousCount; j < newCount; ++j) {
+                                var values = {};
+                                for(var i = previousCount; i < root.dataObject.properties.cols; ++i)
+                                    values["c" + i.toString()] = root.dataObject.value[j][i];
+
+                                append(values);
+                            }
+                        else if(previousCount > newCount)
+                            remove(newCount, previousCount - newCount);
+
+                        previousCount = count;
+                    }
+
+                    function update() {
+                        if(count !== root.dataObject.value.length)
+                            populate();
+
+                        for(var j = 0; j < count; ++j) {
+                            var values = {};
+                            for(var i = previousCount; i < root.dataObject.properties.cols; ++i)
+                                values["c" + i.toString()] = root.dataObject.value[j][i];
+
+                            set(j, values);
+                        }
+                    }
+                }
 
                 function populate() {
-                    var newCount = dataObject.value.length;
-                    if(previousCount < newCount)
-                        for(var j = previousCount; j < newCount; ++j) {
-                            var values = {};
-                            for(var i = previousCount; i < dataObject.properties.cols; ++i)
-                                values["c" + i.toString()] = dataObject.value[j][i];
-
-                            append(values);
-                        }
-                    else if(previousCount > newCount)
-                        remove(newCount, previousCount - newCount);
-
-                    previousCount = count;
+                    listModel.populate();
                 }
 
                 function update() {
-                    if(count !== dataObject.value.length)
-                        populate();
-
-                    for(var j = 0; j < count; ++j) {
-                        var values = {};
-                        for(var i = previousCount; i < dataObject.properties.cols; ++i)
-                            values["c" + i.toString()] = dataObject.value[j][i];
-
-                        set(j, values);
-                    }
+                    listModel.update();
                 }
-            }
 
-            function populate() {
-                listModel.populate();
-            }
-
-            function update() {
-                listModel.update();
-            }
-
-            itemDelegate: TextInput {
-                anchors.fill: parent
-                anchors.leftMargin: 6
-                anchors.rightMargin: 6
-                clip: true
-                readOnly: -1 === styleData.row || dataObject.readOnly || 0 === styleData.column
-                color: styleData.textColor
-                horizontalAlignment: TextEdit.AlignHCenter
-                text: {
-                    if (styleData.column === 0)
-                        return styleData.row;
-                    else if(-1 !== styleData.row && styleData.column !== 0) {
-                        return dataObject.value[styleData.row][styleData.column - 1];
-                    }
-
-                    return "";
-                }
-                property int previousRow: -1
-                onTextChanged: {
-                    if(-1 === styleData.row || dataObject.readOnly || 0 === styleData.column)
-                        return;
-
-                    if(previousRow !== styleData.row) {
-                        previousRow = styleData.row;
-                        return;
-                    }
-
-                    if(styleData.column !== 0) {
-                        var oldValue = dataObject.value[styleData.row][styleData.column - 1];
-
-                        var value = text;
-                        if(value !== oldValue) {
-                            dataObject.value[styleData.row][styleData.column - 1] = value;
-                            dataObject.modified = true;
+                itemDelegate: TextInput {
+                    anchors.fill: parent
+                    anchors.leftMargin: 6
+                    anchors.rightMargin: 6
+                    clip: true
+                    readOnly: -1 === styleData.row || root.dataObject.readOnly || 0 === styleData.column
+                    color: styleData.textColor
+                    horizontalAlignment: TextEdit.AlignHCenter
+                    text: {
+                        if (styleData.column === 0)
+                            return styleData.row;
+                        else if(-1 !== styleData.row && styleData.column !== 0) {
+                            return root.dataObject.value[styleData.row][styleData.column - 1];
                         }
+
+                        return "";
                     }
-                }
-            }
-        }
-    }
-
-    Component {
-        id: staticSmallArrayView
-        RowLayout {
-            id: rowLayout
-            width: parent.width
-            spacing: 0
-            enabled: !dataObject.readOnly
-
-            property var fields: []
-            property bool innerArray: false
-
-            Component.onCompleted: populate();
-
-            function populate() {
-                var values = dataObject.value;
-                if(1 === values.length && Array.isArray(values[0]))
-                {
-                    values = dataObject.value[0];
-                    innerArray = true;
-                }
-
-                fields = [];
-                for(var i = 0; i < values.length; ++i)
-                    fields[i] = textFieldComponent.createObject(rowLayout, {index: i});
-
-                update();
-            }
-
-            function update() {
-                var values = dataObject.value;
-                if(innerArray)
-                    values = dataObject.value[0];
-
-                for(var i = 0; i < values.length; ++i) {
-                    fields[i].text = values[i].toString();
-                }
-            }
-
-            Component {
-                id: textFieldComponent
-
-                TextField {
-                    Layout.fillWidth: true
-                    readOnly: dataObject.readOnly
-                    enabled: !dataObject.readOnly
-
-                    property int index
+                    property int previousRow: -1
                     onTextChanged: {
-                        if(rowLayout.innerArray)
-                            dataObject.value[0][index] = text;
-                        else
-                            dataObject.value[index] = text;
-
-                        dataObject.modified = true;
-                    }
-                }
-            }
-
-            Connections {
-                target: dataObject
-                onValueChanged: rowLayout.update();
-            }
-        }
-    }
-
-    Component {
-        id: staticArrayView
-        TextField {
-            id: textField
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
-            text: undefined !== dataObject.value ? dataObject.value.toString() : ""
-
-            Binding {
-                target: dataObject
-                property: "value"
-                value: textField.text
-            }
-        }
-    }
-
-    Component {
-        id: staticInDynamicTableView
-
-        ColumnLayout {
-            spacing: 0
-
-            RowLayout {
-                Layout.fillWidth: true
-
-                Text {
-                    text: "Size"
-                }
-                SpinBox {
-                    id: rowNumber
-                    enabled: !dataObject.readOnly && showEditButton.checked
-                    Layout.fillWidth: true
-                    value: dataObject.value.length
-                    onEditingFinished: {
-                        if(value === dataObject.value.length)
+                        if(-1 === styleData.row || root.dataObject.readOnly || 0 === styleData.column)
                             return;
 
-                        var oldLength = dataObject.value.length;
-                        dataObject.value.length = value;
-                        for(var j = oldLength; j < dataObject.value.length; ++j) {
-                            dataObject.value[j] = [];
-                            for(var i = 0; i < dataObject.properties.cols; ++i)
-                                dataObject.value[j][i] = 0;
+                        if(previousRow !== styleData.row) {
+                            previousRow = styleData.row;
+                            return;
                         }
 
-                        dataObject.modified = true;
+                        if(styleData.column !== 0) {
+                            var oldValue = root.dataObject.value[styleData.row][styleData.column - 1];
 
-                        if(loader.item)
-                            loader.item.populate();
+                            var value = text;
+                            if(value !== oldValue) {
+                                root.dataObject.value[styleData.row][styleData.column - 1] = value;
+                                root.dataObject.modified = true;
+                            }
+                        }
                     }
-
-                    minimumValue: 0
-                    maximumValue: Number.MAX_VALUE
-                }
-                Button {
-                    id: showEditButton
-                    text: "Show / Edit"
-                    checkable: true
                 }
             }
+        }
 
-            Loader {
-                id: loader
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                visible: showEditButton.checked
-                active: visible
-                sourceComponent: staticInStaticTableView
+        Component {
+            id: staticSmallArrayView
+            RowLayout {
+                id: rowLayout
+                //width: parent.width
+                spacing: 0
+                enabled: !root.dataObject.readOnly
+
+                property var fields: []
+                property bool innerArray: false
+
+                Component.onCompleted: populate();
+
+                function populate() {
+                    var values = root.dataObject.value;
+                    if(1 === values.length && Array.isArray(values[0]))
+                    {
+                        values = root.dataObject.value[0];
+                        innerArray = true;
+                    }
+
+                    fields = [];
+                    for(var i = 0; i < values.length; ++i)
+                        fields[i] = textFieldComponent.createObject(rowLayout, {index: i});
+
+                    update();
+                }
+
+                function update() {
+                    var values = root.dataObject.value;
+                    if(innerArray)
+                        values = root.dataObject.value[0];
+
+                    for(var i = 0; i < values.length; ++i) {
+                        fields[i].text = values[i].toString();
+                    }
+                }
+
+                Component {
+                    id: textFieldComponent
+
+                    TextField {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.alignment: Qt.AlignTop
+                        readOnly: root.dataObject.readOnly
+                        enabled: !root.dataObject.readOnly
+
+                        property int index
+                        onTextChanged: {
+                            if(rowLayout.innerArray)
+                                root.dataObject.value[0][index] = text;
+                            else
+                                root.dataObject.value[index] = text;
+
+                            root.dataObject.modified = true;
+                        }
+                    }
+                }
+
+                Connections {
+                    target: root.dataObject
+                    onValueChanged: rowLayout.update();
+                }
+            }
+        }
+
+        Component {
+            id: staticArrayView
+            TextField {
+                id: textField
+                readOnly: root.dataObject.readOnly
+                enabled: !root.dataObject.readOnly
+                text: undefined !== root.dataObject.value ? root.dataObject.value.toString() : ""
+
+                Binding {
+                    target: root.dataObject
+                    property: "value"
+                    value: textField.text
+                }
+            }
+        }
+
+        Component {
+            id: staticInDynamicTableView
+
+            ColumnLayout {
+                spacing: 0
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop
+
+                    Text {
+                        text: "Size"
+                    }
+                    SpinBox {
+                        id: rowNumber
+                        enabled: !root.dataObject.readOnly && showEditButton.checked
+                        Layout.fillWidth: true
+                        value: root.dataObject.value.length
+                        onEditingFinished: {
+                            if(value === root.dataObject.value.length)
+                                return;
+
+                            var oldLength = root.dataObject.value.length;
+                            root.dataObject.value.length = value;
+                            for(var j = oldLength; j < root.dataObject.value.length; ++j) {
+                                root.dataObject.value[j] = [];
+                                for(var i = 0; i < root.dataObject.properties.cols; ++i)
+                                    root.dataObject.value[j][i] = 0;
+                            }
+
+                            root.dataObject.modified = true;
+
+                            if(loader.item)
+                                loader.item.populate();
+                        }
+
+                        minimumValue: 0
+                        maximumValue: Number.MAX_VALUE
+                    }
+                    Button {
+                        id: showEditButton
+                        text: "Show / Edit"
+                        checkable: true
+                    }
+                }
+
+                Loader {
+                    id: loader
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    visible: showEditButton.checked
+                    active: visible
+                    sourceComponent: staticInStaticTableView
+                }
+            }
+        }
+
+        Component {
+            id: dynamicArrayView
+
+            TextField {
+                id: textField
+                readOnly: root.dataObject.readOnly
+                enabled: !root.dataObject.readOnly
+
+                onTextChanged: {
+                    if(!root.dataObject.readOnly)
+                        if(Array.isArray(root.dataObject.value))
+                            root.dataObject.value = text.split(' ')
+                        else
+                            root.dataObject.value = text
+                }
+
+                Binding {
+                    target: textField
+                    property: "text"
+                    value: Array.isArray(root.dataObject.value) ? root.dataObject.value.join(' ') : root.dataObject.value
+                }
             }
         }
     }
 
-    Component {
-        id: dynamicArrayView
-
-        TextField {
-            id: textField
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
-
-            onTextChanged: {
-                if(!dataObject.readOnly)
-                    if(Array.isArray(dataObject.value))
-                        dataObject.value = text.split(' ')
-                    else
-                        dataObject.value = text
-            }
-
-            Binding {
-                target: textField
-                property: "text"
-                value: Array.isArray(dataObject.value) ? dataObject.value.join(' ') : dataObject.value
-            }
-        }
+    Item {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
     }
 }

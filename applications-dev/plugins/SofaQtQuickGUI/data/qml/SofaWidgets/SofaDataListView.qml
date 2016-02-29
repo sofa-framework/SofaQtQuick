@@ -21,6 +21,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaComponent 1.0
@@ -97,6 +98,8 @@ ColumnLayout {
                             sofaScene: root.sofaScene
                             sofaData: sofaDataListModel.getDataById(index)
 
+                            onDoubleClickedOnLabel: sofaDataWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": root.sofaComponent});
+
                             nameLabelWidth: listView.nameLabelImplicitWidth
                             Component.onCompleted: updateNameLabelWidth();
                             onNameLabelImplicitWidthChanged: updateNameLabelWidth();
@@ -112,14 +115,20 @@ ColumnLayout {
                             Text {
                                 id: linkNameLabel
                                 Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
-                                Layout.preferredHeight: 20
+                                Layout.fillHeight: true
                                 Layout.alignment: Qt.AlignTop
 
                                 text: name
                                 font.italic: true
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onDoubleClicked: sofaDataWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": root.sofaComponent});
+                                }
                             }
                             TextField {
                                 Layout.fillWidth: true
+                                Layout.fillHeight: true
                                 Layout.preferredHeight: implicitHeight
                                 readOnly: true
 
@@ -146,16 +155,22 @@ ColumnLayout {
                             Text {
                                 id: logNameLabel
                                 Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
-                                Layout.preferredHeight: 20
+                                Layout.fillHeight: true
                                 Layout.alignment: Qt.AlignTop
 
                                 text: name
                                 font.italic: true
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onDoubleClicked: sofaDataWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": root.sofaComponent});
+                                }
                             }
                             TextArea {
                                 id: logTextArea
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: Math.min(implicitHeight, 400)
+                                Layout.fillHeight: true
+                                Layout.minimumHeight: Math.min(implicitHeight, 400)
 
                                 text: value.toString().trim()
                                 onTextChanged: cursorPosition = 0;
@@ -192,17 +207,24 @@ ColumnLayout {
                             Text {
                                 id: infoNameLabel
                                 Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
-                                Layout.preferredHeight: 20
+                                Layout.fillHeight: true
                                 Layout.alignment: Qt.AlignTop
 
                                 text: name
                                 font.italic: true
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onDoubleClicked: sofaDataWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": root.sofaComponent});
+                                }
                             }
                             Text {
                                 Layout.fillWidth: true
+                                Layout.fillHeight: true
                                 Layout.preferredHeight: implicitHeight
 
                                 text: value.toString().trim()
+                                wrapMode: Text.WordWrap
                             }
 
                             property int nameLabelWidth: listView.nameLabelImplicitWidth
@@ -213,6 +235,49 @@ ColumnLayout {
 
                             function updateNameLabelWidth() {
                                 listView.nameLabelImplicitWidth = Math.max(listView.nameLabelImplicitWidth, nameLabelImplicitWidth);
+                            }
+                        }
+
+                        Component {
+                            id: sofaDataWindowComponent
+
+                            Window {
+                                id: root
+                                width: 400
+                                height: 600
+                                modality: Qt.NonModal
+                                flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                                visible: true
+                                color: "lightgrey"
+
+                                Component.onCompleted: {
+                                    width = Math.max(width, loader.implicitWidth);
+                                    height = Math.min(height, loader.implicitHeight);
+                                }
+
+                                title: sofaComponent ? ("Data of component: " + sofaComponent.name()) : "No component to visualize"
+
+                                property var sofaScene: root.sofaScene
+                                property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
+
+                                ColumnLayout {
+                                    anchors.fill: parent
+
+                                    Loader {
+                                        id: loader
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: true
+
+                                        onImplicitHeightChanged: root.height = Math.max(root.height, loader.implicitHeight);
+
+                                        sourceComponent: dataLoader.sourceComponent
+                                    }
+
+                                    Item {
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: true
+                                    }
+                                }
                             }
                         }
                     }
