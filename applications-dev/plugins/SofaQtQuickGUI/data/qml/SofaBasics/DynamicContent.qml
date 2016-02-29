@@ -302,7 +302,6 @@ Item {
                                     id: window
                                     width: 400
                                     height: 600
-
                                     modality: Qt.NonModal
                                     flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                                     visible: true

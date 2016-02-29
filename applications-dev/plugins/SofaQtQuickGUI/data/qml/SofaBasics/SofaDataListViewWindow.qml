@@ -37,7 +37,8 @@ Window {
     color: "lightgrey"
 
     Component.onCompleted: {
-        height = Math.min(height, listView.contentHeight);
+        width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
+        height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
     }
 
     title: sofaComponent ? ("Data of component: " + sofaComponent.name()) : "No component to visualize"
@@ -46,6 +47,7 @@ Window {
     property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
 
     Loader {
+        id: loader
         anchors.fill: parent
 
         sourceComponent: SofaDataListView {
