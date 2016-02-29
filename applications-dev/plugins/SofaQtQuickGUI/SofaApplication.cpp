@@ -24,6 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/Utils.h>
 #include <sofa/helper/system/console.h>
+#include <sofa/helper/logging/Messaging.h>
 
 #include <QQuickWindow>
 #include <QQuickItem>
@@ -75,7 +76,7 @@ void SofaApplication::saveScreenshot(const QString& path)
 {
     if(!qGuiApp)
     {
-        qWarning() << "Cannot take a screenshot of the whole application without an instance of QGuiApplication";
+        msg_error("SofaQtQuickGUI") << "Cannot take a screenshot of the whole application without an instance of QGuiApplication";
         return;
     }
 
@@ -115,7 +116,7 @@ void SofaApplication::saveScreenshot(const QString& path)
     }
 
     if(!saved)
-        qWarning() << "Screenshot could not be saved to" << path;
+        msg_error("SofaQtQuickGUI") << "Screenshot could not be saved to" << path.toStdString();
 }
 
 int SofaApplication::overrideCursorShape() const
@@ -202,31 +203,31 @@ void SofaApplication::UseOpenGLDebugLogger()
 {
     QOpenGLContext *ctx = QOpenGLContext::currentContext();
     if(0 == ctx) {
-        qWarning() << "SofaApplication::initializeDebugLogger has been called without a valid opengl context made current";
+        msg_error("SofaQtQuickGUI") << "SofaApplication::initializeDebugLogger has been called without a valid opengl context made current";
         return;
     }
 
-    qInfo() << "OpenGL Context" << (QString::number(ctx->format().majorVersion()) + "." + QString::number(ctx->format().minorVersion())).toLatin1().constData();
-    qInfo() << "Graphics Card Vendor:" << (char*) glGetString(GL_VENDOR);
-    qInfo() << "Graphics Card Model:" << (char*) glGetString(GL_RENDERER);
-    qInfo() << "Graphics Card Drivers:" << (char*) glGetString(GL_VERSION);
+    msg_info("SofaQtQuickGUI") << "OpenGL Context" << (QString::number(ctx->format().majorVersion()) + "." + QString::number(ctx->format().minorVersion())).toLatin1().constData();
+    msg_info("SofaQtQuickGUI") << "Graphics Card Vendor:" << (char*) glGetString(GL_VENDOR);
+    msg_info("SofaQtQuickGUI") << "Graphics Card Model:" << (char*) glGetString(GL_RENDERER);
+    msg_info("SofaQtQuickGUI") << "Graphics Card Drivers:" << (char*) glGetString(GL_VERSION);
 
     if(ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
     {
         QOpenGLDebugLogger* openglDebugLogger = new QOpenGLDebugLogger();
         if(!openglDebugLogger->initialize())
-            qWarning() << "OpenGL debug logging disabled: error - the logger could not be initialized";
+            msg_error("SofaQtQuickGUI") << "OpenGL debug logging disabled: error - the logger could not be initialized";
         else
-            qInfo() << "OpenGL debug logging enabled";
+            msg_info("SofaQtQuickGUI") << "OpenGL debug logging enabled";
 
-        connect(openglDebugLogger, &QOpenGLDebugLogger::messageLogged, [](const QOpenGLDebugMessage &debugMessage) {qInfo() << "OpenGL" << debugMessage.type() << "-" << "Severity;" << debugMessage.severity() << "- Source:" << debugMessage.source() <<  "- Message:" << debugMessage.message();});
+        connect(openglDebugLogger, &QOpenGLDebugLogger::messageLogged, [](const QOpenGLDebugMessage &debugMessage) {msg_info("SofaQtQuickGUI") << "OpenGL" << debugMessage.type() << "-" << "Severity;" << debugMessage.severity() << "- Source:" << debugMessage.source() <<  "- Message:" << debugMessage.message().toStdString();});
         openglDebugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
 
         connect(ctx, &QOpenGLContext::aboutToBeDestroyed, [=]() {delete openglDebugLogger;});
     }
     else
     {
-        qWarning() << "OpenGL debug logging disabled: your graphics card does not support this functionality";
+        msg_warning("SofaQtQuickGUI") << "OpenGL debug logging disabled: your graphics card does not support this functionality";
     }
 }
 
@@ -351,7 +352,7 @@ void SofaApplication::MakeBackupSettings(const QString& backupSettingsPath)
 
 void SofaApplication::ApplyBackupSettings(const QString& backupSettingsPath)
 {
-    qWarning() << "The previous instance of the application did not exit cleanly, falling back on the backup settings";
+    msg_warning("SofaQtQuickGUI")  << "The previous instance of the application did not exit cleanly, falling back on the backup settings";
 
     QString finalBackupSettingsPath = backupSettingsPath;
     if(finalBackupSettingsPath.isEmpty())

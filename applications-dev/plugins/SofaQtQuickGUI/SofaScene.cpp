@@ -29,6 +29,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/PluginManager.h>
+#include <sofa/helper/logging/Messaging.h>
 #include <sofa/helper/cast.h>
 #include <sofa/simulation/graph/graph.h>
 #include <sofa/simulation/graph/DAGSimulation.h>
@@ -183,7 +184,7 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
 
     GLenum err = glewInit();
     if(0 != err)
-        qWarning() << "GLEW Initialization failed with error code:" << err;
+        msg_error("SofaQtQuickGUI") << "GLEW Initialization failed with error code:" << err;
 
     #ifdef __linux__
         static bool glutInited = false;
@@ -388,7 +389,7 @@ void SofaScene::open()
             QString content = in.readAll();
             if(-1 != content.indexOf("PyQt", 0, Qt::CaseInsensitive)) {
                 currentAsynchronous = false;
-                qWarning() << "This scene seems to contain PyQt and will be loaded synchronously";
+                msg_warning("SofaQtQuickGUI")  << "This scene seems to contain PyQt and will be loaded synchronously";
             }
         }
     }
@@ -410,7 +411,7 @@ void SofaScene::open()
         if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath, "", nullptr))
             finalQmlFilepath.clear();
         else
-            qWarning() << "(Deprecated) The extension format of your scene qml interface is deprecated, use directly ***.qml instead of ***.py.qml";
+            msg_deprecated("SofaQtQuickGUI") << "The extension format of your scene qml interface is deprecated, use directly ***.qml instead of ***.py.qml";
     }
     setPathQML(QString::fromStdString(finalQmlFilepath));
 
@@ -420,7 +421,7 @@ void SofaScene::open()
     QFile baseHeaderFile(":/python/BaseHeader.py");
     if(!baseHeaderFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qWarning("ERROR: base header not found");
+        msg_error("SofaQtQuickGUI") << "base header not found";
     }
     else
     {
@@ -717,14 +718,14 @@ bool SofaScene::reinitComponent(const QString& path)
 
         node = node->getChild(pathComponents[i].toStdString());
         if (!node) {
-            qWarning() << "Object path unknown:" << path;
+            msg_warning("SofaQtQuickGUI") << "Object path unknown:" << path.toStdString();
             return false;
         }
         ++i;
     }
     BaseObject* object = node->get<BaseObject>(pathComponents[i].toStdString());
     if(!object) {
-        qWarning() << "Object path unknown:" << path;
+        msg_warning("SofaQtQuickGUI") << "Object path unknown:" << path.toStdString();
         return false;
     }
 
@@ -1035,7 +1036,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
 
             if(!typeinfo->Container())
             {
-                qWarning("Trying to set a list of values on a non-container data");
+                msg_warning("SofaQtQuickGUI") << "Trying to set a list of values on a non-container data";
                 return false;
             }
 
@@ -1043,7 +1044,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
             {
                 if(typeinfo->FixedSize())
                 {
-                    qWarning() << "The new data should have the same size, should be" << nbRows << ", got" << valueIterable.size();
+                    msg_warning("SofaQtQuickGUI") << "The new data should have the same size, should be" << nbRows << ", got" << valueIterable.size();
                     return false;
                 }
 
@@ -1061,7 +1062,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
                         QSequentialIterable subValueIterable = subFinalValue.value<QSequentialIterable>();
                         if(subValueIterable.size() != nbCols)
                         {
-                            qWarning() << "The new sub data should have the same size, should be" << nbCols << ", got" << subValueIterable.size() << "- data size is:" << valueIterable.size();
+                            msg_warning("SofaQtQuickGUI") << "The new sub data should have the same size, should be" << nbCols << ", got" << subValueIterable.size() << "- data size is:" << valueIterable.size();
                             return false;
                         }
 
@@ -1094,7 +1095,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
                         QSequentialIterable subValueIterable = subFinalValue.value<QSequentialIterable>();
                         if(subValueIterable.size() != nbCols)
                         {
-                            qWarning() << "The new sub data should have the same size, should be" << nbCols << ", got" << subValueIterable.size() << "- data size is:" << valueIterable.size();
+                            msg_warning("SofaQtQuickGUI") << "The new sub data should have the same size, should be" << nbCols << ", got" << subValueIterable.size() << "- data size is:" << valueIterable.size();
                             return false;
                         }
 
@@ -1127,7 +1128,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
                         QSequentialIterable subValueIterable = subFinalValue.value<QSequentialIterable>();
                         if(subValueIterable.size() != nbCols)
                         {
-                            qWarning() << "The new sub data should have the same size, should be" << nbCols << ", got" << subValueIterable.size() << "- data size is:" << valueIterable.size();
+                            msg_warning("SofaQtQuickGUI") << "The new sub data should have the same size, should be" << nbCols << ", got" << subValueIterable.size() << "- data size is:" << valueIterable.size();
                             return false;
                         }
 
@@ -1154,7 +1155,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
         }
         else if(QVariant::Map == finalValue.type())
         {
-            qWarning("Map type is not supported");
+            msg_warning("SofaQtQuickGUI") << "Map type is not supported";
             return false;
         }
         else
@@ -1293,7 +1294,7 @@ QVariant SofaScene::onDataValueByPath(const QString& path) const
 
     if(!data)
     {
-        qWarning() << "DataPath unknown:" << path;
+        msg_warning("SofaQtQuickGUI") << "DataPath unknown:" << path.toStdString();
         return QVariant();
     }
 
@@ -1328,7 +1329,7 @@ void SofaScene::onSetDataValueByPath(const QString& path, const QVariant& value)
 
     if(!data)
     {
-        qWarning() << "DataPath unknown:" << path;
+        msg_warning("SofaQtQuickGUI") << "DataPath unknown:" << path.toStdString();
     }
     else
     {
@@ -1741,7 +1742,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
         }
         else if(-1 != index)
         {
-            qWarning() << "SofaScene::pickObject(...) return an incorrect object index";
+            msg_warning("SofaQtQuickGUI") << "SofaScene::pickObject(...) return an incorrect object index";
         }
     }
     myPickingFBO->release();

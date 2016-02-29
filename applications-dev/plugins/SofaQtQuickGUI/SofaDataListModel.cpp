@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaDataListModel.h"
 
 #include <sofa/core/ObjectFactory.h>
+#include <sofa/helper/logging/Messaging.h>
 
 #include <QStack>
 #include <QDebug>
@@ -188,7 +189,7 @@ QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
 {
     if(!index.isValid())
     {
-        qWarning("Invalid index");
+        msg_error("SofaQtQuickGUI") << "SofaDataListModel::data  Invalid index";
         return QVariant("");
     }
 
@@ -244,7 +245,7 @@ QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
         }
     }
     default:
-        qWarning() << "Role unknown:" << role;
+        msg_error("SofaQtQuickGUI") << "SofaDataListModel::data  Role unknown:" << role;
         break;
     }
 

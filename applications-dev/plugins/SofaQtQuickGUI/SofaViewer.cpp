@@ -539,7 +539,7 @@ void SofaViewer::saveScreenshot(const QString& path)
         dir.mkpath(".");
 
     if(!myFBO->toImage().save(path))
-        qWarning() << "Screenshot could not be saved to" << path;
+        msg_error("SofaQtQuickGUI") << "Screenshot could not be saved to" << path.toStdString();
 }
 
 class ScreenshotWorker : public QRunnable
@@ -574,7 +574,7 @@ public:
 		fbo.release();
 
 		if(!fbo.toImage().save(myPath))
-			qWarning() << "Screenshot could not be saved to" << myPath;
+            msg_error("SofaQtQuickGUI") << "Screenshot could not be saved to" << myPath.toStdString();
 	}
 
 private:

@@ -129,7 +129,7 @@ void ImagePlaneModel::handleSofaDataChange()
     else if(0 == type.compare("ImagePlane<bool>"))
         setImagePlane(new ImagePlaneWrapper<bool>(*(ImagePlane<bool>*) data->getValueVoidPtr()));
     else
-        qWarning() << "Type unknown";
+        msg_error("image_qtquickgui") << "Type unknown";
 }
 
 }

@@ -168,13 +168,13 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
 
     if(!index.isValid())
     {
-        qWarning("Invalid index");
+        msg_error("SofaQtQuickGUI") << "Invalid index";
         return QVariant("");
     }
 
     if(index.row() >= myItems.size())
     {
-        qWarning("Index out of bound");
+        msg_error("SofaQtQuickGUI") << "Index out of bound";
         return QVariant("");
     }
 
@@ -188,7 +188,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
 
     if(0 == base)
     {
-        qWarning("Item is empty");
+        msg_error("SofaQtQuickGUI") << "Item is empty";
         return QVariant("");
     }
 
@@ -209,7 +209,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     case CollapsibleRole:
         return QVariant::fromValue(0 == object && item.children.size() != 0);
     default:
-        qWarning("Role unknown");
+        msg_error("SofaQtQuickGUI") << "Role unknown";
     }
 
     return QVariant("");
@@ -236,7 +236,7 @@ QVariant SofaSceneListModel::get(int row) const
 
     if(-1 == row)
     {
-        qWarning("Invalid index");
+        msg_error("SofaQtQuickGUI") << "Invalid index";
         return object;
     }
 
@@ -254,7 +254,7 @@ void SofaSceneListModel::setCollapsed(int row, bool collapsed)
 {
     if(-1 == row)
     {
-        qWarning("Invalid index");
+        msg_error("SofaQtQuickGUI") << "Invalid index";
         return;
     }
 

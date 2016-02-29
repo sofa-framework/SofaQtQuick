@@ -96,7 +96,7 @@ static PyObject* PythonBuildValueHelper(const QVariant& parameter)
 			break;
 		default:
 			value = Py_BuildValue("");
-            qWarning() << "ERROR: buildPythonParameterHelper, type not supported:" << finalParameter.typeName() << "- id" << finalParameter.type();
+            msg_error("SofaQtQuickGUI") << "buildPythonParameterHelper, type not supported:" << finalParameter.typeName() << "- id" << finalParameter.type();
 			break;
 		}
 	}
@@ -204,7 +204,7 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
 		Py_DECREF(iterator);
 
 		if(PyErr_Occurred())
-            qWarning() << "ERROR: during python tuple/list iteration";
+            msg_error("SofaQtQuickGUI") << "during python tuple/list iteration";
 
 		return tuple;
 	}
@@ -220,7 +220,7 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
 			map.insert(PyString_AsString(key), ExtractPythonTupleHelper(item));
 
 		if(PyErr_Occurred())
-            qWarning() << "ERROR: during python dictionary iteration";
+            msg_error("SofaQtQuickGUI") << "during python dictionary iteration";
 
 		return map;
 	}
@@ -236,7 +236,7 @@ bool SofaPythonInteractor::run(const QString& script)
 {
     if(!mySofaScene)
     {
-        qWarning() << "ERROR: cannot run Python script on a null SofaScene";
+        msg_error("SofaQtQuickGUI") << "cannot run Python script on a null SofaScene";
         return false;
     }
 
@@ -254,19 +254,19 @@ bool SofaPythonInteractor::onCallBasicVerifications(const QString& funcName, con
 {
     if(!mySofaScene)
     {
-        qWarning() << "ERROR: cannot call Python function on a null SofaScene (" << funcName << ")";
+        msg_error("SofaQtQuickGUI") << "cannot call Python function on a null SofaScene (" << funcName.toStdString() << ")";
         return false;
     }
 
     if(!mySofaScene->isReady())
     {
-        qWarning() << "ERROR: cannot call Python function on a SofaScene that is still loading (" << funcName << ")";
+        msg_error("SofaQtQuickGUI") << "cannot call Python function on a SofaScene that is still loading (" << funcName.toStdString() << ")";
         return false;
     }
 
     if(funcName.isEmpty())
     {
-        qWarning() << "ERROR: cannot call Python function without a valid python function name (" << funcName << ")";
+        msg_error("SofaQtQuickGUI") << "cannot call Python function without a valid python function name (" << funcName.toStdString() << ")";
         return false;
     }
 
@@ -278,7 +278,7 @@ QVariant SofaPythonInteractor::onCallByController(PythonScriptController* python
     PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
     if(!pyCallableObject)
     {
-        qWarning() << "ERROR: cannot call Python function without a valid function name "<<funcName;
+        msg_error("SofaQtQuickGUI") << "cannot call Python function without a valid function name "<<funcName.toStdString();
         return QVariant();
     }
 
@@ -298,7 +298,7 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
 
     if(pythonScriptControllerName.isEmpty())
     {
-        qWarning() << "ERROR: cannot call Python function without a python controller path/name";
+        msg_error("SofaQtQuickGUI") << "cannot call Python function without a python controller path/name";
         return QVariant();
     }
 
@@ -315,7 +315,7 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
 
     if(!controller)
     {
-        qWarning() << "ERROR: cannot call Python function (" << funcName << ") without a valid python controller path/name" << pythonScriptControllerName;
+        msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name" << pythonScriptControllerName.toStdString();
         return QVariant();
     }
 
