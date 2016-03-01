@@ -74,8 +74,6 @@ void ImagePlaneView::update()
         return;
     }
 
-    setLength(myImagePlaneModel->length(myAxis));
-
     const cimg_library::CImg<unsigned char>& slice = myImagePlaneModel->retrieveSlice(myIndex, myAxis);
     if(slice.width() != myImage.width() || slice.height() != myImage.height())
     {
@@ -134,7 +132,19 @@ void ImagePlaneView::setImagePlaneModel(ImagePlaneModel* imagePlaneModel)
 
     myImagePlaneModel = imagePlaneModel;
 
+    if(myImagePlaneModel)
+    {
+        myLength = myImagePlaneModel->length(myAxis);
+        myIndex = myImagePlaneModel->currentIndex(myAxis);
+    }
+
     imagePlaneModelChanged();
+
+    if(myImagePlaneModel)
+    {
+        lengthChanged();
+        indexChanged();
+    }
 }
 
 void ImagePlaneView::setAxis(int axis)

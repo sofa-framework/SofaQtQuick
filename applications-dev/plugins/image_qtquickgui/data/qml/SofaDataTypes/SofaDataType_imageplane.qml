@@ -20,7 +20,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
+import QtQuick.Window 2.2
 import SofaBasics 1.0
+import SofaApplication 1.0
 import SofaData 1.0
 import ImagePlaneModel 1.0
 import ImagePlaneView 1.0
@@ -32,7 +34,7 @@ GridLayout {
     property var dataObject: null
 
     ImagePlaneModel {
-        id: imagePlane
+        id: model
 
         sofaData: root.dataObject.sofaData
     }
@@ -41,25 +43,25 @@ GridLayout {
         id: sliceComponent
 
         ColumnLayout {
-            readonly property int sliceIndex: slice.index
+            readonly property int sliceIndex: imagePlaneView.index
 
             Rectangle {
                 id: rectangle
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: slice.implicitWidth
-                Layout.preferredHeight: slice.implicitHeight
+                Layout.preferredWidth: imagePlaneView.implicitWidth
+                Layout.preferredHeight: imagePlaneView.implicitHeight
                 color: "black"
 
                 border.color: "darkgrey"
                 border.width: 1
 
                 ImagePlaneView {
-                    id: slice
+                    id: imagePlaneView
                     anchors.fill: parent
                     anchors.margins: rectangle.border.width
 
-                    imagePlaneModel: imagePlane
+                    imagePlaneModel: model
                     index: slider.value
                     axis: sliceAxis
 
@@ -67,20 +69,36 @@ GridLayout {
 
                     Connections {
                         target: sofaScene
-                        onStepEnd: slice.update()
+                        onStepEnd: imagePlaneView.update()
                     }
                 }
             }
 
-            Slider {
-                id: slider
+            RowLayout {
                 Layout.fillWidth: true
 
-                minimumValue: 0
-                maximumValue: slice.length > 0 ? slice.length - 1 : 0
-                value: slice.length / 2
-                stepSize: 1
-                tickmarksEnabled: true
+                Button {
+                    Layout.preferredWidth: Layout.preferredHeight
+                    Layout.preferredHeight: 18
+                    Layout.alignment: Qt.AlignCenter
+                    iconSource: "qrc:/icon/subWindow.png"
+                    visible: showSubWindow
+
+                    onClicked: windowComponent.createObject(SofaApplication, {"sliceComponent": sliceComponent, "sliceAxis": sliceAxis});
+                }
+
+                Slider {
+                    id: slider
+                    Layout.fillWidth: true
+
+                    minimumValue: 0
+                    maximumValue: imagePlaneView.length > 0 ? imagePlaneView.length - 1 : 0
+                    stepSize: 1
+                    tickmarksEnabled: true
+
+                    value: model.currentIndex(imagePlaneView.axis);
+                    onValueChanged: model.setCurrentIndex(imagePlaneView.axis, value);
+                }
             }
         }
     }
@@ -93,6 +111,7 @@ GridLayout {
         sourceComponent: sliceComponent
         property int sliceAxis: 0
         readonly property int sliceIndex: item ? item.sliceIndex : 0
+        property bool showSubWindow: true
     }
 
     Loader {
@@ -103,6 +122,7 @@ GridLayout {
         sourceComponent: sliceComponent
         property int sliceAxis: 1
         readonly property int sliceIndex: item ? item.sliceIndex : 0
+        property bool showSubWindow: true
     }
 
     Item {
@@ -129,6 +149,52 @@ GridLayout {
         sourceComponent: sliceComponent
         property int sliceAxis: 2
         readonly property int sliceIndex: item ? item.sliceIndex : 0
+        property bool showSubWindow: true
+    }
+
+    Component {
+        id: windowComponent
+
+        Window {
+            id: window
+            width: 600
+            height: 600
+            modality: Qt.NonModal
+            flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+            visible: true
+            color: "lightgrey"
+
+//            Component.onCompleted: {
+//                width = Math.max(width, loader.implicitWidth);
+//                height = Math.min(height, loader.implicitHeight);
+//            }
+
+            property var sliceComponent: null
+            property alias sliceAxis: loader.sliceAxis
+
+            title: "Plane " + String.fromCharCode('X'.charCodeAt(0) + sliceAxis)
+
+            ColumnLayout {
+                anchors.fill: parent
+
+                Loader {
+                    id: loader
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    onImplicitHeightChanged: window.height = Math.max(window.height, loader.implicitHeight);
+
+                    sourceComponent: window.sliceComponent
+                    property int sliceAxis: -1
+                    property bool showSubWindow: false
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
+            }
+        }
     }
 }
 

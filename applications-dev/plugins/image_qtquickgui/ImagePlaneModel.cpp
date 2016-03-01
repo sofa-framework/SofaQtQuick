@@ -39,6 +39,39 @@ ImagePlaneModel::ImagePlaneModel(QObject* parent) : QObject(parent),
     connect(this, &ImagePlaneModel::sofaDataChanged, this, &ImagePlaneModel::handleSofaDataChange);
 }
 
+SofaData* ImagePlaneModel::sofaData() const
+{
+    return mySofaData;
+}
+
+void ImagePlaneModel::setSofaData(SofaData* sofaData)
+{
+    if(sofaData == mySofaData)
+        return;
+
+    mySofaData = sofaData;
+
+    sofaDataChanged();
+}
+
+int ImagePlaneModel::currentIndex(int axis) const
+{
+    return myImagePlane->currentIndex(axis);
+}
+
+void ImagePlaneModel::setCurrentIndex(int axis, int index)
+{
+    myImagePlane->setCurrentIndex(axis, index);
+}
+
+int ImagePlaneModel::length(int axis) const
+{
+    if(!imagePlane() || axis < 0 || axis > 5)
+        return 0;
+
+    return myImagePlane->length(axis);
+}
+
 cimg_library::CImg<unsigned char> ImagePlaneModel::retrieveSlice(int index, int axis) const
 {
     if(!imagePlane())
@@ -55,14 +88,6 @@ cimg_library::CImg<unsigned char> ImagePlaneModel::retrieveSlicedModels(int inde
     return myImagePlane->retrieveSlicedModels(index, axis);
 }
 
-int ImagePlaneModel::length(int axis) const
-{
-    if(!imagePlane() || axis < 0 || axis > 5)
-        return 0;
-
-    return myImagePlane->length(axis);
-}
-
 BaseImagePlaneWrapper* ImagePlaneModel::imagePlane() const
 {
     const core::objectmodel::BaseData* data = mySofaData->data();
@@ -70,26 +95,6 @@ BaseImagePlaneWrapper* ImagePlaneModel::imagePlane() const
         myImagePlane = 0;
 
     return myImagePlane;
-}
-
-void ImagePlaneModel::setSofaData(SofaData* sofaData)
-{
-    if(sofaData == mySofaData)
-        return;
-
-    mySofaData = sofaData;
-
-    sofaDataChanged();
-}
-
-void ImagePlaneModel::setImagePlane(BaseImagePlaneWrapper *imagePlane)
-{
-    if(imagePlane == myImagePlane)
-        return;
-
-    myImagePlane = imagePlane;
-
-    imagePlaneChanged();
 }
 
 void ImagePlaneModel::handleSofaDataChange()

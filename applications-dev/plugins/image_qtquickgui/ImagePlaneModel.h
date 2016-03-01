@@ -39,6 +39,8 @@ public:
 
     }
 
+    virtual int currentIndex(int axis) const = 0;
+    virtual void setCurrentIndex(int index, int axis) = 0;
     virtual cimg_library::CImg<unsigned char> retrieveSlice(int index, int axis) const = 0;
     virtual cimg_library::CImg<unsigned char> retrieveSlicedModels(int index, int axis) const = 0;
     virtual int length(int axis) const = 0;
@@ -49,10 +51,36 @@ template<class T>
 class ImagePlaneWrapper : public BaseImagePlaneWrapper
 {
 public:
-    ImagePlaneWrapper(const sofa::defaulttype::ImagePlane<T>& imagePlane) : BaseImagePlaneWrapper(),
+    ImagePlaneWrapper(sofa::defaulttype::ImagePlane<T>& imagePlane) : BaseImagePlaneWrapper(),
         myImagePlane(imagePlane)
     {
 
+    }
+
+    int currentIndex(int axis) const
+    {
+        if(axis < 0 || axis >= sofa::defaulttype::ImagePlane<T>::Coord::total_size)
+        {
+            msg_error("image_qtquickgui") << "Inconsistent axis";
+            return -1;
+        }
+
+        return myImagePlane.getPlane()[axis];
+    }
+
+    void setCurrentIndex(int axis, int index)
+    {
+        typename sofa::defaulttype::ImagePlane<T>::Coord coord = myImagePlane.getPlane();
+
+        if(axis < 0 || axis >= sofa::defaulttype::ImagePlane<T>::Coord::total_size)
+        {
+            msg_error("image_qtquickgui") << "Inconsistent axis";
+            return;
+        }
+
+        coord[axis] = index;
+
+        myImagePlane.setPlane(coord);
     }
 
     cimg_library::CImg<unsigned char> retrieveSlice(int index, int axis) const
@@ -71,7 +99,7 @@ public:
     }
 
 private:
-    const sofa::defaulttype::ImagePlane<T>&     myImagePlane;
+    sofa::defaulttype::ImagePlane<T>& myImagePlane;
 
 };
 
@@ -83,24 +111,27 @@ public:
     ImagePlaneModel(QObject* parent = 0);
 
 public:
-    cimg_library::CImg<unsigned char> retrieveSlice(int index, int axis) const;
-    cimg_library::CImg<unsigned char> retrieveSlicedModels(int index, int axis) const;
-    int length(int axis) const;
-
-public:
     Q_PROPERTY(sofa::qtquick::SofaData* sofaData READ sofaData WRITE setSofaData NOTIFY sofaDataChanged)
 
 public:
-    SofaData* sofaData() const                {return mySofaData;}
-    BaseImagePlaneWrapper* imagePlane() const;
-
-protected:
+    SofaData* sofaData() const;
     void setSofaData(sofa::qtquick::SofaData* sofaData);
-    void setImagePlane(BaseImagePlaneWrapper* imagePlane);
+
+public:
+    BaseImagePlaneWrapper* imagePlane() const;
+    void setImagePlane(BaseImagePlaneWrapper* imagePlane) {myImagePlane = imagePlane;}
+
+    Q_INVOKABLE int currentIndex(int axis) const;
+    Q_INVOKABLE void setCurrentIndex(int axis, int index);
+
+    Q_INVOKABLE int length(int axis) const;
+
+    cimg_library::CImg<unsigned char> retrieveSlice(int index, int axis) const;
+    cimg_library::CImg<unsigned char> retrieveSlicedModels(int index, int axis) const;
 
 signals:
     void sofaDataChanged();
-    void imagePlaneChanged();
+    void currentIndexChanged();
 
 private slots:
     void handleSofaDataChange();
