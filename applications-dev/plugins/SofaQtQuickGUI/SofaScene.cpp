@@ -150,10 +150,10 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
 
 SofaScene::~SofaScene()
 {
-    setSelectedComponent(nullptr);
+    setSource(QUrl());
 
-	if(mySofaSimulation == sofa::simulation::getSimulation())
-		sofa::simulation::setSimulation(0);
+    if(mySofaSimulation == sofa::simulation::getSimulation())
+        sofa::simulation::setSimulation(0);
 
     sofa::simulation::graph::cleanup();
 }
@@ -361,7 +361,7 @@ void SofaScene::open()
 
 	if(finalFilename.isEmpty())
     {
-		setStatus(Status::Error);
+        setStatus(Status::Error);
         return;
     }
 

@@ -45,32 +45,81 @@ GridLayout {
         ColumnLayout {
             readonly property int sliceIndex: imagePlaneView.index
 
-            Rectangle {
-                id: rectangle
+            Flickable {
+                id: flickable
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.preferredWidth: imagePlaneView.implicitWidth
                 Layout.preferredHeight: imagePlaneView.implicitHeight
-                color: "black"
+                clip: true
 
-                border.color: "darkgrey"
-                border.width: 1
+                boundsBehavior: Flickable.StopAtBounds
+                contentWidth: rectangle.width * rectangle.scale
+                contentHeight: rectangle.height * rectangle.scale
 
-                ImagePlaneView {
-                    id: imagePlaneView
-                    anchors.fill: parent
-                    anchors.margins: rectangle.border.width
+                rebound: Transition {}
 
-                    imagePlaneModel: model
-                    index: slider.value
-                    axis: sliceAxis
+                Rectangle {
+                    id: rectangle
+                    width: flickable.width
+                    height: flickable.height
+                    transformOrigin: Item.TopLeft
+                    color: "black"
 
-                    Component.onCompleted: update();
+                    border.color: "darkgrey"
+                    border.width: 1
 
-                    Connections {
-                        target: sofaScene
-                        onStepEnd: imagePlaneView.update()
+                    ImagePlaneView {
+                        id: imagePlaneView
+                        anchors.fill: parent
+                        anchors.margins: rectangle.border.width
+
+                        imagePlaneModel: model
+                        index: slider.value
+                        axis: sliceAxis
+
+                        Component.onCompleted: update();
+
+                        Connections {
+                            target: sofaScene
+                            onStepEnd: imagePlaneView.update()
+                        }
                     }
+                }
+            }
+
+            MouseArea {
+                anchors.fill: flickable
+                acceptedButtons: Qt.NoButton
+
+                onWheel: {
+                    if(0 === wheel.angleDelta.y)
+                        return;
+
+                    var inPosition = mapToItem(rectangle, wheel.x, wheel.y);
+                    if(!rectangle.contains(inPosition))
+                        return;
+
+                    var zoomSpeed = 1.0;
+
+                    var boundary = 2.0;
+                    var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
+                    if(zoom < 0.0) {
+                        zoom = 1.0 + 0.5 * zoom;
+                        zoom /= zoomSpeed;
+                    }
+                    else {
+                        zoom = 1.0 + zoom;
+                        zoom *= zoomSpeed;
+                    }
+
+                    rectangle.scale = Math.max(1.0, rectangle.scale * zoom);
+
+                    var outPosition = mapFromItem(rectangle, inPosition.x, inPosition.y);
+
+                    flickable.contentX += (outPosition.x - wheel.x);
+                    flickable.contentY += (outPosition.y - wheel.y);
+                    flickable.returnToBounds();
                 }
             }
 
