@@ -167,7 +167,7 @@ ColumnLayout {
                             hoverEnabled: false
                             height : {
                                 if(index == p1scores.currentIndex)
-                                    return viewitem.childrenRect.height - 15
+                                    return viewitem.childrenRect.implicitHeight - 15
                                 else
                                     return 20
                             }
