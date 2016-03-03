@@ -39,9 +39,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaDisplayFlagsTreeModel.h"
 #include "SofaViewer.h"
 #include "PythonConsole.h"
-#include <sofa/helper/system/PluginManager.h>
-
 using namespace sofa::qtquick;
+
+#include "Console.h"
+using sofa::qtquick::console::Console ;
+
+#include <sofa/helper/system/PluginManager.h>
 
 const int versionMajor = 1;
 const int versionMinor = 0;
@@ -63,7 +66,7 @@ void SofaQtQuickGUI::init()
 
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
-	//Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
+    //Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
 
     qRegisterMetaType<SofaScene::Status>("Status");
 
@@ -89,4 +92,10 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
+
+
+    // registers the C++ type in the QML system with the name "Console",
+    qmlRegisterType<Console>("Console",                   // char* uri
+                             versionMajor, versionMinor,  // int majorVersion
+                             "Console");                  // exported Name.
 }
