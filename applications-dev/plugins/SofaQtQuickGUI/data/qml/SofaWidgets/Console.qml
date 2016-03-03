@@ -106,7 +106,7 @@ ColumnLayout {
                                 id : extrainfo
 
                                 textFormat: Text.RichText
-                                text: "<a href='http://google.com'>"+link+":"+line+"</a>"
+                                text: "Emitted from: <a href='file://"+link+"?"+line+"'>"+link+":"+line+"</a>"
                                 onLinkActivated: {
                                     Qt.openUrlExternally(link);
                                     console.log("Helle est pas belle la vie ? "+link);
@@ -184,9 +184,12 @@ ColumnLayout {
 
         Console {
             onMessageAdded:{
-                if(p1model.count > 5){
+                if(p1model.count > 100){
                     p1model.remove(0);
-                    p1scores.currentIndex = -1;
+                    if( p1scores.currentIndex <= 0 )
+                        p1scores.currentIndex = -1;
+                    else
+                        p1scores.currentIndex = p1scores.currentIndex-1;
                 }
                 p1model.append({emitter : emitter,
                                    type : type,
