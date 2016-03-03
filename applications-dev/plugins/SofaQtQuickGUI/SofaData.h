@@ -47,6 +47,8 @@ public:
     SofaData(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
     SofaData(const SofaData& sceneData);
 
+    Q_INVOKABLE const sofa::qtquick::SofaComponent* sofaComponent() const;
+
     Q_INVOKABLE QVariantMap object() const;
 
     Q_INVOKABLE QVariant value();
@@ -57,9 +59,8 @@ public:
     const sofa::core::objectmodel::BaseData* data() const;
 
 private:
-    const SofaScene*                                    mySofaScene;
-    mutable const sofa::core::objectmodel::Base*        myBase;
-    mutable const sofa::core::objectmodel::BaseData*    myData;
+    const SofaComponent*                        mySofaComponent;
+    const sofa::core::objectmodel::BaseData*    myData;
 
 };
 

@@ -21,184 +21,293 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.2
+import QtQml.Models 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaData 1.0
 import ImagePlaneModel 1.0
 import ImagePlaneView 1.0
 
-GridLayout {
+ColumnLayout {
     id: root
-    columns: 2
 
     property var dataObject: null
 
     ImagePlaneModel {
-        id: model
+        id: planeModel
 
         sofaData: root.dataObject.sofaData
     }
+
+    GroupBox {
+        id: showGroup
+        Layout.fillWidth: true
+
+        title: "Show"
+
+        property int count2D: (showPlaneX2D.checked ? 1 : 0) + (showPlaneY2D.checked ? 1 : 0) + (showPlaneZ2D.checked ? 1 : 0)
+
+        GridLayout {
+            anchors.fill: parent
+            Layout.alignment: Qt.AlignCenter
+            columns: 4
+
+            Label {
+                text: "2D"
+            }
+
+            CheckBox {
+                id: showPlaneX2D
+                text: "X"
+                checked: true
+            }
+            CheckBox {
+                id: showPlaneY2D
+                text: "Y"
+                checked: true
+            }
+            CheckBox {
+                id: showPlaneZ2D
+                text: "Z"
+                checked: true
+            }
+
+            Label {
+                text: "3D"
+            }
+
+            CheckBox {
+                id: showPlaneX3D
+                text: "X"
+                checked: true
+            }
+            CheckBox {
+                id: showPlaneY3D
+                text: "Y"
+                checked: true
+            }
+            CheckBox {
+                id: showPlaneZ3D
+                text: "Z"
+                checked: true
+            }
+        }
+    }
+
+//    RowLayout {
+//        Layout.fillWidth: true
+
+//        Loader {
+//            id: planeX
+//            visible: showPlaneX2D.checked
+
+//            Layout.fillWidth: true
+
+//            sourceComponent: sliceComponent
+//            property int sliceAxis: 0
+//            readonly property int sliceIndex: item ? item.sliceIndex : 0
+//            property bool showSubWindow: true
+//        }
+
+//        Loader {
+//            id: planeY
+//            visible: showPlaneY2D.checked
+
+//            Layout.fillWidth: true
+
+//            sourceComponent: sliceComponent
+//            property int sliceAxis: 1
+//            readonly property int sliceIndex: item ? item.sliceIndex : 0
+//            property bool showSubWindow: true
+//        }
+
+//        Loader {
+//            id: planeZ
+//            visible: showPlaneZ2D.checked
+
+//            Layout.fillWidth: true
+
+//            sourceComponent: sliceComponent
+//            property int sliceAxis: 2
+//            readonly property int sliceIndex: item ? item.sliceIndex : 0
+//            property bool showSubWindow: true
+//        }
+//    }
+
+    GridView {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 200
+
+        cellWidth: width * 0.5
+        //cellWidth: 200
+        cellHeight: cellWidth
+
+        model: ListModel {
+            id: model
+
+            ListElement {
+                sliceAxis: 0
+                showSubWindow: true
+            }
+            ListElement {
+                sliceAxis: 1
+                showSubWindow: true
+            }
+            ListElement {
+                sliceAxis: 2
+                showSubWindow: true
+            }
+        }
+
+        delegate: sliceComponent
+    }
+
+// components
 
     Component {
         id: sliceComponent
 
         ColumnLayout {
-            readonly property int sliceIndex: imagePlaneView.index
+            width: GridView.view.cellWidth
+            height: GridView.view.cellHeight
+            //readonly property int sliceIndex: imagePlaneView.index
 
-            Flickable {
-                id: flickable
+            Component.onCompleted: console.log("c", width, height)
+
+            onWidthChanged: console.log("w", width);
+            onHeightChanged: console.log("h", height);
+
+            Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: imagePlaneView.implicitWidth
-                Layout.preferredHeight: imagePlaneView.implicitHeight
-                clip: true
-
-                boundsBehavior: Flickable.StopAtBounds
-                contentWidth: rectangle.width * rectangle.scale
-                contentHeight: rectangle.height * rectangle.scale
-
-                rebound: Transition {}
-
-                Rectangle {
-                    id: rectangle
-                    width: flickable.width
-                    height: flickable.height
-                    transformOrigin: Item.TopLeft
-                    color: "black"
-
-                    border.color: "darkgrey"
-                    border.width: 1
-
-                    ImagePlaneView {
-                        id: imagePlaneView
-                        anchors.fill: parent
-                        anchors.margins: rectangle.border.width
-
-                        imagePlaneModel: model
-                        index: slider.value
-                        axis: sliceAxis
-
-                        Component.onCompleted: update();
-
-                        Connections {
-                            target: sofaScene
-                            onStepEnd: imagePlaneView.update()
-                        }
-                    }
-                }
+                color: Qt.rgba(0 == sliceAxis, 1 == sliceAxis, 2 == sliceAxis, 1.0)
             }
 
-            MouseArea {
-                anchors.fill: flickable
-                acceptedButtons: Qt.NoButton
+//            Flickable {
+//                id: flickable
+//                Layout.fillWidth: true
+//                Layout.fillHeight: true
+//                //Layout.preferredWidth: imagePlaneView.implicitWidth
+//                //Layout.preferredHeight: imagePlaneView.implicitHeight
+//                clip: true
 
-                onWheel: {
-                    if(0 === wheel.angleDelta.y)
-                        return;
+//                height: width//implicitHeight
+//                //onHeightChanged: console.log("+", height)
 
-                    var inPosition = mapToItem(rectangle, wheel.x, wheel.y);
-                    if(!rectangle.contains(inPosition))
-                        return;
+//                //Layout.onPreferredHeightChanged: console.log(Layout.preferredHeight)
 
-                    var zoomSpeed = 1.0;
+//                boundsBehavior: Flickable.StopAtBounds
+//                contentWidth: rectangle.width * rectangle.scale
+//                contentHeight: rectangle.height * rectangle.scale
 
-                    var boundary = 2.0;
-                    var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
-                    if(zoom < 0.0) {
-                        zoom = 1.0 + 0.5 * zoom;
-                        zoom /= zoomSpeed;
-                    }
-                    else {
-                        zoom = 1.0 + zoom;
-                        zoom *= zoomSpeed;
-                    }
+//                rebound: Transition {}
 
-                    rectangle.scale = Math.max(1.0, rectangle.scale * zoom);
+//                Rectangle {
+//                    id: rectangle
+////                    implicitWidth: flickable.width
+////                    implicitHeight: flickable.height
+//                    width: 100
+//                    height: 100
+//                    transformOrigin: Item.TopLeft
+//                    color: "black"
 
-                    var outPosition = mapFromItem(rectangle, inPosition.x, inPosition.y);
+//                    //onHeightChanged: console.log("-", height)
 
-                    flickable.contentX += (outPosition.x - wheel.x);
-                    flickable.contentY += (outPosition.y - wheel.y);
-                    flickable.returnToBounds();
-                }
-            }
+//                    border.color: "darkgrey"
+//                    border.width: 1
 
-            RowLayout {
-                Layout.fillWidth: true
+//                    ImagePlaneView {
+//                        id: imagePlaneView
+//                        anchors.fill: parent
+//                        anchors.margins: rectangle.border.width
 
-                Button {
-                    Layout.preferredWidth: Layout.preferredHeight
-                    Layout.preferredHeight: 18
-                    Layout.alignment: Qt.AlignCenter
-                    iconSource: "qrc:/icon/subWindow.png"
-                    visible: showSubWindow
+//                        imagePlaneModel: planeModel
+//                        index: slider.value
+//                        axis: sliceAxis
 
-                    onClicked: windowComponent.createObject(SofaApplication, {"sliceComponent": sliceComponent, "sliceAxis": sliceAxis});
-                }
+//                        Component.onCompleted: update();
 
-                Slider {
-                    id: slider
-                    Layout.fillWidth: true
+//                        Connections {
+//                            target: sofaScene
+//                            onStepEnd: imagePlaneView.update()
+//                        }
+//                    }
+//                }
+//            }
 
-                    minimumValue: 0
-                    maximumValue: imagePlaneView.length > 0 ? imagePlaneView.length - 1 : 0
-                    stepSize: 1
-                    tickmarksEnabled: true
+//            MouseArea {
+//                anchors.fill: flickable
+//                acceptedButtons: Qt.NoButton
 
-                    value: model.currentIndex(imagePlaneView.axis);
-                    onValueChanged: model.setCurrentIndex(imagePlaneView.axis, value);
-                }
-            }
+//                onWheel: {
+//                    if(0 === wheel.angleDelta.y)
+//                        return;
+
+//                    var inPosition = mapToItem(rectangle, wheel.x, wheel.y);
+//                    if(!rectangle.contains(inPosition))
+//                        return;
+
+//                    var zoomSpeed = 1.0;
+
+//                    var boundary = 2.0;
+//                    var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
+//                    if(zoom < 0.0) {
+//                        zoom = 1.0 + 0.5 * zoom;
+//                        zoom /= zoomSpeed;
+//                    }
+//                    else {
+//                        zoom = 1.0 + zoom;
+//                        zoom *= zoomSpeed;
+//                    }
+
+//                    rectangle.scale = Math.max(1.0, rectangle.scale * zoom);
+
+//                    var outPosition = mapFromItem(rectangle, inPosition.x, inPosition.y);
+
+//                    flickable.contentX += (outPosition.x - wheel.x);
+//                    flickable.contentY += (outPosition.y - wheel.y);
+//                    flickable.returnToBounds();
+//                }
+//            }
+
+//            RowLayout {
+//                Layout.fillWidth: true
+//                spacing: 0
+
+//                Button {
+//                    Layout.preferredWidth: Layout.preferredHeight
+//                    Layout.preferredHeight: 18
+//                    Layout.alignment: Qt.AlignCenter
+//                    iconSource: "qrc:/icon/subWindow.png"
+//                    visible: showSubWindow
+
+//                    onClicked: windowComponent.createObject(SofaApplication, {"sliceComponent": sliceComponent, "sliceAxis": sliceAxis});
+//                }
+
+//                Slider {
+//                    id: slider
+//                    Layout.fillWidth: true
+
+//                    minimumValue: 0
+//                    maximumValue: imagePlaneView.length > 0 ? imagePlaneView.length - 1 : 0
+//                    stepSize: 1
+//                    tickmarksEnabled: true
+
+//                    value: planeModel.currentIndex(imagePlaneView.axis);
+//                    onValueChanged: planeModel.setCurrentIndex(imagePlaneView.axis, value);
+//                }
+
+//                Label {
+//                    horizontalAlignment: Qt.AlignRight
+//                    text: (imagePlaneView.length - 1).toString() + "/" + (imagePlaneView.length - 1).toString()
+
+//                    Component.onCompleted: {
+//                        Layout.preferredWidth = implicitWidth; // set value to avoid binding
+//                        text = Qt.binding(function() {return slider.value.toString() + "/" + (imagePlaneView.length - 1).toString();});
+//                    }
+//                }
+//            }
         }
-    }
-
-    Loader {
-        id: planeX
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 0
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
-    }
-
-    Loader {
-        id: planeY
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 1
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
-    }
-
-    Item {
-        id: info
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        TextArea {
-            anchors.fill: parent
-            readOnly: true
-
-            text: "Info:\n\n" +
-                  "x: " + planeX.sliceIndex + "\n" +
-                  "y: " + planeY.sliceIndex + "\n" +
-                  "z: " + planeZ.sliceIndex + "\n"
-        }
-    }
-
-    Loader {
-        id: planeZ
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 2
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
     }
 
     Component {
