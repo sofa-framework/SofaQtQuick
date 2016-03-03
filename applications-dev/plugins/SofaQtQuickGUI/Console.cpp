@@ -42,29 +42,82 @@ namespace qtquick
 namespace console
 {
 
-QtAppMessageHandler::QtAppMessageHandler(Console* console)
+Console::Console(QObject *parent) : QAbstractListModel(parent)
 {
-    m_console = console ;
-}
-
-void QtAppMessageHandler::process(Message &m){
-    m_console->messageAdded( QString(m.sender().c_str()),
-                             QString(m.message().str().c_str()),
-                             QString(m.fileInfo().filename),
-                             m.type(),
-                             m.fileInfo().line) ;
-}
-
-Console::Console(QObject *parent) : QObject(parent)
-{
-    MessageDispatcher::addHandler(new QtAppMessageHandler(this)) ;
+    MessageDispatcher::addHandler(this);
 }
 
 Console::~Console()
 {
-    //MessageDispatcher::rmHandler()
+   MessageDispatcher::rmHandler(this) ;
 }
 
+void Console::process(Message &m)
+{
+    if(m_messages.size() > 100){
+        beginRemoveRows(QModelIndex(), 0, 0);
+        m_messages.erase(m_messages.begin(),m_messages.begin()+1);
+        endRemoveRows();
+    }
+
+    beginInsertRows(QModelIndex(), m_messages.size(), m_messages.size());
+    m_messages.push_back(m) ;
+    endInsertRows();
+}
+
+int Console::rowCount(const QModelIndex & /*parent*/) const
+{
+    return m_messages.size() ;
+}
+
+QVariant Console::data(const QModelIndex& index, int role) const
+{
+    if(!index.isValid())
+    {
+        msg_error("SofaQtQuickGUI") << "Invalid index";
+        return QVariant("");
+    }
+
+    if(index.row() >= m_messages.size())
+    {
+        msg_error("SofaQtQuickGUI") << "Index out of bound";
+        return QVariant("");
+    }
+
+    const Message& item = m_messages[index.row()];
+
+    switch(role)
+    {
+    case MSG_MESSAGE:
+        return QVariant::fromValue(QString::fromStdString(item.message().str()));
+    case MSG_FILE:
+        return QVariant::fromValue(QString::fromStdString(item.fileInfo().filename));
+    case MSG_LINE:
+        return QVariant::fromValue(item.fileInfo().line);
+    case MSG_TYPE:
+        return QVariant::fromValue((int)item.type());
+    case MSG_EMITTER:
+        return QVariant::fromValue(QString::fromStdString(item.sender()));
+    default:
+        msg_error("SofaQtQuickGUI") << "Role unknown (this shouldn't happen in an official release and "
+                                        "must be fixed by careful code-path analysis and test " ;
+    }
+
+    return QVariant("");
+}
+
+
+QHash<int,QByteArray> Console::roleNames() const
+{
+    QHash<int,QByteArray> roles;
+
+    roles[MSG_MESSAGE]     = "message";
+    roles[MSG_EMITTER]     = "emitter";
+    roles[MSG_TYPE]        = "type";
+    roles[MSG_LINE]        = "line";
+    roles[MSG_FILE]        = "link";
+    return roles;
+}
 
 }
 

@@ -25,7 +25,7 @@ import QtQuick.Dialogs 1.1
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaScene 1.0
-import Console 1.0
+import SofaMessageList 1.0
 
 ColumnLayout {
     id: root
@@ -38,10 +38,6 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        ListModel {
-            id: p1model
-        }
-
         ScrollView {
             Layout.fillWidth: true
             width: parent.width
@@ -50,11 +46,20 @@ ColumnLayout {
             ListView {
                 anchors.fill: parent
                 id: p1scores
-                model: p1model
+                model: SofaMessageList
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
                 focus: true
+
+                Connections {
+                    target : SofaMessageList
+                    onRowsRemoved : {
+                        if( p1scores.currentIndex <= 0 ){
+                            p1scores.currentIndex = -1
+                        }
+                    }
+                }
 
                 delegate: Component {
                     Rectangle{
@@ -178,25 +183,6 @@ ColumnLayout {
                     }
                 }
                 highlightFollowsCurrentItem: true
-            }
-        }
-
-
-        Console {
-            onMessageAdded:{
-                if(p1model.count > 100){
-                    p1model.remove(0);
-                    if( p1scores.currentIndex <= 0 )
-                        p1scores.currentIndex = -1;
-                    else
-                        p1scores.currentIndex = p1scores.currentIndex-1;
-                }
-                p1model.append({emitter : emitter,
-                                   type : type,
-                                   message : message,
-                                   link : source,
-                                   line : line});
-
             }
         }
     }

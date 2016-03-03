@@ -111,14 +111,13 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaViewer.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
-    data/qml/SofaWidgets/Console.qml
+    data/qml/SofaWidgets/SofaMessageView.qml
     data/qml/SofaWidgets/PythonConsole.qml
     data/qml/SofaWidgets/SofaDataListView.qml
     data/qml/SofaWidgets/SofaSceneGraphView.qml
     data/qml/SofaWidgets/SofaSceneToolPanel.qml
     data/qml/SofaWidgets/SofaSimulationControl.qml
     data/qml/SofaWidgets/SofaVisualizationControl.qml
-
 )
 
 set(CONFIG_FILES

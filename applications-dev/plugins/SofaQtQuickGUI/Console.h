@@ -21,12 +21,11 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #define CONSOLE_H
 
 #include "SofaQtQuickGUI.h"
-#include <QObject>
-#include <QString>
-#include <QSet>
+#include <QAbstractListModel>
+
+#include <sofa/helper/vector.h>
 
 #include <sofa/helper/logging/MessageHandler.h>
-
 /// Forward declaration
 namespace sofa {
     namespace helper {
@@ -52,43 +51,44 @@ using sofa::helper::logging::Message ;
 using sofa::helper::logging::MessageHandler ;
 
 
-class QtAppMessageHandler : public MessageHandler
-{
-    Console* m_console ;
-public:
-    QtAppMessageHandler(Console* console) ;
-    virtual void process(Message &m) ;
-};
-
 /*******************************************************************************
  *  \class A console with features to interact on the messages.
  *    1) click on the message location to expand it
  *    2) click on the source code location to open it in a source editor
  *    3) popup menu to select the emitting object.
  ******************************************************************************/
-class SOFA_SOFAQTQUICKGUI_API Console : public QObject
+class SOFA_SOFAQTQUICKGUI_API Console : public QAbstractListModel,
+                                        public MessageHandler
 {
     Q_OBJECT
+
+    enum {
+        MSG_MESSAGE = 0,
+        MSG_EMITTER,
+        MSG_FILE,
+        MSG_LINE,
+        MSG_TYPE,
+        MSG_ROLES_COUNT
+    }ConsoleRoles;
 
 public:
     Console(QObject *parent = 0);
     ~Console();
 
-signals:
-    void messageAdded(const QString& emitter,
-                      const QString& message,
-                      const QString& source,
-                      int type, int line);
-};
+    /// inherited from QAbstractListModel
+    int rowCount(const QModelIndex& parent) const ;
+    QVariant data(const QModelIndex& index, int role) const ;
+    QHash<int, QByteArray> roleNames() const;
 
-namespace singleton
-{
-    class Console
-    {
-        public:
-            static sofa::qtquick::console::Console* instance() ;
-    };
-}
+    /// inherited from MessageHandler
+    virtual void process(Message &m) ;
+
+private:
+    sofa::helper::vector<Message> m_messages ;
+
+//signals:
+//    void messageRemovedAt(int idx) ;
+};
 
 }
 

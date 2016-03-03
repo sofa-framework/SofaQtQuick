@@ -64,6 +64,16 @@ void SofaQtQuickGUI::init()
     sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
 }
 
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createConsole(QQmlEngine *engine,
+                              QJSEngine *scriptEngine){
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return new Console() ;
+}
+
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
     //Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
@@ -95,7 +105,8 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 
 
     // registers the C++ type in the QML system with the name "Console",
-    qmlRegisterType<Console>("Console",                   // char* uri
-                             versionMajor, versionMinor,  // int majorVersion
-                             "Console");                  // exported Name.
+    qmlRegisterSingletonType<Console>("SofaMessageList",                    // char* uri
+                                       versionMajor, versionMinor,          // int majorVersion
+                                      "SofaMessageList",
+                                       createConsole );        // exported Name.
 }
