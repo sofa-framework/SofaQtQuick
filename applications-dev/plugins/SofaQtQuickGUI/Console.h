@@ -17,8 +17,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
@@ -27,9 +25,16 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #include <QString>
 #include <QSet>
 
-#include "sofa/helper/logging/MessageDispatcher.h"
-#include "sofa/helper/logging/Messaging.h"
-using sofa::helper::logging::Message ;
+#include <sofa/helper/logging/MessageHandler.h>
+
+/// Forward declaration
+namespace sofa {
+    namespace helper {
+        namespace logging {
+            class Message;
+        }
+    }
+}
 
 namespace sofa
 {
@@ -39,6 +44,21 @@ namespace qtquick
 
 namespace console
 {
+class Console ;
+
+// I can use 'using' because I'm in my private 'console' namespace so it
+// will not generate namespace pollution.
+using sofa::helper::logging::Message ;
+using sofa::helper::logging::MessageHandler ;
+
+
+class QtAppMessageHandler : public MessageHandler
+{
+    Console* m_console ;
+public:
+    QtAppMessageHandler(Console* console) ;
+    virtual void process(Message &m) ;
+};
 
 /*******************************************************************************
  *  \class A console with features to interact on the messages.
@@ -57,8 +77,8 @@ public:
 signals:
     void messageAdded(const QString& emitter,
                       const QString& message,
-                      const QString& source, int type, int line);
-
+                      const QString& source,
+                      int type, int line);
 };
 
 namespace singleton

@@ -111,6 +111,14 @@ ColumnLayout {
                                     Qt.openUrlExternally(link);
                                     console.log("Helle est pas belle la vie ? "+link);
                                 }
+                                /*MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: text.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                        acceptedButtons: Qt.NoButton
+                                }*/
+                                /*onLinkHovered: {
+                                    console.log("TOTO !!" +link) ;
+                                }*/
                             }
                             Rectangle{
                                 id: endline
@@ -175,12 +183,18 @@ ColumnLayout {
 
 
         Console {
-            onMessageAdded:
+            onMessageAdded:{
+                if(p1model.count > 5){
+                    p1model.remove(0);
+                    p1scores.currentIndex = -1;
+                }
                 p1model.append({emitter : emitter,
                                    type : type,
                                    message : message,
                                    link : source,
                                    line : line});
+
+            }
         }
     }
 }
