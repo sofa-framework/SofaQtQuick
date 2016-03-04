@@ -39,9 +39,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaDisplayFlagsTreeModel.h"
 #include "SofaViewer.h"
 #include "PythonConsole.h"
-#include <sofa/helper/system/PluginManager.h>
-
 using namespace sofa::qtquick;
+
+#include "Console.h"
+using sofa::qtquick::console::Console ;
+
+#include <sofa/helper/system/PluginManager.h>
 
 const int versionMajor = 1;
 const int versionMinor = 0;
@@ -61,9 +64,19 @@ void SofaQtQuickGUI::init()
     sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
 }
 
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createConsole(QQmlEngine *engine,
+                              QJSEngine *scriptEngine){
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return new Console() ;
+}
+
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
-	//Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
+    //Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
 
     qRegisterMetaType<SofaScene::Status>("Status");
 
@@ -89,4 +102,11 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
+
+
+    // registers the C++ type in the QML system with the name "Console",
+    qmlRegisterSingletonType<Console>("SofaMessageList",                    // char* uri
+                                       versionMajor, versionMinor,          // int majorVersion
+                                      "SofaMessageList",
+                                       createConsole );        // exported Name.
 }

@@ -7,3 +7,5 @@ SofaSceneGraphView 1.0 SofaSceneGraphView.qml
 SofaSceneToolPanel 1.0 SofaSceneToolPanel.qml
 SofaSimulationControl 1.0 SofaSimulationControl.qml
 SofaVisualizationControl 1.0 SofaVisualizationControl.qml
+SofaMessageView 1.0 SofaMessageView.qml
+
