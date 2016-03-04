@@ -78,7 +78,7 @@ QVariant Console::data(const QModelIndex& index, int role) const
         return QVariant("");
     }
 
-    if(index.row() >= m_messages.size())
+    if((unsigned int)index.row() >= m_messages.size())
     {
         msg_error("SofaQtQuickGUI") << "Index out of bound";
         return QVariant("");

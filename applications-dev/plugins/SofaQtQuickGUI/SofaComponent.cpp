@@ -198,13 +198,14 @@ Base* SofaComponent::base()
 
 const Base* SofaComponent::base() const
 {
+    const Base* base = nullptr;
+
     // check object existence
     if(mySofaScene && myBase)
         if(mySofaScene->componentExists(myBase))
-            return myBase;
+            base = myBase;
 
-    myBase = 0;
-    return 0;
+    return base;
 }
 
 const SofaScene* SofaComponent::sofaScene() const

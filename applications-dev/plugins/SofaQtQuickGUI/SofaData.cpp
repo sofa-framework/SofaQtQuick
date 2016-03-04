@@ -33,44 +33,43 @@ namespace qtquick
 using namespace sofa::core::objectmodel;
 
 SofaData::SofaData(const SofaComponent* sofaComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    mySofaScene(sofaComponent->sofaScene()),
-    myBase(sofaComponent->base()),
+    mySofaComponent(sofaComponent),
     myData(data)
 {
 
 }
 
 SofaData::SofaData(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    mySofaScene(sofaScene),
-    myBase(base),
+    mySofaComponent(new SofaComponent(sofaScene, base)),
     myData(data)
 {
 
 }
 
 SofaData::SofaData(const SofaData& sofaData) : QObject(),
-    mySofaScene(sofaData.mySofaScene),
-    myBase(sofaData.myBase),
+    mySofaComponent(sofaData.mySofaComponent),
     myData(sofaData.myData)
 {
 
 }
 
-//SofaData::SofaData(const SofaData& sofaData) :
-//    myScene(sofaData.myScene),
-//    myBase(),
-//    myData(sofaData.data())
-//{
-//    // if the data exists, its base is valid
-//    if(myData)
-//        myBase = sofaData.myBase;
-//}
+const SofaComponent* SofaData::sofaComponent() const
+{
+    return mySofaComponent;
+}
 
 QVariantMap SofaData::object() const
 {
-    const BaseData* data = SofaData::data();
-    if(data)
-        return mySofaScene->dataObject(data);
+    if(mySofaComponent)
+    {
+        const SofaScene* sofaScene = mySofaComponent->sofaScene();
+        if(sofaScene)
+        {
+            const BaseData* data = SofaData::data();
+            if(data)
+                return sofaScene->dataObject(data);
+        }
+    }
 
     return QVariantMap();
 }
@@ -118,17 +117,17 @@ BaseData* SofaData::data()
 
 const BaseData* SofaData::data() const
 {
+    const BaseData* data = nullptr;
+
     // check if the base still exists hence if the data is still valid
-    const Base* base = 0;
-    if(mySofaScene && myBase)
-        if(mySofaScene->componentExists(myBase))
-            base = myBase;
+    if(mySofaComponent)
+    {
+        const Base* base = mySofaComponent->base();
+        if(base)
+            data = myData;
+    }
 
-    myBase = base;
-    if(!myBase)
-        myData = 0;
-
-    return myData;
+    return data;
 }
 
 }

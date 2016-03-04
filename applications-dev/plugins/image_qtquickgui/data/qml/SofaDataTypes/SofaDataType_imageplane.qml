@@ -125,6 +125,7 @@ GridLayout {
 
             RowLayout {
                 Layout.fillWidth: true
+                spacing: 0
 
                 Button {
                     Layout.preferredWidth: Layout.preferredHeight
@@ -147,6 +148,16 @@ GridLayout {
 
                     value: model.currentIndex(imagePlaneView.axis);
                     onValueChanged: model.setCurrentIndex(imagePlaneView.axis, value);
+                }
+
+                Label {
+                    horizontalAlignment: Qt.AlignRight
+                    text: (imagePlaneView.length - 1).toString() + "/" + (imagePlaneView.length - 1).toString()
+
+                    Component.onCompleted: {
+                        Layout.preferredWidth = implicitWidth; // set value to avoid binding
+                        text = Qt.binding(function() {return slider.value.toString() + "/" + (imagePlaneView.length - 1).toString();});
+                    }
                 }
             }
         }
