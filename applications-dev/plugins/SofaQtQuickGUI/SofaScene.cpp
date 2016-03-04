@@ -91,13 +91,13 @@ using namespace sofa::simulation;
 typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
 
 SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
-	myStatus(Status::Null),
-	mySource(),
+    myStatus(Status::Null),
+    mySource(),
     mySourceQML(),
     myPath(),
     myPathQML(),
     myVisualDirty(false),
-	myDt(0.04),
+    myDt(0.04),
     myAnimate(false),
     myDefaultAnimate(false),
     myAsynchronous(true),
@@ -120,16 +120,16 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     sofa::component::initComponentAdvanced();
     sofa::component::initComponentMisc();
 
-	sofa::core::ExecParams::defaultInstance()->setAspectID(0);
+    sofa::core::ExecParams::defaultInstance()->setAspectID(0);
     sofa::core::ObjectFactory::ClassEntry::SPtr classVisualModel;
-	sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
+    sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
 
-	myStepTimer->setInterval(0);
-	mySofaSimulation = sofa::simulation::graph::getSimulation();
+    myStepTimer->setInterval(0);
+    mySofaSimulation = sofa::simulation::graph::getSimulation();
 
     // plugins
     QVector<QString> plugins;
-	plugins.append("SofaPython");
+    plugins.append("SofaPython");
 
     for(const QString& plugin : plugins)
     {
@@ -137,10 +137,10 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
         sofa::helper::system::PluginManager::getInstance().loadPlugin(s);
     }
 
-	sofa::helper::system::PluginManager::getInstance().init();
+    sofa::helper::system::PluginManager::getInstance().init();
 
-	// connections
-	connect(this, &SofaScene::sourceChanged, this, &SofaScene::open);
+    // connections
+    connect(this, &SofaScene::sourceChanged, this, &SofaScene::open);
     connect(this, &SofaScene::animateChanged, myStepTimer, [&](bool newAnimate) {newAnimate ? myStepTimer->start() : myStepTimer->stop();});
     connect(this, &SofaScene::statusChanged, this, &SofaScene::handleStatusChange);
     connect(this, &SofaScene::aboutToUnload, this, [&]() {myBases.clear();});
@@ -163,24 +163,24 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
     if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
 
-	if(!QOpenGLContext::currentContext())
-	{
-		// create an opengl context
-		QOpenGLContext* openglContext = new QOpenGLContext();
+    if(!QOpenGLContext::currentContext())
+    {
+        // create an opengl context
+        QOpenGLContext* openglContext = new QOpenGLContext();
 
-		// share its resources with the global context
-		QOpenGLContext* sharedOpenglContext = QOpenGLContext::globalShareContext();
-		if(sharedOpenglContext)
-			openglContext->setShareContext(sharedOpenglContext);
+        // share its resources with the global context
+        QOpenGLContext* sharedOpenglContext = QOpenGLContext::globalShareContext();
+        if(sharedOpenglContext)
+            openglContext->setShareContext(sharedOpenglContext);
 
-		if(!openglContext->create())
+        if(!openglContext->create())
             qFatal("Cannot create an OpenGL Context needed to init SofaScene");
 
-		if(!offscreenSurface->isValid())
+        if(!offscreenSurface->isValid())
             qFatal("Cannot create an OpenGL Surface needed to init SofaScene");
 
-		openglContext->makeCurrent(offscreenSurface);
-	}
+        openglContext->makeCurrent(offscreenSurface);
+    }
 
     GLenum err = glewInit();
     if(0 != err)
@@ -264,7 +264,7 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         sofaScene->sofaSimulation()->init(sofaScene->sofaSimulation()->GetRoot().get());
         sofaScene->sofaSimulation()->initTextures(sofaScene->sofaSimulation()->GetRoot().get());
 
-		glFinish();
+        glFinish();
 
         sofaScene->addChild(0, sofaScene->sofaSimulation()->GetRoot().get());
 
@@ -281,7 +281,7 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
 
     sofaScene->setStatus(SofaScene::Status::Error);
 
-	return false;
+    return false;
 }
 
 class LoaderThread : public QThread
@@ -290,22 +290,22 @@ public:
     LoaderThread(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface) :
         mySofaScene(sofaScene),
         myOffscreenSurface(offscreenSurface),
-		myIsLoaded(false)
-	{
+        myIsLoaded(false)
+    {
 
-	}
+    }
 
-	void run()
-	{
+    void run()
+    {
         myIsLoaded = LoaderProcess(mySofaScene, myOffscreenSurface);
-	}
+    }
 
-	bool isLoaded() const			{return myIsLoaded;}
+    bool isLoaded() const			{return myIsLoaded;}
 
 private:
     SofaScene*                      mySofaScene;
     QOffscreenSurface*              myOffscreenSurface;
-	bool							myIsLoaded;
+    bool							myIsLoaded;
 
 };
 
@@ -356,10 +356,10 @@ void SofaScene::open()
     mySofaSimulation->unload(mySofaSimulation->GetRoot());
 
     QString finalFilename = mySource.path();
-	if(mySource.isLocalFile())
-		finalFilename = mySource.toLocalFile();
+    if(mySource.isLocalFile())
+        finalFilename = mySource.toLocalFile();
 
-	if(finalFilename.isEmpty())
+    if(finalFilename.isEmpty())
     {
         setStatus(Status::Error);
         return;
@@ -367,13 +367,13 @@ void SofaScene::open()
 
     std::string filepath = finalFilename.toLatin1().constData();
     if(!sofa::helper::system::DataRepository.findFile(filepath))
-	{
+    {
         setStatus(Status::Error);
         return;
     }
 
-	finalFilename = filepath.c_str();
-	finalFilename.replace("\\", "/");
+    finalFilename = filepath.c_str();
+    finalFilename.replace("\\", "/");
 
     setPath(finalFilename);
 
@@ -438,9 +438,9 @@ void SofaScene::open()
     offScreenSurface->create();
 
     if(currentAsynchronous)
-	{
+    {
         LoaderThread* loaderThread = new LoaderThread(this, offScreenSurface);
-		
+
         connect(loaderThread, &QThread::finished, this, [this, loaderThread, offScreenSurface]() {
             if(!loaderThread->isLoaded())
                 setStatus(Status::Error);
@@ -453,28 +453,28 @@ void SofaScene::open()
             offScreenSurface->deleteLater();
         });
 
-		loaderThread->start();
+        loaderThread->start();
 
-		/*
-		QWindowList windows = qGuiApp->topLevelWindows();
-		for(QWindow* window : windows)
-		{
-			QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-			if(quickWindow)
-			{
-				window()->scheduleRenderJob(loaderThread, QQuickWindow::AfterSynchronizingStage);
-				window()->update();
-				break;
-			}			
-		}		
+        /*
+        QWindowList windows = qGuiApp->topLevelWindows();
+        for(QWindow* window : windows)
+        {
+            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
+            if(quickWindow)
+            {
+                window()->scheduleRenderJob(loaderThread, QQuickWindow::AfterSynchronizingStage);
+                window()->update();
+                break;
+            }
+        }
 
-		// TODO: add a timeout
-		while(!finished)
-			qApp->processEvents(QEventLoop::WaitForMoreEvents);
-		*/
-	}
+        // TODO: add a timeout
+        while(!finished)
+            qApp->processEvents(QEventLoop::WaitForMoreEvents);
+        */
+    }
     else
-	{
+    {
         if(!LoaderProcess(this, offScreenSurface))
             setStatus(Status::Error);
         else
@@ -482,7 +482,7 @@ void SofaScene::open()
             setDt(mySofaSimulation->GetRoot()->getDt());
             offScreenSurface->deleteLater();
         }
-	}
+    }
 }
 
 void SofaScene::handleStatusChange(SofaScene::Status newStatus)
@@ -506,12 +506,12 @@ void SofaScene::handleStatusChange(SofaScene::Status newStatus)
 
 void SofaScene::setStatus(Status newStatus)
 {
-	if(newStatus == myStatus)
-		return;
+    if(newStatus == myStatus)
+        return;
 
-	myStatus = newStatus;
+    myStatus = newStatus;
 
-	statusChanged(newStatus);
+    statusChanged(newStatus);
 }
 
 void SofaScene::setHeader(const QString& newHeader)
@@ -526,24 +526,24 @@ void SofaScene::setHeader(const QString& newHeader)
 
 void SofaScene::setSource(const QUrl& newSource)
 {
-	if(newSource == mySource || Status::Loading == myStatus)
-		return;
+    if(newSource == mySource || Status::Loading == myStatus)
+        return;
 
-	setStatus(Status::Null);
+    setStatus(Status::Null);
 
-	mySource = newSource;
+    mySource = newSource;
 
-	sourceChanged(newSource);
+    sourceChanged(newSource);
 }
 
 void SofaScene::setSourceQML(const QUrl& newSourceQML)
 {
-	if(newSourceQML == mySourceQML)
-		return;
+    if(newSourceQML == mySourceQML)
+        return;
 
-	mySourceQML = newSourceQML;
+    mySourceQML = newSourceQML;
 
-	sourceQMLChanged(newSourceQML);
+    sourceQMLChanged(newSourceQML);
 }
 
 void SofaScene::setPath(const QString& newPath)
@@ -568,12 +568,12 @@ void SofaScene::setPathQML(const QString& newPathQML)
 
 void SofaScene::setDt(double newDt)
 {
-	if(newDt == myDt)
-		return;
+    if(newDt == myDt)
+        return;
 
-	myDt = newDt;
+    myDt = newDt;
 
-	dtChanged(newDt);
+    dtChanged(newDt);
 }
 
 void SofaScene::setAnimate(bool newAnimate)
@@ -669,39 +669,39 @@ QQmlListProperty<sofa::qtquick::Manipulator> SofaScene::manipulators()
 
 double SofaScene::radius() const
 {
-	QVector3D min, max;
-	computeBoundingBox(min, max);
-	QVector3D diag = (max - min);
+    QVector3D min, max;
+    computeBoundingBox(min, max);
+    QVector3D diag = (max - min);
 
-	return diag.length();
+    return diag.length();
 }
 
 void SofaScene::computeBoundingBox(QVector3D& min, QVector3D& max) const
 {
-	SReal pmin[3], pmax[3];
+    SReal pmin[3], pmax[3];
     mySofaSimulation->computeTotalBBox(mySofaSimulation->GetRoot().get(), pmin, pmax);
 
-	min = QVector3D(pmin[0], pmin[1], pmin[2]);
-	max = QVector3D(pmax[0], pmax[1], pmax[2]);
+    min = QVector3D(pmin[0], pmin[1], pmin[2]);
+    max = QVector3D(pmax[0], pmax[1], pmax[2]);
 }
 
 QString SofaScene::dumpGraph() const
 {
-	QString dump;
+    QString dump;
 
-	if(mySofaSimulation->GetRoot())
-	{
-		std::streambuf* backup(std::cout.rdbuf());
+    if(mySofaSimulation->GetRoot())
+    {
+        std::streambuf* backup(std::cout.rdbuf());
 
-		std::ostringstream stream;
-		std::cout.rdbuf(stream.rdbuf());
-		mySofaSimulation->print(mySofaSimulation->GetRoot().get());
-		std::cout.rdbuf(backup);
+        std::ostringstream stream;
+        std::cout.rdbuf(stream.rdbuf());
+        mySofaSimulation->print(mySofaSimulation->GetRoot().get());
+        std::cout.rdbuf(backup);
 
-		dump += QString::fromStdString(stream.str());
-	}
+        dump += QString::fromStdString(stream.str());
+    }
 
-	return dump;
+    return dump;
 }
 
 bool SofaScene::reinitComponent(const QString& path)
@@ -1081,7 +1081,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
                     if(valueIterable.size() - 1 != i)
                         dataString += ' ';
                 }
-				
+
                 data->read(dataString.toStdString());
             }
             else if(typeinfo->Integer())
@@ -1196,15 +1196,15 @@ QVariant SofaScene::dataValue(const QString& path) const
 
 QVariant SofaScene::dataValue(const SofaComponent* sofaComponent, const QString& name) const
 {
-	if(!sofaComponent)
-		return QVariant();
+    if(!sofaComponent)
+        return QVariant();
 
-	const Base* base = sofaComponent->base();
-	if(!base)
-		return QVariant();
+    const Base* base = sofaComponent->base();
+    if(!base)
+        return QVariant();
 
-	BaseData* data = base->findData(name.toStdString());
-	return dataValue(data);
+    BaseData* data = base->findData(name.toStdString());
+    return dataValue(data);
 }
 
 void SofaScene::setDataValue(const QString& path, const QVariant& value)
@@ -1214,15 +1214,15 @@ void SofaScene::setDataValue(const QString& path, const QVariant& value)
 
 void SofaScene::setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value)
 {
-	if(!sofaComponent)
-		return;
+    if(!sofaComponent)
+        return;
 
-	Base* base = sofaComponent->base();
-	if(!base)
-		return;
+    Base* base = sofaComponent->base();
+    if(!base)
+        return;
 
-	BaseData* data = base->findData(name.toStdString());
-	setDataValue(data, value);
+    BaseData* data = base->findData(name.toStdString());
+    setDataValue(data, value);
 }
 
 static BaseData* FindData_Helper(BaseNode* node, const QString& path)
@@ -1271,7 +1271,20 @@ SofaComponent* SofaScene::component(const QString& path) const
 
 bool SofaScene::componentExists(const sofa::core::objectmodel::Base* base) const
 {
-	return myBases.contains(base);
+    return myBases.contains(base);
+}
+
+
+SofaComponent* SofaScene::root() const
+{
+    if(!mySofaSimulation)
+        return 0;
+
+    Base* base = mySofaSimulation->GetRoot().get();
+    if(!base)
+        return 0;
+
+    return new SofaComponent(this, base);
 }
 
 SofaComponent* SofaScene::visualStyleComponent() const
@@ -1303,24 +1316,24 @@ QVariant SofaScene::onDataValueByPath(const QString& path) const
 
 QVariant SofaScene::onDataValueByComponent(SofaComponent* sofaComponent, const QString& name) const
 {
-	return dataValue((const SofaComponent*) sofaComponent, name);
+    return dataValue((const SofaComponent*) sofaComponent, name);
 }
 
 // arguments from JS have been packed in an array, we have to unpack them
 static QVariant UnpackParameters_Helper(const QVariant& value)
 {
-	QVariant finalValue = value;
-	if(finalValue.userType() == qMetaTypeId<QJSValue>())
-		finalValue = finalValue.value<QJSValue>().toVariant();
+    QVariant finalValue = value;
+    if(finalValue.userType() == qMetaTypeId<QJSValue>())
+        finalValue = finalValue.value<QJSValue>().toVariant();
 
-	if(QVariant::List == finalValue.type())
-	{
-		QSequentialIterable valueIterable = finalValue.value<QSequentialIterable>();
-		if(1 == valueIterable.size())
-			finalValue = valueIterable.at(0);
-	}
+    if(QVariant::List == finalValue.type())
+    {
+        QSequentialIterable valueIterable = finalValue.value<QSequentialIterable>();
+        if(1 == valueIterable.size())
+            finalValue = valueIterable.at(0);
+    }
 
-	return finalValue;
+    return finalValue;
 }
 
 void SofaScene::onSetDataValueByPath(const QString& path, const QVariant& value)
@@ -1340,7 +1353,7 @@ void SofaScene::onSetDataValueByPath(const QString& path, const QVariant& value)
 
 void SofaScene::onSetDataValueByComponent(SofaComponent* sofaComponent, const QString& name, const QVariant& value)
 {
-	return setDataValue(sofaComponent, name, UnpackParameters_Helper(value));
+    return setDataValue(sofaComponent, name, UnpackParameters_Helper(value));
 }
 
 void SofaScene::reload()
@@ -1351,9 +1364,9 @@ void SofaScene::reload()
 void SofaScene::step()
 {
     if(!isReady())
-		return;
+        return;
 
-	emit stepBegin();
+    emit stepBegin();
     mySofaSimulation->animate(mySofaSimulation->GetRoot().get(), myDt);
     myVisualDirty = true;
 
@@ -1503,16 +1516,16 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
 {
     SelectableSofaParticle* selectableSofaParticle = nullptr;
 
-	std::list<Tag> tagList(tags.size());
-	std::transform(tags.constBegin(), tags.constEnd(), tagList.begin(), [](const QString& tag) {return Tag(tag.toStdString());});
+    std::list<Tag> tagList(tags.size());
+    std::transform(tags.constBegin(), tags.constEnd(), tagList.begin(), [](const QString& tag) {return Tag(tag.toStdString());});
 
     sofa::simulation::MechanicalPickParticlesWithTagsVisitor pickVisitor(sofa::core::ExecParams::defaultInstance(),
-																		sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
-																		sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
-																		distanceToRay,
-																		distanceToRayGrowth,
-																		tagList,
-																		false);
+                                                                        sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
+                                                                        sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
+                                                                        distanceToRay,
+                                                                        distanceToRayGrowth,
+                                                                        tagList,
+                                                                        false);
 
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
@@ -1566,17 +1579,17 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
 
 static bool HasTag_Helper(Base* base, const QStringList& tags)
 {
-	if(!base)
-		return false;
+    if(!base)
+        return false;
 
-	if(tags.isEmpty())
-		return true;
+    if(tags.isEmpty())
+        return true;
 
-	for(const QString& tag : tags)
-		if(base->hasTag(Tag(tag.toStdString())))
-			return true;
+    for(const QString& tag : tags)
+        if(base->hasTag(Tag(tag.toStdString())))
+            return true;
 
-	return false;
+    return false;
 }
 
 Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QStringList& tags, const QList<SofaComponent*>& roots)
@@ -1755,8 +1768,8 @@ void SofaScene::onKeyPressed(char key)
     if(!isReady())
         return;
 
-	sofa::core::objectmodel::KeypressedEvent keyEvent(key);
-	sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
+    sofa::core::objectmodel::KeypressedEvent keyEvent(key);
+    sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
 }
 
 void SofaScene::onKeyReleased(char key)
@@ -1764,8 +1777,8 @@ void SofaScene::onKeyReleased(char key)
     if(!isReady())
         return;
 
-	sofa::core::objectmodel::KeyreleasedEvent keyEvent(key);
-	sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
+    sofa::core::objectmodel::KeyreleasedEvent keyEvent(key);
+    sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
 }
 
 void SofaScene::addChild(Node* parent, Node* child)
