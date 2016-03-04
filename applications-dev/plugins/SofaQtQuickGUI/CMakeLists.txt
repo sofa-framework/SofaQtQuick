@@ -118,6 +118,8 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaSceneToolPanel.qml
     data/qml/SofaWidgets/SofaSimulationControl.qml
     data/qml/SofaWidgets/SofaVisualizationControl.qml
+    data/qml/SofaWidgets/SofaInspector.qml
+    data/qml/SofaWidgets/SofaSceneViewer.qml
 )
 
 set(CONFIG_FILES
