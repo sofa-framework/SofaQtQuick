@@ -73,8 +73,8 @@ public:
     const SofaScene* sofaScene() const;
 
 private:
-    const SofaScene*                                mySofaScene;
-    mutable const sofa::core::objectmodel::Base*    myBase;
+    const SofaScene*                        mySofaScene;
+    const sofa::core::objectmodel::Base*    myBase;
 
 };
 
