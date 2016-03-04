@@ -52,6 +52,7 @@ SofaScene {
         case SofaScene.Ready:
             statusMessage = 'SofaScene "' + root.path + '" loaded successfully';
             SofaApplication.sceneSettings.addRecent(root.path);
+            selectedComponent = SofaApplication.sofaScene.root() ;
             break;
         }
     }
@@ -79,7 +80,7 @@ SofaScene {
             onKeyReleased(event.key);
     }
 
-	property var resetAction: Action {
+    property var resetAction: Action {
         text: "&Reset"
         shortcut: "Ctrl+Alt+R"
         onTriggered: root.reset();

@@ -87,11 +87,11 @@ public:
 
     Q_ENUMS(Status)
     enum Status {
-		Null,
-		Ready,
-		Loading,
-		Error
-	};
+        Null,
+        Ready,
+        Loading,
+        Error
+    };
 
 public:
     sofa::qtquick::SofaScene::Status status()	const               {return myStatus;}
@@ -104,10 +104,10 @@ public:
     void setHeader(const QString& newHeader);
 
     const QUrl& source() const                                  {return mySource;}
-	void setSource(const QUrl& newSource);
+    void setSource(const QUrl& newSource);
 
     const QUrl& sourceQML() const                               {return mySourceQML;}
-	void setSourceQML(const QUrl& newSourceQML);
+    void setSourceQML(const QUrl& newSourceQML);
 
     const QString& path() const                                 {return myPath;}
     void setPath(const QString& newPath);
@@ -116,8 +116,8 @@ public:
     void setPathQML(const QString& newPathQML);
 
     double dt() const                                           {return myDt;}
-	void setDt(double newDt);
-	
+    void setDt(double newDt);
+
     bool animate() const                                        {return myAnimate;}
     void setAnimate(bool newAnimate);
 
@@ -143,11 +143,11 @@ signals:
     void aboutToUnload();                               /// scene is being to be unloaded
     void statusChanged(Status newStatus);
     void headerChanged(const QString& newHeader);
-	void sourceChanged(const QUrl& newSource);
-	void sourceQMLChanged(const QUrl& newSourceQML);
+    void sourceChanged(const QUrl& newSource);
+    void sourceQMLChanged(const QUrl& newSourceQML);
     void pathChanged(const QString& newPath);
     void pathQMLChanged(const QString& newPathQML);
-	void dtChanged(double newDt);
+    void dtChanged(double newDt);
     void animateChanged(bool newAnimate);
     void defaultAnimateChanged(bool newDefaultAnimate);
     void asynchronousChanged(bool newAsynchronous);
@@ -174,37 +174,39 @@ public:
     QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data) const;
 
     QVariant dataValue(const QString& path) const;
-	QVariant dataValue(const SofaComponent* sofaComponent, const QString& name) const;
+    QVariant dataValue(const SofaComponent* sofaComponent, const QString& name) const;
 
     void setDataValue(const QString& path, const QVariant& value);
-	void setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value);
+    void setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value);
 
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path) const;
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path) const;
-	bool componentExists(const sofa::core::objectmodel::Base* base) const;
+    Q_INVOKABLE sofa::qtquick::SofaComponent* root() const;
+
+    bool componentExists(const sofa::core::objectmodel::Base* base) const;
 
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent() const;
 
 protected:
     Q_INVOKABLE QVariant onDataValueByPath(const QString& path) const; /// \note From QML: directly call 'dataValue'
-	Q_INVOKABLE QVariant onDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name) const; /// \note From QML: directly call 'dataValue'
+    Q_INVOKABLE QVariant onDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name) const; /// \note From QML: directly call 'dataValue'
 
     Q_INVOKABLE void onSetDataValueByPath(const QString& path, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
-	Q_INVOKABLE void onSetDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
+    Q_INVOKABLE void onSetDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
 
 public slots:
-	void reload();
-	void step();
+    void reload();
+    void step();
     void markVisualDirty(); // useful when you move objects without stepping (with manipulators for instance)
-	void reset();
+    void reset();
     //void exportObj();
 
-	void onKeyPressed(char key);
-	void onKeyReleased(char key);
+    void onKeyPressed(char key);
+    void onKeyReleased(char key);
 
 signals:
-	void stepBegin();
+    void stepBegin();
     void stepEnd();
     void reseted();
 
@@ -213,7 +215,7 @@ private slots:
     void handleStatusChange(Status newStatus);
 
 public:
-	sofa::simulation::Simulation* sofaSimulation() const {return mySofaSimulation;}
+    sofa::simulation::Simulation* sofaSimulation() const {return mySofaSimulation;}
 
 protected:
     /// \brief      Low-level drawing function
@@ -224,7 +226,7 @@ protected:
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
     /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaComponent where it belongs
-	SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
+    SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
