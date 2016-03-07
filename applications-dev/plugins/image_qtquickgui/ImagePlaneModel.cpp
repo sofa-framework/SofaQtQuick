@@ -50,6 +50,8 @@ void ImagePlaneModel::setSofaData(SofaData* sofaData)
         return;
 
     mySofaData = sofaData;
+    if(sofaData)
+        mySofaData = new SofaData(*sofaData);
 
     sofaDataChanged();
 }
@@ -61,6 +63,9 @@ int ImagePlaneModel::currentIndex(int axis) const
 
 void ImagePlaneModel::setCurrentIndex(int axis, int index)
 {
+    if(index >= length(axis))
+        return;
+
     myImagePlane->setCurrentIndex(axis, index);
 }
 

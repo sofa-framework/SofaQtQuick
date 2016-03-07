@@ -52,9 +52,12 @@ class ImagePlaneWrapper : public BaseImagePlaneWrapper
 {
 public:
     ImagePlaneWrapper(sofa::defaulttype::ImagePlane<T>& imagePlane) : BaseImagePlaneWrapper(),
-        myImagePlane(imagePlane)
+        myImagePlane(imagePlane),
+        myAxisLengths()
     {
-
+        int axisCount = sofa::defaulttype::ImagePlane<T>::pCoord::spatial_dimensions;
+        for(int axis = 0; axis < axisCount; ++axis)
+            myAxisLengths.append(myImagePlane.getDimensions()[axis]);
     }
 
     int currentIndex(int axis) const
@@ -95,11 +98,12 @@ public:
 
     int length(int axis) const
     {
-        return myImagePlane.getDimensions()[axis];
+        return myAxisLengths[axis];
     }
 
 private:
     sofa::defaulttype::ImagePlane<T>& myImagePlane;
+    QVector<int> myAxisLengths;
 
 };
 

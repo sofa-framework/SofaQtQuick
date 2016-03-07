@@ -33,10 +33,69 @@ GridLayout {
 
     property var dataObject: null
 
+    property var controller: null
+    onDataObjectChanged: {
+        if(dataObject) {
+            var sofaComponent = dataObject.sofaData.sofaComponent();
+            var sofaScene = sofaComponent.sofaScene();
+            controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController")
+            console.log("controller", controller);
+        }
+    }
+
     ImagePlaneModel {
         id: model
 
         sofaData: root.dataObject.sofaData
+    }
+
+    Loader {
+        id: planeX
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        sourceComponent: sliceComponent
+        property int sliceAxis: 0
+        readonly property int sliceIndex: item ? item.sliceIndex : 0
+        property bool showSubWindow: true
+    }
+
+    Loader {
+        id: planeY
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        sourceComponent: sliceComponent
+        property int sliceAxis: 1
+        readonly property int sliceIndex: item ? item.sliceIndex : 0
+        property bool showSubWindow: true
+    }
+
+    Item {
+        id: info
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        TextArea {
+            anchors.fill: parent
+            readOnly: true
+
+            text: "Info:\n\n" +
+                  "x: " + planeX.sliceIndex + "\n" +
+                  "y: " + planeY.sliceIndex + "\n" +
+                  "z: " + planeZ.sliceIndex + "\n"
+        }
+    }
+
+    Loader {
+        id: planeZ
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        sourceComponent: sliceComponent
+        property int sliceAxis: 2
+        readonly property int sliceIndex: item ? item.sliceIndex : 0
+        property bool showSubWindow: true
     }
 
     Component {
@@ -84,13 +143,113 @@ GridLayout {
                             target: sofaScene
                             onStepEnd: imagePlaneView.update()
                         }
+
+                        Item {
+                            id: pointCanvas
+                            anchors.fill: parent
+
+                            property int pointLastId: 0
+                            property var points: Object()
+
+                            onPointsChanged: updatePoints();
+
+                            function addPoint(x, y) {
+                                var id = pointLastId++;
+                                points[id] = Qt.point(x, y);
+
+                                points = points;
+
+                                return id;
+                            }
+
+                            function removePointById(id) {
+                                if(!points.hasOwnProperty(id))
+                                    return;
+
+                                delete points[id];
+
+                                points = points;
+                            }
+
+                            function removePointAt(x, y, brushSize) {
+                                if(undefined == brushSize)
+                                    brushSize = 1.0;
+
+                                var brushRadius = brushSize * 0.5;
+
+                                for(var id in points) {
+                                    if(!points.hasOwnProperty(id))
+                                        continue;
+
+                                    var point = points[id];
+                                    var distance = Qt.vector2d(x - point.x, y - point.y).length();
+                                    if(distance < brushRadius)
+                                        delete points[id];
+                                }
+
+                                points = points;
+                            }
+
+                            function updatePoints() {
+                                // clear old point
+                                var children = pointCanvas.children;
+                                for(var i = children.length - 1; i >= 0; --i)
+                                    pointCanvas[i].destroy();
+
+                                console.log("updatePoints");
+
+                                // add new points
+                                for(var id in points) {
+                                    if(!points.hasOwnProperty(id))
+                                        continue;
+
+                                    var point = points[id];
+                                    pointComponent.createObject(pointCanvas, {'x': point.x, 'y': point.y});
+                                }
+                            }
+
+                            Component {
+                                id: pointComponent
+
+                                Rectangle {
+                                    width: 5
+                                    height: width
+                                    radius: width * 0.5
+                                    color: "red"
+
+                                    Component.onCompleted: {
+                                        console.log("creating point at:", x, y);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
 
             MouseArea {
                 anchors.fill: flickable
-                acceptedButtons: Qt.NoButton
+                acceptedButtons: Qt.AllButtons
+
+                onPressed: {
+                    if(!controller)
+                        return;
+                }
+
+                onReleased: {
+                    if(!controller)
+                        return;
+
+//                    var sofaComponent = dataObject.sofaData.sofaComponent();
+//                    var sofaScene = sofaComponent.sofaScene();
+//                    sofaScene.sofaPythonInteractor.call(controller, "addPoint", 0, mouse.x, mouse.y);
+
+                    var position = Qt.point(mouse.x + 0.5, mouse.y + 0.5);
+                    if(Qt.LeftButton === mouse.button)
+                        pointCanvas.addPoint(position.x, position.y);
+                    else if(Qt.RightButton === mouse.button)
+                        pointCanvas.removePointAt(position.x, position.y, 5);
+                }
 
                 onWheel: {
                     if(0 === wheel.angleDelta.y)
@@ -161,55 +320,6 @@ GridLayout {
                 }
             }
         }
-    }
-
-    Loader {
-        id: planeX
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 0
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
-    }
-
-    Loader {
-        id: planeY
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 1
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
-    }
-
-    Item {
-        id: info
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        TextArea {
-            anchors.fill: parent
-            readOnly: true
-
-            text: "Info:\n\n" +
-                  "x: " + planeX.sliceIndex + "\n" +
-                  "y: " + planeY.sliceIndex + "\n" +
-                  "z: " + planeZ.sliceIndex + "\n"
-        }
-    }
-
-    Loader {
-        id: planeZ
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 2
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
     }
 
     Component {

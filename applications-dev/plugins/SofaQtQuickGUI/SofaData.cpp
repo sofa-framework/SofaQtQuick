@@ -33,36 +33,36 @@ namespace qtquick
 using namespace sofa::core::objectmodel;
 
 SofaData::SofaData(const SofaComponent* sofaComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    mySofaComponent(sofaComponent),
+    mySofaComponent(new SofaComponent(*sofaComponent)),
     myData(data)
 {
-
+    mySofaComponent->setParent(this);
 }
 
-SofaData::SofaData(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
+SofaData::SofaData(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
     mySofaComponent(new SofaComponent(sofaScene, base)),
     myData(data)
 {
-
+    mySofaComponent->setParent(this);
 }
 
 SofaData::SofaData(const SofaData& sofaData) : QObject(),
-    mySofaComponent(sofaData.mySofaComponent),
+    mySofaComponent(new SofaComponent(*sofaData.mySofaComponent)),
     myData(sofaData.myData)
 {
-
+    mySofaComponent->setParent(this);
 }
 
-const SofaComponent* SofaData::sofaComponent() const
+SofaComponent* SofaData::sofaComponent() const
 {
     return mySofaComponent;
 }
 
-QVariantMap SofaData::object() const
+QVariantMap SofaData::object()
 {
     if(mySofaComponent)
     {
-        const SofaScene* sofaScene = mySofaComponent->sofaScene();
+        SofaScene* sofaScene = mySofaComponent->sofaScene();
         if(sofaScene)
         {
             const BaseData* data = SofaData::data();
@@ -74,9 +74,9 @@ QVariantMap SofaData::object() const
     return QVariantMap();
 }
 
-QVariant SofaData::value()
+QVariant SofaData::value() const
 {
-    BaseData* data = SofaData::data();
+    const BaseData* data = SofaData::data();
     if(data)
         return SofaScene::dataValue(data);
 

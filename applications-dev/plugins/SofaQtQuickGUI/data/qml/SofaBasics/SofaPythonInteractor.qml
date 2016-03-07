@@ -23,16 +23,23 @@ import SofaPythonInteractor 1.0
 SofaPythonInteractor {
     id: root
 
-    function call(scriptControllerName, funcName) {
+    /// \note you can use scriptController with a SofaComponent or directly with the controller name
+    function call(scriptController, funcName) {
         //console.log(arguments.length);
         if(arguments.length == 2) {
-            return onCall(scriptControllerName, funcName);
+            if(!Qt.isQtObject(scriptController))
+                return onCall(scriptController, funcName);
+            else
+                return onCallBySofaComponent(scriptController, funcName);
         } else if(arguments.length > 2) {
             var packedArguments = [];
             for(var i = 2; i < arguments.length; ++i)
                 packedArguments.push(arguments[i]);
 
-            return onCall(scriptControllerName, funcName, packedArguments);
+            if(!Qt.isQtObject(scriptController))
+                return onCall(scriptController, funcName, packedArguments);
+            else
+                return onCallBySofaComponent(scriptController, funcName, packedArguments);
         }
 
         console.debug("ERROR: SofaPythonInteractor - using call with an invalid number of arguments:", arguments.length);

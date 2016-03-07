@@ -50,7 +50,7 @@ namespace qtquick
 {
 
 class SofaScene;
-
+class SofaComponent;
 
 /// \class Allow us to call a sofa PythonScriptController function from QML/JS
 class SOFA_SOFAQTQUICKGUI_API SofaPythonInteractor : public QObject, public QQmlParserStatus
@@ -89,6 +89,9 @@ protected:
     bool onCallBasicVerifications(const QString& funcName, const QVariant& parameter = QVariant());
     /// @internal call by controller
     QVariant onCallByController(PythonScriptController* controller, const QString& funcName, const QVariant& parameter = QVariant());
+
+    /// call by controller wrapped in a SofaComponent
+    Q_INVOKABLE QVariant onCallBySofaComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& funcName, const QVariant& parameter = QVariant());
 
     /// call by controller name
     Q_INVOKABLE QVariant onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());

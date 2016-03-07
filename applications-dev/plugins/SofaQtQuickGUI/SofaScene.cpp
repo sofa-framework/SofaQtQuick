@@ -39,6 +39,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/core/visual/VisualModel.h>
 #include <sofa/helper/system/glut.h>
 #include <SofaPython/SceneLoaderPY.h>
+#include <SofaPython/PythonScriptController.h>
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
 #include <SofaMeshCollision/TriangleModel.h>
@@ -86,6 +87,7 @@ using namespace sofa::core::objectmodel;
 using namespace sofa::core::visual;
 using namespace sofa::component::visualmodel;
 using namespace sofa::component::collision;
+using namespace sofa::component::controller;
 using namespace sofa::simulation;
 
 typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
@@ -818,7 +820,7 @@ QVariant SofaScene::linkValue(const sofa::core::objectmodel::BaseLink* link)
     return value;
 }
 
-QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data) const
+QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
 {
     QVariantMap object;
 
@@ -892,7 +894,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
 
     properties.insert("readOnly", data->isReadOnly());
 
-    SofaData* sofaData = new SofaData(this, data->getOwner(), data);
+    SofaData* sofaData = new SofaData(new SofaComponent(this, data->getOwner()), data);
     object.insert("sofaData", QVariant::fromValue(sofaData));
     object.insert("name", data->getName().c_str());
     object.insert("description", data->getHelp());
@@ -1242,7 +1244,7 @@ static BaseData* FindData_Helper(BaseNode* node, const QString& path)
     return data;
 }
 
-SofaData* SofaScene::data(const QString& path) const
+SofaData* SofaScene::data(const QString& path)
 {
     BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
     if(!data)
@@ -1255,7 +1257,7 @@ SofaData* SofaScene::data(const QString& path) const
     return new SofaData(this, base, data);
 }
 
-SofaComponent* SofaScene::component(const QString& path) const
+SofaComponent* SofaScene::component(const QString& path)
 {
     BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path + ".name"); // search for the "name" data of the component (this data is always present if the component exist)
 
@@ -1274,7 +1276,7 @@ bool SofaScene::componentExists(const sofa::core::objectmodel::Base* base) const
 	return myBases.contains(base);
 }
 
-SofaComponent* SofaScene::visualStyleComponent() const
+SofaComponent* SofaScene::visualStyleComponent()
 {
     if(mySofaSimulation->GetRoot())
     {
@@ -1284,6 +1286,31 @@ SofaComponent* SofaScene::visualStyleComponent() const
         if(visualStyle)
             return new SofaComponent(this, visualStyle);
     }
+
+    return nullptr;
+}
+
+SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom)
+{
+    Base* base = context->base();
+    if(!base)
+        return nullptr;
+
+    BaseContext* baseContext = dynamic_cast<BaseContext*>(base);
+    if(!baseContext)
+    {
+        BaseObject* baseObject = dynamic_cast<BaseObject*>(base);
+        baseContext = baseObject->getContext();
+
+        if(!baseContext)
+            return nullptr;
+    }
+
+    QList<PythonScriptController*> pythonScriptControllers;
+    baseContext->get<PythonScriptController>(&pythonScriptControllers, BaseContext::Local);
+    for(PythonScriptController* pythonScriptController : pythonScriptControllers)
+        if(derivedFrom.isEmpty() || pythonScriptController->isDerivedFrom(derivedFrom.toStdString()))
+            return new SofaComponent(this, pythonScriptController);
 
     return nullptr;
 }
@@ -1499,7 +1526,7 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
                 manipulator->draw(viewer);
 }
 
-SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots) const
+SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots)
 {
     SelectableSofaParticle* selectableSofaParticle = nullptr;
 

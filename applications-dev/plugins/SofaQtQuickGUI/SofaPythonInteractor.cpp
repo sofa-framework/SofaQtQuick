@@ -19,6 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaPythonInteractor.h"
 #include "SofaScene.h"
+#include "SofaComponent.h"
 #include "PythonConsole.h"
 
 #include <SofaPython/PythonScriptFunction.h>
@@ -35,6 +36,8 @@ namespace sofa
 
 namespace qtquick
 {
+
+using namespace sofa::core::objectmodel;
 
 SofaPythonInteractor::SofaPythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus()
     , mySofaScene(0)
@@ -289,6 +292,22 @@ QVariant SofaPythonInteractor::onCallByController(PythonScriptController* python
     pythonScriptFunction(&pythonScriptParameter, &pythonScriptResult);
 
     return ExtractPythonTupleHelper(pythonScriptResult.data());
+}
+
+QVariant SofaPythonInteractor::onCallBySofaComponent(SofaComponent* sofaComponent, const QString& funcName, const QVariant& parameter)
+{
+    if(!onCallBasicVerifications(funcName, parameter))
+        return QVariant();
+
+    Base* base = sofaComponent->base();
+    if(!base)
+        return QVariant();
+
+    PythonScriptController* controller = dynamic_cast<PythonScriptController*>(base);
+    if(!controller)
+        return QVariant();
+
+    return onCallByController(controller, funcName, parameter);
 }
 
 QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
