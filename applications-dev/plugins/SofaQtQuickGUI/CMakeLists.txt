@@ -19,6 +19,7 @@ set(SOURCE_FILES
     SelectableSofaComponent.cpp
     SelectableSofaParticle.cpp
     SofaDataListModel.cpp
+    SofaInspectorDataListModel.cpp
     SofaDisplayFlagsTreeModel.cpp
     SofaPythonInteractor.cpp
     Console.cpp
@@ -45,6 +46,7 @@ set(HEADER_FILES
     SelectableSofaComponent.h
     SelectableSofaParticle.h
     SofaDataListModel.h
+    SofaInspectorDataListModel.h
     SofaDisplayFlagsTreeModel.h
     SofaPythonInteractor.h
     Console.h
