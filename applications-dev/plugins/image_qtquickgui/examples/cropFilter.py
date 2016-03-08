@@ -33,19 +33,28 @@ class ImagePlaneController(Sofa.PythonScriptController) :
     
 class PythonScript(ImagePlaneController) :
     node = None
+    points = {}
+    lastId = 0
+
     def createGraph(self, root):
-        print "image viewer script created"
+        #print "image viewer script created"
         sys.stdout.flush()
         self.node = root
 
-    def addPoint(self, id, x, y, z):
-        global imageViewer
-        print "add", str(id), str(x), str(y), str(z), str(imageViewer)
+    def addPoint(self, x, y, z):
+        id = self.lastId
+        self.lastId += 1
+        #print "add", str(id), str(x), str(y), str(z)
         sys.stdout.flush()
-        return
+        self.points[str(id)] = {'x': x, 'y': y, 'z': z};
+        return id
 
     def removePoint(self, id):
         global imageViewer
-        print "remove", str(id), str(imageViewer)
+        #print "remove", str(id)
         sys.stdout.flush()
+        del self.points[str(id)]
         return
+
+    def getPoints(self):
+        return self.points

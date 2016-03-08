@@ -41,6 +41,8 @@ ImagePlaneView::ImagePlaneView(QQuickItem* parent) : QQuickPaintedItem(parent),
     myIndex(0),
     myImage(),
     myLength(0)
+//    myPaintedWidth(0),
+//    myPaintedHeight(0)
 {
     connect(this, &ImagePlaneView::imagePlaneModelChanged,  this, &ImagePlaneView::update);
     connect(this, &ImagePlaneView::axisChanged,             this, &ImagePlaneView::update);
@@ -176,6 +178,46 @@ void ImagePlaneView::setLength(int length)
 
     lengthChanged();
 }
+
+//void ImagePlaneView::setPaintedWidth(double paintedWidth)
+//{
+//    if(paintedWidth == myPaintedWidth)
+//        return;
+
+//    myPaintedWidth = paintedWidth;
+
+//    paintedWidthChanged();
+//}
+
+//void ImagePlaneView::setPaintedHeight(double paintedHeight)
+//{
+//    if(paintedHeight == myPaintedHeight)
+//        return;
+
+//    myPaintedHeight = paintedHeight;
+
+//    paintedHeightChanged();
+//}
+
+//void ImagePlaneView::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+//{
+//    QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
+
+//    QSize size(myImage.size());
+//    size.scale(width(), height(), Qt::AspectRatioMode::KeepAspectRatio);
+
+//    setPaintedWidth(size.width());
+//    setPaintedHeight(size.height());
+
+////    double scaleRatio = 1.0;
+////    if(qFloor(width()) == size.width())
+////        scaleRatio = width() / myImage.width();
+////    else
+////        scaleRatio = height() / myImage.height();
+
+////    setPaintedWidth(myImage.width() * scaleRatio);
+////    setPaintedHeight(myImage.height() * scaleRatio);
+//}
 
 }
 

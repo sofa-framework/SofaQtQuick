@@ -219,11 +219,11 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
 		PyObject* item;
 		Py_ssize_t pos = 0;
 
-		while(PyDict_Next(parameter, &pos, &key, &item))
-			map.insert(PyString_AsString(key), ExtractPythonTupleHelper(item));
+        while(PyDict_Next(parameter, &pos, &key, &item))
+            map.insert(PyString_AsString(key), ExtractPythonTupleHelper(item));
 
 		if(PyErr_Occurred())
-            msg_error("SofaQtQuickGUI") << "during python dictionary iteration";
+            msg_error("SofaQtQuickGUI") << "during python dictionary iteration, key must be of type 'string'";
 
 		return map;
 	}

@@ -44,6 +44,8 @@ public:
     virtual cimg_library::CImg<unsigned char> retrieveSlice(int index, int axis) const = 0;
     virtual cimg_library::CImg<unsigned char> retrieveSlicedModels(int index, int axis) const = 0;
     virtual int length(int axis) const = 0;
+    virtual QVector3D toImagePoint(const QVector3D& wsPoint) const = 0;
+    virtual QVector3D toWorldPoint(const QVector3D& isPoint) const = 0;
 
 };
 
@@ -101,6 +103,22 @@ public:
         return myAxisLengths[axis];
     }
 
+    QVector3D toImagePoint(const QVector3D& wsPoint) const
+    {
+        typedef typename sofa::defaulttype::ImagePlane<T>::Coord Coord;
+        Coord result = myImagePlane.get_pointImageCoord(Coord(wsPoint.x(), wsPoint.y(), wsPoint.z()));
+
+        return QVector3D(result.x(), result.y(), result.z());
+    }
+
+    QVector3D toWorldPoint(const QVector3D& isPoint) const
+    {
+        typedef typename sofa::defaulttype::ImagePlane<T>::Coord Coord;
+        Coord result = myImagePlane.get_pointCoord(Coord(isPoint.x(), isPoint.y(), isPoint.z()));
+
+        return QVector3D(result.x(), result.y(), result.z());
+    }
+
 private:
     sofa::defaulttype::ImagePlane<T>& myImagePlane;
     QVector<int> myAxisLengths;
@@ -129,6 +147,9 @@ public:
     Q_INVOKABLE void setCurrentIndex(int axis, int index);
 
     Q_INVOKABLE int length(int axis) const;
+
+    Q_INVOKABLE QPointF toImagePoint(int axis, const QVector3D& wsPoint) const;
+    Q_INVOKABLE QVector3D toWorldPoint(int axis, int index, const QPointF& isPoint) const;
 
     cimg_library::CImg<unsigned char> retrieveSlice(int index, int axis) const;
     cimg_library::CImg<unsigned char> retrieveSlicedModels(int index, int axis) const;

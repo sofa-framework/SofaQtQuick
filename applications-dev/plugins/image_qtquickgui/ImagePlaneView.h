@@ -51,24 +51,35 @@ public:
     Q_PROPERTY(int axis READ axis WRITE setAxis NOTIFY axisChanged)
     Q_PROPERTY(int index READ index WRITE setIndex NOTIFY indexChanged)
     Q_PROPERTY(int length READ length NOTIFY lengthChanged)
+//    Q_PROPERTY(double paintedWidth READ paintedWidth NOTIFY paintedWidthChanged)
+//    Q_PROPERTY(double paintedHeight READ paintedHeight NOTIFY paintedHeightChanged)
 
 public:
     sofa::qtquick::ImagePlaneModel* imagePlaneModel() const {return myImagePlaneModel;}
     int axis() const {return myAxis;}
     int index() const {return myIndex;}
     int length() const {return myLength;}
+//    int paintedWidth() const {return myPaintedWidth;}
+//    int paintedHeight() const {return myPaintedHeight;}
 
 protected:
     void setImagePlaneModel(sofa::qtquick::ImagePlaneModel* imagePlaneModel);
     void setAxis(int axis);
     void setIndex(int index);
     void setLength(int length);
+//    void setPaintedWidth(double paintedWidth);
+//    void setPaintedHeight(double paintedHeight);
+
+protected:
+//    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);
 
 signals:
     void imagePlaneModelChanged();
     void lengthChanged();
     void axisChanged();
     void indexChanged();
+//    void paintedWidthChanged();
+//    void paintedHeightChanged();
 
 private:
     ImagePlaneModel*                    myImagePlaneModel;
@@ -77,6 +88,8 @@ private:
     int                                 myIndex;
     QImage                              myImage;
     int                                 myLength;
+//    double                              myPaintedWidth;
+//    double                              myPaintedHeight;
 
 };
 

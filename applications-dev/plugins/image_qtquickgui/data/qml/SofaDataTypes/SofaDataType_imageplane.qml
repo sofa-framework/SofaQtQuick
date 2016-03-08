@@ -43,6 +43,11 @@ GridLayout {
         }
     }
 
+    property bool allPlanesLoaded: (Loader.Ready === planeX.status) && (Loader.Ready === planeY.status) && (Loader.Ready === planeZ.status)
+    onAllPlanesLoadedChanged: if(allPlanesLoaded) requestRefresh();
+
+    signal requestRefresh()
+
     ImagePlaneModel {
         id: model
 
@@ -104,181 +109,259 @@ GridLayout {
         ColumnLayout {
             readonly property int sliceIndex: imagePlaneView.index
 
-            Flickable {
-                id: flickable
+            Rectangle {
+                id: rectangle
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.preferredWidth: imagePlaneView.implicitWidth
                 Layout.preferredHeight: imagePlaneView.implicitHeight
-                clip: true
 
-                boundsBehavior: Flickable.StopAtBounds
-                contentWidth: rectangle.width * rectangle.scale
-                contentHeight: rectangle.height * rectangle.scale
+                color: "black"
+                border.color: "darkgrey"
+                border.width: 1
 
-                rebound: Transition {}
+                Flickable {
+                    id: flickable
+                    anchors.fill: parent
+                    anchors.margins: parent.border.width
+                    clip: true
 
-                Rectangle {
-                    id: rectangle
-                    width: flickable.width
-                    height: flickable.height
-                    transformOrigin: Item.TopLeft
-                    color: "black"
+                    boundsBehavior: Flickable.StopAtBounds
+                    contentWidth: flickableContent.width * flickableContent.scale
+                    contentHeight: flickableContent.height * flickableContent.scale
 
-                    border.color: "darkgrey"
-                    border.width: 1
+                    rebound: Transition {}
 
-                    ImagePlaneView {
-                        id: imagePlaneView
-                        anchors.fill: parent
-                        anchors.margins: rectangle.border.width
+                    Item {
+                        id: flickableContent
+                        width: imagePlaneView.implicitWidth
+                        height: imagePlaneView.implicitHeight
+                        transformOrigin: Item.TopLeft
 
-                        imagePlaneModel: model
-                        index: slider.value
-                        axis: sliceAxis
+                        scale: maxScale
+                        property real maxScale: Math.min(flickable.width / imagePlaneView.implicitWidth, flickable.height / imagePlaneView.implicitHeight);
 
-                        Component.onCompleted: update();
-
-                        Connections {
-                            target: sofaScene
-                            onStepEnd: imagePlaneView.update()
-                        }
-
-                        Item {
-                            id: pointCanvas
+                        ImagePlaneView {
+                            id: imagePlaneView
                             anchors.fill: parent
 
-                            property int pointLastId: 0
-                            property var points: Object()
+                            imagePlaneModel: model
+                            index: slider.value
+                            axis: sliceAxis
 
-                            onPointsChanged: updatePoints();
+                            Component.onCompleted: update();
 
-                            function addPoint(x, y) {
-                                var id = pointLastId++;
-                                points[id] = Qt.point(x, y);
-
-                                points = points;
-
-                                return id;
+                            Connections {
+                                target: sofaScene
+                                onStepEnd: imagePlaneView.update()
                             }
 
-                            function removePointById(id) {
-                                if(!points.hasOwnProperty(id))
-                                    return;
+                            Item {
+                                id: pointCanvas
+                                anchors.centerIn: parent
+                                width: imagePlaneView.paintedWidth
+                                height: imagePlaneView.paintedHeight
 
-                                delete points[id];
+                                property alias imagePlaneView: imagePlaneView
 
-                                points = points;
-                            }
+                                property var points: Object()
 
-                            function removePointAt(x, y, brushSize) {
-                                if(undefined == brushSize)
-                                    brushSize = 1.0;
-
-                                var brushRadius = brushSize * 0.5;
-
-                                for(var id in points) {
-                                    if(!points.hasOwnProperty(id))
-                                        continue;
-
-                                    var point = points[id];
-                                    var distance = Qt.vector2d(x - point.x, y - point.y).length();
-                                    if(distance < brushRadius)
-                                        delete points[id];
+                                Connections {
+                                    target: root
+                                    onRequestRefresh: pointCanvas.updatePoints();
                                 }
 
-                                points = points;
-                            }
+                                imagePlaneView.onIndexChanged: updatePoints();
+                                imagePlaneView.onAxisChanged: updatePoints();
 
-                            function updatePoints() {
-                                // clear old point
-                                var children = pointCanvas.children;
-                                for(var i = children.length - 1; i >= 0; --i)
-                                    pointCanvas[i].destroy();
+                                function addPoint(x, y) {
+                                    if(!root.controller)
+                                        return;
 
-                                console.log("updatePoints");
+                                    var sofaComponent = dataObject.sofaData.sofaComponent();
+                                    var sofaScene = sofaComponent.sofaScene();
 
-                                // add new points
-                                for(var id in points) {
-                                    if(!points.hasOwnProperty(id))
-                                        continue;
+                                    var worldPosition = model.toWorldPoint(imagePlaneView.axis, imagePlaneView.index, Qt.point(x, y));
+                                    console.log(x, y, ";", worldPosition);
+                                    var id = sofaScene.sofaPythonInteractor.call(controller, "addPoint", worldPosition.x, worldPosition.y, worldPosition.z);
 
-                                    var point = points[id];
-                                    pointComponent.createObject(pointCanvas, {'x': point.x, 'y': point.y});
+                                    root.requestRefresh();
+
+                                    return id;
                                 }
-                            }
 
-                            Component {
-                                id: pointComponent
+                                function removePoint(id) {
+                                    if(!root.controller)
+                                        return;
 
-                                Rectangle {
-                                    width: 5
-                                    height: width
-                                    radius: width * 0.5
-                                    color: "red"
+                                    var sofaComponent = dataObject.sofaData.sofaComponent();
+                                    var sofaScene = sofaComponent.sofaScene();
+                                    sofaScene.sofaPythonInteractor.call(controller, "removePoint", id);
 
-                                    Component.onCompleted: {
-                                        console.log("creating point at:", x, y);
+                                    root.requestRefresh();
+                                }
+
+                                function removePointAt(x, y, brushSize) {
+                                    if(!root.controller)
+                                        return;
+
+                                    if(undefined === brushSize)
+                                        brushSize = 1.0;
+
+                                    var brushRadius = brushSize * 0.5;
+
+                                    var sofaComponent = dataObject.sofaData.sofaComponent();
+                                    var sofaScene = sofaComponent.sofaScene();
+
+                                    for(var id in points) {
+                                        if(!points.hasOwnProperty(id))
+                                            continue;
+
+                                        var point = points[id];
+                                        var distance = Qt.vector2d(x - point.x, y - point.y).length();
+                                        if(distance < brushRadius)
+                                            sofaScene.sofaPythonInteractor.call(controller, "removePoint", id);
+                                    }
+
+                                    root.requestRefresh();
+                                }
+
+                                function updatePoints() {
+                                    var sofaComponent = dataObject.sofaData.sofaComponent();
+                                    var sofaScene = sofaComponent.sofaScene();
+                                    var updatedPoints = sofaScene.sofaPythonInteractor.call(controller, "getPoints");
+
+                                    // mark old points for deletion
+                                    var pointsToRemove = Object();
+                                    for(var stringId in points) {
+                                        if(!points.hasOwnProperty(stringId))
+                                            continue;
+
+                                        pointsToRemove[stringId] = points[stringId];
+                                    }
+
+                                    // add / update points
+                                    for(var stringId in updatedPoints) {
+                                        if(!updatedPoints.hasOwnProperty(stringId))
+                                            continue;
+
+                                        var id = parseInt(stringId);
+
+                                        if(!points.hasOwnProperty(id)) { // add new points
+                                            points[id] = updatedPoints[stringId];
+                                            //console.log("add", id, points[id]);
+                                            pointComponent.createObject(pointCanvas, {'pointId': id});
+                                        }
+                                        else { // keep old point still presents
+                                            points[id] = updatedPoints[stringId];
+                                            delete pointsToRemove[id];
+                                        }
+                                    }
+
+                                    // clear old points that has been removed from the model
+                                    for(var stringId in pointsToRemove) {
+                                        if(!pointsToRemove.hasOwnProperty(stringId))
+                                            continue;
+
+                                        for(var i = 0; i < children.length; ++i)
+                                            if(stringId === children[i].pointId) {
+                                                children[i].destroy();
+                                                break;
+                                            }
+                                    }
+
+                                    pointsChanged();
+                                }
+
+                                Component {
+                                    id: pointComponent
+
+                                    Item {
+                                        id: item
+
+                                        property int pointId: -1
+                                        property var point: pointCanvas.points[pointId]
+
+                                        Component.onCompleted: update();
+                                        onPointChanged: update();
+
+                                        function update() {
+                                            if(null === point)
+                                                return;
+
+                                            var screenPosition = model.toImagePoint(imagePlaneView.axis, Qt.vector3d(point.x, point.y, point.z))
+
+                                            x = screenPosition.x;
+                                            y = screenPosition.y;
+                                        }
+
+                                        Rectangle {
+                                            anchors.centerIn: parent
+                                            width: 5 / flickableContent.scale
+                                            height: width
+                                            radius: width * 0.5
+                                            color: "red"
+
+                                            Component.onCompleted: {
+                                                console.log("creating point", pointId, pointCanvas.points[pointId], "at:", x, y);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            MouseArea {
-                anchors.fill: flickable
-                acceptedButtons: Qt.AllButtons
+                MouseArea {
+                    anchors.fill: flickable
+                    acceptedButtons: Qt.AllButtons
 
-                onPressed: {
-                    if(!controller)
-                        return;
-                }
+                    onClicked: {
+                        var position = mapToItem(pointCanvas, mouse.x + 0.5, mouse.y + 0.5);
+                        if(!pointCanvas.contains(position))
+                            return;
 
-                onReleased: {
-                    if(!controller)
-                        return;
-
-//                    var sofaComponent = dataObject.sofaData.sofaComponent();
-//                    var sofaScene = sofaComponent.sofaScene();
-//                    sofaScene.sofaPythonInteractor.call(controller, "addPoint", 0, mouse.x, mouse.y);
-
-                    var position = Qt.point(mouse.x + 0.5, mouse.y + 0.5);
-                    if(Qt.LeftButton === mouse.button)
-                        pointCanvas.addPoint(position.x, position.y);
-                    else if(Qt.RightButton === mouse.button)
-                        pointCanvas.removePointAt(position.x, position.y, 5);
-                }
-
-                onWheel: {
-                    if(0 === wheel.angleDelta.y)
-                        return;
-
-                    var inPosition = mapToItem(rectangle, wheel.x, wheel.y);
-                    if(!rectangle.contains(inPosition))
-                        return;
-
-                    var zoomSpeed = 1.0;
-
-                    var boundary = 2.0;
-                    var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
-                    if(zoom < 0.0) {
-                        zoom = 1.0 + 0.5 * zoom;
-                        zoom /= zoomSpeed;
-                    }
-                    else {
-                        zoom = 1.0 + zoom;
-                        zoom *= zoomSpeed;
+                        if(Qt.LeftButton === mouse.button)
+                            pointCanvas.addPoint(position.x, position.y);
+                        else if(Qt.RightButton === mouse.button)
+                            pointCanvas.removePointAt(position.x, position.y, 5);
                     }
 
-                    rectangle.scale = Math.max(1.0, rectangle.scale * zoom);
+                    onWheel: {
+                        if(0 === wheel.angleDelta.y)
+                            return;
 
-                    var outPosition = mapFromItem(rectangle, inPosition.x, inPosition.y);
+                        var inPosition = mapToItem(flickableContent, wheel.x, wheel.y);
+                        if(!flickableContent.contains(inPosition)) {
+                            return;
 
-                    flickable.contentX += (outPosition.x - wheel.x);
-                    flickable.contentY += (outPosition.y - wheel.y);
-                    flickable.returnToBounds();
+                            // TODO: project
+                            inPosition.x = Math.max(0.0, Math.min(inPosition.x, flickableContent.width - 1.0));
+                            inPosition.y = Math.max(0.0, Math.min(inPosition.y, flickableContent.height - 1.0));
+                        }
+
+                        var zoomSpeed = 1.0;
+
+                        var boundary = 2.0;
+                        var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
+                        if(zoom < 0.0) {
+                            zoom = 1.0 + 0.5 * zoom;
+                            zoom /= zoomSpeed;
+                        }
+                        else {
+                            zoom = 1.0 + zoom;
+                            zoom *= zoomSpeed;
+                        }
+
+                        flickableContent.scale = Math.max(flickableContent.maxScale, flickableContent.scale * zoom);
+
+                        var outPosition = mapFromItem(flickableContent, inPosition.x, inPosition.y);
+
+                        flickable.contentX += (outPosition.x - wheel.x);
+                        flickable.contentY += (outPosition.y - wheel.y);
+                        flickable.returnToBounds();
+                    }
                 }
             }
 

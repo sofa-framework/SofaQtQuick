@@ -31,6 +31,7 @@ namespace qtquick
 {
 
 using namespace sofa::defaulttype;
+using namespace sofa::core::objectmodel;
 
 ImagePlaneModel::ImagePlaneModel(QObject* parent) : QObject(parent),
     mySofaData(0),
@@ -75,6 +76,40 @@ int ImagePlaneModel::length(int axis) const
         return 0;
 
     return myImagePlane->length(axis);
+}
+
+QPointF ImagePlaneModel::toImagePoint(int axis, const QVector3D& wsPoint) const
+{
+    QPointF result(std::numeric_limits<qreal>::infinity(), std::numeric_limits<qreal>::infinity());
+    if(!imagePlane() || axis < 0 || axis > 5)
+        return result;
+
+    QVector3D isPoint = myImagePlane->toImagePoint(wsPoint);
+
+    if(0 == axis) // zy
+        result = QPointF(isPoint.z(), isPoint.y());
+    else if(1 == axis) // xz
+        result = QPointF(isPoint.x(), isPoint.z());
+    else if(2 == axis) // xy
+        result = QPointF(isPoint.x(), isPoint.y());
+
+    return result;
+}
+
+QVector3D ImagePlaneModel::toWorldPoint(int axis, int index, const QPointF& isPoint) const
+{
+    QVector3D wsPoint(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+    if(!imagePlane() || axis < 0 || axis > 5)
+        return wsPoint;
+
+    if(0 == axis) // zy
+        wsPoint = QVector3D(index, isPoint.y(), isPoint.x());
+    else if(1 == axis) // xz
+        wsPoint = QVector3D(isPoint.x(), index, isPoint.y());
+    else if(2 == axis) // xy
+        wsPoint = QVector3D(isPoint.x(), isPoint.y(), index);
+
+    return myImagePlane->toWorldPoint(wsPoint);
 }
 
 cimg_library::CImg<unsigned char> ImagePlaneModel::retrieveSlice(int index, int axis) const
