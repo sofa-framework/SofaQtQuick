@@ -12,6 +12,7 @@ set(SOFAQTQUICKGUI_TARGETS "")
 
 find_package(image QUIET)
 find_package(SofaQtQuickGUI QUIET)
+# if(PLUGIN_IMAGE AND PLUGIN_SOFAQTQUICKGUI)
 if(image_FOUND AND SofaQtQuickGUI_FOUND)
     list(APPEND SOFAQTQUICKGUI_TARGETS image_qtquickgui)
     message("Adding automatically image_qtquickgui (image and SofaQtQuickGUI are activated)")
