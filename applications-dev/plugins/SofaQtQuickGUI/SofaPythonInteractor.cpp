@@ -186,18 +186,21 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
 	QVariant value;
 
 	if(!parameter)
-		return value;
-	
-	if(PyTuple_Check(parameter) || PyList_Check(parameter))
-	{
-		QVariantList tuple;
+        return value;
 
-		PyObject *iterator = PyObject_GetIter(parameter);
-		PyObject *item;
+    qDebug() << "parameter" << PyObject_REPR(parameter) << PyObject_REPR(PyObject_Type(parameter)) << PyType_Check(parameter);
 
-		if(!iterator)
-			return value;
+    if(PyTuple_Check(parameter) || PyList_Check(parameter))
+    {
+        qDebug() << "tuple";
 
+        QVariantList tuple;
+
+        PyObject* iterator = PyObject_GetIter(parameter);
+        if(!iterator)
+            return tuple;
+
+        PyObject* item;
         while((item = PyIter_Next(iterator)))
 		{
 			tuple.append(ExtractPythonTupleHelper(item));
@@ -210,25 +213,66 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
             msg_error("SofaQtQuickGUI") << "during python tuple/list iteration";
 
 		return tuple;
-	}
-	else if(PyDict_Check(parameter))
-	{
-		QVariantMap map;
+    }
+    else if(PyDict_Check(parameter))
+    {
+        qDebug() << "dict";
+
+        QVariantMap map;
 
 		PyObject* key;
 		PyObject* item;
 		Py_ssize_t pos = 0;
 
         while(PyDict_Next(parameter, &pos, &key, &item))
+        {
+            qDebug() << "kv" << PyString_AsString(key) << PyObject_REPR(item) << PyObject_REPR(PyObject_Type(item));
             map.insert(PyString_AsString(key), ExtractPythonTupleHelper(item));
+        }
 
 		if(PyErr_Occurred())
             msg_error("SofaQtQuickGUI") << "during python dictionary iteration, key must be of type 'string'";
 
 		return map;
 	}
+    else if(PyObject_HasAttrString(parameter, "__class__"))
+    {
+        qDebug() << "class" << PyObject_REPR(parameter) << PyObject_REPR(PyObject_Type(parameter)) << PyType_Check(parameter);
+
+        QVariantMap map;
+
+        PyObject* keys = PyObject_Dir(parameter);
+
+        PyObject* iterator = PyObject_GetIter(keys);
+        if(!iterator)
+            return map;
+
+        PyObject* key;
+        while((key = PyIter_Next(iterator)))
+        {
+            QString attribute = PyString_AsString(key);
+            //qDebug() << "+attribute" << attribute;
+            Py_DECREF(key);
+
+            if(0 != attribute.indexOf("__"))
+            {
+                qDebug() << "-attribute" << attribute;
+                PyObject* value = PyObject_GetAttrString(parameter, attribute.toLatin1().constData());
+                //map.insert(attribute, ExtractPythonTupleHelper(value));
+                Py_DECREF(value);
+            }
+        }
+        Py_DECREF(iterator);
+
+        if(PyErr_Occurred())
+            msg_error("SofaQtQuickGUI") << "during python object iteration";
+
+        return map;
+    }
 	else
 	{
+        qDebug() << "value";
+
 		value = ExtractPythonValueHelper(parameter);
 	}	
 

@@ -49,6 +49,24 @@ ImagePlaneView::ImagePlaneView(QQuickItem* parent) : QQuickPaintedItem(parent),
     connect(this, &ImagePlaneView::indexChanged,            this, &ImagePlaneView::update);
 }
 
+bool ImagePlaneView::containsPoint(const QVector3D& wsPoint) const
+{
+    bool result = false;
+    if(!myImagePlaneModel || !myImagePlaneModel->imagePlane())
+        return result;
+
+    QVector3D isPoint = myImagePlaneModel->imagePlane()->toImagePoint(wsPoint);
+
+    if(0 == myAxis) // x - zy
+        result = (myIndex - 0.5f < isPoint.x() && isPoint.x() < myIndex + 0.5f);
+    else if(1 == myAxis) // y - xz
+        result = (myIndex - 0.5f < isPoint.y() && isPoint.y() < myIndex + 0.5f);
+    else if(2 == myAxis) // z - xy
+        result = (myIndex - 0.5f < isPoint.z() && isPoint.z() < myIndex + 0.5f);
+
+    return result;
+}
+
 void ImagePlaneView::paint(QPainter* painter)
 {
     QSize size(myImage.size());

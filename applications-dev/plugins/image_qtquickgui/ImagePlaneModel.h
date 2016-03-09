@@ -140,7 +140,7 @@ public:
     void setSofaData(sofa::qtquick::SofaData* sofaData);
 
 public:
-    BaseImagePlaneWrapper* imagePlane() const;
+    const BaseImagePlaneWrapper* imagePlane() const;
     void setImagePlane(BaseImagePlaneWrapper* imagePlane) {myImagePlane = imagePlane;}
 
     Q_INVOKABLE int currentIndex(int axis) const;
@@ -148,7 +148,8 @@ public:
 
     Q_INVOKABLE int length(int axis) const;
 
-    Q_INVOKABLE QPointF toImagePoint(int axis, const QVector3D& wsPoint) const;
+    Q_INVOKABLE QPointF toPlanePoint(int axis, const QVector3D& wsPoint) const;
+    Q_INVOKABLE QVector3D toImagePoint(const QVector3D& wsPoint) const;
     Q_INVOKABLE QVector3D toWorldPoint(int axis, int index, const QPointF& isPoint) const;
 
     cimg_library::CImg<unsigned char> retrieveSlice(int index, int axis) const;

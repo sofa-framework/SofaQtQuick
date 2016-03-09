@@ -27,7 +27,7 @@ Manipulator2D_Translation {
 
     function mousePressed(mouse, sofaViewer) {
         var z = sofaViewer.computeDepth(root.position);
-        var startPosition = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+        var startPosition = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
 
         startVector = startPosition.minus(root.position);
     }
@@ -41,7 +41,7 @@ Manipulator2D_Translation {
         if(0 !== axisNum) {
             // project on a specific plane parallel to our view plane
             var z = sofaViewer.computeDepth(root.position);
-            var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+            var position = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
             var direction = position.minus(root.position.plus(startVector));
 
             // project on a specific axis aligned with the view space axis

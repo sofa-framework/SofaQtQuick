@@ -34,7 +34,7 @@ Manipulator3D_Rotation {
 
         if(1 === axisNum) {
             var normalVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
-            var direction = sofaViewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position).normalized();
+            var direction = sofaViewer.projectOnPlane(Qt.point(mouse.x, mouse.y), root.position, normalVector).minus(root.position).normalized();
 
             var right = Qt.vector3d(yAxis || zAxis ?  1.0 : 0.0,                        0.0, xAxis ? -1.0 : 0.0);
             var up    = Qt.vector3d(                        0.0, xAxis || zAxis ? 1.0 : 0.0, yAxis ? -1.0 : 0.0);
@@ -56,7 +56,7 @@ Manipulator3D_Rotation {
 
         if(1 === axisNum) {
             var normalVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
-            var direction = sofaViewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position).normalized();
+            var direction = sofaViewer.projectOnPlane(Qt.point(mouse.x, mouse.y), root.position, normalVector).minus(root.position).normalized();
 
             var right = Qt.vector3d(yAxis || zAxis ?  1.0 : 0.0,                        0.0, xAxis ? -1.0 : 0.0);
             var up    = Qt.vector3d(                        0.0, xAxis || zAxis ? 1.0 : 0.0, yAxis ? -1.0 : 0.0);

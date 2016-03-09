@@ -62,6 +62,9 @@ public:
 //    int paintedWidth() const {return myPaintedWidth;}
 //    int paintedHeight() const {return myPaintedHeight;}
 
+public:
+    Q_INVOKABLE bool containsPoint(const QVector3D& wsPoint) const;
+
 protected:
     void setImagePlaneModel(sofa::qtquick::ImagePlaneModel* imagePlaneModel);
     void setAxis(int axis);
