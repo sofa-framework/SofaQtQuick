@@ -436,7 +436,7 @@ QVector4D SofaViewer::projectOnGeometry(const QPointF& ssPoint) const
 QVector4D SofaViewer::projectOnGeometryWithTags(const QPointF& ssPoint, const QStringList& tags) const
 {
 	if(!window() || !window()->isActive())
-		return QVector4D();
+        return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
 
 	bool finished = false;
 	Selectable* selectable = nullptr;

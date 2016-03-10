@@ -23,6 +23,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/core/ObjectFactory.h>
 
+#include <qqml.h>
+#include <QQmlEngine>
+
 namespace sofa
 {
 
@@ -31,7 +34,7 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SofaComponent::SofaComponent(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base) : QObject(),
+SofaComponent::SofaComponent(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base) : QObject(),
     mySofaScene(sofaScene),
     myBase(base)
 {
@@ -112,7 +115,7 @@ QString SofaComponent::providerName() const
     return "";
 }
 
-bool SofaComponent::isSame(SofaComponent* sofaComponent)
+bool SofaComponent::isSame(SofaComponent* sofaComponent) const
 {
     if(!sofaComponent)
         return false;
@@ -186,6 +189,11 @@ void SofaComponent::reinit()
 	baseObject->reinit();
 }
 
+SofaScene* SofaComponent::sofaScene() const
+{
+    return mySofaScene;
+}
+
 bool SofaComponent::isValid() const
 {
 	return base();
@@ -206,11 +214,6 @@ const Base* SofaComponent::base() const
             base = myBase;
 
     return base;
-}
-
-const SofaScene* SofaComponent::sofaScene() const
-{
-    return mySofaScene;
 }
 
 }

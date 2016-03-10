@@ -34,7 +34,7 @@ UserInteractor_MoveCamera {
             selectedManipulator = sofaScene.selectedManipulator;
             selectedComponent = sofaScene.selectedComponent;
 
-            var selectable = sofaViewer.pickObject(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+            var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
             if(selectable) {
                 if(selectable.manipulator) {
                     selectedManipulator = selectable.manipulator;
@@ -59,13 +59,13 @@ UserInteractor_MoveCamera {
                 if(!sofaScene.areSameComponent(sofaScene.selectedComponent, selectedComponent)) {
                     sofaScene.selectedComponent = selectedComponent;
                 }/* else {
-                    var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+                    var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
                     if(sofaComponentParticle) {
                         sofaScene.sofaParticleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
 
                         setMouseMovedMapping(function(mouse, sofaViewer) {
                             var z = sofaViewer.computeDepth(sofaScene.sofaParticleInteractor.interactorPosition);
-                            var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+                            var position = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
                             sofaScene.sofaParticleInteractor.update(position);
                         });
                     }

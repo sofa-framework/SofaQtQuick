@@ -33,10 +33,10 @@ Manipulator3D_Translation {
 
         if(2 === axisNum) { // project on a specific plane
             var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
-            startVector = sofaViewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
+            startVector = sofaViewer.projectOnPlane(Qt.point(mouse.x, mouse.y), root.position, normalVector).minus(root.position);
         } else if(1 === axisNum) {
             var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
-            startVector = sofaViewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
+            startVector = sofaViewer.projectOnLine(Qt.point(mouse.x, mouse.y), root.position, axisVector).minus(root.position);
         }
     }
 
@@ -48,13 +48,13 @@ Manipulator3D_Translation {
 
         if(2 === axisNum) { // project on a specific plane
             var normalVector = Qt.vector3d(!xAxis ? 1.0 : 0.0, !yAxis ? 1.0 : 0.0, !zAxis ? 1.0 : 0.0);
-            var direction = sofaViewer.projectOnPlane(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, normalVector).minus(root.position);
+            var direction = sofaViewer.projectOnPlane(Qt.point(mouse.x, mouse.y), root.position, normalVector).minus(root.position);
             var position = root.position.plus(direction).minus(startVector);
 
             root.position = position;
         } else if(1 === axisNum) { // project on a specific axis
             var axisVector = Qt.vector3d(xAxis ? 1.0 : 0.0, yAxis ? 1.0 : 0.0, zAxis ? 1.0 : 0.0);
-            var direction = sofaViewer.projectOnLine(Qt.point(mouse.x + 0.5, mouse.y + 0.5), root.position, axisVector).minus(root.position);
+            var direction = sofaViewer.projectOnLine(Qt.point(mouse.x, mouse.y), root.position, axisVector).minus(root.position);
             var position = root.position.plus(direction).minus(startVector);
 
             root.position = position;

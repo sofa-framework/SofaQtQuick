@@ -29,7 +29,7 @@ Manipulator2D_Rotation {
     function mousePressed(mouse, sofaViewer) {
         // project on a specific plane parallel to our view plane
         var z = sofaViewer.computeDepth(root.position);
-        var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+        var position = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
 
         var direction = position.minus(root.position).normalized();
         startAngle = Math.acos(sofaViewer.camera.up().dotProduct(direction));
@@ -42,7 +42,7 @@ Manipulator2D_Rotation {
     function mouseMoved(mouse, sofaViewer) {
         // project on a specific plane parallel to our view plane
         var z = sofaViewer.computeDepth(root.position);
-        var position = sofaViewer.mapToWorld(Qt.point(mouse.x + 0.5, mouse.y + 0.5), z);
+        var position = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
 
         var direction = position.minus(root.position).normalized();
         var angle = Math.acos(sofaViewer.camera.up().dotProduct(direction));

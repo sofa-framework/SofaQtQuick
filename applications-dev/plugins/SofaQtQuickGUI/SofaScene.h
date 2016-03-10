@@ -171,7 +171,7 @@ public:
     static bool setDataValue(sofa::core::objectmodel::BaseData* data, const QVariant& value);
     static bool setDataLink(sofa::core::objectmodel::BaseData* data, const QString& link);
 
-    QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data) const;
+    QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data);
 
     QVariant dataValue(const QString& path) const;
     QVariant dataValue(const SofaComponent* sofaComponent, const QString& name) const;
@@ -179,14 +179,15 @@ public:
     void setDataValue(const QString& path, const QVariant& value);
     void setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value);
 
-    Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path) const;
-    Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path) const;
-    Q_INVOKABLE sofa::qtquick::SofaComponent* root() const;
+    Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* root();
 
-    bool componentExists(const sofa::core::objectmodel::Base* base) const;
+	bool componentExists(const sofa::core::objectmodel::Base* base) const;
 
     // TODO: avoid this kind of specialization if possible
-    Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent() const;
+    Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
+    Q_INVOKABLE sofa::qtquick::SofaComponent* retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module = "");
 
 protected:
     Q_INVOKABLE QVariant onDataValueByPath(const QString& path) const; /// \note From QML: directly call 'dataValue'
@@ -226,7 +227,7 @@ protected:
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
     /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaComponent where it belongs
-    SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
+    SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
 
     /// \brief      Low-level function for color index picking
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set

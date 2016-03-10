@@ -34,7 +34,7 @@ UserInteractor {
     function moveCamera_init() {
 
         addMouseDoubleClickedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            var position = sofaViewer.projectOnGeometry(Qt.point(mouse.x + 0.5, mouse.y + 0.5));
+            var position = sofaViewer.projectOnGeometry(Qt.point(mouse.x, mouse.y));
             if(1.0 === position.w) {
                 sofaViewer.camera.target = position.toVector3d();
                 sofaViewer.crosshairGizmo.pop();
