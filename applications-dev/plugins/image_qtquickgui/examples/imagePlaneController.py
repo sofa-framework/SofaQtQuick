@@ -93,8 +93,13 @@ class PythonScript(SofaImage.Tools.ImagePlaneController):
             mechanicalObject.position = mechanicalPosition
             mechanicalObject.resize(len(mechanicalObject.position))
 
+            # shift the following position indices
+            for key in self.points:
+                if(self.points[key]['positionIndex'] > positionIndex):
+                    self.points[key]['positionIndex'] = self.points[key]['positionIndex'] - 1
+
             # remove the point from our dictionary
-            del self.points[str(int(id))]
+            del self.points[stringId]
 
             return True
 

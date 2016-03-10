@@ -383,6 +383,7 @@ GridLayout {
 
                     onClicked: {
                         var position = mapToItem(pointCanvas, mouse.x, mouse.y);
+                        position = Qt.point(position.x + 0.5, position.y + 0.5);
                         if(!pointCanvas.contains(position))
                             return;
 
