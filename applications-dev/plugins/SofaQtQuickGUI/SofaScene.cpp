@@ -1290,7 +1290,7 @@ SofaComponent* SofaScene::visualStyleComponent()
     return nullptr;
 }
 
-SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom)
+SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module)
 {
     Base* base = context->base();
     if(!base)
@@ -1308,9 +1308,20 @@ SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context,
 
     QList<PythonScriptController*> pythonScriptControllers;
     baseContext->get<PythonScriptController>(&pythonScriptControllers, BaseContext::Local);
-    for(PythonScriptController* pythonScriptController : pythonScriptControllers)
-        if(derivedFrom.isEmpty() || pythonScriptController->isDerivedFrom(derivedFrom.toStdString()))
-            return new SofaComponent(this, pythonScriptController);
+
+    if(module.isEmpty())
+    {
+        for(PythonScriptController* pythonScriptController : pythonScriptControllers)
+            if(derivedFrom.isEmpty() || pythonScriptController->isDerivedFrom(derivedFrom.toStdString()))
+                return new SofaComponent(this, pythonScriptController);
+    }
+    else
+    {
+        for(PythonScriptController* pythonScriptController : pythonScriptControllers)
+            if(derivedFrom.isEmpty() || pythonScriptController->isDerivedFrom(derivedFrom.toStdString(), module.toStdString()))
+                return new SofaComponent(this, pythonScriptController);
+    }
+
 
     return nullptr;
 }

@@ -38,7 +38,7 @@ GridLayout {
         if(dataObject) {
             var sofaComponent = dataObject.sofaData.sofaComponent();
             var sofaScene = sofaComponent.sofaScene();
-            controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController")
+            controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
         }
     }
 
@@ -97,7 +97,7 @@ GridLayout {
                             continue;
 
                         var point = points[stringId];
-                        var worldPosition = Qt.vector3d(point.position.x, point.position.y, point.position.z);
+                        var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
                         var imagePosition = model.toImagePoint(worldPosition);
 
                         text += "P" + stringId + ": (" + Math.round(imagePosition.x).toFixed(0) + ", " + Math.round(imagePosition.y).toFixed(0) + ", " + Math.round(imagePosition.z).toFixed(0) + ") -> (" + worldPosition.x.toFixed(3) + ", " + worldPosition.y.toFixed(3) + ", " + worldPosition.z.toFixed(3) + ")\n";
@@ -251,7 +251,7 @@ GridLayout {
                                         var id = parseInt(stringId);
 
                                         var point = points[stringId];
-                                        var worldPosition = Qt.vector3d(point.position.x, point.position.y, point.position.z);
+                                        var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
                                         var screenPosition = model.toPlanePoint(imagePlaneView.axis, worldPosition)
 
                                         var distance = Qt.vector2d(x - screenPosition.x, y - screenPosition.y).length();
@@ -287,15 +287,7 @@ GridLayout {
                                         var id = parseInt(stringId);
                                         var point = updatedPoints[stringId];
 
-                                        console.log("point:", point);
-                                        for(var key in point) {
-//                                            if(!point.hasOwnProperty(key))
-//                                                continue;
-
-                                            console.log("key", key, " = ", point[key]);
-                                        }
-
-                                        var worldPosition = Qt.vector3d(point.position.x, point.position.y, point.position.z);
+                                        var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
                                         if(!imagePlaneView.containsPoint(worldPosition))
                                             continue;
 
@@ -348,7 +340,7 @@ GridLayout {
 
                                             var point = pointCanvas.points[pointId];
 
-                                            var worldPosition = Qt.vector3d(point.position.x, point.position.y, point.position.z);
+                                            var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
                                             var screenPosition = model.toPlanePoint(imagePlaneView.axis, worldPosition)
 
                                             x = screenPosition.x;
@@ -356,7 +348,7 @@ GridLayout {
 
                                             var color = "red";
                                             if(undefined !== point.color)
-                                                color = Qt.rgba(point.color.r, point.color.g, point.color.b, 1.0);
+                                                color = Qt.rgba(point.color[0], point.color[1], point.color[2], 1.0);
 
                                             dot.color = color;
                                         }
