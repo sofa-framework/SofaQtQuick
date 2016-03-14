@@ -91,6 +91,7 @@ set(QML_FILES
     data/qml/SofaBasics/SofaTimeItem.qml
     data/qml/SofaBasics/ContentItem.qml
     data/qml/SofaBasics/ExplicitSwitch.qml
+    data/qml/SofaBasics/RangeSlider.qml
     data/qml/SofaBasics/CollapsibleGroupBox.qml
     data/qml/SofaBasics/Vector2DSpinBox.qml
     data/qml/SofaBasics/Vector3DSpinBox.qml

@@ -51,16 +51,18 @@ public:
     Q_PROPERTY(int axis READ axis WRITE setAxis NOTIFY axisChanged)
     Q_PROPERTY(int index READ index WRITE setIndex NOTIFY indexChanged)
     Q_PROPERTY(int length READ length NOTIFY lengthChanged)
-//    Q_PROPERTY(double paintedWidth READ paintedWidth NOTIFY paintedWidthChanged)
-//    Q_PROPERTY(double paintedHeight READ paintedHeight NOTIFY paintedHeightChanged)
+
+    Q_PROPERTY(float minIntensity READ minIntensity WRITE setMinIntensity NOTIFY minIntensityChanged)
+    Q_PROPERTY(float maxIntensity READ maxIntensity WRITE setMaxIntensity NOTIFY maxIntensityChanged)
 
 public:
     sofa::qtquick::ImagePlaneModel* imagePlaneModel() const {return myImagePlaneModel;}
     int axis() const {return myAxis;}
     int index() const {return myIndex;}
     int length() const {return myLength;}
-//    int paintedWidth() const {return myPaintedWidth;}
-//    int paintedHeight() const {return myPaintedHeight;}
+
+    float minIntensity() const {return myMinIntensity;}
+    float maxIntensity() const {return myMaxIntensity;}
 
 public:
     Q_INVOKABLE bool containsPoint(const QVector3D& wsPoint) const;
@@ -70,19 +72,21 @@ protected:
     void setAxis(int axis);
     void setIndex(int index);
     void setLength(int length);
-//    void setPaintedWidth(double paintedWidth);
-//    void setPaintedHeight(double paintedHeight);
 
-protected:
-//    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);
+    void setMinIntensity(float minIntensity);
+    void setMaxIntensity(float maxIntensity);
 
 signals:
     void imagePlaneModelChanged();
     void lengthChanged();
     void axisChanged();
     void indexChanged();
-//    void paintedWidthChanged();
-//    void paintedHeightChanged();
+
+    void minIntensityChanged();
+    void maxIntensityChanged();
+
+private:
+    QRgb computePixelColor(int r, int g, int b) const;
 
 private:
     ImagePlaneModel*                    myImagePlaneModel;
@@ -91,8 +95,9 @@ private:
     int                                 myIndex;
     QImage                              myImage;
     int                                 myLength;
-//    double                              myPaintedWidth;
-//    double                              myPaintedHeight;
+
+    float                               myMinIntensity;
+    float                               myMaxIntensity;
 
 };
 

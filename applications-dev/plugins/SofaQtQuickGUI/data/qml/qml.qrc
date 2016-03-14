@@ -16,6 +16,7 @@
         <file>SofaBasics/UserInteractor.qml</file>
         <file>SofaBasics/ContentItem.qml</file>
         <file>SofaBasics/ExplicitSwitch.qml</file>
+        <file>SofaBasics/RangeSlider.qml</file>
         <file>SofaBasics/CollapsibleGroupBox.qml</file>
         <file>SofaBasics/Vector3DSpinBox.qml</file>
         <file>SofaBasics/DynamicSplitView.qml</file>

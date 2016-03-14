@@ -58,9 +58,9 @@ GridLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        sourceComponent: sliceComponent
-        property int sliceAxis: 0
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
+        sourceComponent: planeComponent
+        property int planeAxis: 0
+        readonly property int planeIndex: item ? item.planeIndex : 0
         property bool showSubWindow: true
     }
 
@@ -69,9 +69,9 @@ GridLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        sourceComponent: sliceComponent
-        property int sliceAxis: 1
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
+        sourceComponent: planeComponent
+        property int planeAxis: 1
+        readonly property int planeIndex: item ? item.planeIndex : 0
         property bool showSubWindow: true
     }
 
@@ -126,17 +126,29 @@ GridLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        sourceComponent: sliceComponent
-        property int sliceAxis: 2
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
+        sourceComponent: planeComponent
+        property int planeAxis: 2
+        readonly property int planeIndex: item ? item.planeIndex : 0
         property bool showSubWindow: true
     }
 
     Component {
-        id: sliceComponent
+        id: planeComponent
 
         ColumnLayout {
-            readonly property int sliceIndex: imagePlaneView.index
+            spacing: 0
+
+            readonly property int planeIndex: imagePlaneView.index
+
+            RangeSlider {
+                id: intensityRangeSlider
+                Layout.fillWidth: true
+
+                title: "Intensity"
+
+                minimumValue: 0.0
+                maximumValue: 1.0
+            }
 
             Rectangle {
                 id: rectangle
@@ -175,7 +187,10 @@ GridLayout {
 
                             imagePlaneModel: model
                             index: slider.value
-                            axis: sliceAxis
+                            axis: planeAxis
+
+                            minIntensity: intensityRangeSlider.beginValue
+                            maxIntensity: intensityRangeSlider.endValue
 
                             Component.onCompleted: update();
 
@@ -440,7 +455,7 @@ GridLayout {
                     iconSource: "qrc:/icon/subWindow.png"
                     visible: showSubWindow
 
-                    onClicked: windowComponent.createObject(SofaApplication, {"sliceComponent": sliceComponent, "sliceAxis": sliceAxis});
+                    onClicked: windowComponent.createObject(SofaApplication, {"planeComponent": planeComponent, "planeAxis": planeAxis});
                 }
 
                 Slider {
@@ -490,10 +505,10 @@ GridLayout {
 //                height = Math.min(height, loader.implicitHeight);
 //            }
 
-            property var sliceComponent: null
-            property alias sliceAxis: loader.sliceAxis
+            property var planeComponent: null
+            property alias planeAxis: loader.planeAxis
 
-            title: "Plane " + String.fromCharCode('X'.charCodeAt(0) + sliceAxis)
+            title: "Plane " + String.fromCharCode('X'.charCodeAt(0) + planeAxis)
 
             ColumnLayout {
                 anchors.fill: parent
@@ -505,8 +520,8 @@ GridLayout {
 
                     onImplicitHeightChanged: window.height = Math.max(window.height, loader.implicitHeight);
 
-                    sourceComponent: window.sliceComponent
-                    property int sliceAxis: -1
+                    sourceComponent: window.planeComponent
+                    property int planeAxis: -1
                     property bool showSubWindow: false
                 }
 
