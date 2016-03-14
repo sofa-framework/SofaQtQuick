@@ -44,14 +44,14 @@ class SOFA_SOFAQTQUICKGUI_API SofaData : public QObject
 
 public:
     SofaData(const SofaComponent* sofaComponent, const sofa::core::objectmodel::BaseData* data);
-    SofaData(const SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
+    SofaData(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
     SofaData(const SofaData& sceneData);
 
-    Q_INVOKABLE const sofa::qtquick::SofaComponent* sofaComponent() const;
+    Q_INVOKABLE sofa::qtquick::SofaComponent* sofaComponent() const;
 
-    Q_INVOKABLE QVariantMap object() const;
+    Q_INVOKABLE QVariantMap object();
 
-    Q_INVOKABLE QVariant value();
+    Q_INVOKABLE QVariant value() const;
     Q_INVOKABLE bool setValue(const QVariant& value);
     Q_INVOKABLE bool setLink(const QString& path);
 
@@ -59,7 +59,7 @@ public:
     const sofa::core::objectmodel::BaseData* data() const;
 
 private:
-    const SofaComponent*                        mySofaComponent;
+    SofaComponent*                              mySofaComponent;
     const sofa::core::objectmodel::BaseData*    myData;
 
 };

@@ -19,6 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaPythonInteractor.h"
 #include "SofaScene.h"
+#include "SofaComponent.h"
 #include "PythonConsole.h"
 
 #include <SofaPython/PythonScriptFunction.h>
@@ -35,6 +36,8 @@ namespace sofa
 
 namespace qtquick
 {
+
+using namespace sofa::core::objectmodel;
 
 SofaPythonInteractor::SofaPythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus()
     , mySofaScene(0)
@@ -183,18 +186,17 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
 	QVariant value;
 
 	if(!parameter)
-		return value;
-	
-	if(PyTuple_Check(parameter) || PyList_Check(parameter))
-	{
-		QVariantList tuple;
+        return value;
 
-		PyObject *iterator = PyObject_GetIter(parameter);
-		PyObject *item;
+    if(PyTuple_Check(parameter) || PyList_Check(parameter))
+    {
+        QVariantList tuple;
 
-		if(!iterator)
-			return value;
+        PyObject* iterator = PyObject_GetIter(parameter);
+        if(!iterator)
+            return tuple;
 
+        PyObject* item;
         while((item = PyIter_Next(iterator)))
 		{
 			tuple.append(ExtractPythonTupleHelper(item));
@@ -207,23 +209,23 @@ static QVariant ExtractPythonTupleHelper(PyObject* parameter)
             msg_error("SofaQtQuickGUI") << "during python tuple/list iteration";
 
 		return tuple;
-	}
-	else if(PyDict_Check(parameter))
-	{
-		QVariantMap map;
+    }
+    else if(PyDict_Check(parameter))
+    {
+        QVariantMap map;
 
 		PyObject* key;
 		PyObject* item;
 		Py_ssize_t pos = 0;
 
-		while(PyDict_Next(parameter, &pos, &key, &item))
-			map.insert(PyString_AsString(key), ExtractPythonTupleHelper(item));
+        while(PyDict_Next(parameter, &pos, &key, &item))
+            map.insert(PyString_AsString(key), ExtractPythonTupleHelper(item));
 
 		if(PyErr_Occurred())
-            msg_error("SofaQtQuickGUI") << "during python dictionary iteration";
+            msg_error("SofaQtQuickGUI") << "during python dictionary iteration, key must be of type 'string'";
 
 		return map;
-	}
+    }
 	else
 	{
 		value = ExtractPythonValueHelper(parameter);
@@ -289,6 +291,22 @@ QVariant SofaPythonInteractor::onCallByController(PythonScriptController* python
     pythonScriptFunction(&pythonScriptParameter, &pythonScriptResult);
 
     return ExtractPythonTupleHelper(pythonScriptResult.data());
+}
+
+QVariant SofaPythonInteractor::onCallBySofaComponent(SofaComponent* sofaComponent, const QString& funcName, const QVariant& parameter)
+{
+    if(!onCallBasicVerifications(funcName, parameter))
+        return QVariant();
+
+    Base* base = sofaComponent->base();
+    if(!base)
+        return QVariant();
+
+    PythonScriptController* controller = dynamic_cast<PythonScriptController*>(base);
+    if(!controller)
+        return QVariant();
+
+    return onCallByController(controller, funcName, parameter);
 }
 
 QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)

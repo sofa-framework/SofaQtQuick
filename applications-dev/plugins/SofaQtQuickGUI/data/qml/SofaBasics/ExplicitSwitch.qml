@@ -27,20 +27,24 @@ Switch {
     property string checkedString: "ON"
     property string notCheckedString: "OFF"
 
+    property color checkedColor: root.enabled ? "#468bb7" : Qt.darker("lightgrey", 1.25)
+    property color notCheckedColor: Qt.darker("#C3C3C3", root.enabled ? 1.0 : 1.25)
+
     style: SwitchStyle {
         groove: Item {
             id: groove
-            implicitWidth: 10 + 2 * Math.max(checkedText.implicitWidth, notCheckedText.implicitWidth)
+            implicitWidth: Math.ceil(checkedRectangle.implicitWidth + notCheckedRectangle.implicitWidth)
             implicitHeight: 20
 
             Rectangle {
+                id: checkedRectangle
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.bottom: parent.bottom
-                implicitWidth: parent.width * 0.5
+                implicitWidth: Math.max(checkedText.implicitWidth, notCheckedText.implicitWidth) + 7
                 implicitHeight: parent.height
                 radius: 5
-                color: root.enabled ? "#468bb7" : Qt.darker("lightgrey", 1.25)
+                color: root.checkedColor
                 Text {
                     id: checkedText
                     color: Qt.darker("white", root.enabled ? 1.0 : 1.25)
@@ -49,11 +53,12 @@ Switch {
                 }
             }
             Rectangle {
+                id: notCheckedRectangle
                 anchors.right: parent.right
-                implicitWidth: parent.width * 0.5
+                implicitWidth: Math.max(checkedText.implicitWidth, notCheckedText.implicitWidth) + 7
                 implicitHeight: parent.height
                 radius: 5
-                color: Qt.darker("#C3C3C3", root.enabled ? 1.0 : 1.25)
+                color: root.notCheckedColor
                 Text {
                     id: notCheckedText
                     color: Qt.darker("white", root.enabled ? 1.0 : 1.25)
@@ -64,7 +69,7 @@ Switch {
         }
 
         handle: Rectangle {
-            implicitWidth: Math.round((parent.parent.width - padding.left - padding.right)/2)
+            implicitWidth: Math.ceil((parent.parent.width - padding.left - padding.right) * 0.5)
             implicitHeight: control.height - padding.top - padding.bottom
             radius: 5
             border.width: 1
