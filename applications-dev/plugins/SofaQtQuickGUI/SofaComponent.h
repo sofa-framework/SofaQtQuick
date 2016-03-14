@@ -61,13 +61,13 @@ public:
 
     Q_INVOKABLE void reinit();
 
+    Q_INVOKABLE sofa::qtquick::SofaScene* sofaScene() const;
+
     Q_INVOKABLE void beginDataChange();
     Q_INVOKABLE void endDataChange();
 
 signals:
     void dataHasChanged() ;
-
-    Q_INVOKABLE sofa::qtquick::SofaScene* sofaScene() const;
 
 public slots:
     void clearOutput();

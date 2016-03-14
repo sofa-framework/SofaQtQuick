@@ -235,5 +235,4 @@ void SofaComponent::endDataChange()
 
 }
 
-
 }

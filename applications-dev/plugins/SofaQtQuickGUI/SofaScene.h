@@ -192,7 +192,6 @@ public:
 
     bool componentExists(const sofa::core::objectmodel::Base* base) const;
 
-
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
     Q_INVOKABLE sofa::qtquick::SofaComponent* retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module = "");

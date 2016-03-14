@@ -38,9 +38,61 @@ namespace sofa
 namespace qtquick
 {
 
+class ItemBase {
+public:
+    bool m_visible;
+    virtual ~ItemBase(){}
+    ItemBase(){ m_visible = true; }
+    bool isVisible(){ return m_visible; }
+    void setVisibility(bool theNewState){ m_visible = theNewState; }
+};
+
+class Item : public QObject, public ItemBase
+{
+    Q_OBJECT
+
+    Q_PROPERTY(QString m_name READ getName WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QVariant m_data READ getData WRITE setData NOTIFY dataChanged)
+
+public:
+    Item(const QString& name, const QVariant& data, int type) :
+        m_name(name),
+        m_type(type),
+        m_data(data){ }
+    virtual ~Item(){}
+
+    QString     m_name;
+    int         m_type;
+    QVariant    m_data;
+
+    QString getName() { return m_name ; }
+    void setName(QString& s){ m_name=s; }
+
+    QVariant getData() { return m_data ; }
+    void setData(QVariant& s){ m_data=s; }
+
+signals:
+    void nameChanged(QString*) const ;
+    void dataChanged(QVariant*) const ;
+};
+
+class ItemGroup : public ItemBase
+{
+public:
+    ItemGroup() {} ;
+    virtual ~ItemGroup(){
+        for(auto item : m_children)
+            delete item ;
+    }
+
+    ItemGroup(const QString& name) : m_name(name) {} ;
+    QString         m_name ;
+    QList<Item*>    m_children;
+};
+
 /// \class A Model allowing us to show a list of sofa data belonging to
 /// a specific sofa component in a ListView
-class SofaInspectorDataListModel : public QAbstractListModel
+class SofaInspectorDataListModel : public QAbstractItemModel
 {
     Q_OBJECT
 
@@ -49,68 +101,66 @@ public:
     ~SofaInspectorDataListModel();
 
     Q_INVOKABLE void update();
+    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaSelectedComponent
+               READ sofaSelectedComponent
+               WRITE setSofaSelectedComponent
+               NOTIFY sofaSelectedComponentChanged)
 
-public:
-    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaComponent
-               READ sofaComponent
-               WRITE setSofaComponent
-               NOTIFY sofaComponentChanged)
+     Q_INVOKABLE QModelIndex index(int row, int col,
+                                   const QModelIndex& parent) const ;
+     Q_INVOKABLE int rowCount(int row)  ;
 
     enum Type {
-        SofaDataType = 0,
+        SofaDataType = 5,
         SofaLinkType,
-        LogType,
         InfoType,
+        LogType,
+        GroupType,
     };
     Q_ENUMS(Type);
 
-public:
-    SofaComponent* sofaComponent() const		{return mySofaComponent;}
-    void setSofaComponent(SofaComponent* newSofaComponent);
+    enum Visibility {
+        Expanded = 1,
+        Collapsed,
+        Hidden
+    };
+    Q_ENUMS(Visibility)
+
+    SofaComponent* sofaSelectedComponent() const {return m_selectedsofacomponent;}
+    void setSofaSelectedComponent(SofaComponent* newSofaComponent);
+
+public slots:
+    void handleDataHasChanged() ;
+
+signals:
+    void sofaSelectedComponentChanged(SofaComponent* newSofaComponent) const;
+    void sofaDataHasChanged() ;
 
 protected:
+    QModelIndex parent ( const QModelIndex & index ) const ;
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
+    int	columnCount(const QModelIndex & parent = QModelIndex()) const;
+
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     QHash<int,QByteArray> roleNames() const;
 
-    Q_INVOKABLE sofa::qtquick::SofaData* getDataById(int row) const;
-signals:
-    void sofaComponentChanged(SofaComponent* newSofaComponent) const;
+    Q_INVOKABLE sofa::qtquick::SofaData* getDataById(int parent, int child) const;
+    Q_INVOKABLE bool isGroupVisible(int id) const ;
+    Q_INVOKABLE bool isItemVisible(int parent, int child) const ;
 
 private:
     enum {
         NameRole = Qt::UserRole + 1,
-        GroupRole,
         TypeRole,
-        ValueRole
+        ValueRole,
+        VisibilityRole,
     };
 
-    struct Item
-    {
-        Item() :
-            name(),
-            group(),
-            type(),
-            data(0)
-        {
+    ItemGroup* findOrCreateGroup(const QString& groupname) ;
 
-        }
-
-        QString     name;
-        QString     group;
-        int         type;
-        QVariant    data;
-    };
-
-    Item buildItem(sofa::core::objectmodel::BaseData* data) const;
-    Item buildItem(sofa::core::objectmodel::BaseLink* link) const;
-    Item buildItem(const QString& name, const QString& group, const QString& value) const; // readonly
-
-private:
-    QList<Item>             myItems;
-    int                     myUpdatedCount;
-    mutable SofaComponent*  mySofaComponent;
-
+    QList<ItemGroup*>             m_groups;
+    QMap<QString, int>            m_nameindex ;
+    SofaComponent*                m_selectedsofacomponent;
 };
 
 }
