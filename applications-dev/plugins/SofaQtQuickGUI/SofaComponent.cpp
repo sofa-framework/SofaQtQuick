@@ -57,6 +57,13 @@ QString SofaComponent::name() const
     return QString("Invalid SofaComponent");
 }
 
+void SofaComponent::setName(const QString& newName)
+{
+    Base* base = SofaComponent::base();
+    if(base)
+        base->setName(newName.toStdString());
+}
+
 QString SofaComponent::className() const
 {
     const Base* base = SofaComponent::base();
@@ -142,51 +149,51 @@ SofaData* SofaComponent::getComponentData(const QString& name) const
 
 QString SofaComponent::output() const
 {
-	const Base* base = SofaComponent::base();
-	if(base)
-		return QString::fromStdString(base->getOutputs());
+    const Base* base = SofaComponent::base();
+    if(base)
+        return QString::fromStdString(base->getOutputs());
 
-	return QString();
+    return QString();
 }
 
 QString SofaComponent::warning() const
 {
-	const Base* base = SofaComponent::base();
-	if(base)
-		return QString::fromStdString(base->getWarnings());
+    const Base* base = SofaComponent::base();
+    if(base)
+        return QString::fromStdString(base->getWarnings());
 
-	return QString();
+    return QString();
 }
 
 void SofaComponent::clearOutput()
 {
-	Base* base = SofaComponent::base();
-	if(base)
-	{
-		base->clearOutputs();
-	}
+    Base* base = SofaComponent::base();
+    if(base)
+    {
+        base->clearOutputs();
+    }
 }
 
 void SofaComponent::clearWarning()
 {
-	Base* base = SofaComponent::base();
-	if(base)
-	{
-		base->clearWarnings();
-	}
+    Base* base = SofaComponent::base();
+    if(base)
+    {
+        base->clearWarnings();
+    }
 }
 
 void SofaComponent::reinit()
 {
-	Base* base = SofaComponent::base();
-	if(!base)
-		return;
+    Base* base = SofaComponent::base();
+    if(!base)
+        return;
 
-	BaseObject* baseObject = dynamic_cast<BaseObject*>(base);
-	if(!baseObject)
-		return;
+    BaseObject* baseObject = dynamic_cast<BaseObject*>(base);
+    if(!baseObject)
+        return;
 
-	baseObject->reinit();
+    baseObject->reinit();
 }
 
 SofaScene* SofaComponent::sofaScene() const
@@ -196,7 +203,7 @@ SofaScene* SofaComponent::sofaScene() const
 
 bool SofaComponent::isValid() const
 {
-	return base();
+    return base();
 }
 
 Base* SofaComponent::base()
@@ -216,6 +223,17 @@ const Base* SofaComponent::base() const
     return base;
 }
 
+
+void SofaComponent::beginDataChange()
+{
 }
+
+void SofaComponent::endDataChange()
+{
+    emit dataHasChanged();
+}
+
+}
+
 
 }

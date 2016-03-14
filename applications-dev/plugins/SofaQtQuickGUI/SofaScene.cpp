@@ -631,6 +631,8 @@ void SofaScene::setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedCo
     if(newSelectedComponent)
         mySelectedComponent = new SofaComponent(*newSelectedComponent);
 
+    connect(mySelectedComponent, SIGNAL(dataHasChanged()), this, SIGNAL(dataHasChanged()));
+
     selectedComponentChanged(mySelectedComponent);
 }
 
@@ -1858,6 +1860,18 @@ void SofaScene::removeObject(Node* parent, BaseObject* object)
 
     myBases.remove(object);
 }
+
+void SofaScene::beginDataChange()
+{
+
+}
+
+void SofaScene::endDataChange()
+{
+    emit dataHasChanged() ;
+}
+
+
 
 }
 

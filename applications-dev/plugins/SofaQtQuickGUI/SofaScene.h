@@ -155,6 +155,8 @@ signals:
     void selectedComponentChanged(sofa::qtquick::SofaComponent* newSelectedComponent);
     void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
+    void dataHasChanged() ;
+
 public:
     Q_INVOKABLE double radius() const;
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
@@ -183,7 +185,13 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* root();
 
-	bool componentExists(const sofa::core::objectmodel::Base* base) const;
+    // There is a corresponding signal that is emitted when the object is
+    // markedAsDirty.
+    Q_INVOKABLE void beginDataChange() ;
+    Q_INVOKABLE void endDataChange() ;
+
+    bool componentExists(const sofa::core::objectmodel::Base* base) const;
+
 
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
@@ -254,6 +262,8 @@ private:
     bool                                        myDefaultAnimate;
     bool                                        myAsynchronous;
     bool                                        myPyQtForceSynchronous;
+
+    bool                                        m_dirty ;
 
     sofa::simulation::Simulation*               mySofaSimulation;
     QTimer*                                     myStepTimer;

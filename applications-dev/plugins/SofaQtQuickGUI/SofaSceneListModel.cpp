@@ -81,6 +81,9 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
             update();
         }
 
+        connect(mySofaScene, SIGNAL(dataHasChanged()),
+                this, SLOT(sofaDataHasChanged())) ;
+
         connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
             clear();
 
@@ -90,6 +93,12 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
             update();
         });
     }
+}
+
+void SofaSceneListModel::sofaDataHasChanged()
+{
+    markDirty() ;
+    update() ;
 }
 
 void SofaSceneListModel::clear()
@@ -533,7 +542,7 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
         }
     }
 
-	markDirty();
+    markDirty();
 }
 
 //void SceneListModel::moveObject(Node* previous, Node* parent, BaseObject* object)
@@ -545,14 +554,14 @@ void SofaSceneListModel::addSlave(BaseObject* master, BaseObject* slave)
 {
     MutationListener::addSlave(master, slave);
 
-	markDirty();
+    markDirty();
 }
 
 void SofaSceneListModel::removeSlave(BaseObject* master, BaseObject* slave)
 {
     MutationListener::removeSlave(master, slave);
 
-	markDirty();
+    markDirty();
 }
 
 }

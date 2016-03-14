@@ -55,6 +55,7 @@ public:
 
 public slots:
     void clear();
+    void sofaDataHasChanged() ;
 
 public:
     Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
@@ -140,7 +141,7 @@ private:
 private:
     QList<Item>                     myItems;
     int                             myUpdatedCount;
-	bool							myIsDirty;
+    bool							myIsDirty;
     SofaScene*                      mySofaScene;
 
 };

@@ -146,6 +146,7 @@ Item {
             visible: root.showName
             text: dataObject.name + " "
             font.italic: true
+            verticalAlignment: Text.AlignVCenter
 
             MouseArea {
                 anchors.fill: parent

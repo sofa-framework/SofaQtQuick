@@ -45,6 +45,8 @@ public:
 
 public:
     Q_INVOKABLE QString name() const;
+    Q_INVOKABLE void setName(const QString& newName);
+
     Q_INVOKABLE QString className() const;
     Q_INVOKABLE QString namespaceName() const;
     Q_INVOKABLE QString templateName() const;
@@ -54,20 +56,26 @@ public:
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent) const;
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;
 
-	Q_INVOKABLE QString output() const;
-	Q_INVOKABLE QString warning() const;
+    Q_INVOKABLE QString output() const;
+    Q_INVOKABLE QString warning() const;
 
-	Q_INVOKABLE void reinit();
+    Q_INVOKABLE void reinit();
+
+    Q_INVOKABLE void beginDataChange();
+    Q_INVOKABLE void endDataChange();
+
+signals:
+    void dataHasChanged() ;
 
     Q_INVOKABLE sofa::qtquick::SofaScene* sofaScene() const;
 
 public slots:
-	void clearOutput();
-	void clearWarning();
+    void clearOutput();
+    void clearWarning();
 
 public:
-	/// \brief check if the sofa component still exists, if you need to access the component it is recommended to directly call SofaComponent::base() because it already check the object existence
-	bool isValid() const;
+    /// \brief check if the sofa component still exists, if you need to access the component it is recommended to directly call SofaComponent::base() because it already check the object existence
+    bool isValid() const;
 
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;

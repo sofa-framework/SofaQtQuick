@@ -89,15 +89,18 @@ ColumnLayout {
                                 spacing : 10
                                 Text{
                                     textFormat: Text.RichText
-
+                                    // possible levels of messages (ordered)
+                                    // enum Type {Info=0, Deprecated, Warning, Error, Fatal, TEmpty, TypeCount};
                                     text: {
                                         if(type == 0)
                                             return "[<font color='#00ff00'>INFO</font>]: "+emitter
-                                        if(type == 1)
+                                        else if(type == 1)
+                                            return "[<font color='#ff0000'>DEPRECATED</font>]: "+emitter
+                                        else if(type == 2)
                                             return "[<font color='#998800'>WARNING</font>]: "+emitter
-                                        if(type == 2)
+                                        else if(type == 3)
                                             return "[<font color='#ff0000'>ERROR</font>]: "+emitter
-                                        return "[<font color='#ff0000'>DEPRECATED</font>]: "+emitter
+                                        return "[<font color='#ff0000'>UNDEFINED</font>]: "+emitter
                                     }
                                 }
                                 Text{
@@ -109,7 +112,6 @@ ColumnLayout {
                             }
                             Text{
                                 id : extrainfo
-
                                 textFormat: Text.RichText
                                 text: "Emitted from: <a href='file://"+link+"?"+line+"'>"+link+":"+line+"</a>"
                                 onLinkActivated: {
@@ -179,7 +181,6 @@ ColumnLayout {
                                     p1scores.currentIndex = index ;
                             }
                         }
-
                     }
                 }
                 highlightFollowsCurrentItem: true
