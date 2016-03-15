@@ -492,6 +492,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 // launch the main script
 
     applicationEngine.addImportPath("qrc:/");
+    applicationEngine.addImportPath("qrc:/SofaImage/");
     applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
     applicationEngine.load(QUrl(mainScript));
 

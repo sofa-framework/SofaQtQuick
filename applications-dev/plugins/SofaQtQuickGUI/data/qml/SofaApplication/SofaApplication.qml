@@ -93,6 +93,11 @@ SofaApplication {
         viewerPrivate.sofaViewersChanged(viewerPrivate.sofaViewers);
     }
 
+    function callOnAllSofaViewers(visitor) {
+        for (var i = 0; i < sofaViewers.length; i++)
+            visitor(sofaViewers[i]);
+    }
+
     property QtObject _viewerPrivate: QtObject {
         id: viewerPrivate
 
@@ -111,6 +116,11 @@ SofaApplication {
         }
 
         return cameras;
+    }
+
+    function callOnAllCameras(visitor) {
+        for (var i = 0; i < sofaViewers.length; i++)
+            visitor(sofaViewers[i].camera);
     }
 
 ////////////////////////////////////////////////// SETTINGS

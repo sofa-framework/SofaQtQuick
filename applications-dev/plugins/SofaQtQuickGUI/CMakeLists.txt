@@ -135,6 +135,8 @@ set(QRC_FILES
     data/qml/qml.qrc
 )
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 # on Window, Qt packages need the glu32 lib full path, but they do not find it without help
 if(WIN32)
     if(CMAKE_CL_64)

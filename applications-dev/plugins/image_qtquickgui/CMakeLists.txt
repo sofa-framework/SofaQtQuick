@@ -21,9 +21,9 @@ set(HEADER_FILES
 )
 
 set(QML_FILES
-    data/qml/SofaDataTypes/qmldir
+    data/qml/SofaImage/qmldir
+    data/qml/SofaImage/SofaImagePlaneItem.qml
     data/qml/SofaDataTypes/SofaDataType_imageplane.qml
-    data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_Image.qml
 )
 
