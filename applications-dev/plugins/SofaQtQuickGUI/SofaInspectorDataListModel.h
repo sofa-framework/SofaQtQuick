@@ -40,11 +40,13 @@ namespace qtquick
 
 class ItemBase {
 public:
-    bool m_visible;
-    virtual ~ItemBase(){}
     ItemBase(){ m_visible = true; }
+    virtual ~ItemBase(){}
     bool isVisible(){ return m_visible; }
     void setVisibility(bool theNewState){ m_visible = theNewState; }
+
+    QString         m_name          {"empty"};
+    bool m_visible;
 };
 
 class Item : public QObject, public ItemBase
@@ -55,13 +57,15 @@ class Item : public QObject, public ItemBase
     Q_PROPERTY(QVariant m_data READ getData WRITE setData NOTIFY dataChanged)
 
 public:
-    Item(const QString& name, const QVariant& data, int type) :
-        m_name(name),
+    Item(const QString& name, const QVariant& data, int type, bool visible) :
+
         m_type(type),
-        m_data(data){ }
+        m_data(data)
+        { m_visible=visible;
+          m_name=name;
+        }
     virtual ~Item(){}
 
-    QString     m_name;
     int         m_type;
     QVariant    m_data;
 
@@ -79,15 +83,16 @@ signals:
 class ItemGroup : public ItemBase
 {
 public:
-    ItemGroup() {} ;
+    ItemGroup() {}
+    ItemGroup(const QString& name)  { m_name = name; }
     virtual ~ItemGroup(){
-        for(auto item : m_children)
+        for(Item* item : m_children)
             delete item ;
+        m_children.clear();
     }
 
-    ItemGroup(const QString& name) : m_name(name) {} ;
-    QString         m_name ;
     QList<Item*>    m_children;
+    int             m_order         {0};
 };
 
 /// \class A Model allowing us to show a list of sofa data belonging to
@@ -109,6 +114,7 @@ public:
      Q_INVOKABLE QModelIndex index(int row, int col,
                                    const QModelIndex& parent) const ;
      Q_INVOKABLE int rowCount(int row)  ;
+     Q_INVOKABLE void resortGroup(int groupid) ;
 
     enum Type {
         SofaDataType = 5,
@@ -147,6 +153,10 @@ protected:
     Q_INVOKABLE sofa::qtquick::SofaData* getDataById(int parent, int child) const;
     Q_INVOKABLE bool isGroupVisible(int id) const ;
     Q_INVOKABLE bool isItemVisible(int parent, int child) const ;
+
+    Q_INVOKABLE void setVisibility(int groupid, bool visibility) ;
+    Q_INVOKABLE void setOrdering(int groupid, int idx) ;
+    Q_INVOKABLE void setVisibility(int groupid, int itemid, bool visibility) ;
 
 private:
     enum {

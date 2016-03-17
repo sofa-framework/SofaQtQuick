@@ -72,10 +72,11 @@ Rectangle{
 
         delegate: Component {
             Rectangle{
-                property var theDataList : null
-
                 id: theItem
-                state: "expanded"
+                property int groupIndex: index
+                property bool editingMode: false
+
+                state: sofaInspectorDataListModel.isGroupVisible(index) ? "expanded" : "collapsed"
                 width: parent.width
                 color: "lightgrey"
                 clip: true
@@ -101,6 +102,13 @@ Rectangle{
                         }
                     },
                     State {
+                        name: "expanded-all"
+                        PropertyChanges {
+                            target: theItem
+                            implicitHeight: childView.childHeight + 20
+                        }
+                    },
+                    State {
                         name: "collapsed"
                         PropertyChanges {
                             target: theItem
@@ -109,40 +117,60 @@ Rectangle{
                     }
                 ]
 
+                /*
+                |--------------------------------------------------------|
+                | Group 1 (header)                                       |
+                |   Data 1:                                              |
+                |   Data 2:                                              |
+                |   Data ...:                                            |
+                |--------------------------------------------------------|*/
                 Column{
                     anchors.fill: parent
-
-                    property var childModel : visualModel.modelIndex(index) ;
+                    property int theIndex: index
 
                     Rectangle{
                         width: theView.width
                         height:20
                         color: "grey"
                         radius: 10
+                        Row{
+                            width: parent.width
+                            height: parent.height
+                            Text{
+                                id: titleText
+                                horizontalAlignment: Text.AlignHCenter
+                                width: theView.width-20
+                                height:20
+                                color: "darkblue"
 
-                        Text{
-                            id: titleText
-                            horizontalAlignment: Text.AlignHCenter
-                            width: theView.width
-                            height:20
-                            color: "darkblue"
+                                font.bold: true
+                                font.pixelSize: 14
 
-                            font.bold: true
-                            font.pixelSize: 14
+                                text: name
 
-                            text: name
+                                MouseArea {
+                                    id: mouse_area1
+                                    z: 1
+                                    hoverEnabled: false
+                                    height : parent.height
+                                    width : parent.width - 20
+                                    onClicked: {
+                                        if(theItem.state === "expanded")
+                                            theItem.state = "expanded-all"
+                                        else if (theItem.state === "expanded-all")
+                                            theItem.state = "collapsed"
+                                        else
+                                            theItem.state = "expanded"
 
-                            MouseArea {
-                                id: mouse_area1
-                                z: 1
-                                hoverEnabled: false
-                                height : parent.height
-                                width : parent.width
-                                onClicked: {
-                                    if(theItem.state == "expanded")
-                                        theItem.state = "collapsed"
-                                    else
-                                        theItem.state = "expanded"
+                                        visualModel.theModel.setVisibility(index, !(theItem.state==="collapsed"))
+                                    }
+                                }
+                            }
+                            CheckBox{
+                                width: 15
+                                height: 15
+                                onClicked :{
+                                    theItem.editingMode = !theItem.editingMode;
                                 }
                             }
                         }
@@ -150,32 +178,39 @@ Rectangle{
 
                     ListView{
                         property int childHeight : contentHeight
+                        property int nameLabelWidth : 100
+                        property int nameLabelImplicitWidth : 100
+                        property bool editingMode : theItem.editingMode
                         id: childView
-                        visible: theItem.state == "expanded"
+                        visible: theItem.state != "collapsed"
+
                         width: theView.width
                         height: contentHeight
+
+                        implicitHeight: contentHeight
                         clip: true
 
                         model : VisualDataModel {
+                            property int parentIndex: theItem.groupIndex
+
                             id : childModel
                             model : visualModel.theModel
-                            rootIndex : visualModel.modelIndex(index)
-                            property var parentIndex: index
+                            rootIndex : visualModel.modelIndex(theItem.groupIndex)
 
                             delegate : visibleItem ;
 
 
-                            property Component hiddenItem : Rectangle {
-                                width : theItem.width ;
-                                height: 100 ;
-                                color : "yellow"
-                            }
                             property Component visibleItem :
                                 Column {
                                 Loader{
                                     id: dataLoader
                                     width: theItem.width
+
                                     sourceComponent: {
+                                        if(theItem.state != "expanded-all" && !theItem.editingMode){
+                                            if(!visualModel.theModel.isItemVisible(childModel.parentIndex, index))
+                                                return hiddenItem;
+                                        }
                                         switch(type){
                                         case 5: //sofaInspectorDataListModel.SofaDataType:
                                             return dataItem;
@@ -186,20 +221,89 @@ Rectangle{
                                         case 8: //sofaInspectorDataListModel.LogType:
                                             return logItem;
                                         }
+                                        return hiddenItem;
                                     }
 
-                                    property Component dataItem : SofaDataItem {
-                                        implicitWidth :  theItem.width
-                                        property int nameLabelWidth: 100
+                                    property Component hiddenItem : Rectangle {
+                                        width : theItem.width ;
+                                        height: 0;
+                                        color : "yellow"
+                                    }
+
+                                    property Component dataItem :
+                                        SofaDataItem {
+
                                         id: sofaDataItem
+                                        implicitWidth : theItem.width
 
                                         sofaScene: root.sofaScene
-                                        sofaData: sofaInspectorDataListModel.getDataById(childModel.parentIndex, index)
+                                        sofaData: {
+                                            return sofaInspectorDataListModel.getDataById(childModel.parentIndex, index)
+                                        }
+
+                                        nameLabelWidth:100
+
+                                        Component.onCompleted: updateNameLabelWidth();
+                                        onNameLabelImplicitWidthChanged: updateNameLabelWidth();
+
+                                        function updateNameLabelWidth() {
+                                            childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
+                                        }
+
+                                        state: {
+                                            if( theItem.editingMode ) {
+                                                return "editing"
+                                            }else if( theItem.state === "expanded-all" ) {
+                                                return "default"
+                                            }
+                                            return "non-editing"
+                                        }
+
+                                        MouseArea{
+                                            id: mouseArea
+                                            enabled: theItem.editingMode
+
+                                            property bool checked: visualModel.theModel.isItemVisible(childModel.parentIndex, index)
+
+                                            width: sofaDataItem.implicitWidth
+                                            height: sofaDataItem.implicitWidth
+
+                                            onClicked: {
+                                                checked = !checked
+                                                visualModel.theModel.setVisibility(childModel.parentIndex, index, checked)
+                                            }
+                                        }
+                                        states: [
+                                            State {
+                                                name: "default"
+                                                PropertyChanges {
+                                                    target: sofaDataItem
+                                                    color: "lightgray"
+                                                    visible: true
+                                                }
+                                            },
+                                            State {
+                                                name: "editing"
+                                                PropertyChanges {
+                                                    target: sofaDataItem
+                                                    color: mouseArea.checked? "yellow" : "red"
+                                                    visible: true
+                                                }
+                                            },
+                                            State {
+                                                name: "non-editing"
+                                                PropertyChanges {
+                                                    target: sofaDataItem
+                                                    color: "lightgray"
+                                                    visible: visualModel.theModel.isItemVisible(childModel.parentIndex, index)
+                                                }
+                                            }
+                                        ]
                                     }
 
                                     property Component linkItem: RowLayout {
+                                        id: linkView
                                         spacing: 1
-                                        property int nameLabelWidth: 100
 
                                         Text {
                                             id: linkNameLabel
@@ -225,11 +329,21 @@ Rectangle{
                                             text: value.toString().trim()
                                             onTextChanged: cursorPosition = 0;
                                         }
+
+
+                                        property int nameLabelWidth: childView.nameLabelImplicitWidth
+                                        readonly property int nameLabelImplicitWidth: linkView.implicitWidth
+
+                                        Component.onCompleted: updateNameLabelWidth();
+                                        onNameLabelImplicitWidthChanged: updateNameLabelWidth();
+
+                                        function updateNameLabelWidth() {
+                                            childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
+                                        }
                                     }
 
                                     property Component infoItem: RowLayout {
                                         spacing: 1
-                                        property int nameLabelWidth: 100
 
                                         Text {
                                             id: infoNameLabel
@@ -254,23 +368,21 @@ Rectangle{
                                             wrapMode: Text.WordWrap
                                         }
 
-                                        /*property int nameLabelWidth: listView.nameLabelImplicitWidth
+                                        property int nameLabelWidth: childView.nameLabelImplicitWidth
                                         readonly property int nameLabelImplicitWidth: infoNameLabel.implicitWidth
 
                                         Component.onCompleted: updateNameLabelWidth();
                                         onNameLabelImplicitWidthChanged: updateNameLabelWidth();
 
                                         function updateNameLabelWidth() {
-                                            listView.nameLabelImplicitWidth = Math.max(listView.nameLabelImplicitWidth, nameLabelImplicitWidth);
-                                        }*/
+                                            childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
+                                        }
                                     }
 
                                     property Component logItem: GridLayout {
                                         columnSpacing: 1
                                         rowSpacing: 1
                                         columns: 2
-                                        property int nameLabelWidth: 100
-
 
                                         Text {
                                             id: logNameLabel
@@ -310,24 +422,17 @@ Rectangle{
                                             }
                                         }
 
-                                        //property int nameLabelWidth: listView.nameLabelImplicitWidth
-                                        //readonly property int nameLabelImplicitWidth: logNameLabel.implicitWidth
+                                        property int nameLabelWidth: childView.nameLabelImplicitWidth
+                                        readonly property int nameLabelImplicitWidth: logNameLabel.implicitWidth
 
-                                        //Component.onCompleted: updateNameLabelWidth();
-                                        //onNameLabelImplicitWidthChanged: updateNameLabelWidth();
+                                        Component.onCompleted: updateNameLabelWidth();
+                                        onNameLabelImplicitWidthChanged: updateNameLabelWidth();
 
-                                        //function updateNameLabelWidth() {
-                                        //    listView.nameLabelImplicitWidth = Math.max(listView.nameLabelImplicitWidth, nameLabelImplicitWidth);
-                                        //}
+                                        function updateNameLabelWidth() {
+                                            childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
+                                        }
                                     }
                                 }
-
-                                Rectangle{
-                                    width : theView.width
-                                    height: 1
-                                    color: "grey"
-                                }
-                                // }
                             }
                         }
                     }
@@ -339,6 +444,8 @@ Rectangle{
     Column{
         width: parent.width
         height: parent.height
+        clip:true
+
         Rectangle{
             width: parent.width
             height: 20
@@ -352,11 +459,11 @@ Rectangle{
         }
         Rectangle{
             width: parent.width
-            height: 25
+            height: 22
             color: "darkgrey"
+            clip: true
 
             Row{
-
                 Text{
                     id: nameText
                     height: 20
@@ -378,7 +485,6 @@ Rectangle{
                             border.width: 0
                         }
                         font.pixelSize: 12
-
                     }
                     verticalAlignment: Text.AlignVCenter;
 
@@ -391,11 +497,10 @@ Rectangle{
             }
         }
 
-
         ScrollView {
             Layout.fillWidth: true
             width: parent.width
-            height: parent.height
+            height: parent.height - 42
 
             ListView {
                 id : theView

@@ -55,6 +55,8 @@ Item {
     property bool showTrackButton: true
     property alias track: trackButton.checked
 
+    property var color: "lightgray"
+
     QtObject {
         id: dataObject
 
@@ -123,9 +125,18 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        visible: root.modified
+        visible: true //root.modified
 
-        color: "lightsteelblue"
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+            }
+        }
+
+        color: { if(root.modified)
+                    return "lightsteelblue"
+                 return root.color
+               }
         radius: 5
     }
 
