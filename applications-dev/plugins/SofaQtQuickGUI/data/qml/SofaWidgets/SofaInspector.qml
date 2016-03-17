@@ -74,7 +74,6 @@ Rectangle{
             Rectangle{
                 id: theItem
                 property int groupIndex: index
-                property bool editingMode: false
 
                 state: sofaInspectorDataListModel.isGroupVisible(index) ? "expanded" : "collapsed"
                 width: parent.width
@@ -96,13 +95,6 @@ Rectangle{
                 states: [
                     State {
                         name: "expanded"
-                        PropertyChanges {
-                            target: theItem
-                            implicitHeight: childView.childHeight + 20
-                        }
-                    },
-                    State {
-                        name: "expanded-all"
                         PropertyChanges {
                             target: theItem
                             implicitHeight: childView.childHeight + 20
@@ -132,7 +124,8 @@ Rectangle{
                         width: theView.width
                         height:20
                         color: "grey"
-                        radius: 10
+                        border.color: "darkgrey"
+                        border.width: 1
                         Row{
                             width: parent.width
                             height: parent.height
@@ -156,21 +149,12 @@ Rectangle{
                                     width : parent.width - 20
                                     onClicked: {
                                         if(theItem.state === "expanded")
-                                            theItem.state = "expanded-all"
-                                        else if (theItem.state === "expanded-all")
                                             theItem.state = "collapsed"
                                         else
                                             theItem.state = "expanded"
 
                                         visualModel.theModel.setVisibility(index, !(theItem.state==="collapsed"))
                                     }
-                                }
-                            }
-                            CheckBox{
-                                width: 15
-                                height: 15
-                                onClicked :{
-                                    theItem.editingMode = !theItem.editingMode;
                                 }
                             }
                         }
@@ -180,7 +164,6 @@ Rectangle{
                         property int childHeight : contentHeight
                         property int nameLabelWidth : 100
                         property int nameLabelImplicitWidth : 100
-                        property bool editingMode : theItem.editingMode
                         id: childView
                         visible: theItem.state != "collapsed"
 
@@ -207,10 +190,6 @@ Rectangle{
                                     width: theItem.width
 
                                     sourceComponent: {
-                                        if(theItem.state != "expanded-all" && !theItem.editingMode){
-                                            if(!visualModel.theModel.isItemVisible(childModel.parentIndex, index))
-                                                return hiddenItem;
-                                        }
                                         switch(type){
                                         case 5: //sofaInspectorDataListModel.SofaDataType:
                                             return dataItem;
@@ -249,56 +228,6 @@ Rectangle{
                                         function updateNameLabelWidth() {
                                             childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
                                         }
-
-                                        state: {
-                                            if( theItem.editingMode ) {
-                                                return "editing"
-                                            }else if( theItem.state === "expanded-all" ) {
-                                                return "default"
-                                            }
-                                            return "non-editing"
-                                        }
-
-                                        MouseArea{
-                                            id: mouseArea
-                                            enabled: theItem.editingMode
-
-                                            property bool checked: visualModel.theModel.isItemVisible(childModel.parentIndex, index)
-
-                                            width: sofaDataItem.implicitWidth
-                                            height: sofaDataItem.implicitWidth
-
-                                            onClicked: {
-                                                checked = !checked
-                                                visualModel.theModel.setVisibility(childModel.parentIndex, index, checked)
-                                            }
-                                        }
-                                        states: [
-                                            State {
-                                                name: "default"
-                                                PropertyChanges {
-                                                    target: sofaDataItem
-                                                    color: "lightgray"
-                                                    visible: true
-                                                }
-                                            },
-                                            State {
-                                                name: "editing"
-                                                PropertyChanges {
-                                                    target: sofaDataItem
-                                                    color: mouseArea.checked? "yellow" : "red"
-                                                    visible: true
-                                                }
-                                            },
-                                            State {
-                                                name: "non-editing"
-                                                PropertyChanges {
-                                                    target: sofaDataItem
-                                                    color: "lightgray"
-                                                    visible: visualModel.theModel.isItemVisible(childModel.parentIndex, index)
-                                                }
-                                            }
-                                        ]
                                     }
 
                                     property Component linkItem: RowLayout {

@@ -1,5 +1,6 @@
 /*
-Copyright 2015, Anatoscope
+Author: damien.marchal@univ-lille1.fr
+Copyright 2016 CNRS,
 
 This file is part of sofaqtquick.
 
@@ -45,8 +46,8 @@ public:
     bool isVisible(){ return m_visible; }
     void setVisibility(bool theNewState){ m_visible = theNewState; }
 
-    QString         m_name          {"empty"};
-    bool m_visible;
+    QString         m_name          {""};
+    bool m_visible                  {true};
 };
 
 class Item : public QObject, public ItemBase
@@ -114,7 +115,7 @@ public:
      Q_INVOKABLE QModelIndex index(int row, int col,
                                    const QModelIndex& parent) const ;
      Q_INVOKABLE int rowCount(int row)  ;
-     Q_INVOKABLE void resortGroup(int groupid) ;
+
 
     enum Type {
         SofaDataType = 5,
