@@ -37,8 +37,17 @@ GridLayout {
     property var controller: null
     onDataObjectChanged: {
         if(dataObject) {
+            if(!dataObject || !root.controller)
+                return;
+
             var sofaComponent = dataObject.sofaData.sofaComponent();
+            if(!sofaComponent)
+                return;
+
             var sofaScene = sofaComponent.sofaScene();
+            if(!sofaScene)
+                return;
+
             controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
         }
     }
@@ -125,18 +134,26 @@ GridLayout {
             readOnly: true
 
             function refresh() {
-                var points = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
                 var text = "";
 
-                for(var stringId in points) {
-                    if(!points.hasOwnProperty(stringId))
-                        continue;
+                if(dataObject && root.controller) {
+                    var sofaComponent = dataObject.sofaData.sofaComponent();
+                    if(sofaComponent) {
+                        var sofaScene = sofaComponent.sofaScene();
+                        if(sofaScene) {
+                            var points = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
+                            for(var stringId in points) {
+                                if(!points.hasOwnProperty(stringId))
+                                    continue;
 
-                    var point = points[stringId];
-                    var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                    var imagePosition = model.toImagePoint(worldPosition);
+                                var point = points[stringId];
+                                var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
+                                var imagePosition = model.toImagePoint(worldPosition);
 
-                    text += "P" + stringId + ": (" + Math.round(imagePosition.x).toFixed(0) + ", " + Math.round(imagePosition.y).toFixed(0) + ", " + Math.round(imagePosition.z).toFixed(0) + ") -> (" + worldPosition.x.toFixed(3) + ", " + worldPosition.y.toFixed(3) + ", " + worldPosition.z.toFixed(3) + ")\n";
+                                text += "P" + stringId + ": (" + Math.round(imagePosition.x).toFixed(0) + ", " + Math.round(imagePosition.y).toFixed(0) + ", " + Math.round(imagePosition.z).toFixed(0) + ") -> (" + worldPosition.x.toFixed(3) + ", " + worldPosition.y.toFixed(3) + ", " + worldPosition.z.toFixed(3) + ")\n";
+                            }
+                        }
+                    }
                 }
 
                 if(0 === text.length)
@@ -150,8 +167,19 @@ GridLayout {
             Layout.fillWidth: true
             text: "Clear points"
             onClicked: {
+                if(!dataObject || !root.controller)
+                    return;
+
+                var sofaComponent = dataObject.sofaData.sofaComponent();
+                if(!sofaComponent)
+                    return;
+
+                var sofaScene = sofaComponent.sofaScene();
+                if(!sofaScene)
+                    return;
+
                 sofaScene.sofaPythonInteractor.call(root.controller, "clearPoints");
-                root.requestRefresh();
+                root.refreshAll();
             }
         }
     }

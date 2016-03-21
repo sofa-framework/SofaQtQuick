@@ -184,6 +184,9 @@ ColumnLayout {
                         }
 
                         function updatePoints() {
+                            if(!root.sofaComponent || !root.controller)
+                                return;
+
                             var sofaScene = root.sofaComponent.sofaScene();
                             var updatedPoints = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
 

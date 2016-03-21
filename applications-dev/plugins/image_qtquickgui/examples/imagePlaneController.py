@@ -17,7 +17,7 @@ def createScene(root):
     root.createObject('ImageFilter', name='engine', src='@image', param='50 50 5 200 200 50')
     root.createObject('ImageContainer', name='image2', inputImage='@engine.outputImage', inputTransform='@engine.outputTransform')
     root.createObject('ImageViewer', name='viewer', src='@image2', plane='84 53 15')
-    root.createObject('PythonScriptController', name="imageViewerScript", filename=__file, classname="PythonScript")
+    #root.createObject('PythonScriptController', name="imageViewerScript", filename=__file, classname="PythonScript")
     root.createObject('OglModel', fileMesh='data/pelvis_f.obj', color='1 0.8 0.8 1')
     P0 = root.createChild('P0')
     P1 = root.createChild('P1')
