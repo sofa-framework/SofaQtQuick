@@ -51,7 +51,8 @@ SofaViewer {
         if(!SofaApplication.focusedSofaViewer)
             forceActiveFocus();
 
-        recreateCamera();
+        if(root.sofaScene && root.sofaScene.ready)
+            recreateCamera();
     }
 
     Component.onDestruction: {
@@ -122,6 +123,10 @@ SofaViewer {
             camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
 
             viewAll();
+//            camera.zNear = 0.001;
+//            camera.zFar = 2.5;
+
+//            console.log(camera.eye(), camera.direction());
         }
     }
 
@@ -829,7 +834,7 @@ SofaViewer {
 
                                             text: "Orthographic"
                                             checkable: true
-                                            checked: camera.orthographic
+                                            checked: root.camera ? root.camera.orthographic : false
                                             onCheckedChanged: if(root.camera && checked !== root.camera.orthographic) root.camera.orthographic = checked;
 
                                             Connections {
@@ -867,7 +872,7 @@ SofaViewer {
 
                                             text: "Perspective"
                                             checkable: true
-                                            checked: !camera.orthographic
+                                            checked: root.camera ? !camera.orthographic : true
                                             onCheckedChanged: if(root.camera && checked === root.camera.orthographic) root.camera.orthographic = !checked;
 
                                             Connections {
@@ -942,6 +947,9 @@ SofaViewer {
                                                     }
 
                                                     function download() {
+                                                        if(!root.camera)
+                                                            return;
+
                                                         zNearTextField.text = Number(root.camera.zNear).toString();
                                                         cursorPosition = 0;
                                                     }
@@ -993,6 +1001,9 @@ SofaViewer {
                                                     }
 
                                                     function download() {
+                                                        if(!root.camera)
+                                                            return;
+
                                                         zFarTextField.text = Number(root.camera.zFar).toString();
                                                         cursorPosition = 0;
                                                     }
