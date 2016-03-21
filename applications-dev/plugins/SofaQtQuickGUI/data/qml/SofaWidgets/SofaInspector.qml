@@ -51,6 +51,7 @@ import SofaInspectorDataListModel 1.0
   While each group have its own ListView.
 */
 Rectangle{
+    color: "lightgrey"
     clip: true
     anchors.fill: parent
     property var sofaScene: SofaApplication.sofaScene
@@ -161,17 +162,21 @@ Rectangle{
                     }
 
                     ListView{
-                        property int childHeight : contentHeight
+                        property int childHeight: contentHeight
+
                         property int nameLabelWidth : 100
                         property int nameLabelImplicitWidth : 100
                         id: childView
                         visible: theItem.state != "collapsed"
 
                         width: theView.width
-                        height: contentHeight
+                        implicitHeight: 2000
+                        clip: false
 
-                        implicitHeight: contentHeight
-                        clip: true
+                        Component.onCompleted: {
+                            implicitHeight: contentHeight
+                            clip = true
+                        }
 
                         model : VisualDataModel {
                             property int parentIndex: theItem.groupIndex
@@ -181,7 +186,6 @@ Rectangle{
                             rootIndex : visualModel.modelIndex(theItem.groupIndex)
 
                             delegate : visibleItem ;
-
 
                             property Component visibleItem :
                                 Column {
@@ -429,6 +433,7 @@ Rectangle{
         ScrollView {
             Layout.fillWidth: true
             width: parent.width
+            // TODO(dmarchal): fix the following constant.
             height: parent.height - 42
 
             ListView {
