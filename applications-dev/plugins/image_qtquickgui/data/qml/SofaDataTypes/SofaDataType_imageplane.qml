@@ -50,6 +50,13 @@ GridLayout {
 
             controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
         }
+
+        refreshAll();
+    }
+
+    Connections {
+        target: root.dataObject
+        onUpdated: root.refreshAll();
     }
 
     property bool allPlanesLoaded: (Loader.Ready === planeX.status) && (Loader.Ready === planeY.status) && (Loader.Ready === planeZ.status)
