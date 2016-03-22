@@ -31,11 +31,12 @@ ColumnLayout {
     id: root
     spacing: 0
 
+    property var imagePlaneModel: null
     property var sofaComponent: null
-
     property var controller: null
+
     onSofaComponentChanged: {
-        if(dataObject) {
+        if(sofaComponent) {
             var sofaScene = sofaComponent.sofaScene();
             controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
         }
@@ -96,7 +97,7 @@ ColumnLayout {
                     id: imagePlaneView
                     anchors.centerIn: parent
 
-                    imagePlaneModel: model
+                    imagePlaneModel: root.imagePlaneModel
                     index: slider.value
                     axis: root.planeAxis
 
@@ -127,7 +128,7 @@ ColumnLayout {
 
                             var sofaScene = root.sofaComponent.sofaScene();
 
-                            var worldPosition = model.toWorldPoint(axis, index, Qt.point(x, y));
+                            var worldPosition = root.imagePlaneModel.toWorldPoint(axis, index, Qt.point(x, y));
                             var id = sofaScene.sofaPythonInteractor.call(root.controller, "addPoint", worldPosition.x, worldPosition.y, worldPosition.z);
 
                             root.requestRefresh();
@@ -170,7 +171,7 @@ ColumnLayout {
 
                                 var point = points[stringId];
                                 var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                                var screenPosition = model.toPlanePoint(imagePlaneView.axis, worldPosition)
+                                var screenPosition = root.imagePlaneModel.toPlanePoint(imagePlaneView.axis, worldPosition)
 
                                 var distance = Qt.vector2d(x - screenPosition.x, y - screenPosition.y).length();
                                 if(distance < brushRadius)
@@ -261,7 +262,7 @@ ColumnLayout {
                                     var point = pointCanvas.points[pointId];
 
                                     var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                                    var screenPosition = model.toPlanePoint(imagePlaneView.axis, worldPosition)
+                                    var screenPosition = root.imagePlaneModel.toPlanePoint(imagePlaneView.axis, worldPosition)
 
                                     x = screenPosition.x;
                                     y = screenPosition.y;
@@ -362,8 +363,8 @@ ColumnLayout {
             stepSize: 1
             tickmarksEnabled: true
 
-            value: model.currentIndex(imagePlaneView.axis);
-            onValueChanged: model.setCurrentIndex(imagePlaneView.axis, value);
+            value: root.imagePlaneModel.currentIndex(imagePlaneView.axis);
+            onValueChanged: root.imagePlaneModel.setCurrentIndex(imagePlaneView.axis, value);
         }
 
         TextField {

@@ -28,27 +28,21 @@ import SofaData 1.0
 import ImagePlaneModel 1.0
 import ImagePlaneView 1.0
 
-GridLayout {
+ColumnLayout {
     id: root
-    columns: 2
 
     property var dataObject: null
+    property var sofaComponent: null
 
     property var controller: null
     onDataObjectChanged: {
         if(dataObject) {
-            if(!dataObject || !root.controller)
-                return;
-
-            var sofaComponent = dataObject.sofaData.sofaComponent();
-            if(!sofaComponent)
-                return;
-
-            var sofaScene = sofaComponent.sofaScene();
-            if(!sofaScene)
-                return;
-
-            controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
+            sofaComponent = dataObject.sofaData.sofaComponent();
+            if(sofaComponent) {
+                var sofaScene = sofaComponent.sofaScene();
+                if(sofaScene)
+                    controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
+            }
         }
 
         refreshAll();
@@ -59,20 +53,25 @@ GridLayout {
         onUpdated: root.refreshAll();
     }
 
-    property bool allPlanesLoaded: (Loader.Ready === planeX.status) && (Loader.Ready === planeY.status) && (Loader.Ready === planeZ.status)
-    onAllPlanesLoadedChanged: if(allPlanesLoaded) refreshAll();
+    readonly property alias planeX: container.planeX
+    readonly property alias planeY: container.planeY
+    readonly property alias planeZ: container.planeZ
+    readonly property alias infoTextArea: container.infoTextArea
+
+    Component.onCompleted: refreshAll();
 
     function refreshAll() {
-        if(planeX.item)
-            planeX.item.refresh();
+        if(planeX)
+            planeX.refresh();
 
-        if(planeY.item)
-            planeY.item.refresh();
+        if(planeY)
+            planeY.refresh();
 
-        if(planeZ.item)
-            planeZ.item.refresh();
+        if(planeZ)
+            planeZ.refresh();
 
-        infoTextArea.refresh();
+        if(infoTextArea)
+            infoTextArea.refresh();
     }
 
     ImagePlaneModel {
@@ -81,72 +80,191 @@ GridLayout {
         sofaData: root.dataObject.sofaData
     }
 
-    Loader {
-        id: planeX
+// maim
+
+    GroupBox {
         Layout.fillWidth: true
-        Layout.fillHeight: true
 
-        sourceComponent: planeComponent
-        property int planeAxis: 0
-        readonly property int planeIndex: item ? item.planeIndex : 0
-        property bool showSubWindow: true
+        RowLayout {
+            anchors.fill: parent
+            anchors.topMargin: 2
+            anchors.bottomMargin: anchors.topMargin
+            spacing: 5
 
-        Connections {
-            target: planeX.item
-            onRequestRefresh: {
-                if(planeY.item)
-                    planeY.item.refresh();
+            Item {
+                Layout.fillWidth: true
+                Layout.minimumWidth: showLabel.implicitWidth
+                implicitHeight: showLabel.implicitHeight
 
-                if(planeZ.item)
-                    planeZ.item.refresh();
+                Label {
+                    id: showLabel
+                    anchors.fill: parent
+                    text: "Show"
+                }
+            }
 
-                infoTextArea.refresh();
+            CheckBox {
+                id: xCheckBox
+                text: "X"
+                checked: true
+            }
+
+            CheckBox {
+                id: yCheckBox
+                text: "Y"
+                checked: true
+            }
+
+            CheckBox {
+                id: zCheckBox
+                text: "Z"
+                checked: true
+            }
+
+            Item {
+                Layout.fillWidth: true
+                Layout.minimumWidth: showLabel.implicitWidth
             }
         }
     }
 
-    Loader {
-        id: planeY
+    Item {
+        id: container
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        sourceComponent: planeComponent
-        property int planeAxis: 1
-        readonly property int planeIndex: item ? item.planeIndex : 0
-        property bool showSubWindow: true
+        property var planeX: null
+        property var planeY: null
+        property var planeZ: null
+        property var infoTextArea: null
 
-        Connections {
-            target: planeY.item
+        implicitHeight: layout ? layout.implicitHeight: 0
+        property var layout: null
+
+        property int planeNumber: root.sofaComponent ? (xCheckBox.checked ? 1 : 0) + (yCheckBox.checked ? 1 : 0) + (zCheckBox.checked ? 1 : 0) : 0
+        onPlaneNumberChanged: refresh();
+
+        Component.onCompleted: refresh();
+
+        function refresh() {
+            if(layout)
+                layout.destroy();
+
+            layout = gridLayoutComponent.createObject(container, {'anchors.fill': container});
+
+            if(xCheckBox.checked)
+                planeX = planeXComponent.createObject(layout, {'Layout.fillWidth': true})
+
+            if(yCheckBox.checked)
+                planeY = planeYComponent.createObject(layout, {'Layout.fillWidth': true})
+
+            if(zCheckBox.checked)
+                planeZ = planeZComponent.createObject(layout, {'Layout.fillWidth': true})
+
+            infoTextArea = infoComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.columnSpan': 1 + (planeNumber + 1) % 2})
+        }
+    }
+
+// component
+
+    Component {
+        id: gridLayoutComponent
+
+        GridLayout {
+            columns: 2
+            columnSpacing: 0
+            rowSpacing: 0
+        }
+    }
+
+    Component {
+        id: planeXComponent
+
+        SofaImagePlaneItem {
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 0
+
+            property bool showSubWindow: true
+
             onRequestRefresh: {
-                if(planeX.item)
-                    planeX.item.refresh();
+                if(root.planeY)
+                    root.planeY.refresh();
 
-                if(planeZ.item)
-                    planeZ.item.refresh();
+                if(root.planeZ)
+                    root.planeZ.refresh();
 
-                infoTextArea.refresh();
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
             }
         }
     }
 
-    ColumnLayout {
-        id: info
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+    Component {
+        id: planeYComponent
 
-        TextArea {
-            id: infoTextArea
+        SofaImagePlaneItem {
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 1
+
+            property bool showSubWindow: true
+
+            onRequestRefresh: {
+                if(root.planeX)
+                    root.planeX.refresh();
+
+                if(root.planeZ)
+                    root.planeZ.refresh();
+
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
+            }
+        }
+    }
+
+    Component {
+        id: planeZComponent
+
+        SofaImagePlaneItem {
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 2
+
+            property bool showSubWindow: true
+
+            onRequestRefresh: {
+                if(root.planeX)
+                    root.planeX.refresh();
+
+                if(root.planeY)
+                    root.planeY.refresh();
+
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
+            }
+        }
+    }
+
+    Component {
+        id: infoComponent
+
+        ColumnLayout {
+            id: info
             Layout.fillWidth: true
             Layout.fillHeight: true
-            readOnly: true
+
+            Component.onCompleted: refresh();
 
             function refresh() {
                 var text = "";
 
-                if(dataObject && root.controller) {
-                    var sofaComponent = dataObject.sofaData.sofaComponent();
-                    if(sofaComponent) {
-                        var sofaScene = sofaComponent.sofaScene();
+                if(root.sofaComponent && root.controller) {
+                    if(root.sofaComponent) {
+                        var sofaScene = root.sofaComponent.sofaScene();
                         if(sofaScene) {
                             var points = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
                             for(var stringId in points) {
@@ -164,64 +282,33 @@ GridLayout {
                 }
 
                 if(0 === text.length)
-                    infoTextArea.text = "Shift + Left click to add / remove points, put a ImagePlaneController in the same context than the sofa component that is owning this data to control how points are added / removed";
+                    textArea.text = "Shift + Left click to add / remove points, put a ImagePlaneController in the same context than the sofa component that is owning this data to control how points are added / removed";
                 else
-                    infoTextArea.text = text;
+                    textArea.text = text;
             }
-        }
 
-        Button {
-            Layout.fillWidth: true
-            text: "Clear points"
-            onClicked: {
-                if(!dataObject || !root.controller)
-                    return;
-
-                var sofaComponent = dataObject.sofaData.sofaComponent();
-                if(!sofaComponent)
-                    return;
-
-                var sofaScene = sofaComponent.sofaScene();
-                if(!sofaScene)
-                    return;
-
-                sofaScene.sofaPythonInteractor.call(root.controller, "clearPoints");
-                root.refreshAll();
+            TextArea {
+                id: textArea
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                readOnly: true
             }
-        }
-    }
 
-    Loader {
-        id: planeZ
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+            Button {
+                Layout.fillWidth: true
+                text: "Clear points"
+                onClicked: {
+                    if(!root.sofaComponent || !root.controller)
+                        return;
 
-        sourceComponent: planeComponent
-        property int planeAxis: 2
-        readonly property int planeIndex: item ? item.planeIndex : 0
-        property bool showSubWindow: true
+                    var sofaScene = root.sofaComponent.sofaScene();
+                    if(!sofaScene)
+                        return;
 
-        Connections {
-            target: planeZ.item
-            onRequestRefresh: {
-                if(planeX.item)
-                    planeX.item.refresh();
-
-                if(planeY.item)
-                    planeY.item.refresh();
-
-                infoTextArea.refresh();
+                    sofaScene.sofaPythonInteractor.call(root.controller, "clearPoints");
+                    root.refreshAll();
+                }
             }
-        }
-    }
-
-    Component {
-        id: planeComponent
-
-        SofaImagePlaneItem {
-            controller: root.controller
-            sofaComponent: root.dataObject && root.dataObject.sofaData ? root.dataObject.sofaData.sofaComponent() : null
-            planeAxis: parent.planeAxis
         }
     }
 
