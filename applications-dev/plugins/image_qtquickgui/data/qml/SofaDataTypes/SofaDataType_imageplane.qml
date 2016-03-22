@@ -26,7 +26,6 @@ import SofaImage 1.0
 import SofaApplication 1.0
 import SofaData 1.0
 import ImagePlaneModel 1.0
-import ImagePlaneView 1.0
 
 ColumnLayout {
     id: root
@@ -106,19 +105,76 @@ ColumnLayout {
             CheckBox {
                 id: xCheckBox
                 text: "X"
-                checked: true
+
+                Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
+
+                readonly property int axis: 0
+                property int previousIndex: -1
+                onCheckedChanged: {
+                    if(!checked) {
+                        previousIndex = model.currentIndex(axis);
+                        model.setCurrentIndex(axis, -1);
+                    } else {
+                        var currentIndex = model.currentIndex(axis);
+                        if(-1 !== currentIndex)
+                            previousIndex = currentIndex;
+
+                        if(-1 === previousIndex)
+                            previousIndex = model.length(axis) / 2;
+
+                        model.setCurrentIndex(axis, previousIndex);
+                    }
+                }
             }
 
             CheckBox {
                 id: yCheckBox
                 text: "Y"
-                checked: true
+
+                Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
+
+                readonly property int axis: 1
+                property int previousIndex: -1
+                onCheckedChanged: {
+                    if(!checked) {
+                        previousIndex = model.currentIndex(axis);
+                        model.setCurrentIndex(axis, -1);
+                    } else {
+                        var currentIndex = model.currentIndex(axis);
+                        if(-1 !== currentIndex)
+                            previousIndex = currentIndex;
+
+                        if(-1 === previousIndex)
+                            previousIndex = model.length(axis) / 2;
+
+                        model.setCurrentIndex(axis, previousIndex);
+                    }
+                }
             }
 
             CheckBox {
                 id: zCheckBox
                 text: "Z"
-                checked: true
+
+                Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
+
+                readonly property int axis: 2
+                property int previousIndex: -1
+                onCheckedChanged: {
+                    if(!checked) {
+                        previousIndex = model.currentIndex(axis);
+                        model.setCurrentIndex(axis, -1);
+                    } else {
+                        var currentIndex = model.currentIndex(axis);
+                        if(-1 !== currentIndex)
+                            previousIndex = currentIndex;
+
+                        if(-1 === previousIndex)
+                            previousIndex = model.length(axis) / 2;
+
+                        model.setCurrentIndex(axis, previousIndex);
+                    }
+                }
             }
 
             Item {

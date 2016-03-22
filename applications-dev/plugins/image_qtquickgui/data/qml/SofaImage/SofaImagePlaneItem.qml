@@ -363,7 +363,7 @@ ColumnLayout {
             stepSize: 1
             tickmarksEnabled: true
 
-            value: root.imagePlaneModel.currentIndex(imagePlaneView.axis);
+            value: root.imagePlaneModel.currentIndex(imagePlaneView.axis)
             onValueChanged: root.imagePlaneModel.setCurrentIndex(imagePlaneView.axis, value);
         }
 
