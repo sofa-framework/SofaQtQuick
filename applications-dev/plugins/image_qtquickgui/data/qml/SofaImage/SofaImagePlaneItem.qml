@@ -103,6 +103,7 @@ Item {
                     ImagePlaneView {
                         id: imagePlaneView
                         anchors.centerIn: parent
+                        smooth: false
 
                         imagePlaneModel: root.imagePlaneModel
                         index: slider.value
