@@ -41,12 +41,14 @@ ImagePlaneView::ImagePlaneView(QQuickItem* parent) : QQuickPaintedItem(parent),
     myIndex(0),
     myImage(),
     myLength(0),
+    myShowModels(true),
     myMinIntensity(0.0f),
     myMaxIntensity(1.0f)
 {
     connect(this, &ImagePlaneView::imagePlaneModelChanged,  this, &ImagePlaneView::update);
     connect(this, &ImagePlaneView::axisChanged,             this, &ImagePlaneView::update);
     connect(this, &ImagePlaneView::indexChanged,            this, &ImagePlaneView::update);
+    connect(this, &ImagePlaneView::showModelsChanged,       this, &ImagePlaneView::update);
     connect(this, &ImagePlaneView::minIntensityChanged,     this, &ImagePlaneView::update);
     connect(this, &ImagePlaneView::maxIntensityChanged,     this, &ImagePlaneView::update);
 }
@@ -137,12 +139,15 @@ void ImagePlaneView::update()
                 myImage.setPixel(x, y, computePixelColor(plane(x, y, 0, 0), plane(x, y, 0, 1), plane(x, y, 0, 2)));
     }
 
-    CImg<unsigned char> slicedModels = myImagePlaneModel->retrieveSlicedModels(myIndex, myAxis);
-    if(slicedModels)
-        for(int y = 0; y < myImage.height(); y++)
-            for(int x = 0; x < myImage.width(); x++)
-                if(slicedModels(x, y, 0, 0) || slicedModels(x, y, 0, 1) || slicedModels(x, y, 0, 2))
-                    myImage.setPixel(x, y, qRgb(slicedModels(x, y, 0, 0), slicedModels(x, y, 0, 1), slicedModels(x, y, 0, 2)));
+    if(myShowModels)
+    {
+        CImg<unsigned char> slicedModels = myImagePlaneModel->retrieveSlicedModels(myIndex, myAxis);
+        if(slicedModels)
+            for(int y = 0; y < myImage.height(); y++)
+                for(int x = 0; x < myImage.width(); x++)
+                    if(slicedModels(x, y, 0, 0) || slicedModels(x, y, 0, 1) || slicedModels(x, y, 0, 2))
+                        myImage.setPixel(x, y, qRgb(slicedModels(x, y, 0, 0), slicedModels(x, y, 0, 1), slicedModels(x, y, 0, 2)));
+    }
 
     QQuickItem::update();
 }
@@ -197,6 +202,16 @@ void ImagePlaneView::setLength(int length)
     myLength = length;
 
     lengthChanged();
+}
+
+void ImagePlaneView::setShowModels(bool showModels)
+{
+    if(showModels == myShowModels)
+        return;
+
+    myShowModels = showModels;
+
+    showModelsChanged();
 }
 
 void ImagePlaneView::setMinIntensity(float minIntensity)

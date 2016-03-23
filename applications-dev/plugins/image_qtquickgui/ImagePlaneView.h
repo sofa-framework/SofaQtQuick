@@ -51,6 +51,7 @@ public:
     Q_PROPERTY(int axis READ axis WRITE setAxis NOTIFY axisChanged)
     Q_PROPERTY(int index READ index WRITE setIndex NOTIFY indexChanged)
     Q_PROPERTY(int length READ length NOTIFY lengthChanged)
+    Q_PROPERTY(bool showModels READ showModels WRITE setShowModels NOTIFY showModelsChanged)
 
     Q_PROPERTY(float minIntensity READ minIntensity WRITE setMinIntensity NOTIFY minIntensityChanged)
     Q_PROPERTY(float maxIntensity READ maxIntensity WRITE setMaxIntensity NOTIFY maxIntensityChanged)
@@ -60,6 +61,7 @@ public:
     int axis() const {return myAxis;}
     int index() const {return myIndex;}
     int length() const {return myLength;}
+    bool showModels() const {return myShowModels;}
 
     float minIntensity() const {return myMinIntensity;}
     float maxIntensity() const {return myMaxIntensity;}
@@ -72,6 +74,7 @@ protected:
     void setAxis(int axis);
     void setIndex(int index);
     void setLength(int length);
+    void setShowModels(bool showModels);
 
     void setMinIntensity(float minIntensity);
     void setMaxIntensity(float maxIntensity);
@@ -81,6 +84,7 @@ signals:
     void lengthChanged();
     void axisChanged();
     void indexChanged();
+    void showModelsChanged();
 
     void minIntensityChanged();
     void maxIntensityChanged();
@@ -95,6 +99,7 @@ private:
     int                                 myIndex;
     QImage                              myImage;
     int                                 myLength;
+    bool                                myShowModels;
 
     float                               myMinIntensity;
     float                               myMaxIntensity;

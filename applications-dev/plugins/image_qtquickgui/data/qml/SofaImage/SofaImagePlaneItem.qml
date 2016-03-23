@@ -27,13 +27,15 @@ import SofaData 1.0
 import ImagePlaneModel 1.0
 import ImagePlaneView 1.0
 
-ColumnLayout {
+Item {
     id: root
-    spacing: 0
+    implicitWidth: layout.implicitWidth
+    implicitHeight: layout.implicitHeight
 
     property var imagePlaneModel: null
     property var sofaComponent: null
     property var controller: null
+    property bool showModels: true
 
     onSofaComponentChanged: {
         if(sofaComponent) {
@@ -52,333 +54,340 @@ ColumnLayout {
         pointCanvas.updatePoints();
     }
 
-    RangeSlider {
-        id: intensityRangeSlider
-        Layout.fillWidth: true
+    ColumnLayout {
+        id: layout
+        anchors.fill: parent
+        spacing: 0
 
-        title: "Intensity"
+        RangeSlider {
+            id: intensityRangeSlider
+            Layout.fillWidth: true
 
-        minimumValue: 0.0
-        maximumValue: 1.0
-    }
+            title: "Intensity"
 
-    Rectangle {
-        id: rectangle
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.preferredWidth: imagePlaneView.implicitWidth
-        Layout.preferredHeight: imagePlaneView.implicitHeight
+            minimumValue: 0.0
+            maximumValue: 1.0
+        }
 
-        color: "black"
-        border.color: "darkgrey"
-        border.width: 1
+        Rectangle {
+            id: rectangle
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.preferredWidth: imagePlaneView.implicitWidth
+            Layout.preferredHeight: imagePlaneView.implicitHeight
 
-        Flickable {
-            id: flickable
-            anchors.fill: parent
-            anchors.margins: parent.border.width
-            clip: true
+            color: "black"
+            border.color: "darkgrey"
+            border.width: 1
 
-            contentWidth: flickableContent.width * flickableContent.scale
-            contentHeight: flickableContent.height * flickableContent.scale
-            boundsBehavior: Flickable.StopAtBounds
+            Flickable {
+                id: flickable
+                anchors.fill: parent
+                anchors.margins: parent.border.width
+                clip: true
 
-            Item {
-                id: flickableContent
-                width: Math.max(flickable.width / scale, imagePlaneView.implicitWidth)
-                height: Math.max(flickable.height / scale, imagePlaneView.implicitHeight)
-                transformOrigin: Item.TopLeft
+                contentWidth: flickableContent.width * flickableContent.scale
+                contentHeight: flickableContent.height * flickableContent.scale
+                boundsBehavior: Flickable.StopAtBounds
 
-                scale: minScale
-                property real minScale: Math.min(flickable.width / imagePlaneView.implicitWidth, flickable.height / imagePlaneView.implicitHeight);
-                property real maxScale: minScale * Math.max(imagePlaneView.implicitWidth, imagePlaneView.implicitHeight);
+                Item {
+                    id: flickableContent
+                    width: Math.max(flickable.width / scale, imagePlaneView.implicitWidth)
+                    height: Math.max(flickable.height / scale, imagePlaneView.implicitHeight)
+                    transformOrigin: Item.TopLeft
 
-                ImagePlaneView {
-                    id: imagePlaneView
-                    anchors.centerIn: parent
+                    scale: minScale
+                    property real minScale: Math.min(flickable.width / imagePlaneView.implicitWidth, flickable.height / imagePlaneView.implicitHeight);
+                    property real maxScale: minScale * Math.max(imagePlaneView.implicitWidth, imagePlaneView.implicitHeight);
 
-                    imagePlaneModel: root.imagePlaneModel
-                    index: slider.value
-                    axis: root.planeAxis
+                    ImagePlaneView {
+                        id: imagePlaneView
+                        anchors.centerIn: parent
 
-                    minIntensity: intensityRangeSlider.beginValue
-                    maxIntensity: intensityRangeSlider.endValue
+                        imagePlaneModel: root.imagePlaneModel
+                        index: slider.value
+                        axis: root.planeAxis
+                        showModels: root.showModels
 
-                    Component.onCompleted: update();
+                        minIntensity: intensityRangeSlider.beginValue
+                        maxIntensity: intensityRangeSlider.endValue
 
-                    Connections {
-                        target: root.sofaComponent ? root.sofaComponent.sofaScene() : null
-                        onStepEnd: imagePlaneView.update()
-                    }
+                        Component.onCompleted: update();
 
-                    Item {
-                        id: pointCanvas
-                        anchors.fill: parent
-
-                        property var points: Object()
-
-                        property alias index: imagePlaneView.index
-                        property alias axis: imagePlaneView.axis
-                        onIndexChanged: updatePoints();
-                        onAxisChanged: updatePoints();
-
-                        function addPoint(x, y) {
-                            if(!root.sofaComponent || !root.controller)
-                                return;
-
-                            var sofaScene = root.sofaComponent.sofaScene();
-
-                            var worldPosition = root.imagePlaneModel.toWorldPoint(axis, index, Qt.point(x, y));
-                            var id = sofaScene.sofaPythonInteractor.call(root.controller, "addPoint", worldPosition.x, worldPosition.y, worldPosition.z);
-
-                            root.requestRefresh();
-
-                            return id;
+                        Connections {
+                            target: root.sofaComponent ? root.sofaComponent.sofaScene() : null
+                            onStepEnd: imagePlaneView.update()
                         }
 
-                        function removePoint(id) {
-                            var removed = false;
+                        Item {
+                            id: pointCanvas
+                            anchors.fill: parent
 
-                            if(!root.sofaComponent || !root.controller)
+                            property var points: Object()
+
+                            property alias index: imagePlaneView.index
+                            property alias axis: imagePlaneView.axis
+                            onIndexChanged: updatePoints();
+                            onAxisChanged: updatePoints();
+
+                            function addPoint(x, y) {
+                                if(!root.sofaComponent || !root.controller)
+                                    return;
+
+                                var sofaScene = root.sofaComponent.sofaScene();
+
+                                var worldPosition = root.imagePlaneModel.toWorldPoint(axis, index, Qt.point(x, y));
+                                var id = sofaScene.sofaPythonInteractor.call(root.controller, "addPoint", worldPosition.x, worldPosition.y, worldPosition.z);
+
+                                root.requestRefresh();
+
+                                return id;
+                            }
+
+                            function removePoint(id) {
+                                var removed = false;
+
+                                if(!root.sofaComponent || !root.controller)
+                                    return removed;
+
+                                var sofaScene = root.sofaComponent.sofaScene();
+                                removed = sofaScene.sofaPythonInteractor.call(root.controller, "removePoint", id);
+
+                                root.requestRefresh();
+
                                 return removed;
-
-                            var sofaScene = root.sofaComponent.sofaScene();
-                            removed = sofaScene.sofaPythonInteractor.call(root.controller, "removePoint", id);
-
-                            root.requestRefresh();
-
-                            return removed;
-                        }
-
-                        function removePointAt(x, y, brushSize) {
-                            var removed = false;
-
-                            if(!root.sofaComponent || !root.controller)
-                                return removed;
-
-                            if(undefined === brushSize)
-                                brushSize = Screen.devicePixelRatio * 5.0 / flickableContent.scale;
-
-                            var brushRadius = brushSize * 0.5;
-
-                            var sofaScene = root.sofaComponent.sofaScene();
-
-                            for(var stringId in points) {
-                                if(!points.hasOwnProperty(stringId))
-                                    continue;
-
-                                var id = parseInt(stringId);
-
-                                var point = points[stringId];
-                                var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                                var screenPosition = root.imagePlaneModel.toPlanePoint(imagePlaneView.axis, worldPosition)
-
-                                var distance = Qt.vector2d(x - screenPosition.x, y - screenPosition.y).length();
-                                if(distance < brushRadius)
-                                    if(sofaScene.sofaPythonInteractor.call(root.controller, "removePoint", id))
-                                        removed = true;
                             }
 
-                            root.requestRefresh();
+                            function removePointAt(x, y, brushSize) {
+                                var removed = false;
 
-                            return removed;
-                        }
+                                if(!root.sofaComponent || !root.controller)
+                                    return removed;
 
-                        function updatePoints() {
-                            if(!root.sofaComponent || !root.controller)
-                                return;
+                                if(undefined === brushSize)
+                                    brushSize = Screen.devicePixelRatio * 5.0 / flickableContent.scale;
 
-                            var sofaScene = root.sofaComponent.sofaScene();
-                            var updatedPoints = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
+                                var brushRadius = brushSize * 0.5;
 
-                            // mark old points for deletion
-                            var pointsToRemove = Object();
-                            for(var stringId in points) {
-                                if(!points.hasOwnProperty(stringId))
-                                    continue;
+                                var sofaScene = root.sofaComponent.sofaScene();
 
-                                pointsToRemove[stringId] = points[stringId];
-                            }
+                                for(var stringId in points) {
+                                    if(!points.hasOwnProperty(stringId))
+                                        continue;
 
-                            // add / update points
-                            for(var stringId in updatedPoints) {
-                                if(!updatedPoints.hasOwnProperty(stringId))
-                                    continue;
+                                    var id = parseInt(stringId);
 
-                                var id = parseInt(stringId);
-                                var point = updatedPoints[stringId];
-
-                                var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                                if(!imagePlaneView.containsPoint(worldPosition))
-                                    continue;
-
-                                if(!points.hasOwnProperty(id)) { // add new points
-                                    points[id] = point;
-                                    pointComponent.createObject(pointCanvas, {'pointId': id});
-                                }
-                                else { // keep old point still presents
-                                    points[id] = point;
-                                    delete pointsToRemove[stringId];
-                                }
-                            }
-
-                            // clear old points that has been removed from the model
-                            for(var stringId in pointsToRemove) {
-                                if(!pointsToRemove.hasOwnProperty(stringId))
-                                    continue;
-
-                                var id = parseInt(stringId);
-
-                                for(var i = 0; i < children.length; ++i) {
-                                    if(id === children[i].pointId) {
-                                        children[i].pointId = -1;
-                                        break;
-                                    }
-                                }
-
-                                delete points[id];
-                            }
-
-                            pointsChanged();
-                        }
-
-                        Component {
-                            id: pointComponent
-
-                            Item {
-                                id: item
-
-                                property int pointId: -1
-
-                                onPointIdChanged: update();
-
-                                function update() {
-                                    if(-1 === pointId)
-                                    {
-                                        destroy();
-                                        return;
-                                    }
-
-                                    var point = pointCanvas.points[pointId];
-
+                                    var point = points[stringId];
                                     var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
                                     var screenPosition = root.imagePlaneModel.toPlanePoint(imagePlaneView.axis, worldPosition)
 
-                                    x = screenPosition.x;
-                                    y = screenPosition.y;
-
-                                    var color = "red";
-                                    if(undefined !== point.color)
-                                        color = Qt.rgba(point.color[0], point.color[1], point.color[2], 1.0);
-
-                                    dot.color = color;
+                                    var distance = Qt.vector2d(x - screenPosition.x, y - screenPosition.y).length();
+                                    if(distance < brushRadius)
+                                        if(sofaScene.sofaPythonInteractor.call(root.controller, "removePoint", id))
+                                            removed = true;
                                 }
 
-                                Rectangle {
-                                    id: dot
-                                    anchors.centerIn: parent
-                                    width: 5
-                                    height: width
-                                    radius: width * 0.5
-                                    scale: 1.0 / flickableContent.scale
-                                    color: "red"
+                                root.requestRefresh();
+
+                                return removed;
+                            }
+
+                            function updatePoints() {
+                                if(!root.sofaComponent || !root.controller)
+                                    return;
+
+                                var sofaScene = root.sofaComponent.sofaScene();
+                                var updatedPoints = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
+
+                                // mark old points for deletion
+                                var pointsToRemove = Object();
+                                for(var stringId in points) {
+                                    if(!points.hasOwnProperty(stringId))
+                                        continue;
+
+                                    pointsToRemove[stringId] = points[stringId];
+                                }
+
+                                // add / update points
+                                for(var stringId in updatedPoints) {
+                                    if(!updatedPoints.hasOwnProperty(stringId))
+                                        continue;
+
+                                    var id = parseInt(stringId);
+                                    var point = updatedPoints[stringId];
+
+                                    var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
+                                    if(!imagePlaneView.containsPoint(worldPosition))
+                                        continue;
+
+                                    if(!points.hasOwnProperty(id)) { // add new points
+                                        points[id] = point;
+                                        pointComponent.createObject(pointCanvas, {'pointId': id});
+                                    }
+                                    else { // keep old point still presents
+                                        points[id] = point;
+                                        delete pointsToRemove[stringId];
+                                    }
+                                }
+
+                                // clear old points that has been removed from the model
+                                for(var stringId in pointsToRemove) {
+                                    if(!pointsToRemove.hasOwnProperty(stringId))
+                                        continue;
+
+                                    var id = parseInt(stringId);
+
+                                    for(var i = 0; i < children.length; ++i) {
+                                        if(id === children[i].pointId) {
+                                            children[i].pointId = -1;
+                                            break;
+                                        }
+                                    }
+
+                                    delete points[id];
+                                }
+
+                                pointsChanged();
+                            }
+
+                            Component {
+                                id: pointComponent
+
+                                Item {
+                                    id: item
+
+                                    property int pointId: -1
+
+                                    onPointIdChanged: update();
+
+                                    function update() {
+                                        if(-1 === pointId)
+                                        {
+                                            destroy();
+                                            return;
+                                        }
+
+                                        var point = pointCanvas.points[pointId];
+
+                                        var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
+                                        var screenPosition = root.imagePlaneModel.toPlanePoint(imagePlaneView.axis, worldPosition)
+
+                                        x = screenPosition.x;
+                                        y = screenPosition.y;
+
+                                        var color = "red";
+                                        if(undefined !== point.color)
+                                            color = Qt.rgba(point.color[0], point.color[1], point.color[2], 1.0);
+
+                                        dot.color = color;
+                                    }
+
+                                    Rectangle {
+                                        id: dot
+                                        anchors.centerIn: parent
+                                        width: 5
+                                        height: width
+                                        radius: width * 0.5
+                                        scale: 1.0 / flickableContent.scale
+                                        color: "red"
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            MouseArea {
+                anchors.fill: flickable
+                acceptedButtons: Qt.LeftButton
+                propagateComposedEvents: true
+
+                onPressed: {
+                    if(mouse.modifiers & Qt.ShiftModifier)
+                        mouse.accepted = true;
+                    else
+                        mouse.accepted = false;
+                }
+
+                onClicked: {
+                    var position = mapToItem(pointCanvas, mouse.x, mouse.y);
+                    position = Qt.point(position.x + 0.5, position.y + 0.5);
+                    if(!pointCanvas.contains(position))
+                        return;
+
+                    var brushSize = Screen.devicePixelRatio * 5.0 / flickableContent.scale;
+                    if(!pointCanvas.removePointAt(position.x, position.y, brushSize))
+                        pointCanvas.addPoint(position.x, position.y);
+                }
+
+                onWheel: {
+                    if(0 === wheel.angleDelta.y)
+                        return;
+
+                    var inPosition = mapToItem(imagePlaneView, wheel.x, wheel.y);
+                    var projectedPosition = Qt.point(wheel.x, wheel.y);
+                    if(!imagePlaneView.contains(inPosition)) {
+                        inPosition.x = Math.max(0.0, Math.min(inPosition.x, imagePlaneView.width - 0.0001));
+                        inPosition.y = Math.max(0.0, Math.min(inPosition.y, imagePlaneView.height - 0.0001));
+                        projectedPosition = mapFromItem(imagePlaneView, inPosition.x, inPosition.y);
+                    }
+
+                    var zoomSpeed = 1.0;
+
+                    var boundary = 2.0;
+                    var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
+                    if(zoom < 0.0) {
+                        zoom = 1.0 + 0.5 * zoom;
+                        zoom /= zoomSpeed;
+                    }
+                    else {
+                        zoom = 1.0 + zoom;
+                        zoom *= zoomSpeed;
+                    }
+
+                    flickableContent.scale = Math.max(flickableContent.minScale, Math.min(flickableContent.scale * zoom, flickableContent.maxScale));
+
+                    var outPosition = mapFromItem(imagePlaneView, inPosition.x, inPosition.y);
+
+                    flickable.contentX += (outPosition.x - projectedPosition.x);
+                    flickable.contentY += (outPosition.y - projectedPosition.y);
+
+                    //flickable.returnToBounds();
+                }
+            }
         }
 
-        MouseArea {
-            anchors.fill: flickable
-            acceptedButtons: Qt.LeftButton
-            propagateComposedEvents: true
-
-            onPressed: {
-                if(mouse.modifiers & Qt.ShiftModifier)
-                    mouse.accepted = true;
-                else
-                    mouse.accepted = false;
-            }
-
-            onClicked: {
-                var position = mapToItem(pointCanvas, mouse.x, mouse.y);
-                position = Qt.point(position.x + 0.5, position.y + 0.5);
-                if(!pointCanvas.contains(position))
-                    return;
-
-                var brushSize = Screen.devicePixelRatio * 5.0 / flickableContent.scale;
-                if(!pointCanvas.removePointAt(position.x, position.y, brushSize))
-                    pointCanvas.addPoint(position.x, position.y);
-            }
-
-            onWheel: {
-                if(0 === wheel.angleDelta.y)
-                    return;
-
-                var inPosition = mapToItem(imagePlaneView, wheel.x, wheel.y);
-                var projectedPosition = Qt.point(wheel.x, wheel.y);
-                if(!imagePlaneView.contains(inPosition)) {
-                    inPosition.x = Math.max(0.0, Math.min(inPosition.x, imagePlaneView.width - 0.0001));
-                    inPosition.y = Math.max(0.0, Math.min(inPosition.y, imagePlaneView.height - 0.0001));
-                    projectedPosition = mapFromItem(imagePlaneView, inPosition.x, inPosition.y);
-                }
-
-                var zoomSpeed = 1.0;
-
-                var boundary = 2.0;
-                var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
-                if(zoom < 0.0) {
-                    zoom = 1.0 + 0.5 * zoom;
-                    zoom /= zoomSpeed;
-                }
-                else {
-                    zoom = 1.0 + zoom;
-                    zoom *= zoomSpeed;
-                }
-
-                flickableContent.scale = Math.max(flickableContent.minScale, Math.min(flickableContent.scale * zoom, flickableContent.maxScale));
-
-                var outPosition = mapFromItem(imagePlaneView, inPosition.x, inPosition.y);
-
-                flickable.contentX += (outPosition.x - projectedPosition.x);
-                flickable.contentY += (outPosition.y - projectedPosition.y);
-
-                //flickable.returnToBounds();
-            }
-        }
-    }
-
-    RowLayout {
-        Layout.fillWidth: true
-        spacing: 0
-
-        Slider {
-            id: slider
+        RowLayout {
             Layout.fillWidth: true
+            spacing: 0
 
-            minimumValue: 0
-            maximumValue: imagePlaneView.length > 0 ? imagePlaneView.length - 1 : 0
-            stepSize: 1
-            tickmarksEnabled: true
+            Slider {
+                id: slider
+                Layout.fillWidth: true
 
-            value: root.imagePlaneModel.currentIndex(imagePlaneView.axis)
-            onValueChanged: root.imagePlaneModel.setCurrentIndex(imagePlaneView.axis, value);
-        }
+                minimumValue: 0
+                maximumValue: imagePlaneView.length > 0 ? imagePlaneView.length - 1 : 0
+                stepSize: 1
+                tickmarksEnabled: true
 
-        TextField {
-            Layout.preferredWidth: lengthLabel.implicitWidth + 3
-            text: slider.value.toString()
+                value: root.imagePlaneModel.currentIndex(imagePlaneView.axis)
+                onValueChanged: root.imagePlaneModel.setCurrentIndex(imagePlaneView.axis, value);
+            }
 
-            onAccepted: slider.value = Number(text)
-        }
+            TextField {
+                Layout.preferredWidth: lengthLabel.implicitWidth + 3
+                text: slider.value.toString()
 
-        Label {
-            id: lengthLabel
-            Layout.preferredWidth: implicitWidth
-            horizontalAlignment: Qt.AlignRight
-            text: "/" + (imagePlaneView.length - 1).toString()
+                onAccepted: slider.value = Number(text)
+            }
+
+            Label {
+                id: lengthLabel
+                Layout.preferredWidth: implicitWidth
+                horizontalAlignment: Qt.AlignRight
+                text: "/" + (imagePlaneView.length - 1).toString()
+            }
         }
     }
 }

@@ -52,22 +52,22 @@ ColumnLayout {
         onUpdated: root.refreshAll();
     }
 
-    readonly property alias planeX: container.planeX
-    readonly property alias planeY: container.planeY
-    readonly property alias planeZ: container.planeZ
+    readonly property alias planeXY: container.planeXY
+    readonly property alias planeZY: container.planeZY
+    readonly property alias planeXZ: container.planeXZ
     readonly property alias infoTextArea: container.infoTextArea
 
     Component.onCompleted: refreshAll();
 
     function refreshAll() {
-        if(planeX)
-            planeX.refresh();
+        if(planeXY)
+            planeXY.refresh();
 
-        if(planeY)
-            planeY.refresh();
+        if(planeZY)
+            planeZY.refresh();
 
-        if(planeZ)
-            planeZ.refresh();
+        if(planeXZ)
+            planeXZ.refresh();
 
         if(infoTextArea)
             infoTextArea.refresh();
@@ -79,107 +79,118 @@ ColumnLayout {
         sofaData: root.dataObject.sofaData
     }
 
-// maim
+// main
 
     GroupBox {
         Layout.fillWidth: true
 
-        RowLayout {
+        //title: "Show"
+
+        ColumnLayout {
             anchors.fill: parent
             anchors.topMargin: 2
             anchors.bottomMargin: anchors.topMargin
             spacing: 5
 
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+
+                CheckBox {
+                    id: xyCheckBox
+                    text: "XY"
+
+                    Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
+
+                    readonly property int axis: 2
+                    property int previousIndex: -1
+                    onCheckedChanged: {
+                        if(!checked) {
+                            previousIndex = model.currentIndex(axis);
+                            model.setCurrentIndex(axis, -1);
+                        } else {
+                            var currentIndex = model.currentIndex(axis);
+                            if(-1 !== currentIndex)
+                                previousIndex = currentIndex;
+
+                            if(-1 === previousIndex)
+                                previousIndex = model.length(axis) / 2;
+
+                            model.setCurrentIndex(axis, previousIndex);
+                        }
+                    }
+                }
+
+                CheckBox {
+                    id: zyCheckBox
+                    text: "ZY"
+
+                    Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
+
+                    readonly property int axis: 0
+                    property int previousIndex: -1
+                    onCheckedChanged: {
+                        if(!checked) {
+                            previousIndex = model.currentIndex(axis);
+                            model.setCurrentIndex(axis, -1);
+                        } else {
+                            var currentIndex = model.currentIndex(axis);
+                            if(-1 !== currentIndex)
+                                previousIndex = currentIndex;
+
+                            if(-1 === previousIndex)
+                                previousIndex = model.length(axis) / 2;
+
+                            model.setCurrentIndex(axis, previousIndex);
+                        }
+                    }
+                }
+
+                CheckBox {
+                    id: xzCheckBox
+                    text: "XZ"
+
+                    Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
+
+                    readonly property int axis: 1
+                    property int previousIndex: -1
+                    onCheckedChanged: {
+                        if(!checked) {
+                            previousIndex = model.currentIndex(axis);
+                            model.setCurrentIndex(axis, -1);
+                        } else {
+                            var currentIndex = model.currentIndex(axis);
+                            if(-1 !== currentIndex)
+                                previousIndex = currentIndex;
+
+                            if(-1 === previousIndex)
+                                previousIndex = model.length(axis) / 2;
+
+                            model.setCurrentIndex(axis, previousIndex);
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+
+                CheckBox {
+                    id: modelsCheckBox
+                    text: "Models"
+                    checked: true
+                }
+
+                CheckBox {
+                    id: infoCheckBox
+                    text: "Info"
+                    checked: true
+                }
+            }
+
             Item {
                 Layout.fillWidth: true
-                Layout.minimumWidth: showLabel.implicitWidth
-                implicitHeight: showLabel.implicitHeight
-
-                Label {
-                    id: showLabel
-                    anchors.fill: parent
-                    text: "Show"
-                }
-            }
-
-            CheckBox {
-                id: xCheckBox
-                text: "X"
-
-                Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
-
-                readonly property int axis: 0
-                property int previousIndex: -1
-                onCheckedChanged: {
-                    if(!checked) {
-                        previousIndex = model.currentIndex(axis);
-                        model.setCurrentIndex(axis, -1);
-                    } else {
-                        var currentIndex = model.currentIndex(axis);
-                        if(-1 !== currentIndex)
-                            previousIndex = currentIndex;
-
-                        if(-1 === previousIndex)
-                            previousIndex = model.length(axis) / 2;
-
-                        model.setCurrentIndex(axis, previousIndex);
-                    }
-                }
-            }
-
-            CheckBox {
-                id: yCheckBox
-                text: "Y"
-
-                Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
-
-                readonly property int axis: 1
-                property int previousIndex: -1
-                onCheckedChanged: {
-                    if(!checked) {
-                        previousIndex = model.currentIndex(axis);
-                        model.setCurrentIndex(axis, -1);
-                    } else {
-                        var currentIndex = model.currentIndex(axis);
-                        if(-1 !== currentIndex)
-                            previousIndex = currentIndex;
-
-                        if(-1 === previousIndex)
-                            previousIndex = model.length(axis) / 2;
-
-                        model.setCurrentIndex(axis, previousIndex);
-                    }
-                }
-            }
-
-            CheckBox {
-                id: zCheckBox
-                text: "Z"
-
-                Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
-
-                readonly property int axis: 2
-                property int previousIndex: -1
-                onCheckedChanged: {
-                    if(!checked) {
-                        previousIndex = model.currentIndex(axis);
-                        model.setCurrentIndex(axis, -1);
-                    } else {
-                        var currentIndex = model.currentIndex(axis);
-                        if(-1 !== currentIndex)
-                            previousIndex = currentIndex;
-
-                        if(-1 === previousIndex)
-                            previousIndex = model.length(axis) / 2;
-
-                        model.setCurrentIndex(axis, previousIndex);
-                    }
-                }
-            }
-
-            Item {
-                Layout.fillWidth: true
-                Layout.minimumWidth: showLabel.implicitWidth
             }
         }
     }
@@ -189,16 +200,17 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        property var planeX: null
-        property var planeY: null
-        property var planeZ: null
+        property var planeXY: null
+        property var planeZY: null
+        property var planeXZ: null
         property var infoTextArea: null
 
         implicitHeight: layout ? layout.implicitHeight: 0
         property var layout: null
 
-        property int planeNumber: root.sofaComponent ? (xCheckBox.checked ? 1 : 0) + (yCheckBox.checked ? 1 : 0) + (zCheckBox.checked ? 1 : 0) : 0
-        onPlaneNumberChanged: refresh();
+        property int planeNumber: root.sofaComponent ? (xyCheckBox.checked ? 1 : 0) + (zyCheckBox.checked ? 1 : 0) + (xzCheckBox.checked ? 1 : 0) : 0
+        property int viewNumber: planeNumber + (infoCheckBox.checked ? 1 : 0)
+        onViewNumberChanged: refresh();
 
         Component.onCompleted: refresh();
 
@@ -208,16 +220,49 @@ ColumnLayout {
 
             layout = gridLayoutComponent.createObject(container, {'anchors.fill': container});
 
-            if(xCheckBox.checked)
-                planeX = planeXComponent.createObject(layout, {'Layout.fillWidth': true})
+            var maxImplicitWidth = 0.0;
+            var maxImplicitHeight = 0.0;
 
-            if(yCheckBox.checked)
-                planeY = planeYComponent.createObject(layout, {'Layout.fillWidth': true})
+            if(xyCheckBox.checked) {
+                planeXY = planeXYComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true})
+                maxImplicitWidth = Math.max(maxImplicitWidth, planeXY.implicitWidth);
+                maxImplicitHeight = Math.max(maxImplicitHeight, planeXY.implicitHeight);
+            }
 
-            if(zCheckBox.checked)
-                planeZ = planeZComponent.createObject(layout, {'Layout.fillWidth': true})
+            if(zyCheckBox.checked) {
+                planeZY = planeZYComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true})
+                maxImplicitWidth = Math.max(maxImplicitWidth, planeZY.implicitWidth);
+                maxImplicitHeight = Math.max(maxImplicitHeight, planeZY.implicitHeight);
+            }
 
-            infoTextArea = infoComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.columnSpan': 1 + (planeNumber + 1) % 2})
+            if(xzCheckBox.checked) {
+                planeXZ = planeXZComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true, 'Layout.columnSpan': 1 + (3 === planeNumber && !infoCheckBox.checked)})
+                maxImplicitWidth = Math.max(maxImplicitWidth, planeXZ.implicitWidth);
+                maxImplicitHeight = Math.max(maxImplicitHeight, planeXZ.implicitHeight);
+            }
+
+            if(infoCheckBox.checked)
+                infoTextArea = infoComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true, 'Layout.columnSpan': 1 + (planeNumber + 1) % 2})
+
+            if(planeXY) {
+                planeXY.implicitWidth = maxImplicitWidth;
+                planeXY.implicitHeight = maxImplicitHeight;
+            }
+
+            if(planeZY) {
+                planeZY.implicitWidth = maxImplicitWidth;
+                planeZY.implicitHeight = maxImplicitHeight;
+            }
+
+            if(planeXZ) {
+                planeXZ.implicitWidth = maxImplicitWidth;
+                planeXZ.implicitHeight = maxImplicitHeight;
+            }
+
+            if(infoTextArea) {
+                infoTextArea.implicitWidth = maxImplicitWidth;
+                infoTextArea.implicitHeight = maxImplicitHeight;
+            }
         }
     }
 
@@ -234,70 +279,76 @@ ColumnLayout {
     }
 
     Component {
-        id: planeXComponent
+        id: planeXYComponent
 
         SofaImagePlaneItem {
-            sofaComponent: root.sofaComponent
-            controller: root.controller
-            imagePlaneModel: model
-            planeAxis: 0
-
-            property bool showSubWindow: true
-
-            onRequestRefresh: {
-                if(root.planeY)
-                    root.planeY.refresh();
-
-                if(root.planeZ)
-                    root.planeZ.refresh();
-
-                if(root.infoTextArea)
-                    root.infoTextArea.refresh();
-            }
-        }
-    }
-
-    Component {
-        id: planeYComponent
-
-        SofaImagePlaneItem {
-            sofaComponent: root.sofaComponent
-            controller: root.controller
-            imagePlaneModel: model
-            planeAxis: 1
-
-            property bool showSubWindow: true
-
-            onRequestRefresh: {
-                if(root.planeX)
-                    root.planeX.refresh();
-
-                if(root.planeZ)
-                    root.planeZ.refresh();
-
-                if(root.infoTextArea)
-                    root.infoTextArea.refresh();
-            }
-        }
-    }
-
-    Component {
-        id: planeZComponent
-
-        SofaImagePlaneItem {
+            id: imagePlaneItem
             sofaComponent: root.sofaComponent
             controller: root.controller
             imagePlaneModel: model
             planeAxis: 2
+            showModels: modelsCheckBox.checked
 
             property bool showSubWindow: true
 
             onRequestRefresh: {
-                if(root.planeX)
-                    root.planeX.refresh();
+                if(root.planeZY)
+                    root.planeZY.refresh();
 
-                if(root.planeY)
-                    root.planeY.refresh();
+                if(root.planeXZ)
+                    root.planeXZ.refresh();
+
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
+            }
+        }
+    }
+
+    Component {
+        id: planeZYComponent
+
+        SofaImagePlaneItem {
+            id: imagePlaneItem
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 0
+            showModels: modelsCheckBox.checked
+
+            property bool showSubWindow: true
+
+            onRequestRefresh: {
+                if(root.planeXY)
+                    root.planeXY.refresh();
+
+                if(root.planeXZ)
+                    root.planeXZ.refresh();
+
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
+            }
+        }
+    }
+
+    Component {
+        id: planeXZComponent
+
+        SofaImagePlaneItem {
+            id: imagePlaneItem
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 1
+            showModels: modelsCheckBox.checked
+
+            property bool showSubWindow: true
+
+            onRequestRefresh: {
+                if(root.planeXY)
+                    root.planeXY.refresh();
+
+                if(root.planeZY)
+                    root.planeZY.refresh();
 
                 if(root.infoTextArea)
                     root.infoTextArea.refresh();
@@ -388,7 +439,7 @@ ColumnLayout {
             property var planeComponent: null
             property alias planeAxis: loader.planeAxis
 
-            title: "Plane " + String.fromCharCode('X'.charCodeAt(0) + planeAxis)
+            title: "Plane " + (0 === planeAxis ? "XY" : (1 === planeAxis ? "ZY" : (2 === planeAxis ? "XZ" : "")))
 
             ColumnLayout {
                 anchors.fill: parent
