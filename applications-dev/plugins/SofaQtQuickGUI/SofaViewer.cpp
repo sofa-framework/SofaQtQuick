@@ -694,7 +694,8 @@ void SofaViewer::internalRender(int width, int height) const
 	//        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
 	//    }
 
-	glClearColor(myBackgroundColor.redF(), myBackgroundColor.greenF(), myBackgroundColor.blueF(), myBackgroundColor.alphaF());
+    // final image will be blended using premultiplied alpha
+    glClearColor(myBackgroundColor.redF() * myBackgroundColor.alphaF(), myBackgroundColor.greenF() * myBackgroundColor.alphaF(), myBackgroundColor.blueF() * myBackgroundColor.alphaF(), myBackgroundColor.alphaF());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if(!myCamera)

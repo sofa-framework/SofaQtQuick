@@ -42,6 +42,14 @@ SofaViewer {
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
 
+    Image {
+        anchors.fill: parent
+        z: -1
+        visible: root.backgroundColor.a < 1.0
+        fillMode: Image.Tile
+        source: "qrc:/icon/alphaBackground.png"
+    }
+
     implicitWidth: 800
     implicitHeight: 600
 
