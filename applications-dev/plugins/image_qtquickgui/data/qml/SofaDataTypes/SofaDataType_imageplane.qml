@@ -84,8 +84,6 @@ ColumnLayout {
     GroupBox {
         Layout.fillWidth: true
 
-        //title: "Show"
-
         ColumnLayout {
             anchors.fill: parent
             anchors.topMargin: 2
@@ -185,7 +183,7 @@ ColumnLayout {
                 CheckBox {
                     id: infoCheckBox
                     text: "Info"
-                    checked: true
+                    checked: false
                 }
             }
 
