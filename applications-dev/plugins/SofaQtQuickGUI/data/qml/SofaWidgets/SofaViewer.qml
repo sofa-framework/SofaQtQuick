@@ -36,9 +36,6 @@ SofaViewer {
     backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
     mirroredHorizontally: false
     mirroredVertically: false
-    wireframe: false
-    culling: true
-    blending: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
 
@@ -131,10 +128,6 @@ SofaViewer {
             camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
 
             viewAll();
-//            camera.zNear = 0.001;
-//            camera.zFar = 2.5;
-
-//            console.log(camera.eye(), camera.direction());
         }
     }
 
@@ -491,63 +484,6 @@ SofaViewer {
                                 rowSpacing: 2
                                 columns: 2
 
-    // wireframe
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Wireframe"
-                                }
-
-                                Switch {
-                                    id: wireframeSwitch
-                                    Layout.alignment: Qt.AlignCenter
-                                    Component.onCompleted: checked = root.wireframe
-                                    onCheckedChanged: root.wireframe = checked
-
-                                    ToolTip {
-                                        anchors.fill: parent
-                                        description: "Draw in wireframe mode"
-                                    }
-                                }
-
-    // culling
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Culling"
-                                }
-
-                                Switch {
-                                    id: cullingSwitch
-                                    Layout.alignment: Qt.AlignCenter
-                                    Component.onCompleted: checked = root.culling
-                                    onCheckedChanged: root.culling = checked
-
-                                    ToolTip {
-                                        anchors.fill: parent
-                                        description: "Enable culling"
-                                    }
-                                }
-
-    // blending
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Blending"
-                                }
-
-                                Switch {
-                                    id: blendingSwitch
-                                    Layout.alignment: Qt.AlignCenter
-                                    Component.onCompleted: checked = root.blending
-                                    onCheckedChanged: root.blending = checked
-
-                                    ToolTip {
-                                        anchors.fill: parent
-                                        description: "Enable blending"
-                                    }
-                                }
-
     // antialiasing
 
                                 Label {
@@ -628,8 +564,8 @@ SofaViewer {
                                 }
 
                                 Rectangle {
-                                    Layout.preferredWidth: wireframeSwitch.implicitWidth
-                                    Layout.preferredHeight: wireframeSwitch.implicitHeight
+                                    Layout.preferredWidth: 48
+                                    Layout.preferredHeight: 20
                                     Layout.alignment: Qt.AlignCenter
                                     color: "darkgrey"
                                     radius: 2

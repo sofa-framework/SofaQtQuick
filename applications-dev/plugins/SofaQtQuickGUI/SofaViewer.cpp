@@ -70,9 +70,6 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myBackgroundColor("#00404040"),
     myBackgroundImageSource(),
     myBackgroundImage(),
-    myWireframe(false),
-    myCulling(true),
-    myBlending(false),
     myAntialiasingSamples(2),
     myMirroredHorizontally(false),
     myMirroredVertically(false),
@@ -175,36 +172,6 @@ void SofaViewer::setBackgroundImageSource(QUrl newBackgroundImageSource)
     myBackgroundImageSource = newBackgroundImageSource;
 
     backgroundImageSourceChanged(newBackgroundImageSource);
-}
-
-void SofaViewer::setWireframe(bool newWireframe)
-{
-    if(newWireframe == myWireframe)
-        return;
-
-    myWireframe = newWireframe;
-
-    wireframeChanged(newWireframe);
-}
-
-void SofaViewer::setCulling(bool newCulling)
-{
-    if(newCulling == myCulling)
-        return;
-
-    myCulling = newCulling;
-
-    cullingChanged(newCulling);
-}
-
-void SofaViewer::setBlending(bool newBlending)
-{
-    if(newBlending == myBlending)
-        return;
-
-    myBlending = newBlending;
-
-    blendingChanged(newBlending);
 }
 
 void SofaViewer::setAntialiasingSamples(int newAntialiasingSamples)
@@ -383,8 +350,6 @@ public:
         glDisable(GL_BLEND);
         glDisable(GL_LIGHTING);
 
-        glDisable(GL_CULL_FACE);
-
         glViewport(0.0, 0.0, size.width(), size.height());
 
         camera->setAspectRatio(size.width() / (double) size.height());
@@ -397,18 +362,7 @@ public:
         glPushMatrix();
         glLoadMatrixf(camera->view().constData());
 
-        if(myViewer->wireframe())
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
-        else
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-        if(myViewer->culling())
-            glEnable(GL_CULL_FACE);
-
         mySelectable = sofaScene->pickObject(*myViewer, mySSPoint, myTags, myViewer->roots());
-
-        if(myViewer->wireframe())
-            glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
@@ -732,15 +686,8 @@ void SofaViewer::internalRender(int width, int height) const
 
 	glEnable(GL_LIGHTING);
 
-	if(blending())
-		glEnable(GL_BLEND);
-	else
-		glDisable(GL_BLEND);
-
 	if(mySofaScene && mySofaScene->isReady())
 	{
-		glDisable(GL_CULL_FACE);
-
 		myCamera->setAspectRatio(width / (double) height);
 
 		glMatrixMode(GL_PROJECTION);
@@ -750,14 +697,6 @@ void SofaViewer::internalRender(int width, int height) const
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glLoadMatrixf(myCamera->view().constData());
-
-		if(wireframe())
-			glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE);
-		else
-			glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-		if(culling())
-			glEnable(GL_CULL_FACE);
 
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_TEXTURE_2D);
@@ -795,18 +734,12 @@ void SofaViewer::internalRender(int width, int height) const
 			postDraw();
 		}
 
-		if(wireframe())
-			glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
 	}
-
-	if(blending())
-		glDisable(GL_BLEND);
 }
 
 SofaViewer::SofaRenderer::SofaRenderer(SofaViewer* viewer) : QQuickFramebufferObject::Renderer(),

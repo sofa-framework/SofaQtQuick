@@ -77,9 +77,6 @@ public:
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::SofaComponent> roots READ rootsListProperty)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QUrl backgroundImageSource READ backgroundImageSource WRITE setBackgroundImageSource NOTIFY backgroundImageSourceChanged)
-    Q_PROPERTY(bool wireframe READ wireframe WRITE setWireframe NOTIFY wireframeChanged)
-    Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged)
-    Q_PROPERTY(bool blending READ blending WRITE setBlending NOTIFY blendingChanged)
     Q_PROPERTY(int antialiasingSamples READ antialiasingSamples WRITE setAntialiasingSamples NOTIFY antialiasingSamplesChanged)
     Q_PROPERTY(bool mirroredHorizontally READ mirroredHorizontally WRITE setMirroredHorizontally NOTIFY mirroredHorizontallyChanged)
     Q_PROPERTY(bool mirroredVertically READ mirroredVertically WRITE setMirroredVertically NOTIFY mirroredVerticallyChanged)
@@ -103,15 +100,6 @@ public:
 
     QUrl backgroundImageSource() const	{return myBackgroundImageSource;}
     void setBackgroundImageSource(QUrl newBackgroundImageSource);
-
-    bool wireframe() const      {return myWireframe;}
-    void setWireframe(bool newWireframe);
-
-    bool culling() const        {return myCulling;}
-    void setCulling(bool newCulling);
-
-    bool blending() const        {return myBlending;}
-    void setBlending(bool newBlending);
 
     int antialiasingSamples() const        {return myAntialiasingSamples;}
     void setAntialiasingSamples(int newAntialiasingSamples);
@@ -162,9 +150,6 @@ signals:
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
     void backgroundImageSourceChanged(QUrl newBackgroundImageSource);
-    void wireframeChanged(bool newWireframe);
-    void cullingChanged(bool newCulling);
-    void blendingChanged(bool newBlending);
     void antialiasingSamplesChanged(int newAntialiasingSamples);
     void mirroredHorizontallyChanged(bool newMirroredHorizontally);
     void mirroredVerticallyChanged(bool newMirroredVertically);
@@ -213,9 +198,6 @@ private:
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
     QImage                      myBackgroundImage;
-    bool                        myWireframe;
-    bool                        myCulling;
-    bool                        myBlending;
     int                         myAntialiasingSamples;
     bool                        myMirroredHorizontally;
     bool                        myMirroredVertically;
