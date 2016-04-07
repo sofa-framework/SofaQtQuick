@@ -90,6 +90,9 @@ Item {
                 contentHeight: flickableContent.height * flickableContent.scale
                 boundsBehavior: Flickable.StopAtBounds
 
+                onWidthChanged: returnToBounds();
+                onHeightChanged: returnToBounds();
+
                 Item {
                     id: flickableContent
                     width: Math.max(flickable.width / scale, imagePlaneView.implicitWidth)
