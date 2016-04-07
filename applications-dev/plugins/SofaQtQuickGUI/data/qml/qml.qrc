@@ -58,5 +58,7 @@
         <file>SofaManipulators/Manipulator3D_Translation.qml</file>
         <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
         <file>SofaWidgets/SofaMessageView.qml</file>
+        <file>SofaBasics/Vector2DSpinBox.qml</file>
+        <file>SofaBasics/Vector4DSpinBox.qml</file>
     </qresource>
 </RCC>
