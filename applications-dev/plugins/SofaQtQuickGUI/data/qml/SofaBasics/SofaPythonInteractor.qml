@@ -25,7 +25,6 @@ SofaPythonInteractor {
 
     /// \note you can use scriptController with a SofaComponent or directly with the controller name
     function call(scriptController, funcName) {
-        //console.log(arguments.length);
         if(arguments.length == 2) {
             if(!Qt.isQtObject(scriptController))
                 return onCall(scriptController, funcName);

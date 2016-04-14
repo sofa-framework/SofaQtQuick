@@ -1313,8 +1313,6 @@ SofaComponent* SofaScene::componentByType(const QString& typeName)
 
     BaseObject* firstBaseObject = baseObjects.first();
 
-    qDebug() << "componentByType" << QString::fromStdString(firstBaseObject->getName());
-
     return new SofaComponent(this, firstBaseObject);
 }
 

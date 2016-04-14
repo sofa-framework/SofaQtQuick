@@ -12,6 +12,7 @@
         <file>SofaBasics/SofaPythonInteractor.qml</file>
         <file>SofaBasics/FPSItem.qml</file>
         <file>SofaBasics/SofaTimeItem.qml</file>
+        <file>SofaBasics/Fit.qml</file>
         <file>SofaBasics/Camera.qml</file>
         <file>SofaBasics/UserInteractor.qml</file>
         <file>SofaBasics/ContentItem.qml</file>

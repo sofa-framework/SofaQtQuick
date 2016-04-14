@@ -86,6 +86,7 @@ set(QML_FILES
     data/qml/SofaBasics/SofaDataItem.qml
     data/qml/SofaBasics/SofaPythonInteractor.qml
     data/qml/SofaBasics/UserInteractor.qml
+    data/qml/SofaBasics/Fit.qml
     data/qml/SofaBasics/Camera.qml
     data/qml/SofaBasics/FPSItem.qml
     data/qml/SofaBasics/SofaTimeItem.qml
