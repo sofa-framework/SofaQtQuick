@@ -40,13 +40,17 @@ ImagePlaneView::ImagePlaneView(QQuickItem* parent) : QQuickPaintedItem(parent),
     myAxis(0),
     myIndex(0),
     myImage(),
-    myLength(0)
-//    myPaintedWidth(0),
-//    myPaintedHeight(0)
+    myLength(0),
+    myShowModels(true),
+    myMinIntensity(0.0f),
+    myMaxIntensity(1.0f)
 {
     connect(this, &ImagePlaneView::imagePlaneModelChanged,  this, &ImagePlaneView::update);
     connect(this, &ImagePlaneView::axisChanged,             this, &ImagePlaneView::update);
     connect(this, &ImagePlaneView::indexChanged,            this, &ImagePlaneView::update);
+    connect(this, &ImagePlaneView::showModelsChanged,       this, &ImagePlaneView::update);
+    connect(this, &ImagePlaneView::minIntensityChanged,     this, &ImagePlaneView::update);
+    connect(this, &ImagePlaneView::maxIntensityChanged,     this, &ImagePlaneView::update);
 }
 
 bool ImagePlaneView::containsPoint(const QVector3D& wsPoint) const
@@ -86,6 +90,20 @@ void ImagePlaneView::paint(QPainter* painter)
     painter->drawImage(0, 0, myImage);
 }
 
+QRgb ImagePlaneView::computePixelColor(int r, int g, int b) const
+{
+    const float minPixelIntensity = myMinIntensity * 255.0f;
+    const float intensityRange = qMax(1.0f / 255.0f, myMaxIntensity - myMinIntensity);
+
+    r = qFloor((r - minPixelIntensity) / intensityRange);
+    g = qFloor((g - minPixelIntensity) / intensityRange);
+    b = qFloor((b - minPixelIntensity) / intensityRange);
+
+    return qRgb(qBound(0, r, 255),
+                qBound(0, g, 255),
+                qBound(0, b, 255));
+}
+
 void ImagePlaneView::update()
 {
     if(!myImagePlaneModel || -1 == myIndex || myAxis < 0 || myAxis > 5)
@@ -94,53 +112,42 @@ void ImagePlaneView::update()
         return;
     }
 
-    const cimg_library::CImg<unsigned char>& slice = myImagePlaneModel->retrieveSlice(myIndex, myAxis);
-    if(slice.width() != myImage.width() || slice.height() != myImage.height())
+    const cimg_library::CImg<unsigned char>& plane = myImagePlaneModel->retrieveSlice(myIndex, myAxis);
+    if(plane.width() != myImage.width() || plane.height() != myImage.height())
     {
-        myImage = QImage(slice.width(), slice.height(), QImage::Format_RGB32);
-        setImplicitWidth(slice.width());
-        setImplicitHeight(slice.height());
+        myImage = QImage(plane.width(), plane.height(), QImage::Format_RGB32);
+        setImplicitWidth(plane.width());
+        setImplicitHeight(plane.height());
     }
 
-    if(1 == slice.spectrum())
+    if(1 == plane.spectrum())
     {
         for(int y = 0; y < myImage.height(); y++)
             for(int x = 0; x < myImage.width(); x++)
-                myImage.setPixel(x, y, qRgb(slice(x, y, 0, 0), slice(x, y, 0, 0), slice(x, y, 0, 0)));
+                myImage.setPixel(x, y, computePixelColor(plane(x, y, 0, 0), plane(x, y, 0, 0), plane(x, y, 0, 0)));
     }
-    else if(2 == slice.spectrum())
+    else if(2 == plane.spectrum())
     {
         for(int y = 0; y < myImage.height(); y++)
             for(int x = 0; x < myImage.width(); x++)
-                myImage.setPixel(x, y, qRgb(slice(x, y, 0, 0), slice(x, y, 0, 1), slice(x, y, 0, 0)));
+                myImage.setPixel(x, y, computePixelColor(plane(x, y, 0, 0), plane(x, y, 0, 1), plane(x, y, 0, 0)));
     }
     else
     {
         for(int y = 0; y < myImage.height(); y++)
             for(int x = 0; x < myImage.width(); x++)
-                myImage.setPixel(x, y, qRgb(slice(x, y, 0, 0), slice(x, y, 0, 1), slice(x, y, 0, 2)));
+                myImage.setPixel(x, y, computePixelColor(plane(x, y, 0, 0), plane(x, y, 0, 1), plane(x, y, 0, 2)));
     }
 
-    CImg<unsigned char> slicedModels = myImagePlaneModel->retrieveSlicedModels(myIndex, myAxis);
-    if(slicedModels)
-        for(int y = 0; y < myImage.height(); y++)
-            for(int x = 0; x < myImage.width(); x++)
-                if(slicedModels(x, y, 0, 0) || slicedModels(x, y, 0, 1) || slicedModels(x, y, 0, 2))
-                    myImage.setPixel(x, y, qRgb(slicedModels(x, y, 0, 0), slicedModels(x, y, 0, 1), slicedModels(x, y, 0, 2)));
-
-    // display selected pixels on the image plane
-//    for(int i = 0; i < points.size(); ++i)
-//    {
-//        Coord point = points[i];
-//        if(myAxis==0 && myIndex == point.x())
-//            myImage.setPixel(QPoint(point.z(), point.y()), qRgb(255, 0, 0));
-
-//        else if(myAxis==1 && myIndex == point.y())
-//            myImage.setPixel(QPoint(point.x(), point.z()), qRgb(255, 0, 0));
-
-//        else if (myAxis==2 && myIndex == point.z())
-//            myImage.setPixel(QPoint(point.x(), point.y()), qRgb(255, 0, 0));
-//    }
+    if(myShowModels)
+    {
+        CImg<unsigned char> slicedModels = myImagePlaneModel->retrieveSlicedModels(myIndex, myAxis);
+        if(slicedModels)
+            for(int y = 0; y < myImage.height(); y++)
+                for(int x = 0; x < myImage.width(); x++)
+                    if(slicedModels(x, y, 0, 0) || slicedModels(x, y, 0, 1) || slicedModels(x, y, 0, 2))
+                        myImage.setPixel(x, y, qRgb(slicedModels(x, y, 0, 0), slicedModels(x, y, 0, 1), slicedModels(x, y, 0, 2)));
+    }
 
     QQuickItem::update();
 }
@@ -197,45 +204,35 @@ void ImagePlaneView::setLength(int length)
     lengthChanged();
 }
 
-//void ImagePlaneView::setPaintedWidth(double paintedWidth)
-//{
-//    if(paintedWidth == myPaintedWidth)
-//        return;
+void ImagePlaneView::setShowModels(bool showModels)
+{
+    if(showModels == myShowModels)
+        return;
 
-//    myPaintedWidth = paintedWidth;
+    myShowModels = showModels;
 
-//    paintedWidthChanged();
-//}
+    showModelsChanged();
+}
 
-//void ImagePlaneView::setPaintedHeight(double paintedHeight)
-//{
-//    if(paintedHeight == myPaintedHeight)
-//        return;
+void ImagePlaneView::setMinIntensity(float minIntensity)
+{
+    if(minIntensity == myMinIntensity)
+        return;
 
-//    myPaintedHeight = paintedHeight;
+    myMinIntensity = minIntensity;
 
-//    paintedHeightChanged();
-//}
+    minIntensityChanged();
+}
 
-//void ImagePlaneView::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
-//{
-//    QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
+void ImagePlaneView::setMaxIntensity(float maxIntensity)
+{
+    if(maxIntensity == myMaxIntensity)
+        return;
 
-//    QSize size(myImage.size());
-//    size.scale(width(), height(), Qt::AspectRatioMode::KeepAspectRatio);
+    myMaxIntensity = maxIntensity;
 
-//    setPaintedWidth(size.width());
-//    setPaintedHeight(size.height());
-
-////    double scaleRatio = 1.0;
-////    if(qFloor(width()) == size.width())
-////        scaleRatio = width() / myImage.width();
-////    else
-////        scaleRatio = height() / myImage.height();
-
-////    setPaintedWidth(myImage.width() * scaleRatio);
-////    setPaintedHeight(myImage.height() * scaleRatio);
-//}
+    maxIntensityChanged();
+}
 
 }
 

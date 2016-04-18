@@ -83,6 +83,7 @@ namespace qtquick
 {
 
 using namespace sofa::defaulttype;
+using namespace sofa::core;
 using namespace sofa::core::objectmodel;
 using namespace sofa::core::visual;
 using namespace sofa::component::visualmodel;
@@ -1250,11 +1251,11 @@ SofaData* SofaScene::data(const QString& path)
 {
     BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
     if(!data)
-        return 0;
+        return nullptr;
 
     Base* base = data->getOwner();
     if(!base)
-        return 0;
+        return nullptr;
 
     return new SofaData(this, base, data);
 }
@@ -1264,13 +1265,73 @@ SofaComponent* SofaScene::component(const QString& path)
     BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path + ".name"); // search for the "name" data of the component (this data is always present if the component exist)
 
     if(!data)
-        return 0;
+        return nullptr;
 
     Base* base = data->getOwner();
     if(!base)
-        return 0;
+        return nullptr;
 
     return new SofaComponent(this, base);
+}
+
+class GetObjectsByTypeVisitor : public Visitor
+{
+public:
+    GetObjectsByTypeVisitor(const QString& typeName) : Visitor(sofa::core::ExecParams::defaultInstance()),
+        myTypeName(typeName)
+    {
+
+    }
+
+    virtual Result processNodeTopDown(Node* node)
+    {
+        Node::ObjectIterator objectIt;
+        for(objectIt = node->object.begin(); objectIt != node->object.end(); ++objectIt)
+            if(0 == QString::fromStdString(objectIt->get()->getClassName()).compare(myTypeName, Qt::CaseInsensitive))
+                myBaseObjects.append(objectIt->get());
+
+        return RESULT_CONTINUE;
+    }
+
+    QList<BaseObject*> baseObjects() const {return myBaseObjects;}
+
+private:
+    QString myTypeName;
+    QList<BaseObject*> myBaseObjects;
+
+};
+
+SofaComponent* SofaScene::componentByType(const QString& typeName)
+{
+    if(!mySofaSimulation || typeName.isEmpty())
+        return nullptr;
+
+    GetObjectsByTypeVisitor getObjectByTypeVisitor(typeName);
+    mySofaSimulation->GetRoot()->execute(getObjectByTypeVisitor);
+
+    const QList<BaseObject*>& baseObjects = getObjectByTypeVisitor.baseObjects();
+    if(baseObjects.isEmpty())
+        return nullptr;
+
+    BaseObject* firstBaseObject = baseObjects.first();
+
+    return new SofaComponent(this, firstBaseObject);
+}
+
+QList<SofaComponent*> SofaScene::componentsByType(const QString& typeName)
+{
+    QList<SofaComponent*> sofaComponents;
+    if(!mySofaSimulation || typeName.isEmpty())
+        return sofaComponents;
+
+    GetObjectsByTypeVisitor getObjectByTypeVisitor(typeName);
+    mySofaSimulation->GetRoot()->execute(getObjectByTypeVisitor);
+
+    const QList<BaseObject*>& baseObjects = getObjectByTypeVisitor.baseObjects();
+    for(BaseObject* baseObject : baseObjects)
+        sofaComponents.append(new SofaComponent(this, baseObject));
+
+    return sofaComponents;
 }
 
 bool SofaScene::componentExists(const sofa::core::objectmodel::Base* base) const
@@ -1278,15 +1339,14 @@ bool SofaScene::componentExists(const sofa::core::objectmodel::Base* base) const
     return myBases.contains(base);
 }
 
-
 SofaComponent* SofaScene::root()
 {
     if(!mySofaSimulation)
-        return 0;
+        return nullptr;
 
     Base* base = mySofaSimulation->GetRoot().get();
     if(!base)
-        return 0;
+        return nullptr;
 
     return new SofaComponent(this, base);
 }

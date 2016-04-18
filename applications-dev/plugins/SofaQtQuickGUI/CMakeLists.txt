@@ -88,11 +88,13 @@ set(QML_FILES
     data/qml/SofaBasics/SofaDataItem.qml
     data/qml/SofaBasics/SofaPythonInteractor.qml
     data/qml/SofaBasics/UserInteractor.qml
+    data/qml/SofaBasics/Fit.qml
     data/qml/SofaBasics/Camera.qml
     data/qml/SofaBasics/FPSItem.qml
     data/qml/SofaBasics/SofaTimeItem.qml
     data/qml/SofaBasics/ContentItem.qml
     data/qml/SofaBasics/ExplicitSwitch.qml
+    data/qml/SofaBasics/RangeSlider.qml
     data/qml/SofaBasics/CollapsibleGroupBox.qml
     data/qml/SofaBasics/Vector2DSpinBox.qml
     data/qml/SofaBasics/Vector3DSpinBox.qml
@@ -137,6 +139,8 @@ set(QRC_FILES
     data/resources.qrc
     data/qml/qml.qrc
 )
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # on Window, Qt packages need the glu32 lib full path, but they do not find it without help
 if(WIN32)

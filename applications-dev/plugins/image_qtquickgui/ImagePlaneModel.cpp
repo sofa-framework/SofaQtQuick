@@ -59,12 +59,15 @@ void ImagePlaneModel::setSofaData(SofaData* sofaData)
 
 int ImagePlaneModel::currentIndex(int axis) const
 {
-    return myImagePlane->currentIndex(axis);
+    if(imagePlane())
+        return myImagePlane->currentIndex(axis);
+
+    return -1;
 }
 
 void ImagePlaneModel::setCurrentIndex(int axis, int index)
 {
-    if(index >= length(axis))
+    if(!imagePlane() || index >= length(axis))
         return;
 
     myImagePlane->setCurrentIndex(axis, index);
@@ -139,9 +142,16 @@ cimg_library::CImg<unsigned char> ImagePlaneModel::retrieveSlicedModels(int inde
 
 const BaseImagePlaneWrapper* ImagePlaneModel::imagePlane() const
 {
-    const core::objectmodel::BaseData* data = mySofaData->data();
-    if(!data)
+    if(!mySofaData)
+    {
         myImagePlane = 0;
+    }
+    else
+    {
+        const core::objectmodel::BaseData* data = mySofaData->data();
+        if(!data)
+            myImagePlane = 0;
+    }
 
     return myImagePlane;
 }

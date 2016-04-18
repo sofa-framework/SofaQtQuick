@@ -288,27 +288,43 @@ void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector
 
 void Camera::fit(QVector3D min, QVector3D max)
 {
-	if(min == max)
-	{
-		min -= QVector3D(0.5f, 0.5f, 0.5f);
-		max += QVector3D(0.5f, 0.5f, 0.5f);
-	}
+    if(min == max)
+    {
+        min -= QVector3D(0.5f, 0.5f, 0.5f);
+        max += QVector3D(0.5f, 0.5f, 0.5f);
+    }
+    else if(min.x() > max.x() || min.y() > max.y() || min.z() > max.z())
+    {
+        min = QVector3D(-0.5f, -0.5f, -0.5f);
+        max = QVector3D( 0.5f,  0.5f,  0.5f);
+    }
 
     myTarget = (min + max) * 0.5;
 	QVector3D diagonal = max - min;
 	double radius = diagonal.length();
-    double distance = 1.5 * radius / qTan(myPerspectiveFovY * M_PI / 180.0);
 
-    QVector3D eye = myTarget - direction() * distance;
+    double distance = 1.5 * radius / qTan(myPerspectiveFovY * M_PI / 180.0);
+    if(distance < 0.0001 || !(distance == distance)) // return if incorrect value, i.e < epsilon or nan
+        return;
 
     setZNear(qMax(0.01, distance - radius * 100));
     setZFar(distance + radius * 100);
 
-    if(distance < 0.0001 || !(distance == distance)) // return if incorrect value, i.e < epsilon or nan
-		return;
+    if(!(myTarget == myTarget))
+        myTarget = QVector3D(0.0f, 0.0f, 0.0f);
+
+    QVector3D direction = Camera::direction();
+    QVector3D up = Camera::up();
+    if(!(direction == direction) || !(up == up))
+    {
+        direction = QVector3D(0.0f, 0.0f, -1.0f);
+        up = QVector3D(0.0f, 1.0f, 0.0f);
+    }
+
+    QVector3D eye = myTarget - direction * distance;
 
     myView.setToIdentity();
-    myView.lookAt(eye, myTarget, up());
+    myView.lookAt(eye, myTarget, up);
     myModel = myView.inverted();
 
     myViewDirty = false;

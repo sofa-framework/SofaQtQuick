@@ -116,6 +116,16 @@ Item {
         Component.onCompleted: showFiles = true
         onCountChanged: update();
 
+        property var sceneConnections: Connections {
+            target: SofaApplication.sofaScene
+            onReadyChanged: if(SofaApplication.sofaScene.ready) folderListModel.refresh();
+        }
+
+        function refresh() {
+            showFiles = false;
+            showFiles = true;
+        }
+
         function update() {
             listModel.clear();
 

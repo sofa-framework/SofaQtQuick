@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 
@@ -55,6 +56,38 @@ SofaSceneInterface {
                                 SofaApplication.sofaScene.sofaPythonInteractor.call('imageViewerScript', 'useM0')
                             else
                                 SofaApplication.sofaScene.sofaPythonInteractor.call('imageViewerScript', 'useM1')
+                        }
+                    }
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    text: "Open ImagePlane"
+                    onClicked: windowComponent.createObject(SofaApplication);
+
+                    Component {
+                        id: windowComponent
+
+                        Window {
+                            id: window
+                            width: 400
+                            height: 600
+                            modality: Qt.NonModal
+                            flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                            visible: true
+                            color: "lightgrey"
+
+                            Component.onCompleted: {
+                                width = Math.max(width, Math.max(dataItem.implicitWidth, dataItem.width));
+                                height = Math.min(height, Math.max(dataItem.implicitHeight, dataItem.height));
+                            }
+
+                            SofaDataItem {
+                                id: dataItem
+                                anchors.fill: parent
+
+                                sofaData: SofaApplication.sofaScene ? SofaApplication.sofaScene.data("@/viewer.plane") : null;
+                            }
                         }
                     }
                 }

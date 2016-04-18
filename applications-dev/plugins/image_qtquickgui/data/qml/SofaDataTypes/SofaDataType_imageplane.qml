@@ -22,30 +22,56 @@ import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.2
 import SofaBasics 1.0
+import SofaImage 1.0
 import SofaApplication 1.0
 import SofaData 1.0
 import ImagePlaneModel 1.0
-import ImagePlaneView 1.0
 
-GridLayout {
+ColumnLayout {
     id: root
-    columns: 2
 
     property var dataObject: null
+    property var sofaComponent: null
 
     property var controller: null
     onDataObjectChanged: {
         if(dataObject) {
-            var sofaComponent = dataObject.sofaData.sofaComponent();
-            var sofaScene = sofaComponent.sofaScene();
-            controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
+            sofaComponent = dataObject.sofaData.sofaComponent();
+            if(sofaComponent) {
+                var sofaScene = sofaComponent.sofaScene();
+                if(sofaScene)
+                    controller = sofaScene.retrievePythonScriptController(sofaComponent, "ImagePlaneController", "SofaImage.Tools");
+            }
         }
+
+        refreshAll();
     }
 
-    property bool allPlanesLoaded: (Loader.Ready === planeX.status) && (Loader.Ready === planeY.status) && (Loader.Ready === planeZ.status)
-    onAllPlanesLoadedChanged: if(allPlanesLoaded) requestRefresh();
+    Connections {
+        target: root.dataObject
+        onUpdated: root.refreshAll();
+    }
 
-    signal requestRefresh()
+    readonly property alias planeXY: container.planeXY
+    readonly property alias planeZY: container.planeZY
+    readonly property alias planeXZ: container.planeXZ
+    readonly property alias infoTextArea: container.infoTextArea
+
+    Component.onCompleted: refreshAll();
+
+    function refreshAll() {
+        if(planeXY)
+            planeXY.refresh();
+
+        if(planeZY)
+            planeZY.refresh();
+
+        if(planeXZ)
+            planeXZ.refresh();
+
+        if(infoTextArea)
+            infoTextArea.refresh();
+    }
 
     ImagePlaneModel {
         id: model
@@ -53,421 +79,339 @@ GridLayout {
         sofaData: root.dataObject.sofaData
     }
 
-    Loader {
-        id: planeX
+// main
+
+    GroupBox {
         Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 0
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
-    }
-
-    Loader {
-        id: planeY
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 1
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
-    }
-
-    ColumnLayout {
-        id: info
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        TextArea {
-            id: infoTextArea
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            readOnly: true
-
-            Connections {
-                target: root
-                onRequestRefresh: {
-                    var points = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
-                    var text = "";
-
-                    for(var stringId in points) {
-                        if(!points.hasOwnProperty(stringId))
-                            continue;
-
-                        var point = points[stringId];
-                        var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                        var imagePosition = model.toImagePoint(worldPosition);
-
-                        text += "P" + stringId + ": (" + Math.round(imagePosition.x).toFixed(0) + ", " + Math.round(imagePosition.y).toFixed(0) + ", " + Math.round(imagePosition.z).toFixed(0) + ") -> (" + worldPosition.x.toFixed(3) + ", " + worldPosition.y.toFixed(3) + ", " + worldPosition.z.toFixed(3) + ")\n";
-                    }
-
-                    if(0 === text.length)
-                        infoTextArea.text = "Shift + Left click to add / remove points, put a ImagePlaneController in the same context than the sofa component that is owning this data to control how points are added / removed";
-                    else
-                        infoTextArea.text = text;
-                }
-            }
-        }
-
-        Button {
-            Layout.fillWidth: true
-            text: "Clear points"
-            onClicked: {
-                sofaScene.sofaPythonInteractor.call(root.controller, "clearPoints");
-                root.requestRefresh();
-            }
-        }
-    }
-
-    Loader {
-        id: planeZ
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        sourceComponent: sliceComponent
-        property int sliceAxis: 2
-        readonly property int sliceIndex: item ? item.sliceIndex : 0
-        property bool showSubWindow: true
-    }
-
-    Component {
-        id: sliceComponent
 
         ColumnLayout {
-            readonly property int sliceIndex: imagePlaneView.index
+            anchors.fill: parent
+            anchors.topMargin: 2
+            anchors.bottomMargin: anchors.topMargin
+            spacing: 5
 
-            Rectangle {
-                id: rectangle
+            RowLayout {
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.preferredWidth: imagePlaneView.implicitWidth
-                Layout.preferredHeight: imagePlaneView.implicitHeight
+                Layout.alignment: Qt.AlignHCenter
 
-                color: "black"
-                border.color: "darkgrey"
-                border.width: 1
+                CheckBox {
+                    id: xyCheckBox
+                    text: "XY"
 
-                Flickable {
-                    id: flickable
-                    anchors.fill: parent
-                    anchors.margins: parent.border.width
-                    clip: true
+                    Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
 
-                    contentWidth: flickableContent.width * flickableContent.scale
-                    contentHeight: flickableContent.height * flickableContent.scale
-                    boundsBehavior: Flickable.StopAtBounds
+                    readonly property int axis: 2
+                    property int previousIndex: -1
+                    onCheckedChanged: {
+                        if(!checked) {
+                            previousIndex = model.currentIndex(axis);
+                            model.setCurrentIndex(axis, -1);
+                        } else {
+                            var currentIndex = model.currentIndex(axis);
+                            if(-1 !== currentIndex)
+                                previousIndex = currentIndex;
 
-                    Item {
-                        id: flickableContent
-                        width: Math.max(flickable.width / scale, imagePlaneView.implicitWidth)
-                        height: Math.max(flickable.height / scale, imagePlaneView.implicitHeight)
-                        transformOrigin: Item.TopLeft
+                            if(-1 === previousIndex)
+                                previousIndex = model.length(axis) / 2;
 
-                        scale: minScale
-                        property real minScale: Math.min(flickable.width / imagePlaneView.implicitWidth, flickable.height / imagePlaneView.implicitHeight);
-                        property real maxScale: minScale * Math.max(imagePlaneView.implicitWidth, imagePlaneView.implicitHeight);
-
-                        ImagePlaneView {
-                            id: imagePlaneView
-                            anchors.centerIn: parent
-
-                            imagePlaneModel: model
-                            index: slider.value
-                            axis: sliceAxis
-
-                            Component.onCompleted: update();
-
-                            Connections {
-                                target: sofaScene
-                                onStepEnd: imagePlaneView.update()
-                            }
-
-                            Item {
-                                id: pointCanvas
-                                anchors.fill: parent
-
-                                property var points: Object()
-
-                                Connections {
-                                    target: root
-                                    onRequestRefresh: pointCanvas.updatePoints();
-                                }
-
-                                property alias index: imagePlaneView.index
-                                property alias axis: imagePlaneView.axis
-                                onIndexChanged: updatePoints();
-                                onAxisChanged: updatePoints();
-
-                                function addPoint(x, y) {
-                                    if(!root.controller)
-                                        return;
-
-                                    var sofaComponent = dataObject.sofaData.sofaComponent();
-                                    var sofaScene = sofaComponent.sofaScene();
-
-                                    var worldPosition = model.toWorldPoint(axis, index, Qt.point(x, y));
-                                    var id = sofaScene.sofaPythonInteractor.call(root.controller, "addPoint", worldPosition.x, worldPosition.y, worldPosition.z);
-
-                                    root.requestRefresh();
-
-                                    return id;
-                                }
-
-                                function removePoint(id) {
-                                    var removed = false;
-
-                                    if(!root.controller)
-                                        return removed;
-
-                                    var sofaComponent = dataObject.sofaData.sofaComponent();
-                                    var sofaScene = sofaComponent.sofaScene();
-                                    removed = sofaScene.sofaPythonInteractor.call(root.controller, "removePoint", id);
-
-                                    root.requestRefresh();
-
-                                    return removed;
-                                }
-
-                                function removePointAt(x, y, brushSize) {
-                                    var removed = false;
-
-                                    if(!root.controller)
-                                        return removed;
-
-                                    if(undefined === brushSize)
-                                        brushSize = Screen.devicePixelRatio * 5.0 / flickableContent.scale;
-
-                                    var brushRadius = brushSize * 0.5;
-
-                                    var sofaComponent = dataObject.sofaData.sofaComponent();
-                                    var sofaScene = sofaComponent.sofaScene();
-
-                                    for(var stringId in points) {
-                                        if(!points.hasOwnProperty(stringId))
-                                            continue;
-
-                                        var id = parseInt(stringId);
-
-                                        var point = points[stringId];
-                                        var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                                        var screenPosition = model.toPlanePoint(imagePlaneView.axis, worldPosition)
-
-                                        var distance = Qt.vector2d(x - screenPosition.x, y - screenPosition.y).length();
-                                        if(distance < brushRadius)
-                                            if(sofaScene.sofaPythonInteractor.call(root.controller, "removePoint", id))
-                                                removed = true;
-                                    }
-
-                                    root.requestRefresh();
-
-                                    return removed;
-                                }
-
-                                function updatePoints() {
-                                    var sofaComponent = dataObject.sofaData.sofaComponent();
-                                    var sofaScene = sofaComponent.sofaScene();
-                                    var updatedPoints = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
-
-                                    // mark old points for deletion
-                                    var pointsToRemove = Object();
-                                    for(var stringId in points) {
-                                        if(!points.hasOwnProperty(stringId))
-                                            continue;
-
-                                        pointsToRemove[stringId] = points[stringId];
-                                    }
-
-                                    // add / update points
-                                    for(var stringId in updatedPoints) {
-                                        if(!updatedPoints.hasOwnProperty(stringId))
-                                            continue;
-
-                                        var id = parseInt(stringId);
-                                        var point = updatedPoints[stringId];
-
-                                        var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                                        if(!imagePlaneView.containsPoint(worldPosition))
-                                            continue;
-
-                                        if(!points.hasOwnProperty(id)) { // add new points
-                                            points[id] = point;
-                                            pointComponent.createObject(pointCanvas, {'pointId': id});
-                                        }
-                                        else { // keep old point still presents
-                                            points[id] = point;
-                                            delete pointsToRemove[stringId];
-                                        }
-                                    }
-
-                                    // clear old points that has been removed from the model
-                                    for(var stringId in pointsToRemove) {
-                                        if(!pointsToRemove.hasOwnProperty(stringId))
-                                            continue;
-
-                                        var id = parseInt(stringId);
-
-                                        for(var i = 0; i < children.length; ++i) {
-                                            if(id === children[i].pointId) {
-                                                children[i].pointId = -1;
-                                                break;
-                                            }
-                                        }
-
-                                        delete points[id];
-                                    }
-
-                                    pointsChanged();
-                                }
-
-                                Component {
-                                    id: pointComponent
-
-                                    Item {
-                                        id: item
-
-                                        property int pointId: -1
-
-                                        onPointIdChanged: update();
-
-                                        function update() {
-                                            if(-1 === pointId)
-                                            {
-                                                destroy();
-                                                return;
-                                            }
-
-                                            var point = pointCanvas.points[pointId];
-
-                                            var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
-                                            var screenPosition = model.toPlanePoint(imagePlaneView.axis, worldPosition)
-
-                                            x = screenPosition.x;
-                                            y = screenPosition.y;
-
-                                            var color = "red";
-                                            if(undefined !== point.color)
-                                                color = Qt.rgba(point.color[0], point.color[1], point.color[2], 1.0);
-
-                                            dot.color = color;
-                                        }
-
-                                        Rectangle {
-                                            id: dot
-                                            anchors.centerIn: parent
-                                            width: 5
-                                            height: width
-                                            radius: width * 0.5
-                                            scale: 1.0 / flickableContent.scale
-                                            color: "red"
-                                        }
-                                    }
-                                }
-                            }
+                            model.setCurrentIndex(axis, previousIndex);
                         }
                     }
                 }
 
-                MouseArea {
-                    anchors.fill: flickable
-                    acceptedButtons: Qt.LeftButton
-                    propagateComposedEvents: true
+                CheckBox {
+                    id: zyCheckBox
+                    text: "ZY"
 
-                    onPressed: {
-                        if(mouse.modifiers & Qt.ShiftModifier)
-                            mouse.accepted = true;
-                        else
-                            mouse.accepted = false;
+                    Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
+
+                    readonly property int axis: 0
+                    property int previousIndex: -1
+                    onCheckedChanged: {
+                        if(!checked) {
+                            previousIndex = model.currentIndex(axis);
+                            model.setCurrentIndex(axis, -1);
+                        } else {
+                            var currentIndex = model.currentIndex(axis);
+                            if(-1 !== currentIndex)
+                                previousIndex = currentIndex;
+
+                            if(-1 === previousIndex)
+                                previousIndex = model.length(axis) / 2;
+
+                            model.setCurrentIndex(axis, previousIndex);
+                        }
                     }
+                }
 
-                    onClicked: {
-                        var position = mapToItem(pointCanvas, mouse.x, mouse.y);
-                        position = Qt.point(position.x + 0.5, position.y + 0.5);
-                        if(!pointCanvas.contains(position))
-                            return;
+                CheckBox {
+                    id: xzCheckBox
+                    text: "XZ"
 
-                        var brushSize = Screen.devicePixelRatio * 5.0 / flickableContent.scale;
-                        if(!pointCanvas.removePointAt(position.x, position.y, brushSize))
-                            pointCanvas.addPoint(position.x, position.y);
-                    }
+                    Component.onCompleted: checked = (-1 !== model.currentIndex(axis))
 
-                    onWheel: {
-                        if(0 === wheel.angleDelta.y)
-                            return;
+                    readonly property int axis: 1
+                    property int previousIndex: -1
+                    onCheckedChanged: {
+                        if(!checked) {
+                            previousIndex = model.currentIndex(axis);
+                            model.setCurrentIndex(axis, -1);
+                        } else {
+                            var currentIndex = model.currentIndex(axis);
+                            if(-1 !== currentIndex)
+                                previousIndex = currentIndex;
 
-                        var inPosition = mapToItem(imagePlaneView, wheel.x, wheel.y);
-                        var projectedPosition = Qt.point(wheel.x, wheel.y);
-                        if(!imagePlaneView.contains(inPosition)) {
-                            inPosition.x = Math.max(0.0, Math.min(inPosition.x, imagePlaneView.width - 0.0001));
-                            inPosition.y = Math.max(0.0, Math.min(inPosition.y, imagePlaneView.height - 0.0001));
-                            projectedPosition = mapFromItem(imagePlaneView, inPosition.x, inPosition.y);
+                            if(-1 === previousIndex)
+                                previousIndex = model.length(axis) / 2;
+
+                            model.setCurrentIndex(axis, previousIndex);
                         }
-
-                        var zoomSpeed = 1.0;
-
-                        var boundary = 2.0;
-                        var zoom = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
-                        if(zoom < 0.0) {
-                            zoom = 1.0 + 0.5 * zoom;
-                            zoom /= zoomSpeed;
-                        }
-                        else {
-                            zoom = 1.0 + zoom;
-                            zoom *= zoomSpeed;
-                        }
-
-                        flickableContent.scale = Math.max(flickableContent.minScale, Math.min(flickableContent.scale * zoom, flickableContent.maxScale));
-
-                        var outPosition = mapFromItem(imagePlaneView, inPosition.x, inPosition.y);
-
-                        flickable.contentX += (outPosition.x - projectedPosition.x);
-                        flickable.contentY += (outPosition.y - projectedPosition.y);
-
-                        //flickable.returnToBounds();
                     }
                 }
             }
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 0
+                Layout.alignment: Qt.AlignHCenter
 
-                Button {
-                    Layout.preferredWidth: Layout.preferredHeight
-                    Layout.preferredHeight: 18
-                    Layout.alignment: Qt.AlignCenter
-                    iconSource: "qrc:/icon/subWindow.png"
-                    visible: showSubWindow
-
-                    onClicked: windowComponent.createObject(SofaApplication, {"sliceComponent": sliceComponent, "sliceAxis": sliceAxis});
+                CheckBox {
+                    id: modelsCheckBox
+                    text: "Models"
+                    checked: true
                 }
 
-                Slider {
-                    id: slider
-                    Layout.fillWidth: true
+                CheckBox {
+                    id: infoCheckBox
+                    text: "Info"
+                    checked: false
+                }
+            }
 
-                    minimumValue: 0
-                    maximumValue: imagePlaneView.length > 0 ? imagePlaneView.length - 1 : 0
-                    stepSize: 1
-                    tickmarksEnabled: true
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+    }
 
-                    value: model.currentIndex(imagePlaneView.axis);
-                    onValueChanged: model.setCurrentIndex(imagePlaneView.axis, value);
+    Item {
+        id: container
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        property var planeXY: null
+        property var planeZY: null
+        property var planeXZ: null
+        property var infoTextArea: null
+
+        implicitHeight: layout ? layout.implicitHeight: 0
+        property var layout: null
+
+        property int planeNumber: root.sofaComponent ? (xyCheckBox.checked ? 1 : 0) + (zyCheckBox.checked ? 1 : 0) + (xzCheckBox.checked ? 1 : 0) : 0
+        property int viewNumber: planeNumber + (infoCheckBox.checked ? 1 : 0)
+        onViewNumberChanged: refresh();
+
+        Component.onCompleted: refresh();
+
+        function refresh() {
+            if(layout)
+                layout.destroy();
+
+            layout = gridLayoutComponent.createObject(container, {'anchors.fill': container});
+
+            var maxImplicitWidth = 0.0;
+            var maxImplicitHeight = 0.0;
+
+            if(xyCheckBox.checked) {
+                planeXY = planeXYComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true})
+                maxImplicitWidth = Math.max(maxImplicitWidth, planeXY.implicitWidth);
+                maxImplicitHeight = Math.max(maxImplicitHeight, planeXY.implicitHeight);
+            }
+
+            if(zyCheckBox.checked) {
+                planeZY = planeZYComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true})
+                maxImplicitWidth = Math.max(maxImplicitWidth, planeZY.implicitWidth);
+                maxImplicitHeight = Math.max(maxImplicitHeight, planeZY.implicitHeight);
+            }
+
+            if(xzCheckBox.checked) {
+                planeXZ = planeXZComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true, 'Layout.columnSpan': 1 + (3 === planeNumber && !infoCheckBox.checked)})
+                maxImplicitWidth = Math.max(maxImplicitWidth, planeXZ.implicitWidth);
+                maxImplicitHeight = Math.max(maxImplicitHeight, planeXZ.implicitHeight);
+            }
+
+            if(infoCheckBox.checked)
+                infoTextArea = infoComponent.createObject(layout, {'Layout.fillWidth': true, 'Layout.fillHeight': true, 'Layout.columnSpan': 1 + (planeNumber + 1) % 2})
+
+            if(planeXY) {
+                planeXY.implicitWidth = maxImplicitWidth;
+                planeXY.implicitHeight = maxImplicitHeight;
+            }
+
+            if(planeZY) {
+                planeZY.implicitWidth = maxImplicitWidth;
+                planeZY.implicitHeight = maxImplicitHeight;
+            }
+
+            if(planeXZ) {
+                planeXZ.implicitWidth = maxImplicitWidth;
+                planeXZ.implicitHeight = maxImplicitHeight;
+            }
+
+            if(infoTextArea) {
+                infoTextArea.implicitWidth = maxImplicitWidth;
+                infoTextArea.implicitHeight = maxImplicitHeight;
+            }
+        }
+    }
+
+// component
+
+    Component {
+        id: gridLayoutComponent
+
+        GridLayout {
+            columns: 2
+            columnSpacing: 0
+            rowSpacing: 0
+        }
+    }
+
+    Component {
+        id: planeXYComponent
+
+        SofaImagePlaneItem {
+            id: imagePlaneItem
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 2
+            showModels: modelsCheckBox.checked
+
+            property bool showSubWindow: true
+
+            onRequestRefresh: {
+                if(root.planeZY)
+                    root.planeZY.refresh();
+
+                if(root.planeXZ)
+                    root.planeXZ.refresh();
+
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
+            }
+        }
+    }
+
+    Component {
+        id: planeZYComponent
+
+        SofaImagePlaneItem {
+            id: imagePlaneItem
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 0
+            showModels: modelsCheckBox.checked
+
+            property bool showSubWindow: true
+
+            onRequestRefresh: {
+                if(root.planeXY)
+                    root.planeXY.refresh();
+
+                if(root.planeXZ)
+                    root.planeXZ.refresh();
+
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
+            }
+        }
+    }
+
+    Component {
+        id: planeXZComponent
+
+        SofaImagePlaneItem {
+            id: imagePlaneItem
+            sofaComponent: root.sofaComponent
+            controller: root.controller
+            imagePlaneModel: model
+            planeAxis: 1
+            showModels: modelsCheckBox.checked
+
+            property bool showSubWindow: true
+
+            onRequestRefresh: {
+                if(root.planeXY)
+                    root.planeXY.refresh();
+
+                if(root.planeZY)
+                    root.planeZY.refresh();
+
+                if(root.infoTextArea)
+                    root.infoTextArea.refresh();
+            }
+        }
+    }
+
+    Component {
+        id: infoComponent
+
+        ColumnLayout {
+            id: info
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            Component.onCompleted: refresh();
+
+            function refresh() {
+                var text = "";
+
+                if(root.sofaComponent && root.controller) {
+                    if(root.sofaComponent) {
+                        var sofaScene = root.sofaComponent.sofaScene();
+                        if(sofaScene) {
+                            var points = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
+                            for(var stringId in points) {
+                                if(!points.hasOwnProperty(stringId))
+                                    continue;
+
+                                var point = points[stringId];
+                                var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
+                                var imagePosition = model.toImagePoint(worldPosition);
+
+                                text += "P" + stringId + ": (" + Math.round(imagePosition.x).toFixed(0) + ", " + Math.round(imagePosition.y).toFixed(0) + ", " + Math.round(imagePosition.z).toFixed(0) + ") -> (" + worldPosition.x.toFixed(3) + ", " + worldPosition.y.toFixed(3) + ", " + worldPosition.z.toFixed(3) + ")\n";
+                            }
+                        }
+                    }
                 }
 
-                TextField {
-                    Layout.preferredWidth: lengthLabel.implicitWidth + 3
-                    text: slider.value.toString()
+                if(0 === text.length)
+                    textArea.text = "Shift + Left click to add / remove points, put a ImagePlaneController in the same context than the sofa component that is owning this data to control how points are added / removed";
+                else
+                    textArea.text = text;
+            }
 
-                    onAccepted: slider.value = Number(text)
-                }
+            TextArea {
+                id: textArea
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                readOnly: true
+            }
 
-                Label {
-                    id: lengthLabel
-                    Layout.preferredWidth: implicitWidth
-                    horizontalAlignment: Qt.AlignRight
-                    text: "/" + (imagePlaneView.length - 1).toString()
+            Button {
+                Layout.fillWidth: true
+                text: "Clear points"
+                onClicked: {
+                    if(!root.sofaComponent || !root.controller)
+                        return;
+
+                    var sofaScene = root.sofaComponent.sofaScene();
+                    if(!sofaScene)
+                        return;
+
+                    sofaScene.sofaPythonInteractor.call(root.controller, "clearPoints");
+                    root.refreshAll();
                 }
             }
         }
@@ -490,10 +434,10 @@ GridLayout {
 //                height = Math.min(height, loader.implicitHeight);
 //            }
 
-            property var sliceComponent: null
-            property alias sliceAxis: loader.sliceAxis
+            property var planeComponent: null
+            property alias planeAxis: loader.planeAxis
 
-            title: "Plane " + String.fromCharCode('X'.charCodeAt(0) + sliceAxis)
+            title: "Plane " + (0 === planeAxis ? "XY" : (1 === planeAxis ? "ZY" : (2 === planeAxis ? "XZ" : "")))
 
             ColumnLayout {
                 anchors.fill: parent
@@ -505,8 +449,8 @@ GridLayout {
 
                     onImplicitHeightChanged: window.height = Math.max(window.height, loader.implicitHeight);
 
-                    sourceComponent: window.sliceComponent
-                    property int sliceAxis: -1
+                    sourceComponent: window.planeComponent
+                    property int planeAxis: -1
                     property bool showSubWindow: false
                 }
 

@@ -183,6 +183,8 @@ public:
 
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* componentByType(const QString& typeName);
+    Q_INVOKABLE QList<sofa::qtquick::SofaComponent*> componentsByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponent* root();
 
     // There is a corresponding signal that is emitted when the object is

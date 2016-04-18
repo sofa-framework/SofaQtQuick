@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "ImageQtQuickGUI.h"
 
 #include <QApplication>
+#include <QDebug>
 
 #include "ImagePlaneView.h"
 #include "ImagePlaneModel.h"

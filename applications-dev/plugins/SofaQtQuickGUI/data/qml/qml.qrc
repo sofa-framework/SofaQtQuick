@@ -12,10 +12,12 @@
         <file>SofaBasics/SofaPythonInteractor.qml</file>
         <file>SofaBasics/FPSItem.qml</file>
         <file>SofaBasics/SofaTimeItem.qml</file>
+        <file>SofaBasics/Fit.qml</file>
         <file>SofaBasics/Camera.qml</file>
         <file>SofaBasics/UserInteractor.qml</file>
         <file>SofaBasics/ContentItem.qml</file>
         <file>SofaBasics/ExplicitSwitch.qml</file>
+        <file>SofaBasics/RangeSlider.qml</file>
         <file>SofaBasics/CollapsibleGroupBox.qml</file>
         <file>SofaBasics/Vector3DSpinBox.qml</file>
         <file>SofaBasics/DynamicSplitView.qml</file>
@@ -59,5 +61,7 @@
         <file>SofaWidgets/SofaMessageView.qml</file>
         <file>SofaWidgets/SofaInspector.qml</file>
         <file>SofaWidgets/SofaSceneViewer.qml</file>
+        <file>SofaBasics/Vector2DSpinBox.qml</file>
+        <file>SofaBasics/Vector4DSpinBox.qml</file>
     </qresource>
 </RCC>
