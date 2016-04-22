@@ -280,7 +280,7 @@ QVariant SofaPythonInteractor::onCallByController(PythonScriptController* python
     PyObject* pyCallableObject = PyObject_GetAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
     if(!pyCallableObject)
     {
-        msg_error("SofaQtQuickGUI") << "cannot call Python function without a valid function name " << pythonScriptController->getName() << "::" << funcName.toStdString();
+        msg_error("SofaQtQuickGUI") << "cannot call Python function without a valid function name (" << pythonScriptController->getName() << "::" << funcName.toStdString() << ")";
         return QVariant();
     }
 
@@ -333,7 +333,7 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
 
     if(!controller)
     {
-        msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name: " << pythonScriptControllerName.toStdString();
+        msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name (" << pythonScriptControllerName.toStdString() << ")";
         return QVariant();
     }
 

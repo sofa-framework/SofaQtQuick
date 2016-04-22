@@ -129,6 +129,11 @@ void Manipulator::setScale(const QVector3D& newScale)
     scaleChanged(newScale);
 }
 
+QQuaternion Manipulator::quaternionFromEulerAngles(const QVector3D& eulerAngles)
+{
+    return QQuaternion::fromEulerAngles(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());
+}
+
 QVector3D Manipulator::quaternionToEulerAngles(const QQuaternion& quaternion)
 {
     return quaternion.toEulerAngles();

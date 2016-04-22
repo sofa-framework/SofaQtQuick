@@ -27,5 +27,7 @@
         <file>icon/previous.png</file>
         <file>icon/next.png</file>
         <file>icon/alphaBackground.png</file>
+        <file>icon/rotation.png</file>
+        <file>icon/translation.png</file>
     </qresource>
 </RCC>
