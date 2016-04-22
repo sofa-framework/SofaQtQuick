@@ -333,7 +333,7 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
 
     if(!controller)
     {
-        msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name" << pythonScriptControllerName.toStdString();
+        msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name: " << pythonScriptControllerName.toStdString();
         return QVariant();
     }
 
