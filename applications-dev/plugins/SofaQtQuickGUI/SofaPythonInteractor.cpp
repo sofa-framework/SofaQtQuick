@@ -120,11 +120,24 @@ static PyObject* PythonBuildTupleHelper(const QVariant& parameter, bool mustBeTu
         if(QVariant::List == finalParameter.type())
 		{
             QSequentialIterable parameterIterable = finalParameter.value<QSequentialIterable>();
-			tuple = PyTuple_New(parameterIterable.size());
+            if(mustBeTuple)
+            {
+                tuple = PyTuple_New(parameterIterable.size());
 
-			int count = 0;
-			for(const QVariant& i : parameterIterable)
-				PyTuple_SetItem(tuple, count++, PythonBuildTupleHelper(i, false));
+                int count = 0;
+                for(const QVariant& i : parameterIterable)
+                    PyTuple_SetItem(tuple, count++, PythonBuildTupleHelper(i, false));
+            }
+            else
+            {
+                PyObject* list = PyList_New(parameterIterable.size());
+
+                int count = 0;
+                for(const QVariant& i : parameterIterable)
+                    PyList_SetItem(list, count++, PythonBuildTupleHelper(i, false));
+
+                tuple = list;
+            }
 		}
         else if(QVariant::Map == finalParameter.type())
         {
@@ -283,6 +296,17 @@ QVariant SofaPythonInteractor::onCallByController(PythonScriptController* python
         msg_error("SofaQtQuickGUI") << "cannot call Python function without a valid function name (" << pythonScriptController->getName() << "::" << funcName.toStdString() << ")";
         return QVariant();
     }
+
+//    // if there are paramaters, they are packed into a list and we have to unpack them first
+//    QVariant finalParameter = parameter;
+//    if(qMetaTypeId<QJSValue>() == finalParameter.userType())
+//        finalParameter = finalParameter.value<QJSValue>().toVariant();
+
+//    if(QVariant::List == finalParameter.type())
+//        finalParameter = finalParameter.value<QList<QVariant>>().first();
+
+//    qDebug() << "Type" << finalParameter.typeName();
+//    qDebug() << funcName << " = " << parameter << " ; " << finalParameter;
 
     sofa::core::objectmodel::PythonScriptFunction pythonScriptFunction(pyCallableObject, true);
     sofa::core::objectmodel::PythonScriptFunctionParameter pythonScriptParameter(PythonBuildTupleHelper(parameter, true), true);
