@@ -64,8 +64,11 @@ public:
     void setSofaScene(SofaScene* newScene);
 
 protected:
-    int	rowCount(const QModelIndex & parent = QModelIndex()) const;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    int computeModelRow(int itemIndex) const;
+    int computeItemRow(int modelIndex) const;
+    int computeItemRow(const QModelIndex& index) const;
+    int	rowCount(const QModelIndex& parent = QModelIndex()) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     QHash<int, QByteArray> roleNames() const;
 
     Q_INVOKABLE QVariant get(int row) const;

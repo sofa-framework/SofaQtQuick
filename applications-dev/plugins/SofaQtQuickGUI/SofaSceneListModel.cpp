@@ -51,21 +51,23 @@ void SofaSceneListModel::update()
     if(!myIsDirty)
         return;
 
-    dataChanged(createIndex(0, 0), createIndex(qMin(myItems.size(), myUpdatedCount) - 1, 0));
+    int count = rowCount();
 
-    int changeNum = myItems.size() - myUpdatedCount;
+    dataChanged(createIndex(0, 0), createIndex(qMin(count, myUpdatedCount) - 1, 0));
+
+    int changeNum = count - myUpdatedCount;
     if(changeNum > 0)
     {
-        beginInsertRows(QModelIndex(), myUpdatedCount, myItems.size() - 1);
+        beginInsertRows(QModelIndex(), myUpdatedCount, count - 1);
         endInsertRows();
     }
     else if(changeNum < 0)
     {
-        beginRemoveRows(QModelIndex(), myItems.size(), myUpdatedCount - 1);
+        beginRemoveRows(QModelIndex(), count, myUpdatedCount - 1);
         endRemoveRows();
     }
 
-    myUpdatedCount = myItems.size();
+    myUpdatedCount = count;
 
     myIsDirty = false;
 }
@@ -156,9 +158,68 @@ void SofaSceneListModel::setSofaScene(SofaScene* newSofaScene)
     sofaSceneChanged(newSofaScene);
 }
 
+int SofaSceneListModel::computeModelRow(int itemRow) const
+{
+    if(itemRow >= 0 && itemRow < myItems.size())
+    {
+        int currentModelRow = -1;
+
+        int currentItemRow = 0;
+        for(const Item& item : myItems)
+        {
+            if(!(item.visibility & Visibility::Hidden))
+                ++currentModelRow;
+
+            if(currentItemRow == itemRow)
+                return currentModelRow;
+
+            ++currentItemRow;
+        }
+    }
+
+    return -1;
+}
+
+int SofaSceneListModel::computeItemRow(int modelRow) const
+{
+    if(modelRow >= 0 && modelRow < rowCount())
+    {
+        int currentModelRow = -1;
+
+        int currentItemRow = 0;
+        for(const Item& item : myItems)
+        {
+            if(!(item.visibility & Visibility::Hidden))
+                ++currentModelRow;
+
+            if(currentModelRow == modelRow)
+                return currentItemRow;
+
+            ++currentItemRow;
+        }
+    }
+
+    return -1;
+}
+
+int SofaSceneListModel::computeItemRow(const QModelIndex& index) const
+{
+    if(index.isValid())
+        return computeItemRow(index.row());
+
+    return -1;
+}
+
 int SofaSceneListModel::rowCount(const QModelIndex & /*parent*/) const
 {
-    return myItems.size();
+    int count = 0;
+    for(const Item& item : myItems)
+    {
+        if(!(item.visibility & Visibility::Hidden))
+            ++count;
+    }
+
+    return count;
 }
 
 QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
@@ -166,19 +227,15 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     if(!mySofaScene || !mySofaScene->isReady())
         return QVariant("");
 
-    if(!index.isValid())
+    int row = computeItemRow(index);
+
+    if(-1 == row)
     {
         msg_error("SofaQtQuickGUI") << "Invalid index";
         return QVariant("");
     }
 
-    if(index.row() >= myItems.size())
-    {
-        msg_error("SofaQtQuickGUI") << "Index out of bound";
-        return QVariant("");
-    }
-
-    const Item& item = myItems[index.row()];
+    const Item& item = myItems[row];
     bool multiparent = item.multiparent;
     int depth = item.depth;
     int visibility = item.visibility;
@@ -234,14 +291,11 @@ QVariant SofaSceneListModel::get(int row) const
 {
     QVariantMap object;
 
-    if(-1 == row)
+    if(row < 0 || row > myItems.size())
     {
         msg_error("SofaQtQuickGUI") << "Invalid index";
         return object;
     }
-
-    if(row >= myItems.size())
-        return object;
 
     QHash<int,QByteArray> roles = roleNames();
     for(auto roleIt = roles.begin(); roleIt != roles.end(); ++roleIt)
@@ -252,14 +306,12 @@ QVariant SofaSceneListModel::get(int row) const
 
 void SofaSceneListModel::setCollapsed(int row, bool collapsed)
 {
+    row = computeItemRow(row);
     if(-1 == row)
     {
         msg_error("SofaQtQuickGUI") << "Invalid index";
         return;
     }
-
-    if(row >= myItems.size())
-        return;
 
     Item& item = myItems[row];
 
@@ -294,12 +346,16 @@ void SofaSceneListModel::setCollapsed(int row, bool collapsed)
     update();
 }
 
-SofaComponent* SofaSceneListModel::getComponentById(int row) const
+SofaComponent* SofaSceneListModel::getComponentById(int modelRow) const
 {
-    if(row < 0 || row >= myItems.size())
-        return 0;
+    int itemRow = computeItemRow(modelRow);
+    if(-1 == itemRow)
+    {
+        msg_error("SofaQtQuickGUI") << "Invalid index";
+        return nullptr;
+    }
 
-    return new SofaComponent(mySofaScene, myItems.at(row).base);
+    return new SofaComponent(mySofaScene, myItems.at(itemRow).base);
 }
 
 int SofaSceneListModel::getComponentId(SofaComponent* sofaComponent) const
@@ -311,7 +367,7 @@ int SofaSceneListModel::getComponentId(SofaComponent* sofaComponent) const
     if(base)
         for(int i = 0; i < myItems.size(); ++i)
             if(base == myItems[i].base)
-                return i;
+                return computeModelRow(i);
 
     return -1;
 }
@@ -327,7 +383,7 @@ QList<int> SofaSceneListModel::computeFilteredRows(const QString& filter) const
 
             QString name = QString::fromStdString(item.base->getName());
             if(-1 != name.indexOf(filter, 0, Qt::CaseInsensitive))
-                filteredRows.append(i);
+                filteredRows.append(computeItemRow(i));
         }
 
     return filteredRows;
