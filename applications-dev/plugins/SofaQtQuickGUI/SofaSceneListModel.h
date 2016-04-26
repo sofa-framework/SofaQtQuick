@@ -73,7 +73,6 @@ protected:
 
     Q_INVOKABLE QVariant get(int row) const;
     Q_INVOKABLE void setCollapsed(int row, bool value);
-    Q_INVOKABLE void markDirty() {myIsDirty = true;}
 
     Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentById(int row) const;
     Q_INVOKABLE int getComponentId(sofa::qtquick::SofaComponent*) const;
@@ -88,14 +87,8 @@ signals:
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
     void removeChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
-    //void moveChild(sofa::simulation::Node* previous, sofa::simulation::Node* parent, sofa::simulation::Node* child);
     void addObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object);
     void removeObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object);
-    //void moveObject(sofa::simulation::Node* previous, sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object);
-    void addSlave(sofa::core::objectmodel::BaseObject* master, sofa::core::objectmodel::BaseObject* slave);
-    void removeSlave(sofa::core::objectmodel::BaseObject* master, sofa::core::objectmodel::BaseObject* slave);
-    //void moveSlave(sofa::core::objectmodel::BaseObject* previousMaster, sofa::core::objectmodel::BaseObject* master, sofa::core::objectmodel::BaseObject* slave);
-    //void sleepChanged(sofa::simulation::Node* node);
 
 private:
     enum {
@@ -142,8 +135,6 @@ private:
 
 private:
     QList<Item>                     myItems;
-    int                             myUpdatedCount;
-	bool							myIsDirty;
     SofaScene*                      mySofaScene;
 
 };

@@ -138,20 +138,12 @@ ColumnLayout {
                 model: SofaSceneListModel {
                     id: listModel
                     sofaScene: root.sofaScene
-
-                    property bool dirty: true
                 }
 
                 Connections {
                     target: root.sofaScene
                     onStatusChanged: {
                         listView.currentIndex = -1;
-                    }
-                    onStepEnd: {
-                        if(root.sofaScene.animate)
-                            listModel.dirty = true;
-                        else if(listModel)
-                            listModel.update();
                     }
                     onReseted: {
                         if(listModel)
@@ -162,17 +154,12 @@ ColumnLayout {
                     }
                 }
 
-                Timer {
-                    running: root.sofaScene ? root.sofaScene.animate : false
-                    repeat: true
-                    interval: 200
-                    onTriggered: {
-                        if(listModel.dirty) {
-                            listModel.update()
-                            listModel.dirty = false;
-                        }
-                    }
-                }
+//                Timer {
+//                    running: root.sofaScene ? root.sofaScene.animate : false
+//                    repeat: true
+//                    interval: 200
+//                    onTriggered: listModel.update();
+//                }
 
                 focus: true
 
@@ -302,7 +289,6 @@ ColumnLayout {
                                                     listView.currentIndex = -1;
 
                                                 sofaScene.removeComponent(listModel.getComponentById(index));
-                                                listModel.update();
                                             }
                                         }
                                     }
@@ -321,7 +307,6 @@ ColumnLayout {
                                                     listView.currentIndex = -1;
 
                                                 sofaScene.removeComponent(listModel.getComponentById(index));
-                                                listModel.update();
                                             }
                                         }
                                     }

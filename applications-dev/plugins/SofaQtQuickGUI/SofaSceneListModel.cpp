@@ -34,8 +34,6 @@ using namespace sofa::simulation;
 
 SofaSceneListModel::SofaSceneListModel(QObject* parent) : QAbstractListModel(parent), MutationListener(),
     myItems(),
-    myUpdatedCount(0),
-    myIsDirty(true),
     mySofaScene(nullptr)
 {
 
@@ -48,28 +46,7 @@ SofaSceneListModel::~SofaSceneListModel()
 
 void SofaSceneListModel::update()
 {
-    if(!myIsDirty)
-        return;
-
-    int count = rowCount();
-
-    dataChanged(createIndex(0, 0), createIndex(qMin(count, myUpdatedCount) - 1, 0));
-
-    int changeNum = count - myUpdatedCount;
-    if(changeNum > 0)
-    {
-        beginInsertRows(QModelIndex(), myUpdatedCount, count - 1);
-        endInsertRows();
-    }
-    else if(changeNum < 0)
-    {
-        beginRemoveRows(QModelIndex(), count, myUpdatedCount - 1);
-        endRemoveRows();
-    }
-
-    myUpdatedCount = count;
-
-    myIsDirty = false;
+    dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0));
 }
 
 void SofaSceneListModel::handleSceneChange(SofaScene*)
@@ -78,18 +55,13 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
     if(mySofaScene)
     {
         if(mySofaScene->isReady())
-        {
             addChild(0, mySofaScene->sofaSimulation()->GetRoot().get());
-            update();
-        }
 
         connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
             clear();
 
             if(SofaScene::Ready == mySofaScene->status())
                 addChild(0, mySofaScene->sofaSimulation()->GetRoot().get());
-
-            update();
         });
     }
 }
@@ -107,10 +79,11 @@ void SofaSceneListModel::clear()
                 node->removeListener(this);
         }
 
+    beginRemoveRows(QModelIndex(), 0, myItems.size() - 1);
+
     myItems.clear();
 
-    markDirty();
-    update();
+    endRemoveRows();
 }
 
 SofaSceneListModel::Item SofaSceneListModel::buildNodeItem(SofaSceneListModel::Item* parent, BaseNode* node) const
@@ -182,7 +155,7 @@ int SofaSceneListModel::computeModelRow(int itemRow) const
 
 int SofaSceneListModel::computeItemRow(int modelRow) const
 {
-    if(modelRow >= 0 && modelRow < rowCount())
+    if(modelRow >= 0)
     {
         int currentModelRow = -1;
 
@@ -304,16 +277,18 @@ QVariant SofaSceneListModel::get(int row) const
     return object;
 }
 
-void SofaSceneListModel::setCollapsed(int row, bool collapsed)
+void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
 {
-    row = computeItemRow(row);
-    if(-1 == row)
+    int itemRow = computeItemRow(modelRow);
+    if(-1 == itemRow)
     {
         msg_error("SofaQtQuickGUI") << "Invalid index";
         return;
     }
 
-    Item& item = myItems[row];
+    int oldCount = rowCount();
+
+    Item& item = myItems[itemRow];
 
     BaseContext* baseContext = item.node->getContext();
     if(!baseContext->isActive())
@@ -342,8 +317,20 @@ void SofaSceneListModel::setCollapsed(int row, bool collapsed)
                 children.append(child->children[i]);
     }
 
-    markDirty();
-    update();
+    int newCount = rowCount();
+
+    dataChanged(createIndex(modelRow, 0), createIndex(qMin(oldCount, newCount) - 1, 0));
+
+    if(newCount > oldCount)
+    {
+        beginInsertRows(QModelIndex(), oldCount, newCount - 1);
+        endInsertRows();
+    }
+    else if(newCount < oldCount)
+    {
+        beginRemoveRows(QModelIndex(), newCount, oldCount - 1);
+        endRemoveRows();
+    }
 }
 
 SofaComponent* SofaSceneListModel::getComponentById(int modelRow) const
@@ -414,7 +401,11 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
 
     if(!parent)
     {
+        beginInsertRows(QModelIndex(), 0, 0);
+
         myItems.append(buildNodeItem(0, child));
+
+        endInsertRows();
     }
     else
     {
@@ -444,10 +435,20 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
                 if(alreadyAdded)
                     break;
 
+                int count = itemIt - myItems.begin();
+
                 QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildNodeItem(parentItem, child));
                 parentItem->children.append(&*childItemIt);
 
                 parentItemIt = childItemIt;
+
+                bool hidden = childItemIt->visibility & Visibility::Hidden;
+                if(!hidden)
+                {
+                    beginInsertRows(QModelIndex(), count, count);
+                    endInsertRows();
+                }
+
                 break;
             }
             else
@@ -456,8 +457,6 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
     }
 
     MutationListener::addChild(parent, child);
-
-    markDirty();
 }
 
 void SofaSceneListModel::removeChild(Node* parent, Node* child)
@@ -486,7 +485,17 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
                         parentItem->children.remove(index);
                 }
 
+                int count = itemIt - myItems.begin();
+                bool hidden = itemIt->visibility & Visibility::Hidden;
+
                 itemIt = myItems.erase(itemIt);
+
+                if(!hidden)
+                {
+                    beginRemoveRows(QModelIndex(), count, count);
+                    endRemoveRows();
+                }
+
                 break;
             }
             else
@@ -497,8 +506,6 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
             ++itemIt;
         }
     }
-
-    markDirty();
 }
 
 //void SceneListModel::moveChild(Node* previous, Node* parent, Node* child)
@@ -535,17 +542,24 @@ void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
                     if(parentItem != itemIt->parent || !itemIt->object)
                         break;
 
+                int count = itemIt - myItems.begin();
+
                 QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildObjectItem(parentItem, object));
                 parentItem->children.append(&*childItemIt);
                 parentItemIt = childItemIt;
+
+                bool hidden = childItemIt->visibility & Visibility::Hidden;
+                if(!hidden)
+                {
+                    beginInsertRows(QModelIndex(), count, count);
+                    endInsertRows();
+                }
 
                 break;
             }
             else
                 ++parentItemIt;
         }
-
-        markDirty();
     }
 
     MutationListener::addObject(parent, object);
@@ -577,7 +591,17 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
                         parentItem->children.remove(index);
                 }
 
+                int count = itemIt - myItems.begin();
+                bool hidden = itemIt->visibility & Visibility::Hidden;
+
                 itemIt = myItems.erase(itemIt);
+
+                if(!hidden)
+                {
+                    beginRemoveRows(QModelIndex(), count, count);
+                    endRemoveRows();
+                }
+
                 break;
             }
             else
@@ -588,27 +612,6 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
             ++itemIt;
         }
     }
-
-	markDirty();
-}
-
-//void SceneListModel::moveObject(Node* previous, Node* parent, BaseObject* object)
-//{
-//	markDirty();
-//}
-
-void SofaSceneListModel::addSlave(BaseObject* master, BaseObject* slave)
-{
-    MutationListener::addSlave(master, slave);
-
-	markDirty();
-}
-
-void SofaSceneListModel::removeSlave(BaseObject* master, BaseObject* slave)
-{
-    MutationListener::removeSlave(master, slave);
-
-	markDirty();
 }
 
 }
