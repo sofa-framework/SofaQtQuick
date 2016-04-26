@@ -80,6 +80,7 @@ public:
     Q_PROPERTY(int antialiasingSamples READ antialiasingSamples WRITE setAntialiasingSamples NOTIFY antialiasingSamplesChanged)
     Q_PROPERTY(bool mirroredHorizontally READ mirroredHorizontally WRITE setMirroredHorizontally NOTIFY mirroredHorizontallyChanged)
     Q_PROPERTY(bool mirroredVertically READ mirroredVertically WRITE setMirroredVertically NOTIFY mirroredVerticallyChanged)
+    Q_PROPERTY(bool drawFrame READ drawFrame WRITE setDrawFrame NOTIFY drawFrameChanged)
     Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
 
 public:
@@ -109,6 +110,9 @@ public:
 
     bool mirroredVertically() const        {return myMirroredVertically;}
     void setMirroredVertically(bool newMirroredVertically);
+
+    bool drawFrame() const {return myDrawFrame;}
+    void setDrawFrame(bool newDrawFrame);
 
     bool drawManipulators() const {return myDrawManipulators;}
     void setDrawManipulators(bool newDrawManipulators);
@@ -153,6 +157,7 @@ signals:
     void antialiasingSamplesChanged(int newAntialiasingSamples);
     void mirroredHorizontallyChanged(bool newMirroredHorizontally);
     void mirroredVerticallyChanged(bool newMirroredVertically);
+    void drawFrameChanged(bool newDrawFrame);
     void drawManipulatorsChanged(bool newDrawManipulators);
 
     void preDraw() const;
@@ -164,6 +169,7 @@ public slots:
 protected:
     QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);
 	void internalRender(int width, int height) const;
+    void renderFrame() const;
 
 private:
     QRect nativeRect() const;
@@ -201,6 +207,7 @@ private:
     int                         myAntialiasingSamples;
     bool                        myMirroredHorizontally;
     bool                        myMirroredVertically;
+    bool                        myDrawFrame;
     bool                        myDrawManipulators;
 
 };

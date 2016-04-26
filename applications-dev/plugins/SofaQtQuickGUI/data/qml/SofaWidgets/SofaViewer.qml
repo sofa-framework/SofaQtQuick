@@ -603,6 +603,26 @@ SofaViewer {
                                         }
                                     }
                                 }
+
+    // background
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: "Frame"
+                                }
+
+                                Switch {
+                                    id: frameSwitch
+                                    Layout.alignment: Qt.AlignCenter
+                                    Component.onCompleted: checked = root.drawFrame
+
+                                    onCheckedChanged: root.drawFrame = checked;
+
+                                    ToolTip {
+                                        anchors.fill: parent
+                                        description: "Enable / Disable Scene Frame"
+                                    }
+                                }
                             }
                         }
 

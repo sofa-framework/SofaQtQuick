@@ -73,6 +73,7 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myAntialiasingSamples(2),
     myMirroredHorizontally(false),
     myMirroredVertically(false),
+    myDrawFrame(false),
     myDrawManipulators(true)
 {
     setFlag(QQuickItem::ItemHasContents);
@@ -202,6 +203,16 @@ void SofaViewer::setMirroredVertically(bool newMirroredVertically)
     myMirroredVertically = newMirroredVertically;
 
     mirroredVerticallyChanged(newMirroredVertically);
+}
+
+void SofaViewer::setDrawFrame(bool newDrawFrame)
+{
+    if(newDrawFrame == myDrawFrame)
+        return;
+
+    myDrawFrame = newDrawFrame;
+
+    drawFrameChanged(newDrawFrame);
 }
 
 void SofaViewer::setDrawManipulators(bool newDrawManipulators)
@@ -727,6 +738,10 @@ void SofaViewer::internalRender(int width, int height) const
 			_vparams->setModelViewMatrix(_mvmatrix);
 		}
 
+        // draw the scene frame
+        if(myDrawFrame)
+            renderFrame();
+
 		// draw the SofaScene
 		{
 			preDraw();
@@ -740,6 +755,22 @@ void SofaViewer::internalRender(int width, int height) const
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
 	}
+}
+
+void SofaViewer::renderFrame() const
+{
+    sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+    if(!_vparams)
+        return;
+
+    float size = 1.0f;
+    if(mySofaScene)
+        size = mySofaScene->radius() * 0.1;
+
+    if(0.0f == size)
+        size = 1.0f;
+
+    _vparams->drawTool()->drawFrame(sofa::defaulttype::Vector3(), sofa::defaulttype::Quaternion(), sofa::defaulttype::Vector3(size, size, size));
 }
 
 SofaViewer::SofaRenderer::SofaRenderer(SofaViewer* viewer) : QQuickFramebufferObject::Renderer(),

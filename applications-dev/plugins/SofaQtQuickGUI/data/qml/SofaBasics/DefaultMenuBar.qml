@@ -130,7 +130,7 @@ MenuBar {
                     var openRecentItem = recentMenu.addItem(title);
                     openRecentItem.action = openRecentAction;
 
-                    if(10 === recentMenu.items.length)
+                    if(50 === recentMenu.items.length)
                         break;
                 }
 
