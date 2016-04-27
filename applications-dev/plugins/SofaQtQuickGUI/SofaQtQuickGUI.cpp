@@ -79,6 +79,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     //Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
 
     qRegisterMetaType<SofaScene::Status>("Status");
+    qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
     qmlRegisterType<SofaApplication>                                ("Tools"                                , versionMajor, versionMinor, "Tools");

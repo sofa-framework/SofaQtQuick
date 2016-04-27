@@ -193,32 +193,36 @@ ColumnLayout {
                             anchors.fill: parent
                             spacing: 0
 
-                            Item {
-                                Layout.preferredHeight: scrollView.rowHeight
-                                Layout.preferredWidth: Layout.preferredHeight
+                            Image {
+                                Layout.preferredWidth: 16
+                                Layout.preferredHeight: Layout.preferredWidth
+                                visible: collapsible
 
-                                Image {
+                                source: SofaSceneListModel.Collapsed & visibility ? "qrc:/icon/rightArrow.png" : "qrc:/icon/downArrow.png"
+
+                                MouseArea {
                                     anchors.fill: parent
-                                    visible: collapsible
-                                    source: (SofaSceneListModel.Disabled & visibility) ? "qrc:/icon/disabled.png" : (!(SofaSceneListModel.Collapsed & visibility) ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png")
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        enabled: collapsible && !(SofaSceneListModel.Disabled & visibility)
-                                        onClicked: listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
-                                    }
+                                    enabled: collapsible
+                                    onClicked: listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
                                 }
                             }
 
                             RowLayout {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: scrollView.rowHeight
-                                spacing: 4
+                                spacing: 2
 
                                 RowLayout {
                                     Layout.fillHeight: true
                                     spacing: 0
 
+                                    Image {
+                                        visible: isNode && (SofaSceneListModel.Disabled & visibility)
+                                        Layout.preferredWidth: scrollView.rowHeight
+                                        Layout.preferredHeight: Layout.preferredWidth
+
+                                        source: "qrc:/icon/disabled.png"
+                                    }
                                     Rectangle {
                                         id: colorIcon
 
@@ -271,11 +275,7 @@ ColumnLayout {
                                             text: {
                                                 nodeMenu.nodeActivated ? "Desactivate node" : "Activate node"
                                             }
-                                            onTriggered: {
-                                                nodeMenu.nodeActivated ? nodeMenu.sofaData.setValue(false) : nodeMenu.sofaData.setValue(true);
-                                                nodeMenu.nodeActivated = nodeMenu.sofaData.value();
-                                                listView.model.setCollapsed(index, visibility); // update the collapse property
-                                            }
+                                            onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
                                         }
 
                                         MenuSeparator {}

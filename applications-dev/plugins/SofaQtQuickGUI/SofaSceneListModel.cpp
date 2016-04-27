@@ -93,10 +93,20 @@ SofaSceneListModel::Item SofaSceneListModel::buildNodeItem(SofaSceneListModel::I
     item.parent = parent;
     item.multiparent = node->getNbParents() > 1;
     item.depth = parent ? parent->depth + 1 : 0;
-    item.visibility = !parent ? Visible : (((Hidden | Collapsed) & parent->visibility) ? Hidden : Visible);
     item.base = node;
     item.object = 0;
     item.node = node;
+
+    BaseContext* baseContext = item.node->getContext();
+    item.visibility = Visible;
+    if(parent)
+    {
+        if(parent->visibility & (Collapsed | Hidden))
+            item.visibility |= Hidden;
+
+        if(parent->visibility & (Disabled) || !baseContext->isActive())
+            item.visibility |= Disabled;
+    }
 
     return item;
 }
@@ -108,10 +118,19 @@ SofaSceneListModel::Item SofaSceneListModel::buildObjectItem(SofaSceneListModel:
     item.parent = parent;
     item.multiparent = false;
     item.depth = parent ? parent->depth + 1 : 0;
-    item.visibility = !parent ? Visible : (((Hidden | Collapsed) & parent->visibility) ? Hidden : Visible);
     item.base = object;
     item.object = object;
     item.node = parent->node;
+
+    item.visibility = Visible;
+    if(parent)
+    {
+        if(parent->visibility & (Collapsed | Hidden))
+            item.visibility |= Hidden;
+
+        if(parent->visibility & Disabled)
+            item.visibility |= Disabled;
+    }
 
     return item;
 }
@@ -214,7 +233,6 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     int visibility = item.visibility;
     Base* base = item.base;
     BaseObject* object = item.object;
-    BaseContext* baseContext = item.node->getContext();
 
     if(0 == base)
     {
@@ -231,7 +249,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     case DepthRole:
         return QVariant::fromValue(depth);
     case VisibilityRole:
-        return Visible == visibility && !baseContext->isActive() ? QVariant::fromValue((int) Collapsed | Disabled) : QVariant::fromValue(visibility);
+        return QVariant::fromValue(visibility);
     case TypeRole:
         return QVariant::fromValue(QString::fromStdString(base->getClass()->className));
     case IsNodeRole:
@@ -277,7 +295,7 @@ QVariant SofaSceneListModel::get(int row) const
     return object;
 }
 
-void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
+void SofaSceneListModel::setDisabled(int modelRow, bool disabled)
 {
     int itemRow = computeItemRow(modelRow);
     if(-1 == itemRow)
@@ -291,14 +309,65 @@ void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
     Item& item = myItems[itemRow];
 
     BaseContext* baseContext = item.node->getContext();
-    if(!baseContext->isActive())
+    if(disabled)
     {
-        collapsed = true;
+        baseContext->setActive(false);
+        item.visibility |= Visibility::Disabled;
     }
     else
     {
-        item.visibility = collapsed;
+        baseContext->setActive(true);
+        item.visibility &= ~Visibility::Disabled;
     }
+
+    QStack<Item*> children;
+    for(int i = 0; i < item.children.size(); ++i)
+        children.append(item.children[i]);
+
+    while(!children.isEmpty())
+    {
+        Item* child = children.pop();
+        if(disabled)
+            child->visibility |= Disabled;
+        else
+            child->visibility &= ~Disabled;
+    }
+
+    int newCount = rowCount();
+
+    // TODO: can be optimized
+
+    dataChanged(createIndex(modelRow, 0), createIndex(qMin(oldCount, newCount) - 1, 0));
+
+    if(newCount > oldCount)
+    {
+        beginInsertRows(QModelIndex(), oldCount, newCount - 1);
+        endInsertRows();
+    }
+    else if(newCount < oldCount)
+    {
+        beginRemoveRows(QModelIndex(), newCount, oldCount - 1);
+        endRemoveRows();
+    }
+}
+
+void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
+{
+    int itemRow = computeItemRow(modelRow);
+    if(-1 == itemRow)
+    {
+        msg_error("SofaQtQuickGUI") << "Invalid index";
+        return;
+    }
+
+    int oldCount = rowCount();
+
+    Item& item = myItems[itemRow];
+
+    if(collapsed)
+        item.visibility |= Visibility::Collapsed;
+    else
+        item.visibility &= ~Visibility::Collapsed;
 
     QStack<Item*> children;
     for(int i = 0; i < item.children.size(); ++i)
@@ -310,7 +379,7 @@ void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
         if(collapsed)
             child->visibility |= Hidden;
         else
-            child->visibility ^= Hidden;
+            child->visibility &= ~Hidden;
 
         if(!(Collapsed & child->visibility))
             for(int i = 0; i < child->children.size(); ++i)
@@ -318,6 +387,8 @@ void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
     }
 
     int newCount = rowCount();
+
+    // TODO: can be optimized
 
     dataChanged(createIndex(modelRow, 0), createIndex(qMin(oldCount, newCount) - 1, 0));
 

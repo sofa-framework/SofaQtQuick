@@ -72,7 +72,9 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
     Q_INVOKABLE QVariant get(int row) const;
-    Q_INVOKABLE void setCollapsed(int row, bool value);
+
+    Q_INVOKABLE void setDisabled(int modelRow, bool disabled);
+    Q_INVOKABLE void setCollapsed(int modelRow, bool value);
 
     Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentById(int row) const;
     Q_INVOKABLE int getComponentId(sofa::qtquick::SofaComponent*) const;
