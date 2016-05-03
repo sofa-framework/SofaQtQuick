@@ -264,6 +264,11 @@ Item {
 
                                     onPointIdChanged: update();
 
+                                    Connections {
+                                        target: pointCanvas
+                                        onPointsChanged: item.update();
+                                    }
+
                                     function update() {
                                         if(-1 === pointId)
                                         {
