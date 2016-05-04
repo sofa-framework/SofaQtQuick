@@ -95,18 +95,22 @@ Item {
 
                 Item {
                     id: flickableContent
-                    width: Math.max(flickable.width / scale, imagePlaneView.implicitWidth)
-                    height: Math.max(flickable.height / scale, imagePlaneView.implicitHeight)
+                    width: Math.max(flickable.width / scale, imagePlaneView.rotatedImplicitWidth)
+                    height: Math.max(flickable.height / scale, imagePlaneView.rotatedImplicitHeight)
                     transformOrigin: Item.TopLeft
 
-                    scale: minScale
-                    property real minScale: Math.min(flickable.width / imagePlaneView.implicitWidth, flickable.height / imagePlaneView.implicitHeight);
-                    property real maxScale: minScale * Math.max(imagePlaneView.implicitWidth, imagePlaneView.implicitHeight);
+                    Component.onCompleted: scale = minScale;
+
+                    property real minScale: Math.min(flickable.width / imagePlaneView.rotatedImplicitWidth, flickable.height / imagePlaneView.rotatedImplicitHeight);
+                    property real maxScale: minScale * Math.max(imagePlaneView.rotatedImplicitWidth, imagePlaneView.rotatedImplicitHeight);
 
                     ImagePlaneView {
                         id: imagePlaneView
                         anchors.centerIn: parent
                         smooth: false
+
+                        readonly property real rotatedImplicitWidth: Math.abs(implicitWidth * Math.cos(rotation * Math.PI / 180.0) - implicitHeight * Math.sin(rotation * Math.PI / 180.0))
+                        readonly property real rotatedImplicitHeight: Math.abs(implicitWidth * Math.sin(rotation * Math.PI / 180.0) + implicitHeight * Math.cos(rotation * Math.PI / 180.0))
 
                         imagePlaneModel: root.imagePlaneModel
                         index: slider.value
@@ -370,6 +374,13 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: 0
+
+            IconButton {
+                Layout.preferredWidth: Layout.preferredHeight
+                Layout.preferredHeight: implicitHeight + 10
+                iconSource: "qrc:/icon/rotateClockwise.png"
+                onClicked: imagePlaneView.rotation += 90.0;
+            }
 
             Slider {
                 id: slider

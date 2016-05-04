@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>icon/open.png</file>
         <file>icon/hand.png</file>
+        <file>icon/rotateClockwise.png</file>
         <file>icon/trCorner.png</file>
         <file>icon/blCorner.png</file>
         <file>icon/plus.png</file>
