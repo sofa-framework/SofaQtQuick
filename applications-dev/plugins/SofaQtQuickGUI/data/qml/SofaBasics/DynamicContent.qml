@@ -113,7 +113,13 @@ Item {
         sortField: FolderListModel.Name
         folder: root.sourceDir
 
-        Component.onCompleted: showFiles = true
+        property var delayedUpdateTimer: Timer {
+            interval: 1
+            repeat: false
+            running: true
+            onTriggered: folderListModel.showFiles = true;
+        }
+
         onCountChanged: update();
 
         property var sceneConnections: Connections {
@@ -321,6 +327,8 @@ Item {
                                         width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
                                         height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
                                     }
+
+                                    onClosing: destroy();
 
                                     property url source
 
