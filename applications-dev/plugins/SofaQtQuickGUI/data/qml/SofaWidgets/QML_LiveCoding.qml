@@ -92,6 +92,7 @@ Rectangle {
             if(item)
                 item.destroy();
 
+            consoleTextArea.text = "";
             try {
                 item = Qt.createQmlObject(script, container, "livecoding");
             }
