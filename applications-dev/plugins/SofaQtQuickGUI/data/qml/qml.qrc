@@ -25,6 +25,7 @@
         <file>SofaBasics/SofaDataItem.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaWidgets/qmldir</file>
+        <file>SofaWidgets/QML_LiveCoding.qml</file>
         <file>SofaWidgets/SofaViewer.qml</file>
         <file>SofaWidgets/ImageViewer.qml</file>
         <file>SofaWidgets/SofaDataView.qml</file>

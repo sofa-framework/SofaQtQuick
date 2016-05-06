@@ -255,6 +255,8 @@ ColumnLayout {
                                     height = Math.min(height, loader.implicitHeight);
                                 }
 
+                                onClosing: destroy();
+
                                 title: sofaComponent ? ("Data of component: " + sofaComponent.name()) : "No component to visualize"
 
                                 property var sofaScene: root.sofaScene

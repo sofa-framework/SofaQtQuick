@@ -379,6 +379,7 @@ Item {
                 Layout.preferredWidth: Layout.preferredHeight
                 Layout.preferredHeight: implicitHeight + 10
                 iconSource: "qrc:/icon/rotateClockwise.png"
+
                 onClicked: imagePlaneView.rotation += 90.0;
             }
 

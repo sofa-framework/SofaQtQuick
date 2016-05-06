@@ -110,6 +110,7 @@ set(QML_FILES
     data/qml/SofaManipulators/Manipulator3D_Translation.qml
     data/qml/SofaManipulators/Manipulator3D_Rotation.qml
     data/qml/SofaWidgets/qmldir
+    data/qml/SofaWidgets/QML_LiveCoding.qml
     data/qml/SofaWidgets/SofaViewer.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
