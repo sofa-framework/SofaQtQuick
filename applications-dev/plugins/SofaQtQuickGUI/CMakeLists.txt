@@ -78,6 +78,7 @@ set(QML_FILES
     data/qml/SofaBasics/qmldir
     data/qml/SofaBasics/IconButton.qml
     data/qml/SofaBasics/ToolTip.qml
+    data/qml/SofaBasics/BubbleToolTip.qml
     data/qml/SofaBasics/DefaultStatusBar.qml
     data/qml/SofaBasics/DefaultToolBar.qml
     data/qml/SofaBasics/DefaultMenuBar.qml

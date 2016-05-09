@@ -32,6 +32,7 @@ Button {
     Image {
         anchors.fill: parent
         source: root.iconSource
+        fillMode: Image.PreserveAspectFit
 
         Rectangle {
             anchors.fill: parent

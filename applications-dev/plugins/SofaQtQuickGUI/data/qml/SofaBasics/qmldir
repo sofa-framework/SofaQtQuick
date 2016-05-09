@@ -7,6 +7,7 @@ ContentItem 1.0 ContentItem.qml
 ExplicitSwitch 1.0 ExplicitSwitch.qml
 RangeSlider 1.0 RangeSlider.qml
 ToolTip 1.0 ToolTip.qml
+BubbleToolTip 1.0 BubbleToolTip.qml
 SofaDataItem 1.0 SofaDataItem.qml
 DefaultMenuBar 1.0 DefaultMenuBar.qml
 DefaultToolBar 1.0 DefaultToolBar.qml

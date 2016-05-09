@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>icon/open.png</file>
+        <file>icon/leave.png</file>
         <file>icon/hand.png</file>
         <file>icon/rotateClockwise.png</file>
         <file>icon/trCorner.png</file>

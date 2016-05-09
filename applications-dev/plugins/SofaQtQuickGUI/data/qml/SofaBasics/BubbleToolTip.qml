@@ -23,7 +23,6 @@ import SofaApplication 1.0
 
 MouseArea {
     id: root
-    anchors.fill: parent
     hoverEnabled:true
 
     property string title: ""

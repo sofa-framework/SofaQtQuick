@@ -487,16 +487,16 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     }
 
 // apply the app settings or use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
+
     SofaApplication::ApplySettings();
 
 // launch the main script
 
     applicationEngine.addImportPath("qrc:/");
-    applicationEngine.addImportPath("qrc:/SofaImage/");
     applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
     applicationEngine.load(QUrl(mainScript));
 
-    // apply command line arguments
+// apply command line arguments
 
     QList<QObject*> objects = applicationEngine.rootObjects();
     foreach(QObject* object, objects)
