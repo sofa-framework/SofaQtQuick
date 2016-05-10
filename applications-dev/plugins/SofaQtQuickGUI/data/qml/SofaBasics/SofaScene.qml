@@ -130,6 +130,8 @@ SofaScene {
         if(manipulator.manipulators && 0 !== manipulator.manipulators.length)
             for(var i = 0; i < manipulator.manipulators.length; ++i)
                 addManipulator(manipulator.manipulators[i]);
+
+        return manipulator;
     }
 
     function removeManipulator(manipulator) {

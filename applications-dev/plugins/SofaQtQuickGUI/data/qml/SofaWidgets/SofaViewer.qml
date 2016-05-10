@@ -127,7 +127,8 @@ SofaViewer {
         if(!camera) {
             camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
 
-            viewAll();
+            if(!keepCamera)
+                viewAll();
         }
     }
 
