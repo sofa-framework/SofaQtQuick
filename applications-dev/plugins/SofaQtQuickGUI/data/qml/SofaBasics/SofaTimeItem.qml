@@ -36,7 +36,7 @@ Label {
         triggeredOnStart: true
         onTriggered: sceneTimeString = format(sofaScene.dataValue("@.time"));
 
-        property string sceneTimeString: format(value);
+        property string sceneTimeString: format(0.0);
 
         readonly property alias sofaScene: root.sofaScene
         onSofaSceneChanged: sceneTimeString = format(0.0);

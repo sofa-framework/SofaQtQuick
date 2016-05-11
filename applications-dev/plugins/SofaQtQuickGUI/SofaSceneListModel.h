@@ -64,8 +64,8 @@ public:
     void setSofaScene(SofaScene* newScene);
 
 protected:
-    int computeModelRow(int itemIndex) const;
-    int computeItemRow(int modelIndex) const;
+    Q_INVOKABLE int computeModelRow(int itemIndex) const;
+    Q_INVOKABLE int computeItemRow(int modelIndex) const;
     int computeItemRow(const QModelIndex& index) const;
     int	rowCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;

@@ -223,7 +223,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
 
     if(-1 == row)
     {
-        msg_error("SofaQtQuickGUI") << "Invalid index";
+        msg_error("SofaQtQuickGUI") << "Invalid index " << row;
         return QVariant("");
     }
 
@@ -284,7 +284,7 @@ QVariant SofaSceneListModel::get(int row) const
 
     if(row < 0 || row > myItems.size())
     {
-        msg_error("SofaQtQuickGUI") << "Invalid index";
+        msg_error("SofaQtQuickGUI") << "Invalid index " << row;
         return object;
     }
 
@@ -300,7 +300,7 @@ void SofaSceneListModel::setDisabled(int modelRow, bool disabled)
     int itemRow = computeItemRow(modelRow);
     if(-1 == itemRow)
     {
-        msg_error("SofaQtQuickGUI") << "Invalid index";
+        msg_error("SofaQtQuickGUI") << "Invalid index " << itemRow;
         return;
     }
 
@@ -356,7 +356,7 @@ void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
     int itemRow = computeItemRow(modelRow);
     if(-1 == itemRow)
     {
-        msg_error("SofaQtQuickGUI") << "Invalid index";
+        msg_error("SofaQtQuickGUI") << "Invalid index " << itemRow;
         return;
     }
 
@@ -409,7 +409,7 @@ SofaComponent* SofaSceneListModel::getComponentById(int modelRow) const
     int itemRow = computeItemRow(modelRow);
     if(-1 == itemRow)
     {
-        msg_error("SofaQtQuickGUI") << "Invalid index";
+        msg_error("SofaQtQuickGUI") << "Invalid index " << itemRow;
         return nullptr;
     }
 
@@ -441,7 +441,7 @@ QList<int> SofaSceneListModel::computeFilteredRows(const QString& filter) const
 
             QString name = QString::fromStdString(item.base->getName());
             if(-1 != name.indexOf(filter, 0, Qt::CaseInsensitive))
-                filteredRows.append(computeItemRow(i));
+                filteredRows.append(computeModelRow(i));
         }
 
     return filteredRows;
