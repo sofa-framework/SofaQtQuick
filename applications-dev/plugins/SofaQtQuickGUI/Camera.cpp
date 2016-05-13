@@ -55,7 +55,7 @@ Camera::~Camera()
 
 const QMatrix4x4& Camera::projection() const
 {
-	if(myProjectionDirty) // update projection if needed
+    if(myProjectionDirty) // update projection if needed
 	{
 		myProjection.setToIdentity();
         if(myOrthographic)

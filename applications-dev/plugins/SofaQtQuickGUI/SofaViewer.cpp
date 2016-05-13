@@ -236,7 +236,7 @@ double SofaViewer::computeDepth(const QVector3D& wsPosition) const
 QVector3D SofaViewer::mapFromWorld(const QVector3D& wsPoint) const
 {
 	if(!myCamera)
-		return QVector3D();
+        return QVector3D();
 
     QVector4D nsPosition = (myCamera->projection() * myCamera->view() * QVector4D(wsPoint, 1.0));
 	nsPosition /= nsPosition.w();
