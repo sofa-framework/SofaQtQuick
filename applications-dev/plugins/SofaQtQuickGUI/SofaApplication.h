@@ -65,6 +65,8 @@ public:
     Q_INVOKABLE QString binaryDirectory() const;
     Q_INVOKABLE void saveScreenshot(const QString& path);
 
+    Q_INVOKABLE QObject* instanciateURL(const QUrl& url);
+
     Q_INVOKABLE QPointF mapItemToScene(QQuickItem* item, const QPointF& point) const;
     Q_INVOKABLE bool isAncestorItem(QQuickItem* item, QQuickItem* ancestorItem) const;
     Q_INVOKABLE QQuickWindow* itemWindow(QQuickItem* item) const;

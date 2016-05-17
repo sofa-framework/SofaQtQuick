@@ -1500,7 +1500,16 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
     {
         sofa::core::objectmodel::Base* base = sofaComponent->base();
         if(base)
-            nodes.append(down_cast<Node>(base->toBaseNode()));
+        {
+            Node* node = down_cast<Node>(base->toBaseNode());
+            if(!node->visualLoop)
+            {
+                msg_warning("SofaQtQuickGUI")  << "SofaViewer: The node \"" << node->getPathName() << "\" has been selected for visualization but will be skipped because it contains no VisualManagerLoop";
+                continue;
+            }
+
+            nodes.append(node);
+        }
     }
 
     if(nodes.isEmpty())

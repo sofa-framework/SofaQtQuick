@@ -99,6 +99,7 @@ public slots:
     void move(double x, double y, double z);
     void turn(double angleAroundX, double angleAroundY, double angleAroundZ);
     void zoom(double factor);
+    void zoomWithBounds(double factor, double min, double max);
 
     void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
     void fit(QVector3D min, QVector3D max);

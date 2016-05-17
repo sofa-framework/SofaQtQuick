@@ -201,6 +201,11 @@ void Camera::turn(double angleAroundX, double angleAroundY, double angleAroundZ)
 
 void Camera::zoom(double factor)
 {
+    return zoomWithBounds(factor, myZNear, myZFar * 0.5);
+}
+
+void Camera::zoomWithBounds(double factor, double min, double max)
+{
     if(factor <= 0.0)
         return;
 
@@ -209,9 +214,11 @@ void Camera::zoom(double factor)
     factor = 1.0 / factor;
     translationVector *= (1.0 - factor);
 
-    // limit zoom to znear
-    if((eye() + translationVector - target()).length() <= myZNear)
-        translationVector = (target() - eye()) + (eye() - target()).normalized() * (myZNear + std::numeric_limits<float>::epsilon());
+    // clamp to bounds
+    if((eye() + translationVector - target()).length() < min) // limit zoom-in to znear
+        translationVector = (target() - eye()) + (eye() - target()).normalized() * (min + std::numeric_limits<float>::epsilon());
+    else if((eye() + translationVector - target()).length() > max) // limit zoom-out to zfar / 2
+        translationVector = (target() - eye()) + (eye() - target()).normalized() * (max - std::numeric_limits<float>::epsilon());
 
     QMatrix4x4 translation;
     translation.translate(translationVector);

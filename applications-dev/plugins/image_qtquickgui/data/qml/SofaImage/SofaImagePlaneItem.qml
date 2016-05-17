@@ -104,6 +104,13 @@ Item {
                     property real minScale: Math.min(flickable.width / imagePlaneView.rotatedImplicitWidth, flickable.height / imagePlaneView.rotatedImplicitHeight);
                     property real maxScale: minScale * Math.max(imagePlaneView.rotatedImplicitWidth, imagePlaneView.rotatedImplicitHeight);
 
+                    onMinScaleChanged: clampScale();
+                    onMaxScaleChanged: clampScale();
+
+                    function clampScale() {
+                        scale = Math.max(minScale, Math.min(scale, maxScale));
+                    }
+
                     ImagePlaneView {
                         id: imagePlaneView
                         anchors.centerIn: parent

@@ -116,7 +116,23 @@ void SofaApplication::saveScreenshot(const QString& path)
     }
 
     if(!saved)
-        msg_error("SofaQtQuickGUI") << "Screenshot could not be saved to" << path.toStdString();
+        msg_error("SofaQtQuickGUI") << "Screenshot could not be saved to " << path.toStdString();
+}
+
+QObject* SofaApplication::instanciateURL(const QUrl& url)
+{
+    QQmlEngine* engine = qmlEngine(this);
+
+    QQmlComponent component(engine, url, this);
+    if(component.isReady())
+    {
+        QObject* object = component.create(qmlContext(this));
+        return object;
+    }
+
+    msg_error("SofaQtQuickGUI") << "Component could not be instanciated, reason: " << component.errorString().toStdString();
+
+    return nullptr;
 }
 
 int SofaApplication::overrideCursorShape() const
