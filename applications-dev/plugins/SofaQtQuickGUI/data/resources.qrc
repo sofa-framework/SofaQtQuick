@@ -31,5 +31,7 @@
         <file>icon/alphaBackground.png</file>
         <file>icon/rotation.png</file>
         <file>icon/translation.png</file>
+        <file>icon/translate.png</file>
+        <file>icon/rotate.png</file>
     </qresource>
 </RCC>

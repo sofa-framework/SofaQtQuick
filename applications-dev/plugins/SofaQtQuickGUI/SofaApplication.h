@@ -24,6 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QPointF>
+#include <QQuaternion>
 
 class QApplication;
 class QQmlApplicationEngine;
@@ -72,6 +73,15 @@ public:
     Q_INVOKABLE QQuickWindow* itemWindow(QQuickItem* item) const;
     Q_INVOKABLE void trimComponentCache(QObject* object = 0);
     Q_INVOKABLE void clearSettingGroup(const QString& group);
+
+    Q_INVOKABLE QQuaternion quaternionFromEulerAngles(const QVector3D& eulerAngles) const;
+    Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion) const;
+    Q_INVOKABLE QVariantList quaternionToAxisAngle(const QQuaternion& quaternion) const; // return [QVector3D axis, float angle];
+    Q_INVOKABLE QQuaternion quaternionFromAxisAngle(const QVector3D& axis, float angle) const;
+    Q_INVOKABLE QQuaternion quaternionDifference(const QQuaternion& q0, const QQuaternion& q1) const;
+    Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1) const;
+    Q_INVOKABLE QQuaternion quaternionConjugate(const QQuaternion& q) const;
+    Q_INVOKABLE QVector3D quaternionMap(const QQuaternion& q, const QVector3D& v) const;
 
 public:
     static void SetOpenGLDebugContext();    // must be call before the window has been shown

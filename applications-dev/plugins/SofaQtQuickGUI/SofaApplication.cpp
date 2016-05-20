@@ -202,6 +202,51 @@ void SofaApplication::clearSettingGroup(const QString& group)
     settings.endGroup();
 }
 
+QQuaternion SofaApplication::quaternionFromEulerAngles(const QVector3D& eulerAngles) const
+{
+    return QQuaternion::fromEulerAngles(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());
+}
+
+QVector3D SofaApplication::quaternionToEulerAngles(const QQuaternion& quaternion) const
+{
+    return quaternion.toEulerAngles();
+}
+
+QVariantList SofaApplication::quaternionToAxisAngle(const QQuaternion& quaternion) const // return [QVector3D axis, float angle];
+{
+    QVector3D axis;
+    float angle = 0.0f;
+
+    quaternion.getAxisAndAngle(&axis, &angle);
+
+    return QVariantList() << QVariant::fromValue(axis) << QVariant::fromValue(angle);
+}
+
+QQuaternion SofaApplication::quaternionFromAxisAngle(const QVector3D& axis, float angle) const
+{
+    return QQuaternion::fromAxisAndAngle(axis, angle);
+}
+
+QQuaternion SofaApplication::quaternionDifference(const QQuaternion& q0, const QQuaternion& q1) const
+{
+    return q1 * q0.inverted();
+}
+
+QQuaternion SofaApplication::quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1) const
+{
+    return q0 * q1;
+}
+
+QQuaternion SofaApplication::quaternionConjugate(const QQuaternion& q) const
+{
+    return q.conjugated();
+}
+
+QVector3D SofaApplication::quaternionMap(const QQuaternion& q, const QVector3D& v) const
+{
+    return q.rotatedVector(v);
+}
+
 void SofaApplication::SetOpenGLDebugContext()
 {
     QSurfaceFormat format;

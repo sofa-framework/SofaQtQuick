@@ -129,6 +129,34 @@ void Manipulator::setScale(const QVector3D& newScale)
     scaleChanged(newScale);
 }
 
+QVector3D Manipulator::right() const
+{
+    return myOrientation.rotatedVector(QVector3D(1.0f, 0.0f, 0.0f));
+}
+
+QVector3D Manipulator::up() const
+{
+    return myOrientation.rotatedVector(QVector3D(0.0f, 1.0f, 0.0f));
+}
+
+QVector3D Manipulator::dir() const
+{
+    return myOrientation.rotatedVector(QVector3D(0.0f, 0.0f, 1.0f));
+}
+
+QVector3D Manipulator::applyModelToPoint(const QVector3D& point) const
+{
+    QMatrix4x4 model(myOrientation.toRotationMatrix());
+    model.setColumn(3, QVector4D(myPosition, 1.0f));
+
+    return model.map(point);
+}
+
+QVector3D Manipulator::applyModelToVector(const QVector3D& vector) const
+{
+    return QMatrix4x4(myOrientation.toRotationMatrix()).mapVector(vector);
+}
+
 QQuaternion Manipulator::quaternionFromEulerAngles(const QVector3D& eulerAngles)
 {
     return QQuaternion::fromEulerAngles(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());

@@ -77,13 +77,22 @@ public:
     const QVector3D& scale() const {return myScale;}
     void setScale(const QVector3D& newScale);
 
+    Q_INVOKABLE QVector3D right() const;
+    Q_INVOKABLE QVector3D up() const;
+    Q_INVOKABLE QVector3D dir() const;
+
+    Q_INVOKABLE QVector3D applyModelToPoint(const QVector3D& point) const;
+    Q_INVOKABLE QVector3D applyModelToVector(const QVector3D& vector) const;
+
 public:
+    // DEPRECATED: use the SofaApplication singleton, it contains these functions
     Q_INVOKABLE QQuaternion quaternionFromEulerAngles(const QVector3D& eulerAngles);
     Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion);
     Q_INVOKABLE QVariantList quaternionToAxisAngle(const QQuaternion& quaternion); // return [QVector3D axis, float angle];
     Q_INVOKABLE QQuaternion quaternionFromAxisAngle(const QVector3D& axis, float angle);
     Q_INVOKABLE QQuaternion quaternionDifference(const QQuaternion& q0, const QQuaternion& q1);
     Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1);
+    //
 
 public slots:
     virtual void draw(const SofaViewer& viewer) const;
