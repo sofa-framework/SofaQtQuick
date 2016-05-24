@@ -74,7 +74,8 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myMirroredHorizontally(false),
     myMirroredVertically(false),
     myDrawFrame(false),
-    myDrawManipulators(true)
+    myDrawManipulators(true),
+    myDrawSelected(true)
 {
     setFlag(QQuickItem::ItemHasContents);
 
@@ -116,8 +117,7 @@ void SofaViewer::setCamera(Camera* newCamera)
 
 static void appendRoot(QQmlListProperty<SofaComponent> *property, SofaComponent *value)
 {
-    if(value)
-        static_cast<QList<SofaComponent*>*>(property->data)->append(new SofaComponent(*value));
+    static_cast<QList<SofaComponent*>*>(property->data)->append(value ? new SofaComponent(*value) : nullptr);
 }
 
 static SofaComponent* atRoot(QQmlListProperty<SofaComponent> *property, int index)
@@ -223,6 +223,16 @@ void SofaViewer::setDrawManipulators(bool newDrawManipulators)
     myDrawManipulators = newDrawManipulators;
 
     drawManipulatorsChanged(newDrawManipulators);
+}
+
+void SofaViewer::setDrawSelected(bool newDrawSelected)
+{
+    if(newDrawSelected == myDrawSelected)
+        return;
+
+    myDrawSelected = newDrawSelected;
+
+    drawSelectedChanged(newDrawSelected);
 }
 
 double SofaViewer::computeDepth(const QVector3D& wsPosition) const

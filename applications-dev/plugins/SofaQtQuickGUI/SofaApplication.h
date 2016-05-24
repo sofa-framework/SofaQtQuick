@@ -81,7 +81,8 @@ public:
     Q_INVOKABLE QQuaternion quaternionDifference(const QQuaternion& q0, const QQuaternion& q1) const;
     Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1) const;
     Q_INVOKABLE QQuaternion quaternionConjugate(const QQuaternion& q) const;
-    Q_INVOKABLE QVector3D quaternionMap(const QQuaternion& q, const QVector3D& v) const;
+    Q_INVOKABLE QVector3D quaternionRotate(const QQuaternion& q, const QVector3D& v) const;
+    Q_INVOKABLE QVariantList quaternionSwingTwistDecomposition(const QQuaternion& q, const QVector3D& direction);
 
 public:
     static void SetOpenGLDebugContext();    // must be call before the window has been shown

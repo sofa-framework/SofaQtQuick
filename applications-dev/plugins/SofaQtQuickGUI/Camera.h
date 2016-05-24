@@ -77,6 +77,8 @@ public:
     Q_INVOKABLE QVector3D up() const				{return  model().column(1).toVector3D().normalized();}
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
+    Q_INVOKABLE QQuaternion orientation() const;
+
     Q_INVOKABLE double aspectRatio() const          {return myAspectRatio;}
 
     /// @return depth in normalized device coordinate (ndc) space

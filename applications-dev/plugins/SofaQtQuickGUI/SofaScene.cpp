@@ -1497,22 +1497,23 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
     for(SofaComponent* sofaComponent : roots)
-    {
-        sofa::core::objectmodel::Base* base = sofaComponent->base();
-        if(base)
+        if(sofaComponent)
         {
-            Node* node = down_cast<Node>(base->toBaseNode());
-            if(!node->visualLoop)
+            sofa::core::objectmodel::Base* base = sofaComponent->base();
+            if(base)
             {
-                msg_warning("SofaQtQuickGUI")  << "SofaViewer: The node \"" << node->getPathName() << "\" has been selected for visualization but will be skipped because it contains no VisualManagerLoop";
-                continue;
+                Node* node = down_cast<Node>(base->toBaseNode());
+                if(!node->visualLoop)
+                {
+                    msg_warning("SofaQtQuickGUI")  << "SofaViewer: The node \"" << node->getPathName() << "\" has been selected for visualization but will be skipped because it contains no VisualManagerLoop";
+                    continue;
+                }
+
+                nodes.append(node);
             }
-
-            nodes.append(node);
         }
-    }
 
-    if(nodes.isEmpty())
+    if(nodes.isEmpty() && roots.isEmpty())
         nodes.append(mySofaSimulation->GetRoot().get());
 
     // prepare the sofa visual params
@@ -1548,45 +1549,26 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
     }
 
     // highlight selected components using a specific shader
-    Base* selectedBase = nullptr;
-    if(mySelectedComponent)
-        selectedBase = mySelectedComponent->base();
-
-    if(selectedBase)
+    if(viewer.drawSelected())
     {
-        glDepthFunc(GL_LEQUAL);
+        Base* selectedBase = nullptr;
+        if(mySelectedComponent)
+            selectedBase = mySelectedComponent->base();
 
-        glEnable(GL_POLYGON_OFFSET_LINE);
-        glPolygonOffset(-0.2f, 0.0f);
-
-        myHighlightShaderProgram->bind();
+        if(selectedBase)
         {
-            VisualModel* visualModel = selectedBase->toVisualModel();
-            if(visualModel)
+            glDepthFunc(GL_LEQUAL);
+
+            glEnable(GL_POLYGON_OFFSET_LINE);
+            glPolygonOffset(-0.2f, 0.0f);
+
+            myHighlightShaderProgram->bind();
             {
-                VisualStyle* visualStyle = nullptr;
-                visualModel->getContext()->get(visualStyle);
-
-                if(visualStyle)
-                    visualStyle->fwdDraw(visualParams);
-
-                sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
-                visualParams->displayFlags().setShowWireFrame(true);
-
-                visualModel->drawVisual(visualParams);
-
-                visualParams->displayFlags().setShowWireFrame(state);
-
-                if(visualStyle)
-                    visualStyle->bwdDraw(visualParams);
-            }
-            else
-            {
-                TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(selectedBase);
-                if(triangleModel)
+                VisualModel* visualModel = selectedBase->toVisualModel();
+                if(visualModel)
                 {
                     VisualStyle* visualStyle = nullptr;
-                    triangleModel->getContext()->get(visualStyle);
+                    visualModel->getContext()->get(visualStyle);
 
                     if(visualStyle)
                         visualStyle->fwdDraw(visualParams);
@@ -1594,20 +1576,42 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
                     sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
                     visualParams->displayFlags().setShowWireFrame(true);
 
-                    triangleModel->draw(visualParams);
+                    visualModel->drawVisual(visualParams);
 
                     visualParams->displayFlags().setShowWireFrame(state);
 
                     if(visualStyle)
                         visualStyle->bwdDraw(visualParams);
                 }
+                else
+                {
+                    TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(selectedBase);
+                    if(triangleModel)
+                    {
+                        VisualStyle* visualStyle = nullptr;
+                        triangleModel->getContext()->get(visualStyle);
+
+                        if(visualStyle)
+                            visualStyle->fwdDraw(visualParams);
+
+                        sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
+                        visualParams->displayFlags().setShowWireFrame(true);
+
+                        triangleModel->draw(visualParams);
+
+                        visualParams->displayFlags().setShowWireFrame(state);
+
+                        if(visualStyle)
+                            visualStyle->bwdDraw(visualParams);
+                    }
+                }
             }
+            myHighlightShaderProgram->release();
+
+            glDisable(GL_POLYGON_OFFSET_LINE);
+
+            glDepthFunc(GL_LESS);
         }
-        myHighlightShaderProgram->release();
-
-        glDisable(GL_POLYGON_OFFSET_LINE);
-
-        glDepthFunc(GL_LESS);
     }
 
     glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
@@ -1637,13 +1641,14 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
     for(SofaComponent* sofaComponent : roots)
-    {
-        sofa::core::objectmodel::Base* base = sofaComponent->base();
-        if(base)
-            nodes.append(down_cast<Node>(base->toBaseNode()));
-    }
+        if(sofaComponent)
+        {
+            sofa::core::objectmodel::Base* base = sofaComponent->base();
+            if(base)
+                nodes.append(down_cast<Node>(base->toBaseNode()));
+        }
 
-    if(nodes.isEmpty())
+    if(nodes.isEmpty() && roots.isEmpty())
         nodes.append(sofaSimulation()->GetRoot().get());
 
     for(sofa::simulation::Node* root : nodes)
@@ -1706,13 +1711,14 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
     for(SofaComponent* sofaComponent : roots)
-    {
-        sofa::core::objectmodel::Base* base = sofaComponent->base();
-        if(base)
-            nodes.append(down_cast<Node>(base->toBaseNode()));
-    }
+        if(sofaComponent)
+        {
+            sofa::core::objectmodel::Base* base = sofaComponent->base();
+            if(base)
+                nodes.append(down_cast<Node>(base->toBaseNode()));
+        }
 
-    if(nodes.isEmpty())
+    if(nodes.isEmpty() && roots.isEmpty())
         nodes.append(mySofaSimulation->GetRoot().get());
 
     QSize nativeSize = viewer.nativeSize();

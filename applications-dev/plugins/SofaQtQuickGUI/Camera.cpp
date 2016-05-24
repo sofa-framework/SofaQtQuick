@@ -84,6 +84,17 @@ const QMatrix4x4& Camera::model() const
 	return myModel;
 }
 
+QQuaternion Camera::orientation() const
+{
+    QMatrix4x4 orientation;
+
+    orientation.setColumn(0, right());
+    orientation.setColumn(1, up());
+    orientation.setColumn(2, direction());
+
+    return  QQuaternion::fromRotationMatrix(orientation.normalMatrix());
+}
+
 double Camera::computeDepth(const QVector3D& wsPosition) const
 {
     QVector4D csPosition = projection() * view() * QVector4D(wsPosition, 1.0);
