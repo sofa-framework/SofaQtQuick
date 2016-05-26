@@ -358,6 +358,12 @@ void SofaScene::open()
 
     mySofaSimulation->unload(mySofaSimulation->GetRoot());
 
+    if(mySource.isEmpty())
+    {
+        setStatus(Status::Null);
+        return;
+    }
+
     QString finalFilename = mySource.path();
     if(mySource.isLocalFile())
         finalFilename = mySource.toLocalFile();

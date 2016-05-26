@@ -80,10 +80,15 @@ public:
 public:
     Q_INVOKABLE bool run(const QString& script);
 
+    /// check if a function exists
+    Q_INVOKABLE bool hasFunction(const QString& pythonScriptControllerName, const QString& funcName) const;
+
     /// call by controller name
     QVariant call(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter = QVariant());
 
 protected:
+
+    PythonScriptController* pythonScriptControllerByName(const QString& pythonScriptControllerName) const;
 
     /// @internal basic common verifications
     bool onCallBasicVerifications(const QString& funcName, const QVariant& parameter = QVariant());

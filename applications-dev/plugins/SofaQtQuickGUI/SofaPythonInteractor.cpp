@@ -38,6 +38,7 @@ namespace qtquick
 {
 
 using namespace sofa::core::objectmodel;
+using namespace sofa::component::controller;
 
 SofaPythonInteractor::SofaPythonInteractor(QObject *parent) : QObject(parent), QQmlParserStatus()
     , mySofaScene(0)
@@ -260,9 +261,34 @@ bool SofaPythonInteractor::run(const QString& script)
     return sofa::simulation::PythonEnvironment::runString(script.toStdString());
 }
 
+bool SofaPythonInteractor::hasFunction(const QString& pythonScriptControllerName, const QString& funcName) const
+{
+    PythonScriptController* pythonScriptController = pythonScriptControllerByName(pythonScriptControllerName);
+    if(!pythonScriptController || funcName.isEmpty())
+        return false;
+
+    return PyObject_HasAttrString(pythonScriptController->scriptControllerInstance(), funcName.toLatin1().constData());
+}
+
 QVariant SofaPythonInteractor::call(const QString& pythonScriptControllerName, const QString& funcName, const QVariant& parameter)
 {
     return onCall(pythonScriptControllerName, funcName, parameter);
+}
+
+PythonScriptController* SofaPythonInteractor::pythonScriptControllerByName(const QString& pythonScriptControllerName) const
+{
+    const char* path = pythonScriptControllerName.toLatin1().constData();
+    PythonScriptController* controller = nullptr;
+
+    // try to find by path (faster)
+    void* rawController = mySofaScene->sofaSimulation()->GetRoot()->getObject(classid(PythonScriptController), path);
+
+    if(rawController) // found by path
+       controller = reinterpret_cast<PythonScriptController*>(rawController);
+    else // try to find by name in the root node (slower but more generic)
+        controller = dynamic_cast<PythonScriptController*>(mySofaScene->sofaSimulation()->GetRoot()->getObject(path));
+
+    return controller;
 }
 
 bool SofaPythonInteractor::onCallBasicVerifications(const QString& funcName, const QVariant& /*parameter*/)
@@ -344,17 +370,7 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
         return QVariant();
     }
 
-    const char* path = pythonScriptControllerName.toLatin1().constData();
-    PythonScriptController* controller = nullptr;
-
-    // try to find by path (faster)
-    void* rawController = mySofaScene->sofaSimulation()->GetRoot()->getObject(classid(PythonScriptController), path);
-
-    if(rawController) // found by path
-       controller = reinterpret_cast<PythonScriptController*>(rawController);
-    else // try to find by name in the root node (slower but more generic)
-        controller = dynamic_cast<PythonScriptController*>(mySofaScene->sofaSimulation()->GetRoot()->getObject( path ));
-
+    PythonScriptController* controller = pythonScriptControllerByName(pythonScriptControllerName);
     if(!controller)
     {
         msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name (" << pythonScriptControllerName.toStdString() << ")";

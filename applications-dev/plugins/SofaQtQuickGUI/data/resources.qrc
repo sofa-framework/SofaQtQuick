@@ -33,5 +33,7 @@
         <file>icon/translation.png</file>
         <file>icon/translate.png</file>
         <file>icon/rotate.png</file>
+        <file>icon/undo.png</file>
+        <file>icon/redo.png</file>
     </qresource>
 </RCC>

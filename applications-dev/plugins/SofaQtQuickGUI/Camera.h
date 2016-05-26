@@ -166,6 +166,8 @@ inline void Camera::setZNear(double newZNear)
 
     myProjectionDirty = true;
 
+    zoom(1.0);
+
     zNearChanged(newZNear);
 }
 
@@ -185,6 +187,8 @@ inline void Camera::setZFar(double newZFar)
     myZFar = newZFar;
 
     myProjectionDirty = true;
+
+    zoom(1.0);
 
     zFarChanged(newZFar);
 }
