@@ -335,7 +335,6 @@ void SofaScene::open()
 {
 // clear the qml interface
 
-    setPath("");
     setPathQML("");
     setSourceQML(QUrl());
 
@@ -348,19 +347,23 @@ void SofaScene::open()
 
     setAnimate(false);
 
-    setStatus(Status::Loading);
-
-    aboutToUnload();
-
     setSelectedComponent(nullptr);
     setSelectedManipulator(nullptr);
     myManipulators.clear();
 
-    mySofaSimulation->unload(mySofaSimulation->GetRoot());
+    if(mySofaSimulation->GetRoot())
+    {
+        setStatus(Status::Unloading);
+
+        aboutToUnload();
+
+        mySofaSimulation->unload(mySofaSimulation->GetRoot());
+    }
 
     if(mySource.isEmpty())
     {
         setStatus(Status::Null);
+        setPath("");
         return;
     }
 
@@ -371,6 +374,7 @@ void SofaScene::open()
     if(finalFilename.isEmpty())
     {
         setStatus(Status::Error);
+        setPath("");
         return;
     }
 
@@ -378,6 +382,7 @@ void SofaScene::open()
     if(!sofa::helper::system::DataRepository.findFile(filepath))
     {
         setStatus(Status::Error);
+        setPath("");
         return;
     }
 
@@ -385,6 +390,7 @@ void SofaScene::open()
     finalFilename.replace("\\", "/");
 
     setPath(finalFilename);
+    setStatus(Status::Loading);
 
 // does scene contain PyQt ? if so, load it synchronously to avoid instantiation of a QApplication outside of the main thread
 
@@ -505,6 +511,8 @@ void SofaScene::handleStatusChange(SofaScene::Status newStatus)
         break;
     case Status::Loading:
         break;
+    case Status::Unloading:
+        break;
     case Status::Error:
         break;
     default:
@@ -537,8 +545,6 @@ void SofaScene::setSource(const QUrl& newSource)
 {
     if(newSource == mySource || Status::Loading == myStatus)
         return;
-
-    setStatus(Status::Null);
 
     mySource = newSource;
 

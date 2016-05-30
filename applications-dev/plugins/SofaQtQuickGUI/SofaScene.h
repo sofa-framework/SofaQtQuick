@@ -90,6 +90,7 @@ public:
         Null,
         Ready,
         Loading,
+        Unloading,
         Error
     };
 

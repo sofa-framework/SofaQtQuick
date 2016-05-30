@@ -43,8 +43,14 @@ SofaScene {
 
     onStatusChanged: {
         switch(status) {
+        case SofaScene.Null:
+            statusMessage = 'SofaScene released';
+            break;
         case SofaScene.Loading:
             statusMessage = 'SofaScene loading "' + root.path + '" please wait';
+            break;
+        case SofaScene.Unloading:
+            statusMessage = 'SofaScene releasing "' + root.path + '" please wait';
             break;
         case SofaScene.Error:
             statusMessage = 'SofaScene "' + root.path + '" issued an error during loading';
