@@ -23,7 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaQtQuickGUI.h"
 #include "SofaScene.h"
 
-#include <sofa/simulation/common/MutationListener.h>
+#include <sofa/simulation/MutationListener.h>
 
 #include <QAbstractListModel>
 #include <QQmlParserStatus>

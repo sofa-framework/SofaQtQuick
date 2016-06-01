@@ -26,8 +26,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Manipulator.h"
 #include "SelectableSofaParticle.h"
 
-#include <sofa/simulation/common/Simulation.h>
-#include <sofa/simulation/common/MutationListener.h>
+#include <sofa/simulation/Simulation.h>
+#include <sofa/simulation/MutationListener.h>
 
 #include <QObject>
 #include <QQmlListProperty>

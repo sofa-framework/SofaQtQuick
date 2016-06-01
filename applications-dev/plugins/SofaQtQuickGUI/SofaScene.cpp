@@ -31,9 +31,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/system/PluginManager.h>
 #include <sofa/helper/logging/Messaging.h>
 #include <sofa/helper/cast.h>
-#include <sofa/simulation/graph/graph.h>
-#include <sofa/simulation/graph/DAGSimulation.h>
-#include <sofa/simulation/graph/init.h>
+#include <SofaSimulationGraph/graph.h>
+#include <SofaSimulationGraph/DAGSimulation.h>
+#include <SofaSimulationGraph/init.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <sofa/core/visual/VisualModel.h>
@@ -49,8 +49,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaComponentAdvanced/initComponentAdvanced.h>
 #include <SofaComponentMisc/initComponentMisc.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
-#include <sofa/simulation/common/MechanicalVisitor.h>
-#include <sofa/simulation/common/DeleteVisitor.h>
+#include <sofa/simulation/MechanicalVisitor.h>
+#include <sofa/simulation/DeleteVisitor.h>
 
 #include <array>
 #include <sstream>

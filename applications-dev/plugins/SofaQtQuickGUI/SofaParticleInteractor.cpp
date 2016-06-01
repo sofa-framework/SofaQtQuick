@@ -25,9 +25,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/VisualModel.h>
 #include <sofa/core/behavior/MechanicalState.h>
-#include <sofa/simulation/common/MechanicalVisitor.h>
-#include <sofa/simulation/common/CleanupVisitor.h>
-#include <sofa/simulation/common/DeleteVisitor.h>
+#include <sofa/simulation/MechanicalVisitor.h>
+#include <sofa/simulation/CleanupVisitor.h>
+#include <sofa/simulation/DeleteVisitor.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <SofaBoundaryCondition/FixedConstraint.h>
 #include <SofaRigid/JointSpringForceField.h>

@@ -22,7 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaQtQuickGUI.h"
 
-#include <sofa/simulation/common/Simulation.h>
+#include <sofa/simulation/Simulation.h>
 #include <QVariantMap>
 
 class QTimer;

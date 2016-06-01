@@ -22,7 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaQtQuickGUI.h"
 #include "SofaData.h"
-#include <sofa/simulation/common/Simulation.h>
+#include <sofa/simulation/Simulation.h>
 
 namespace sofa
 {

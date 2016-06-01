@@ -21,7 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaScene.h"
 #include "Manipulator.h"
 
-#include <sofa/simulation/common/Node.h>
+#include <sofa/simulation/Node.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <SofaOpenglVisual/OglModel.h>

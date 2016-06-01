@@ -23,9 +23,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Manipulator.h"
 
 #include <sofa/core/visual/VisualModel.h>
-#include <sofa/simulation/common/MechanicalVisitor.h>
-#include <sofa/simulation/common/CleanupVisitor.h>
-#include <sofa/simulation/common/DeleteVisitor.h>
+#include <sofa/simulation/MechanicalVisitor.h>
+#include <sofa/simulation/CleanupVisitor.h>
+#include <sofa/simulation/DeleteVisitor.h>
 #include <SofaBoundaryCondition/FixedConstraint.h>
 #include <SofaDeformable/StiffSpringForceField.h>
 #include <SofaBaseVisual/VisualStyle.h>
