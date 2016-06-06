@@ -202,6 +202,17 @@ void SofaApplication::clearSettingGroup(const QString& group)
     settings.endGroup();
 }
 
+int SofaApplication::objectDepthFromRoot(QObject* object)
+{
+    int depth = -1;
+
+    if(object)
+        for(QObject* ancestor = object->parent(); ancestor; ancestor = ancestor->parent())
+            ++depth;
+
+    return depth;
+}
+
 QQuaternion SofaApplication::quaternionFromEulerAngles(const QVector3D& eulerAngles) const
 {
     return QQuaternion::fromEulerAngles(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());

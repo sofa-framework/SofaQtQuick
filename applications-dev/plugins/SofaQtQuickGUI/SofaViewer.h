@@ -197,7 +197,7 @@ private:
     private:
         // TODO: not safe at all when we will use multithreaded rendering, use synchronize() instead
         SofaViewer* myViewer;
-        int     myAntialiasingSamples;
+        int         myAntialiasingSamples;
 
     };
 

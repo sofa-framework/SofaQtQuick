@@ -100,6 +100,8 @@ set(QML_FILES
     data/qml/SofaBasics/Vector4DSpinBox.qml
     data/qml/SofaBasics/DynamicSplitView.qml
     data/qml/SofaBasics/DynamicContent.qml
+    data/qml/SofaBasics/MementoObject.qml
+    data/qml/SofaBasics/MementoManager.qml
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
     data/qml/SofaInteractors/UserInteractor_Selection.qml

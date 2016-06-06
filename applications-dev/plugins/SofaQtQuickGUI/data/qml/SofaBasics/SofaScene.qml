@@ -65,6 +65,7 @@ SofaScene {
 
     // convenience
     readonly property bool ready: status === SofaScene.Ready
+    readonly property bool loading: status === SofaScene.Loading
 
     // allow us to interact with the python script controller
     property var sofaPythonInteractor: SofaPythonInteractor {sofaScene: root}

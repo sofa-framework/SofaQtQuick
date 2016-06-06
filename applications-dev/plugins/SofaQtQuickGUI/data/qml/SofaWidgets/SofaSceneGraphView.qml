@@ -35,6 +35,7 @@ ColumnLayout {
     height: searchBar.implicitHeight + listView.contentHeight
 
     property var sofaScene: SofaApplication.sofaScene
+    readonly property var searchBar: searchBar
 
 // search bar
 
@@ -225,7 +226,7 @@ ColumnLayout {
                                     listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
 
                                     listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
-                                    searchBar.updateFilteredRows();
+                                    root.searchBar.updateFilteredRows();
                                 }
                             }
                         }

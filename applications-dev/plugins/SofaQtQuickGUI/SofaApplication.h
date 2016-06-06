@@ -73,6 +73,7 @@ public:
     Q_INVOKABLE QQuickWindow* itemWindow(QQuickItem* item) const;
     Q_INVOKABLE void trimComponentCache(QObject* object = 0);
     Q_INVOKABLE void clearSettingGroup(const QString& group);
+    Q_INVOKABLE int objectDepthFromRoot(QObject* object);
 
     Q_INVOKABLE QQuaternion quaternionFromEulerAngles(const QVector3D& eulerAngles) const;
     Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion) const;
