@@ -23,5 +23,6 @@ SofaSceneListModel 1.0 SofaSceneListModel.qml
 Vector2DSpinBox 1.0 Vector2DSpinBox.qml
 Vector3DSpinBox 1.0 Vector3DSpinBox.qml
 Vector4DSpinBox 1.0 Vector4DSpinBox.qml
+MementoBar 1.0 MementoBar.qml
 MementoObject 1.0 MementoObject.qml
 singleton MementoManager 1.0 MementoManager.qml
