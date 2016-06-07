@@ -557,13 +557,17 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     // compute command line arguments
     QCommandLineParser parser;
 
-    QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Start the application with this scene", "file");
-    QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start the application in animate mode");
-    QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Start the application in fullscreen mode");
+    QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Load with this scene", "file");
+    QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start in animate mode");
+    QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Fullscreen mode");
+    QCommandLineOption widthOption(QStringList() << "width", "Window width", "pixels");
+    QCommandLineOption heightOption(QStringList() << "height", "Window height", "pixels");
 
     parser.addOption(sceneOption);
     parser.addOption(animateOption);
     parser.addOption(fullscreenOption);
+    parser.addOption(widthOption);
+    parser.addOption(heightOption);
 
     parser.addVersionOption();
     parser.addHelpOption();
@@ -615,6 +619,12 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
                     sofaScene->setAnimate(true);
             }
         }
+
+        if(parser.isSet(widthOption))
+            window->setWidth(parser.value(widthOption).toInt());
+
+        if(parser.isSet(heightOption))
+            window->setHeight(parser.value(heightOption).toInt());
 
         if(parser.isSet(fullscreenOption))
             window->setVisibility(QWindow::FullScreen);
