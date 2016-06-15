@@ -77,6 +77,8 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myDrawManipulators(true),
     myDrawSelected(true)
 {
+    setMirrorVertically(true);
+
     setFlag(QQuickItem::ItemHasContents);
 
     connect(this, &SofaViewer::backgroundImageSourceChanged, this, &SofaViewer::handleBackgroundImageSourceChanged);
@@ -85,12 +87,12 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
 
 SofaViewer::~SofaViewer()
 {
-	/*sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-	if(_vparams && _vparams->drawTool())
-	{
-		delete _vparams->drawTool();
-		_vparams->drawTool() = 0;
-	}*/
+    /*sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+    if(_vparams && _vparams->drawTool())
+    {
+        delete _vparams->drawTool();
+        _vparams->drawTool() = 0;
+    }*/
 
     clearRoots();
 }
@@ -98,7 +100,7 @@ SofaViewer::~SofaViewer()
 void SofaViewer::setSofaScene(SofaScene* newSofaScene)
 {
     if(newSofaScene == mySofaScene)
-		return;
+        return;
 
     mySofaScene = newSofaScene;
 
@@ -107,12 +109,12 @@ void SofaViewer::setSofaScene(SofaScene* newSofaScene)
 
 void SofaViewer::setCamera(Camera* newCamera)
 {
-	if(newCamera == myCamera)
-		return;
+    if(newCamera == myCamera)
+        return;
 
-	myCamera = newCamera;
+    myCamera = newCamera;
 
-	cameraChanged(newCamera);
+    cameraChanged(newCamera);
 }
 
 static void appendRoot(QQmlListProperty<SofaComponent> *property, SofaComponent *value)
@@ -245,11 +247,11 @@ double SofaViewer::computeDepth(const QVector3D& wsPosition) const
 
 QVector3D SofaViewer::mapFromWorld(const QVector3D& wsPoint) const
 {
-	if(!myCamera)
+    if(!myCamera)
         return QVector3D();
 
     QVector4D nsPosition = (myCamera->projection() * myCamera->view() * QVector4D(wsPoint, 1.0));
-	nsPosition /= nsPosition.w();
+    nsPosition /= nsPosition.w();
 
     if(mirroredHorizontally())
         nsPosition.setX(-nsPosition.x());
@@ -257,13 +259,13 @@ QVector3D SofaViewer::mapFromWorld(const QVector3D& wsPoint) const
     if(mirroredVertically())
         nsPosition.setY(-nsPosition.y());
 
-	return QVector3D((nsPosition.x() * 0.5 + 0.5) * qCeil(width()) + 0.5, qCeil(height()) - (nsPosition.y() * 0.5 + 0.5) * qCeil(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
+    return QVector3D((nsPosition.x() * 0.5 + 0.5) * qCeil(width()) + 0.5, qCeil(height()) - (nsPosition.y() * 0.5 + 0.5) * qCeil(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
 }
 
 QVector3D SofaViewer::mapToWorld(const QPointF& ssPoint, double z) const
 {
-	if(!myCamera)
-		return QVector3D();
+    if(!myCamera)
+        return QVector3D();
 
     QVector3D nsPosition = QVector3D(ssPoint.x() / (double) qCeil(width()) * 2.0 - 1.0, (1.0 - ssPoint.y() / (double) qCeil(height())) * 2.0 - 1.0, z * 2.0 - 1.0);
     if(mirroredHorizontally())
@@ -272,10 +274,10 @@ QVector3D SofaViewer::mapToWorld(const QPointF& ssPoint, double z) const
     if(mirroredVertically())
         nsPosition.setY(-nsPosition.y());
 
-	QVector4D vsPosition = myCamera->projection().inverted() * QVector4D(nsPosition, 1.0);
-	vsPosition /= vsPosition.w();
+    QVector4D vsPosition = myCamera->projection().inverted() * QVector4D(nsPosition, 1.0);
+    vsPosition /= vsPosition.w();
 
-	return (myCamera->model() * vsPosition).toVector3D();
+    return (myCamera->model() * vsPosition).toVector3D();
 }
 
 
@@ -345,7 +347,7 @@ public:
     PickUsingRasterizationWorker(const SofaViewer* viewer, const QPointF& ssPoint, const QStringList& tags, Selectable*& selectable, bool& finished) :
         myViewer(viewer),
         mySSPoint(ssPoint),
-		myTags(tags),
+        myTags(tags),
         mySelectable(selectable),
         myFinished(finished)
     {
@@ -397,7 +399,7 @@ public:
 private:
     const SofaViewer*   myViewer;
     QPointF             mySSPoint;
-	QStringList			myTags;
+    QStringList			myTags;
     Selectable*&        mySelectable;
     bool&               myFinished;
 
@@ -410,24 +412,24 @@ QVector4D SofaViewer::projectOnGeometry(const QPointF& ssPoint) const
 
 QVector4D SofaViewer::projectOnGeometryWithTags(const QPointF& ssPoint, const QStringList& tags) const
 {
-	if(!window() || !window()->isActive())
+    if(!window() || !window()->isActive())
         return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
 
-	bool finished = false;
-	Selectable* selectable = nullptr;
+    bool finished = false;
+    Selectable* selectable = nullptr;
 
-	PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, tags, selectable, finished);
-	window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
-	window()->update();
+    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, tags, selectable, finished);
+    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+    window()->update();
 
-	// TODO: add a timeout
-	while(!finished)
-		qApp->processEvents(QEventLoop::WaitForMoreEvents);
+    // TODO: add a timeout
+    while(!finished)
+        qApp->processEvents(QEventLoop::WaitForMoreEvents);
 
-	if(selectable)
-		return QVector4D(selectable->position(), 1.0f);
+    if(selectable)
+        return QVector4D(selectable->position(), 1.0f);
 
-	return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
+    return QVector4D(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), 0.0f);
 }
 
 SelectableSofaParticle* SofaViewer::pickParticle(const QPointF& ssPoint) const
@@ -437,16 +439,16 @@ SelectableSofaParticle* SofaViewer::pickParticle(const QPointF& ssPoint) const
 
 SelectableSofaParticle* SofaViewer::pickParticleWithTags(const QPointF& ssPoint, const QStringList& tags) const
 {
-	QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
-	QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
+    QVector3D nearPosition = mapToWorld(ssPoint, 0.0);
+    QVector3D farPosition  = mapToWorld(ssPoint, 1.0);
 
-	QVector3D origin = nearPosition;
-	QVector3D direction = (farPosition - nearPosition).normalized();
+    QVector3D origin = nearPosition;
+    QVector3D direction = (farPosition - nearPosition).normalized();
 
-	double distanceToRay = mySofaScene->radius() / 76.0;
-	double distanceToRayGrowth = 0.001;
+    double distanceToRay = mySofaScene->radius() / 76.0;
+    double distanceToRayGrowth = 0.001;
 
-	return mySofaScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, tags, roots());
+    return mySofaScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, tags, roots());
 }
 
 Selectable* SofaViewer::pickObject(const QPointF& ssPoint)
@@ -456,22 +458,22 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint)
 
 Selectable* SofaViewer::pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags)
 {
-	Selectable* selectable = nullptr;
+    Selectable* selectable = nullptr;
 
-	if(!window() || !window()->isActive())
-		return selectable;
+    if(!window() || !window()->isActive())
+        return selectable;
 
-	bool finished = false;
+    bool finished = false;
 
-	PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, tags, selectable, finished);
-	window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
-	window()->update();
+    PickUsingRasterizationWorker* worker = new PickUsingRasterizationWorker(this, ssPoint, tags, selectable, finished);
+    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+    window()->update();
 
-	// TODO: add a timeout
-	while(!finished)
-		qApp->processEvents(QEventLoop::WaitForMoreEvents);
+    // TODO: add a timeout
+    while(!finished)
+        qApp->processEvents(QEventLoop::WaitForMoreEvents);
 
-	return selectable;
+    return selectable;
 }
 
 QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
@@ -508,7 +510,7 @@ void SofaViewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSourc
 }
 
 void SofaViewer::saveScreenshot(const QString& path)
-{    
+{
     QDir dir = QFileInfo(path).dir();
     if(!dir.exists())
         dir.mkpath(".");
@@ -520,58 +522,58 @@ void SofaViewer::saveScreenshot(const QString& path)
 class ScreenshotWorker : public QRunnable
 {
 public:
-	ScreenshotWorker(const SofaViewer* viewer, const QString& path, int width, int height) :
-		myViewer(viewer),
-		myPath(path),
-		myWidth(width),
-		myHeight(height)
-	{
+    ScreenshotWorker(const SofaViewer* viewer, const QString& path, int width, int height) :
+        myViewer(viewer),
+        myPath(path),
+        myWidth(width),
+        myHeight(height)
+    {
 
-	}
+    }
 
-	void run()
-	{
-		QSize size(myWidth, myHeight);
-		if(size.isEmpty())
-			return;
+    void run()
+    {
+        QSize size(myWidth, myHeight);
+        if(size.isEmpty())
+            return;
 
-		QOpenGLFramebufferObjectFormat format;
-		format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
-		format.setSamples(myViewer->antialiasingSamples());
+        QOpenGLFramebufferObjectFormat format;
+        format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+        format.setSamples(myViewer->antialiasingSamples());
 
-		glViewport(0.0, 0.0, myWidth, myHeight);
+        glViewport(0.0, 0.0, myWidth, myHeight);
 
-		QOpenGLFramebufferObject fbo(myWidth, myHeight, format);
-		fbo.bind();
+        QOpenGLFramebufferObject fbo(myWidth, myHeight, format);
+        fbo.bind();
 
-		myViewer->internalRender(myWidth, myHeight);
+        myViewer->internalRender(myWidth, myHeight);
 
-		fbo.release();
+        fbo.release();
 
-		if(!fbo.toImage().save(myPath))
+        if(!fbo.toImage().save(myPath))
             msg_error("SofaQtQuickGUI") << "Screenshot could not be saved to" << myPath.toStdString();
-	}
+    }
 
 private:
-	const SofaViewer*	myViewer;
-	QString				myPath;
-	int					myWidth;
-	int					myHeight;
+    const SofaViewer*	myViewer;
+    QString				myPath;
+    int					myWidth;
+    int					myHeight;
 
 };
 
 void SofaViewer::saveScreenshotWithResolution(const QString& path, int width, int height)
 {
-	if(!window())
-		return;
+    if(!window())
+        return;
 
-	QDir dir = QFileInfo(path).dir();
+    QDir dir = QFileInfo(path).dir();
     if(!dir.exists())
         dir.mkpath(".");
 
-	ScreenshotWorker* worker = new ScreenshotWorker(this, path, width, height);
-	window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
-	window()->update();
+    ScreenshotWorker* worker = new ScreenshotWorker(this, path, width, height);
+    window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
+    window()->update();
 }
 
 QSize SofaViewer::nativeSize() const
@@ -581,8 +583,8 @@ QSize SofaViewer::nativeSize() const
 
 QRect SofaViewer::nativeRect() const
 {
-	if(!window())
-		return QRect();
+    if(!window())
+        return QRect();
 
     QPointF realPos = mapToScene(QPointF(0.0, qCeil(height())));
     realPos.setX(realPos.x() * window()->devicePixelRatio());
@@ -590,8 +592,8 @@ QRect SofaViewer::nativeRect() const
 
     QPoint pos(qFloor(realPos.x()), qFloor(realPos.y()));
     QSize size((qCeil(width()) + qCeil(pos.x() - realPos.x())) * window()->devicePixelRatio(), (qCeil((height()) + qCeil(pos.y() - realPos.y())) * window()->devicePixelRatio()));
-	
-	return QRect(pos, size);
+
+    return QRect(pos, size);
 }
 
 QRect SofaViewer::qtRect() const
@@ -628,9 +630,9 @@ QPointF SofaViewer::mapToNative(const QPointF& ssPoint) const
 void SofaViewer::viewAll()
 {
     if(!myCamera || !mySofaScene || !mySofaScene->isReady())
-		return;
+        return;
 
-	QVector3D min, max;
+    QVector3D min, max;
     mySofaScene->computeBoundingBox(min, max);
 
     myCamera->fit(min, max);
@@ -657,114 +659,114 @@ QSGNode* SofaViewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* in
 
 void SofaViewer::internalRender(int width, int height) const
 {
-	QSize size(width, height);
-	if(size.isEmpty())
-		return;
+    QSize size(width, height);
+    if(size.isEmpty())
+        return;
 
-	//    if(!myBackgroundImage.isNull())
-	//    {
-	//        // TODO: warning: disable lights, but why ?
-	//        QOpenGLPaintDevice device(size);
-	//        QPainter painter(&device);
-	//        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
-	//    }
+    //    if(!myBackgroundImage.isNull())
+    //    {
+    //        // TODO: warning: disable lights, but why ?
+    //        QOpenGLPaintDevice device(size);
+    //        QPainter painter(&device);
+    //        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
+    //    }
 
     // final image will be blended using premultiplied alpha
     glClearColor(myBackgroundColor.redF() * myBackgroundColor.alphaF(), myBackgroundColor.greenF() * myBackgroundColor.alphaF(), myBackgroundColor.blueF() * myBackgroundColor.alphaF(), myBackgroundColor.alphaF());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(!myCamera)
-		return;
+    if(!myCamera)
+        return;
 
-	// set default lights
-	{
-		glEnable(GL_LIGHT0);
-		{
-			float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
-			float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
-			float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
-			float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
+    // set default lights
+    {
+        glEnable(GL_LIGHT0);
+        {
+            float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
+            float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
+            float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
+            float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
 
-			glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-			glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
-			glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
-			glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-		}
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
+            glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
+            glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+        }
 
-		glEnable(GL_LIGHT1);
-		{
-			float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
-			float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
-			float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
-			float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
+        glEnable(GL_LIGHT1);
+        {
+            float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
+            float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
+            float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
+            float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
 
-			glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
-			glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
-			glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
-			glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
-		}
-	}
+            glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+            glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
+            glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
+            glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
+        }
+    }
 
-	glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
 
-	if(mySofaScene && mySofaScene->isReady())
-	{
-		myCamera->setAspectRatio(width / (double) height);
+    if(mySofaScene && mySofaScene->isReady())
+    {
+        myCamera->setAspectRatio(width / (double) height);
 
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadMatrixf(myCamera->projection().constData());
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadMatrixf(myCamera->projection().constData());
 
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadMatrixf(myCamera->view().constData());
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadMatrixf(myCamera->view().constData());
 
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_TEXTURE_2D);
 
-		// qt does not release its shader program and we do not use one so we have to release the current bound program
-		glUseProgram(0);
+        // qt does not release its shader program and we do not use one so we have to release the current bound program
+        glUseProgram(0);
 
-		// prepare the sofa visual params
-		sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-		if(_vparams)
-		{
-			if(!_vparams->drawTool())
-			{
-				_vparams->drawTool() = new sofa::core::visual::DrawToolGL();
-				_vparams->setSupported(sofa::core::visual::API_OpenGL);
-			}
+        // prepare the sofa visual params
+        sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+        if(_vparams)
+        {
+            if(!_vparams->drawTool())
+            {
+                _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
+                _vparams->setSupported(sofa::core::visual::API_OpenGL);
+            }
 
-			GLint _viewport[4];
-			GLdouble _mvmatrix[16], _projmatrix[16];
+            GLint _viewport[4];
+            GLdouble _mvmatrix[16], _projmatrix[16];
 
-			glGetIntegerv (GL_VIEWPORT, _viewport);
-			glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
-			glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
+            glGetIntegerv (GL_VIEWPORT, _viewport);
+            glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
+            glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
 
-			_vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-			_vparams->sceneBBox() = mySofaScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
-			_vparams->setProjectionMatrix(_projmatrix);
-			_vparams->setModelViewMatrix(_mvmatrix);
-		}
+            _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+            _vparams->sceneBBox() = mySofaScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
+            _vparams->setProjectionMatrix(_projmatrix);
+            _vparams->setModelViewMatrix(_mvmatrix);
+        }
 
         // draw the scene frame
         if(myDrawFrame)
             renderFrame();
 
-		// draw the SofaScene
-		{
-			preDraw();
-			mySofaScene->draw(*this, roots());
-			postDraw();
-		}
+        // draw the SofaScene
+        {
+            preDraw();
+            mySofaScene->draw(*this, roots());
+            postDraw();
+        }
 
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
 
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-	}
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+    }
 }
 
 void SofaViewer::renderFrame() const
@@ -820,7 +822,7 @@ void SofaViewer::SofaRenderer::render()
     if(!myViewer || !myViewer->isVisible())
         return;
 
-	myViewer->internalRender(myViewer->width(), myViewer->height());
+    myViewer->internalRender(myViewer->width(), myViewer->height());
 }
 
 }

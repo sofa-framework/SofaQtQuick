@@ -774,10 +774,12 @@ SofaViewer {
                         GroupBox {
                             id: cameraPanel
                             implicitWidth: parent.width
+                            implicitHeight: cameraLayout.implicitHeight
 
                             title: "Camera"
 
                             Column {
+                                id: cameraLayout
                                 anchors.fill: parent
                                 spacing: 0
 
