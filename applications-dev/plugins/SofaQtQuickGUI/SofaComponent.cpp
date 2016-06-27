@@ -57,6 +57,16 @@ QString SofaComponent::name() const
     return QString("Invalid SofaComponent");
 }
 
+QStringList SofaComponent::tags() const
+{
+    const Base* base = SofaComponent::base();
+    QStringList tags;
+    if(base)
+        for (Tag const& t : base->getTags())
+            tags << QString::fromStdString(std::string(t));
+    return tags;
+}
+
 QString SofaComponent::className() const
 {
     const Base* base = SofaComponent::base();
