@@ -136,15 +136,30 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
             glVertex3f( 0.0,            0.0,          height - width);
             glVertex3f( 0.0,            0.0,          height + width);
 
+            glVertex3f(-0.2 * height, width,            0.8 * height);
+            glVertex3f(-0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.0,         -width,                 height );
+            glVertex3f( 0.0,          width,                 height );
+
             glVertex3f( 0.0,            0.0,          height + width);
             glVertex3f( 0.0,            0.0,          height - width);
             glVertex3f( 0.2 * height,   0.0,    0.8 * height - width);
             glVertex3f( 0.2 * height,   0.0,    0.8 * height + width);
 
+            glVertex3f( 0.0,          width,                  height);
+            glVertex3f( 0.0,         -width,                  height);
+            glVertex3f( 0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.2 * height, width,            0.8 * height);
+
             glVertex3f(       -width,   0.0,          height - width);
             glVertex3f(       -width,   0.0,                   width);
             glVertex3f(        width,   0.0,                   width);
             glVertex3f(        width,   0.0,          height - width);
+
+            glVertex3f(       0.0,   -width,          height - width);
+            glVertex3f(       0.0,   -width,                   width);
+            glVertex3f(       0.0,    width,                   width);
+            glVertex3f(       0.0,    width,          height - width);
         }
         glEnd();
     }
