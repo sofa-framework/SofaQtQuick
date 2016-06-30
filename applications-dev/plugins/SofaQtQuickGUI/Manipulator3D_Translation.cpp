@@ -115,6 +115,7 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
     glColor3f(color.redF(), color.greenF(), color.blueF());
 
     glEnable(GL_POLYGON_OFFSET_FILL);
+    glEnable(GL_COLOR_MATERIAL);
 
     // draw arrows
     if(1 == axisNum)
@@ -186,6 +187,7 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
         glEnd();
     }
 
+    glDisable(GL_COLOR_MATERIAL);
     glDisable(GL_POLYGON_OFFSET_FILL);
 
     glLineWidth(1.0f);

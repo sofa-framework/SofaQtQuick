@@ -148,6 +148,7 @@ void Manipulator3D_Rotation::internalDraw(const SofaViewer& viewer, bool isPicki
 
     glLineWidth(width);
     glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_COLOR_MATERIAL);
 
     QColor color(xAxis ? 255 : 50, yAxis ? 255 : 50, zAxis ? 255 : 50);
 
@@ -271,6 +272,7 @@ void Manipulator3D_Rotation::internalDraw(const SofaViewer& viewer, bool isPicki
         glDepthRange(0.0, 1.0);
     }
 
+    glDisable(GL_COLOR_MATERIAL);
     glDisable(GL_LINE_SMOOTH);
     glLineWidth(1.0f);
 
