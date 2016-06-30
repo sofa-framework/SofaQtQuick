@@ -150,6 +150,15 @@ SofaScene {
         root.manipulators = manipulators;
     }
 
+    function removeManipulatorByName(name) {
+        var manipulators = [];
+        for(var i = 0; i < root.manipulators; ++i)
+            if(name !== root.manipulators[i].objectName)
+                manipulators.push(root.manipulators[i]);
+
+        root.manipulators = manipulators;
+    }
+
     function clearManipulators() {
         root.manipulators = [];
     }
