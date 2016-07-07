@@ -541,6 +541,9 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     // initialise paths
     SofaApplication::UseDefaultSofaPath();
 
+    // add application data path
+    sofa::helper::system::DataRepository.addFirstPath((QCoreApplication::applicationDirPath() + "/" + app.applicationName() + "Data").toStdString());
+
     // plugin initialization
     QString pluginName("SofaQtQuickGUI");
 #ifndef NDEBUG

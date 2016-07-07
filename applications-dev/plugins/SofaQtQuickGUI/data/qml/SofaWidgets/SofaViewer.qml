@@ -38,6 +38,7 @@ SofaViewer {
     mirroredVertically: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
+    property bool configurable: true
 
     Image {
         anchors.fill: parent
@@ -1168,6 +1169,7 @@ SofaViewer {
         source: toolPanel.visible ? "qrc:/icon/minus.png" : "qrc:/icon/plus.png"
         width: 12
         height: width
+        visible: configurable
 
         MouseArea {
             anchors.fill: parent
