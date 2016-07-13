@@ -97,7 +97,7 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
     float height = 0.2f;
     {
         QVector4D p0 = camera->projection() * camera->view() * QVector4D(position(), 1.0);
-        QVector4D p1 = camera->projection() * camera->view() * QVector4D(position() + camera->right(), 1.0);
+        QVector4D p1 = camera->projection() * camera->view() * QVector4D(position() + camera->up(), 1.0);
         QVector3D direction = ((p1 / p1.w() - p0 / p0.w()).toVector3D());
 
         height *= 1.0 / direction.length();
