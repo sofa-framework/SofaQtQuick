@@ -9,4 +9,5 @@ SofaSimulationControl 1.0 SofaSimulationControl.qml
 SofaVisualizationControl 1.0 SofaVisualizationControl.qml
 SofaMessageView 1.0 SofaMessageView.qml
 QML_LiveCoding 1.0 QML_LiveCoding.qml
-
+AffineTransformationController 1.0 AffineTransformationController.qml
+ColorSelector 1.0 ColorSelector.qml

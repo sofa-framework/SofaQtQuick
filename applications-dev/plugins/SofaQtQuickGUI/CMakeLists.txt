@@ -125,6 +125,8 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaSceneToolPanel.qml
     data/qml/SofaWidgets/SofaSimulationControl.qml
     data/qml/SofaWidgets/SofaVisualizationControl.qml
+    data/qml/SofaWidgets/AffineTransformationController.qml
+    data/qml/SofaWidgets/ColorSelector.qml
 )
 
 set(CONFIG_FILES
