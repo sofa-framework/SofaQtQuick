@@ -38,6 +38,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QDebug>
 #include <QCommandLineParser>
 #include <QWindow>
+#include <QProcess>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -51,7 +52,8 @@ namespace qtquick
 
 SofaApplication* SofaApplication::OurInstance = nullptr;
 
-SofaApplication::SofaApplication(QObject* parent) : QObject(parent)
+SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
+    myDataDirectory(QCoreApplication::applicationDirPath() + "/" + QCoreApplication::applicationName() + "Data")
 {
     OurInstance = this;
 }
@@ -67,9 +69,41 @@ SofaApplication* SofaApplication::Instance()
     return OurInstance;
 }
 
+QVariantList SofaApplication::executeCommand(const QString& command, int timeOutMsecs)
+{
+    QProcess process;
+    process.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+
+    process.start(command);
+
+    process.waitForFinished(timeOutMsecs);
+
+    return QVariantList() << QVariant::fromValue((int) process.exitStatus()) << QVariant::fromValue(process.exitCode()) << QVariant::fromValue(process.readAllStandardOutput()) << QVariant::fromValue(process.readAllStandardError());
+}
+
+void SofaApplication::executeAsyncCommand(const QString& command)
+{
+    QProcess* process = new QProcess();
+    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+
+    process->connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [=](int, QProcess::ExitStatus) {process->deleteLater();});
+
+    process->start(command);
+}
+
 QString SofaApplication::binaryDirectory() const
 {
     return QCoreApplication::applicationDirPath();
+}
+
+QString SofaApplication::dataDirectory() const
+{
+    return myDataDirectory;
+}
+
+void SofaApplication::setDataDirectory(const QString& dataDirectory)
+{
+    myDataDirectory = dataDirectory;
 }
 
 void SofaApplication::saveScreenshot(const QString& path)

@@ -63,6 +63,12 @@ signals:
     void overrideCursorShapeChanged();
 
 public:
+    Q_INVOKABLE QVariantList executeCommand(const QString& command, int timeOutMsecs = -1); // return : [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
+    Q_INVOKABLE void executeAsyncCommand(const QString& command);
+
+    Q_INVOKABLE QString dataDirectory() const;
+    Q_INVOKABLE void setDataDirectory(const QString& dataDirectory);
+
     Q_INVOKABLE QString binaryDirectory() const;
     Q_INVOKABLE void saveScreenshot(const QString& path);
 
@@ -111,6 +117,8 @@ public:
 
 private:
     static SofaApplication* OurInstance;
+
+    QString                 myDataDirectory;
 
 };
 
