@@ -63,7 +63,12 @@ signals:
     void overrideCursorShapeChanged();
 
 public:
-    Q_INVOKABLE QVariantList executeCommand(const QString& command, int timeOutMsecs = -1); // return : [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
+    Q_INVOKABLE QString readFile(const QString& filename);
+
+    Q_INVOKABLE bool runPythonScript(const QString& script); // \return true if script ran successfuly, false on error
+    Q_INVOKABLE bool runPythonFile(const QString& filename); // \return true if script ran successfuly, false on error
+
+    Q_INVOKABLE QVariantList executeCommand(const QString& command, int timeOutMsecs = -1); // \return [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
     Q_INVOKABLE void executeAsyncCommand(const QString& command);
 
     Q_INVOKABLE QString dataDirectory() const;

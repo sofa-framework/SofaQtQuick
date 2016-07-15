@@ -25,6 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/Utils.h>
 #include <sofa/helper/system/console.h>
 #include <sofa/helper/logging/Messaging.h>
+#include <SofaPython/PythonEnvironment.h>
 
 #include <QQuickWindow>
 #include <QQuickItem>
@@ -50,6 +51,8 @@ namespace sofa
 namespace qtquick
 {
 
+using namespace sofa::simulation;
+
 SofaApplication* SofaApplication::OurInstance = nullptr;
 
 SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
@@ -67,6 +70,25 @@ SofaApplication::~SofaApplication()
 SofaApplication* SofaApplication::Instance()
 {
     return OurInstance;
+}
+
+QString SofaApplication::readFile(const QString& filename)
+{
+    QFile file(filename);
+    if(file.open(QFile::ReadOnly))
+        return QString(file.readAll());
+
+    return QString();
+}
+
+bool SofaApplication::runPythonScript(const QString& script)
+{
+    return PythonEnvironment::runString(script.toStdString());
+}
+
+bool SofaApplication::runPythonFile(const QString& filename)
+{
+    return PythonEnvironment::runFile(filename.toLatin1().constData());
 }
 
 QVariantList SofaApplication::executeCommand(const QString& command, int timeOutMsecs)
