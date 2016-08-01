@@ -47,10 +47,6 @@ if(WIN32)
     endif()
 endif()
 
-if(NOT MSVC)
-    add_definitions(-std=gnu++11)
-endif()
-
 find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
 # make sure to use QT > 5.0
 
@@ -76,6 +72,11 @@ qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 add_definitions(-DQT_PLUGIN)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
+
+
+if(NOT MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
+endif()
 
 find_package(CImg REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CImg_INCLUDE_DIRS}>")

@@ -198,7 +198,7 @@ add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
 
 
 if(NOT MSVC)
-    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:-std=c++11>")
+    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
 
 
