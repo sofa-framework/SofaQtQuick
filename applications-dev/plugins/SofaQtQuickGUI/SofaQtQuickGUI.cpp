@@ -82,7 +82,6 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
-    qmlRegisterType<SofaApplication>                                ("Tools"                                , versionMajor, versionMinor, "Tools");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
