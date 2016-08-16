@@ -40,6 +40,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QCommandLineParser>
 #include <QWindow>
 #include <QProcess>
+#include <QDesktopServices>
+#include <QClipboard>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -72,13 +74,39 @@ SofaApplication* SofaApplication::Instance()
     return OurInstance;
 }
 
-QString SofaApplication::readFile(const QString& filename)
+void SofaApplication::copyToClipboard(const QString& text)
+{
+    QClipboard* clipboard = QApplication::clipboard();
+    if(!clipboard)
+        return;
+
+    clipboard->setText(text);
+}
+
+void SofaApplication::openInExplorer(const QString& folder) const
+{
+    QDesktopServices::openUrl(QUrl::fromLocalFile(folder));
+}
+
+QString SofaApplication::loadFile(const QString& filename)
 {
     QFile file(filename);
     if(file.open(QFile::ReadOnly))
         return QString(file.readAll());
 
     return QString();
+}
+
+bool SofaApplication::saveFile(const QString& destination, const QString& data)
+{
+    QFile file(destination);
+    if(!file.open(QFile::WriteOnly))
+        return false;
+
+    QTextStream out(&file);
+    out << data;
+
+    return true;
 }
 
 bool SofaApplication::runPythonScript(const QString& script)
