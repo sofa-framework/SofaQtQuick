@@ -63,6 +63,8 @@ const QMatrix4x4& Camera::projection() const
         else
             myProjection.perspective((float) myPerspectiveFovY, (float) myAspectRatio, myZNear, myZFar);
 		myProjectionDirty = false;
+
+        projectionChanged();
 	}
 
 	return myProjection;
@@ -74,6 +76,8 @@ const QMatrix4x4& Camera::view() const
     {
         myView = model().inverted();
         myViewDirty = false;
+
+        modelViewChanged();
     }
 
 	return myView;

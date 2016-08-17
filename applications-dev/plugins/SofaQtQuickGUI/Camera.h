@@ -66,6 +66,9 @@ signals:
     void orthographicChanged(bool);
     void targetChanged(const QVector3D&);
 
+    void projectionChanged() const;
+    void modelViewChanged() const;
+
 public:
 	const QMatrix4x4& projection() const;
 	const QMatrix4x4& view() const;
