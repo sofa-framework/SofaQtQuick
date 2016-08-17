@@ -42,6 +42,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QProcess>
 #include <QDesktopServices>
 #include <QClipboard>
+#include <QQuickRenderControl>
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+#include <QQmlComponent>
+#include <QQuickItem>
+#include <QOpenGLFramebufferObject>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -105,6 +111,68 @@ bool SofaApplication::saveFile(const QString& destination, const QString& data)
 
     QTextStream out(&file);
     out << data;
+
+    return true;
+}
+
+bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QString& destination)
+{
+    QQmlComponent component(qmlEngine(this), componentUrl);
+    if(component.status() != QQmlComponent::Ready)
+    {
+        msg_error("AteosApplication::savePatientInfoInImage") << "QmlComponent is not ready, errors are:" << component.errorString().toStdString();
+        return false;
+    }
+
+    QQuickItem* content = qobject_cast<QQuickItem*>(component.create());
+    if(!content)
+    {
+        msg_error("AteosApplication::savePatientInfoInImage") << "QmlComponent should embed an object inheriting QQuickItem";
+        return false;
+    }
+
+    QSurfaceFormat format;
+    format.setDepthBufferSize(16);
+    format.setStencilBufferSize(8);
+
+    QOpenGLContext* glContext = new QOpenGLContext;
+    glContext->setFormat(format);
+    glContext->create();
+
+    QOffscreenSurface* offscreenSurface = new QOffscreenSurface;
+    offscreenSurface->setFormat(glContext->format());
+    offscreenSurface->create();
+
+    glContext->makeCurrent(offscreenSurface);
+
+    QQuickRenderControl renderControl;
+    QQuickWindow window(&renderControl);
+
+    content->setParentItem(window.contentItem());
+
+    window.setGeometry(0, 0, content->implicitWidth(), content->implicitHeight());
+
+    renderControl.initialize(glContext);
+
+    QOpenGLFramebufferObjectFormat fboFormat;
+    fboFormat.setSamples(4);
+    QOpenGLFramebufferObject fbo(window.size() * window.effectiveDevicePixelRatio(), fboFormat);
+
+    window.setRenderTarget(&fbo);
+
+    renderControl.polishItems();
+    renderControl.sync();
+    renderControl.render();
+
+    if(!fbo.toImage().save(destination))
+    {
+        glContext->doneCurrent();
+
+        msg_error("AteosApplication::savePatientInfoInImage") << "Image could not be saved, possible reasons are : item has an incorrect size or the image destination path is incorrect";
+        return false;
+    }
+
+    glContext->doneCurrent();
 
     return true;
 }

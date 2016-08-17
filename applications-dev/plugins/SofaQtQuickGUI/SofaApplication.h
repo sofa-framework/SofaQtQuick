@@ -69,6 +69,8 @@ public:
     Q_INVOKABLE QString loadFile(const QString& filename);
     Q_SLOT bool saveFile(const QString& destination, const QString& data);
 
+    Q_SLOT bool screenshotComponent(const QUrl& componentUrl, const QString& destination);
+
     Q_INVOKABLE bool runPythonScript(const QString& script); // \return true if script ran successfuly, false on error
     Q_INVOKABLE bool runPythonFile(const QString& filename); // \return true if script ran successfuly, false on error
 
