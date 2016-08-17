@@ -220,6 +220,8 @@ private slots:
 
 public:
     sofa::simulation::Simulation* sofaSimulation() const {return mySofaSimulation;}
+    const sofa::simulation::Node::SPtr& sofaRootNode() const {return mySofaRootNode;}
+    sofa::simulation::Node::SPtr& sofaRootNode() {return mySofaRootNode;}
 
 protected:
     /// \brief      Low-level drawing function
@@ -259,6 +261,7 @@ private:
     bool                                        myPyQtForceSynchronous;
 
     sofa::simulation::Simulation*               mySofaSimulation;
+    sofa::simulation::Node::SPtr                mySofaRootNode;
     QTimer*                                     myStepTimer;
     QSet<const sofa::core::objectmodel::Base*>  myBases;                        /// \todo For each base, reference a unique SofaComponent and use it in QML as a wrapper
 

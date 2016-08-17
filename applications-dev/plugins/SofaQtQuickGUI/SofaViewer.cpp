@@ -745,7 +745,7 @@ void SofaViewer::internalRender(int width, int height) const
             glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
 
             _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-            _vparams->sceneBBox() = mySofaScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
+            _vparams->sceneBBox() = mySofaScene->sofaRootNode()->f_bbox.getValue();
             _vparams->setProjectionMatrix(_projmatrix);
             _vparams->setModelViewMatrix(_mvmatrix);
         }

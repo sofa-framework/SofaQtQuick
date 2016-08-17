@@ -256,22 +256,16 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         visualParams->displayFlags().setShowVisualModels(true);
     }
 
-    if(sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData()))
+    if(sofaScene->sofaRootNode() = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData()))
     {
-        if(!sofaScene->sofaSimulation()->GetRoot())
-        {
-            sofaScene->setStatus(SofaScene::Status::Error);
-            return false;
-        }
-
-        sofaScene->sofaSimulation()->init(sofaScene->sofaSimulation()->GetRoot().get());
-        sofaScene->sofaSimulation()->initTextures(sofaScene->sofaSimulation()->GetRoot().get());
+        sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
+        sofaScene->sofaSimulation()->initTextures(sofaScene->sofaRootNode().get());
 
         glFinish();
 
-        sofaScene->addChild(0, sofaScene->sofaSimulation()->GetRoot().get());
+        sofaScene->addChild(0, sofaScene->sofaRootNode().get());
 
-        if(sofaScene->sofaSimulation()->GetRoot()->getAnimate() || sofaScene->defaultAnimate())
+        if(sofaScene->sofaRootNode()->getAnimate() || sofaScene->defaultAnimate())
             sofaScene->setAnimate(true);
 
         sofaScene->setStatus(SofaScene::Status::Ready);
@@ -280,6 +274,11 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
             sofaScene->setSourceQML(QUrl::fromLocalFile(sofaScene->pathQML()));
 
         return true;
+    }
+    else
+    {
+        sofaScene->setStatus(SofaScene::Status::Error);
+        return false;
     }
 
     sofaScene->setStatus(SofaScene::Status::Error);
@@ -351,13 +350,13 @@ void SofaScene::open()
     setSelectedManipulator(nullptr);
     myManipulators.clear();
 
-    if(mySofaSimulation->GetRoot())
+    if(mySofaRootNode)
     {
         setStatus(Status::Unloading);
 
         aboutToUnload();
 
-        mySofaSimulation->unload(mySofaSimulation->GetRoot());
+        mySofaSimulation->unload(mySofaRootNode);
     }
 
     if(mySource.isEmpty())
@@ -461,7 +460,7 @@ void SofaScene::open()
                 setStatus(Status::Error);
             else
             {
-                setDt(mySofaSimulation->GetRoot()->getDt());
+                setDt(mySofaRootNode->getDt());
             }
 
             loaderThread->deleteLater();
@@ -494,7 +493,7 @@ void SofaScene::open()
             setStatus(Status::Error);
         else
         {
-            setDt(mySofaSimulation->GetRoot()->getDt());
+            setDt(mySofaRootNode->getDt());
             offScreenSurface->deleteLater();
         }
     }
@@ -597,8 +596,8 @@ void SofaScene::setAnimate(bool newAnimate)
         return;
 
     myAnimate = newAnimate;
-    if(sofaSimulation() && sofaSimulation()->GetRoot())
-        sofaSimulation()->GetRoot()->setAnimate(myAnimate);
+    if(sofaSimulation() && sofaRootNode())
+        sofaRootNode()->setAnimate(myAnimate);
 
     animateChanged(newAnimate);
 }
@@ -694,7 +693,7 @@ double SofaScene::radius() const
 void SofaScene::computeBoundingBox(QVector3D& min, QVector3D& max) const
 {
     SReal pmin[3], pmax[3];
-    mySofaSimulation->computeTotalBBox(mySofaSimulation->GetRoot().get(), pmin, pmax);
+    mySofaSimulation->computeTotalBBox(mySofaRootNode.get(), pmin, pmax);
 
     min = QVector3D(pmin[0], pmin[1], pmin[2]);
     max = QVector3D(pmax[0], pmax[1], pmax[2]);
@@ -704,13 +703,13 @@ QString SofaScene::dumpGraph() const
 {
     QString dump;
 
-    if(mySofaSimulation->GetRoot())
+    if(mySofaRootNode)
     {
         std::streambuf* backup(std::cout.rdbuf());
 
         std::ostringstream stream;
         std::cout.rdbuf(stream.rdbuf());
-        mySofaSimulation->print(mySofaSimulation->GetRoot().get());
+        mySofaSimulation->print(mySofaRootNode.get());
         std::cout.rdbuf(backup);
 
         dump += QString::fromStdString(stream.str());
@@ -723,7 +722,7 @@ bool SofaScene::reinitComponent(const QString& path)
 {
     QStringList pathComponents = path.split("/");
 
-    Node::SPtr node = mySofaSimulation->GetRoot();
+    Node::SPtr node = mySofaRootNode;
     unsigned int i = 0;
     while(i+1 < (unsigned int)pathComponents.size()) {
         if (pathComponents[i]=="@") {
@@ -814,11 +813,11 @@ bool SofaScene::areInSameBranch(SofaComponent* sofaComponentA, SofaComponent* so
 
 void SofaScene::sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value)
 {
-    if(!mySofaSimulation->GetRoot())
+    if(!mySofaRootNode)
         return;
 
     sofa::core::objectmodel::GUIEvent event(controlID.toUtf8().constData(), valueName.toUtf8().constData(), value.toUtf8().constData());
-    mySofaSimulation->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
+    mySofaRootNode->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
 }
 
 QVariant SofaScene::linkValue(const sofa::core::objectmodel::BaseLink* link)
@@ -1259,7 +1258,7 @@ static BaseData* FindData_Helper(BaseNode* node, const QString& path)
 
 SofaData* SofaScene::data(const QString& path)
 {
-    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
+    BaseData* data = FindData_Helper(mySofaRootNode.get(), path);
     if(!data)
         return nullptr;
 
@@ -1272,7 +1271,7 @@ SofaData* SofaScene::data(const QString& path)
 
 SofaComponent* SofaScene::component(const QString& path)
 {
-    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path + ".name"); // search for the "name" data of the component (this data is always present if the component exist)
+    BaseData* data = FindData_Helper(mySofaRootNode.get(), path + ".name"); // search for the "name" data of the component (this data is always present if the component exist)
 
     if(!data)
         return nullptr;
@@ -1317,7 +1316,7 @@ SofaComponent* SofaScene::componentByType(const QString& typeName)
         return nullptr;
 
     GetObjectsByTypeVisitor getObjectByTypeVisitor(typeName);
-    mySofaSimulation->GetRoot()->execute(getObjectByTypeVisitor);
+    mySofaRootNode->execute(getObjectByTypeVisitor);
 
     const QList<BaseObject*>& baseObjects = getObjectByTypeVisitor.baseObjects();
     if(baseObjects.isEmpty())
@@ -1335,7 +1334,7 @@ QList<SofaComponent*> SofaScene::componentsByType(const QString& typeName)
         return sofaComponents;
 
     GetObjectsByTypeVisitor getObjectByTypeVisitor(typeName);
-    mySofaSimulation->GetRoot()->execute(getObjectByTypeVisitor);
+    mySofaRootNode->execute(getObjectByTypeVisitor);
 
     const QList<BaseObject*>& baseObjects = getObjectByTypeVisitor.baseObjects();
     for(BaseObject* baseObject : baseObjects)
@@ -1354,7 +1353,7 @@ SofaComponent* SofaScene::root()
     if(!mySofaSimulation)
         return nullptr;
 
-    Base* base = mySofaSimulation->GetRoot().get();
+    Base* base = mySofaRootNode.get();
     if(!base)
         return nullptr;
 
@@ -1363,11 +1362,11 @@ SofaComponent* SofaScene::root()
 
 SofaComponent* SofaScene::visualStyleComponent()
 {
-    if(mySofaSimulation->GetRoot())
+    if(mySofaRootNode)
     {
         sofa::component::visualmodel::VisualStyle* visualStyle = nullptr;
 
-        mySofaSimulation->GetRoot()->get(visualStyle);
+        mySofaRootNode->get(visualStyle);
         if(visualStyle)
             return new SofaComponent(this, visualStyle);
     }
@@ -1413,7 +1412,7 @@ SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context,
 
 QVariant SofaScene::onDataValueByPath(const QString& path) const
 {
-    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
+    BaseData* data = FindData_Helper(mySofaRootNode.get(), path);
 
     if(!data)
     {
@@ -1448,7 +1447,7 @@ static QVariant UnpackParameters_Helper(const QVariant& value)
 
 void SofaScene::onSetDataValueByPath(const QString& path, const QVariant& value)
 {
-    BaseData* data = FindData_Helper(mySofaSimulation->GetRoot().get(), path);
+    BaseData* data = FindData_Helper(mySofaRootNode.get(), path);
 
     if(!data)
     {
@@ -1477,10 +1476,10 @@ void SofaScene::step()
         return;
 
     emit stepBegin();
-    mySofaSimulation->animate(mySofaSimulation->GetRoot().get(), myDt);
+    mySofaSimulation->animate(mySofaRootNode.get(), myDt);
     myVisualDirty = true;
 
-    setAnimate(sofaSimulation()->GetRoot()->getAnimate());
+    setAnimate(sofaRootNode()->getAnimate());
 
     emit stepEnd();
 }
@@ -1496,7 +1495,7 @@ void SofaScene::reset()
         return;
 
     // TODO: ! NEED CURRENT OPENGL CONTEXT
-    mySofaSimulation->reset(mySofaSimulation->GetRoot().get());
+    mySofaSimulation->reset(mySofaRootNode.get());
     myVisualDirty = true;
     emit reseted();
 }
@@ -1526,7 +1525,7 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
         }
 
     if(nodes.isEmpty() && roots.isEmpty())
-        nodes.append(mySofaSimulation->GetRoot().get());
+        nodes.append(mySofaRootNode.get());
 
     // prepare the sofa visual params
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
@@ -1540,7 +1539,7 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
         glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
 
 //        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-//        visualParams->sceneBBox() = mySofaSimulation->GetRoot()->f_bbox.getValue();
+//        visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
 //        visualParams->setProjectionMatrix(_projmatrix);
 //        visualParams->setModelViewMatrix(_mvmatrix);
     }
@@ -1549,7 +1548,7 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
     {
         myVisualDirty = false;
 
-        mySofaSimulation->updateVisual(mySofaSimulation->GetRoot().get());
+        mySofaSimulation->updateVisual(mySofaRootNode.get());
     }
 
     for(sofa::simulation::Node* root : nodes)
@@ -1661,7 +1660,7 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
         }
 
     if(nodes.isEmpty() && roots.isEmpty())
-        nodes.append(sofaSimulation()->GetRoot().get());
+        nodes.append(sofaRootNode().get());
 
     for(sofa::simulation::Node* root : nodes)
     {
@@ -1731,7 +1730,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
         }
 
     if(nodes.isEmpty() && roots.isEmpty())
-        nodes.append(mySofaSimulation->GetRoot().get());
+        nodes.append(mySofaRootNode.get());
 
     QSize nativeSize = viewer.nativeSize();
     if(!myPickingFBO || nativeSize != myPickingFBO->size())
@@ -1761,7 +1760,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
             int indexLocation = myPickingShaderProgram->uniformLocation("index");
 
             if(nodes.isEmpty())
-                nodes.append(sofaSimulation()->GetRoot().get());
+                nodes.append(sofaRootNode().get());
 
             // visual models
 
@@ -1894,7 +1893,7 @@ void SofaScene::onKeyPressed(char key)
         return;
 
     sofa::core::objectmodel::KeypressedEvent keyEvent(key);
-    sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
+    sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
 }
 
 void SofaScene::onKeyReleased(char key)
@@ -1903,7 +1902,7 @@ void SofaScene::onKeyReleased(char key)
         return;
 
     sofa::core::objectmodel::KeyreleasedEvent keyEvent(key);
-    sofaSimulation()->GetRoot()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
+    sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
 }
 
 void SofaScene::addChild(Node* parent, Node* child)

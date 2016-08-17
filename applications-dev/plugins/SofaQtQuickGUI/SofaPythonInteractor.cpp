@@ -279,12 +279,12 @@ PythonScriptController* SofaPythonInteractor::pythonScriptControllerByName(const
     PythonScriptController* controller = nullptr;
 
     // try to find by path (faster)
-    void* rawController = mySofaScene->sofaSimulation()->GetRoot()->getObject(classid(PythonScriptController), path);
+    void* rawController = mySofaScene->sofaRootNode()->getObject(classid(PythonScriptController), path);
 
     if(rawController) // found by path
        controller = reinterpret_cast<PythonScriptController*>(rawController);
     else // try to find by name in the root node (slower but more generic)
-        controller = dynamic_cast<PythonScriptController*>(mySofaScene->sofaSimulation()->GetRoot()->getObject(path));
+        controller = dynamic_cast<PythonScriptController*>(mySofaScene->sofaRootNode()->getObject(path));
 
     return controller;
 }
