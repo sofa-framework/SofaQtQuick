@@ -256,7 +256,8 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         visualParams->displayFlags().setShowVisualModels(true);
     }
 
-    if(sofaScene->sofaRootNode() = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData()))
+    sofaScene->sofaRootNode() = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData());
+    if( sofaScene->sofaRootNode() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
         sofaScene->sofaSimulation()->initTextures(sofaScene->sofaRootNode().get());
