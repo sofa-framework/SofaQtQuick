@@ -68,6 +68,7 @@ public:
 
     Q_INVOKABLE QString loadFile(const QString& filename);
     Q_SLOT bool saveFile(const QString& destination, const QString& data);
+    Q_SLOT bool copyFile(const QString& source, const QString& destination);
 
     Q_SLOT bool screenshotComponent(const QUrl& componentUrl, const QString& destination);
 
@@ -91,6 +92,8 @@ public:
     Q_INVOKABLE void trimComponentCache(QObject* object = 0);
     Q_INVOKABLE void clearSettingGroup(const QString& group);
     Q_INVOKABLE int objectDepthFromRoot(QObject* object);
+
+    Q_INVOKABLE QString toLocalFile(const QUrl& url);
 
     Q_INVOKABLE QQuaternion quaternionFromEulerAngles(const QVector3D& eulerAngles) const;
     Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion) const;
@@ -129,7 +132,7 @@ public:
 private:
     static SofaApplication* OurInstance;
 
-    QString                 myDataDirectory;
+    mutable QString         myDataDirectory;
 
 };
 

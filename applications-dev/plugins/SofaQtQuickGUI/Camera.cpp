@@ -306,6 +306,8 @@ void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector
     myTarget = target;
 
     myViewDirty = false;
+
+    modelViewChanged();
 }
 
 void Camera::fit(QVector3D min, QVector3D max)
@@ -350,6 +352,8 @@ void Camera::fit(QVector3D min, QVector3D max)
     myModel = myView.inverted();
 
     myViewDirty = false;
+
+    modelViewChanged();
 
     if(orthographic())
         computeOrthographic();
@@ -410,6 +414,8 @@ void Camera::computeModel()
     myModel = myView.inverted();
 
     myViewDirty = false;
+
+    modelViewChanged();
 }
 
 QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int caseTested)

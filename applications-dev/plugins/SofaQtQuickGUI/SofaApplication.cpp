@@ -64,7 +64,7 @@ using namespace sofa::simulation;
 SofaApplication* SofaApplication::OurInstance = nullptr;
 
 SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
-    myDataDirectory(QCoreApplication::applicationDirPath() + "/" + QCoreApplication::applicationName() + "Data")
+    myDataDirectory()
 {
     OurInstance = this;
 }
@@ -113,6 +113,13 @@ bool SofaApplication::saveFile(const QString& destination, const QString& data)
     out << data;
 
     return true;
+}
+
+bool SofaApplication::copyFile(const QString& source, const QString& destination)
+{
+    QFile(destination).remove();
+
+    return QFile::copy(source, destination);
 }
 
 bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QString& destination)
@@ -216,6 +223,23 @@ QString SofaApplication::binaryDirectory() const
 
 QString SofaApplication::dataDirectory() const
 {
+    if(myDataDirectory.isEmpty())
+    {
+        QVector<QString> paths;
+
+        paths.append(QCoreApplication::applicationDirPath() + "/../data");
+        paths.append(QCoreApplication::applicationDirPath() + "/../" + QCoreApplication::applicationName() + "Data");
+        paths.append(QCoreApplication::applicationDirPath() + "/" + QCoreApplication::applicationName() + "Data");
+        paths.append(QCoreApplication::applicationDirPath() + "/data");
+
+        for(const QString& path : paths)
+            if(QFileInfo::exists(path))
+            {
+                myDataDirectory = path;
+                break;
+            }
+    }
+
     return myDataDirectory;
 }
 
@@ -363,6 +387,11 @@ int SofaApplication::objectDepthFromRoot(QObject* object)
             ++depth;
 
     return depth;
+}
+
+QString SofaApplication::toLocalFile(const QUrl& url)
+{
+    return url.toLocalFile();
 }
 
 QQuaternion SofaApplication::quaternionFromEulerAngles(const QVector3D& eulerAngles) const
