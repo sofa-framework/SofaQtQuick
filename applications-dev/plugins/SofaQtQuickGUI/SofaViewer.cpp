@@ -671,82 +671,82 @@ void SofaViewer::internalRender(int width, int height) const
 
     // final image will be blended using premultiplied alpha
     glClearColor(myBackgroundColor.redF() * myBackgroundColor.alphaF(), myBackgroundColor.greenF() * myBackgroundColor.alphaF(), myBackgroundColor.blueF() * myBackgroundColor.alphaF(), myBackgroundColor.alphaF());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(!myCamera)
-		return;
+    if(!myCamera)
+        return;
 
-	// set default lights
-	{
-		glEnable(GL_LIGHT0);
-		{
-			float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
-			float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
-			float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
-			float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
+    // set default lights
+    {
+        glEnable(GL_LIGHT0);
+        {
+            float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
+            float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
+            float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
+            float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
 
-			glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-			glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
-			glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
-			glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-		}
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
+            glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
+            glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+        }
 
-		glEnable(GL_LIGHT1);
-		{
-			float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
-			float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
-			float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
-			float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
+        glEnable(GL_LIGHT1);
+        {
+            float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
+            float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
+            float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
+            float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
 
-			glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
-			glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
-			glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
-			glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
-		}
-	}
+            glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+            glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
+            glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
+            glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
+        }
+    }
 
-	glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
 
-	if(mySofaScene && mySofaScene->isReady())
-	{
-		myCamera->setAspectRatio(width / (double) height);
+    if(mySofaScene && mySofaScene->isReady())
+    {
+        myCamera->setAspectRatio(width / (double) height);
 
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadMatrixf(myCamera->projection().constData());
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadMatrixf(myCamera->projection().constData());
 
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadMatrixf(myCamera->view().constData());
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadMatrixf(myCamera->view().constData());
 
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_TEXTURE_2D);
 
-		// qt does not release its shader program and we do not use one so we have to release the current bound program
-		glUseProgram(0);
+        // qt does not release its shader program and we do not use one so we have to release the current bound program
+        glUseProgram(0);
 
-		// prepare the sofa visual params
-		sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-		if(_vparams)
-		{
-			if(!_vparams->drawTool())
-			{
-				_vparams->drawTool() = new sofa::core::visual::DrawToolGL();
-				_vparams->setSupported(sofa::core::visual::API_OpenGL);
-			}
+        // prepare the sofa visual params
+        sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
+        if(_vparams)
+        {
+            if(!_vparams->drawTool())
+            {
+                _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
+                _vparams->setSupported(sofa::core::visual::API_OpenGL);
+            }
 
-			GLint _viewport[4];
-			GLdouble _mvmatrix[16], _projmatrix[16];
+            GLint _viewport[4];
+            GLdouble _mvmatrix[16], _projmatrix[16];
 
-			glGetIntegerv (GL_VIEWPORT, _viewport);
-			glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
-			glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
+            glGetIntegerv (GL_VIEWPORT, _viewport);
+            glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
+            glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
 
-			_vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-			_vparams->sceneBBox() = mySofaScene->sofaSimulation()->GetRoot()->f_bbox.getValue();
-			_vparams->setProjectionMatrix(_projmatrix);
-			_vparams->setModelViewMatrix(_mvmatrix);
-		}
+            _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+            _vparams->sceneBBox() = mySofaScene->sofaRootNode()->f_bbox.getValue();
+            _vparams->setProjectionMatrix(_projmatrix);
+            _vparams->setModelViewMatrix(_mvmatrix);
+        }
 
         // draw the scene frame
         if(myDrawFrame)

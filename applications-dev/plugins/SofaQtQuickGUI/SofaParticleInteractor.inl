@@ -69,7 +69,7 @@ inline void SofaParticleInteraction<Types>::start()
 	typedef sofa::core::visual::InteractionForceFieldPainter InteractionForceFieldPainter;
 	InteractionForceFieldPainter::SPtr forcefieldPainter = sofa::core::objectmodel::New<InteractionForceFieldPainter>(interactionForceField.get());
 
-	Node::SPtr node = mySofaComponent->sofaScene()->sofaSimulation()->GetRoot()->createChild("Interactor");
+    Node::SPtr node = mySofaComponent->sofaScene()->sofaRootNode()->createChild("Interactor");
 	node->addObject(visualStyle);
 	node->addObject(interactorMechanicalObject);
 	node->addObject(fixedConstraint);
