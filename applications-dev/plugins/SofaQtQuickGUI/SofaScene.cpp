@@ -185,6 +185,8 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         openglContext->makeCurrent(offscreenSurface);
     }
 
+	//qDebug() << "OpenGL" << QOpenGLContext::currentContext()->format().majorVersion() << "." << QOpenGLContext::currentContext()->format().minorVersion();
+
     GLenum err = glewInit();
     if(0 != err)
         msg_error("SofaQtQuickGUI") << "GLEW Initialization failed with error code:" << err;

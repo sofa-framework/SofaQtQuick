@@ -66,6 +66,9 @@ public:
     Q_SLOT void copyToClipboard(const QString& text);
     Q_SLOT void openInExplorer(const QString& folder) const;
 
+	Q_SLOT bool createFolder(const QString& destination);
+	Q_SLOT bool copyFolder(const QString& source, const QString& destination);
+
     Q_INVOKABLE QString loadFile(const QString& filename);
     Q_SLOT bool saveFile(const QString& destination, const QString& data);
     Q_SLOT bool copyFile(const QString& source, const QString& destination);

@@ -36,6 +36,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QSettings>
 #include <QScreen>
 #include <QDir>
+#include <QStack>
 #include <QDebug>
 #include <QCommandLineParser>
 #include <QWindow>
@@ -48,6 +49,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QQmlComponent>
 #include <QQuickItem>
 #include <QOpenGLFramebufferObject>
+#include <QRunnable>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -94,6 +96,53 @@ void SofaApplication::openInExplorer(const QString& folder) const
     QDesktopServices::openUrl(QUrl::fromLocalFile(folder));
 }
 
+bool SofaApplication::createFolder(const QString& destination)
+{
+	QDir dir(destination);
+	if (!dir.exists())
+		return dir.mkpath(".");
+
+	return false;
+}
+
+bool SofaApplication::copyFolder(const QString& source, const QString& destination)
+{
+	QDir destinationDir(destination);
+	if (destinationDir.exists())
+		return false;
+
+	QDir baseSourceDir(source);
+
+	QStack<QDir> sourceDirs;
+	sourceDirs.push(baseSourceDir);
+
+	while (!sourceDirs.isEmpty())
+	{
+		QDir sourceDir = sourceDirs.pop();
+
+		QFileInfoList entries = sourceDir.entryInfoList(QDir::AllDirs | QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDir::DirsFirst);
+		for (QFileInfo entry : entries)
+		{
+			if (entry.isDir())
+			{
+				sourceDirs.push(QDir(entry.filePath()));
+			}
+			else if (entry.isFile())
+			{
+				QString relativeFolderPath = destination + "/" + baseSourceDir.relativeFilePath(entry.absolutePath());
+				QDir().mkpath(relativeFolderPath);
+
+				QString sourceFilepath = entry.filePath();
+				QString destinationFilepath = destination + "/" + baseSourceDir.relativeFilePath(entry.filePath());
+
+				QFile(sourceFilepath).copy(destinationFilepath);
+			}
+		}
+	}
+
+	return true;
+}
+
 QString SofaApplication::loadFile(const QString& filename)
 {
     QFile file(filename);
@@ -117,7 +166,12 @@ bool SofaApplication::saveFile(const QString& destination, const QString& data)
 
 bool SofaApplication::copyFile(const QString& source, const QString& destination)
 {
-    QFile(destination).remove();
+	QFileInfo fileInfo(destination);
+	QDir dir = fileInfo.dir();
+	if (dir.exists())
+		QFile(destination).remove();
+	else
+		dir.mkpath(".");
 
     return QFile::copy(source, destination);
 }
@@ -518,29 +572,35 @@ void SofaApplication::UseDefaultSofaPath()
 #endif
     sofa::helper::system::PluginRepository.addFirstPath(pluginDir);
 
+	sofa::helper::system::DataRepository.addFirstPath("../share/");
+	sofa::helper::system::DataRepository.addFirstPath("../examples/");
+
     // read the paths to the share/ and examples/ directories from etc/sofa.ini
 
     const std::string etcDir = sofa::helper::Utils::getSofaPathPrefix() + "/etc";
     const std::string sofaIniFilePath = etcDir + "/sofa.ini";
-    std::map<std::string, std::string> iniFileValues = sofa::helper::Utils::readBasicIniFile(sofaIniFilePath);
+	if(QFileInfo(QString::fromStdString(sofaIniFilePath)).exists())
+	{
+		std::map<std::string, std::string> iniFileValues = sofa::helper::Utils::readBasicIniFile(sofaIniFilePath);
 
-    // and add them to DataRepository
+		// and add them to DataRepository
 
-    if(iniFileValues.find("SHARE_DIR") != iniFileValues.end())
-    {
-        std::string shareDir = iniFileValues["SHARE_DIR"];
-        if (!sofa::helper::system::FileSystem::isAbsolute(shareDir))
-            shareDir = etcDir + "/" + shareDir;
-        sofa::helper::system::DataRepository.addFirstPath(shareDir);
-    }
+		if(iniFileValues.find("SHARE_DIR") != iniFileValues.end())
+		{
+			std::string shareDir = iniFileValues["SHARE_DIR"];
+			if (!sofa::helper::system::FileSystem::isAbsolute(shareDir))
+				shareDir = etcDir + "/" + shareDir;
+			sofa::helper::system::DataRepository.addFirstPath(shareDir);
+		}
 
-    if(iniFileValues.find("EXAMPLES_DIR") != iniFileValues.end())
-    {
-        std::string examplesDir = iniFileValues["EXAMPLES_DIR"];
-        if (!sofa::helper::system::FileSystem::isAbsolute(examplesDir))
-            examplesDir = etcDir + "/" + examplesDir;
-        sofa::helper::system::DataRepository.addFirstPath(examplesDir);
-    }
+		if(iniFileValues.find("EXAMPLES_DIR") != iniFileValues.end())
+		{
+			std::string examplesDir = iniFileValues["EXAMPLES_DIR"];
+			if (!sofa::helper::system::FileSystem::isAbsolute(examplesDir))
+				examplesDir = etcDir + "/" + examplesDir;
+			sofa::helper::system::DataRepository.addFirstPath(examplesDir);
+		}
+	}
 
     // also add application binary path
 #ifndef WIN32
@@ -690,6 +750,16 @@ bool SofaApplication::Initialization()
 {
     QGuiApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
+	QSurfaceFormat format;
+	format.setMajorVersion(4);
+	format.setMinorVersion(5);
+	format.setProfile(QSurfaceFormat::CompatibilityProfile);
+	format.setOption(QSurfaceFormat::DebugContext);
+	format.setDepthBufferSize(24);
+	format.setStencilBufferSize(8);
+	format.setSamples(4);
+	QSurfaceFormat::setDefaultFormat(format);
+
     return true;
 }
 
@@ -697,6 +767,14 @@ void SofaApplication::Destruction()
 {
     qApp->quit();
 }
+
+class UseOpenGLDebugLoggerRunnable : public QRunnable
+{
+	void run()
+	{
+		SofaApplication::UseOpenGLDebugLogger();
+	}
+};
 
 bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
@@ -791,7 +869,11 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
         if(!window)
             continue;
 
-        if(parser.isSet(animateOption) || parser.isSet(sceneOption))
+		//QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
+		//if (quickWindow)
+		//	quickWindow->scheduleRenderJob(new UseOpenGLDebugLoggerRunnable(), QQuickWindow::RenderStage::BeforeRenderingStage);
+
+		if(parser.isSet(animateOption) || parser.isSet(sceneOption))
         {
             SofaScene* sofaScene = object->findChild<SofaScene*>();
             if(parser.isSet(sceneOption))

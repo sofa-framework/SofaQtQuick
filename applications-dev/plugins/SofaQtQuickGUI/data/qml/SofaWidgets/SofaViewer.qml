@@ -136,7 +136,7 @@ SofaViewer {
     Connections {
         target: root.sofaScene
         onStatusChanged: {
-            if(SofaScene.Ready === root.sofaScene.status)
+            if(root.sofaScene && SofaScene.Ready === root.sofaScene.status)
                 root.recreateCamera();
         }
     }
