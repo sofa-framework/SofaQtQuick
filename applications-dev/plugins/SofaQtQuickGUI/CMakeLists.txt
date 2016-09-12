@@ -34,6 +34,7 @@ set(SOURCE_FILES
 set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
+    ProcessState.h
     SofaViewer.h
     Camera.h
     SofaScene.h

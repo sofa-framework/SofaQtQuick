@@ -19,6 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaApplication.h"
 #include "SofaScene.h"
+#include "ProcessState.h"
 
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/FileRepository.h>
@@ -40,7 +41,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QDebug>
 #include <QCommandLineParser>
 #include <QWindow>
-#include <QProcess>
 #include <QDesktopServices>
 #include <QClipboard>
 #include <QQuickRenderControl>
@@ -50,6 +50,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QQuickItem>
 #include <QOpenGLFramebufferObject>
 #include <QRunnable>
+#include <QTimer>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -248,7 +249,7 @@ bool SofaApplication::runPythonFile(const QString& filename)
     return PythonEnvironment::runFile(filename.toLatin1().constData());
 }
 
-QVariantList SofaApplication::executeCommand(const QString& command, int timeOutMsecs)
+QVariantList SofaApplication::executeProcess(const QString& command, int timeOutMsecs)
 {
     QProcess process;
     process.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
@@ -260,14 +261,16 @@ QVariantList SofaApplication::executeCommand(const QString& command, int timeOut
     return QVariantList() << QVariant::fromValue((int) process.exitStatus()) << QVariant::fromValue(process.exitCode()) << QVariant::fromValue(process.readAllStandardOutput()) << QVariant::fromValue(process.readAllStandardError());
 }
 
-void SofaApplication::executeAsyncCommand(const QString& command)
+ProcessState* SofaApplication::executeProcessAsync(const QString& command)
 {
     QProcess* process = new QProcess();
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
 
-    process->connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [=](int, QProcess::ExitStatus) {process->deleteLater();});
+    ProcessState* processState = new ProcessState(process);
 
     process->start(command);
+
+    return processState;
 }
 
 QString SofaApplication::binaryDirectory() const

@@ -21,10 +21,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #define SOFAAPPLICATION_H
 
 #include "SofaQtQuickGUI.h"
+
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QPointF>
 #include <QQuaternion>
+#include <QProcess>
 
 class QApplication;
 class QQmlApplicationEngine;
@@ -39,7 +41,9 @@ namespace sofa
 namespace qtquick
 {
 
-/// \class Represents the whole application
+class ProcessState;
+
+/// \class Useful tool when creating applications
 class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
 {
     Q_OBJECT
@@ -78,8 +82,8 @@ public:
     Q_INVOKABLE bool runPythonScript(const QString& script); // \return true if script ran successfuly, false on error
     Q_INVOKABLE bool runPythonFile(const QString& filename); // \return true if script ran successfuly, false on error
 
-    Q_INVOKABLE QVariantList executeCommand(const QString& command, int timeOutMsecs = -1); // \return [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
-    Q_INVOKABLE void executeAsyncCommand(const QString& command);
+    Q_INVOKABLE QVariantList executeProcess(const QString& command, int timeOutMsecs = -1); // \return [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
+    Q_INVOKABLE sofa::qtquick::ProcessState* executeProcessAsync(const QString& command);
 
     Q_INVOKABLE QString dataDirectory() const;
     Q_INVOKABLE void setDataDirectory(const QString& dataDirectory);
