@@ -253,7 +253,7 @@ QVariantList SofaApplication::executeProcess(const QString& command, int timeOut
 {
     QProcess process;
     process.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    process->setProcessChannelMode(QProcess::ForwardedChannels); // to display stdout/sterr (QProcess::MergedChannels for stdout only)
+    process.setProcessChannelMode(QProcess::ForwardedChannels); // to display stdout/sterr (QProcess::MergedChannels for stdout only)
 
     process.start(command);
 
