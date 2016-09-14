@@ -253,6 +253,7 @@ QVariantList SofaApplication::executeProcess(const QString& command, int timeOut
 {
     QProcess process;
     process.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    process->setProcessChannelMode(QProcess::ForwardedChannels); // to display stdout/sterr (QProcess::MergedChannels for stdout only)
 
     process.start(command);
 
@@ -265,12 +266,16 @@ ProcessState* SofaApplication::executeProcessAsync(const QString& command)
 {
     QProcess* process = new QProcess();
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    process->setProcessChannelMode(QProcess::ForwardedChannels); // to display stdout/sterr (QProcess::MergedChannels for stdout only)
 
     ProcessState* processState = new ProcessState(process);
 
     process->start(command);
 
     return processState;
+
+    // do not forget to call destroyProcess to delete "process"
+    // how to delete "processState"?
 }
 
 QString SofaApplication::binaryDirectory() const
