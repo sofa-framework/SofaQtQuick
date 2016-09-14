@@ -57,7 +57,7 @@ class SofaViewer;
 class PickUsingRasterizationWorker;
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
-class SofaScene : public QObject, private sofa::simulation::MutationListener
+class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject, private sofa::simulation::MutationListener
 {
     Q_OBJECT
 
