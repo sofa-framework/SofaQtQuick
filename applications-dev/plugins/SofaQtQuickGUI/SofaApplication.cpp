@@ -155,6 +155,11 @@ QString SofaApplication::loadFile(const QString& filename)
 
 bool SofaApplication::saveFile(const QString& destination, const QString& data)
 {
+    QFileInfo fileInfo(destination);
+    QDir dir = fileInfo.dir();
+    if (!dir.exists())
+        dir.mkpath(".");
+
     QFile file(destination);
     if(!file.open(QFile::WriteOnly))
         return false;
