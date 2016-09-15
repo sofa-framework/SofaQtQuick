@@ -73,6 +73,8 @@ public:
 	Q_SLOT bool createFolder(const QString& destination);
 	Q_SLOT bool copyFolder(const QString& source, const QString& destination);
 
+	Q_INVOKABLE QStringList findFiles(const QString& dirPath, const QStringList& nameFilters);
+
     Q_INVOKABLE QString loadFile(const QString& filename);
     Q_SLOT bool saveFile(const QString& destination, const QString& data);
     Q_SLOT bool copyFile(const QString& source, const QString& destination);

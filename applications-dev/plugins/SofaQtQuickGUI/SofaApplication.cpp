@@ -144,6 +144,21 @@ bool SofaApplication::copyFolder(const QString& source, const QString& destinati
 	return true;
 }
 
+QStringList SofaApplication::findFiles(const QString& dirPath, const QStringList& nameFilters)
+{
+	QStringList filepaths;
+
+	QDir dir(dirPath);
+	if (!dir.exists())
+		return filepaths;
+
+	QFileInfoList entries = dir.entryInfoList(nameFilters, QDir::Files);
+	for (QFileInfo entry : entries)
+		filepaths << entry.filePath();
+
+	return filepaths;
+}
+
 QString SofaApplication::loadFile(const QString& filename)
 {
     QFile file(filename);
@@ -173,13 +188,20 @@ bool SofaApplication::saveFile(const QString& destination, const QString& data)
 bool SofaApplication::copyFile(const QString& source, const QString& destination)
 {
 	QFileInfo fileInfo(destination);
-	QDir dir = fileInfo.dir();
-	if (dir.exists())
-		QFile(destination).remove();
+	if (fileInfo.isDir())
+	{
+		return QFile::copy(source, destination + "/" + QFileInfo(source).fileName());
+	}
 	else
-		dir.mkpath(".");
+	{
+		QDir dir = fileInfo.dir();
+		if (dir.exists())
+			QFile(destination).remove();
+		else
+			dir.mkpath(".");
 
-    return QFile::copy(source, destination);
+		return QFile::copy(source, destination);
+	}
 }
 
 bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QString& destination)
