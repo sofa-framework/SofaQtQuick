@@ -369,7 +369,6 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
     }
 
     PythonScriptController* controller = pythonScriptControllerByName(pythonScriptControllerName);
-    controller = pythonScriptControllerByName(pythonScriptControllerName);
     if(!controller)
     {
         // sometimes a second call to pythonScriptControllerByName is ok
