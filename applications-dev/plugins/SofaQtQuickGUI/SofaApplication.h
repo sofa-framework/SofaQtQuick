@@ -71,6 +71,7 @@ public:
     Q_SLOT void openInExplorer(const QString& folder) const;
 
 	Q_SLOT bool createFolder(const QString& destination);
+    Q_SLOT bool removeFolder(const QString& destination);
 	Q_SLOT bool copyFolder(const QString& source, const QString& destination);
 
 	Q_INVOKABLE QStringList findFiles(const QString& dirPath, const QStringList& nameFilters);
