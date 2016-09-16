@@ -107,6 +107,12 @@ bool SofaApplication::createFolder(const QString& destination)
 	return false;
 }
 
+bool SofaApplication::removeFolder(const QString& destination)
+{
+    QDir dir(destination);
+    return dir.removeRecursively();
+}
+
 bool SofaApplication::copyFolder(const QString& source, const QString& destination)
 {
 	QDir destinationDir(destination);
@@ -330,7 +336,7 @@ QString SofaApplication::dataDirectory() const
         for(const QString& path : paths)
             if(QFileInfo::exists(path))
             {
-                myDataDirectory = path;
+                myDataDirectory = path + "/";
                 break;
             }
     }
@@ -345,7 +351,7 @@ void SofaApplication::setDataDirectory(const QString& dataDirectory)
 
 QString SofaApplication::binaryDirectory() const
 {
-	return QCoreApplication::applicationDirPath();
+    return QCoreApplication::applicationDirPath() + "/";
 }
 
 void SofaApplication::saveScreenshot(const QString& path)
