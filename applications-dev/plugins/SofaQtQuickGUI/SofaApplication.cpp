@@ -67,6 +67,7 @@ using namespace sofa::simulation;
 SofaApplication* SofaApplication::OurInstance = nullptr;
 
 SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
+	myPythonDirectory(),
     myDataDirectory()
 {
     OurInstance = this;
@@ -305,9 +306,14 @@ ProcessState* SofaApplication::executeProcessAsync(const QString& command)
     // how to delete "processState"?
 }
 
-QString SofaApplication::binaryDirectory() const
+QString SofaApplication::pythonDirectory() const
 {
-    return QCoreApplication::applicationDirPath();
+	return myPythonDirectory;
+}
+
+void SofaApplication::setPythonDirectory(const QString& pythonDirectory)
+{
+	myPythonDirectory = pythonDirectory;
 }
 
 QString SofaApplication::dataDirectory() const
@@ -335,6 +341,11 @@ QString SofaApplication::dataDirectory() const
 void SofaApplication::setDataDirectory(const QString& dataDirectory)
 {
     myDataDirectory = dataDirectory;
+}
+
+QString SofaApplication::binaryDirectory() const
+{
+	return QCoreApplication::applicationDirPath();
 }
 
 void SofaApplication::saveScreenshot(const QString& path)

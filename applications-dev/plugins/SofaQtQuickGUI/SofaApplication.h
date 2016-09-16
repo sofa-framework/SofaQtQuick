@@ -87,6 +87,9 @@ public:
     Q_INVOKABLE QVariantList executeProcess(const QString& command, int timeOutMsecs = -1); // \return [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
     Q_INVOKABLE sofa::qtquick::ProcessState* executeProcessAsync(const QString& command);
 
+	Q_INVOKABLE QString pythonDirectory() const;
+	Q_INVOKABLE void setPythonDirectory(const QString& pythonDirectory);
+
     Q_INVOKABLE QString dataDirectory() const;
     Q_INVOKABLE void setDataDirectory(const QString& dataDirectory);
 
@@ -141,6 +144,7 @@ public:
 private:
     static SofaApplication* OurInstance;
 
+	QString					myPythonDirectory;
     mutable QString         myDataDirectory;
 
 };
