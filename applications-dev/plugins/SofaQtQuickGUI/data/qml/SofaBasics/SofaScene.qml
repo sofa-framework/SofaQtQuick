@@ -143,7 +143,7 @@ SofaScene {
 
     function removeManipulator(manipulator) {
         var manipulators = [];
-        for(var i = 0; i < root.manipulators; ++i)
+        for(var i = 0; i < root.manipulators.length; ++i)
             if(manipulator !== root.manipulators[i])
                 manipulators.push(root.manipulators[i]);
 
@@ -152,7 +152,7 @@ SofaScene {
 
     function removeManipulatorByName(name) {
         var manipulators = [];
-        for(var i = 0; i < root.manipulators; ++i)
+        for(var i = 0; i < root.manipulators.length; ++i)
             if(name !== root.manipulators[i].objectName)
                 manipulators.push(root.manipulators[i]);
 
