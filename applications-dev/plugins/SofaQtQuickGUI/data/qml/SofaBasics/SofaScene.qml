@@ -159,6 +159,13 @@ SofaScene {
         root.manipulators = manipulators;
     }
 
+    function getManipulatorByName(name) {
+        for(var i = 0; i < root.manipulators.length; ++i)
+            if(name === root.manipulators[i].objectName)
+                return root.manipulators[i];
+        return null;
+    }
+
     function clearManipulators() {
         root.manipulators = [];
     }
