@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE QString templateName() const;
     Q_INVOKABLE QString description() const;
     Q_INVOKABLE QString providerName() const;
+    Q_INVOKABLE QString getPathName() const;
 
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent) const;
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;

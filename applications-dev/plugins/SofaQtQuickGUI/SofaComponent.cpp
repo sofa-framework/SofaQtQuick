@@ -125,6 +125,17 @@ QString SofaComponent::providerName() const
     return "";
 }
 
+QString SofaComponent::getPathName() const
+{
+    const Base* base = SofaComponent::base();
+    if(base) {
+        const BaseObject* baseObject = dynamic_cast<const BaseObject*>(base);
+        if (baseObject)
+            return QString::fromStdString(baseObject->getPathName());
+    }
+    return "";
+}
+
 bool SofaComponent::isSame(SofaComponent* sofaComponent) const
 {
     if(!sofaComponent)
