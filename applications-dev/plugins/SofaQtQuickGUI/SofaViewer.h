@@ -169,7 +169,7 @@ signals:
     void postDraw() const;
 
 public slots:
-    void viewAll();
+    void viewAll(float radiusFactor=1.5); // radiusFactor scales the bounding box used to compute the zoom level
 
 protected:
     QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);

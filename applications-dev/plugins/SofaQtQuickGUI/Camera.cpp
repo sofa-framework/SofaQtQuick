@@ -310,7 +310,7 @@ void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector
     modelViewChanged();
 }
 
-void Camera::fit(QVector3D min, QVector3D max)
+void Camera::fit(QVector3D min, QVector3D max, float radiusFactor)
 {
     if(min == max)
     {
@@ -327,7 +327,7 @@ void Camera::fit(QVector3D min, QVector3D max)
 	QVector3D diagonal = max - min;
 	double radius = diagonal.length();
 
-    double distance = 1.5 * radius / qTan(myPerspectiveFovY * M_PI / 180.0);
+    double distance = radiusFactor * radius / qTan(myPerspectiveFovY * M_PI / 180.0);
     if(distance < 0.0001 || !(distance == distance)) // return if incorrect value, i.e < epsilon or nan
         return;
 

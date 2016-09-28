@@ -627,7 +627,7 @@ QPointF SofaViewer::mapToNative(const QPointF& ssPoint) const
     return ssNativePoint;
 }
 
-void SofaViewer::viewAll()
+void SofaViewer::viewAll(float radiusFactor)
 {
     if(!myCamera || !mySofaScene || !mySofaScene->isReady())
         return;
@@ -635,7 +635,7 @@ void SofaViewer::viewAll()
     QVector3D min, max;
     mySofaScene->computeBoundingBox(min, max);
 
-    myCamera->fit(min, max);
+    myCamera->fit(min, max, radiusFactor);
 }
 
 QSGNode* SofaViewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData)
