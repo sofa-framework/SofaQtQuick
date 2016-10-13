@@ -88,6 +88,8 @@ public:
     Q_INVOKABLE QVariantList executeProcess(const QString& command, int timeOutMsecs = -1); // \return [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
     Q_INVOKABLE sofa::qtquick::ProcessState* executeProcessAsync(const QString& command);
 
+	Q_INVOKABLE void addNextFrameAction(QJSValue& jsFunction); // \brief will execute the jsfunction (that must live that far) at the next frame
+
 	Q_INVOKABLE QString pythonDirectory() const;
 	Q_INVOKABLE void setPythonDirectory(const QString& pythonDirectory);
 

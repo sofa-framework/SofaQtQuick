@@ -214,9 +214,9 @@ Item {
                         if("undefined" === type) {
                             loader.source = "";
                             if(0 === root.name.length)
-                                console.warn("Trying to display a null data");
+                                console.warn("WARNING: Trying to display a null data");
                             else
-                                console.warn("Type unknown for data: " + root.name);
+                                console.warn("WARNING: Type unknown for data: " + root.name);
                         } else {
                             loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
                             if(Loader.Ready !== loader.status)

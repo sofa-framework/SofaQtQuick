@@ -312,6 +312,17 @@ ProcessState* SofaApplication::executeProcessAsync(const QString& command)
     // how to delete "processState"?
 }
 
+void SofaApplication::addNextFrameAction(QJSValue& jsFunction)
+{
+	if(!jsFunction.isCallable())
+	{
+		qWarning() << "SofaApplication::addNextFrameAction - parameter must be a JS function";
+		return;
+	}
+
+	QTimer::singleShot(0, [&]() { jsFunction.call(); });
+}
+
 QString SofaApplication::pythonDirectory() const
 {
 	return myPythonDirectory;

@@ -635,7 +635,7 @@ void SofaViewer::viewAll(float radiusFactor)
     QVector3D min, max;
     mySofaScene->computeBoundingBox(min, max);
 
-    myCamera->fit(min, max, radiusFactor);
+    myCamera->fit(min, max, 1.5f * radiusFactor);
 }
 
 QSGNode* SofaViewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData)

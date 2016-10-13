@@ -119,6 +119,6 @@ QtObject {
     }
 
     function init() {
-        console.error("UserInteractor_* must implement the init function !");
+        console.error("ERROR: UserInteractor_* must implement the init function !");
     }
 }
