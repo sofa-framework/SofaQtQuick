@@ -24,12 +24,16 @@ import QtQuick.Controls.Styles 1.1
 Button {
     id: root
 
+    implicitWidth: 32
+    implicitHeight: 32
+
     style: ButtonStyle {
         background: null
         label: null
     }
 
     Image {
+        id: image
         anchors.fill: parent
         source: root.iconSource
         fillMode: Image.PreserveAspectFit

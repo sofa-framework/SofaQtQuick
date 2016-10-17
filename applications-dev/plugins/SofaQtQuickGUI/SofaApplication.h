@@ -21,10 +21,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #define SOFAAPPLICATION_H
 
 #include "SofaQtQuickGUI.h"
+
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QPointF>
 #include <QQuaternion>
+#include <QProcess>
 
 class QApplication;
 class QQmlApplicationEngine;
@@ -39,7 +41,9 @@ namespace sofa
 namespace qtquick
 {
 
-/// \class Represents the whole application
+class ProcessState;
+
+/// \class Useful tool when creating applications
 class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
 {
     Q_OBJECT
@@ -63,6 +67,35 @@ signals:
     void overrideCursorShapeChanged();
 
 public:
+    Q_SLOT void copyToClipboard(const QString& text);
+    Q_SLOT void openInExplorer(const QString& folder) const;
+
+	Q_SLOT bool createFolder(const QString& destination);
+    Q_SLOT bool removeFolder(const QString& destination);
+	Q_SLOT bool copyFolder(const QString& source, const QString& destination);
+
+	Q_INVOKABLE QStringList findFiles(const QString& dirPath, const QStringList& nameFilters);
+
+    Q_INVOKABLE QString loadFile(const QString& filename);
+    Q_SLOT bool saveFile(const QString& destination, const QString& data);
+    Q_SLOT bool copyFile(const QString& source, const QString& destination);
+
+    Q_SLOT bool screenshotComponent(const QUrl& componentUrl, const QString& destination);
+
+    Q_INVOKABLE bool runPythonScript(const QString& script); // \return true if script ran successfuly, false on error
+    Q_INVOKABLE bool runPythonFile(const QString& filename); // \return true if script ran successfuly, false on error
+
+    Q_INVOKABLE QVariantList executeProcess(const QString& command, int timeOutMsecs = -1); // \return [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
+    Q_INVOKABLE sofa::qtquick::ProcessState* executeProcessAsync(const QString& command);
+
+	Q_INVOKABLE void addNextFrameAction(QJSValue& jsFunction); // \brief will execute the jsfunction (that must live that far) at the next frame
+
+	Q_INVOKABLE QString pythonDirectory() const;
+	Q_INVOKABLE void setPythonDirectory(const QString& pythonDirectory);
+
+    Q_INVOKABLE QString dataDirectory() const;
+    Q_INVOKABLE void setDataDirectory(const QString& dataDirectory);
+
     Q_INVOKABLE QString binaryDirectory() const;
     Q_INVOKABLE void saveScreenshot(const QString& path);
 
@@ -74,6 +107,8 @@ public:
     Q_INVOKABLE void trimComponentCache(QObject* object = 0);
     Q_INVOKABLE void clearSettingGroup(const QString& group);
     Q_INVOKABLE int objectDepthFromRoot(QObject* object);
+
+    Q_INVOKABLE QString toLocalFile(const QUrl& url);
 
     Q_INVOKABLE QQuaternion quaternionFromEulerAngles(const QVector3D& eulerAngles) const;
     Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion) const;
@@ -111,6 +146,9 @@ public:
 
 private:
     static SofaApplication* OurInstance;
+
+	QString					myPythonDirectory;
+    mutable QString         myDataDirectory;
 
 };
 

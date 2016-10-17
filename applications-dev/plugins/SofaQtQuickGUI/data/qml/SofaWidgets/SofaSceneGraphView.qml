@@ -197,8 +197,8 @@ ColumnLayout {
             }
 
             delegate: Item {
-                anchors.left: parent.left
-                anchors.right: parent.right
+                anchors.left: parent ? parent.left : undefined
+                anchors.right: parent ? parent.right : undefined
                 height: visible ? listView.rowHeight : 0
                 visible: !(SofaSceneListModel.Hidden & visibility)
                 opacity: !(SofaSceneListModel.Disabled & visibility) ? 1.0 : 0.5
@@ -214,13 +214,13 @@ ColumnLayout {
                         Image {
                             Layout.preferredWidth: 16
                             Layout.preferredHeight: Layout.preferredWidth
-                            visible: collapsible
+                            visible: undefined !== collapsible ? collapsible : false
 
                             source: SofaSceneListModel.Collapsed & visibility ? "qrc:/icon/rightArrow.png" : "qrc:/icon/downArrow.png"
 
                             MouseArea {
                                 anchors.fill: parent
-                                enabled: collapsible
+                                enabled: undefined !== collapsible ? collapsible : false
                                 onClicked: {
                                     var currentRow = listView.model.computeItemRow(listView.currentIndex);
                                     listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
@@ -241,7 +241,7 @@ ColumnLayout {
                                 spacing: 0
 
                                 Image {
-                                    visible: isNode && (SofaSceneListModel.Disabled & visibility)
+                                    visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
                                     Layout.preferredWidth: listView.rowHeight
                                     Layout.preferredHeight: Layout.preferredWidth
 
@@ -260,7 +260,7 @@ ColumnLayout {
                                     border.color: "black"
                                 }
                                 Rectangle {
-                                    visible: multiparent
+                                    visible: (undefined !== multiparent ? multiparent : false)
                                     Layout.preferredWidth: listView.rowHeight * 0.5
                                     Layout.preferredHeight: Layout.preferredWidth
 
@@ -273,9 +273,9 @@ ColumnLayout {
                             }
 
                             Text {
-                                text: (!isNode && 0 !== type.length ? type + " - ": "") + (0 !== name.length ? name : "")
+                                text: ((undefined !== isNode ? !isNode : false) && type && 0 !== type.length ? type + " - ": "") + (name && 0 !== name.length ? name : "")
                                 color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
-                                font.bold: isNode
+                                font.bold: undefined !== isNode ? isNode : false
 
                                 Layout.fillWidth: true
 

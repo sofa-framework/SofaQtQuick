@@ -75,35 +75,33 @@ void SofaPythonInteractor::setSofaScene(SofaScene* newSofaScene)
 static PyObject* PythonBuildValueHelper(const QVariant& parameter)
 {
 	PyObject* value = 0;
-	if(!parameter.isNull())
-	{
-        QVariant finalParameter = parameter;
-        if(finalParameter.userType() == qMetaTypeId<QJSValue>())
-            finalParameter = finalParameter.value<QJSValue>().toVariant();
 
-        switch(finalParameter.type())
-		{
-		case QVariant::Bool:
-            value = Py_BuildValue("b", finalParameter.toBool());
-			break;
-		case QVariant::Int:
-            value = Py_BuildValue("i", finalParameter.toInt());
-			break;
-		case QVariant::UInt:
-            value = Py_BuildValue("I", finalParameter.toUInt());
-			break;
-		case QVariant::Double:
-            value = Py_BuildValue("d", finalParameter.toDouble());
-			break;
-		case QVariant::String:
-            value = Py_BuildValue("s", finalParameter.toString().toLatin1().constData());
-			break;
-		default:
-			value = Py_BuildValue("");
-            msg_error("SofaQtQuickGUI") << "buildPythonParameterHelper, type not supported:" << finalParameter.typeName() << "- id" << finalParameter.type();
-			break;
-		}
-	}
+    QVariant finalParameter = parameter;
+    if(finalParameter.userType() == qMetaTypeId<QJSValue>())
+        finalParameter = finalParameter.value<QJSValue>().toVariant();
+
+    switch(finalParameter.type())
+    {
+    case QVariant::Bool:
+        value = Py_BuildValue("b", finalParameter.toBool());
+        break;
+    case QVariant::Int:
+        value = Py_BuildValue("i", finalParameter.toInt());
+        break;
+    case QVariant::UInt:
+        value = Py_BuildValue("I", finalParameter.toUInt());
+        break;
+    case QVariant::Double:
+        value = Py_BuildValue("d", finalParameter.toDouble());
+        break;
+    case QVariant::String:
+        value = Py_BuildValue("s", finalParameter.toString().toLatin1().constData());
+        break;
+    default:
+        value = Py_BuildValue("");
+        msg_error("SofaQtQuickGUI") << "buildPythonParameterHelper, type not supported:" << finalParameter.typeName() << "- id" << finalParameter.type();
+        break;
+    }
 
 	return value;
 }
@@ -112,7 +110,7 @@ static PyObject* PythonBuildTupleHelper(const QVariant& parameter, bool mustBeTu
 {
 	PyObject* tuple = 0;
 
-	if(!parameter.isNull())
+    if(parameter.isValid())
     {
         QVariant finalParameter = parameter;
         if(finalParameter.userType() == qMetaTypeId<QJSValue>())
@@ -373,8 +371,16 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
     PythonScriptController* controller = pythonScriptControllerByName(pythonScriptControllerName);
     if(!controller)
     {
-        msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name (" << pythonScriptControllerName.toStdString() << ")";
-        return QVariant();
+        // sometimes a second call to pythonScriptControllerByName is ok
+        // TODO something must be initialised in the first call
+        // TODO clean that
+        controller = pythonScriptControllerByName(pythonScriptControllerName);
+
+        if(!controller)
+        {
+            msg_error("SofaQtQuickGUI") << "cannot call Python function (" << funcName.toStdString() << ") without a valid python controller path/name (" << pythonScriptControllerName.toStdString() << ")";
+            return QVariant();
+        }
     }
 
     return onCallByController(controller, funcName, parameter);

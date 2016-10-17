@@ -16,7 +16,7 @@ GridLayout {
 
         var values = [Number(array[0]), Number(array[1]), Number(array[2]), Number(array[4])];
         if(values[0] !== values[0] || values[1] !== values[1] || values[2] !== values[2] || values[3] !== values[3]) {
-            console.error("Value is Nan");
+            console.error("ERROR: Value is Nan");
             return;
         }
 

@@ -34,6 +34,7 @@ set(SOURCE_FILES
 set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
+    ProcessState.h
     SofaViewer.h
     Camera.h
     SofaScene.h
@@ -125,6 +126,8 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaSceneToolPanel.qml
     data/qml/SofaWidgets/SofaSimulationControl.qml
     data/qml/SofaWidgets/SofaVisualizationControl.qml
+    data/qml/SofaWidgets/AffineTransformationController.qml
+    data/qml/SofaWidgets/ColorSelector.qml
 )
 
 set(CONFIG_FILES
@@ -196,7 +199,7 @@ add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
 
 
 if(NOT MSVC)
-    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:-std=c++11>")
+    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
 
 

@@ -66,6 +66,9 @@ signals:
     void orthographicChanged(bool);
     void targetChanged(const QVector3D&);
 
+    void projectionChanged() const;
+    void modelViewChanged() const;
+
 public:
 	const QMatrix4x4& projection() const;
 	const QMatrix4x4& view() const;
@@ -78,6 +81,7 @@ public:
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
     Q_INVOKABLE QQuaternion orientation() const;
+	Q_INVOKABLE QMatrix4x4 rotationMatrix() const;
 
     Q_INVOKABLE double aspectRatio() const          {return myAspectRatio;}
 
@@ -104,7 +108,7 @@ public slots:
     void zoomWithBounds(double factor, double min, double max);
 
     void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
-    void fit(QVector3D min, QVector3D max);
+    void fit(QVector3D min, QVector3D max, float radiusFactor=1.5);
 
     void alignCameraAxis();
 

@@ -63,6 +63,8 @@ const QMatrix4x4& Camera::projection() const
         else
             myProjection.perspective((float) myPerspectiveFovY, (float) myAspectRatio, myZNear, myZFar);
 		myProjectionDirty = false;
+
+        projectionChanged();
 	}
 
 	return myProjection;
@@ -74,6 +76,8 @@ const QMatrix4x4& Camera::view() const
     {
         myView = model().inverted();
         myViewDirty = false;
+
+        modelViewChanged();
     }
 
 	return myView;
@@ -93,6 +97,15 @@ QQuaternion Camera::orientation() const
     orientation.setColumn(2, direction());
 
     return  QQuaternion::fromRotationMatrix(orientation.normalMatrix());
+}
+
+QMatrix4x4 Camera::rotationMatrix() const
+{
+	QMatrix4x4 mat = QMatrix4x4(myModel.normalMatrix());
+
+	qDebug() << mat;
+
+	return mat;
 }
 
 double Camera::computeDepth(const QVector3D& wsPosition) const
@@ -302,9 +315,11 @@ void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector
     myTarget = target;
 
     myViewDirty = false;
+
+    modelViewChanged();
 }
 
-void Camera::fit(QVector3D min, QVector3D max)
+void Camera::fit(QVector3D min, QVector3D max, float radiusFactor)
 {
     if(min == max)
     {
@@ -321,7 +336,7 @@ void Camera::fit(QVector3D min, QVector3D max)
 	QVector3D diagonal = max - min;
 	double radius = diagonal.length();
 
-    double distance = 1.5 * radius / qTan(myPerspectiveFovY * M_PI / 180.0);
+    double distance = radiusFactor * radius / qTan(myPerspectiveFovY * M_PI / 180.0);
     if(distance < 0.0001 || !(distance == distance)) // return if incorrect value, i.e < epsilon or nan
         return;
 
@@ -346,6 +361,8 @@ void Camera::fit(QVector3D min, QVector3D max)
     myModel = myView.inverted();
 
     myViewDirty = false;
+
+    modelViewChanged();
 
     if(orthographic())
         computeOrthographic();
@@ -406,6 +423,8 @@ void Camera::computeModel()
     myModel = myView.inverted();
 
     myViewDirty = false;
+
+    modelViewChanged();
 }
 
 QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int caseTested)

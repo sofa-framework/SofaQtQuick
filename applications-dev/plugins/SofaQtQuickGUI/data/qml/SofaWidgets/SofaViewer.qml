@@ -38,6 +38,7 @@ SofaViewer {
     mirroredVertically: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
+    property bool configurable: true
 
     Image {
         anchors.fill: parent
@@ -135,7 +136,7 @@ SofaViewer {
     Connections {
         target: root.sofaScene
         onStatusChanged: {
-            if(SofaScene.Ready === root.sofaScene.status)
+            if(root.sofaScene && SofaScene.Ready === root.sofaScene.status)
                 root.recreateCamera();
         }
     }
@@ -774,10 +775,12 @@ SofaViewer {
                         GroupBox {
                             id: cameraPanel
                             implicitWidth: parent.width
+                            implicitHeight: cameraLayout.implicitHeight
 
                             title: "Camera"
 
                             Column {
+                                id: cameraLayout
                                 anchors.fill: parent
                                 spacing: 0
 
@@ -1166,6 +1169,7 @@ SofaViewer {
         source: toolPanel.visible ? "qrc:/icon/minus.png" : "qrc:/icon/plus.png"
         width: 12
         height: width
+        visible: configurable
 
         MouseArea {
             anchors.fill: parent
