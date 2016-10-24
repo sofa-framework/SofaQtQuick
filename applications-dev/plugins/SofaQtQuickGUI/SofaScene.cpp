@@ -31,6 +31,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/system/PluginManager.h>
 #include <sofa/helper/logging/Messaging.h>
 #include <sofa/helper/cast.h>
+#include <sofa/simulation/UpdateBoundingBoxVisitor.h>
 #include <SofaSimulationGraph/graph.h>
 #include <SofaSimulationGraph/DAGSimulation.h>
 #include <SofaSimulationGraph/init.h>
@@ -697,6 +698,32 @@ void SofaScene::computeBoundingBox(QVector3D& min, QVector3D& max) const
 {
     SReal pmin[3], pmax[3];
     mySofaSimulation->computeTotalBBox(mySofaRootNode.get(), pmin, pmax);
+
+    min = QVector3D(pmin[0], pmin[1], pmin[2]);
+    max = QVector3D(pmax[0], pmax[1], pmax[2]);
+}
+
+void SofaScene::computeBoundingBox(QVector3D& min, QVector3D& max, const QList<SofaComponent*>& roots) const
+{
+    SReal pmin[3], pmax[3];
+
+    pmin[0] = pmin[1] = pmin[2] = 1e10;
+    pmax[0] = pmax[1] = pmax[2] = -1e10;
+
+    for(SofaComponent* sofaComponent : roots)
+    {
+        Node* node = dynamic_cast<Node*>(sofaComponent->base());
+        if(!node)
+            continue;
+
+        sofa::core::ExecParams* params = sofa::core::ExecParams::defaultInstance();
+        node->execute<UpdateBoundingBoxVisitor>( params );
+        defaulttype::BoundingBox bb = node->f_bbox.getValue();
+        for(int i=0; i<3; i++){
+            pmin[i]= bb.minBBox()[i];
+            pmax[i]= bb.maxBBox()[i];
+        }
+    }
 
     min = QVector3D(pmin[0], pmin[1], pmin[2]);
     max = QVector3D(pmax[0], pmax[1], pmax[2]);
