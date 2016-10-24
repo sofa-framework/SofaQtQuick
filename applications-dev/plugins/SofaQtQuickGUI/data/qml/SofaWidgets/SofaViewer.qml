@@ -40,10 +40,11 @@ SofaViewer {
     sofaScene: SofaApplication.sofaScene
     property bool configurable: true
 
+    property bool transparentBackground: false
     Image {
         anchors.fill: parent
         z: -1
-        visible: root.backgroundColor.a < 1.0
+        visible: !root.transparentBackground && root.backgroundColor.a < 1.0
         fillMode: Image.Tile
         source: "qrc:/icon/alphaBackground.png"
     }
@@ -90,7 +91,7 @@ SofaViewer {
         anchors.centerIn: parent
         width: 100
         height: width
-        running: !hideBusyIndicator && (sofaScene ? sofaScene.status === SofaScene.Loading : false);
+        running: !root.hideBusyIndicator && (root.sofaScene ? root.sofaScene.status === SofaScene.Loading : false);
     }
 
     Label {

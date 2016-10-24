@@ -137,6 +137,8 @@ public:
     /// IMPORTANT NOTE: To be called in the main function BEFORE the QApplication object creation
     static bool Initialization();
 
+    static void Instanciate(QQmlApplicationEngine& applicationEngine);
+
     static void Destruction();
 
     /// Centralized common settings for most sofaqtquick applications.
@@ -148,7 +150,7 @@ private:
     static SofaApplication* OurInstance;
 
 	QString					myPythonDirectory;
-    mutable QString         myDataDirectory;
+    QString                 myDataDirectory;
 
 };
 

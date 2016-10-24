@@ -26,7 +26,7 @@ import SofaScene 1.0
 SofaScene {
     id: root
 
-    asynchronous: true
+    asynchronous: false
     header: ""
     source: ""
     sourceQML: ""
@@ -143,11 +143,27 @@ SofaScene {
 
     function removeManipulator(manipulator) {
         var manipulators = [];
-        for(var i = 0; i < root.manipulators; ++i)
+        for(var i = 0; i < root.manipulators.length; ++i)
             if(manipulator !== root.manipulators[i])
                 manipulators.push(root.manipulators[i]);
 
         root.manipulators = manipulators;
+    }
+
+    function removeManipulatorByName(name) {
+        var manipulators = [];
+        for(var i = 0; i < root.manipulators.length; ++i)
+            if(name !== root.manipulators[i].objectName)
+                manipulators.push(root.manipulators[i]);
+
+        root.manipulators = manipulators;
+    }
+
+    function getManipulatorByName(name) {
+        for(var i = 0; i < root.manipulators.length; ++i)
+            if(name === root.manipulators[i].objectName)
+                return root.manipulators[i];
+        return null;
     }
 
     function clearManipulators() {

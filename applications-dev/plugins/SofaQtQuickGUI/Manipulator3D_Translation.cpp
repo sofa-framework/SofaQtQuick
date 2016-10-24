@@ -115,6 +115,7 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
     glColor3f(color.redF(), color.greenF(), color.blueF());
 
     glEnable(GL_POLYGON_OFFSET_FILL);
+    glEnable(GL_COLOR_MATERIAL);
 
     // draw arrows
     if(1 == axisNum)
@@ -136,15 +137,30 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
             glVertex3f( 0.0,            0.0,          height - width);
             glVertex3f( 0.0,            0.0,          height + width);
 
+            glVertex3f(-0.2 * height, width,            0.8 * height);
+            glVertex3f(-0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.0,         -width,                 height );
+            glVertex3f( 0.0,          width,                 height );
+
             glVertex3f( 0.0,            0.0,          height + width);
             glVertex3f( 0.0,            0.0,          height - width);
             glVertex3f( 0.2 * height,   0.0,    0.8 * height - width);
             glVertex3f( 0.2 * height,   0.0,    0.8 * height + width);
 
+            glVertex3f( 0.0,          width,                  height);
+            glVertex3f( 0.0,         -width,                  height);
+            glVertex3f( 0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.2 * height, width,            0.8 * height);
+
             glVertex3f(       -width,   0.0,          height - width);
             glVertex3f(       -width,   0.0,                   width);
             glVertex3f(        width,   0.0,                   width);
             glVertex3f(        width,   0.0,          height - width);
+
+            glVertex3f(       0.0,   -width,          height - width);
+            glVertex3f(       0.0,   -width,                   width);
+            glVertex3f(       0.0,    width,                   width);
+            glVertex3f(       0.0,    width,          height - width);
         }
         glEnd();
     }
@@ -171,6 +187,7 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
         glEnd();
     }
 
+    glDisable(GL_COLOR_MATERIAL);
     glDisable(GL_POLYGON_OFFSET_FILL);
 
     glLineWidth(1.0f);

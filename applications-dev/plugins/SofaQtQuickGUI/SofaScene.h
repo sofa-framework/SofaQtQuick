@@ -159,6 +159,7 @@ signals:
 public:
     Q_INVOKABLE double radius() const;
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
+    Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max, const QList<SofaComponent*>& roots) const;
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE bool reinitComponent(const QString& path);
     Q_INVOKABLE bool removeComponent(SofaComponent* sofaComponent);

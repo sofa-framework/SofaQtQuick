@@ -90,22 +90,7 @@ const QMatrix4x4& Camera::model() const
 
 QQuaternion Camera::orientation() const
 {
-    QMatrix4x4 orientation;
-
-    orientation.setColumn(0, right());
-    orientation.setColumn(1, up());
-    orientation.setColumn(2, direction());
-
-    return  QQuaternion::fromRotationMatrix(orientation.normalMatrix());
-}
-
-QMatrix4x4 Camera::rotationMatrix() const
-{
-	QMatrix4x4 mat = QMatrix4x4(myModel.normalMatrix());
-
-	qDebug() << mat;
-
-	return mat;
+    return  QQuaternion::fromRotationMatrix(myModel.normalMatrix());
 }
 
 double Camera::computeDepth(const QVector3D& wsPosition) const

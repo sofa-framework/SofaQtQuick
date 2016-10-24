@@ -111,6 +111,7 @@ void Manipulator2D_Rotation::internalDraw(const SofaViewer& viewer, bool isPicki
 
     glLineWidth(width);
     glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_COLOR_MATERIAL);
     glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 
     // draw a ring
@@ -218,6 +219,7 @@ void Manipulator2D_Rotation::internalDraw(const SofaViewer& viewer, bool isPicki
         glDepthRange(0.0, 1.0);
     }
 
+    glDisable(GL_COLOR_MATERIAL);
     glDisable(GL_LINE_SMOOTH);
     glLineWidth(1.0f);
 

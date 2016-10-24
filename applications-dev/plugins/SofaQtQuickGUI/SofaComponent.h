@@ -45,11 +45,13 @@ public:
 
 public:
     Q_INVOKABLE QString name() const;
+    Q_INVOKABLE QStringList tags() const;
     Q_INVOKABLE QString className() const;
     Q_INVOKABLE QString namespaceName() const;
     Q_INVOKABLE QString templateName() const;
     Q_INVOKABLE QString description() const;
     Q_INVOKABLE QString providerName() const;
+    Q_INVOKABLE QString getPathName() const;
 
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent) const;
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;

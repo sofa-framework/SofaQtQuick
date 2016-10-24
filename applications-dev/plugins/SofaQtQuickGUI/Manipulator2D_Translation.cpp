@@ -103,6 +103,8 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
     QColor color(xAxis ? 255 : 0, yAxis ? 255 : 0, (xAxis && yAxis) ? 255 : 0);
     glColor3f(color.redF(), color.greenF(), color.blueF());
 
+    glEnable(GL_COLOR_MATERIAL);
+
     // draw arrows
     if(1 == axisNum)
     {
@@ -152,6 +154,8 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
 
         glDisable(GL_POLYGON_OFFSET_FILL);
     }
+
+    glDisable(GL_COLOR_MATERIAL);
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
