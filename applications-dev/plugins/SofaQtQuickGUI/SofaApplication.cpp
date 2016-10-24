@@ -24,6 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/Utils.h>
+#include <sofa/helper/Backtrace.h>
 #include <sofa/helper/system/console.h>
 #include <sofa/helper/logging/Messaging.h>
 #include <SofaPython/PythonEnvironment.h>
@@ -62,6 +63,7 @@ namespace sofa
 namespace qtquick
 {
 
+using namespace sofa::helper;
 using namespace sofa::simulation;
 
 SofaApplication* SofaApplication::OurInstance = nullptr;
@@ -811,6 +813,8 @@ void SofaApplication::CopySettings(const QSettings& src, QSettings& dst)
 
 bool SofaApplication::Initialization()
 {
+	BackTrace::autodump();
+
     QGuiApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
 	QSurfaceFormat format;
