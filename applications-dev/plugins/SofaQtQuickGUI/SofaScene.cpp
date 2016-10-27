@@ -705,6 +705,9 @@ void SofaScene::computeBoundingBox(QVector3D& min, QVector3D& max) const
 
 void SofaScene::computeBoundingBox(QVector3D& min, QVector3D& max, const QList<SofaComponent*>& roots) const
 {
+    if(roots.isEmpty())
+        return computeBoundingBox(min, max);
+
     SReal pmin[3], pmax[3];
 
     pmin[0] = pmin[1] = pmin[2] = 1e10;
