@@ -68,9 +68,6 @@ const QString& getGroupName(const QString& a, const QString& b)
 
 void SofaInspectorDataListModel::update()
 {
-    msg_info("TOTO") << "HELLLO WORLD" ;
-
-
     QSettings settings;
     if(m_selectedsofacomponent)
     {
