@@ -91,9 +91,9 @@ QVariant Console::data(const QModelIndex& index, int role) const
     case MSG_MESSAGE:
         return QVariant::fromValue(QString::fromStdString(item.message().str()));
     case MSG_FILE:
-        return QVariant::fromValue(QString::fromStdString(item.fileInfo().filename));
+        return QVariant::fromValue(QString::fromStdString(item.fileInfo()->filename));
     case MSG_LINE:
-        return QVariant::fromValue(item.fileInfo().line);
+        return QVariant::fromValue(item.fileInfo()->line);
     case MSG_TYPE:
         return QVariant::fromValue((int)item.type());
     case MSG_EMITTER:
