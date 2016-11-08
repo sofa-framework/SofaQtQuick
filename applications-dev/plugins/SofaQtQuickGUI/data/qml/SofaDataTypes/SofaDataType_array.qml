@@ -304,7 +304,7 @@ ColumnLayout {
                     }
                     Button {
                         id: showEditButton
-                        text: "Show / Edit"
+                        text: "Edit"
                         checkable: true
                     }
                 }
