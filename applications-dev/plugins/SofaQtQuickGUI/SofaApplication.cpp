@@ -27,6 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/BackTrace.h>
 #include <sofa/helper/system/console.h>
 #include <sofa/helper/logging/Messaging.h>
+#include <sofa/helper/logging/ConsoleMessageHandler.h>
 #include <SofaPython/PythonEnvironment.h>
 
 #include <QQuickWindow>
@@ -861,6 +862,13 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 {
     // color console
     sofa::helper::Console::setColorsStatus(sofa::helper::Console::ColorsEnabled);
+
+
+    // default, simple logger
+    // TODO make it an option, like in runSofa
+    sofa::helper::logging::MessageDispatcher::clearHandlers() ;
+    sofa::helper::logging::MessageDispatcher::addHandler( new sofa::helper::logging::ConsoleMessageHandler() ) ;
+
 
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
     qputenv("QSG_RENDER_LOOP", "basic");
