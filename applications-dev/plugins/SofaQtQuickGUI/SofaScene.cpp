@@ -186,7 +186,7 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         openglContext->makeCurrent(offscreenSurface);
     }
 
-	//qDebug() << "OpenGL" << QOpenGLContext::currentContext()->format().majorVersion() << "." << QOpenGLContext::currentContext()->format().minorVersion();
+    //qDebug() << "OpenGL" << QOpenGLContext::currentContext()->format().majorVersion() << "." << QOpenGLContext::currentContext()->format().minorVersion();
 
     GLenum err = glewInit();
     if(0 != err)
@@ -809,6 +809,36 @@ bool SofaScene::removeComponent(SofaComponent* sofaComponent)
 
     return false;
 }
+
+
+bool SofaScene::addNodeTo(SofaComponent* sofaComponent)
+{
+    msg_info("SofaScene") << "add a new Node !!! " ;
+
+    if(!sofaComponent)
+        return false;
+
+    // if component is an object
+    BaseObject* baseObject = sofaComponent->base()->toBaseObject();
+    if(baseObject)
+    {
+        dmsg_info("SofaScene") << "This shouldn't happen" ;
+
+        return false;
+    }
+
+    // if component is a node
+    BaseNode* baseNode = sofaComponent->base()->toBaseNode();
+    if(baseNode)
+    {
+        Node::SPtr node = static_cast<Node*>(baseNode);
+        node->createChild("NEWNODE") ;
+        return true;
+    }
+
+    return false;
+}
+
 
 bool SofaScene::areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB)
 {

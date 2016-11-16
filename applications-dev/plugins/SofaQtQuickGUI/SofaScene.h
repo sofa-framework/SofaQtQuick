@@ -163,6 +163,8 @@ public:
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE bool reinitComponent(const QString& path);
     Q_INVOKABLE bool removeComponent(SofaComponent* sofaComponent);
+    Q_INVOKABLE bool addNodeTo(SofaComponent* sofaComponent);
+
     Q_INVOKABLE bool areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
     Q_INVOKABLE bool areInSameBranch(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
@@ -187,7 +189,7 @@ public:
     Q_INVOKABLE QList<sofa::qtquick::SofaComponent*> componentsByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponent* root();
 
-	bool componentExists(const sofa::core::objectmodel::Base* base) const;
+    bool componentExists(const sofa::core::objectmodel::Base* base) const;
 
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
