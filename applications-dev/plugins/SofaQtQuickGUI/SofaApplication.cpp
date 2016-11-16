@@ -27,6 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/BackTrace.h>
 #include <sofa/helper/system/console.h>
 #include <sofa/helper/logging/Messaging.h>
+#include <sofa/helper/logging/ConsoleMessageHandler.h>
 #include <SofaPython/PythonEnvironment.h>
 
 #include <QQuickWindow>
