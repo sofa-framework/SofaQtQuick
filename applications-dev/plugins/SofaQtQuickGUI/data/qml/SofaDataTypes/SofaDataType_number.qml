@@ -47,30 +47,27 @@ TextField {
         }
     }
 
-    Keys.onPressed: function(event){
-        if(event.key == Qt.Key_Left){
-            console.log("LEFT")
-        }else if(event.key == Qt.Key_Left){
-            console.log("RIGHT")
-        }
+    onCursorPositionChanged: function(){
     }
 
     onAccepted: function(){
         root.focus=false
     }
 
+    /*
     MouseArea
     {
-       anchors.fill: parent
-       onClicked : function(me) {
-            if(!root.focus){
-                root.forceActiveFocus()
-                root.focus = true
-            }else{
-                root.focus=false
-            }
-        }
-    }
+        anchors.fill: parent
+
+        propagateComposedEvents: true
+
+        onClicked: mouse.accepted = false;
+        onPressed: mouse.accepted = false;
+        onReleased: mouse.accepted = false;
+        onDoubleClicked: mouse.accepted = false;
+        onPositionChanged: mouse.accepted = false;
+        onPressAndHold: mouse.accepted = false;
+    }*/
 
     property var intValidator: IntValidator {
         Component.onCompleted: {
@@ -95,7 +92,7 @@ TextField {
     /***************************************************************
      The formatting rules is inspired by Blender.
      - the dot '.' is at a fixed position so that row of numbers are aligned
-     - there is 6 decimal number at right
+     - there is 5 decimal number at right
      - there is at least 4 decimal number at right
     ***************************************************************/
     function download() {
