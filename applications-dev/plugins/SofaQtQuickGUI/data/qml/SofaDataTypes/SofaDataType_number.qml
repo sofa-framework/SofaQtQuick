@@ -19,6 +19,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import QtQuick.Controls 1.3
+import SofaApplication 1.0
+import SofaData 1.0
+import SofaBasics 1.0
 
 TextField {
     id: root
@@ -28,9 +31,34 @@ TextField {
     enabled: !dataObject.readOnly
     property int decimals: dataObject.properties["decimals"]
 
+    horizontalAlignment : TextInput.AlignRight
+
     Component.onCompleted: download();
-    onTextChanged: upload();
-    onAccepted: dataObject.upload();
+
+    onActiveFocusChanged: function(){
+        if(activeFocus){
+            horizontalAlignment = TextInput.AlignLeft
+            if(decimals!=0)
+                root.text = Number(dataObject.value).toFixed(10) ;
+            else
+                root.text = Number(dataObject.value).toFixed(0) ;
+
+            cursorPosition = 0
+            selectAll()
+        }else{
+            horizontalAlignment = TextInput.AlignRight
+            upload()
+            download()
+            cursorPosition = 10
+        }
+    }
+
+    onCursorPositionChanged: function(){
+    }
+
+    onAccepted: function(){
+        root.focus=false
+    }
 
     property var intValidator: IntValidator {
         Component.onCompleted: {
@@ -44,6 +72,7 @@ TextField {
         decimals: root.decimals
     }
 
+
     validator: decimals > 0 ? doubleValidator : intValidator
 
     Connections {
@@ -51,16 +80,36 @@ TextField {
         onUpdated: root.download();
     }
 
+    ToolTip {
+        delay: 300
+        anchors.fill: parent
+        description: Number(dataObject.value).toFixed(decimals)
+    }
+
+    /***************************************************************
+     The formatting rules is inspired by Blender.
+     - the dot '.' is at a fixed position so that row of numbers are aligned
+     - there is 5 decimal number at right
+     - there is at least 4 decimal number at right
+    ***************************************************************/
     function download() {
-        root.text = Number(Number(dataObject.value).toFixed(decimals)).toString();
+        if(decimals!=0)
+            root.text = Number(dataObject.value).toFixed(5) ;
+        else
+            root.text = Number(dataObject.value).toFixed(0) ;
+
         cursorPosition = 0;
     }
 
     function upload() {
+
         var oldValue = Number(Number(dataObject.value).toFixed(decimals));
         var newValue = Number(Number(root.text).toFixed(decimals));
 
-        if(oldValue !== newValue)
-            dataObject.value = newValue;
+        if(oldValue !== newValue){
+            dataObject.value = root.text;
+        }
     }
+
+
 }

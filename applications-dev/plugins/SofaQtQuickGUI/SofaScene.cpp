@@ -813,8 +813,6 @@ bool SofaScene::removeComponent(SofaComponent* sofaComponent)
 
 bool SofaScene::addNodeTo(SofaComponent* sofaComponent)
 {
-    msg_info("SofaScene") << "add a new Node !!! " ;
-
     if(!sofaComponent)
         return false;
 
@@ -833,6 +831,34 @@ bool SofaScene::addNodeTo(SofaComponent* sofaComponent)
     {
         Node::SPtr node = static_cast<Node*>(baseNode);
         node->createChild("NEWNODE") ;
+        return true;
+    }
+
+    return false;
+}
+
+bool SofaScene::addComponent(SofaComponent* sofaComponent)
+{
+    if(!sofaComponent)
+        return false;
+
+    // if component is an object then the new component is a brother of this one.
+    BaseObject* baseObject = sofaComponent->base()->toBaseObject();
+    if(baseObject)
+    {
+        //TODO(dmarchal): to do
+        msg_fatal("SofaScene") << "TO IMPLEMENT" ;
+
+        return true;
+    }
+
+    // if component is a node then the new component is a child of this one.
+    BaseNode* baseNode = sofaComponent->base()->toBaseNode();
+    if(baseNode)
+    {
+        //TODO(dmarchal): to do
+        msg_fatal("SofaScene") << "TO IMPLEMENT" ;
+
         return true;
     }
 
@@ -928,6 +954,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         type = "number";
         properties.insert("step", 0.1);
         properties.insert("decimals", 14);
+        properties.insert("autoUpdate", true);
     }
     else if(typeinfo->Integer())
     {
@@ -940,6 +967,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         {
             type = "number";
             properties.insert("decimals", 0);
+            properties.insert("autoUpdate", true);
             if(std::string::npos != typeinfo->name().find("unsigned"))
                 properties.insert("min", 0);
         }
