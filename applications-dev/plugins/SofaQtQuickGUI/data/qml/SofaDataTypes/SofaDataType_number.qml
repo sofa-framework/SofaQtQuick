@@ -19,10 +19,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import QtQuick.Controls 1.3
+import SofaApplication 1.0
+import SofaData 1.0
+import SofaBasics 1.0
 
 TextField {
     id: root
-
 
     property var dataObject: null
 
@@ -54,21 +56,6 @@ TextField {
         root.focus=false
     }
 
-    /*
-    MouseArea
-    {
-        anchors.fill: parent
-
-        propagateComposedEvents: true
-
-        onClicked: mouse.accepted = false;
-        onPressed: mouse.accepted = false;
-        onReleased: mouse.accepted = false;
-        onDoubleClicked: mouse.accepted = false;
-        onPositionChanged: mouse.accepted = false;
-        onPressAndHold: mouse.accepted = false;
-    }*/
-
     property var intValidator: IntValidator {
         Component.onCompleted: {
             var min = dataObject.properties["min"];
@@ -89,6 +76,12 @@ TextField {
         onUpdated: root.download();
     }
 
+    ToolTip {
+        delay: 300
+        anchors.fill: parent
+        description: Number(dataObject.value).toFixed(decimals)
+    }
+
     /***************************************************************
      The formatting rules is inspired by Blender.
      - the dot '.' is at a fixed position so that row of numbers are aligned
@@ -101,9 +94,14 @@ TextField {
     }
 
     function upload() {
-        //var oldValue = Number(dataObject.value).toFixed(decimals);
-        //var newValue = root.text
-        //if(oldValue !== newValue)
-        dataObject.value = root.text;
+
+        var oldValue = Number(Number(dataObject.value).toFixed(decimals));
+        var newValue = Number(Number(root.text).toFixed(decimals));
+
+        if(oldValue !== newValue){
+            dataObject.value = root.text;
+        }
     }
+
+
 }
