@@ -954,7 +954,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         type = "number";
         properties.insert("step", 0.1);
         properties.insert("decimals", 14);
-
+        properties.insert("autoUpdate", true);
     }
     else if(typeinfo->Integer())
     {
@@ -967,6 +967,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         {
             type = "number";
             properties.insert("decimals", 0);
+            properties.insert("autoUpdate", true);
             if(std::string::npos != typeinfo->name().find("unsigned"))
                 properties.insert("min", 0);
         }
