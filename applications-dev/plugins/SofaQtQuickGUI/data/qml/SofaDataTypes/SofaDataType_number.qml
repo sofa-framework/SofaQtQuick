@@ -38,7 +38,11 @@ TextField {
     onActiveFocusChanged: function(){
         if(activeFocus){
             horizontalAlignment = TextInput.AlignLeft
-            root.text = Number(dataObject.value).toFixed(10) ;
+            if(decimals!=0)
+                root.text = Number(dataObject.value).toFixed(10) ;
+            else
+                root.text = Number(dataObject.value).toFixed(0) ;
+
             cursorPosition = 0
             selectAll()
         }else{
@@ -89,7 +93,11 @@ TextField {
      - there is at least 4 decimal number at right
     ***************************************************************/
     function download() {
-        root.text = Number(dataObject.value).toFixed(5) ;
+        if(decimals!=0)
+            root.text = Number(dataObject.value).toFixed(5) ;
+        else
+            root.text = Number(dataObject.value).toFixed(0) ;
+
         cursorPosition = 0;
     }
 
