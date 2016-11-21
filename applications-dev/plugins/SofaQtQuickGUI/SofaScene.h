@@ -163,6 +163,7 @@ public:
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE bool reinitComponent(const QString& path);
     Q_INVOKABLE bool removeComponent(SofaComponent* sofaComponent);
+    Q_INVOKABLE bool addComponent(SofaComponent* sofaComponent);
     Q_INVOKABLE bool addNodeTo(SofaComponent* sofaComponent);
 
     Q_INVOKABLE bool areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
