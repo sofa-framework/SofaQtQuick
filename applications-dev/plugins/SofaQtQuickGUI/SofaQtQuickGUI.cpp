@@ -40,6 +40,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaInspectorDataListModel.h"
 #include "SofaDisplayFlagsTreeModel.h"
 #include "SofaViewer.h"
+
+#include "LiveFileMonitor.h"
+using sofa::qtquick::LiveFileMonitor;
+
+
 #include "PythonConsole.h"
 using namespace sofa::qtquick;
 
@@ -76,6 +81,17 @@ static QObject* createConsole(QQmlEngine *engine,
     return new Console() ;
 }
 
+
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createAnInstanceOfLiveFileMonitor(QQmlEngine *engine,
+                                                  QJSEngine *scriptEngine){
+    Q_UNUSED(scriptEngine)
+    return new LiveFileMonitor(engine) ;
+}
+
+
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
     //Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
@@ -110,6 +126,13 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     // registers the C++ type in the QML system with the name "Console",
     qmlRegisterSingletonType<Console>("SofaMessageList",                    // char* uri
                                        versionMajor, versionMinor,          // int majorVersion
-                                      "SofaMessageList",
-                                       createConsole );        // exported Name.
+                                      "SofaMessageList",                    // exported Name.
+                                       createConsole );
+
+    qmlRegisterSingletonType<LiveFileMonitor>("LiveFileMonitorSingleton",            // char* uri
+                                          versionMajor, versionMinor,   // minor/major version number
+                                          "LiveFileMonitorSingleton",       // exported name
+                                          createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
+                                          );
+
 }

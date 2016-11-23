@@ -30,6 +30,7 @@ set(SOURCE_FILES
     Manipulator2D_Rotation.cpp
     Manipulator3D_Translation.cpp
     Manipulator3D_Rotation.cpp
+    LiveFileMonitor.cpp
 )
 
 set(HEADER_FILES
@@ -58,6 +59,7 @@ set(HEADER_FILES
     Manipulator2D_Rotation.h
     Manipulator3D_Translation.h
     Manipulator3D_Rotation.h
+    LiveFileMonitor.h
 )
 
 set(QML_FILES
@@ -78,6 +80,7 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
+    data/qml/SofaApplication/SofaEditorMainWindow.qml
     data/qml/SofaBasics/qmldir
     data/qml/SofaBasics/IconButton.qml
     data/qml/SofaBasics/ToolTip.qml
@@ -132,6 +135,11 @@ set(QML_FILES
     data/qml/SofaWidgets/ColorSelector.qml
     data/qml/SofaWidgets/SofaInspector.qml
     data/qml/SofaWidgets/SofaSceneViewer.qml
+    data/qml/SofaWidgets/SceneView.qml
+    data/qml/SofaWidgets/LiveInterfaceEditor.qml
+    data/qml/SofaWidgets/BaseWidgetExample.qml
+    data/qml/SofaWidgets/3DScene.qml
+    data/qml/SofaWidgets/CameraView.qml
 )
 
 
@@ -213,7 +221,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CUR
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${SOFAQTQUICKGUI_VERSION})
 
 add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
-
+add_definitions("-DSOFA_SOFAQTQUICKGUI_SRC_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/data/qml/\"" )
 
 if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
