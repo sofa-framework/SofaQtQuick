@@ -33,6 +33,7 @@ set(SOURCE_FILES
     LiveFileMonitor.cpp
 )
 
+
 set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
@@ -80,7 +81,6 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
-    data/qml/SofaApplication/SofaEditorMainWindow.qml
     data/qml/SofaBasics/qmldir
     data/qml/SofaBasics/IconButton.qml
     data/qml/SofaBasics/ToolTip.qml
@@ -135,11 +135,8 @@ set(QML_FILES
     data/qml/SofaWidgets/ColorSelector.qml
     data/qml/SofaWidgets/SofaInspector.qml
     data/qml/SofaWidgets/SofaSceneViewer.qml
-    data/qml/SofaWidgets/SceneView.qml
     data/qml/SofaWidgets/LiveInterfaceEditor.qml
     data/qml/SofaWidgets/BaseWidgetExample.qml
-    data/qml/SofaWidgets/3DScene.qml
-    data/qml/SofaWidgets/CameraView.qml
 )
 
 
