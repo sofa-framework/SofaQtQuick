@@ -9,6 +9,7 @@ set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
     SofaViewer.cpp
+    RuntimeViewer.cpp
     Camera.cpp
     SofaScene.cpp
     SofaComponent.cpp
@@ -33,12 +34,12 @@ set(SOURCE_FILES
     LiveFileMonitor.cpp
 )
 
-
 set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
     ProcessState.h
     SofaViewer.h
+    RuntimeViewer.h
     Camera.h
     SofaScene.h
     SofaComponent.h
@@ -122,6 +123,7 @@ set(QML_FILES
     data/qml/SofaWidgets/qmldir
     data/qml/SofaWidgets/QML_LiveCoding.qml
     data/qml/SofaWidgets/SofaViewer.qml
+    data/qml/SofaWidgets/RuntimeViewer.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
     data/qml/SofaWidgets/SofaMessageView.qml

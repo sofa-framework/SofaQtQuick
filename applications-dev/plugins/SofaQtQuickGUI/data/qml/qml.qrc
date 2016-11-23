@@ -71,5 +71,6 @@
         <file>SofaWidgets/SofaInspector.qml</file>
         <file>SofaWidgets/SofaSceneViewer.qml</file>
         <file>SofaWidgets/LiveInterfaceEditor.qml</file>
+        <file>SofaWidgets/RuntimeViewer.qml</file>
     </qresource>
 </RCC>

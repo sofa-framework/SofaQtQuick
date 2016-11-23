@@ -54,6 +54,7 @@ namespace qtquick
 
 class SofaScene;
 class SofaViewer;
+class RuntimeViewer;
 class PickUsingRasterizationWorker;
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
@@ -62,6 +63,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject, private sofa::simulati
     Q_OBJECT
 
     friend class SofaViewer;
+    friend class RuntimeViewer;
     friend class PickUsingRasterizationWorker;
     friend bool LoaderProcess(SofaScene* scene, QOffscreenSurface* surface);
 
@@ -231,6 +233,7 @@ protected:
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
     void draw(const SofaViewer& viewer, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
+    void draw(const RuntimeViewer& viewer, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
 
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function

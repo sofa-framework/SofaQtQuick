@@ -41,6 +41,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaDisplayFlagsTreeModel.h"
 #include "SofaViewer.h"
 
+#include "RuntimeViewer.h"
+
 #include "LiveFileMonitor.h"
 using sofa::qtquick::LiveFileMonitor;
 
@@ -121,6 +123,8 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
+    qmlRegisterType<RuntimeViewer>                                  ("RuntimeViewer"                           , versionMajor, versionMinor, "RuntimeViewer");
+
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
 
     // registers the C++ type in the QML system with the name "Console",
