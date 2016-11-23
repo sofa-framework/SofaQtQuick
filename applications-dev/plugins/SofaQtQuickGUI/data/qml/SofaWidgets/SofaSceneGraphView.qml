@@ -22,9 +22,11 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
+import QtQml 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneListModel 1.0
+import SofaFactorySingleton 1.0
 
 ColumnLayout {
     id: root
@@ -330,7 +332,24 @@ ColumnLayout {
                                         onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
                                     }
 
+                                    MenuSeparator {}
 
+                                    Menu{
+                                        title: "Add Component"
+
+                                        Instantiator {
+                                                  model: SofaFactory.categories
+                                                  onObjectAdded: dynamicContextMenu.insertItem( index, object )
+                                                  onObjectRemoved: dynamicContextMenu.removeItem( object )
+
+                                                  delegate: MenuItem {
+                                                      text: "YOLO"+index+" "+object
+                                                      onTriggered: {
+                                                          //menuModel.executeCommand( role_command, role_user );
+                                                      }
+                                                  }
+                                              }
+                                    }
 
                                 }
 

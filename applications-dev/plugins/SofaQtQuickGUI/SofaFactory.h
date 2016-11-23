@@ -21,7 +21,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #define SOFAFACTORY_H
 
 #include <QStringList>
-#include <QObject>
+#include <QAbstractItemModel>
 
 #include "SofaQtQuickGUI.h"
 
@@ -37,7 +37,7 @@ namespace sofafactory
 /*******************************************************************************
  *  \class SofaFactory expose the Factory API to QT/QML.
  ******************************************************************************/
-class SOFA_SOFAQTQUICKGUI_API SofaFactory : public QObject
+class SOFA_SOFAQTQUICKGUI_API SofaFactory : public QAbstractItemModel
 {
 public:
     Q_OBJECT

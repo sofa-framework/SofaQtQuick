@@ -46,6 +46,9 @@ using namespace sofa::qtquick;
 #include "Console.h"
 using sofa::qtquick::console::Console ;
 
+#include "SofaFactory.h"
+using sofa::qtquick::sofafactory::SofaFactory ;
+
 #include <sofa/helper/system/PluginManager.h>
 
 const int versionMajor = 1;
@@ -66,15 +69,26 @@ void SofaQtQuickGUI::init()
     sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
 }
 
-// Following the doc on creating a singleton component
-// we need to have function that return the singleton instance.
-// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+/// Following the doc on creating a singleton component
+/// we need to have function that return the singleton instance.
+/// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
 static QObject* createConsole(QQmlEngine *engine,
                               QJSEngine *scriptEngine){
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
     return new Console() ;
 }
+
+/// Following the doc on creating a singleton component
+/// we need to have function that return the singleton instance.
+/// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createSofaFactory(QQmlEngine *engine,
+                              QJSEngine *scriptEngine){
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return new SofaFactory() ;
+}
+
 
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
@@ -112,4 +126,9 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
                                        versionMajor, versionMinor,          // int majorVersion
                                       "SofaMessageList",
                                        createConsole );        // exported Name.
+
+    qmlRegisterSingletonType<SofaFactory>("SofaFactorySingleton",                    // char* uri
+                                          versionMajor, versionMinor,          // int majorVersion
+                                          "SofaFactory",
+                                          createSofaFactory );        // exported Name.
 }
