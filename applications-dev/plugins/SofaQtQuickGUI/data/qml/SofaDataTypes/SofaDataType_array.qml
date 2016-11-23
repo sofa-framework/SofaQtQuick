@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
+import SofaBasics 1.0
 
 ColumnLayout {
     id: root
@@ -193,6 +194,7 @@ ColumnLayout {
 
                 Component.onCompleted: populate();
 
+
                 function populate() {
                     var values = root.dataObject.value;
                     if(1 === values.length && Array.isArray(values[0]))
@@ -205,10 +207,10 @@ ColumnLayout {
                     for(var i = 0; i < values.length; ++i)
                         fields[i] = textFieldComponent.createObject(rowLayout, {index: i});
 
-                    update();
+                    //update();
                 }
 
-                function update() {
+                /*function update() {
                     var values = root.dataObject.value;
                     if(innerArray)
                         values = root.dataObject.value[0];
@@ -216,33 +218,47 @@ ColumnLayout {
                     for(var i = 0; i < values.length; ++i) {
                         fields[i].text = values[i].toString();
                     }
-                }
+                }*/
 
                 Component {
+
                     id: textFieldComponent
 
-                    TextField {
+                    NumberField {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.alignment: Qt.AlignTop
-                        readOnly: root.dataObject.readOnly
-                        enabled: !root.dataObject.readOnly
+                        //readOnly: root.dataObject.readOnly
+                        //enabled: !root.dataObject.readOnly
+
+                        minvalue : dataObject.properties["min"]
+                        maxvalue : dataObject.properties["max"]
+                        decimals: dataObject.properties["decimals"]
 
                         property int index
-                        onTextChanged: {
-                            if(rowLayout.innerArray)
-                                root.dataObject.value[0][index] = text;
-                            else
-                                root.dataObject.value[index] = text;
+                        property bool inited : false
 
-                            root.dataObject.modified = true;
+                        value : 0
+
+                        Component.onCompleted: function(){
+                            var values = root.dataObject.value;
+                            if(innerArray)
+                                values = root.dataObject.value[0];
+                            value= values[index]
+                        }
+
+                        onValueChanged: function(){
+                            updateData()
+                        }
+
+                        function updateData(){
+                            if(innerArray)
+                                root.dataObject.value[0][index] = value;
+                            else
+                                root.dataObject.value[index] = value;
+                            root.dataObject.modified=true
                         }
                     }
-                }
-
-                Connections {
-                    target: root.dataObject
-                    onValueChanged: rowLayout.update();
                 }
             }
         }
