@@ -86,12 +86,14 @@ SofaViewer {
 		onTriggered: root.viewAll()
     }
 
+
+    property alias busyIndicator: busyIndicator
     BusyIndicator {
         id: busyIndicator
         anchors.centerIn: parent
         width: 100
         height: width
-        running: !root.hideBusyIndicator && (root.sofaScene ? root.sofaScene.status === SofaScene.Loading : false);
+        running: !root.hideBusyIndicator && (root.sofaScene ? root.sofaScene.status === SofaScene.Loading : false)
     }
 
     Label {

@@ -51,12 +51,14 @@ SofaSceneViewer {
         //    SofaApplication.setFocusedSofaViewer(root);
     }
 
+
+    property alias busyIndicator: busyIndicator
     BusyIndicator {
         id: busyIndicator
         anchors.centerIn: parent
         width: 100
         height: width
-        running: !hideBusyIndicator && (sofaScene ? sofaScene.status === SofaScene.Loading : false);
+        running: !hideBusyIndicator && (sofaScene ? sofaScene.status === SofaScene.Loading : false)
     }
 
     Label {
