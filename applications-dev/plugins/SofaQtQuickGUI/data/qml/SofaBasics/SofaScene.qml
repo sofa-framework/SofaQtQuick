@@ -183,6 +183,7 @@ SofaScene {
             repeat: false
             running: root.ready
             onTriggered: {
+                console.log("LOGGGG." + root.sourceQML)
                 interfaceLoader.source = root.sourceQML;
             }
         }

@@ -139,6 +139,7 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaSceneViewer.qml
     data/qml/SofaWidgets/LiveInterfaceEditor.qml
     data/qml/SofaWidgets/BaseWidgetExample.qml
+    data/qml/SofaWidgets/SceneToolsPanel.qml
 )
 
 

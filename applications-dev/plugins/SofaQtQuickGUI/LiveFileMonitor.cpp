@@ -58,7 +58,6 @@ public:
     virtual ~QMLFileEventListener(){}
 
     void fileHasChanged(const std::string &filename){
-        std::cout << "PRINT FILE: " << filename << std::endl ;
         m_qmlfilemanager->hasChanged(filename);
     }
 
@@ -112,6 +111,11 @@ void LiveFileMonitor::hasChanged(const std::string& filename)
     m_files.clear();
     m_files.push_back(QString(filename.c_str()));
     emit filesChanged();
+}
+
+bool LiveFileMonitor::addFile(const QUrl &filename)
+{
+    return FileMonitor::addFile(filename.toLocalFile().toStdString().c_str(), m_filelistener) >= 0;
 }
 
 QStringList LiveFileMonitor::files() const

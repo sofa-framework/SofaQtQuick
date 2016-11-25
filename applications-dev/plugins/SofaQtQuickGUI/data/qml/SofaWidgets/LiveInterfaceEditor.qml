@@ -32,7 +32,7 @@ import LiveFileMonitorSingleton 1.0
 SplitView {
     id: root
     orientation: Qt.Horizontal
-    property var filehaschanged : LiveFileMonitorSingleton.files
+    property var files : LiveFileMonitorSingleton.files
 
     property alias container: container
 
@@ -42,18 +42,17 @@ SplitView {
         Layout.fillHeight: true
     }
 
-    onFilehaschangedChanged: {
+    onFilesChanged: {
             container.children=""
-            var viewedcomponent=Qt.createComponent("file://"+filehaschanged+"?t="+Date.now())
+            /// Reload the component using the non cached version (because of Data.now())
+            var viewedcomponent=Qt.createComponent("file://"+files+"?t="+Date.now())
             if(viewedcomponent.status == Component.Ready)
             {
                 viewedcomponent.createObject(container)
-                console.log("Object updated !!!")
+                console.log("Component updated !!!")
             }else{
-                console.log("ZOB") ;
                 var err = viewedcomponent.errorString();
                 console.log("Error at " + err + "<br />")
-
             }
     }
 }

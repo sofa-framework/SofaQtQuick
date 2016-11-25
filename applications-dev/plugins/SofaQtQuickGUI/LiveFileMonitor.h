@@ -57,6 +57,7 @@ public:
     Q_OBJECT
 
     Q_PROPERTY(QStringList files READ files NOTIFY filesChanged)
+    Q_INVOKABLE bool addFile(const QUrl&);
 
 public:
     explicit LiveFileMonitor(QQmlEngine* q, QObject *parent = nullptr) ;

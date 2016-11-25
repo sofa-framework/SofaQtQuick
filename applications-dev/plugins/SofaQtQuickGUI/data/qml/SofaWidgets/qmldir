@@ -13,3 +13,4 @@ AffineTransformationController 1.0 AffineTransformationController.qml
 ColorSelector 1.0 ColorSelector.qml
 LiveInterfaceEditor 1.0 LiveInterfaceEditor.qml
 BaseWidgetExample 1.0 BaseWidgetExample
+SceneToolsPanel 1.0 SceneToolsPanel
