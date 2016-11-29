@@ -103,6 +103,7 @@ public slots:
 
     void move(double x, double y, double z);
     void turn(double angleAroundX, double angleAroundY, double angleAroundZ);
+    void turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ);
     void zoom(double factor);
     void zoomWithBounds(double factor, double min, double max);
 

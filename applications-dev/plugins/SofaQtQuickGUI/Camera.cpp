@@ -208,6 +208,37 @@ void Camera::turn(double angleAroundX, double angleAroundY, double angleAroundZ)
     myViewDirty = true;
 }
 
+void Camera::turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ)
+{
+    QVector3D translationVector(-myTarget.x(), -myTarget.y(), -myTarget.z());
+
+    QMatrix4x4 rotation;
+    rotation.rotate(angleAroundY, up());
+    rotation.rotate(angleAroundX, right());
+    rotation.rotate(angleAroundZ, direction());
+
+    QVector3D translationVector2(rotation * myTarget);
+
+    // Translation
+    QMatrix4x4 translation;
+    translation.translate(translationVector);
+
+    myModel = translation * myModel;
+    myTarget += translationVector;
+
+    // Rotation
+    myModel = rotation * myModel;
+
+    // Translation
+    QMatrix4x4 translation2;
+    translation2.translate(translationVector2);
+
+    myModel = translation2 * myModel;
+    myTarget += translationVector2;
+
+    myViewDirty = true;
+}
+
 void Camera::zoom(double factor)
 {
     return zoomWithBounds(factor, myZNear, myZFar * 0.5);
