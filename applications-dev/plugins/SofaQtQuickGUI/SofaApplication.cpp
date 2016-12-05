@@ -24,8 +24,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/Utils.h>
+#include <sofa/helper/BackTrace.h>
 #include <sofa/helper/system/console.h>
 #include <sofa/helper/logging/Messaging.h>
+#include <sofa/helper/logging/ConsoleMessageHandler.h>
 #include <SofaPython/PythonEnvironment.h>
 
 #include <QQuickWindow>
@@ -62,6 +64,7 @@ namespace sofa
 namespace qtquick
 {
 
+using namespace sofa::helper;
 using namespace sofa::simulation;
 
 SofaApplication* SofaApplication::OurInstance = nullptr;
@@ -71,6 +74,24 @@ SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
     myDataDirectory()
 {
     OurInstance = this;
+
+    // look for the data directory next to the executable location
+    if(QCoreApplication::applicationName().isEmpty())
+        qCritical() << "The QCoreApplication::applicationName should have been setted before SofaApplication instantiation";
+
+    QVector<QString> paths;
+
+    paths.append(QCoreApplication::applicationDirPath() + "/../data");
+    paths.append(QCoreApplication::applicationDirPath() + "/../" + QCoreApplication::applicationName() + "Data");
+    paths.append(QCoreApplication::applicationDirPath() + "/" + QCoreApplication::applicationName() + "Data");
+    paths.append(QCoreApplication::applicationDirPath() + "/data");
+
+    for(const QString& path : paths)
+        if(QFileInfo::exists(path))
+        {
+            myDataDirectory = path + "/";
+            break;
+        }
 }
 
 SofaApplication::~SofaApplication()
@@ -335,29 +356,15 @@ void SofaApplication::setPythonDirectory(const QString& pythonDirectory)
 
 QString SofaApplication::dataDirectory() const
 {
-    if(myDataDirectory.isEmpty())
-    {
-        QVector<QString> paths;
-
-        paths.append(QCoreApplication::applicationDirPath() + "/../data");
-        paths.append(QCoreApplication::applicationDirPath() + "/../" + QCoreApplication::applicationName() + "Data");
-        paths.append(QCoreApplication::applicationDirPath() + "/" + QCoreApplication::applicationName() + "Data");
-        paths.append(QCoreApplication::applicationDirPath() + "/data");
-
-        for(const QString& path : paths)
-            if(QFileInfo::exists(path))
-            {
-                myDataDirectory = path + "/";
-                break;
-            }
-    }
-
     return myDataDirectory;
 }
 
 void SofaApplication::setDataDirectory(const QString& dataDirectory)
 {
     myDataDirectory = dataDirectory;
+
+    if(!myDataDirectory.isEmpty() && !(myDataDirectory.endsWith("/") || myDataDirectory.endsWith("\\")))
+        myDataDirectory += "/";
 }
 
 QString SofaApplication::binaryDirectory() const
@@ -811,6 +818,8 @@ void SofaApplication::CopySettings(const QSettings& src, QSettings& dst)
 
 bool SofaApplication::Initialization()
 {
+	BackTrace::autodump();
+
     QGuiApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
 	QSurfaceFormat format;
@@ -824,6 +833,16 @@ bool SofaApplication::Initialization()
 	QSurfaceFormat::setDefaultFormat(format);
 
     return true;
+}
+
+void SofaApplication::Instanciate(QQmlApplicationEngine& applicationEngine)
+{
+    // this will instanciate a SofaApplication QML instance
+    applicationEngine.loadData("import QtQuick 2.0\n"
+                               "import SofaApplication 1.0\n"
+                               "QtObject {\n"
+                               "Component.onCompleted: {SofaApplication.objectName;}\n"
+                               "}");
 }
 
 void SofaApplication::Destruction()

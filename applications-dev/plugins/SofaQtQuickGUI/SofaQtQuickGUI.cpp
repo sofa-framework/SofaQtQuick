@@ -37,6 +37,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SelectableSofaParticle.h"
 #include "SofaSceneListModel.h"
 #include "SofaDataListModel.h"
+#include "SofaInspectorDataListModel.h"
 #include "SofaDisplayFlagsTreeModel.h"
 #include "SofaViewer.h"
 #include "PythonConsole.h"
@@ -101,6 +102,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterUncreatableType<ProcessState>                        ("ProcessState"                         , versionMajor, versionMinor, "ProcessState", "ProcessState is not instantiable");
     qmlRegisterType<SofaSceneListModel>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaDataListModel>                              ("SofaDataListModel"                    , versionMajor, versionMinor, "SofaDataListModel");
+    qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");

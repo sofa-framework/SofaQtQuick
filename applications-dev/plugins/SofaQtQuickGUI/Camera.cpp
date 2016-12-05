@@ -90,22 +90,7 @@ const QMatrix4x4& Camera::model() const
 
 QQuaternion Camera::orientation() const
 {
-    QMatrix4x4 orientation;
-
-    orientation.setColumn(0, right());
-    orientation.setColumn(1, up());
-    orientation.setColumn(2, direction());
-
-    return  QQuaternion::fromRotationMatrix(orientation.normalMatrix());
-}
-
-QMatrix4x4 Camera::rotationMatrix() const
-{
-	QMatrix4x4 mat = QMatrix4x4(myModel.normalMatrix());
-
-	qDebug() << mat;
-
-	return mat;
+    return  QQuaternion::fromRotationMatrix(myModel.normalMatrix());
 }
 
 double Camera::computeDepth(const QVector3D& wsPosition) const
@@ -219,6 +204,37 @@ void Camera::turn(double angleAroundX, double angleAroundY, double angleAroundZ)
     rotation.translate(-target());
 
     myModel = rotation * myModel;
+
+    myViewDirty = true;
+}
+
+void Camera::turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ)
+{
+    QVector3D translationVector(-myTarget.x(), -myTarget.y(), -myTarget.z());
+
+    QMatrix4x4 rotation;
+    rotation.rotate(angleAroundY, up());
+    rotation.rotate(angleAroundX, right());
+    rotation.rotate(angleAroundZ, direction());
+
+    QVector3D translationVector2(rotation * myTarget);
+
+    // Translation
+    QMatrix4x4 translation;
+    translation.translate(translationVector);
+
+    myModel = translation * myModel;
+    myTarget += translationVector;
+
+    // Rotation
+    myModel = rotation * myModel;
+
+    // Translation
+    QMatrix4x4 translation2;
+    translation2.translate(translationVector2);
+
+    myModel = translation2 * myModel;
+    myTarget += translationVector2;
 
     myViewDirty = true;
 }

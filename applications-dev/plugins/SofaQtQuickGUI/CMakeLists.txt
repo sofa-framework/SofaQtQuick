@@ -21,6 +21,7 @@ set(SOURCE_FILES
     SofaDataListModel.cpp
     SofaDisplayFlagsTreeModel.cpp
     SofaPythonInteractor.cpp
+    SofaInspectorDataListModel.cpp
     Console.cpp
     PythonConsole.cpp
     SofaParticleInteractor.cpp
@@ -48,6 +49,7 @@ set(HEADER_FILES
     SofaDataListModel.h
     SofaDisplayFlagsTreeModel.h
     SofaPythonInteractor.h
+    SofaInspectorDataListModel.h
     Console.h
     PythonConsole.h
     SofaParticleInteractor.h
@@ -128,7 +130,22 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaVisualizationControl.qml
     data/qml/SofaWidgets/AffineTransformationController.qml
     data/qml/SofaWidgets/ColorSelector.qml
+    data/qml/SofaWidgets/SofaInspector.qml
+    data/qml/SofaWidgets/SofaSceneViewer.qml
 )
+
+
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaBasics/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaInteractors/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
+set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
+
+
+
 
 set(CONFIG_FILES
     data/config/default.ini

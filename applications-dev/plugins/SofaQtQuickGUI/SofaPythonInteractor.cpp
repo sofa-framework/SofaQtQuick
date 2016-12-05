@@ -275,7 +275,7 @@ QVariant SofaPythonInteractor::call(const QString& pythonScriptControllerName, c
 
 PythonScriptController* SofaPythonInteractor::pythonScriptControllerByName(const QString& pythonScriptControllerName) const
 {
-    const char* path = pythonScriptControllerName.toLatin1().constData();
+    const std::string& path = pythonScriptControllerName.toLatin1().constData();
     PythonScriptController* controller = nullptr;
 
     // try to find by path (faster)
@@ -371,6 +371,9 @@ QVariant SofaPythonInteractor::onCall(const QString& pythonScriptControllerName,
     PythonScriptController* controller = pythonScriptControllerByName(pythonScriptControllerName);
     if(!controller)
     {
+
+        msg_warning("SofaQtQuickGUI") << "SofaPythonInteractor::onCall a second call to pythonScriptControllerByName is necessary";
+
         // sometimes a second call to pythonScriptControllerByName is ok
         // TODO something must be initialised in the first call
         // TODO clean that

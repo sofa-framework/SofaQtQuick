@@ -27,16 +27,30 @@ import SofaApplication 1.0
 import SofaScene 1.0
 import SofaMessageList 1.0
 
-ColumnLayout {
+Column {
     id: root
-    spacing: 0
 
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    anchors.fill: parent
     property var sofaScene: SofaApplication.sofaScene
 
+    Rectangle{
+            id: header
+            width: parent.width
+            height: 20
+            color: "darkgrey"
+            Text{
+                text : "Messages"
+                font.pixelSize: 14
+                font.bold: true
+            }
+    }
+
     Rectangle {
-        anchors.fill: parent
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+        implicitWidth: parent.width
+        implicitHeight: parent.height - header.height
+        color : "lightgrey"
 
         ScrollView {
             Layout.fillWidth: true
@@ -70,9 +84,9 @@ ColumnLayout {
                         clip : true
 
                         Behavior on height {
-                            SpringAnimation {
-                                spring: 3
-                                damping: 0.2
+                            NumberAnimation {
+                                easing.type: Easing.InOutCubic
+                                easing.period: 1.5
                             }
                         }
 
@@ -91,13 +105,19 @@ ColumnLayout {
                                     textFormat: Text.RichText
 
                                     text: {
+                                        // Info=0, Advice, Deprecated, Warning, Error, Fatal,
                                         if(type == 0)
                                             return "[<font color='#00ff00'>INFO</font>]: "+emitter
                                         if(type == 1)
-                                            return "[<font color='#998800'>WARNING</font>]: "+emitter
+                                            return "[<font color='#00ff00'>ADVICE</font>]: "+emitter
                                         if(type == 2)
+                                            return "[<font color='#ff0000'>DEPRECATED</font>]: "+emitter
+                                        if(type == 3)
+                                            return "[<font color='#998800'>WARNING</font>]: "+emitter
+                                        if(type == 4)
                                             return "[<font color='#ff0000'>ERROR</font>]: "+emitter
-                                        return "[<font color='#ff0000'>DEPRECATED</font>]: "+emitter
+                                        if(type == 5)
+                                            return "[<font color='#ff0000'>FATAL</font>]: "+emitter
                                     }
                                 }
                                 Text{
@@ -114,16 +134,7 @@ ColumnLayout {
                                 text: "Emitted from: <a href='file://"+link+"?"+line+"'>"+link+":"+line+"</a>"
                                 onLinkActivated: {
                                     Qt.openUrlExternally(link);
-                                    console.log("Helle est pas belle la vie ? "+link);
                                 }
-                                /*MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: text.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                        acceptedButtons: Qt.NoButton
-                                }*/
-                                /*onLinkHovered: {
-                                    console.log("TOTO !!" +link) ;
-                                }*/
                             }
                             Rectangle{
                                 id: endline

@@ -297,12 +297,16 @@ ColumnLayout {
 
                                     MenuItem {
                                         text: {
-                                            nodeMenu.nodeActivated ? "Desactivate node" : "Activate node"
+                                            "Add node"
                                         }
-                                        onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
-                                    }
+                                        onTriggered: {
+                                            var currentRow = listView.model.computeItemRow(listView.currentIndex);
 
-                                    MenuSeparator {}
+                                            sofaScene.addNodeTo(listModel.getComponentById(index));
+
+                                            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
+                                        }
+                                    }
 
                                     MenuItem {
                                         text: {
@@ -316,6 +320,18 @@ ColumnLayout {
                                             listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
                                         }
                                     }
+
+                                    MenuSeparator {}
+
+                                    MenuItem {
+                                        text: {
+                                            nodeMenu.nodeActivated ? "Desactivate" : "Activate"
+                                        }
+                                        onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
+                                    }
+
+
+
                                 }
 
                                 Menu {

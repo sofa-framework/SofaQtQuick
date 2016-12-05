@@ -81,7 +81,6 @@ public:
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
     Q_INVOKABLE QQuaternion orientation() const;
-	Q_INVOKABLE QMatrix4x4 rotationMatrix() const;
 
     Q_INVOKABLE double aspectRatio() const          {return myAspectRatio;}
 
@@ -104,6 +103,7 @@ public slots:
 
     void move(double x, double y, double z);
     void turn(double angleAroundX, double angleAroundY, double angleAroundZ);
+    void turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ);
     void zoom(double factor);
     void zoomWithBounds(double factor, double min, double max);
 

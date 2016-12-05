@@ -633,7 +633,7 @@ void SofaViewer::viewAll(float radiusFactor)
         return;
 
     QVector3D min, max;
-    mySofaScene->computeBoundingBox(min, max);
+    mySofaScene->computeBoundingBox(min, max, myRoots);
 
     myCamera->fit(min, max, 1.5f * radiusFactor);
 }
