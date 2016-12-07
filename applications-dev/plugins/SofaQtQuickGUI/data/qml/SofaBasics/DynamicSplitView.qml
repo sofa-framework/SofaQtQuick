@@ -38,6 +38,7 @@ Item {
     property real splitterMagnetizeThreshold: 5
     property real splitterMarginThreshold: 30
     property real splittingMarginThreshold: 10
+    property bool reloadSavedViews: true
 
     property url source
     property Component sourceComponent
@@ -75,27 +76,29 @@ Item {
     }
 
     Component.onCompleted: {
-        if(0 === uiId) {
-            uiId = SofaApplication.uiSettings.generate();
-        } else {
-            // try to load a previous configuration
-            var viewIdArray = uiSettings.viewIds.split(';');
-            for(var i = 0; i < viewIdArray.length; ++i) {
-                if(0 === viewIdArray[i].length)
-                    continue;
+        if (root.reloadSavedViews) {
+            if(0 === uiId) {
+                uiId = SofaApplication.uiSettings.generate();
+            } else {
+                // try to load a previous configuration
+                var viewIdArray = uiSettings.viewIds.split(';');
+                for(var i = 0; i < viewIdArray.length; ++i) {
+                    if(0 === viewIdArray[i].length)
+                        continue;
 
-                createView({"uiId": viewIdArray[i]});
+                    createView({"uiId": viewIdArray[i]});
+                }
+
+                var splitterIdArray = uiSettings.splitterIds.split(';');
+                for(var i = 0; i < splitterIdArray.length; ++i) {
+                    if(0 === splitterIdArray[i].length)
+                        continue;
+
+                    createSplitter({"uiId": splitterIdArray[i]});
+                }
+
+                load();
             }
-
-            var splitterIdArray = uiSettings.splitterIds.split(';');
-            for(var i = 0; i < splitterIdArray.length; ++i) {
-                if(0 === splitterIdArray[i].length)
-                    continue;
-
-                createSplitter({"uiId": splitterIdArray[i]});
-            }
-
-            load();
         }
 
         // use the default settings if there is no saved one
