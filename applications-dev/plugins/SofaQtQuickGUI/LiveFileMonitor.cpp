@@ -48,23 +48,6 @@ namespace qtquick
 namespace livefilemonitor
 {
 
-class QMLFileEventListener : public FileEventListener
-{
-public:
-    QMLFileEventListener(LiveFileMonitor *qmlfilemanager){
-        m_qmlfilemanager = qmlfilemanager ;
-    }
-
-    virtual ~QMLFileEventListener(){}
-
-    void fileHasChanged(const std::string &filename){
-        m_qmlfilemanager->hasChanged(filename);
-    }
-
-private:
-    LiveFileMonitor* m_qmlfilemanager ;
-} ;
-
 LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
 {
     Q_UNUSED(parent);
@@ -72,19 +55,17 @@ LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
     msg_info("LiveFileMonitor") << "Creating a LiveFileMonitor singleton with data directory '"
                                 << SOFA_SOFAQTQUICKGUI_SRC_DIR << "'" ;
 
-    m_filelistener = new QMLFileEventListener(this);
+    m_filesystemwatcher = new QFileSystemWatcher() ;
+    connect( m_filesystemwatcher, SIGNAL(fileChanged(QString)),
+             this, SLOT(hasChanged(QString)));
 
     std::vector<std::string> files;
     std::string path = std::string(SOFA_SOFAQTQUICKGUI_SRC_DIR)+"SofaWidgets/";
     FileSystem::listDirectory(path, files, ".qml") ;
 
-    FileMonitor::addFile(path, m_filelistener);
-
     m_files = QStringList() ;
     for(auto& filename : files){
-        if( FileMonitor::addFile(path ,filename, m_filelistener) < 0 ){
-            msg_info("LiveFileMonitor") << "Unable to monitor this file... '" << path << "'";
-        }
+        m_filesystemwatcher->addPath(QString::fromStdString(path+"/"+filename)) ;
     }
 
     QTimer *timer = new QTimer(this);
@@ -96,8 +77,8 @@ LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
 
 LiveFileMonitor::~LiveFileMonitor()
 {
-    if(m_filelistener!=nullptr)
-        delete m_filelistener ;
+    if(m_filesystemwatcher!=nullptr)
+        delete m_filesystemwatcher ;
 }
 
 void LiveFileMonitor::update()
@@ -105,18 +86,19 @@ void LiveFileMonitor::update()
     FileMonitor::updates(0) ;
 }
 
-void LiveFileMonitor::hasChanged(const std::string& filename)
+void LiveFileMonitor::hasChanged(const QString& filename)
 {
     m_engine->clearComponentCache();
     m_files.clear();
-    m_files.push_back(QString(filename.c_str()));
+    m_files.push_back(filename);
     emit filesChanged();
 }
 
+/*
 bool LiveFileMonitor::addFile(const QUrl &filename)
 {
-    return FileMonitor::addFile(filename.toLocalFile().toStdString().c_str(), m_filelistener) >= 0;
-}
+    return FileMonitor::addFile(filename.toLocalFile(), m_filelistener) >= 0;
+}*/
 
 QStringList LiveFileMonitor::files() const
 {
