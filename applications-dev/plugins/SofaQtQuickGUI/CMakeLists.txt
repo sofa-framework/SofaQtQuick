@@ -106,6 +106,7 @@ set(QML_FILES
     data/qml/SofaBasics/MementoBar.qml
     data/qml/SofaBasics/MementoObject.qml
     data/qml/SofaBasics/MementoManager.qml
+    data/qml/SofaBasics/ClipPlane.qml
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
     data/qml/SofaInteractors/UserInteractor_Selection.qml

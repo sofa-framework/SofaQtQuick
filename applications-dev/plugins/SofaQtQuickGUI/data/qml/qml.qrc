@@ -70,5 +70,6 @@
         <file>SofaBasics/Vector4DSpinBox.qml</file>
         <file>SofaWidgets/SofaInspector.qml</file>
         <file>SofaWidgets/SofaSceneViewer.qml</file>
+        <file>SofaBasics/ClipPlane.qml</file>
     </qresource>
 </RCC>

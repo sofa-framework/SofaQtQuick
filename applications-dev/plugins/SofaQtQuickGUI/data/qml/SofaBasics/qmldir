@@ -26,3 +26,4 @@ Vector4DSpinBox 1.0 Vector4DSpinBox.qml
 MementoBar 1.0 MementoBar.qml
 MementoObject 1.0 MementoObject.qml
 singleton MementoManager 1.0 MementoManager.qml
+ClipPlane 1.0 ClipPlane.qml
