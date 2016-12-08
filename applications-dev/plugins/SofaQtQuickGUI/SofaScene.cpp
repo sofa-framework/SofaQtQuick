@@ -1699,8 +1699,8 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
 }
 
 /// TODO(dmarchal): this function is cut&pasted from draw(SofaViewer&) one...but it should evolved
-/// to be more specific (if not then we should use a tempalte or proper inheritence to factor this code)
-void SofaScene::draw(const RuntimeViewer& viewer, const QList<SofaComponent*>& roots) const
+/// to be more specific (if not then we should use a template or proper inheritence to factor this code)
+void SofaScene::draw(const RuntimeViewer& /*viewer*/, const QList<SofaComponent*>& roots) const
 {
     if(!isReady())
         return;
