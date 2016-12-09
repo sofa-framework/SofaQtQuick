@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
 
@@ -10,13 +10,18 @@ GroupBox {
     property double distanceMin: -10
     property double distanceMax: 10
     property double distanceStepSize: 0.1
+    property var normal: [1,0,0]
+    property double distance: 0
     
-    function setNormal() {
-        sofaScene.setDataValue("@"+clipPlaneComponentPath+".normal", [[nx.value, ny.value, nz.value]])
+    onNormalChanged: {
+        sofaScene.setDataValue("@"+clipPlaneComponentPath+".normal", [[normal[0], normal[1], normal[2]]]);
+        updatePosition();
     }
     
-    function setDistance() {
-        sofaScene.setDataValue("@"+clipPlaneComponentPath+".position", [[nx.value*distance.value, ny.value*distance.value, nz.value*distance.value]])
+    onDistanceChanged: updatePosition()
+
+    function updatePosition() {
+        sofaScene.setDataValue("@"+clipPlaneComponentPath+".position", [[distance*normal[0], distance*normal[1], distance*normal[2]]])
     }
     
     title: "Clipping Plane"
@@ -26,71 +31,65 @@ GroupBox {
     onCheckedChanged : sofaScene.setDataValue("@"+clipPlaneComponentPath+".active", checked)
     
     GridLayout {
+        Layout.fillWidth: true
         columns: 2
         Label {
             Layout.alignment: Qt.AlignRight
             text: "Normal:"
         }
         RowLayout {
-            id: normalLayout
-            Layout.fillWidth: true
-            Button {
-                text: "x"
-                implicitWidth: 20
-                onClicked: {
-                    nx.value=1.;
-                    ny.value=0.;
-                    nz.value=0.;
+            spacing: 20
+            ExclusiveGroup {
+                id: normalSelection
+            }
+            RowLayout {
+                Button {
+                    checkable: true
+                    checked: true
+                    exclusiveGroup: normalSelection
+                    text: "x"
+                    implicitWidth: 20
+                    onClicked: normal = [1,0,0]
+                }
+                Button {
+                    checkable: true
+                    exclusiveGroup: normalSelection
+                    text: "-x"
+                    implicitWidth: 20
+                    onClicked: normal = [-1,0,0]
                 }
             }
-            Button {
-                text: "y"
-                implicitWidth: 20
-                onClicked: {
-                    nx.value=0.;
-                    ny.value=1.;
-                    nz.value=0.;
+            RowLayout {
+                Button {
+                    checkable: true
+                    exclusiveGroup: normalSelection
+                    text: "y"
+                    implicitWidth: 20
+                    onClicked: normal = [0,1,0]
+                }
+                Button {
+                    checkable: true
+                    exclusiveGroup: normalSelection
+                    text: "-y"
+                    implicitWidth: 20
+                    onClicked: normal = [0,-1,0]
                 }
             }
-            Button {
-                text: "z"
-                implicitWidth: 20
-                onClicked: {
-                    nx.value=0.;
-                    ny.value=0.;
-                    nz.value=1.;
+            RowLayout {
+                Button {
+                    checkable: true
+                    exclusiveGroup: normalSelection
+                    text: "z"
+                    implicitWidth: 20
+                    onClicked: normal = [0,0,1]
                 }
-            }
-            Label {
-                Layout.fillWidth: true
-                text: ":"
-            }
-            SpinBox {
-                id: nx
-                value: 1
-                decimals: 1
-                maximumValue: 1
-                minimumValue: -1
-                stepSize: 0.1
-                onValueChanged: setNormal()
-            }
-            SpinBox {
-                id: ny
-                value: 0
-                decimals: 1
-                maximumValue: 1
-                minimumValue: -1
-                stepSize: 0.1
-                onValueChanged: setNormal()
-            }
-            SpinBox {
-                id: nz
-                value: 0
-                decimals: 1
-                maximumValue: 1
-                minimumValue: -1
-                stepSize: 0.1
-                onValueChanged: setNormal()
+                Button {
+                    checkable: true
+                    exclusiveGroup: normalSelection
+                    text: "-z"
+                    implicitWidth: 20
+                    onClicked: normal = [0,0,-1]
+                }
             }
         }
         Label {
@@ -99,7 +98,12 @@ GroupBox {
         }
         RowLayout {
             Layout.fillWidth: true
-            width: normalLayout.width
+            TextField {
+                implicitWidth: 50
+                text: root.distanceMin
+                validator: DoubleValidator { }
+                onAccepted: root.distanceMin = parseFloat(text)
+            }
             Slider {
                 id: distanceSlider
                 Layout.fillWidth: true
@@ -108,20 +112,26 @@ GroupBox {
                 stepSize: root.distanceStepSize
                 
                 onValueChanged: {
-                    distance.value = value;
+                    root.distance = value;
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    onWheel: {
+                        if (wheel.angleDelta.x>0 || wheel.angleDelta.y>0)
+                            distanceSlider.value += distanceSlider.stepSize;
+                        else
+                            distanceSlider.value -= distanceSlider.stepSize;
+                    }
                 }
             }
-            SpinBox {
-                id: distance
-                value: 0
-                decimals: 1
-                minimumValue: root.distanceMin
-                maximumValue: root.distanceMax
-                stepSize: root.distanceStepSize
-                onValueChanged: {
-                    distanceSlider.value = value;
-                    setDistance();
-                }
+            TextField {
+                implicitWidth: 50
+                text: root.distanceMax
+                validator: DoubleValidator { }
+                maximumLength: 5
+                onAccepted: root.distanceMax = parseFloat(text)
             }
         }
         
