@@ -6,10 +6,12 @@ import SofaBasics 1.0
 
 GroupBox {
     id: root
+    /// path to the ClipPlane component to control
     property string clipPlaneComponentPath: "/clipPlane"
-    property double distanceMin: -10
-    property double distanceMax: 10
-    property double distanceStepSize: 0.1
+    /// min/max value for the distance slider
+    property double distanceMinMax: 10
+    /// precision for distance
+    property int distanceNbDecimals: 1
     property var normal: [1,0,0]
     property double distance: 0
     
@@ -99,20 +101,30 @@ GroupBox {
         RowLayout {
             Layout.fillWidth: true
             TextField {
+                id: distanceTextField
                 implicitWidth: 50
-                text: root.distanceMin
+                text: root.distance
                 validator: DoubleValidator { }
-                onAccepted: root.distanceMin = parseFloat(text)
+                onAccepted: root.distance = parseFloat(text)
+                Connections {
+                    target: root
+                    onDistanceChanged : {
+                        distanceTextField.text = distance.toFixed(root.distanceNbDecimals);
+                    }
+                }
             }
             Slider {
                 id: distanceSlider
                 Layout.fillWidth: true
-                minimumValue: root.distanceMin
-                maximumValue: root.distanceMax
-                stepSize: root.distanceStepSize
-                
+                minimumValue: -1.*root.distanceMinMax
+                maximumValue: root.distanceMinMax
+                stepSize: Math.pow(10, -1*root.distanceNbDecimals)
                 onValueChanged: {
                     root.distance = value;
+                }
+                Connections {
+                    target: root
+                    onDistanceChanged : distanceSlider.value = distance
                 }
 
                 MouseArea {
@@ -125,13 +137,6 @@ GroupBox {
                             distanceSlider.value -= distanceSlider.stepSize;
                     }
                 }
-            }
-            TextField {
-                implicitWidth: 50
-                text: root.distanceMax
-                validator: DoubleValidator { }
-                maximumLength: 5
-                onAccepted: root.distanceMax = parseFloat(text)
             }
         }
         

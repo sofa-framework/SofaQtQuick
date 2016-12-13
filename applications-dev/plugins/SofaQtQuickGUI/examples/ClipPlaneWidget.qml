@@ -8,8 +8,6 @@ SofaSceneInterface {
     toolpanel:
          ClipPlane {
              clipPlaneComponentPath: "/clipPlane"
-             distanceMin: -10
-             distanceMax: 10
-             distanceStepSize: 0.1
+             distanceMinMax: 10
          }
 }
