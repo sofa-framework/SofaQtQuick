@@ -77,7 +77,7 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myDrawManipulators(true),
     myDrawSelected(true)
 {
-    setMirroredVertically(true);
+    QQuickFramebufferObject::setMirrorVertically(true);
 
     setFlag(QQuickItem::ItemHasContents);
 
