@@ -24,7 +24,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Manipulator.h"
 
 #include <QObject>
-#include <QVector3D>
 
 namespace sofa
 {
