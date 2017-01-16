@@ -75,7 +75,10 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myMirroredVertically(false),
     myDrawFrame(false),
     myDrawManipulators(true),
-    myDrawSelected(true)
+    myDrawSelected(true),
+	myCulling(true), /*---ARMELLE---*/
+	myVisualizeBoundingBox(false), /*---ARMELLE---*/
+	myChoiceAllwaysDraw(false) /*---ARMELLE---*/
 {
     QQuickFramebufferObject::setMirrorVertically(true);
 
@@ -97,6 +100,11 @@ SofaViewer::~SofaViewer()
     clearRoots();
 }
 
+QOpenGLFramebufferObject* SofaViewer::getFBO() const /*---ARMELLE---*/
+{
+	return myFBO;
+}
+
 void SofaViewer::setSofaScene(SofaScene* newSofaScene)
 {
     if(newSofaScene == mySofaScene)
@@ -115,6 +123,36 @@ void SofaViewer::setCamera(Camera* newCamera)
     myCamera = newCamera;
 
     cameraChanged(newCamera);
+}
+
+void SofaViewer::setCulling(bool newCulling) /*---ARMELLE---*/
+{
+	if (newCulling == myCulling)
+		return;
+
+	myCulling = newCulling;
+
+	cullingChanged(newCulling);
+}
+
+void SofaViewer::setVisualizeBoundingBox(bool newVisualizeBoundingBox) /*---ARMELLE---*/
+{
+	if (newVisualizeBoundingBox == myVisualizeBoundingBox)
+		return;
+
+	myVisualizeBoundingBox = newVisualizeBoundingBox;
+
+	visualizeBoundingBoxChanged(newVisualizeBoundingBox);
+}
+
+void SofaViewer::setChoiceAllwaysDraw(bool newChoiceAllwaysDraw) /*---ARMELLE---*/
+{
+	if (newChoiceAllwaysDraw == myChoiceAllwaysDraw)
+		return;
+
+	myChoiceAllwaysDraw = newChoiceAllwaysDraw;
+
+	choiceAllwaysDrawChanged(newChoiceAllwaysDraw);
 }
 
 static void appendRoot(QQmlListProperty<SofaComponent> *property, SofaComponent *value)
@@ -373,6 +411,8 @@ public:
         glDisable(GL_BLEND);
         glDisable(GL_LIGHTING);
 
+		glDisable(GL_CULL_FACE); /*---ARMELLE---*/
+
         glViewport(0.0, 0.0, size.width(), size.height());
 
         camera->setAspectRatio(size.width() / (double) size.height());
@@ -384,6 +424,9 @@ public:
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         glLoadMatrixf(camera->view().constData());
+
+		if (myViewer->culling()) /*---ARMELLE---*/
+			glEnable(GL_CULL_FACE);
 
         mySelectable = sofaScene->pickObject(*myViewer, mySSPoint, myTags, myViewer->roots());
 
@@ -482,6 +525,14 @@ QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
     mySofaScene->computeBoundingBox(min, max);
 
     return QPair<QVector3D, QVector3D>(min, max);
+}
+
+QPair<QVector3D, QVector3D> SofaViewer::rootsBoundingBox() const
+{
+	QVector3D min, max;
+	mySofaScene->computeBoundingBox(min, max, myRoots); /*---ARMELLE--- :: attention, ne prend en compte que le dernier élément mis dans la liste*/
+
+	return QPair<QVector3D, QVector3D>(min, max);
 }
 
 QVector3D SofaViewer::boundingBoxMin() const
@@ -711,6 +762,8 @@ void SofaViewer::internalRender(int width, int height) const
 
     if(mySofaScene && mySofaScene->isReady())
     {
+		glDisable(GL_CULL_FACE); /*---ARMELLE---*/
+
         myCamera->setAspectRatio(width / (double) height);
 
         glMatrixMode(GL_PROJECTION);
@@ -720,6 +773,9 @@ void SofaViewer::internalRender(int width, int height) const
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         glLoadMatrixf(myCamera->view().constData());
+
+		if (culling()) /*---ARMELLE---*/
+			glEnable(GL_CULL_FACE);
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_TEXTURE_2D);
@@ -761,6 +817,10 @@ void SofaViewer::internalRender(int width, int height) const
             postDraw();
         }
 
+		/*---ARMELLE---*/
+		if (this->myVisualizeBoundingBox)
+			this->renderBoungindBox();
+
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
 
@@ -784,6 +844,61 @@ void SofaViewer::renderFrame() const
 
     _vparams->drawTool()->drawFrame(sofa::defaulttype::Vector3(), sofa::defaulttype::Quaternion(), sofa::defaulttype::Vector3(size, size, size));
 }
+
+void SofaViewer::renderBoungindBox() const 	/*---ARMELLE---*/
+{
+	QPair<QVector3D, QVector3D> bbox = this->rootsBoundingBox();
+
+	float minX, minY, minZ;
+	float maxX, maxY, maxZ;
+
+	// min
+	//---------------------------------------------
+	minX = bbox.first.x();
+	if (bbox.second.x() < minX)
+		minX = bbox.second.x();
+
+	minY = bbox.first.y();
+	if (bbox.second.y() < minY)
+		minY = bbox.second.y();
+
+	minZ = bbox.first.z();
+	if (bbox.second.z() < minZ)
+		minZ = bbox.second.z();
+
+	// max
+	//---------------------------------------------
+	maxX = bbox.first.x();
+	if (bbox.second.x() > maxX)
+		maxX = bbox.second.x();
+
+	maxY = bbox.first.y();
+	if (bbox.second.y() > maxY)
+		maxY = bbox.second.y();
+
+	maxZ = bbox.first.z();
+	if (bbox.second.z() > maxZ)
+		maxZ = bbox.second.z();
+
+	//---------------------------------------------
+	glLineWidth(2.5);
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex3f(minX, maxY, maxZ); glVertex3f(maxX, maxY, maxZ);
+	glVertex3f(minX, maxY, maxZ); glVertex3f(minX, maxY, minZ);
+	glVertex3f(minX, maxY, maxZ); glVertex3f(minX, minY, maxZ);
+	glVertex3f(minX, maxY, minZ); glVertex3f(maxX, maxY, minZ);
+	glVertex3f(maxX, maxY, minZ); glVertex3f(maxX, maxY, maxZ);
+	glVertex3f(maxX, maxY, maxZ); glVertex3f(maxX, minY, maxZ);
+	glVertex3f(maxX, minY, maxZ); glVertex3f(minX, minY, maxZ);
+	glVertex3f(maxX, minY, maxZ); glVertex3f(maxX, minY, minZ);
+	glVertex3f(minX, minY, minZ); glVertex3f(maxX, minY, minZ);
+	glVertex3f(minX, minY, minZ); glVertex3f(minX, minY, maxZ);
+	glVertex3f(minX, minY, minZ); glVertex3f(minX, maxY, minZ);
+	glVertex3f(maxX, maxY, minZ); glVertex3f(maxX, minY, minZ);
+	glEnd();
+}
+
 
 SofaViewer::SofaRenderer::SofaRenderer(SofaViewer* viewer) : QQuickFramebufferObject::Renderer(),
     myViewer(viewer),
@@ -819,7 +934,8 @@ void SofaViewer::SofaRenderer::render()
 {
     update();
 
-    if(!myViewer || !myViewer->isVisible())
+    //if(!myViewer || !myViewer->isVisible()) /*---ARMELLE---*/
+	if (!myViewer || !myViewer->isVisible() && !myViewer->choiceAllwaysDraw()) /*---ARMELLE---*/
         return;
 
     myViewer->internalRender(myViewer->width(), myViewer->height());
