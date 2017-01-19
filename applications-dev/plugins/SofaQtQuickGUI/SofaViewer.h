@@ -83,9 +83,7 @@ public:
     Q_PROPERTY(bool drawFrame READ drawFrame WRITE setDrawFrame NOTIFY drawFrameChanged)
     Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
     Q_PROPERTY(bool drawSelected READ drawSelected WRITE setDrawSelected NOTIFY drawSelectedChanged)
-	Q_PROPERTY(bool culling READ culling WRITE setCulling NOTIFY cullingChanged) /*---ARMELLE---*/
-	Q_PROPERTY(bool visualizeBoundingBox READ visualizeBoundingBox WRITE setVisualizeBoundingBox NOTIFY visualizeBoundingBoxChanged) /*---ARMELLE---*/
-	Q_PROPERTY(bool choiceAllwaysDraw READ choiceAllwaysDraw WRITE setChoiceAllwaysDraw NOTIFY choiceAllwaysDrawChanged) /*---ARMELLE---*/
+	Q_PROPERTY(bool alwaysDraw READ alwaysDraw WRITE setAlwaysDraw NOTIFY alwaysDrawChanged)
 
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
@@ -124,14 +122,8 @@ public:
     bool drawSelected() const {return myDrawSelected;}
     void setDrawSelected(bool newDrawSelected);
 
-	bool culling() const { return myCulling; } /*---ARMELLE---*/
-	void setCulling(bool newCulling); /*---ARMELLE---*/
-
-	bool visualizeBoundingBox() const { return myVisualizeBoundingBox; } /*---ARMELLE---*/
-	void setVisualizeBoundingBox(bool newVisualizeBoundingBox); /*---ARMELLE---*/
-
-	bool choiceAllwaysDraw() const { return myChoiceAllwaysDraw; } /*---ARMELLE---*/
-	void setChoiceAllwaysDraw(bool myChoiceAllwaysDraw); /*---ARMELLE---*/
+	bool alwaysDraw() const { return myAlwaysDraw; }
+	void setAlwaysDraw(bool myAlwaysDraw);
 
     /// @return depth in screen space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
@@ -165,7 +157,7 @@ public:
     Q_INVOKABLE void saveScreenshot(const QString& path);
 	Q_INVOKABLE void saveScreenshotWithResolution(const QString& path, int width, int height);
 
-	QOpenGLFramebufferObject* getFBO() const;  /*---ARMELLE---*/
+	QOpenGLFramebufferObject* getFBO() const;
 
 signals:
     void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
@@ -179,9 +171,7 @@ signals:
     void drawFrameChanged(bool newDrawFrame);
     void drawManipulatorsChanged(bool newDrawManipulators);
     void drawSelectedChanged(bool newDrawSelected);
-	void cullingChanged(bool newCulling); /*---ARMELLE---*/
-	void visualizeBoundingBoxChanged(bool newVisualizeBoundingBox); /*---ARMELLE---*/
-	void choiceAllwaysDrawChanged(bool newChoiceAllwaysDraw); /*---ARMELLE---*/
+	void alwaysDrawChanged(bool newAlwaysDraw);
 
     void preDraw() const;
     void postDraw() const;
@@ -193,7 +183,6 @@ protected:
     QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);
 	void internalRender(int width, int height) const;
     void renderFrame() const;
-	void renderBoungindBox() const;
 
 private:
     QRect nativeRect() const;
@@ -234,9 +223,7 @@ private:
     bool                        myDrawFrame;
     bool                        myDrawManipulators;
     bool                        myDrawSelected;
-	bool                        myCulling; /*---ARMELLE---*/
-	bool						myVisualizeBoundingBox; /*---ARMELLE---*/
-	bool						myChoiceAllwaysDraw; /*---ARMELLE---*/
+	bool						myAlwaysDraw;
 
 };
 
