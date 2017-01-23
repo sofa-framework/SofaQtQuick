@@ -274,6 +274,9 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
 
         sofaScene->setStatus(SofaScene::Status::Ready);
 
+	// fix: runSofa calls reset on scene load, qtQuickSofa doesn't
+	sofaScene->reset();
+	
         if(!sofaScene->pathQML().isEmpty())
             sofaScene->setSourceQML(QUrl::fromLocalFile(sofaScene->pathQML()));
 
