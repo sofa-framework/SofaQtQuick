@@ -83,7 +83,8 @@ public:
     Q_PROPERTY(bool drawFrame READ drawFrame WRITE setDrawFrame NOTIFY drawFrameChanged)
     Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
     Q_PROPERTY(bool drawSelected READ drawSelected WRITE setDrawSelected NOTIFY drawSelectedChanged)
-	Q_PROPERTY(bool alwaysDraw READ alwaysDraw WRITE setAlwaysDraw NOTIFY alwaysDrawChanged)
+    Q_PROPERTY(bool alwaysDraw READ alwaysDraw WRITE setAlwaysDraw NOTIFY alwaysDrawChanged) /// \brief always draw the scene in the fbo
+    Q_PROPERTY(bool autoPaint READ autoPaint WRITE setAutoPaint NOTIFY autoPaintChanged) /// \brief paint the fbo on the screen every frame, if false: you must call update() to request a paint
 
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
@@ -124,6 +125,10 @@ public:
 
 	bool alwaysDraw() const { return myAlwaysDraw; }
 	void setAlwaysDraw(bool myAlwaysDraw);
+
+    bool autoPaint() const { return myAutoPaint; }
+    Q_SLOT void setAutoPaint(bool newAutoPaint) { if(myAutoPaint == newAutoPaint) return; myAutoPaint = newAutoPaint; autoPaintChanged(newAutoPaint); }
+    Q_SIGNAL void autoPaintChanged(bool newAutoPaint);
 
     /// @return depth in screen space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
@@ -224,6 +229,7 @@ private:
     bool                        myDrawManipulators;
     bool                        myDrawSelected;
 	bool						myAlwaysDraw;
+    bool                        myAutoPaint;
 
 };
 

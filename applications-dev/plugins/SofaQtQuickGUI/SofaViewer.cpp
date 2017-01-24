@@ -76,7 +76,8 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myDrawFrame(false),
     myDrawManipulators(true),
     myDrawSelected(true),
-	myAlwaysDraw(false)
+    myAlwaysDraw(false),
+    myAutoPaint(true)
 {
     QQuickFramebufferObject::setMirrorVertically(true);
 
@@ -842,10 +843,20 @@ void SofaViewer::SofaRenderer::synchronize(QQuickFramebufferObject* quickFramebu
 
 void SofaViewer::SofaRenderer::render()
 {
-    update();
+    if(!myViewer)
+    {
+        update();
 
-	if (!myViewer || !myViewer->isVisible() && !myViewer->alwaysDraw())
         return;
+    }
+
+    if(myViewer->autoPaint())
+    {
+        update();
+
+        if(!myViewer->isVisible() && !myViewer->alwaysDraw())
+            return;
+    }
 
     myViewer->internalRender(myViewer->width(), myViewer->height());
 }

@@ -62,9 +62,8 @@ const QMatrix4x4& Camera::projection() const
             myProjection.ortho(myOrthoLeft, myOrthoRight, myOrthoBottom, myOrthoTop, myZNear, myZFar);
         else
             myProjection.perspective((float) myPerspectiveFovY, (float) myAspectRatio, myZNear, myZFar);
-		myProjectionDirty = false;
 
-        projectionChanged();
+        setProjectionDirty(false);
 	}
 
 	return myProjection;
@@ -75,9 +74,7 @@ const QMatrix4x4& Camera::view() const
     if(myViewDirty) // update view if needed
     {
         myView = model().inverted();
-        myViewDirty = false;
-
-        modelViewChanged();
+        setViewDirty(false);
     }
 
 	return myView;
@@ -191,7 +188,7 @@ void Camera::move(double x, double y, double z)
     myModel = translation * myModel;
     myTarget += translationVector;
 
-    myViewDirty = true;
+    setViewDirty(true);
 }
 
 void Camera::turn(double angleAroundX, double angleAroundY, double angleAroundZ)
@@ -205,7 +202,7 @@ void Camera::turn(double angleAroundX, double angleAroundY, double angleAroundZ)
 
     myModel = rotation * myModel;
 
-    myViewDirty = true;
+    setViewDirty(true);
 }
 
 void Camera::turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ)
@@ -236,7 +233,7 @@ void Camera::turnWorld(double angleAroundX, double angleAroundY, double angleAro
     myModel = translation2 * myModel;
     myTarget += translationVector2;
 
-    myViewDirty = true;
+    setViewDirty(true);
 }
 
 void Camera::zoom(double factor)
@@ -265,7 +262,7 @@ void Camera::zoomWithBounds(double factor, double min, double max)
 
     myModel = translation * myModel;
 
-    myViewDirty = true;
+    setViewDirty(true);
 
     if(orthographic())
         computeOrthographic();
@@ -275,28 +272,28 @@ void Camera::setOrthoLeft(double left)
 {
     myOrthoLeft = left;
 
-    myProjectionDirty = true;
+    setProjectionDirty(true);
 }
 
 void Camera::setOrthoRight(double right)
 {
     myOrthoRight = right;
 
-    myProjectionDirty = true;
+    setProjectionDirty(true);
 }
 
 void Camera::setOrthoBottom(double bottom)
 {
     myOrthoBottom = bottom;
 
-    myProjectionDirty = true;
+    setProjectionDirty(true);
 }
 
 void Camera::setOrthoTop(double top)
 {
     myOrthoTop = top;
 
-    myProjectionDirty = true;
+    setProjectionDirty(true);
 }
 
 void Camera::setPerspectiveFovY(double fovY)
@@ -306,7 +303,7 @@ void Camera::setPerspectiveFovY(double fovY)
 
     myPerspectiveFovY = fovY;
 
-	myProjectionDirty = true;
+    setProjectionDirty(true);
 }
 
 void Camera::setAspectRatio(double aspectRatio)
@@ -316,7 +313,7 @@ void Camera::setAspectRatio(double aspectRatio)
 
     myAspectRatio = aspectRatio;
 
-	myProjectionDirty = true;
+    setProjectionDirty(true);
 
     if(orthographic())
         computeOrthographic();
@@ -330,9 +327,7 @@ void Camera::lookAt(const QVector3D& eye, const QVector3D& target, const QVector
 
     myTarget = target;
 
-    myViewDirty = false;
-
-    modelViewChanged();
+    setViewDirty(false);
 }
 
 void Camera::fit(QVector3D min, QVector3D max, float radiusFactor)
@@ -376,9 +371,7 @@ void Camera::fit(QVector3D min, QVector3D max, float radiusFactor)
     myView.lookAt(eye, myTarget, up);
     myModel = myView.inverted();
 
-    myViewDirty = false;
-
-    modelViewChanged();
+    setViewDirty(false);
 
     if(orthographic())
         computeOrthographic();
@@ -429,7 +422,7 @@ void Camera::computeOrthographic()
     setOrthoBottom  (-trCorner.y());
     setOrthoTop     ( trCorner.y());
 
-    myProjectionDirty = true;
+    setProjectionDirty(true);
 }
 
 void Camera::computeModel()
@@ -438,9 +431,7 @@ void Camera::computeModel()
     myView.lookAt(eye(), myTarget, up());
     myModel = myView.inverted();
 
-    myViewDirty = false;
-
-    modelViewChanged();
+    setViewDirty(false);
 }
 
 QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int caseTested)
@@ -507,6 +498,32 @@ QVector3D Camera::computeNearestAxis(QVector3D axis, int& nearAxisIndex, int cas
       axisRef[nearAxisIndex] = -1;
 
     return axisRef;
+}
+
+void Camera::setProjectionDirty(bool dirty) const
+{
+    myProjectionDirty = dirty;
+
+    if(0 != receivers(SIGNAL(projectionChanged())))
+    {
+        if(myProjectionDirty)
+            projection();
+        else
+            projectionChanged();
+    }
+}
+
+void Camera::setViewDirty(bool dirty) const
+{
+    myViewDirty = dirty;
+
+    if(0 != receivers(SIGNAL(modelViewChanged())))
+    {
+        if(myViewDirty)
+            view();
+        else
+            modelViewChanged();
+    }
 }
 
 }

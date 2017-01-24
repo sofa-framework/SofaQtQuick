@@ -31,6 +31,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/AdvancedTimer.h>
 #include <SofaPython/PythonEnvironment.h>
 
+#include <QQuickStyle>
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQmlContext>
@@ -861,6 +862,9 @@ class UseOpenGLDebugLoggerRunnable : public QRunnable
 
 bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
+    // application style
+    QQuickStyle::setStyle("Material");
+
     // color console
     sofa::helper::Console::setColorsStatus(sofa::helper::Console::ColorsEnabled);
 

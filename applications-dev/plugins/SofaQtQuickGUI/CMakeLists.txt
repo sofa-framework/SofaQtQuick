@@ -106,6 +106,7 @@ set(QML_FILES
     data/qml/SofaBasics/MementoBar.qml
     data/qml/SofaBasics/MementoObject.qml
     data/qml/SofaBasics/MementoManager.qml
+    data/qml/SofaBasics/WindowResizer.qml
     data/qml/SofaBasics/ClipPlane.qml
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
@@ -173,18 +174,19 @@ if(WIN32)
     endif()
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
-# make sure to use QT > 5.2
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
 include_directories(${Qt5Gui_INCLUDE_DIRS})
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
+include_directories(${Qt5QuickControls2_INCLUDE_DIRS})
 include_directories(${Qt5Qml_INCLUDE_DIRS})
 include_directories(${Qt5Quick_INCLUDE_DIRS})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${Qt5Gui_DEFINITIONS})
 add_definitions(${Qt5Widgets_DEFINITIONS})
+add_definitions(${Qt5QuickControls2_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 
@@ -207,7 +209,7 @@ find_package(SofaFramework REQUIRED)
 find_package(SofaPython REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES})
-target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick)
+target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")

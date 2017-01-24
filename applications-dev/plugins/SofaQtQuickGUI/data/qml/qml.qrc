@@ -28,6 +28,7 @@
         <file>SofaBasics/MementoBar.qml</file>
         <file>SofaBasics/MementoManager.qml</file>
         <file>SofaBasics/MementoObject.qml</file>
+        <file>SofaBasics/WindowResizer.qml</file>
         <file>SofaWidgets/qmldir</file>
         <file>SofaWidgets/QML_LiveCoding.qml</file>
         <file>SofaWidgets/SofaViewer.qml</file>
