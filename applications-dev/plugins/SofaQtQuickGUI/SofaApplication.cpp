@@ -925,10 +925,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     parser.addVersionOption();
     parser.addHelpOption();
 
-    if( !parser.parse(app.arguments()) ) {
-	qCritical() << "ERROR: " << parser.errorText();
-	return false;
-    }
+    parser.parse(app.arguments());
 
     if(parser.isSet("version"))
     {
