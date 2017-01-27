@@ -28,7 +28,7 @@ set(QML_FILES
 )
 
 set(QRC_FILES
-    data/qml/qml.qrc
+    data/qml/image_qtquickgui_qml.qrc
 )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
