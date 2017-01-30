@@ -11,13 +11,22 @@ sofa_add_application(applications-dev/projects/qtQuickSofa qtQuickSofa)
 set(SOFAQTQUICKGUI_TARGETS "")
 
 find_package(image QUIET)
+find_package(Compliant QUIET)
 find_package(SofaQtQuickGUI QUIET)
 # if(PLUGIN_IMAGE AND PLUGIN_SOFAQTQUICKGUI)
+
 if(image_FOUND AND SofaQtQuickGUI_FOUND)
     list(APPEND SOFAQTQUICKGUI_TARGETS image_qtquickgui)
-    message("Adding automatically image_qtquickgui (image and SofaQtQuickGUI are activated)")
+    message("Adding (auto) image_qtquickgui (image and SofaQtQuickGUI are activated)")
     add_subdirectory(applications-dev/plugins/image_qtquickgui)
 endif()
+
+if(Compliant_FOUND AND SofaQtQuickGUI_FOUND)
+    list(APPEND SOFAQTQUICKGUI_TARGETS compliant_qtquickgui)
+    message("Adding (auto) compliant_qtquickgui (since Compliant and SofaQtQuickGUI are activated)")
+    add_subdirectory(applications-dev/plugins/compliant_qtquickgui)
+endif()
+
 
 ## Version
 set(SOFAQTQUICKGUI_VERSION "1.0")

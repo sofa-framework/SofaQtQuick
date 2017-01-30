@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>SofaInteractors/UserInteractor_Compliant.qml</file>
+    </qresource>
+</RCC>
