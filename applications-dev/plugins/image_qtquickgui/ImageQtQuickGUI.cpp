@@ -32,7 +32,7 @@ const int versionMinor = 0;
 
 static void initResources()
 {
-    Q_INIT_RESOURCE(qml);
+    Q_INIT_RESOURCE(image_qtquickgui_qml);
 }
 
 namespace sofa

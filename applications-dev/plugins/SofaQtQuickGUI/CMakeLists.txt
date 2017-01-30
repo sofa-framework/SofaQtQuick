@@ -159,8 +159,8 @@ set(PYTHON_FILES
 )
 
 set(QRC_FILES
-    data/resources.qrc
-    data/qml/qml.qrc
+    data/sofaQtQuickGUI_resources.qrc
+    data/qml/sofaQtQuickGUI_qml.qrc
 )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
