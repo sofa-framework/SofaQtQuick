@@ -90,15 +90,11 @@ public:
     
 public:
     Q_PROPERTY(double compliance MEMBER compliance NOTIFY complianceChanged)
-    // Q_PROPERTY(QVector3D interactorPosition READ interactorPosition NOTIFY interactorPositionChanged)
+    Q_PROPERTY(QVector3D interactorPosition MEMBER position NOTIFY interactorPositionChanged)
     Q_PROPERTY(bool interacting READ interacting NOTIFY interactingChanged)
 
 public:
     
-    // double compliance() const;
-    // void setCompliance(double compliance);
-
-    QVector3D interactorPosition() const;
     bool interacting() const;
     
     // Q_INVOKABLE sofa::qtquick::SofaComponent* sofaComponent() const;
@@ -108,12 +104,12 @@ signals:
     void complianceChanged(double);
     void interactingChanged(bool);
     
-    // void interactorPositionChanged(const QVector3D&);
+    void interactorPositionChanged(const QVector3D&);
 
 
 public slots:
     bool start(sofa::qtquick::SofaComponent* sofaComponent, int particleIndex);
-    bool update(const QVector3D& interactorNewPosition);
+    bool update(const QVector3D& pos);
     void release();
 
 private:
@@ -123,6 +119,11 @@ private:
 
     using update_cb_type = std::function< bool(const QVector3D&) >;
     update_cb_type update_cb;
+
+    QVector3D position;
+    
+    template<class Types>
+    update_cb_type update_thunk(SofaComponent* base, int particle_index);
 };
 
 }

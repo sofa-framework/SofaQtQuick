@@ -70,54 +70,62 @@ SofaCompliantInteractor::~SofaCompliantInteractor()
 }
 
 template<class Types>
-static std::function< bool(const QVector3D&) > update_thunk(Node* node,
-							    core::objectmodel::Base* component,
-							    unsigned index,
-							    double compliance) {
-
-    using state_type = MechanicalObject<Types>;
-    auto state = dynamic_cast<state_type*>(component);
-    (void)(state);
+std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(SofaComponent* component,
+									      int index) {
     
-    assert(state && "bad state type in interactor thunk");
+    using state_type = MechanicalObject<Types>;
 
+    // interactor dofs
+    auto state = dynamic_cast<state_type*>(component->base());
+    assert(state && "bad state type in interactor thunk");
+    
     using namespace component;
     using core::objectmodel::New;
-
-    // dofs
+    using helper::write;
+    
+    // difference dofs
     auto dofs = New<container::MechanicalObject<Types>>();
     
-    // mapping
+    // difference mapping
     auto mapping = New<mapping::DifferenceFromTargetMapping<Types, Types>>();
     mapping->setFrom(state);
     mapping->setTo(dofs.get());
-    helper::write(mapping->indices).wref().resize(1);
-    helper::write(mapping->indices).wref()[0] = index;
-    
-    helper::write(mapping->targets).wref().resize(1);
 
-    // forcefield
+    write(mapping->indices).wref().resize(1);
+    write(mapping->indices).wref()[0] = index;
+    
+    write(mapping->targets).wref().resize(1);
+    write(mapping->targets).wref()[0] = write(state->x).wref()[index];
+    
+    // forcefield on difference
     auto ff = New<forcefield::UniformCompliance<Types>>();
+    
     ff->compliance.setValue(compliance);
     ff->damping.setValue(1.0 / (1.0 + compliance) );
 
-    // display
+    // display flags
     auto style = New<visualmodel::VisualStyle>();
     helper::write(style->displayFlags).wref().setShowMechanicalMappings(true);
     
+    // node setup
+    node = component->sofaScene()->sofaRootNode()->createChild("Interactor");
     
-    // node
     node->addObject(dofs);
     node->addObject(mapping);
     node->addObject(ff);
     node->addObject(style);
     
     node->init( core::ExecParams::defaultInstance() );
+
+    // interactor position update
+    position = QVector3D(state->getPX(index), 
+			 state->getPY(index),
+			 state->getPZ(index));
     
-    return [mapping](const QVector3D& pos) -> bool {
-	// std::clog << "update" << std::endl;    
-	helper::write(mapping->targets).wref()[0] = {pos.x(), pos.y(), pos.z()};
-	mapping->reinit();
+    return [mapping,this](const QVector3D& pos) -> bool {
+	
+	position = pos;
+	write(mapping->targets).wref()[0] = {pos.x(), pos.y(), pos.z()};
 	
 	return true;
     };
@@ -126,15 +134,14 @@ static std::function< bool(const QVector3D&) > update_thunk(Node* node,
 bool SofaCompliantInteractor::start(SofaComponent* sofaComponent, int particleIndex)
 {
 
-    using thunk_type = update_cb_type (*)(Node* node,
-					  core::objectmodel::Base* component,
-					  unsigned index, 
-					  double compliance);
+    using thunk_type = update_cb_type (SofaCompliantInteractor::*)(SofaComponent* component,
+								   int index);
 
-    // TODO rigid interactors
+    // double dispatch table
+    // TODO rigid interactors and friends
     static std::map< std::type_index, thunk_type> dispatch {
-	{std::type_index(typeid(MechanicalObject<Vec3dTypes>)), &update_thunk<Vec3dTypes>},
-	{std::type_index(typeid(MechanicalObject<Vec3fTypes>)), &update_thunk<Vec3fTypes>}
+	{std::type_index(typeid(MechanicalObject<Vec3dTypes>)), &SofaCompliantInteractor::update_thunk<Vec3dTypes>},
+	{std::type_index(typeid(MechanicalObject<Vec3fTypes>)), &SofaCompliantInteractor::update_thunk<Vec3fTypes>}
     };
     
     std::type_index key = typeid(*sofaComponent->base());
@@ -144,10 +151,7 @@ bool SofaCompliantInteractor::start(SofaComponent* sofaComponent, int particleIn
 	return false;
     }
 
-    // std::clog << "start: " << particleIndex << std::endl;    
-    node = sofaComponent->sofaScene()->sofaRootNode()->createChild("Interactor");
-    update_cb = it->second(node.get(), sofaComponent->base(), particleIndex, compliance);
-
+    update_cb = (this->*it->second)(sofaComponent, particleIndex);
     return true;
 }
 
@@ -166,8 +170,10 @@ void SofaCompliantInteractor::release()
     // std::clog << "release" << std::endl;
     update_cb = 0;
 
-    node->detachFromGraph();
-    node = 0;
+    if( node ) {
+	node->detachFromGraph();
+	node = 0;
+    }
 }
 
 

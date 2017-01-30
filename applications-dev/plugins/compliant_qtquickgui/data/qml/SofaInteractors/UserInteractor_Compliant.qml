@@ -29,7 +29,7 @@ UserInteractor_MoveCamera {
     property var selectedComponent: null
 
     property var interactor : SofaCompliantInteractor {
-	compliance: 1e-1
+	compliance: 1e-2
 	onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
     }
     
