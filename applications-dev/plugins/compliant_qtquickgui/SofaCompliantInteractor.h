@@ -30,6 +30,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/core/visual/VisualParams.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
+#include "CompliantQtQuickGUI.h"
 
 #include <QObject>
 #include <QVector3D>

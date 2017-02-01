@@ -93,7 +93,7 @@ add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} 
 #     target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${X11_X11_INCLUDE_PATH}>")
 # endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_COMPLIANT_QTQUICKGUI")
+add_definitions(-DSOFA_BUILD_COMPLIANT_SOFAQTQUICKGUI)
 
 target_link_libraries(${PROJECT_NAME} Compliant SofaQtQuickGUI)
 
