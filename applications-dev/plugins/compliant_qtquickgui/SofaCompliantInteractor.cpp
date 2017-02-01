@@ -140,8 +140,12 @@ bool SofaCompliantInteractor::start(SofaComponent* sofaComponent, int particleIn
     // double dispatch table
     // TODO rigid interactors and friends
     static std::map< std::type_index, thunk_type> dispatch {
+#ifndef SOFA_FLOAT
 	{std::type_index(typeid(MechanicalObject<Vec3dTypes>)), &SofaCompliantInteractor::update_thunk<Vec3dTypes>},
+#endif
+#ifndef SOFA_DOUBLE
 	{std::type_index(typeid(MechanicalObject<Vec3fTypes>)), &SofaCompliantInteractor::update_thunk<Vec3fTypes>}
+#endif
     };
     
     std::type_index key = typeid(*sofaComponent->base());

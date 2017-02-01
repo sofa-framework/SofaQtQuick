@@ -1,4 +1,4 @@
-# CMake package configuration file for the image_qtquickgui "plugin"
+# CMake package configuration file for the compliant_qtquickgui "plugin"
 
 @PACKAGE_INIT@
 

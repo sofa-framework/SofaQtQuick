@@ -76,7 +76,7 @@ const char* getModuleVersion()
 
 const char* getModuleLicense()
 {
-    return "LGPL";
+    return "GPL";
 }
 
 const char* getModuleDescription()
