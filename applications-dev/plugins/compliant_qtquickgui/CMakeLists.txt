@@ -79,8 +79,7 @@ if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
 
-
-add_definitions(-DSOFA_BUILD_COMPLIANT_SOFAQTQUICKGUI)
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DSOFA_BUILD_COMPLIANT_QTQUICKGUI")
 
 target_link_libraries(${PROJECT_NAME} Compliant SofaQtQuickGUI)
 
