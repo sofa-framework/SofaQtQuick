@@ -20,9 +20,6 @@ set(HEADER_FILES
 )
 
 set(QML_FILES
-    # data/qml/SofaImage/qmldir
-    # data/qml/SofaImage/SofaImagePlaneItem.qml
-    # data/qml/SofaDataTypes/SofaDataType_imageplane.qml
     data/qml/SofaInteractors/UserInteractor_Compliant.qml
 )
 
@@ -77,21 +74,11 @@ add_definitions(-DQT_PLUGIN)
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
 
-# if(NOT MSVC)
-#     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
-# endif()
+# wtf is this
+if(NOT MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
+endif()
 
-# find_package(CImg REQUIRED)
-# target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CImg_INCLUDE_DIRS}>")
-
-# if(APPLE)
-#     find_package(X11)
-#     if(NOT X11_FOUND)
-#         message(FATAL_ERROR "Failed to find X11 which is required to build plugin 'image'")
-#     endif()
-#     target_link_libraries(${PROJECT_NAME} ${X11_X11_LIB})
-#     target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${X11_X11_INCLUDE_PATH}>")
-# endif()
 
 add_definitions(-DSOFA_BUILD_COMPLIANT_SOFAQTQUICKGUI)
 
