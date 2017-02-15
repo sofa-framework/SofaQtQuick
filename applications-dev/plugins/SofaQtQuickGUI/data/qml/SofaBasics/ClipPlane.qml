@@ -16,6 +16,7 @@ GroupBox {
     property double distance: 0
     
     onNormalChanged: {
+        if (!sofaScene.ready) return;
         sofaScene.setDataValue("@"+clipPlaneComponentPath+".normal", [[normal[0], normal[1], normal[2]]]);
         updatePosition();
     }
@@ -23,6 +24,7 @@ GroupBox {
     onDistanceChanged: updatePosition()
 
     function updatePosition() {
+        if (!sofaScene.ready) return;
         sofaScene.setDataValue("@"+clipPlaneComponentPath+".position", [[distance*normal[0], distance*normal[1], distance*normal[2]]])
     }
     
@@ -30,7 +32,10 @@ GroupBox {
     checkable: true
     checked: false
     
-    onCheckedChanged : sofaScene.setDataValue("@"+clipPlaneComponentPath+".active", checked)
+    onCheckedChanged : {
+        if (!sofaScene.ready) return;
+        sofaScene.setDataValue("@"+clipPlaneComponentPath+".active", checked)
+    }
     
     GridLayout {
         Layout.fillWidth: true
