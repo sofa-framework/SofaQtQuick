@@ -43,6 +43,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <qqml.h>
 #include <QDebug>
 
+#include <SofaQtQuickGUI/SofaApplication.h>
+#include <QWindow>
+
 namespace sofa
 {
 
@@ -57,11 +60,11 @@ using namespace sofa::component::container;
 using namespace sofa::component::projectiveconstraintset;
 using namespace sofa::component::interactionforcefield;
 
-SofaCompliantInteractor::SofaCompliantInteractor(QObject *parent)
+    SofaCompliantInteractor::SofaCompliantInteractor(double compliance, QObject *parent)
     : QObject(parent),
-      compliance(1)
+      compliance(compliance)
 {
-	
+    setObjectName("compliant-interactor");
 }
 
 SofaCompliantInteractor::~SofaCompliantInteractor()
@@ -101,6 +104,7 @@ std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(So
     auto ff = New<forcefield::UniformCompliance<Types>>();
     
     ff->compliance.setValue(compliance);
+    
     ff->damping.setValue(1.0 / (1.0 + compliance) );
 
     // display flags
@@ -185,4 +189,21 @@ void SofaCompliantInteractor::release()
 
 }
 
+}
+
+
+extern "C" {
+    void set_compliant_interactor(double compliance) {
+	
+	foreach(QObject* obj, QGuiApplication::allWindows() ) {
+	    auto scene = obj->findChild<sofa::qtquick::SofaScene*>();
+	    if(scene) {
+		QVariant var;
+		auto* interactor = new sofa::qtquick::SofaCompliantInteractor(compliance);
+		var.setValue(interactor);
+		scene->setProperty("sofaParticleInteractor", var);
+	    }
+	}
+	
+    }
 }

@@ -88,7 +88,8 @@ class SOFA_COMPLIANT_QTQUICKGUI_API SofaCompliantInteractor : public QObject
     Q_OBJECT
 
 public:
-    SofaCompliantInteractor(QObject *parent = 0);
+    SofaCompliantInteractor(double compliance = 1, QObject *parent = 0);
+    
     ~SofaCompliantInteractor();
     
 public:
