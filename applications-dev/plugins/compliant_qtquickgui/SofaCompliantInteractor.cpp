@@ -240,6 +240,15 @@ protected:
     virtual void init()
     {
         ::set_compliant_interactor(compliance.getValue());
+
+
+        // TODO take into account every parameters
+        // and update the interactor when they change
+        if( isCompliance.isSet() ) serr<<"isCompliance is not yet used"<<sendl;
+        if( arrowSize.isSet() ) serr<<"arrowSize is not yet used"<<sendl;
+        if( color.isSet() ) serr<<"color is not yet used"<<sendl;
+        if( visualmodel.isSet() ) serr<<"visualmodel is not yet used"<<sendl;
+
     }
 
 public:
