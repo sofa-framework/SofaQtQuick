@@ -73,21 +73,8 @@ bool ImagePlaneView::containsPoint(const QVector3D& wsPoint) const
 
 void ImagePlaneView::paint(QPainter* painter)
 {
-    QSize size(myImage.size());
-    size.scale(width(), height(), Qt::AspectRatioMode::KeepAspectRatio);
-
-    double scaleRatio = 1.0;
-    if(qFloor(width()) == size.width())
-        scaleRatio = width() / myImage.width();
-    else
-        scaleRatio = height() / myImage.height();
-
-    painter->translate((width()  - size.width() ) * 0.5,
-                       (height() - size.height()) * 0.5);
-
-    painter->scale(scaleRatio, scaleRatio);
-
-    painter->drawImage(0, 0, myImage);
+    QImage myImageScaled = myImage.scaled(width(), height(), Qt::AspectRatioMode::IgnoreAspectRatio);
+    painter->drawImage(0, 0, myImageScaled);
 }
 
 QRgb ImagePlaneView::computePixelColor(int r, int g, int b) const
@@ -116,8 +103,16 @@ void ImagePlaneView::update()
     if(plane.width() != myImage.width() || plane.height() != myImage.height())
     {
         myImage = QImage(plane.width(), plane.height(), QImage::Format_RGB32);
+        QVector3D scale = myImagePlaneModel->imagePlane()->getScale();
+        double rx = 1;
+        double ry = 1;
+
+        if (myAxis == 2) { rx = scale.x(); ry = scale.y(); }
+        else if (myAxis == 1) { rx = scale.x(); ry = scale.z(); }
+        else { rx = scale.z(); ry = scale.y(); }
+
         setImplicitWidth(plane.width());
-        setImplicitHeight(plane.height());
+        setImplicitHeight(plane.height() * (ry/rx));
     }
 
     if(1 == plane.spectrum())
