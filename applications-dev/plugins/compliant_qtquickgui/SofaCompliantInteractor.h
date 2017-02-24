@@ -130,8 +130,9 @@ private:
     update_cb_type update_thunk(SofaComponent* base, int particle_index);
 };
 
-}
+} // namespace qtquick
 
-}
+
+} // namespace sofa
 
 #endif // SOFAPARTICLEINTERACTOR_H

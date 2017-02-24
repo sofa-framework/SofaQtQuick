@@ -33,6 +33,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaRigid/JointSpringForceField.h>
 #include <SofaBaseVisual/VisualStyle.h>
 #include <sofa/helper/cast.h>
+#include <sofa/core/ObjectFactory.h>
 
 
 #include <Compliant/mapping/DifferenceFromTargetMapping.h>
@@ -187,9 +188,12 @@ void SofaCompliantInteractor::release()
 
 
 
-}
+} // namespace qtquick
 
-}
+
+} // namespace sofa
+
+
 
 
 extern "C" {
@@ -207,3 +211,54 @@ extern "C" {
 	
     }
 }
+
+
+
+namespace sofa
+{
+
+namespace component
+{
+
+/**
+ * Mouse using multi mapping based modelisation rather than interaction force field (not only for compliant)
+ * Component similar to the one in Compliant_gui to keep scene compatibility in both applications/gui
+ */
+class SOFA_COMPLIANT_QTQUICKGUI_API CompliantAttachButtonSetting: public core::objectmodel::BaseObject
+{
+public:
+    SOFA_CLASS(CompliantAttachButtonSetting,core::objectmodel::BaseObject);
+protected:
+    CompliantAttachButtonSetting()
+      : compliance(initData(&compliance, (SReal)1e-3, "compliance", "Compliance of the manipulator. 0 is rigid, the bigger the softer. Negative values make no sense."))
+      , isCompliance(initData(&isCompliance, false, "isCompliance", "Is the mouse interaction treated as a compliance? (otherwise as a stiffness)"))
+      , arrowSize(initData(&arrowSize, SReal(0), "arrowSize", ""))
+      , color(initData(&color, defaulttype::Vec<4,SReal>(1,0,0,1), "color", ""))
+      , visualmodel(initData(&visualmodel, false, "visualmodel", ""))
+    {}
+
+    virtual void init()
+    {
+        ::set_compliant_interactor(compliance.getValue());
+    }
+
+public:
+    Data<SReal> compliance;
+    Data<bool> isCompliance;
+    Data<SReal> arrowSize;
+    Data<defaulttype::Vec<4,SReal> > color;
+    Data<bool> visualmodel;
+};
+
+
+SOFA_DECL_CLASS(CompliantAttachButtonSetting)
+int CompliantAttachButtonSettingClass = core::RegisterObject("CompliantAttach (CompliantAttachButtonSetting)")
+        .add< CompliantAttachButtonSetting >()
+        .addAlias("CompliantAttachButton")
+        ;
+
+
+} // namespace component
+
+
+} // namespace sofa
