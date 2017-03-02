@@ -46,6 +46,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaApplication.h>
 #include <QWindow>
+#include <QTimer>
 
 namespace sofa
 {
@@ -198,18 +199,29 @@ void SofaCompliantInteractor::release()
 
 extern "C" {
     void set_compliant_interactor(double compliance) {
-	
-	foreach(QObject* obj, QGuiApplication::allWindows() ) {
+
+      // a crude hack to make sure we set property in the event loop
+      // thread
+      QTimer* timer = new QTimer();
+      QObject::connect(timer, &QTimer::timeout, [compliance] {
+	  foreach(QObject* obj, QGuiApplication::allWindows() ) {
 	    auto scene = obj->findChild<sofa::qtquick::SofaScene*>();
 	    if(scene) {
-		QVariant var;
-		auto* interactor = new sofa::qtquick::SofaCompliantInteractor(compliance);
-		var.setValue(interactor);
-		scene->setProperty("sofaParticleInteractor", var);
+	      QVariant var;
+	      auto* interactor = new sofa::qtquick::SofaCompliantInteractor(compliance);
+	      var.setValue(interactor);
+	      scene->setProperty("sofaParticleInteractor", var);
 	    }
-	}
-	
+	  }
+	});
+      
+      timer->setSingleShot(true);
+      timer->start(0);
+      
+      // also because we're nice people
+      timer->deleteLater();
     }
+  
 }
 
 
