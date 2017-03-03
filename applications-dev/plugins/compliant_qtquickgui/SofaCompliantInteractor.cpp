@@ -203,7 +203,7 @@ extern "C" {
       // a crude hack to make sure we set property in the event loop
       // thread
       QTimer* timer = new QTimer();
-      QObject::connect(timer, &QTimer::timeout, [compliance] {
+      QObject::connect(timer, &QTimer::timeout, [compliance,timer] {
 	  foreach(QObject* obj, QGuiApplication::allWindows() ) {
 	    auto scene = obj->findChild<sofa::qtquick::SofaScene*>();
 	    if(scene) {
@@ -213,13 +213,13 @@ extern "C" {
 	      scene->setProperty("sofaParticleInteractor", var);
 	    }
 	  }
-	});
+      // also because we're nice people
+      timer->deleteLater();
+    });
       
       timer->setSingleShot(true);
       timer->start(0);
       
-      // also because we're nice people
-      timer->deleteLater();
     }
   
 }
