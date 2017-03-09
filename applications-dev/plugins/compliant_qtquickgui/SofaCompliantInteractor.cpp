@@ -48,6 +48,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QWindow>
 #include <QTimer>
 
+#include <sofa/helper/cast.h>
+
 namespace sofa
 {
 
@@ -114,7 +116,7 @@ std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(So
     helper::write(style->displayFlags).wref().setShowMechanicalMappings(true);
     
     // node setup
-    node = component->sofaScene()->sofaRootNode()->createChild("Interactor");
+    node = down_cast<simulation::Node>(state->getContext())->createChild("Interactor");
     
     node->addObject(dofs);
     node->addObject(mapping);

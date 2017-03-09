@@ -203,7 +203,7 @@ SofaScene {
 
     readonly property Loader interfaceLoader: Loader {
         id: interfaceLoader
-        asynchronous: true
+        asynchronous: false
 
         // delay the load of the interface to one frame to let the cache be trimmed in order to load the scene interface from scratch without reusing the previous loaded one in case of a scene reloading
         Timer {
