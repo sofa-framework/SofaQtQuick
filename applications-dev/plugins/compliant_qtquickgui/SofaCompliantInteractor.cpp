@@ -228,60 +228,37 @@ extern "C" {
 
 
 
-namespace sofa
+#include <Compliant/misc/CompliantAttachButtonSetting.h>
+
+// RAII to overloaded CompliantAttachButtonSetting::init
+// to be able to create a compliant mouse in qtquicksofa
+// from the CompliantAttachButtonSetting component
+static struct InitCompliantAttachButtonSetting
 {
 
-namespace component
-{
-
-/**
- * Mouse using multi mapping based modelisation rather than interaction force field (not only for compliant)
- * Component similar to the one in Compliant_gui to keep scene compatibility in both applications/gui
- */
-class SOFA_COMPLIANT_QTQUICKGUI_API CompliantAttachButtonSetting: public core::objectmodel::BaseObject
-{
-public:
-    SOFA_CLASS(CompliantAttachButtonSetting,core::objectmodel::BaseObject);
-protected:
-    CompliantAttachButtonSetting()
-      : compliance(initData(&compliance, (SReal)1e-3, "compliance", "Compliance of the manipulator. 0 is rigid, the bigger the softer. Negative values make no sense."))
-      , isCompliance(initData(&isCompliance, false, "isCompliance", "Is the mouse interaction treated as a compliance? (otherwise as a stiffness)"))
-      , arrowSize(initData(&arrowSize, SReal(0), "arrowSize", ""))
-      , color(initData(&color, defaulttype::Vec<4,SReal>(1,0,0,1), "color", ""))
-      , visualmodel(initData(&visualmodel, false, "visualmodel", ""))
-    {}
-
-    virtual void init()
+    InitCompliantAttachButtonSetting()
     {
-        ::set_compliant_interactor(compliance.getValue());
+        sofa::component::configurationsetting::CompliantAttachButtonSetting::s_initFunction = InitCompliantAttachButtonSetting::initCompliantAttachButtonSetting;
+    }
+
+    ~InitCompliantAttachButtonSetting()
+    {
+        sofa::component::configurationsetting::CompliantAttachButtonSetting::s_initFunction = nullptr;
+    }
+
+    static void initCompliantAttachButtonSetting( sofa::component::configurationsetting::CompliantAttachButtonSetting* _this )
+    {
+        ::set_compliant_interactor(_this->compliance.getValue());
 
 
         // TODO take into account every parameters
         // and update the interactor when they change
-        if( isCompliance.isSet() ) serr<<"isCompliance is not yet used"<<sendl;
-        if( arrowSize.isSet() ) serr<<"arrowSize is not yet used"<<sendl;
-        if( color.isSet() ) serr<<"color is not yet used"<<sendl;
-        if( visualmodel.isSet() ) serr<<"visualmodel is not yet used"<<sendl;
+        if( _this->isCompliance.isSet() ) _this->serr<<"isCompliance is not yet used"<<_this->sendl;
+        if( _this->arrowSize.isSet() ) _this->serr<<"arrowSize is not yet used"<<_this->sendl;
+        if( _this->color.isSet() ) _this->serr<<"color is not yet used"<<_this->sendl;
+        if( _this->visualmodel.isSet() ) _this->serr<<"visualmodel is not yet used"<<_this->sendl;
 
     }
 
-public:
-    Data<SReal> compliance;
-    Data<bool> isCompliance;
-    Data<SReal> arrowSize;
-    Data<defaulttype::Vec<4,SReal> > color;
-    Data<bool> visualmodel;
-};
+} initCompliantAttachButtonSetting;
 
-
-SOFA_DECL_CLASS(CompliantAttachButtonSetting)
-int CompliantAttachButtonSettingClass = core::RegisterObject("CompliantAttach (CompliantAttachButtonSetting)")
-        .add< CompliantAttachButtonSetting >()
-        .addAlias("CompliantAttachButton")
-        ;
-
-
-} // namespace component
-
-
-} // namespace sofa
