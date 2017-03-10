@@ -901,6 +901,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 
     // first call to instance() initialize the plugin
     if(0 == pluginLoader.instance()) {
+        qCritical() << pluginLoader.errorString();
         qCritical() << "ERROR: SofaQtQuickGUI plugin has not been found "<<pluginName;
         return false;
     }
