@@ -64,22 +64,36 @@ using namespace sofa::component::container;
 using namespace sofa::component::projectiveconstraintset;
 using namespace sofa::component::interactionforcefield;
 
-    SofaCompliantInteractor::SofaCompliantInteractor(double compliance, QObject *parent)
-    : QObject(parent),
-      compliance(compliance)
+SofaCompliantInteractor::SofaCompliantInteractor(QObject *parent)
+: QObject(parent)
 {
     setObjectName("compliant-interactor");
 }
 
 SofaCompliantInteractor::~SofaCompliantInteractor()
-{
-    
+{ 
 }
+
+void SofaCompliantInteractor::set(double _compliance,
+                                  bool _isCompliance,
+                                  float _arrowSize,
+                                  const QColor& _color,
+                                  bool _visualmodel)
+{
+    compliance=_compliance;
+    isCompliance=_isCompliance;
+    arrowSize=_arrowSize;
+    color=_color;
+    visualmodel=_visualmodel;
+}
+
 
 template<class Types>
 std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(SofaComponent* component,
 									      int index) {
     
+//    std::clog << "SofaCompliantInteractor::update_thunk" << std::endl;
+
     using state_type = MechanicalObject<Types>;
 
     // interactor dofs
@@ -103,6 +117,11 @@ std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(So
     
     write(mapping->targets).wref().resize(1);
     write(mapping->targets).wref()[0] = write(state->x).wref()[index];
+
+    mapping->d_showObjectScale.setValue( arrowSize );
+    mapping->d_color.setValue( defaulttype::Vec4f( color.red()/255.0, color.green()/255.0, color.blue()/255.0, color.alpha()/255.0) );
+
+
     
     // forcefield on difference
     auto ff = New<forcefield::UniformCompliance<Types>>();
@@ -169,6 +188,7 @@ bool SofaCompliantInteractor::start(SofaComponent* sofaComponent, int particleIn
 
 bool SofaCompliantInteractor::update(const QVector3D& position)
 {
+//    std::clog << "SofaCompliantInteractor::update" << std::endl;
     if(update_cb) return update_cb(position);
     else return false;
 }
@@ -179,7 +199,7 @@ bool SofaCompliantInteractor::interacting() const {
     
 void SofaCompliantInteractor::release()
 {
-    // std::clog << "release" << std::endl;
+//     std::clog << "SofaCompliantInteractor::release" << std::endl;
     update_cb = 0;
 
     if( node ) {
@@ -188,6 +208,34 @@ void SofaCompliantInteractor::release()
     }
 }
 
+void SofaCompliantInteractor::set_compliant_interactor( double compliance,
+                                                        bool isCompliance,
+                                                        float arrowSize,
+                                                        const QColor& color,
+                                                        bool visualmodel )
+{
+    // a crude hack to make sure we set property in the event loop
+    // thread
+    QTimer* timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [compliance, isCompliance, arrowSize, color, visualmodel, timer] {
+    foreach(QObject* obj, QGuiApplication::allWindows() ) {
+      auto scene = obj->findChild<sofa::qtquick::SofaScene*>();
+      if(scene) {
+        QVariant var;
+        auto* interactor = sofa::qtquick::SofaCompliantInteractor::getInstance();
+        interactor->set( compliance, isCompliance, arrowSize, color, visualmodel );
+        var.setValue(interactor);
+        scene->setProperty("sofaParticleInteractor", var);
+        break;
+      }
+    }
+    // also because we're nice people
+    timer->deleteLater();
+  });
+
+    timer->setSingleShot(true);
+    timer->start(0);
+}
 
 
 
@@ -200,28 +248,11 @@ void SofaCompliantInteractor::release()
 
 
 extern "C" {
-    void set_compliant_interactor(double compliance) {
 
-      // a crude hack to make sure we set property in the event loop
-      // thread
-      QTimer* timer = new QTimer();
-      QObject::connect(timer, &QTimer::timeout, [compliance,timer] {
-	  foreach(QObject* obj, QGuiApplication::allWindows() ) {
-	    auto scene = obj->findChild<sofa::qtquick::SofaScene*>();
-	    if(scene) {
-	      QVariant var;
-	      auto* interactor = new sofa::qtquick::SofaCompliantInteractor(compliance);
-	      var.setValue(interactor);
-	      scene->setProperty("sofaParticleInteractor", var);
-	    }
-	  }
-      // also because we're nice people
-      timer->deleteLater();
-    });
-      
-      timer->setSingleShot(true);
-      timer->start(0);
-      
+    // todo: update to take all parameters into account
+    // or even better: remove it!
+    void set_compliant_interactor(double compliance) {
+        sofa::qtquick::SofaCompliantInteractor::set_compliant_interactor( compliance );
     }
   
 }
@@ -235,10 +266,10 @@ extern "C" {
 // from the CompliantAttachButtonSetting component
 static struct InitCompliantAttachButtonSetting
 {
-
     InitCompliantAttachButtonSetting()
     {
-        sofa::component::configurationsetting::CompliantAttachButtonSetting::s_initFunction = InitCompliantAttachButtonSetting::initCompliantAttachButtonSetting;
+        sofa::component::configurationsetting::CompliantAttachButtonSetting::s_initFunction   = InitCompliantAttachButtonSetting::initCompliantAttachButtonSetting;
+        sofa::component::configurationsetting::CompliantAttachButtonSetting::s_reinitFunction = InitCompliantAttachButtonSetting::reinitCompliantAttachButtonSetting;
     }
 
     ~InitCompliantAttachButtonSetting()
@@ -248,17 +279,22 @@ static struct InitCompliantAttachButtonSetting
 
     static void initCompliantAttachButtonSetting( sofa::component::configurationsetting::CompliantAttachButtonSetting* _this )
     {
-        ::set_compliant_interactor(_this->compliance.getValue());
+        const sofa::defaulttype::Vec4f& color = _this->color.getValue();
+        sofa::qtquick::SofaCompliantInteractor::set_compliant_interactor(_this->compliance.getValue(),
+                                                                         _this->isCompliance.getValue(),
+                                                                         _this->arrowSize.getValue(),
+                                                                         QColor( color[0]*255, color[1]*255, color[2]*255, color[3]*255 ),
+                                                                         _this->visualmodel.getValue() );
+    }
 
-
-        // TODO take into account every parameters
-        // and update the interactor when they change
-        if( _this->isCompliance.isSet() ) _this->serr<<"isCompliance is not yet used"<<_this->sendl;
-        if( _this->arrowSize.isSet() ) _this->serr<<"arrowSize is not yet used"<<_this->sendl;
-        if( _this->color.isSet() ) _this->serr<<"color is not yet used"<<_this->sendl;
-        if( _this->visualmodel.isSet() ) _this->serr<<"visualmodel is not yet used"<<_this->sendl;
-
+    static void reinitCompliantAttachButtonSetting( sofa::component::configurationsetting::CompliantAttachButtonSetting* _this )
+    {
+        const sofa::defaulttype::Vec4f& color = _this->color.getValue();
+        sofa::qtquick::SofaCompliantInteractor::getInstance()->set(_this->compliance.getValue(),
+                                                                         _this->isCompliance.getValue(),
+                                                                         _this->arrowSize.getValue(),
+                                                                         QColor( color[0]*255, color[1]*255, color[2]*255, color[3]*255 ),
+                                                                         _this->visualmodel.getValue() );
     }
 
 } initCompliantAttachButtonSetting;
-

@@ -34,6 +34,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QObject>
 #include <QVector3D>
+#include <QColor>
 
 #include <functional>
 
@@ -87,17 +88,28 @@ class SOFA_COMPLIANT_QTQUICKGUI_API SofaCompliantInteractor : public QObject
 {
     Q_OBJECT
 
-public:
-    SofaCompliantInteractor(double compliance = 1, QObject *parent = 0);
+protected:
+    SofaCompliantInteractor(QObject *parent = 0);
     
     ~SofaCompliantInteractor();
     
 public:
     Q_PROPERTY(double compliance MEMBER compliance NOTIFY complianceChanged)
+    Q_PROPERTY(bool isCompliance MEMBER isCompliance NOTIFY isComplianceChanged)
+    Q_PROPERTY(float arrowSize MEMBER arrowSize NOTIFY arrowSizeChanged)
+    Q_PROPERTY(QColor color MEMBER color NOTIFY colorChanged)
+    Q_PROPERTY(bool visualmodel MEMBER visualmodel NOTIFY visualmodelChanged)
+
     Q_PROPERTY(QVector3D interactorPosition MEMBER position NOTIFY interactorPositionChanged)
     Q_PROPERTY(bool interacting READ interacting NOTIFY interactingChanged)
 
 public:
+
+    void set(SReal compliance = 1,
+             bool isCompliance = false,
+             float arrowSize = 0.f,
+             const QColor& color = Qt::yellow,
+             bool visualmodel = false);
     
     bool interacting() const;
     
@@ -106,9 +118,14 @@ public:
 signals:
     
     void complianceChanged(double);
-    void interactingChanged(bool);
-    
+    void isComplianceChanged(bool);
+    void arrowSizeChanged(float);
+    void colorChanged(const QColor&);
+    void visualmodelChanged(bool);
+
+
     void interactorPositionChanged(const QVector3D&);
+    void interactingChanged(bool);
 
 
 public slots:
@@ -117,7 +134,14 @@ public slots:
     void release();
 
 private:
+    // mechanical options
     double compliance;
+    bool isCompliance;
+
+    // display options
+    float arrowSize;
+    QColor color;
+    bool visualmodel;
 
     sofa::simulation::Node::SPtr node;
 
@@ -128,6 +152,16 @@ private:
     
     template<class Types>
     update_cb_type update_thunk(SofaComponent* base, int particle_index);
+
+public:
+    static void set_compliant_interactor( double compliance,
+                                          bool isCompliance = false,
+                                          float arrowSize = 0.f,
+                                          const QColor& color = Qt::yellow,
+                                          bool visualmodel = false );
+
+    static SofaCompliantInteractor* getInstance() { static SofaCompliantInteractor sofaCompliantInteractor; return &sofaCompliantInteractor;}
+
 };
 
 } // namespace qtquick
