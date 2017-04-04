@@ -123,7 +123,6 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaViewer.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
-    data/qml/SofaWidgets/SofaMessageView.qml
     data/qml/SofaWidgets/PythonConsole.qml
     data/qml/SofaWidgets/SofaDataListView.qml
     data/qml/SofaWidgets/SofaSceneGraphView.qml
@@ -132,8 +131,10 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaVisualizationControl.qml
     data/qml/SofaWidgets/AffineTransformationController.qml
     data/qml/SofaWidgets/ColorSelector.qml
-    data/qml/SofaWidgets/SofaInspector.qml
     data/qml/SofaWidgets/SofaSceneViewer.qml
+
+    data/qml/SofaWidgets/Inspector.qml
+    data/qml/SofaWidgets/Message.qml
 )
 
 
