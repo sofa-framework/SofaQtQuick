@@ -71,11 +71,8 @@ SofaScene {
     property var sofaPythonInteractor: SofaPythonInteractor {sofaScene: root}
 
     // allow us to interact with the sofa scene particles
-    property var sofaParticleInteractor: SofaParticleInteractor {
-        stiffness: 100
-
-        onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
-    }
+    // by default there is no particle-interactor
+    property var sofaParticleInteractor: null
 
     function keyPressed(event) {
         if(event.modifiers & Qt.ShiftModifier)

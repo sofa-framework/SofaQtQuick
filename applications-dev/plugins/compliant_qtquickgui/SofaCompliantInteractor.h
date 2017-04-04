@@ -103,6 +103,9 @@ public:
     Q_PROPERTY(QVector3D interactorPosition MEMBER position NOTIFY interactorPositionChanged)
     Q_PROPERTY(bool interacting READ interacting NOTIFY interactingChanged)
 
+    // simply for existing non-generic gui
+    Q_PROPERTY(double stiffness READ stiffness WRITE setStiffness NOTIFY stiffnessChanged)
+
 public:
 
     void set(SReal compliance = 1,
@@ -126,6 +129,7 @@ signals:
 
     void interactorPositionChanged(const QVector3D&);
     void interactingChanged(bool);
+    void stiffnessChanged(bool);
 
 
 public slots:
@@ -162,6 +166,10 @@ public:
 
     static SofaCompliantInteractor* getInstance() { static SofaCompliantInteractor sofaCompliantInteractor; return &sofaCompliantInteractor;}
 
+
+    double stiffness() const { return compliance<1e-10 ? 1e100 : 1.0/compliance; }
+    void setStiffness(double stiffness) { compliance = stiffness<1e-10 ? 1e100 : 1.0/stiffness; }
+
 };
 
 } // namespace qtquick
@@ -169,4 +177,4 @@ public:
 
 } // namespace sofa
 
-#endif // SOFAPARTICLEINTERACTOR_H
+#endif // SOFA_COMPLIANT_INTERACTOR_H
