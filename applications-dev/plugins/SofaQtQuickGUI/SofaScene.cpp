@@ -21,6 +21,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaViewer.h"
 #include "SelectableManipulator.h"
 
+#include <sofa/helper/OptionsGroup.h>
+using sofa::helper::OptionsGroup ;
+
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/Tag.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
@@ -963,6 +966,21 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
             properties.insert("innerStatic", true);
     }
 
+    /// OptionsGroup are used to encode a finite set of alternatives.
+    const Data<OptionsGroup>* anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
+    if(anOptionGroup)
+    {
+       type = "OptionsGroup";
+       QStringList choices;
+
+       const OptionsGroup& group = anOptionGroup->getValue();
+       for(unsigned int i=0;i<group.size();++i)
+       {
+           choices.append(QString::fromStdString(group[i]));
+       }
+       properties.insert("choices", choices);
+    }
+
     QString widget(data->getWidget());
     if(!widget.isEmpty())
         type = widget;
@@ -1540,8 +1558,8 @@ void SofaScene::step()
 
     emit stepBegin();
     {
-	sofa::helper::AdvancedTimer::TimerVar step("Animate");
-	mySofaSimulation->animate(mySofaRootNode.get(), myDt);
+    sofa::helper::AdvancedTimer::TimerVar step("Animate");
+    mySofaSimulation->animate(mySofaRootNode.get(), myDt);
     }
     myVisualDirty = true;
 
