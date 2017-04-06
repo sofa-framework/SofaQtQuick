@@ -120,7 +120,7 @@ std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(So
     write(mapping->indices).wref()[0] = index;
     
     write(mapping->targets).wref().resize(1);
-    write(mapping->targets).wref()[0] = write(state->x).wref()[index];
+    write(mapping->targets).wref()[0] = Types::getCPos( write(state->x).wref()[index] );
 
     mapping->d_showObjectScale.setValue( arrowSize );
     mapping->d_color.setValue( defaulttype::Vec4f( color.red()/255.0, color.green()/255.0, color.blue()/255.0, color.alpha()/255.0) );
