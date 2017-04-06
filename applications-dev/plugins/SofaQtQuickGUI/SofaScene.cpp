@@ -24,6 +24,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/OptionsGroup.h>
 using sofa::helper::OptionsGroup ;
 
+#include <sofa/core/objectmodel/DataFileName.h>
+using sofa::core::objectmodel::DataFileName ;
+
+#include <sofa/helper/system/FileSystem.h>
+using sofa::helper::system::FileSystem ;
+
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/Tag.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
@@ -966,19 +972,33 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
             properties.insert("innerStatic", true);
     }
 
-    /// OptionsGroup are used to encode a finite set of alternatives.
-    const Data<OptionsGroup>* anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
-    if(anOptionGroup)
+    /// DataFilename are use to stores path to files.
+    const DataFileName* aDataFilename = dynamic_cast<const DataFileName*>(data) ;
+    if(aDataFilename)
     {
-       type = "OptionsGroup";
-       QStringList choices;
+        type = "FileName" ;
+        properties.insert("url", QString::fromStdString(aDataFilename->getFullPath())) ;
 
-       const OptionsGroup& group = anOptionGroup->getValue();
-       for(unsigned int i=0;i<group.size();++i)
-       {
-           choices.append(QString::fromStdString(group[i]));
-       }
-       properties.insert("choices", choices);
+        const std::string& directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
+        dmsg_info("SofaScene") << directory ;
+        properties.insert("folderurl",  QString::fromStdString(directory)) ;
+    }
+    else
+    {
+        /// OptionsGroup are used to encode a finite set of alternatives.
+        const Data<OptionsGroup>* anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
+        if(anOptionGroup)
+        {
+            type = "OptionsGroup";
+            QStringList choices;
+
+            const OptionsGroup& group = anOptionGroup->getValue();
+            for(unsigned int i=0;i<group.size();++i)
+            {
+                choices.append(QString::fromStdString(group[i]));
+            }
+            properties.insert("choices", choices);
+        }
     }
 
     QString widget(data->getWidget());
@@ -1922,8 +1942,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
         }
         myPickingShaderProgram->release();
 
-// read object index
-
+        // read object index
         QPointF nativePoint = viewer.mapToNative(ssPoint);
         std::array<unsigned char, 4> indexComponents;
         glReadPixels(nativePoint.x(), nativePoint.y(), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, indexComponents.data());

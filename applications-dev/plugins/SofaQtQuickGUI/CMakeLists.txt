@@ -70,6 +70,7 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_BoundingBox.qml
     data/qml/SofaDataTypes/SofaDataType_Material.qml
     data/qml/SofaDataTypes/SofaDataType_OptionsGroup.qml
+    data/qml/SofaDataTypes/SofaDataType_FileName.qml
     data/qml/SofaDataTypes/SofaDataType_graph_linear.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_graph.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_number.qml
