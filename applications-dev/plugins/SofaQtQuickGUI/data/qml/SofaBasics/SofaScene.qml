@@ -58,7 +58,7 @@ SofaScene {
         case SofaScene.Ready:
             statusMessage = 'SofaScene "' + root.path + '" loaded successfully';
             SofaApplication.sceneSettings.addRecent(root.path);
-            selectedComponent = SofaApplication.sofaScene.root() ;
+            if( SofaApplication.sofaScene ) selectedComponent = SofaApplication.sofaScene.root() ;
             break;
         }
     }
@@ -71,11 +71,8 @@ SofaScene {
     property var sofaPythonInteractor: SofaPythonInteractor {sofaScene: root}
 
     // allow us to interact with the sofa scene particles
-    property var sofaParticleInteractor: SofaParticleInteractor {
-        stiffness: 100
-
-        onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
-    }
+    // by default there is no particle-interactor
+    property var sofaParticleInteractor: null
 
     function keyPressed(event) {
         if(event.modifiers & Qt.ShiftModifier)
@@ -125,6 +122,7 @@ SofaScene {
 
     ///// MANIPULATOR
 
+    // add manipulator and its children
     function addManipulator(manipulator) {
         var manipulators = [];
         for(var i = 0; i < root.manipulators.length; ++i)
@@ -141,22 +139,50 @@ SofaScene {
         return manipulator;
     }
 
-    function removeManipulator(manipulator) {
-        var manipulators = [];
-        for(var i = 0; i < root.manipulators.length; ++i)
-            if(manipulator !== root.manipulators[i])
-                manipulators.push(root.manipulators[i]);
-
-        root.manipulators = manipulators;
+    property QtObject _manipulatorPrivate: QtObject {
+        // function for internal use
+        function removeManipulatorList(manipulatorList) {
+            var manipulators = [];
+            for(var i = 0; i < root.manipulators.length; ++i)
+                if(-1 !== manipulatorList.indexOf(root.manipulators[i]))
+                    manipulators.push(root.manipulators[i]);
+            root.manipulators = manipulators;
+        }
     }
 
-    function removeManipulatorByName(name) {
-        var manipulators = [];
-        for(var i = 0; i < root.manipulators.length; ++i)
-            if(name !== root.manipulators[i].objectName)
-                manipulators.push(root.manipulators[i]);
+    // remove manipulator and its children
+    function removeManipulator(manipulator) {
+        var manipulatorsToRemove = [];
+        var index = root.manipulators.indexOf(manipulator);
+        if(-1 !== index) {
+            manipulatorsToRemove.push(root.manipulators[i]);
+            // if the removed manipulator is a compound also remove its children manipulators
+            if(manipulator.manipulators && 0 !== manipulator.manipulators.length)
+                for(var j = 0; j < manipulator.manipulators.length; ++j)
+                    manipulatorsToRemove.push(manipulator.manipulators[j]);
+        }
+        _manipulatorPrivate.removeManipulatorList(manipulatorsToRemove);
+    }
 
-        root.manipulators = manipulators;
+    /** remove all manipulators called \a name and their children
+     *  \return the found manipulators with name
+     */
+    function removeManipulatorByName(name) {
+        var manipulatorsToRemove = [];
+        var childrenManipulatorsToRemove = [];
+        for(var i = 0; i < root.manipulators.length; ++i) {
+            if(name === root.manipulators[i].objectName) {
+                var manip = root.manipulators[i];
+                manipulatorsToRemove.push(manip);
+                // if the removed manipulator is a compound also remove its children manipulators
+                if(manip.manipulators && 0 !== manip.manipulators.length)
+                    for(var j = 0; j < manip.manipulators.length; ++j)
+                        childrenManipulatorsToRemove.push(manip.manipulators[j]);
+            }
+        }
+        _manipulatorPrivate.removeManipulatorList(manipulatorsToRemove);
+        _manipulatorPrivate.removeManipulatorList(childrenManipulatorsToRemove);
+        return manipulatorsToRemove;
     }
 
     function getManipulatorByName(name) {
@@ -174,7 +200,7 @@ SofaScene {
 
     readonly property Loader interfaceLoader: Loader {
         id: interfaceLoader
-        asynchronous: true
+        asynchronous: false
 
         // delay the load of the interface to one frame to let the cache be trimmed in order to load the scene interface from scratch without reusing the previous loaded one in case of a scene reloading
         Timer {

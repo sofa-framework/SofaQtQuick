@@ -73,7 +73,7 @@ ColumnLayout {
             infoTextArea.refresh();
     }
 
-    ImagePlaneModel {
+    property var imagePlaneModel : ImagePlaneModel {
         id: model
 
         sofaData: root.dataObject.sofaData
@@ -386,6 +386,8 @@ ColumnLayout {
                     }
                 }
 
+                landmarkComboBox.refresh();
+
                 if(0 === text.length)
                     textArea.text = "Shift + Left click to add / remove points, put a ImagePlaneController in the same context than the sofa component that is owning this data to control how points are added / removed";
                 else
@@ -399,19 +401,55 @@ ColumnLayout {
                 readOnly: true
             }
 
-            Button {
-                Layout.fillWidth: true
-                text: "Clear points"
-                onClicked: {
-                    if(!root.sofaComponent || !root.controller)
-                        return;
+            RowLayout {
+                ComboBox {
+                    id: landmarkComboBox
+                    model: []
 
-                    var sofaScene = root.sofaComponent.sofaScene();
-                    if(!sofaScene)
-                        return;
+                    Layout.fillWidth: true
 
-                    sofaScene.sofaPythonInteractor.call(root.controller, "clearPoints");
-                    root.refreshAll();
+                    property bool locked: true
+
+                    function refresh() {
+                        var array = ["go to landmark ..."]
+                        var points = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
+                        for(var stringId in points) {
+                            array.push("P" + stringId)
+                        }
+
+                        locked = true;
+                        model = array;
+                        locked = false;
+                    }
+
+                    onCurrentIndexChanged: {
+                        if (!locked && currentIndex != 0) {
+                            var points = sofaScene.sofaPythonInteractor.call(root.controller, "getPoints");
+                            var key = Object.keys(points)[currentIndex-1]
+                            var point = points[key];
+                            var worldPosition = Qt.vector3d(point.position[0], point.position[1], point.position[2]);
+                            var imagePosition = root.imagePlaneModel.toImagePoint(worldPosition);
+                            container.planeXY.slider.value = Math.round(imagePosition.z).toFixed(0);
+                            container.planeZY.slider.value = Math.round(imagePosition.x).toFixed(0);
+                            container.planeXZ.slider.value = Math.round(imagePosition.y).toFixed(0);
+                        }
+                    }
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    text: "Clear points"
+                    onClicked: {
+                        if(!root.sofaComponent || !root.controller)
+                            return;
+
+                        var sofaScene = root.sofaComponent.sofaScene();
+                        if(!sofaScene)
+                            return;
+
+                        sofaScene.sofaPythonInteractor.call(root.controller, "clearPoints");
+                        root.refreshAll();
+                    }
                 }
             }
         }

@@ -86,12 +86,14 @@ SofaViewer {
 		onTriggered: root.viewAll()
     }
 
+
+    property alias busyIndicator: busyIndicator
     BusyIndicator {
         id: busyIndicator
         anchors.centerIn: parent
         width: 100
         height: width
-        running: !root.hideBusyIndicator && (root.sofaScene ? root.sofaScene.status === SofaScene.Loading : false);
+        running: !root.hideBusyIndicator && (root.sofaScene ? root.sofaScene.status === SofaScene.Loading : false)
     }
 
     Label {
@@ -221,11 +223,11 @@ SofaViewer {
     Image {
         id: handIcon
         source: "qrc:/icon/hand.png"
-        visible: sofaScene ? sofaScene.sofaParticleInteractor.interacting : false
+        visible: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor.interacting : false
         antialiasing: true
 
         Connections {
-            target: sofaScene ? sofaScene.sofaParticleInteractor : null
+            target: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor : null
             onInteractorPositionChanged: {
                 var position = root.mapFromWorld(sofaScene.sofaParticleInteractor.interactorPosition)
                 if(position.z > 0.0 && position.z < 1.0) {

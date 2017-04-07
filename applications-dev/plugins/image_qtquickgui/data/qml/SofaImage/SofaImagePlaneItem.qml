@@ -36,6 +36,7 @@ Item {
     property var sofaComponent: null
     property var controller: null
     property bool showModels: true
+    property var slider: slider
 
     onSofaComponentChanged: {
         if(sofaComponent) {

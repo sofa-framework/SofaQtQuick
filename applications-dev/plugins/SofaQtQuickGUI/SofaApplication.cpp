@@ -28,8 +28,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/system/console.h>
 #include <sofa/helper/logging/Messaging.h>
 #include <sofa/helper/logging/ConsoleMessageHandler.h>
+#include <sofa/helper/AdvancedTimer.h>
 #include <SofaPython/PythonEnvironment.h>
 
+#include <QQuickStyle>
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQmlContext>
@@ -860,6 +862,9 @@ class UseOpenGLDebugLoggerRunnable : public QRunnable
 
 bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
+    // application style
+    QQuickStyle::setStyle("Material");
+
     // color console
     sofa::helper::Console::setColorsStatus(sofa::helper::Console::ColorsEnabled);
 
@@ -896,6 +901,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 
     // first call to instance() initialize the plugin
     if(0 == pluginLoader.instance()) {
+        qCritical() << pluginLoader.errorString();
         qCritical() << "ERROR: SofaQtQuickGUI plugin has not been found "<<pluginName;
         return false;
     }
@@ -908,13 +914,15 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Fullscreen mode");
     QCommandLineOption widthOption(QStringList() << "width", "Window width", "pixels");
     QCommandLineOption heightOption(QStringList() << "height", "Window height", "pixels");
-
+    QCommandLineOption logTimeOption(QStringList() << "log", "Log time during simulation");
+    
     parser.addOption(sceneOption);
     parser.addOption(animateOption);
     parser.addOption(fullscreenOption);
     parser.addOption(widthOption);
     parser.addOption(heightOption);
-
+    parser.addOption(logTimeOption);
+    
     parser.addVersionOption();
     parser.addHelpOption();
 
@@ -932,6 +940,10 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
         return true;
     }
 
+    if(parser.isSet("log")) {
+	sofa::helper::AdvancedTimer::setEnabled("Animate", true);
+    }
+    
 // apply the app settings or use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
 
     SofaApplication::ApplySettings();

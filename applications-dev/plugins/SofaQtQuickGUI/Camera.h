@@ -70,9 +70,9 @@ signals:
     void modelViewChanged() const;
 
 public:
-	const QMatrix4x4& projection() const;
-	const QMatrix4x4& view() const;
-	const QMatrix4x4& model() const;
+    const QMatrix4x4& projection() const;
+    const QMatrix4x4& view() const;
+    const QMatrix4x4& model() const;
 
     Q_INVOKABLE QVector3D eye() const				{return  model().column(3).toVector3D();}
 
@@ -103,6 +103,7 @@ public slots:
 
     void move(double x, double y, double z);
     void turn(double angleAroundX, double angleAroundY, double angleAroundZ);
+    void turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ);
     void zoom(double factor);
     void zoomWithBounds(double factor, double min, double max);
 
@@ -130,6 +131,9 @@ private:
     void computeModel();
 
     QVector3D computeNearestAxis(QVector3D axis,int& nearAxisIndex, int caseTested = -1);
+
+    void setProjectionDirty(bool dirty) const;
+    void setViewDirty(bool dirty) const;
 
 private:
     bool                myOrthographic;

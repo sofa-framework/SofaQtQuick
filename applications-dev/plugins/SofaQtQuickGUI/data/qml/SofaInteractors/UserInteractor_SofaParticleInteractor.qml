@@ -20,6 +20,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import SofaBasics 1.0
 import SofaComponent 1.0
+import SofaParticleInteractor 1.0
+import SofaApplication 1.0
 
 UserInteractor_MoveCamera {
     id: root
@@ -27,7 +29,21 @@ UserInteractor_MoveCamera {
     property var selectedManipulator: null
     property var selectedComponent: null
 
+
+    // default SofaParticleInteractor
+    property var interactor : SofaParticleInteractor {
+        stiffness: 100
+        onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
+    }
+
     function init() {
+
+        if( !sofaScene.sofaParticleInteractor || sofaScene.sofaParticleInteractor.objectName !== interactor.objectName )
+        {
+            sofaScene.sofaParticleInteractor = interactor;
+        }
+
+        //        console.log('SofaParticleInteractor init ' + sofaScene.sofaParticleInteractor.objectName)
 
         moveCamera_init();
 
@@ -37,6 +53,7 @@ UserInteractor_MoveCamera {
 
             var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
             if(sofaComponentParticle) {
+
                 sofaScene.sofaParticleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
 
                 setMouseMovedMapping(function(mouse, sofaViewer) {
@@ -58,6 +75,5 @@ UserInteractor_MoveCamera {
 
             setMouseMovedMapping(null);
         });
-
     }
 }

@@ -83,6 +83,8 @@ public:
     Q_PROPERTY(bool drawFrame READ drawFrame WRITE setDrawFrame NOTIFY drawFrameChanged)
     Q_PROPERTY(bool drawManipulators READ drawManipulators WRITE setDrawManipulators NOTIFY drawManipulatorsChanged)
     Q_PROPERTY(bool drawSelected READ drawSelected WRITE setDrawSelected NOTIFY drawSelectedChanged)
+    Q_PROPERTY(bool alwaysDraw READ alwaysDraw WRITE setAlwaysDraw NOTIFY alwaysDrawChanged) /// \brief always draw the scene in the fbo
+    Q_PROPERTY(bool autoPaint READ autoPaint WRITE setAutoPaint NOTIFY autoPaintChanged) /// \brief paint the fbo on the screen every frame, if false: you must call update() to request a paint
 
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
@@ -121,6 +123,13 @@ public:
     bool drawSelected() const {return myDrawSelected;}
     void setDrawSelected(bool newDrawSelected);
 
+	bool alwaysDraw() const { return myAlwaysDraw; }
+	void setAlwaysDraw(bool myAlwaysDraw);
+
+    bool autoPaint() const { return myAutoPaint; }
+    Q_SLOT void setAutoPaint(bool newAutoPaint) { if(myAutoPaint == newAutoPaint) return; myAutoPaint = newAutoPaint; autoPaintChanged(newAutoPaint); }
+    Q_SIGNAL void autoPaintChanged(bool newAutoPaint);
+
     /// @return depth in screen space
     Q_INVOKABLE double computeDepth(const QVector3D& wsPosition) const;
 
@@ -146,11 +155,14 @@ public:
 	Q_INVOKABLE sofa::qtquick::Selectable*                pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags);
 
     Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;
+	Q_INVOKABLE QPair<QVector3D, QVector3D> rootsBoundingBox() const;
     Q_INVOKABLE QVector3D boundingBoxMin() const;
     Q_INVOKABLE QVector3D boundingBoxMax() const;
 
     Q_INVOKABLE void saveScreenshot(const QString& path);
 	Q_INVOKABLE void saveScreenshotWithResolution(const QString& path, int width, int height);
+
+	QOpenGLFramebufferObject* getFBO() const;
 
 signals:
     void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
@@ -164,6 +176,7 @@ signals:
     void drawFrameChanged(bool newDrawFrame);
     void drawManipulatorsChanged(bool newDrawManipulators);
     void drawSelectedChanged(bool newDrawSelected);
+	void alwaysDrawChanged(bool newAlwaysDraw);
 
     void preDraw() const;
     void postDraw() const;
@@ -215,6 +228,8 @@ private:
     bool                        myDrawFrame;
     bool                        myDrawManipulators;
     bool                        myDrawSelected;
+	bool						myAlwaysDraw;
+    bool                        myAutoPaint;
 
 };
 

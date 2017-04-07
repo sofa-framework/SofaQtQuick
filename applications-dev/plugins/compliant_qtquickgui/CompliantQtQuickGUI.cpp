@@ -17,13 +17,14 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ImageQtQuickGUI.h"
+#include "CompliantQtQuickGUI.h"
 
 #include <QApplication>
 #include <QDebug>
 
-#include "ImagePlaneView.h"
-#include "ImagePlaneModel.h"
+#include <QQuickPaintedItem>
+
+#include "SofaCompliantInteractor.h" 
 
 using namespace sofa::qtquick;
 
@@ -32,7 +33,7 @@ const int versionMinor = 0;
 
 static void initResources()
 {
-    Q_INIT_RESOURCE(image_qtquickgui_qml);
+    Q_INIT_RESOURCE(compliant_qml);
 }
 
 namespace sofa
@@ -42,12 +43,12 @@ namespace component
 {
 
 extern "C" {
-    SOFA_IMAGE_QTQUICKGUI_API void initExternalModule();
-    SOFA_IMAGE_QTQUICKGUI_API const char* getModuleName();
-    SOFA_IMAGE_QTQUICKGUI_API const char* getModuleVersion();
-    SOFA_IMAGE_QTQUICKGUI_API const char* getModuleLicense();
-    SOFA_IMAGE_QTQUICKGUI_API const char* getModuleDescription();
-    SOFA_IMAGE_QTQUICKGUI_API const char* getModuleComponentList();
+    SOFA_COMPLIANT_QTQUICKGUI_API void initExternalModule();
+    SOFA_COMPLIANT_QTQUICKGUI_API const char* getModuleName();
+    SOFA_COMPLIANT_QTQUICKGUI_API const char* getModuleVersion();
+    SOFA_COMPLIANT_QTQUICKGUI_API const char* getModuleLicense();
+    SOFA_COMPLIANT_QTQUICKGUI_API const char* getModuleDescription();
+    SOFA_COMPLIANT_QTQUICKGUI_API const char* getModuleComponentList();
 }
 
 void initExternalModule()
@@ -59,14 +60,14 @@ void initExternalModule()
 
         initResources();
 
-        qmlRegisterType<ImagePlaneModel>    ("ImagePlaneModel", versionMajor, versionMinor, "ImagePlaneModel");
-        qmlRegisterType<ImagePlaneView>     ("ImagePlaneView",  versionMajor, versionMinor, "ImagePlaneView" );
+        qmlRegisterType<SofaCompliantInteractor> ("SofaCompliantInteractor",
+						  versionMajor, versionMinor, "SofaCompliantInteractor");	
     }
 }
 
 const char* getModuleName()
 {
-    return "Image Plugin - QtQuick GUI";
+    return "Compliant Plugin - QtQuick GUI";
 }
 
 const char* getModuleVersion()
@@ -81,7 +82,7 @@ const char* getModuleLicense()
 
 const char* getModuleDescription()
 {
-    return "Image QtQuick GUI";
+    return "Compliant QtQuick GUI";
 }
 
 const char* getModuleComponentList()

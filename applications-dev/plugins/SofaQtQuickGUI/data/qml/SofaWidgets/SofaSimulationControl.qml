@@ -65,14 +65,19 @@ ColumnLayout {
             Label {
                 Layout.preferredWidth: implicitWidth
                 text: "Interaction stiffness"
+                visible : sofaScene && sofaScene.sofaParticleInteractor
             }
+
+            // TODO this should depend on the selected particle-interactor so every options can be set
             Slider {
                 id: interactionStiffnessSlider
                 Layout.fillWidth: true
-                maximumValue: 1000
-                value: sofaScene ? sofaScene.sofaParticleInteractor.stiffness : 100
-                onValueChanged: if(sofaScene) sofaScene.sofaParticleInteractor.stiffness = value
+                maximumValue: 1e4
+                value: ( sofaScene && sofaScene.sofaParticleInteractor ) ? sofaScene.sofaParticleInteractor.stiffness : 0
+                onValueChanged: if(sofaScene && sofaScene.sofaParticleInteractor ) sofaScene.sofaParticleInteractor.stiffness = value
                 stepSize: 1
+                enabled: sofaScene && sofaScene.sofaParticleInteractor
+                visible : sofaScene && sofaScene.sofaParticleInteractor
 
                 Component.onCompleted: {
                     minimumValue = 1;
@@ -82,6 +87,7 @@ ColumnLayout {
                 Layout.preferredWidth: 40
                 enabled: false
                 text: interactionStiffnessSlider.value
+                visible : sofaScene && sofaScene.sofaParticleInteractor
             }
 
             Button {

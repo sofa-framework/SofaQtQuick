@@ -1,0 +1,13 @@
+# CMake package configuration file for the compliant_qtquickgui "plugin"
+
+@PACKAGE_INIT@
+
+find_package(Compliant REQUIRED)
+find_package(SofaQtQuickGUI REQUIRED)
+
+# wtf am i writing lol
+if(NOT TARGET Compliant_qtquickgui)
+    include("${CMAKE_CURRENT_LIST_DIR}/compliant_qtquickguiTargets.cmake")
+endif()
+
+check_required_components(compliant_qtquickgui)

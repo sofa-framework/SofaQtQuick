@@ -1540,7 +1540,10 @@ void SofaScene::step()
         return;
 
     emit stepBegin();
-    mySofaSimulation->animate(mySofaRootNode.get(), myDt);
+    {
+	sofa::helper::AdvancedTimer::TimerVar step("Animate");
+	mySofaSimulation->animate(mySofaRootNode.get(), myDt);
+    }
     myVisualDirty = true;
 
     setAnimate(sofaRootNode()->getAnimate());

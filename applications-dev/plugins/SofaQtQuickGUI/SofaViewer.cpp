@@ -75,9 +75,11 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myMirroredVertically(false),
     myDrawFrame(false),
     myDrawManipulators(true),
-    myDrawSelected(true)
+    myDrawSelected(true),
+    myAlwaysDraw(false),
+    myAutoPaint(true)
 {
-    setMirrorVertically(true);
+    QQuickFramebufferObject::setMirrorVertically(true);
 
     setFlag(QQuickItem::ItemHasContents);
 
@@ -95,6 +97,11 @@ SofaViewer::~SofaViewer()
     }*/
 
     clearRoots();
+}
+
+QOpenGLFramebufferObject* SofaViewer::getFBO() const
+{
+	return myFBO;
 }
 
 void SofaViewer::setSofaScene(SofaScene* newSofaScene)
@@ -115,6 +122,16 @@ void SofaViewer::setCamera(Camera* newCamera)
     myCamera = newCamera;
 
     cameraChanged(newCamera);
+}
+
+void SofaViewer::setAlwaysDraw(bool newChoiceAllwaysDraw)
+{
+	if (newChoiceAllwaysDraw == myAlwaysDraw)
+		return;
+
+	myAlwaysDraw = newChoiceAllwaysDraw;
+
+	alwaysDrawChanged(newChoiceAllwaysDraw);
 }
 
 static void appendRoot(QQmlListProperty<SofaComponent> *property, SofaComponent *value)
@@ -484,6 +501,14 @@ QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
     return QPair<QVector3D, QVector3D>(min, max);
 }
 
+QPair<QVector3D, QVector3D> SofaViewer::rootsBoundingBox() const
+{
+	QVector3D min, max;
+	mySofaScene->computeBoundingBox(min, max, myRoots); /*attention, ne prend en compte que le dernier élément mis dans la liste ?*/
+
+	return QPair<QVector3D, QVector3D>(min, max);
+}
+
 QVector3D SofaViewer::boundingBoxMin() const
 {
     QVector3D min, max;
@@ -785,6 +810,7 @@ void SofaViewer::renderFrame() const
     _vparams->drawTool()->drawFrame(sofa::defaulttype::Vector3(), sofa::defaulttype::Quaternion(), sofa::defaulttype::Vector3(size, size, size));
 }
 
+
 SofaViewer::SofaRenderer::SofaRenderer(SofaViewer* viewer) : QQuickFramebufferObject::Renderer(),
     myViewer(viewer),
     myAntialiasingSamples(0)
@@ -817,10 +843,20 @@ void SofaViewer::SofaRenderer::synchronize(QQuickFramebufferObject* quickFramebu
 
 void SofaViewer::SofaRenderer::render()
 {
-    update();
+    if(!myViewer)
+    {
+        update();
 
-    if(!myViewer || !myViewer->isVisible())
         return;
+    }
+
+    if(myViewer->autoPaint())
+    {
+        update();
+
+        if(!myViewer->isVisible() && !myViewer->alwaysDraw())
+            return;
+    }
 
     myViewer->internalRender(myViewer->width(), myViewer->height());
 }
