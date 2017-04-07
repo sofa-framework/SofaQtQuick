@@ -22,11 +22,19 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QStringList>
 #include <QObject>
-#include <QFileSystemWatcher>
 
 #include "SofaQtQuickGUI.h"
 
 class QQmlEngine;
+
+/// FORWARD DECLARATIONb
+namespace sofa{
+    namespace helper{
+        namespace system{
+            class FileEventListener ;
+        }
+    }
+}
 
 namespace sofa
 {
@@ -36,6 +44,8 @@ namespace qtquick
 
 namespace livefilemonitor
 {
+
+using sofa::helper::system::FileEventListener ;
 
 /*******************************************************************************
  *  \class live file monitor.
@@ -47,7 +57,7 @@ public:
     Q_OBJECT
 
     Q_PROPERTY(QStringList files READ files NOTIFY filesChanged)
-    //Q_INVOKABLE bool addFile(const QUrl&);
+    Q_INVOKABLE bool addFile(const QUrl&);
 
 public:
     explicit LiveFileMonitor(QQmlEngine* q, QObject *parent = nullptr) ;
@@ -55,9 +65,10 @@ public:
 
     QStringList files() const ;
 
+    void hasChanged(const std::string&);
+
 private slots:
     void update() ;
-    void hasChanged(const QString& filename);
 
 signals:
     void filesChanged() ;
@@ -65,8 +76,7 @@ signals:
 private:
     QQmlEngine*  m_engine;
     QStringList m_files;
-
-    QFileSystemWatcher* m_filesystemwatcher {nullptr};
+    FileEventListener* m_filelistener {nullptr};
 };
 
 }
