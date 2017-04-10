@@ -31,6 +31,9 @@ namespace qtquick
 
 class SofaScene;
 
+/// \brief This class allows the use of a list of SofaComponent in a QML file
+/// as QList<SofaComponent> is not usable in a QML file
+
 class SOFA_SOFAQTQUICKGUI_API SofaComponentList : public QObject
 {
     Q_OBJECT
@@ -40,13 +43,16 @@ public:
     SofaComponentList(SofaScene* sofaScene, const QList<SofaComponent*> componentList);
     SofaComponentList(const SofaComponentList& sofaComponentList);
 
+    /// \brief get the pointer to the Sofa Scene 
     Q_INVOKABLE sofa::qtquick::SofaScene* sofaScene() const;
 
-    //list methods
+    //List methods
+    /// \brief append a SofaComponent into the list 
     Q_INVOKABLE void append(SofaComponent* sofaComponent) { myComponentList.append(sofaComponent); }
-    Q_INVOKABLE sofa::qtquick::SofaComponent* at(int i) { return myComponentList.at(i); }
+    /// \brief retrieve a SofaComponent from the list at index i 
+    Q_INVOKABLE sofa::qtquick::SofaComponent* at(int i) { return ( i < myComponentList.size() ) ? myComponentList.at(i) : NULL; }
+    /// \brief return the size of the list 
     Q_INVOKABLE int size() { return myComponentList.size(); }
-
 
 public:
     QList<SofaComponent*> componentList();
