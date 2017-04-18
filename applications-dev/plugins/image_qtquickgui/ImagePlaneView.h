@@ -25,6 +25,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QQuickPaintedItem>
 #include <QImage>
 
+#include <image/ImageTypes.h>
+
 namespace sofa
 {
 
@@ -97,6 +99,7 @@ private:
 
     int                                 myAxis;
     int                                 myIndex;
+    cimg_library::CImg<unsigned char>   myCImg;
     QImage                              myImage;
     int                                 myLength;
     bool                                myShowModels;
