@@ -12,6 +12,7 @@ set(SOURCE_FILES
     Camera.cpp
     SofaScene.cpp
     SofaComponent.cpp
+    SofaComponentList.cpp
     SofaData.cpp
     SofaSceneListModel.cpp
     Selectable.cpp
@@ -40,6 +41,7 @@ set(HEADER_FILES
     Camera.h
     SofaScene.h
     SofaComponent.h
+    SofaComponentList.h
     SofaData.h
     SofaSceneListModel.h
     Selectable.h

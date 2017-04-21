@@ -67,7 +67,7 @@ using namespace sofa::component::interactionforcefield;
 SofaCompliantInteractor::SofaCompliantInteractor(QObject *parent)
 : QObject(parent)
 {
-    setObjectName("compliant-interactor");
+    setObjectName("SofaCompliantInteractor");
 }
 
 SofaCompliantInteractor::~SofaCompliantInteractor()
@@ -103,12 +103,16 @@ std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(So
     using namespace component;
     using core::objectmodel::New;
     using helper::write;
+
+    typedef typename Types::Real Real;
+    typedef defaulttype::Vec<Types::spatial_dimensions,Real> MouseVec;
+    typedef defaulttype::StdVectorTypes<MouseVec,MouseVec,Real> MouseTypes;
     
     // difference dofs
-    auto dofs = New<container::MechanicalObject<Types>>();
+    auto dofs = New<container::MechanicalObject<MouseTypes>>();
     
     // difference mapping
-    auto mapping = New<mapping::DifferenceFromTargetMapping<Types, Types>>();
+    auto mapping = New<mapping::DifferenceFromTargetMapping<Types, MouseTypes>>();
     mapping->setFrom(state);
     mapping->setTo(dofs.get());
 
@@ -116,7 +120,7 @@ std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(So
     write(mapping->indices).wref()[0] = index;
     
     write(mapping->targets).wref().resize(1);
-    write(mapping->targets).wref()[0] = write(state->x).wref()[index];
+    write(mapping->targets).wref()[0] = Types::getCPos( write(state->x).wref()[index] );
 
     mapping->d_showObjectScale.setValue( arrowSize );
     mapping->d_color.setValue( defaulttype::Vec4f( color.red()/255.0, color.green()/255.0, color.blue()/255.0, color.alpha()/255.0) );
@@ -124,10 +128,10 @@ std::function< bool(const QVector3D&) > SofaCompliantInteractor::update_thunk(So
 
     
     // forcefield on difference
-    auto ff = New<forcefield::UniformCompliance<Types>>();
+    auto ff = New<forcefield::UniformCompliance<MouseTypes>>();
     
     ff->compliance.setValue(compliance);
-    
+    ff->isCompliance.setValue(isCompliance);
     ff->damping.setValue(1.0 / (1.0 + compliance) );
 
     // display flags
@@ -166,12 +170,14 @@ bool SofaCompliantInteractor::start(SofaComponent* sofaComponent, int particleIn
 
     // double dispatch table
     // TODO rigid interactors and friends
-    static std::map< std::type_index, thunk_type> dispatch {
+    static const std::map< std::type_index, thunk_type> dispatch {
 #ifndef SOFA_FLOAT
-	{std::type_index(typeid(MechanicalObject<Vec3dTypes>)), &SofaCompliantInteractor::update_thunk<Vec3dTypes>},
+     {std::type_index(typeid(MechanicalObject<Vec3dTypes>)), &SofaCompliantInteractor::update_thunk<Vec3dTypes>}
+    ,{std::type_index(typeid(MechanicalObject<Rigid3dTypes>)), &SofaCompliantInteractor::update_thunk<Rigid3dTypes>}
 #endif
 #ifndef SOFA_DOUBLE
-	{std::type_index(typeid(MechanicalObject<Vec3fTypes>)), &SofaCompliantInteractor::update_thunk<Vec3fTypes>}
+    ,{std::type_index(typeid(MechanicalObject<Vec3fTypes>)), &SofaCompliantInteractor::update_thunk<Vec3fTypes>}
+    ,{std::type_index(typeid(MechanicalObject<Rigid3fTypes>)), &SofaCompliantInteractor::update_thunk<Rigid3fTypes>}
 #endif
     };
     

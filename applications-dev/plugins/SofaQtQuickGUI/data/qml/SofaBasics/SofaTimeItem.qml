@@ -42,7 +42,7 @@ Label {
         onSofaSceneChanged: sceneTimeString = format(0.0);
 
         function format(value) {
-            return Number(value).toFixed(2);
+            return Number(value).toFixed(3);
         }
     }
 }

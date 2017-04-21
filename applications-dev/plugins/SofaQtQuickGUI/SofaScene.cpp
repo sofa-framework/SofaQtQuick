@@ -1428,9 +1428,9 @@ SofaComponent* SofaScene::componentByType(const QString& typeName)
     return new SofaComponent(this, firstBaseObject);
 }
 
-QList<SofaComponent*> SofaScene::componentsByType(const QString& typeName)
+sofa::qtquick::SofaComponentList* SofaScene::componentsByType(const QString& typeName)
 {
-    QList<SofaComponent*> sofaComponents;
+    SofaComponentList* sofaComponents = new SofaComponentList(this);
     if(!mySofaSimulation || typeName.isEmpty())
         return sofaComponents;
 
@@ -1439,7 +1439,7 @@ QList<SofaComponent*> SofaScene::componentsByType(const QString& typeName)
 
     const QList<BaseObject*>& baseObjects = getObjectByTypeVisitor.baseObjects();
     for(BaseObject* baseObject : baseObjects)
-        sofaComponents.append(new SofaComponent(this, baseObject));
+        sofaComponents->append(new SofaComponent(this, baseObject));
 
     return sofaComponents;
 }

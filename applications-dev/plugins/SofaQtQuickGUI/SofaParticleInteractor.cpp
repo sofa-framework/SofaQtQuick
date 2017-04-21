@@ -55,7 +55,7 @@ SofaParticleInteractor::SofaParticleInteractor(QObject *parent) : QObject(parent
     myStiffness(100),
 	myParticleInteraction(nullptr)
 {
-	
+    setObjectName("SofaParticleInteractor");
 }
 
 SofaParticleInteractor::~SofaParticleInteractor()

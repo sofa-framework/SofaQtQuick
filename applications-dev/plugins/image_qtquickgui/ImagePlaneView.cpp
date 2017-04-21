@@ -20,8 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "ImagePlaneView.h"
 #include "ImagePlaneModel.h"
 
-#include <image/ImageTypes.h>
-
+#include <QImage>
 #include <QPainter>
 #include <qmath.h>
 
@@ -39,6 +38,7 @@ ImagePlaneView::ImagePlaneView(QQuickItem* parent) : QQuickPaintedItem(parent),
     myImagePlaneModel(0),
     myAxis(0),
     myIndex(0),
+    myCImg(),
     myImage(),
     myLength(0),
     myShowModels(true),
@@ -73,21 +73,8 @@ bool ImagePlaneView::containsPoint(const QVector3D& wsPoint) const
 
 void ImagePlaneView::paint(QPainter* painter)
 {
-    QSize size(myImage.size());
-    size.scale(width(), height(), Qt::AspectRatioMode::KeepAspectRatio);
-
-    double scaleRatio = 1.0;
-    if(qFloor(width()) == size.width())
-        scaleRatio = width() / myImage.width();
-    else
-        scaleRatio = height() / myImage.height();
-
-    painter->translate((width()  - size.width() ) * 0.5,
-                       (height() - size.height()) * 0.5);
-
-    painter->scale(scaleRatio, scaleRatio);
-
-    painter->drawImage(0, 0, myImage);
+    QImage myImageScaled = myImage.scaled(width(), height(), Qt::AspectRatioMode::IgnoreAspectRatio);
+    painter->drawImage(0, 0, myImageScaled);
 }
 
 QRgb ImagePlaneView::computePixelColor(int r, int g, int b) const
@@ -115,29 +102,37 @@ void ImagePlaneView::update()
     const cimg_library::CImg<unsigned char>& plane = myImagePlaneModel->retrieveSlice(myIndex, myAxis);
     if(plane.width() != myImage.width() || plane.height() != myImage.height())
     {
-        myImage = QImage(plane.width(), plane.height(), QImage::Format_RGB32);
+        myCImg.resize(4, plane.width(), plane.height(), 1);   // special dimension for interleaved channel (ie R1G1B1A1R2G2B2A2...)
+        QVector3D scale = myImagePlaneModel->imagePlane()->getScale();
+        double rx = 1;
+        double ry = 1;
+
+        if (myAxis == 2) { rx = scale.x(); ry = scale.y(); }
+        else if (myAxis == 1) { rx = scale.x(); ry = scale.z(); }
+        else { rx = scale.z(); ry = scale.y(); }
+
         setImplicitWidth(plane.width());
-        setImplicitHeight(plane.height());
+        setImplicitHeight(plane.height() * (ry/rx));
     }
 
-    if(1 == plane.spectrum())
-    {
-        for(int y = 0; y < myImage.height(); y++)
-            for(int x = 0; x < myImage.width(); x++)
-                myImage.setPixel(x, y, computePixelColor(plane(x, y, 0, 0), plane(x, y, 0, 0), plane(x, y, 0, 0)));
+    for (int y = 0; y < plane.height(); ++y) {
+        for (int x = 0; x < plane.width(); ++x) {
+            if (plane.spectrum() == 1) {
+                myCImg(0,x,y,0) = myCImg(1,x,y,0) = myCImg(2,x,y,0) = plane(x,y,0,0);
+            } else if (plane.spectrum() == 2) {
+                myCImg(0,x,y,0) = plane(x,y,0,0);
+                myCImg(1,x,y,0) = plane(x,y,0,1);
+                myCImg(2,x,y,0) = plane(x,y,0,0);
+            } else {
+                myCImg(0,x,y,0) = plane(x,y,0,0);
+                myCImg(1,x,y,0) = plane(x,y,0,1);
+                myCImg(2,x,y,0) = plane(x,y,0,2);
+            }
+            myCImg(3,x,y,0) = (uchar) 0;
+        }
     }
-    else if(2 == plane.spectrum())
-    {
-        for(int y = 0; y < myImage.height(); y++)
-            for(int x = 0; x < myImage.width(); x++)
-                myImage.setPixel(x, y, computePixelColor(plane(x, y, 0, 0), plane(x, y, 0, 1), plane(x, y, 0, 0)));
-    }
-    else
-    {
-        for(int y = 0; y < myImage.height(); y++)
-            for(int x = 0; x < myImage.width(); x++)
-                myImage.setPixel(x, y, computePixelColor(plane(x, y, 0, 0), plane(x, y, 0, 1), plane(x, y, 0, 2)));
-    }
+
+    myImage = QImage(myCImg.data(), plane.width(), plane.height(), 4*plane.width(), QImage::Format_RGB32);
 
     if(myShowModels)
     {

@@ -21,56 +21,19 @@ import QtQuick 2.0
 import SofaBasics 1.0
 import SofaComponent 1.0
 import SofaCompliantInteractor 1.0
+import SofaApplication 1.0
 
-UserInteractor_MoveCamera {
-    id: root
+UserInteractor_SofaParticleInteractor {
+//    id: root
 
-    property var selectedManipulator: null
-    property var selectedComponent: null
-
-    property var interactor : SofaCompliantInteractor {
-	compliance: 1e-2
-    arrowSize: 0
-    isCompliance : false
-    color : "yellow"
-    visualmodel : false
-	onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
+    // default SofaCompliantInteractor
+    interactor : SofaCompliantInteractor {
+        compliance: 1e-2
+        isCompliance: false
+        arrowSize: 0
+        color: "red"
+        visualmodel: false
+        onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
     }
     
-    function init() {
-
-	console.log('compliant interactor init')
-	
-        moveCamera_init();
-
-	addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            selectedManipulator = sofaScene.selectedManipulator;
-            selectedComponent = sofaScene.selectedComponent;
-	    
-            var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
-	    
-            if(sofaComponentParticle) {
-                interactor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
-
-                setMouseMovedMapping(function(mouse, sofaViewer) {
-                    var z = sofaViewer.computeDepth(interactor.interactorPosition);
-                    var position = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
-                    interactor.update(position);
-                });
-            }
-        });
-
-        addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            if(interactor)
-                interactor.release();
-
-            if(selectedManipulator && selectedManipulator.mouseReleased)
-                selectedManipulator.mouseReleased(mouse, sofaViewer);
-
-            sofaScene.selectedManipulator = null;
-
-            setMouseMovedMapping(null);
-        });
-
-    }
 }

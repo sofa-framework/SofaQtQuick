@@ -46,7 +46,9 @@ public:
     virtual int length(int axis) const = 0;
     virtual QVector3D toImagePoint(const QVector3D& wsPoint) const = 0;
     virtual QVector3D toWorldPoint(const QVector3D& isPoint) const = 0;
-
+    virtual QVector3D getTranslation() const = 0;
+    virtual QVector3D getRotation() const = 0;
+    virtual QVector3D getScale() const = 0;
 };
 
 template<class T>
@@ -115,6 +117,27 @@ public:
     {
         typedef typename sofa::defaulttype::ImagePlane<T>::Coord Coord;
         Coord result = myImagePlane.get_pointCoord(Coord(isPoint.x(), isPoint.y(), isPoint.z()));
+
+        return QVector3D(result.x(), result.y(), result.z());
+    }
+
+    QVector3D getTranslation() const {
+        typedef typename sofa::defaulttype::ImagePlane<T>::Coord Coord;
+        Coord result = myImagePlane.get_transformTranslation();
+
+        return QVector3D(result.x(), result.y(), result.z());
+    }
+
+    QVector3D getRotation() const {
+        typedef typename sofa::defaulttype::ImagePlane<T>::Coord Coord;
+        Coord result = myImagePlane.get_transformRotation();
+
+        return QVector3D(result.x(), result.y(), result.z());
+    }
+
+    QVector3D getScale() const {
+        typedef typename sofa::defaulttype::ImagePlane<T>::Coord Coord;
+        Coord result = myImagePlane.get_transformScale();
 
         return QVector3D(result.x(), result.y(), result.z());
     }
