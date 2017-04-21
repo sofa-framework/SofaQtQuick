@@ -35,15 +35,10 @@ namespace sofa {
     }
 }
 
-namespace sofa
-{
+namespace sofa {
+namespace qtquick {
+namespace console {
 
-namespace qtquick
-{
-
-namespace console
-{
-class Console ;
 
 // I can use 'using' because I'm in my private 'console' namespace so it
 // will not generate namespace pollution.
@@ -75,6 +70,8 @@ public:
     Console(QObject *parent = 0);
     ~Console();
 
+    Q_PROPERTY(int messageCount READ getMessageCount NOTIFY messageCountChanged) ;
+
     /// inherited from QAbstractListModel
     int rowCount(const QModelIndex& parent) const ;
     QVariant data(const QModelIndex& index, int role) const ;
@@ -83,11 +80,15 @@ public:
     /// inherited from MessageHandler
     virtual void process(Message &m) ;
 
+    int getMessageCount() const ;
+
+    Q_INVOKABLE void clear() ;
+
+signals:
+    void messageCountChanged() ;
+
 private:
     sofa::helper::vector<Message> m_messages ;
-
-//signals:
-//    void messageRemovedAt(int idx) ;
 };
 
 }

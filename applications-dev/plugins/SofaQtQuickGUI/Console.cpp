@@ -45,6 +45,10 @@ namespace console
 Console::Console(QObject *parent) : QAbstractListModel(parent)
 {
     MessageDispatcher::addHandler(this);
+    connect(this, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+            this, SIGNAL(messageCountChanged())) ;
+    connect(this, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+            this, SIGNAL(messageCountChanged())) ;
 }
 
 Console::~Console()
@@ -65,7 +69,19 @@ void Console::process(Message &m)
     endInsertRows();
 }
 
+void Console::clear()
+{
+    beginRemoveRows(QModelIndex(), 0, rowCount(QModelIndex()));
+    m_messages.clear() ;
+    endRemoveRows();
+}
+
 int Console::rowCount(const QModelIndex & /*parent*/) const
+{
+    return m_messages.size() ;
+}
+
+int Console::getMessageCount() const
 {
     return m_messages.size() ;
 }

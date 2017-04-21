@@ -40,10 +40,23 @@ Column {
             width: parent.width
             height: 20
             color: "darkgrey"
-            Text{
-                text : "Messages"
-                font.pixelSize: 14
-                font.bold: true
+            Row{
+                Text{
+                    id: hname
+                    text : "Messages"
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+                IconButton {
+                    id: openSourceFile
+                    height: 10
+                    anchors.margins: 3
+                    iconSource: "qrc:/icon/invalid.png"
+
+                    onClicked: {
+                        SofaMessageList.clear();
+                    }
+                }
             }
     }
 
