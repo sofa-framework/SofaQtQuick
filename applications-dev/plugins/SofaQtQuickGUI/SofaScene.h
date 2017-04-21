@@ -36,6 +36,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QVector3D>
 #include <QUrl>
 
+///// Forward declarations
 class QTimer;
 class QOpenGLShaderProgram;
 class QOpenGLFramebufferObject;

@@ -54,6 +54,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/simulation/DeleteVisitor.h>
 
+#include "Console.h"
+using sofa::qtquick::console::Console ;
+
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -117,7 +120,6 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     myPickingShaderProgram(nullptr),
     myPickingFBO(nullptr)
 {
-
     sofa::simulation::graph::init();
     sofa::component::initComponentBase();
     sofa::component::initComponentCommon();
@@ -337,10 +339,12 @@ private:
 
 void SofaScene::open()
 {
-// clear the qml interface
-
+    // clear the qml interface
+    SofaQtQuickGUI::getConsoleSingleton()->clear();
     setPathQML("");
     setSourceQML(QUrl());
+
+
 
 // return now if a scene is already loading
 
@@ -504,6 +508,8 @@ void SofaScene::open()
     }
 }
 
+
+
 void SofaScene::handleStatusChange(SofaScene::Status newStatus)
 {
     switch(newStatus)
@@ -551,7 +557,6 @@ void SofaScene::setSource(const QUrl& newSource)
         return;
 
     mySource = newSource;
-
     sourceChanged(newSource);
 }
 
@@ -1541,8 +1546,8 @@ void SofaScene::step()
 
     emit stepBegin();
     {
-	sofa::helper::AdvancedTimer::TimerVar step("Animate");
-	mySofaSimulation->animate(mySofaRootNode.get(), myDt);
+    sofa::helper::AdvancedTimer::TimerVar step("Animate");
+    mySofaSimulation->animate(mySofaRootNode.get(), myDt);
     }
     myVisualDirty = true;
 
