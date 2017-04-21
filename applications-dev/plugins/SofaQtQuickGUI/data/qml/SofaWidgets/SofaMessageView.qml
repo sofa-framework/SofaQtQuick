@@ -38,27 +38,30 @@ Column {
     Rectangle{
             id: header
             width: parent.width
-            height: 20
+            height: 16
             color: "darkgrey"
             Row{
                 Text{
                     id: hname
-                    text : "Messages"
-                    font.pixelSize: 14
+                    text : "Messages (" + SofaMessageList.messageCount + ")"
+                    font.pixelSize: 12
                     font.bold: true
                 }
+
                 IconButton {
                     id: openSourceFile
-                    height: 10
-                    anchors.margins: 3
+                    height:12
+                    anchors.horizontalCenter: hname.anchors.horizontalCenter
                     iconSource: "qrc:/icon/invalid.png"
 
                     onClicked: {
                         SofaMessageList.clear();
                     }
                 }
+
             }
     }
+
 
     Rectangle {
         implicitWidth: parent.width
