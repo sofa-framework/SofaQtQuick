@@ -147,7 +147,7 @@ SofaScene {
         function removeManipulatorList(manipulatorList) {
             var manipulators = [];
             for(var i = 0; i < root.manipulators.length; ++i)
-                if(-1 !== manipulatorList.indexOf(root.manipulators[i]))
+                if(-1 === manipulatorList.indexOf(root.manipulators[i]))
                     manipulators.push(root.manipulators[i]);
             root.manipulators = manipulators;
         }
