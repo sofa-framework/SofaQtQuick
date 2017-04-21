@@ -73,20 +73,35 @@ void SofaQtQuickGUI::init()
     sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
 }
 
-// Following the doc on creating a singleton component
-// we need to have function that return the singleton instance.
-// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+/// Following the doc on creating a singleton component
+/// we need to have function that return the singleton instance.
+/// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
 static QObject* createConsole(QQmlEngine *engine,
                               QJSEngine *scriptEngine){
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
-    return new Console() ;
+    return SofaQtQuickGUI::getConsoleSingleton() ;
+}
+
+sofa::qtquick::console::Console* SofaQtQuickGUI::s_consolesingleton ;
+sofa::qtquick::console::Console* SofaQtQuickGUI::getConsoleSingleton()
+{
+    if(!s_consolesingleton){
+        s_consolesingleton=new Console() ;
+    }
+
+    return s_consolesingleton ;
+}
+
+void SofaQtQuickGUI::setConsoleSingleton(sofa::qtquick::console::Console* console)
+{
+    s_consolesingleton=console ;
 }
 
 
-// Following the doc on creating a singleton component
-// we need to have function that return the singleton instance.
-// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+/// Following the doc on creating a singleton component
+/// we need to have function that return the singleton instance.
+/// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
 static QObject* createAnInstanceOfLiveFileMonitor(QQmlEngine *engine,
                                                   QJSEngine *scriptEngine){
     Q_UNUSED(scriptEngine)

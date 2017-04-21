@@ -30,7 +30,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QQmlExtensionPlugin>
 
-/// \class A tool class useful to init the SofaQtQuickGUI plugin as a Qt plugin
+/// Forward declaration.
+namespace sofa {
+namespace qtquick {
+namespace console {
+    class Console;
+}}}
+
+/// \class A tool class to init the SofaQtQuickGUI plugin as a Qt plugin
 class SOFA_SOFAQTQUICKGUI_API SofaQtQuickGUI : public QQmlExtensionPlugin
 {
     Q_OBJECT
@@ -39,10 +46,14 @@ class SOFA_SOFAQTQUICKGUI_API SofaQtQuickGUI : public QQmlExtensionPlugin
 public:
     explicit SofaQtQuickGUI(QObject *parent = 0);
 
+    static sofa::qtquick::console::Console* getConsoleSingleton() ;
+    static void setConsoleSingleton(sofa::qtquick::console::Console*) ;
+
 private:
     void init();
     void registerTypes(const char *uri);
 
+    static sofa::qtquick::console::Console* s_consolesingleton ;
 };
 
 #endif // SOFAQTQUICKSOFA_H
