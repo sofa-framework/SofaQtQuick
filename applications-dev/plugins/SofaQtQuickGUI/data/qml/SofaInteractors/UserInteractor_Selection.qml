@@ -77,8 +77,8 @@ UserInteractor_MoveCamera {
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            if(sofaScene.sofaParticleInteractor)
-                sofaScene.sofaParticleInteractor.release();
+//            if(sofaScene.sofaParticleInteractor)
+//                sofaScene.sofaParticleInteractor.release();
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, sofaViewer);
