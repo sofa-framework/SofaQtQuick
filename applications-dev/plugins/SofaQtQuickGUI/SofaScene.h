@@ -22,6 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaQtQuickGUI.h"
 #include "SofaComponent.h"
+#include "SofaComponentList.h"
 #include "SofaData.h"
 #include "Manipulator.h"
 #include "SelectableSofaParticle.h"
@@ -186,7 +187,7 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* componentByType(const QString& typeName);
-    Q_INVOKABLE QList<sofa::qtquick::SofaComponent*> componentsByType(const QString& typeName);
+    Q_INVOKABLE sofa::qtquick::SofaComponentList* componentsByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponent* root();
 
     bool componentExists(const sofa::core::objectmodel::Base* base) const;

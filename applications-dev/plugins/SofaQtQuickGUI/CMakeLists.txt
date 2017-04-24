@@ -12,6 +12,7 @@ set(SOURCE_FILES
     Camera.cpp
     SofaScene.cpp
     SofaComponent.cpp
+    SofaComponentList.cpp
     SofaData.cpp
     SofaSceneListModel.cpp
     Selectable.cpp
@@ -40,6 +41,7 @@ set(HEADER_FILES
     Camera.h
     SofaScene.h
     SofaComponent.h
+    SofaComponentList.h
     SofaData.h
     SofaSceneListModel.h
     Selectable.h
@@ -70,6 +72,7 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_BoundingBox.qml
     data/qml/SofaDataTypes/SofaDataType_Material.qml
     data/qml/SofaDataTypes/SofaDataType_OptionsGroup.qml
+    data/qml/SofaDataTypes/SofaDataType_FileName.qml
     data/qml/SofaDataTypes/SofaDataType_graph_linear.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_graph.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_number.qml
@@ -123,7 +126,6 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaViewer.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
-    data/qml/SofaWidgets/SofaMessageView.qml
     data/qml/SofaWidgets/PythonConsole.qml
     data/qml/SofaWidgets/SofaDataListView.qml
     data/qml/SofaWidgets/SofaSceneGraphView.qml
@@ -132,8 +134,10 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaVisualizationControl.qml
     data/qml/SofaWidgets/AffineTransformationController.qml
     data/qml/SofaWidgets/ColorSelector.qml
-    data/qml/SofaWidgets/SofaInspector.qml
     data/qml/SofaWidgets/SofaSceneViewer.qml
+
+    data/qml/SofaWidgets/Inspector.qml
+    data/qml/SofaWidgets/Message.qml
 )
 
 
