@@ -1,1 +1,1 @@
-Contact carre@anatoscope.com if you want to contribute to this project.
+Contact carre@anatoscope.com or join the IRC channel #sofaqtquick on the server chat.freenode.net if you want to contribute to this project.
