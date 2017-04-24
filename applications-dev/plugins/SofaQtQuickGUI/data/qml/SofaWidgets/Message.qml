@@ -36,36 +36,35 @@ Column {
     property var sofaScene: SofaApplication.sofaScene
 
     Rectangle{
-            id: header
-            width: parent.width
-            height: 16
-            color: "darkgrey"
-            Row{
-                Text{
-                    id: hname
-                    text : "Messages (" + SofaMessageList.messageCount + ")"
-                    font.pixelSize: 12
-                    font.bold: true
-                }
-
-                IconButton {
-                    id: openSourceFile
-                    height:12
-                    anchors.horizontalCenter: hname.anchors.horizontalCenter
-                    iconSource: "qrc:/icon/invalid.png"
-
-                    onClicked: {
-                        SofaMessageList.clear();
-                    }
-                }
-
+        id: header
+        width: parent.width
+        height: 16
+        color: "darkgrey"
+        Row{
+            Text{
+                id: hname
+                text : "Messages (" + SofaMessageList.messageCount + ")"
+                font.pixelSize: 12
+                font.bold: true
             }
+
+            IconButton {
+                id: buttonClearHistory
+                height:12
+                iconSource: "qrc:/icon/invalid.png"
+
+                onClicked: {
+                    SofaMessageList.clear();
+                }
+            }
+
+        }
     }
 
     Rectangle {
         id: messagearea
-        implicitWidth: parent.width
-        implicitHeight: parent.height - header.height
+        implicitWidth:  parent.width
+        implicitHeight: parent.height
         color : "lightgrey"
 
         ScrollView {
@@ -96,14 +95,19 @@ Column {
                         id: viewitem
                         state: index == p1scores.currentIndex ? "s1" : "s2"
 
+
                         width: parent.width;
                         clip : true
-
                         Behavior on height {
                             NumberAnimation {
                                 easing.type: Easing.InOutCubic
                                 easing.period: 1.5
                             }
+                        }
+
+                        onChildrenRectChanged: {
+                           if(viewitem.state=="s1")
+                               height=baseinfo.height+extrainfo.height+3
                         }
 
                         property alias baseinfo: baseinfo
@@ -113,7 +117,6 @@ Column {
                             id : columnA
                             property alias baseinfo: baseinfo
                             property alias extrainfo: extrainfo
-
                             Row{
                                 id: baseinfo
                                 spacing : 10
@@ -162,9 +165,9 @@ Column {
                                 color: "gray"
                             }
                             Rectangle{
-                                id: endline2
+                                id: spacerline
                                 width: p1scores.width
-                                height: 1
+                                height:3
                                 color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                             }
                         }
@@ -185,7 +188,7 @@ Column {
                                     target: viewitem
                                     baseinfo.height: 15
                                     extrainfo.visible: false
-                                    height: 18
+                                    height: 16
                                     color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                                 }
                             }
@@ -195,18 +198,16 @@ Column {
                             id: mouse_area1
                             z: 1
                             hoverEnabled: false
-                            height : {
-                                if(index == p1scores.currentIndex)
-                                    return viewitem.childrenRect.implicitHeight - 15
-                                else
-                                    return 20
-                            }
+                            height : viewitem.height
                             width : parent.width
                             onClicked: {
                                 if(index == p1scores.currentIndex)
                                     p1scores.currentIndex = -1 ;
                                 else
                                     p1scores.currentIndex = index ;
+                            }
+                            onDoubleClicked: {
+
                             }
                         }
 

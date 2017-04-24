@@ -30,6 +30,9 @@ using sofa::helper::logging::MessageHandler ;
 #include "sofa/helper/logging/Message.h"
 using sofa::helper::logging::Message ;
 
+#include "sofa/core/objectmodel/Base.h"
+using sofa::helper::logging::SofaComponentInfo ;
+
 #include "Console.h"
 
 
@@ -112,8 +115,16 @@ QVariant Console::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(item.fileInfo()->line);
     case MSG_TYPE:
         return QVariant::fromValue((int)item.type());
-    case MSG_EMITTER:
+    case MSG_EMITTER:{
+        SofaComponentInfo* nfo = dynamic_cast<SofaComponentInfo*>(item.componentInfo().get()) ;
+        if( nfo != nullptr )
+        {
+            const std::string& classname= nfo->sender();
+            const std::string& name = nfo->name();
+            return QVariant::fromValue(QString::fromStdString("[" + classname + "(" + name + ")] "));
+        }
         return QVariant::fromValue(QString::fromStdString(item.sender()));
+    }
     default:
         msg_error("SofaQtQuickGUI") << "Role unknown (this shouldn't happen in an official release and "
                                         "must be fixed by careful code-path analysis and test " ;
