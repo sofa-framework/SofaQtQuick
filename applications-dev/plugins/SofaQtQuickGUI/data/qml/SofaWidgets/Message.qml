@@ -62,8 +62,8 @@ Column {
             }
     }
 
-
     Rectangle {
+        id: messagearea
         implicitWidth: parent.width
         implicitHeight: parent.height - header.height
         color : "lightgrey"
@@ -117,9 +117,10 @@ Column {
                             Row{
                                 id: baseinfo
                                 spacing : 10
+                                height: messagetext.height
                                 Text{
+                                    id: messagetype
                                     textFormat: Text.RichText
-
                                     text: {
                                         // Info=0, Advice, Deprecated, Warning, Error, Fatal,
                                         if(type == 0)
@@ -137,7 +138,8 @@ Column {
                                     }
                                 }
                                 Text{
-                                    width : 800
+                                    id: messagetext
+                                    width: messagearea.width - messagetype.width-10
                                     textFormat: Text.RichText
                                     wrapMode: Text.Wrap
                                     text: message
@@ -145,7 +147,8 @@ Column {
                             }
                             Text{
                                 id : extrainfo
-
+                                width: messagearea.width
+                                wrapMode: Text.WrapAnywhere
                                 textFormat: Text.RichText
                                 text: "Emitted from: <a href='file://"+link+"?"+line+"'>"+link+":"+line+"</a>"
                                 onLinkActivated: {
