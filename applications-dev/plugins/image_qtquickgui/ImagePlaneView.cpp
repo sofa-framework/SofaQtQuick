@@ -82,20 +82,6 @@ void ImagePlaneView::paint(QPainter* painter)
     painter->drawImage(0, 0, myImageScaled);
 }
 
-QRgb ImagePlaneView::computePixelColor(int r, int g, int b) const
-{
-    const float minPixelIntensity = myMinIntensity * 255.0f;
-    const float intensityRange = qMax(1.0f / 255.0f, myMaxIntensity - myMinIntensity);
-
-    r = qFloor((r - minPixelIntensity) / intensityRange);
-    g = qFloor((g - minPixelIntensity) / intensityRange);
-    b = qFloor((b - minPixelIntensity) / intensityRange);
-
-    return qRgb(qBound(0, r, 255),
-                qBound(0, g, 255),
-                qBound(0, b, 255));
-}
-
 void ImagePlaneView::update()
 {
     if(!myImagePlaneModel || -1 == myIndex || myAxis < 0 || myAxis > 5)

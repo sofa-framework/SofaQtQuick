@@ -93,9 +93,6 @@ signals:
     void maxIntensityChanged();
 
 private:
-    QRgb computePixelColor(int r, int g, int b) const;
-
-private:
     ImagePlaneModel*                    myImagePlaneModel;
 
     int                                 myAxis;
