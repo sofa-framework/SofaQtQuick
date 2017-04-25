@@ -71,6 +71,11 @@ bool ImagePlaneView::containsPoint(const QVector3D& wsPoint) const
     return result;
 }
 
+QVector3D ImagePlaneView::toWorldPoint(const QPointF& pos) const
+{
+    return myImagePlaneModel->toWorldPoint(myAxis,myIndex,QPointF(pos.x(),pos.y()));
+}
+
 void ImagePlaneView::paint(QPainter* painter)
 {
     QImage myImageScaled = myImage.scaled(width(), height(), Qt::AspectRatioMode::IgnoreAspectRatio);

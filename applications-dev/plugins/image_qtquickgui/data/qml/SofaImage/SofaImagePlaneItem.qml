@@ -46,6 +46,8 @@ Item {
     }
 
     readonly property int planeIndex: imagePlaneView.index
+    readonly property var imgPoint: imagePlaneView.imgPoint
+    readonly property var worldPoint: imagePlaneView.worldPoint
     property int planeAxis: 0
 
     signal requestRefresh()
@@ -119,6 +121,9 @@ Item {
 
                         readonly property real rotatedImplicitWidth: Math.abs(implicitWidth * Math.cos(rotation * Math.PI / 180.0) - implicitHeight * Math.sin(rotation * Math.PI / 180.0))
                         readonly property real rotatedImplicitHeight: Math.abs(implicitWidth * Math.sin(rotation * Math.PI / 180.0) + implicitHeight * Math.cos(rotation * Math.PI / 180.0))
+
+                        property var imgPoint: null
+                        property var worldPoint: null
 
                         imagePlaneModel: root.imagePlaneModel
                         index: slider.value
@@ -313,6 +318,20 @@ Item {
                                         color: "red"
                                     }
                                 }
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton
+                            hoverEnabled: true
+                            onPositionChanged: {
+                                imagePlaneView.imgPoint = Qt.point(mouse.x, mouse.y);
+                                imagePlaneView.worldPoint = imagePlaneView.toWorldPoint(Qt.point(mouse.x, mouse.y));
+                            }
+                            onExited: {
+                                imagePlaneView.imgPoint = null
+                                imagePlaneView.worldPoint = null
                             }
                         }
                     }

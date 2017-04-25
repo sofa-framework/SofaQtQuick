@@ -70,6 +70,7 @@ public:
 
 public:
     Q_INVOKABLE bool containsPoint(const QVector3D& wsPoint) const;
+    Q_INVOKABLE QVector3D toWorldPoint(const QPointF& pos) const;
 
 protected:
     void setImagePlaneModel(sofa::qtquick::ImagePlaneModel* imagePlaneModel);

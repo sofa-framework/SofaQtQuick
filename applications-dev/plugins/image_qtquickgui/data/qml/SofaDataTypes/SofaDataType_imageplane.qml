@@ -264,6 +264,67 @@ ColumnLayout {
         }
     }
 
+    ColumnLayout {
+        RowLayout {
+            Label {
+                text: "image coord: "
+            }
+            Label {
+                text: {
+                    var x, y, z;
+                    if (planeXY && planeXY.imgPoint) {
+                        x = planeXY.imgPoint.x.toFixed(2);
+                        y = planeXY.imgPoint.y.toFixed(2);
+                        z = planeXY.slider.value;
+                        return "[" + x + ", " + y + ", " + z + "]";
+                    }
+                    if (planeZY && planeZY.imgPoint) {
+                        x = planeZY.slider.value;
+                        y = planeZY.imgPoint.y.toFixed(2);
+                        z = planeZY.imgPoint.x.toFixed(2);
+                        return "[" + x + ", " + y + ", " + z + "]";
+                    }
+                    if (planeXZ && planeXZ.imgPoint) {
+                        x = planeXZ.imgPoint.x.toFixed(2);
+                        y = planeXZ.slider.value;
+                        z = planeXZ.imgPoint.y.toFixed(2);
+                        return "[" + x + ", " + y + ", " + z + "]";
+                    }
+                    return "-";
+                }
+            }
+        }
+        RowLayout {
+            Label {
+                text: "world coord: "
+            }
+            Label {
+                text: {
+                    var x, y, z;
+                    if (planeXY && planeXY.worldPoint) {
+                        x = planeXY.worldPoint.x.toFixed(2);
+                        y = planeXY.worldPoint.y.toFixed(2);
+                        z = planeXY.worldPoint.z.toFixed(2);
+                        return "[" + x + ", " + y + ", " + z + "]";
+                    }
+                    if (planeZY && planeZY.worldPoint) {
+                        x = planeZY.worldPoint.x.toFixed(2);
+                        y = planeZY.worldPoint.y.toFixed(2);
+                        z = planeZY.worldPoint.z.toFixed(2);
+                        return "[" + x + ", " + y + ", " + z + "]";
+                    }
+                    if (planeXZ && planeXZ.worldPoint) {
+                        x = planeXZ.worldPoint.x.toFixed(2);
+                        y = planeXZ.worldPoint.y.toFixed(2);
+                        z = planeXZ.worldPoint.z.toFixed(2);
+                        return "[" + x + ", " + y + ", " + z + "]";
+                    }
+                    return "-";
+                }
+            }
+        }
+    }
+
 // component
 
     Component {
