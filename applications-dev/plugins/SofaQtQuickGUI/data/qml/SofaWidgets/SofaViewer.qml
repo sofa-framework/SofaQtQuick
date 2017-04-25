@@ -33,7 +33,7 @@ SofaViewer {
 
     clip: true
     backgroundColor: "#FF404040"
-    backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
+//    backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
     mirroredHorizontally: false
     mirroredVertically: false
     antialiasingSamples: 2

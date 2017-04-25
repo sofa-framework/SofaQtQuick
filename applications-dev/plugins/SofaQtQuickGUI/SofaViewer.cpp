@@ -33,9 +33,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QRunnable>
 #include <QEventLoop>
 //#include <QOpenGLContext>
-//#include <QOpenGLPaintDevice>
-//#include <QPaintEngine>
-//#include <QPainter>
+#include <QOpenGLPaintDevice>
+#include <QPaintEngine>
+#include <QPainter>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
 #include <QSGTransformNode>
@@ -531,7 +531,12 @@ void SofaViewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSourc
     if(path.isEmpty())
         path = newBackgroundImageSource.toLocalFile();
 
-    myBackgroundImage = QImage(path.replace("qrc:", ":"));
+    // WTF?
+    path = path.replace("file://", "");
+    path = path.replace("qrc:", ":");
+
+    myBackgroundImage = QImage(path);
+
 }
 
 void SofaViewer::saveScreenshot(const QString& path)
@@ -688,17 +693,19 @@ void SofaViewer::internalRender(int width, int height) const
     if(size.isEmpty())
         return;
 
-    //    if(!myBackgroundImage.isNull())
-    //    {
-    //        // TODO: warning: disable lights, but why ?
-    //        QOpenGLPaintDevice device(size);
-    //        QPainter painter(&device);
-    //        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
-    //    }
+
 
     // final image will be blended using premultiplied alpha
     glClearColor(myBackgroundColor.redF() * myBackgroundColor.alphaF(), myBackgroundColor.greenF() * myBackgroundColor.alphaF(), myBackgroundColor.blueF() * myBackgroundColor.alphaF(), myBackgroundColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if(!myBackgroundImage.isNull())
+    {
+        // TODO: warning: disable lights, but why ?
+        QOpenGLPaintDevice device(size);
+        QPainter painter(&device);
+        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
+    }
 
     if(!myCamera)
         return;
