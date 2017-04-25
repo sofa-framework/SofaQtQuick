@@ -123,6 +123,7 @@ void ImagePlaneView::update()
         }
     }
 
+    myCImg = myCImg.get_cut(myMinIntensity*255.0f,myMaxIntensity*255.0f).normalize(0,255);
     myImage = QImage(myCImg.data(), plane.width(), plane.height(), 4*plane.width(), QImage::Format_RGB32);
 
     if(myShowModels)
