@@ -24,7 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QQuickPaintedItem>
 #include <QImage>
-
+#include <QVector3D>
 #include <image/ImageTypes.h>
 
 namespace sofa
