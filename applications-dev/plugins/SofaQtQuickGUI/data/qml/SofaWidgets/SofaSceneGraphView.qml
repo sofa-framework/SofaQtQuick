@@ -119,6 +119,22 @@ ColumnLayout {
                 onClicked: searchBar.nextFilteredRow();
             }
         }
+        Item {
+            Layout.preferredWidth: Layout.preferredHeight
+            Layout.preferredHeight: searchBarTextField.implicitHeight
+
+            IconButton {
+                id: openSourceFile
+                anchors.fill: parent
+                anchors.margins: 2
+                iconSource: "qrc:/icon/leave.png"
+
+                onClicked: {
+                    Qt.openUrlExternally(sofaScene.source);
+                }
+            }
+        }
+
     }
 
     ScrollView {
