@@ -30,6 +30,9 @@ using sofa::helper::logging::MessageHandler ;
 #include "sofa/helper/logging/Message.h"
 using sofa::helper::logging::Message ;
 
+#include "sofa/core/objectmodel/Base.h"
+using sofa::helper::logging::SofaComponentInfo ;
+
 #include "Console.h"
 
 
@@ -45,6 +48,10 @@ namespace console
 Console::Console(QObject *parent) : QAbstractListModel(parent)
 {
     MessageDispatcher::addHandler(this);
+    connect(this, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+            this, SIGNAL(messageCountChanged())) ;
+    connect(this, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+            this, SIGNAL(messageCountChanged())) ;
 }
 
 Console::~Console()
@@ -65,7 +72,19 @@ void Console::process(Message &m)
     endInsertRows();
 }
 
+void Console::clear()
+{
+    beginRemoveRows(QModelIndex(), 0, rowCount(QModelIndex()));
+    m_messages.clear() ;
+    endRemoveRows();
+}
+
 int Console::rowCount(const QModelIndex & /*parent*/) const
+{
+    return m_messages.size() ;
+}
+
+int Console::getMessageCount() const
 {
     return m_messages.size() ;
 }
@@ -96,8 +115,16 @@ QVariant Console::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(item.fileInfo()->line);
     case MSG_TYPE:
         return QVariant::fromValue((int)item.type());
-    case MSG_EMITTER:
+    case MSG_EMITTER:{
+        SofaComponentInfo* nfo = dynamic_cast<SofaComponentInfo*>(item.componentInfo().get()) ;
+        if( nfo != nullptr )
+        {
+            const std::string& classname= nfo->sender();
+            const std::string& name = nfo->name();
+            return QVariant::fromValue(QString::fromStdString("[" + classname + "(" + name + ")] "));
+        }
         return QVariant::fromValue(QString::fromStdString(item.sender()));
+    }
     default:
         msg_error("SofaQtQuickGUI") << "Role unknown (this shouldn't happen in an official release and "
                                         "must be fixed by careful code-path analysis and test " ;

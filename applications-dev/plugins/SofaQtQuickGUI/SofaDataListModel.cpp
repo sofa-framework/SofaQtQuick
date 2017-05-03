@@ -17,13 +17,14 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QStack>
+#include <QDebug>
+
 #include "SofaDataListModel.h"
 
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/helper/logging/Messaging.h>
-
-#include <QStack>
-#include <QDebug>
+using sofa::helper::logging::Message ;
 
 namespace sofa
 {
@@ -72,9 +73,15 @@ void SofaDataListModel::update()
                 myItems.append(buildItem(linkFields[i]));
 
             // Logs & Warnings
-			QString logGroup = "Log";
-			myItems.append(buildItem("output", logGroup, QString::fromStdString(base->getOutputs())));
-			myItems.append(buildItem("warning", logGroup, QString::fromStdString(base->getWarnings())));
+            QString logGroup = "Log";
+            myItems.append(buildItem("output", logGroup,
+                                     QString::fromStdString(base->getLoggedMessagesAsString({Message::Advice,
+                                                                                             Message::Info} ))));
+            myItems.append(buildItem("warning", logGroup,
+                                     QString::fromStdString(base->getLoggedMessagesAsString({Message::Deprecated,
+                                                                                             Message::Warning,
+                                                                                             Message::Error,
+                                                                                             Message::Fatal}))));
 
             // Info
             QString infoGroup = "Info";
@@ -100,7 +107,7 @@ void SofaDataListModel::update()
                     myItems.append(buildItem("provided by", infoGroup,QString::fromStdString(it->second->getTarget())));
             }
 
-			// Sort attributes by group
+            // Sort attributes by group
             qStableSort(myItems.begin(), myItems.end(), [](const Item& a, const Item& b) {return QString::compare(a.group, b.group) < 0;});
         }
         else
@@ -235,10 +242,10 @@ QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
 
             return QVariant::fromValue(SofaScene::linkValue(link));
         }
-		else if(LogType == item.type)
-		{
-			return QVariant::fromValue(item.data.toString());
-		}
+        else if(LogType == item.type)
+        {
+            return QVariant::fromValue(item.data.toString());
+        }
         else if(InfoType == item.type)
         {
             return QVariant::fromValue(item.data.toString());

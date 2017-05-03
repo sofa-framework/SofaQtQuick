@@ -17,13 +17,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
+#include <QSettings>
 
 #include "SofaInspectorDataListModel.h"
 
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/helper/logging/Messaging.h>
-
-#include <QSettings>
+using sofa::helper::logging::Message ;
 
 namespace sofa
 {
@@ -109,9 +109,16 @@ void SofaInspectorDataListModel::update()
             QString logName("Messages");
             ItemGroup* logs = findOrCreateGroup(logName) ;
             logs->m_children.append(new Item("info",
-                                             QString::fromStdString(base->getOutputs()), LogType, true));
+                                             QString::fromStdString(base->getLoggedMessagesAsString({Message::Advice,
+                                                                                                     Message::Info})),
+                                             LogType, true));
+
             logs->m_children.append(new Item("warning",
-                                             QString::fromStdString(base->getWarnings()), LogType, true));
+                                             QString::fromStdString(base->getLoggedMessagesAsString({Message::Deprecated,
+                                                                                                     Message::Warning,
+                                                                                                     Message::Error,
+                                                                                                     Message::Fatal})),
+                                             LogType, true));
 
             // Info
             QString infoGroup = "Infos";

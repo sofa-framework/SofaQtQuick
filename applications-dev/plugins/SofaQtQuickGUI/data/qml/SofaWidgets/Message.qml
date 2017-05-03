@@ -36,20 +36,35 @@ Column {
     property var sofaScene: SofaApplication.sofaScene
 
     Rectangle{
-            id: header
-            width: parent.width
-            height: 20
-            color: "darkgrey"
+        id: header
+        width: parent.width
+        height: 16
+        color: "darkgrey"
+        Row{
             Text{
-                text : "Messages"
-                font.pixelSize: 14
+                id: hname
+                text : "Messages (" + SofaMessageList.messageCount + ")"
+                font.pixelSize: 12
                 font.bold: true
             }
+
+            IconButton {
+                id: buttonClearHistory
+                height:12
+                iconSource: "qrc:/icon/invalid.png"
+
+                onClicked: {
+                    SofaMessageList.clear();
+                }
+            }
+
+        }
     }
 
     Rectangle {
-        implicitWidth: parent.width
-        implicitHeight: parent.height - header.height
+        id: messagearea
+        implicitWidth:  parent.width
+        implicitHeight: parent.height
         color : "lightgrey"
 
         ScrollView {
@@ -80,14 +95,19 @@ Column {
                         id: viewitem
                         state: index == p1scores.currentIndex ? "s1" : "s2"
 
+
                         width: parent.width;
                         clip : true
-
                         Behavior on height {
                             NumberAnimation {
                                 easing.type: Easing.InOutCubic
                                 easing.period: 1.5
                             }
+                        }
+
+                        onChildrenRectChanged: {
+                           if(viewitem.state=="s1")
+                               height=baseinfo.height+extrainfo.height+3
                         }
 
                         property alias baseinfo: baseinfo
@@ -97,13 +117,13 @@ Column {
                             id : columnA
                             property alias baseinfo: baseinfo
                             property alias extrainfo: extrainfo
-
                             Row{
                                 id: baseinfo
                                 spacing : 10
+                                height: messagetext.height
                                 Text{
+                                    id: messagetype
                                     textFormat: Text.RichText
-
                                     text: {
                                         // Info=0, Advice, Deprecated, Warning, Error, Fatal,
                                         if(type == 0)
@@ -121,7 +141,8 @@ Column {
                                     }
                                 }
                                 Text{
-                                    width : 800
+                                    id: messagetext
+                                    width: messagearea.width - messagetype.width-10
                                     textFormat: Text.RichText
                                     wrapMode: Text.Wrap
                                     text: message
@@ -129,7 +150,8 @@ Column {
                             }
                             Text{
                                 id : extrainfo
-
+                                width: messagearea.width
+                                wrapMode: Text.WrapAnywhere
                                 textFormat: Text.RichText
                                 text: "Emitted from: <a href='file://"+link+"?"+line+"'>"+link+":"+line+"</a>"
                                 onLinkActivated: {
@@ -143,9 +165,9 @@ Column {
                                 color: "gray"
                             }
                             Rectangle{
-                                id: endline2
+                                id: spacerline
                                 width: p1scores.width
-                                height: 1
+                                height:3
                                 color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                             }
                         }
@@ -166,7 +188,7 @@ Column {
                                     target: viewitem
                                     baseinfo.height: 15
                                     extrainfo.visible: false
-                                    height: 18
+                                    height: 16
                                     color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                                 }
                             }
@@ -176,18 +198,16 @@ Column {
                             id: mouse_area1
                             z: 1
                             hoverEnabled: false
-                            height : {
-                                if(index == p1scores.currentIndex)
-                                    return viewitem.childrenRect.implicitHeight - 15
-                                else
-                                    return 20
-                            }
+                            height : viewitem.height
                             width : parent.width
                             onClicked: {
                                 if(index == p1scores.currentIndex)
                                     p1scores.currentIndex = -1 ;
                                 else
                                     p1scores.currentIndex = index ;
+                            }
+                            onDoubleClicked: {
+
                             }
                         }
 
