@@ -28,3 +28,4 @@ MementoObject 1.0 MementoObject.qml
 singleton MementoManager 1.0 MementoManager.qml
 ClipPlane 1.0 ClipPlane.qml
 WindowResizer 1.0 WindowResizer.qml
+ColorChooser 1.0 ColorChooser.qml

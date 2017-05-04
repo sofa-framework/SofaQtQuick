@@ -73,5 +73,7 @@
         <file>SofaWidgets/Inspector.qml</file>
         <file>SofaWidgets/Message.qml</file>
         <file>SofaDataTypes/SofaDataType_FileName.qml</file>
+        <file>SofaBasics/ColorChooser.qml</file>
+        <file>SofaDataTypes/SofaDataType_RGBAColor.qml</file>
     </qresource>
 </RCC>

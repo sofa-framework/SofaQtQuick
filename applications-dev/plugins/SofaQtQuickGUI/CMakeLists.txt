@@ -78,6 +78,7 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_number.qml
     data/qml/SofaDataTypes/SofaDataType_poissonRatio.notimplementedyet.qml
     data/qml/SofaDataTypes/SofaDataType_string.qml
+    data/qml/SofaDataTypes/SofaDataType_RGBAColor.qml
     data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
@@ -111,6 +112,7 @@ set(QML_FILES
     data/qml/SofaBasics/MementoManager.qml
     data/qml/SofaBasics/WindowResizer.qml
     data/qml/SofaBasics/ClipPlane.qml
+    data/qml/SofaBasics/ColorChooser.qml
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
     data/qml/SofaInteractors/UserInteractor_Selection.qml
