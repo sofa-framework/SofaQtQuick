@@ -1539,13 +1539,17 @@ void SofaScene::step()
         return;
 
     emit stepBegin();
+
+    bool oldAnimate = sofaRootNode()->getAnimate();
+    if( !oldAnimate ) sofaRootNode()->setAnimate(true); // the 'animate' flag should be set even when performing only one step
     {
 	sofa::helper::AdvancedTimer::TimerVar step("Animate");
 	mySofaSimulation->animate(mySofaRootNode.get(), myDt);
     }
-    myVisualDirty = true;
+    if( !oldAnimate ) sofaRootNode()->setAnimate(false); // if was only a single step, so let's remove the 'animate' flag
+    else setAnimate(sofaRootNode()->getAnimate()); // the simulation can be stopped while animating
 
-    setAnimate(sofaRootNode()->getAnimate());
+    myVisualDirty = true;
 
     emit stepEnd();
 }
