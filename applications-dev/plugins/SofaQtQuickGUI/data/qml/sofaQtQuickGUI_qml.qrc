@@ -73,5 +73,6 @@
         <file>SofaWidgets/Inspector.qml</file>
         <file>SofaWidgets/Message.qml</file>
         <file>SofaDataTypes/SofaDataType_FileName.qml</file>
+        <file>SofaBasics/ViewSelector.qml</file>
     </qresource>
 </RCC>

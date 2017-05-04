@@ -1,5 +1,5 @@
 /*
-Copyright 2015, Anatoscope
+Copyright 2017, CNRS
 
 This file is part of sofaqtquick.
 
@@ -15,6 +15,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
+
+Contributors:
+    - damien.marchal@univ-lille1.fr
 */
 
 import QtQuick 2.2

@@ -89,7 +89,7 @@ ApplicationWindow {
         anchors.fill: parent
         uiId: 1
         sourceComponent: Component {
-            DynamicContent {
+            ViewSelector {
                 defaultContentName: "SofaViewer"
                 sourceDir: "qrc:/SofaWidgets"
                 properties: {"sofaScene": root.sofaScene, "drawFrame": false}

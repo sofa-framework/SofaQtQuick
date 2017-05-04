@@ -13,6 +13,7 @@ DefaultMenuBar 1.0 DefaultMenuBar.qml
 DefaultToolBar 1.0 DefaultToolBar.qml
 DefaultStatusBar 1.0 DefaultStatusBar.qml
 DynamicContent 1.0 DynamicContent.qml
+ViewSelector 1.0 ViewSelector.qml
 DynamicSplitView 1.0 DynamicSplitView.qml
 FPSItem 1.0 FPSItem.qml
 SofaTimeItem 1.0 SofaTimeItem.qml
