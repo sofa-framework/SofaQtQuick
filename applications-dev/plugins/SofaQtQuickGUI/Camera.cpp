@@ -243,19 +243,23 @@ void Camera::zoom(double factor)
 
 void Camera::zoomWithBounds(double factor, double min, double max)
 {
-    if(factor <= 0.0)
-        return;
-
     QVector3D translationVector(target() - eye());
 
-    factor = 1.0 / factor;
-    translationVector *= (1.0 - factor);
-
-    // clamp to bounds
-    if((eye() + translationVector - target()).length() < min) // limit zoom-in to znear
-        translationVector = (target() - eye()) + (eye() - target()).normalized() * (min + std::numeric_limits<float>::epsilon());
-    else if((eye() + translationVector - target()).length() > max) // limit zoom-out to zfar / 2
+    if(factor <= 0.0f)
+    {
         translationVector = (target() - eye()) + (eye() - target()).normalized() * (max - std::numeric_limits<float>::epsilon());
+    }
+    else
+    {
+        factor = 1.0 / factor;
+        translationVector *= (1.0 - factor);
+
+        // clamp to bounds
+        if((eye() + translationVector - target()).length() < min) // limit zoom-in to min
+            translationVector = (target() - eye()) + (eye() - target()).normalized() * (min + std::numeric_limits<float>::epsilon());
+        else if((eye() + translationVector - target()).length() > max) // limit zoom-out to max
+            translationVector = (target() - eye()) + (eye() - target()).normalized() * (max - std::numeric_limits<float>::epsilon());
+    }
 
     QMatrix4x4 translation;
     translation.translate(translationVector);
@@ -372,6 +376,29 @@ void Camera::fit(QVector3D min, QVector3D max, float radiusFactor)
     myModel = myView.inverted();
 
     setViewDirty(false);
+
+    if(orthographic())
+        computeOrthographic();
+}
+
+float Camera::distanceFromTarget() const
+{
+    return (target() - eye()).length();
+}
+
+void Camera::setDistanceFromTarget(double distance)
+{
+    if(distance <= 0.0f)
+        return;
+
+    QVector3D translationVector(target() - eye() + (eye() - target()).normalized() * distance);
+
+    QMatrix4x4 translation;
+    translation.translate(translationVector);
+
+    myModel = translation * myModel;
+
+    setViewDirty(true);
 
     if(orthographic())
         computeOrthographic();

@@ -234,42 +234,48 @@ bool SofaApplication::copyFile(const QString& source, const QString& destination
 	}
 }
 
-bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QString& destination)
+QImage SofaApplication::screenshotComponent(QQuickItem* item, const QSize& forceSize) const
 {
-    QQmlComponent component(qmlEngine(this), componentUrl);
-    if(component.status() != QQmlComponent::Ready)
+    if(!item)
     {
-        msg_error("AteosApplication::savePatientInfoInImage") << "QmlComponent is not ready, errors are:" << component.errorString().toStdString();
-        return false;
+        msg_error("SofaApplication::screenshotComponent") << "QQuickItem is null";
+        return QImage();
     }
 
-    QQuickItem* content = qobject_cast<QQuickItem*>(component.create());
-    if(!content)
-    {
-        msg_error("AteosApplication::savePatientInfoInImage") << "QmlComponent should embed an object inheriting QQuickItem";
-        return false;
-    }
+    QSize itemSize(item->width(), item->height());
+    QSize itemScreenshotSize = itemSize;
+    if(forceSize.isValid())
+        itemScreenshotSize = forceSize;
+
+    item->setSize(itemScreenshotSize);
 
     QSurfaceFormat format;
     format.setDepthBufferSize(16);
     format.setStencilBufferSize(8);
 
-    QOpenGLContext* glContext = new QOpenGLContext;
-    glContext->setFormat(format);
-    glContext->create();
+    QOpenGLContext* glCurrentContext = QOpenGLContext::currentContext();
 
-    QOffscreenSurface* offscreenSurface = new QOffscreenSurface;
-    offscreenSurface->setFormat(glContext->format());
-    offscreenSurface->create();
+    QOpenGLContext* glContext = glCurrentContext;
+    if(!glContext)
+    {
+        glContext = new QOpenGLContext;
+        glContext->setFormat(format);
+        glContext->create();
 
-    glContext->makeCurrent(offscreenSurface);
+        QOffscreenSurface* offscreenSurface = new QOffscreenSurface;
+        offscreenSurface->setParent(glContext);
+        offscreenSurface->setFormat(glContext->format());
+        offscreenSurface->create();
+
+        glContext->makeCurrent(offscreenSurface);
+    }
 
     QQuickRenderControl renderControl;
     QQuickWindow window(&renderControl);
 
-    content->setParentItem(window.contentItem());
+    item->setParentItem(window.contentItem());
 
-    window.setGeometry(0, 0, content->implicitWidth(), content->implicitHeight());
+    window.setGeometry(0, 0, itemScreenshotSize.width(), itemScreenshotSize.height());
 
     renderControl.initialize(glContext);
 
@@ -283,17 +289,84 @@ bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QStrin
     renderControl.sync();
     renderControl.render();
 
-    if(!fbo.toImage().save(destination))
-    {
-        glContext->doneCurrent();
+    QImage image = fbo.toImage();
 
-        msg_error("AteosApplication::savePatientInfoInImage") << "Image could not be saved, possible reasons are : item has an incorrect size or the image destination path is incorrect";
+    renderControl.invalidate();
+
+    if(glContext != glCurrentContext)
+        delete glContext;
+
+    if(forceSize.isValid())
+        item->setSize(itemSize);
+
+    return image;
+}
+
+QImage SofaApplication::screenshotComponent(QQmlComponent* component, const QSize& forceSize) const
+{
+    if(!component)
+    {
+        msg_error("SofaApplication::screenshotComponent") << "QQmlComponent is null";
+        return QImage();
+    }
+
+    QQuickItem* item = qobject_cast<QQuickItem*>(component->create());
+
+    return screenshotComponent(item, forceSize);
+}
+
+QImage SofaApplication::screenshotComponent(const QUrl& componentUrl, const QSize& forceSize) const
+{
+    QQmlEngine* engine = qmlEngine(this);
+
+    QQmlComponent component(engine, componentUrl);
+    if(component.status() != QQmlComponent::Ready)
+    {
+        msg_error("SofaApplication::screenshotComponent") << "QQmlComponent is not ready, errors are:" << component.errorString().toStdString();
+        return QImage();
+    }
+
+    return screenshotComponent(&component, forceSize);
+}
+
+bool SofaApplication::screenshotComponent(QQuickItem* item, const QString& destination, const QSize& forceSize) const
+{
+    QImage image = screenshotComponent(item, forceSize);
+
+    if(!image.save(destination))
+    {
+        msg_error("SofaApplication::screenshotComponent") << "Image could not be saved, possible reasons are : item has an incorrect size or the image destination path is incorrect";
         return false;
     }
 
-    glContext->doneCurrent();
-
     return true;
+}
+
+bool SofaApplication::screenshotComponent(QQmlComponent* component, const QString& destination, const QSize& forceSize) const
+{
+    if(!component)
+    {
+        msg_error("SofaApplication::screenshotComponent") << "QQmlComponent is null";
+        return false;
+    }
+
+    QQuickItem* item = qobject_cast<QQuickItem*>(component->create());
+
+    return screenshotComponent(item, destination, forceSize);
+}
+
+bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QString& destination, const QSize& forceSize) const
+{
+    QQmlEngine* engine = qmlEngine(this);
+
+    QQmlComponent component(engine, componentUrl);
+    if(component.status() != QQmlComponent::Ready)
+    {
+        msg_error("SofaApplication::screenshotComponent") << "QQmlComponent is not ready, errors are:" << component.errorString().toStdString();
+        return false;
+    }
+
+    return screenshotComponent(&component, destination, forceSize);
 }
 
 bool SofaApplication::runPythonScript(const QString& script)

@@ -27,6 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QPointF>
 #include <QQuaternion>
 #include <QProcess>
+#include <QImage>
 
 class QApplication;
 class QQmlApplicationEngine;
@@ -80,7 +81,13 @@ public:
     Q_SLOT bool saveFile(const QString& destination, const QString& data);
     Q_SLOT bool copyFile(const QString& source, const QString& destination);
 
-    Q_SLOT bool screenshotComponent(const QUrl& componentUrl, const QString& destination);
+    Q_SLOT QImage screenshotComponent(QQuickItem* item, const QSize& forceSize = QSize()) const;
+    Q_SLOT QImage screenshotComponent(QQmlComponent* component, const QSize& forceSize = QSize()) const;
+    Q_SLOT QImage screenshotComponent(const QUrl& componentUrl, const QSize& forceSize = QSize()) const;
+
+    Q_SLOT bool screenshotComponent(QQuickItem* item, const QString& destination, const QSize& forceSize = QSize()) const;
+    Q_SLOT bool screenshotComponent(QQmlComponent* component, const QString& destination, const QSize& forceSize = QSize()) const;
+    Q_SLOT bool screenshotComponent(const QUrl& componentUrl, const QString& destination, const QSize& forceSize = QSize()) const;
 
     Q_INVOKABLE bool runPythonScript(const QString& script); // \return true if script ran successfuly, false on error
     Q_INVOKABLE bool runPythonFile(const QString& filename); // \return true if script ran successfuly, false on error

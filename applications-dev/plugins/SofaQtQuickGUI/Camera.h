@@ -92,25 +92,27 @@ public:
     Q_INVOKABLE QVector3D projectOnViewSpaceXAxis(const QVector3D& wsVector) const;
     Q_INVOKABLE QVector3D projectOnViewSpaceYAxis(const QVector3D& wsVector) const;
 
-public slots:
-    void viewFromFront();
-    void viewFromBack();
-    void viewFromLeft();
-    void viewFromRight();
-    void viewFromTop();
-    void viewFromBottom();
-    void viewIsometric();
+    Q_SLOT void viewFromFront();
+    Q_SLOT void viewFromBack();
+    Q_SLOT void viewFromLeft();
+    Q_SLOT void viewFromRight();
+    Q_SLOT void viewFromTop();
+    Q_SLOT void viewFromBottom();
+    Q_SLOT void viewIsometric();
 
-    void move(double x, double y, double z);
-    void turn(double angleAroundX, double angleAroundY, double angleAroundZ);
-    void turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ);
-    void zoom(double factor);
-    void zoomWithBounds(double factor, double min, double max);
+    Q_SLOT void move(double x, double y, double z);
+    Q_SLOT void turn(double angleAroundX, double angleAroundY, double angleAroundZ);
+    Q_SLOT void turnWorld(double angleAroundX, double angleAroundY, double angleAroundZ);
+    Q_SLOT void zoom(double factor);
+    Q_SLOT void zoomWithBounds(double factor, double min, double max);
 
-    void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
-    void fit(QVector3D min, QVector3D max, float radiusFactor=1.5);
+    Q_SLOT void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
+    Q_SLOT void fit(QVector3D min, QVector3D max, float radiusFactor=1.5);
 
-    void alignCameraAxis();
+    Q_INVOKABLE float distanceFromTarget() const;
+    Q_SLOT void setDistanceFromTarget(double distance); /// \note distance must be > 0.0
+
+    Q_SLOT void alignCameraAxis();
 
 public:
     double orthoLeft() const    {return myOrthoLeft;}
