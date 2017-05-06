@@ -38,7 +38,8 @@ ApplicationWindow {
     property var sofaScene: SofaScene {
         id: sofaScene
 
-        // delay the opening of the previous scene to the next frame to let a chance to parse command line arguments specifying another scene
+        // delay the opening of the previous scene to the next frame to let a
+        // chance to parse command line arguments specifying another scene
         property var openPreviousTimer: Timer {
             running: true
             repeat: false
@@ -57,13 +58,8 @@ ApplicationWindow {
         }
     }
 
-//    style: ApplicationWindowStyle {
-//        background: null
-//    }
-
     Component.onCompleted: {
         showNormal();
-        //showFullScreen();
     }
 
     // dialog

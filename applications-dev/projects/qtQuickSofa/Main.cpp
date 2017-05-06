@@ -17,12 +17,23 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sofa/helper/BackTrace.h>
+using sofa::helper::BackTrace ;
+
 #include <SofaQtQuickGUI/SofaApplication.h>
+using sofa::qtquick::MainApplication ;
+
+#include <SofaQtQuickGUI/DefaultApplication.h>
+using sofa::qtquick::DefaultApplication ;
 
 int main(int argc, char **argv)
 {
+    BackTrace::autodump();
+
+    MainApplication::setApplicationSingleton(new DefaultApplication());
+
     // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
-    sofa::qtquick::SofaApplication::Initialization();
+    MainApplication::Initialization();
 
     QApplication app(argc, argv);
     QQmlApplicationEngine applicationEngine;
@@ -33,7 +44,7 @@ int main(int argc, char **argv)
     app.setApplicationVersion("v1.0");
 
     // common settings for most sofaqtquick applications
-    if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
+    if(!sofa::qtquick::MainApplication::MainInitialization(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
 
     return app.exec();

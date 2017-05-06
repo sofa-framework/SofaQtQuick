@@ -3,10 +3,11 @@ project(runSofa2)
 
 set(SOURCE_FILES
     Main.cpp
+    RS2Application.cpp
 )
 
 set(HEADER_FILES
-    ""
+    RS2Application.h
 )
 
 set(QML_FILES
@@ -25,11 +26,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # on Window, Qt packages need the glu32 lib full path, but they do not find it without help
 if(WIN32)
-	if(CMAKE_CL_64)
-		set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64")
-	else()
-		set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x86")
-	endif()
+        if(CMAKE_CL_64)
+                set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64")
+        else()
+                set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x86")
+        endif()
 endif()
 
 
