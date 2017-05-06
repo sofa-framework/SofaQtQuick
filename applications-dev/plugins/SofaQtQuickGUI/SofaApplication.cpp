@@ -69,14 +69,12 @@ namespace qtquick
 using namespace sofa::helper;
 using namespace sofa::simulation;
 
-SofaApplication* SofaApplication::OurInstance = nullptr;
+SofaApplication* MainApplication::m_maininstance = nullptr;
 
-SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
-	myPythonDirectory(),
+MainApplication::MainApplication(QObject* parent) : QObject(parent),
+    myPythonDirectory(),
     myDataDirectory()
 {
-    OurInstance = this;
-
     // look for the data directory next to the executable location
     if(QCoreApplication::applicationName().isEmpty())
         qCritical() << "The QCoreApplication::applicationName should have been setted before SofaApplication instantiation";
@@ -96,18 +94,11 @@ SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
         }
 }
 
-SofaApplication::~SofaApplication()
+MainApplication::~MainApplication()
 {
-    if(this == OurInstance)
-        OurInstance = nullptr;
 }
 
-SofaApplication* SofaApplication::Instance()
-{
-    return OurInstance;
-}
-
-void SofaApplication::copyToClipboard(const QString& text)
+void MainApplication::copyToClipboard(const QString& text)
 {
     QClipboard* clipboard = QApplication::clipboard();
     if(!clipboard)
@@ -116,80 +107,80 @@ void SofaApplication::copyToClipboard(const QString& text)
     clipboard->setText(text);
 }
 
-void SofaApplication::openInExplorer(const QString& folder) const
+void MainApplication::openInExplorer(const QString& folder) const
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile(folder));
 }
 
-bool SofaApplication::createFolder(const QString& destination)
+bool MainApplication::createFolder(const QString& destination)
 {
-	QDir dir(destination);
-	if (!dir.exists())
-		return dir.mkpath(".");
+    QDir dir(destination);
+    if (!dir.exists())
+        return dir.mkpath(".");
 
-	return false;
+    return false;
 }
 
-bool SofaApplication::removeFolder(const QString& destination)
+bool MainApplication::removeFolder(const QString& destination)
 {
     QDir dir(destination);
     return dir.removeRecursively();
 }
 
-bool SofaApplication::copyFolder(const QString& source, const QString& destination)
+bool MainApplication::copyFolder(const QString& source, const QString& destination)
 {
-	QDir destinationDir(destination);
-	if (destinationDir.exists())
-		return false;
+    QDir destinationDir(destination);
+    if (destinationDir.exists())
+        return false;
 
-	QDir baseSourceDir(source);
+    QDir baseSourceDir(source);
 
-	QStack<QDir> sourceDirs;
-	sourceDirs.push(baseSourceDir);
+    QStack<QDir> sourceDirs;
+    sourceDirs.push(baseSourceDir);
 
-	while (!sourceDirs.isEmpty())
-	{
-		QDir sourceDir = sourceDirs.pop();
+    while (!sourceDirs.isEmpty())
+    {
+        QDir sourceDir = sourceDirs.pop();
 
-		QFileInfoList entries = sourceDir.entryInfoList(QDir::AllDirs | QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDir::DirsFirst);
-		for (QFileInfo entry : entries)
-		{
-			if (entry.isDir())
-			{
-				sourceDirs.push(QDir(entry.filePath()));
-			}
-			else if (entry.isFile())
-			{
-				QString relativeFolderPath = destination + "/" + baseSourceDir.relativeFilePath(entry.absolutePath());
-				QDir().mkpath(relativeFolderPath);
+        QFileInfoList entries = sourceDir.entryInfoList(QDir::AllDirs | QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDir::DirsFirst);
+        for (QFileInfo entry : entries)
+        {
+            if (entry.isDir())
+            {
+                sourceDirs.push(QDir(entry.filePath()));
+            }
+            else if (entry.isFile())
+            {
+                QString relativeFolderPath = destination + "/" + baseSourceDir.relativeFilePath(entry.absolutePath());
+                QDir().mkpath(relativeFolderPath);
 
-				QString sourceFilepath = entry.filePath();
-				QString destinationFilepath = destination + "/" + baseSourceDir.relativeFilePath(entry.filePath());
+                QString sourceFilepath = entry.filePath();
+                QString destinationFilepath = destination + "/" + baseSourceDir.relativeFilePath(entry.filePath());
 
-				QFile(sourceFilepath).copy(destinationFilepath);
-			}
-		}
-	}
+                QFile(sourceFilepath).copy(destinationFilepath);
+            }
+        }
+    }
 
-	return true;
+    return true;
 }
 
-QStringList SofaApplication::findFiles(const QString& dirPath, const QStringList& nameFilters)
+QStringList MainApplication::findFiles(const QString& dirPath, const QStringList& nameFilters)
 {
-	QStringList filepaths;
+    QStringList filepaths;
 
-	QDir dir(dirPath);
-	if (!dir.exists())
-		return filepaths;
+    QDir dir(dirPath);
+    if (!dir.exists())
+        return filepaths;
 
-	QFileInfoList entries = dir.entryInfoList(nameFilters, QDir::Files);
-	for (QFileInfo entry : entries)
-		filepaths << entry.filePath();
+    QFileInfoList entries = dir.entryInfoList(nameFilters, QDir::Files);
+    for (QFileInfo entry : entries)
+        filepaths << entry.filePath();
 
-	return filepaths;
+    return filepaths;
 }
 
-QString SofaApplication::loadFile(const QString& filename)
+QString MainApplication::loadFile(const QString& filename)
 {
     QFile file(filename);
     if(file.open(QFile::ReadOnly))
@@ -198,7 +189,7 @@ QString SofaApplication::loadFile(const QString& filename)
     return QString();
 }
 
-bool SofaApplication::saveFile(const QString& destination, const QString& data)
+bool MainApplication::saveFile(const QString& destination, const QString& data)
 {
     QFileInfo fileInfo(destination);
     QDir dir = fileInfo.dir();
@@ -215,26 +206,26 @@ bool SofaApplication::saveFile(const QString& destination, const QString& data)
     return true;
 }
 
-bool SofaApplication::copyFile(const QString& source, const QString& destination)
+bool MainApplication::copyFile(const QString& source, const QString& destination)
 {
-	QFileInfo fileInfo(destination);
-	if (fileInfo.isDir())
-	{
-		return QFile::copy(source, destination + "/" + QFileInfo(source).fileName());
-	}
-	else
-	{
-		QDir dir = fileInfo.dir();
-		if (dir.exists())
-			QFile(destination).remove();
-		else
-			dir.mkpath(".");
+    QFileInfo fileInfo(destination);
+    if (fileInfo.isDir())
+    {
+        return QFile::copy(source, destination + "/" + QFileInfo(source).fileName());
+    }
+    else
+    {
+        QDir dir = fileInfo.dir();
+        if (dir.exists())
+            QFile(destination).remove();
+        else
+            dir.mkpath(".");
 
-		return QFile::copy(source, destination);
-	}
+        return QFile::copy(source, destination);
+    }
 }
 
-bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QString& destination)
+bool MainApplication::screenshotComponent(const QUrl& componentUrl, const QString& destination)
 {
     QQmlComponent component(qmlEngine(this), componentUrl);
     if(component.status() != QQmlComponent::Ready)
@@ -296,17 +287,17 @@ bool SofaApplication::screenshotComponent(const QUrl& componentUrl, const QStrin
     return true;
 }
 
-bool SofaApplication::runPythonScript(const QString& script)
+bool MainApplication::runPythonScript(const QString& script)
 {
     return PythonEnvironment::runString(script.toStdString());
 }
 
-bool SofaApplication::runPythonFile(const QString& filename)
+bool MainApplication::runPythonFile(const QString& filename)
 {
     return PythonEnvironment::runFile(filename.toLatin1().constData());
 }
 
-QVariantList SofaApplication::executeProcess(const QString& command, int timeOutMsecs)
+QVariantList MainApplication::executeProcess(const QString& command, int timeOutMsecs)
 {
     QProcess process;
     process.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
@@ -319,7 +310,7 @@ QVariantList SofaApplication::executeProcess(const QString& command, int timeOut
     return QVariantList() << QVariant::fromValue((int) process.exitStatus()) << QVariant::fromValue(process.exitCode()) << QVariant::fromValue(process.readAllStandardOutput()) << QVariant::fromValue(process.readAllStandardError());
 }
 
-ProcessState* SofaApplication::executeProcessAsync(const QString& command)
+ProcessState* MainApplication::executeProcessAsync(const QString& command)
 {
     QProcess* process = new QProcess();
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
@@ -335,33 +326,33 @@ ProcessState* SofaApplication::executeProcessAsync(const QString& command)
     // how to delete "processState"?
 }
 
-void SofaApplication::addNextFrameAction(QJSValue& jsFunction)
+void MainApplication::addNextFrameAction(QJSValue& jsFunction)
 {
-	if(!jsFunction.isCallable())
-	{
-		qWarning() << "SofaApplication::addNextFrameAction - parameter must be a JS function";
-		return;
-	}
+    if(!jsFunction.isCallable())
+    {
+        qWarning() << "SofaApplication::addNextFrameAction - parameter must be a JS function";
+        return;
+    }
 
-	QTimer::singleShot(0, [&]() { jsFunction.call(); });
+    QTimer::singleShot(0, [&]() { jsFunction.call(); });
 }
 
-QString SofaApplication::pythonDirectory() const
+QString MainApplication::pythonDirectory() const
 {
-	return myPythonDirectory;
+    return myPythonDirectory;
 }
 
-void SofaApplication::setPythonDirectory(const QString& pythonDirectory)
+void MainApplication::setPythonDirectory(const QString& pythonDirectory)
 {
-	myPythonDirectory = pythonDirectory;
+    myPythonDirectory = pythonDirectory;
 }
 
-QString SofaApplication::dataDirectory() const
+QString MainApplication::dataDirectory() const
 {
     return myDataDirectory;
 }
 
-void SofaApplication::setDataDirectory(const QString& dataDirectory)
+void MainApplication::setDataDirectory(const QString& dataDirectory)
 {
     myDataDirectory = dataDirectory;
 
@@ -369,12 +360,12 @@ void SofaApplication::setDataDirectory(const QString& dataDirectory)
         myDataDirectory += "/";
 }
 
-QString SofaApplication::binaryDirectory() const
+QString MainApplication::binaryDirectory() const
 {
     return QCoreApplication::applicationDirPath() + "/";
 }
 
-void SofaApplication::saveScreenshot(const QString& path)
+void MainApplication::saveScreenshot(const QString& path)
 {
     if(!qGuiApp)
     {
@@ -421,7 +412,7 @@ void SofaApplication::saveScreenshot(const QString& path)
         msg_error("SofaQtQuickGUI") << "Screenshot could not be saved to " << path.toStdString();
 }
 
-QObject* SofaApplication::instanciateURL(const QUrl& url)
+QObject* MainApplication::instanciateURL(const QUrl& url)
 {
     QQmlEngine* engine = qmlEngine(this);
 
@@ -437,12 +428,12 @@ QObject* SofaApplication::instanciateURL(const QUrl& url)
     return nullptr;
 }
 
-int SofaApplication::overrideCursorShape() const
+int MainApplication::overrideCursorShape() const
 {
     return QApplication::overrideCursor() ? QApplication::overrideCursor()->shape() : Qt::ArrowCursor;
 }
 
-void SofaApplication::setOverrideCursorShape(int newCursorShape)
+void MainApplication::setOverrideCursorShape(int newCursorShape)
 {
     if(newCursorShape == overrideCursorShape())
         return;
@@ -454,7 +445,7 @@ void SofaApplication::setOverrideCursorShape(int newCursorShape)
     overrideCursorShapeChanged();
 }
 
-QPointF SofaApplication::mapItemToScene(QQuickItem* item, const QPointF& point) const
+QPointF MainApplication::mapItemToScene(QQuickItem* item, const QPointF& point) const
 {
     if(!item)
         return QPointF();
@@ -462,7 +453,7 @@ QPointF SofaApplication::mapItemToScene(QQuickItem* item, const QPointF& point) 
     return item->mapToScene(point);
 }
 
-bool SofaApplication::isAncestorItem(QQuickItem* item, QQuickItem* ancestorItem) const
+bool MainApplication::isAncestorItem(QQuickItem* item, QQuickItem* ancestorItem) const
 {
     if(item && ancestorItem && item != ancestorItem)
         for(QQuickItem* parentItem = item->parentItem(); parentItem; parentItem = parentItem->parentItem())
@@ -472,7 +463,7 @@ bool SofaApplication::isAncestorItem(QQuickItem* item, QQuickItem* ancestorItem)
     return false;
 }
 
-QQuickWindow* SofaApplication::itemWindow(QQuickItem* item) const
+QQuickWindow* MainApplication::itemWindow(QQuickItem* item) const
 {
     if(!item)
         return nullptr;
@@ -480,7 +471,7 @@ QQuickWindow* SofaApplication::itemWindow(QQuickItem* item) const
     return item->window();
 }
 
-void SofaApplication::trimComponentCache(QObject* object)
+void MainApplication::trimComponentCache(QObject* object)
 {
     if(!object)
         object = this;
@@ -496,7 +487,7 @@ void SofaApplication::trimComponentCache(QObject* object)
     engine->trimComponentCache();
 }
 
-void SofaApplication::clearSettingGroup(const QString& group)
+void MainApplication::clearSettingGroup(const QString& group)
 {
     QSettings settings;
     settings.beginGroup(group);
@@ -504,7 +495,7 @@ void SofaApplication::clearSettingGroup(const QString& group)
     settings.endGroup();
 }
 
-int SofaApplication::objectDepthFromRoot(QObject* object)
+int MainApplication::objectDepthFromRoot(QObject* object)
 {
     int depth = -1;
 
@@ -515,22 +506,22 @@ int SofaApplication::objectDepthFromRoot(QObject* object)
     return depth;
 }
 
-QString SofaApplication::toLocalFile(const QUrl& url)
+QString MainApplication::toLocalFile(const QUrl& url)
 {
     return url.toLocalFile();
 }
 
-QQuaternion SofaApplication::quaternionFromEulerAngles(const QVector3D& eulerAngles) const
+QQuaternion MainApplication::quaternionFromEulerAngles(const QVector3D& eulerAngles) const
 {
     return QQuaternion::fromEulerAngles(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());
 }
 
-QVector3D SofaApplication::quaternionToEulerAngles(const QQuaternion& quaternion) const
+QVector3D MainApplication::quaternionToEulerAngles(const QQuaternion& quaternion) const
 {
     return quaternion.toEulerAngles();
 }
 
-QVariantList SofaApplication::quaternionToAxisAngle(const QQuaternion& quaternion) const // return [QVector3D axis, float angle];
+QVariantList MainApplication::quaternionToAxisAngle(const QQuaternion& quaternion) const // return [QVector3D axis, float angle];
 {
     QVector3D axis;
     float angle = 0.0f;
@@ -540,27 +531,27 @@ QVariantList SofaApplication::quaternionToAxisAngle(const QQuaternion& quaternio
     return QVariantList() << QVariant::fromValue(axis) << QVariant::fromValue(angle);
 }
 
-QQuaternion SofaApplication::quaternionFromAxisAngle(const QVector3D& axis, float angle) const
+QQuaternion MainApplication::quaternionFromAxisAngle(const QVector3D& axis, float angle) const
 {
     return QQuaternion::fromAxisAndAngle(axis, angle);
 }
 
-QQuaternion SofaApplication::quaternionDifference(const QQuaternion& q0, const QQuaternion& q1) const
+QQuaternion MainApplication::quaternionDifference(const QQuaternion& q0, const QQuaternion& q1) const
 {
     return q1 * q0.conjugated();
 }
 
-QQuaternion SofaApplication::quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1) const
+QQuaternion MainApplication::quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1) const
 {
     return q0 * q1;
 }
 
-QQuaternion SofaApplication::quaternionConjugate(const QQuaternion& q) const
+QQuaternion MainApplication::quaternionConjugate(const QQuaternion& q) const
 {
     return q.conjugated();
 }
 
-QVector3D SofaApplication::quaternionRotate(const QQuaternion& q, const QVector3D& v) const
+QVector3D MainApplication::quaternionRotate(const QQuaternion& q, const QVector3D& v) const
 {
     return q.rotatedVector(v);
 }
@@ -576,7 +567,7 @@ QVector3D SofaApplication::quaternionRotate(const QQuaternion& q, const QVector3
    if the input quaternion is of non-unit length, the outputs are non-unit as well
    otherwise, outputs are both unit
 */
-QVariantList SofaApplication::quaternionSwingTwistDecomposition(const QQuaternion& q, const QVector3D& direction)
+QVariantList MainApplication::quaternionSwingTwistDecomposition(const QQuaternion& q, const QVector3D& direction)
 {
     QVector3D ra(q.x(), q.y(), q.z()); // rotation axis
     QVector3D p = direction.normalized() * QVector3D::dotProduct(ra, direction.normalized()); // projection( ra, direction ); // return projection v1 on to v2  (parallel component)
@@ -589,411 +580,134 @@ QVariantList SofaApplication::quaternionSwingTwistDecomposition(const QQuaternio
     return QVariantList() << QVariant::fromValue(swing) << QVariant::fromValue(twist);
 }
 
-void SofaApplication::SetOpenGLDebugContext()
+void MainApplication::SetOpenGLDebugContext()
 {
-    QSurfaceFormat format;
-    format.setMajorVersion(4);
-    format.setMinorVersion(2);
-    format.setProfile(QSurfaceFormat::CompatibilityProfile);
-    format.setOption(QSurfaceFormat::DebugContext);
-    format.setDepthBufferSize(24);
-    format.setStencilBufferSize(8);
-    format.setSamples(4);
-    QSurfaceFormat::setDefaultFormat(format);
-}
-
-void SofaApplication::UseOpenGLDebugLogger()
-{
-    QOpenGLContext *ctx = QOpenGLContext::currentContext();
-    if(0 == ctx) {
-        msg_error("SofaQtQuickGUI") << "SofaApplication::initializeDebugLogger has been called without a valid opengl context made current";
-        return;
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
     }
+    m_maininstance->setOpenGLDebugContext();
+}
 
-    msg_info("SofaQtQuickGUI") << "OpenGL Context" << (QString::number(ctx->format().majorVersion()) + "." + QString::number(ctx->format().minorVersion())).toLatin1().constData();
-    msg_info("SofaQtQuickGUI") << "Graphics Card Vendor:" << (char*) glGetString(GL_VENDOR);
-    msg_info("SofaQtQuickGUI") << "Graphics Card Model:" << (char*) glGetString(GL_RENDERER);
-    msg_info("SofaQtQuickGUI") << "Graphics Card Drivers:" << (char*) glGetString(GL_VERSION);
-
-    if(ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
-    {
-        QOpenGLDebugLogger* openglDebugLogger = new QOpenGLDebugLogger();
-        if(!openglDebugLogger->initialize())
-            msg_error("SofaQtQuickGUI") << "OpenGL debug logging disabled: error - the logger could not be initialized";
-        else
-            msg_info("SofaQtQuickGUI") << "OpenGL debug logging enabled";
-
-        connect(openglDebugLogger, &QOpenGLDebugLogger::messageLogged, [](const QOpenGLDebugMessage &debugMessage) {msg_info("SofaQtQuickGUI") << "OpenGL" << debugMessage.type() << "-" << "Severity;" << debugMessage.severity() << "- Source:" << debugMessage.source() <<  "- Message:" << debugMessage.message().toStdString();});
-        openglDebugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
-
-        connect(ctx, &QOpenGLContext::aboutToBeDestroyed, [=]() {delete openglDebugLogger;});
+void MainApplication::UseOpenGLDebugLogger()
+{
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
     }
-    else
-    {
-        msg_warning("SofaQtQuickGUI") << "OpenGL debug logging disabled: your graphics card does not support this functionality";
+    m_maininstance->useOpenGLDebugLogger();
+}
+
+void MainApplication::UseDefaultSofaPath()
+{
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
     }
+    m_maininstance->useDefaultSofaPath();
 }
 
-void SofaApplication::UseDefaultSofaPath()
+void MainApplication::ApplySettings(const QString& defaultSettingsPath, const QString& backupSettingsPath)
 {
-    // add the plugin directory to PluginRepository
-#ifdef WIN32
-    const std::string pluginDir = sofa::helper::Utils::getExecutableDirectory();
-#else
-    const std::string pluginDir = sofa::helper::Utils::getSofaPathPrefix() + "/lib";
-#endif
-    sofa::helper::system::PluginRepository.addFirstPath(pluginDir);
-
-	sofa::helper::system::DataRepository.addFirstPath("../share/");
-	sofa::helper::system::DataRepository.addFirstPath("../examples/");
-
-    // read the paths to the share/ and examples/ directories from etc/sofa.ini
-
-    const std::string etcDir = sofa::helper::Utils::getSofaPathPrefix() + "/etc";
-    const std::string sofaIniFilePath = etcDir + "/sofa.ini";
-	if(QFileInfo(QString::fromStdString(sofaIniFilePath)).exists())
-	{
-		std::map<std::string, std::string> iniFileValues = sofa::helper::Utils::readBasicIniFile(sofaIniFilePath);
-
-		// and add them to DataRepository
-
-		if(iniFileValues.find("SHARE_DIR") != iniFileValues.end())
-		{
-			std::string shareDir = iniFileValues["SHARE_DIR"];
-			if (!sofa::helper::system::FileSystem::isAbsolute(shareDir))
-				shareDir = etcDir + "/" + shareDir;
-			sofa::helper::system::DataRepository.addFirstPath(shareDir);
-		}
-
-		if(iniFileValues.find("EXAMPLES_DIR") != iniFileValues.end())
-		{
-			std::string examplesDir = iniFileValues["EXAMPLES_DIR"];
-			if (!sofa::helper::system::FileSystem::isAbsolute(examplesDir))
-				examplesDir = etcDir + "/" + examplesDir;
-			sofa::helper::system::DataRepository.addFirstPath(examplesDir);
-		}
-	}
-
-    // also add application binary path
-#ifndef WIN32
-       sofa::helper::system::DataRepository.addFirstPath(QCoreApplication::applicationDirPath().toStdString());
-#else
-       sofa::helper::system::DataRepository.addFirstPath("./");
-	   sofa::helper::system::DataRepository.addFirstPath("../");
-	   sofa::helper::system::DataRepository.addFirstPath(QCoreApplication::applicationDirPath().toStdString() + "/../");
-#endif
-}
-
-static QString ExitedNormallyKey()
-{
-    return "SofaApplication/ExitedNormally";
-}
-
-static QString CorruptedKey()
-{
-    return "SofaApplication/Corrupted";
-}
-
-void SofaApplication::ApplySettings(const QString& defaultSettingsPath, const QString& backupSettingsPath)
-{
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-
-    connect(qApp, &QApplication::aboutToQuit, &SofaApplication::FinalizeSettings); // maybe too early ?
-
-    QSettings settings;
-    if(QFileInfo(settings.fileName()).exists())
-    {
-        bool exitedNormally = settings.value(ExitedNormallyKey(), false).toBool();
-        if(exitedNormally && !settings.value(CorruptedKey(), false).toBool())
-        {
-            MakeBackupSettings(backupSettingsPath);
-            settings.remove(ExitedNormallyKey());
-        }
-        else
-        {
-            if(settings.value(CorruptedKey(), false).toBool())
-                qCritical() << "Current settings has been corrupted, falling back on backup settings";
-
-            ApplyBackupSettings(backupSettingsPath);
-        }
-
-        if(!settings.value(CorruptedKey(), false).toBool())
-            return;
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
     }
-
-    if(settings.value(CorruptedKey(), false).toBool())
-        qCritical() << "Backup Settings file has been corrupted, falling back on default settings";
-
-    ApplyDefaultSettings(defaultSettingsPath, backupSettingsPath);
+    m_maininstance->applySettings(defaultSettingsPath, backupSettingsPath);
 }
 
-void SofaApplication::FinalizeSettings()
+void MainApplication::FinalizeSettings()
 {
-    QSettings settings;
-    if(!QFileInfo(settings.fileName()).exists())
-    {
-        qCritical("Cannot finalize settings, the application will use the backup settings at next launch");
-        return;
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
     }
-
-    settings.setValue(ExitedNormallyKey(), true);
+    m_maininstance->finalizeSettings();
 }
 
-static QString DefaultBackupSettingsPath()
+
+void MainApplication::MakeBackupSettings(const QString& backupSettingsPath)
 {
-    QSettings settings;
-    return settings.fileName() + ".backup";
-}
-
-void SofaApplication::MakeBackupSettings(const QString& backupSettingsPath)
-{
-    QSettings settings;
-
-    QString finalBackupSettingsPath = backupSettingsPath;
-    if(finalBackupSettingsPath.isEmpty())
-        finalBackupSettingsPath = DefaultBackupSettingsPath();
-
-    QSettings backupSettings(finalBackupSettingsPath, QSettings::IniFormat);
-    backupSettings.clear();
-
-    CopySettings(settings, backupSettings);
-}
-
-void SofaApplication::ApplyBackupSettings(const QString& backupSettingsPath)
-{
-    msg_warning("SofaQtQuickGUI")  << "The previous instance of the application did not exit cleanly, falling back on the backup settings";
-
-    QString finalBackupSettingsPath = backupSettingsPath;
-    if(finalBackupSettingsPath.isEmpty())
-        finalBackupSettingsPath = DefaultBackupSettingsPath();
-
-    QSettings backupSettings(finalBackupSettingsPath, QSettings::IniFormat);
-    QSettings settings;
-    settings.clear();
-
-    CopySettings(backupSettings, settings);
-}
-
-void SofaApplication::ApplyDefaultSettings(const QString& defaultSettingsPath, const QString& backupSettingsPath)
-{
-    QString finalDefaultSettingsPath = ":/config/default.ini";
-    if(!defaultSettingsPath.isEmpty())
-        finalDefaultSettingsPath = defaultSettingsPath;
-
-    // copy properties of default.ini into the backup and current settings if the settings file does not exist
-    QSettings defaultSettings(finalDefaultSettingsPath, QSettings::IniFormat);
-    QSettings settings;
-    settings.clear();
-
-    CopySettings(defaultSettings, settings);
-    MakeBackupSettings(backupSettingsPath);
-}
-
-static void SettingsCopyValuesHelper(const QSettings& src, QSettings& dst)
-{
-    QStringList keys = src.childKeys();
-    foreach(QString key, keys)
-        dst.setValue(key, src.value(key));
-}
-
-static void SettingsCopyGroupsHelper(const QSettings& src, QSettings& dst)
-{
-    QStringList groups = src.childGroups();
-    foreach(QString group, groups)
-    {
-        const_cast<QSettings&>(src).beginGroup(group);
-
-        dst.beginGroup(group);
-        SettingsCopyGroupsHelper(src, dst);
-        dst.endGroup();
-
-        const_cast<QSettings&>(src).endGroup();
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
     }
-
-    SettingsCopyValuesHelper(src, dst);
+    m_maininstance->makeBackupSettings(backupSettingsPath);
 }
 
-void SofaApplication::CopySettings(const QSettings& src, QSettings& dst)
+void MainApplication::ApplyBackupSettings(const QString& backupSettingsPath)
 {
-    SettingsCopyGroupsHelper(src, dst);
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
+    }
+    m_maininstance->applyBackupSettings(backupSettingsPath);
 }
 
-bool SofaApplication::Initialization()
+void MainApplication::ApplyDefaultSettings(const QString& defaultSettingsPath, const QString& backupSettingsPath)
 {
-	BackTrace::autodump();
-
-    QGuiApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-
-	QSurfaceFormat format;
-	format.setMajorVersion(4);
-	format.setMinorVersion(5);
-	format.setProfile(QSurfaceFormat::CompatibilityProfile);
-	format.setOption(QSurfaceFormat::DebugContext);
-	format.setDepthBufferSize(24);
-	format.setStencilBufferSize(8);
-	format.setSamples(4);
-	QSurfaceFormat::setDefaultFormat(format);
-
-    return true;
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
+    }
+    m_maininstance->applyDefaultSettings(defaultSettingsPath,backupSettingsPath);
 }
 
-void SofaApplication::Instanciate(QQmlApplicationEngine& applicationEngine)
+void MainApplication::CopySettings(const QSettings& src, QSettings& dst)
 {
-    // this will instanciate a SofaApplication QML instance
-    applicationEngine.loadData("import QtQuick 2.0\n"
-                               "import SofaApplication 1.0\n"
-                               "QtObject {\n"
-                               "Component.onCompleted: {SofaApplication.objectName;}\n"
-                               "}");
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
+    }
+    m_maininstance->copySettings(src,dst);
 }
 
-void SofaApplication::Destruction()
+bool MainApplication::Initialization()
 {
-    qApp->quit();
-}
-
-class UseOpenGLDebugLoggerRunnable : public QRunnable
-{
-	void run()
-	{
-		SofaApplication::UseOpenGLDebugLogger();
-	}
-};
-
-bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
-{
-    // application style
-    QQuickStyle::setStyle("Material");
-
-    // color console
-    sofa::helper::Console::setColorsStatus(sofa::helper::Console::ColorsEnabled);
-
-    // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
-    qputenv("QSG_RENDER_LOOP", "basic");
-
-    if(!app.testAttribute(Qt::AA_ShareOpenGLContexts))
-        qCritical() << "CRITICAL: SofaApplication::initialization() must be called before QApplication instanciation";
-
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-    // quit on Ctrl-C
-    signal(SIGINT, [](int) {SofaApplication::Destruction();});
-#endif
-
-    QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
-    app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");
-
-    QSettings::setPath(QSettings::Format::IniFormat, QSettings::Scope::UserScope, QCoreApplication::applicationDirPath() + "/config/");
-
-    // initialise paths
-    SofaApplication::UseDefaultSofaPath();
-
-    // add application data path
-    sofa::helper::system::DataRepository.addFirstPath((QCoreApplication::applicationDirPath() + "/" + app.applicationName() + "Data").toStdString());
-    sofa::helper::system::DataRepository.addFirstPath((QCoreApplication::applicationDirPath() + "/../data").toStdString());
-    sofa::helper::system::DataRepository.addFirstPath((QCoreApplication::applicationDirPath() + "/../" + app.applicationName() + "Data").toStdString());
-
-    // plugin initialization
-    QString pluginName("SofaQtQuickGUI");
-#ifndef NDEBUG
-    pluginName += "_d";
-#endif
-    QPluginLoader pluginLoader(pluginName);
-
-    // first call to instance() initialize the plugin
-    if(0 == pluginLoader.instance()) {
-        qCritical() << pluginLoader.errorString();
-        qCritical() << "ERROR: SofaQtQuickGUI plugin has not been found "<<pluginName;
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
         return false;
     }
-
-    // compute command line arguments
-    QCommandLineParser parser;
-
-    QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Load with this scene", "file");
-    QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start in animate mode");
-    QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Fullscreen mode");
-    QCommandLineOption widthOption(QStringList() << "width", "Window width", "pixels");
-    QCommandLineOption heightOption(QStringList() << "height", "Window height", "pixels");
-    QCommandLineOption logTimeOption(QStringList() << "log", "Log time during simulation");
-    
-    parser.addOption(sceneOption);
-    parser.addOption(animateOption);
-    parser.addOption(fullscreenOption);
-    parser.addOption(widthOption);
-    parser.addOption(heightOption);
-    parser.addOption(logTimeOption);
-    
-    parser.addVersionOption();
-    parser.addHelpOption();
-
-    parser.parse(app.arguments());
-
-    if(parser.isSet("version"))
-    {
-        parser.showVersion();
-        return true;
-    }
-
-    if(parser.isSet("help"))
-    {
-        parser.showHelp();
-        return true;
-    }
-
-    if(parser.isSet("log")) {
-	sofa::helper::AdvancedTimer::setEnabled("Animate", true);
-    }
-    
-// apply the app settings or use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
-
-    SofaApplication::ApplySettings();
-
-// launch the main script
-
-    applicationEngine.addImportPath("qrc:/");
-    applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
-    applicationEngine.load(QUrl(mainScript));
-
-// apply command line arguments
-
-    QList<QObject*> objects = applicationEngine.rootObjects();
-    foreach(QObject* object, objects)
-    {
-        QWindow* window = qobject_cast<QWindow*>(object);
-        if(!window)
-            continue;
-
-		//QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-		//if (quickWindow)
-		//	quickWindow->scheduleRenderJob(new UseOpenGLDebugLoggerRunnable(), QQuickWindow::RenderStage::BeforeRenderingStage);
-
-		if(parser.isSet(animateOption) || parser.isSet(sceneOption))
-        {
-            SofaScene* sofaScene = object->findChild<SofaScene*>();
-            if(parser.isSet(sceneOption))
-            {
-                sofaScene->setSource(parser.value(sceneOption));
-            }
-            if(parser.isSet(animateOption))
-            {
-                sofaScene->setDefaultAnimate(true);
-                if(sofaScene->isReady())
-                    sofaScene->setAnimate(true);
-            }
-        }
-
-        if(parser.isSet(widthOption))
-            window->setWidth(parser.value(widthOption).toInt());
-
-        if(parser.isSet(heightOption))
-            window->setHeight(parser.value(heightOption).toInt());
-
-        if(parser.isSet(fullscreenOption))
-            window->setVisibility(QWindow::FullScreen);
-    }
-
-    return true;
+    return m_maininstance->surfaceDefinition() ;
 }
+
+void MainApplication::Instanciate(QQmlApplicationEngine& applicationEngine)
+{
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
+    }
+    m_maininstance->instanciate(applicationEngine);
+}
+
+void MainApplication::Destruction()
+{
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return ;
+    }
+    m_maininstance->destruction();
+}
+
+bool MainApplication::MainInitialization(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
+{
+    if(!m_maininstance){
+        dmsg_error("SofaApplication") << "m_maininstance is not set. Abort."  ;
+        return false;
+    }
+    return m_maininstance->mainInitialization(app, applicationEngine, mainScript);
+}
+
+void MainApplication::setApplicationSingleton(SofaApplication *app)
+{
+    m_maininstance = app ;
+}
+
+SofaApplication* MainApplication::getApplicationSingleton()
+{
+    return m_maininstance ;
+}
+
 
 }
 

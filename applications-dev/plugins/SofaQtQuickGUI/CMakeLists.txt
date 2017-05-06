@@ -8,6 +8,7 @@ set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINO
 set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
+    DefaultApplication.cpp
     SofaViewer.cpp
     Camera.cpp
     SofaScene.cpp
@@ -36,6 +37,7 @@ set(SOURCE_FILES
 set(HEADER_FILES
     SofaQtQuickGUI.h
     SofaApplication.h
+    DefaultApplication.h
     ProcessState.h
     SofaViewer.h
     Camera.h

@@ -27,10 +27,10 @@ import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
 
-SofaApplication {
+SofaApplicationInstance {
     id: root
 
-////////////////////////////////////////////////// SOFASCENE
+    ////////////////////////////////////////////////// SOFASCENE
 
     property var sofaScene: null
 
@@ -60,15 +60,15 @@ SofaApplication {
         }
     }
 
-////////////////////////////////////////////////// TOOLBAR
+    ////////////////////////////////////////////////// TOOLBAR
 
     property var toolBar: null
 
-////////////////////////////////////////////////// STATUSBAR
+    ////////////////////////////////////////////////// STATUSBAR
 
     property var statusBar: null
 
-////////////////////////////////////////////////// SOFAVIEWER
+    ////////////////////////////////////////////////// SOFAVIEWER
 
     readonly property alias focusedSofaViewer: viewerPrivate.focusedSofaViewer
     readonly property alias sofaViewers: viewerPrivate.sofaViewers
@@ -106,7 +106,7 @@ SofaApplication {
 
     }
 
-////////////////////////////////////////////////// CAMERA
+    ////////////////////////////////////////////////// CAMERA
 
     function retrieveAllSofaViewerCameras() {
         var cameras = [];
@@ -123,7 +123,7 @@ SofaApplication {
             visitor(sofaViewers[i].camera);
     }
 
-////////////////////////////////////////////////// SETTINGS
+    ////////////////////////////////////////////////// SETTINGS
 
     property var uiSettings: Settings {
         category: "ui"
@@ -195,14 +195,14 @@ SofaApplication {
         }
     }
 
-////////////////////////////////////////////////// INTERACTOR
+    ////////////////////////////////////////////////// INTERACTOR
 
     property string defaultInteractorName: "SofaParticleInteractor"
     readonly property string interactorName: {
         if(interactorComponent)
-            for(var key in interactorComponentMap)
-                if(interactorComponentMap.hasOwnProperty(key) && interactorComponent === interactorComponentMap[key])
-                    return key;
+        for(var key in interactorComponentMap)
+        if(interactorComponentMap.hasOwnProperty(key) && interactorComponent === interactorComponentMap[key])
+        return key;
 
         return "";
     }
@@ -312,7 +312,7 @@ SofaApplication {
         }
     }
 
-////////////////////////////////////////////////// SCREENSHOT
+    ////////////////////////////////////////////////// SCREENSHOT
 
     function formatDateForScreenshot() {
         var today = new Date();
@@ -354,7 +354,7 @@ SofaApplication {
         property bool saveVideo: false
         onSaveVideoChanged: {
             if(!saveVideo)
-                return;
+            return;
 
             videoFrameNumber = 0;
 
@@ -384,10 +384,10 @@ SofaApplication {
         }
     }
 
-////////////////////////////////////////////////// MISC
+    ////////////////////////////////////////////////// MISC
 
 
 
-//////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
 }

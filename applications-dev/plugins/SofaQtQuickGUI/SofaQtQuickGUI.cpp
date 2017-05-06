@@ -48,6 +48,8 @@ using sofa::qtquick::console::Console ;
 
 #include <sofa/helper/system/PluginManager.h>
 
+#include "DefaultApplication.h"
+
 const int versionMajor = 1;
 const int versionMinor = 0;
 
@@ -78,12 +80,13 @@ static QObject* createConsole(QQmlEngine *engine,
 
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
-    //Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
-
     qRegisterMetaType<SofaScene::Status>("Status");
     qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
 
-    qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
+    qmlRegisterType<MainApplication>                                ("SofaApplicationSingleton"             ,
+                                                                     versionMajor, versionMinor,
+                                                                     "SofaApplicationInstance");
+
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
@@ -109,8 +112,10 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
 
     // registers the C++ type in the QML system with the name "Console",
-    qmlRegisterSingletonType<Console>("SofaMessageList",                    // char* uri
-                                       versionMajor, versionMinor,          // int majorVersion
-                                      "SofaMessageList",
-                                       createConsole );        // exported Name.
+    qmlRegisterSingletonType<Console>("SofaMessageList",                    /// char* uri
+                                       versionMajor, versionMinor,          /// int majorVersion
+                                      "SofaMessageList",                    /// exported Name.
+                                       createConsole );
+
+
 }
