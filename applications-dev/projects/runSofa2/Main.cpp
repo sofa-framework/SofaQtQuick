@@ -23,18 +23,25 @@ Contributors:
 #include <sofa/helper/BackTrace.h>
 using sofa::helper::BackTrace ;
 
-#include "RS2Application.h"
-using sofa::rs::RS2Application ;
-
 #include "SofaQtQuickGUI/SofaApplication.h"
 using sofa::qtquick::MainApplication ;
 
+#include "RS2Application.h"
+using sofa::rs::RS2Application ;
+
+
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#include <signal.h>
+#endif
 
 int main(int argc, char **argv)
 {
-    BackTrace::autodump();
-
     MainApplication::setApplicationSingleton(new RS2Application()) ;
+
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+    /// quit on Ctrl-C
+    signal(SIGINT, [](int) {MainApplication::Destruction();});
+#endif
 
     /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to
     /// load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
@@ -49,7 +56,7 @@ int main(int argc, char **argv)
     QQmlApplicationEngine applicationEngine;
 
     if(!MainApplication::MainInitialization(app, applicationEngine, "qrc:/qml/Main.qml"))
-        return -1;
+        exit(0);
 
     /// Let's start runSofa2.
     return app.exec();

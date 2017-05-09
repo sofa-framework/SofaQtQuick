@@ -26,6 +26,7 @@ Contributors:
 #define RS2APPLICATION_H
 
 #include <QCommandLineParser>
+#include <QWindow>
 #include "SofaQtQuickGUI/DefaultApplication.h"
 
 namespace sofa
@@ -43,17 +44,39 @@ public:
     Q_OBJECT
 
 public:
+    Q_PROPERTY(bool animateOnLoad READ getAnimateOnLoad CONSTANT) ;
+    Q_PROPERTY(QString defaultScene READ getDefaultScene CONSTANT) ;
+    Q_PROPERTY(int defaultWidth READ getDefaultWidth CONSTANT) ;
+    Q_PROPERTY(int defaultHeight READ getDefaultHeight CONSTANT) ;
+    Q_PROPERTY(QWindow::Visibility defaultVisibility READ getDefaultVisibility CONSTANT) ;
+
     RS2Application(QObject* parent = 0);
     virtual ~RS2Application();
 
-    /// Centralized common settings for most sofaqtquick applications.
-    /// Every applications will be updated when modifying this code.
-    /// To be called in the main function.
+    /// Initialize the application, parse command line argument and expose everything as
+    /// a qml component name RS2Application.
     bool mainInitialization(QApplication& app,
                             QQmlApplicationEngine& applicationEngine ,
                             const QString &mainScript) override ;
 
-    void prepareCommandLine(QCommandLineParser& parser) ;
+    bool getAnimateOnLoad() ;
+    int getDefaultWidth() ;
+    int getDefaultHeight() ;
+    QString getDefaultScene() ;
+    QWindow::Visibility getDefaultVisibility() ;
+
+protected:
+    void processCommandLineOptions(const QStringList &app) ;
+    void setMessageType(const QString& type) ;
+    void setConsoleMode(const QString& mode) ;
+    void loadSofaPlugins(const QStringList& plugins);
+
+private:
+    bool m_animateOnLoad      {false} ;
+    int m_defaultWidth        {1280} ;
+    int m_defaultHeight       {720} ;
+    QWindow::Visibility m_defaultVisibility {QWindow::Windowed} ;
+    QString m_defaultScene    {"file:Demos/caduceus.scn"} ;
 };
 
 } /// namespace _rs2application_

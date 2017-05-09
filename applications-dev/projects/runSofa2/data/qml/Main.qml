@@ -1,7 +1,8 @@
 /*
 Copyright 2015, Anatoscope
+Copyright 2017, CNRS
 
-This file is part of sofaqtquick.
+This file is part of runSofa2
 
 sofaqtquick is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -15,6 +16,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
+
+contributors:
+    - damien.marchal@univ-lille1.fr
 */
 
 import QtQuick 2.0
@@ -25,37 +29,25 @@ import QtQuick.Controls.Styles 1.3
 import SofaScene 1.0
 import SofaBasics 1.0
 import SofaApplication 1.0
+import RS2Application 1.0
 import SofaWidgets 1.0
 
 ApplicationWindow {
     id: root
-    width: 1280
-    height: 720
+    width: RS2Application.defaultWidth
+    height: RS2Application.defaultHeight
+    visibility: RS2Application.defaultVisibility
+    visible: true
+
     title: Qt.application.name + " - \"" + sofaScene.path + "\""
 
-    onClosing: Qt.quit()
+    onClosing:
+        Qt.quit()
 
     property var sofaScene: SofaScene {
         id: sofaScene
-
-        // delay the opening of the previous scene to the next frame to let a
-        // chance to parse command line arguments specifying another scene
-        property var openPreviousTimer: Timer {
-            running: true
-            repeat: false
-            interval: 1
-
-            onTriggered: {
-                if(SofaScene.Null !== sofaScene.status)
-                    return;
-
-                var source = SofaApplication.sceneSettings.mostRecent();
-                if(0 === source.length)
-                    source = "file:Demos/caduceus.scn";
-
-                sofaScene.source = source;
-            }
-        }
+        source: RS2Application.defaultScene
+        defaultAnimate: RS2Application.animateOnLoad
     }
 
     Component.onCompleted: {
