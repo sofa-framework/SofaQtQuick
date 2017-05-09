@@ -25,6 +25,7 @@ Contributors:
 #ifndef RS2APPLICATION_H
 #define RS2APPLICATION_H
 
+#include <QCommandLineParser>
 #include "SofaQtQuickGUI/DefaultApplication.h"
 
 namespace sofa
@@ -52,6 +53,7 @@ public:
                             QQmlApplicationEngine& applicationEngine ,
                             const QString &mainScript) override ;
 
+    void prepareCommandLine(QCommandLineParser& parser) ;
 };
 
 } /// namespace _rs2application_

@@ -25,6 +25,25 @@ Contributors:
 #include <QSettings>
 #include <QWindow>
 
+#include <sofa/helper/system/console.h>
+using sofa::helper::Console;
+
+#include <sofa/helper/logging/MessageDispatcher.h>
+using sofa::helper::logging::MessageDispatcher ;
+
+#include <sofa/helper/logging/ClangMessageHandler.h>
+using sofa::helper::logging::ClangMessageHandler ;
+
+#include <sofa/helper/logging/ConsoleMessageHandler.h>
+using sofa::helper::logging::ConsoleMessageHandler ;
+
+#include <sofa/core/logging/PerComponentLoggingMessageHandler.h>
+using  sofa::helper::logging::MainPerComponentLoggingMessageHandler ;
+
+
+#include <sofa/core/logging/RichConsoleStyleMessageFormatter.h>
+using  sofa::helper::logging::RichConsoleStyleMessageFormatter ;
+
 #if 0
 #include <iostream>
 using std::string ;
@@ -32,14 +51,17 @@ using std::string ;
 #include <vector>
 using std::vector;
 
-#include <sofa/helper/ArgumentParser.h>
-using sofa::helper::ArgumentParser ;
-
-#include <sofa/helper/system/console.h>
-using sofa::helper::Console;
-
 #include <sofa/helper/BackTrace.h>
 using sofa::helper::BackTrace ;
+
+#include <sofa/helper/logging/ClangMessageHandler.h>
+using sofa::helper::logging::ClangMessageHandler ;
+
+#include <sofa/helper/logging/ConsoleMessageHandler.h>
+using sofa::helper::logging::ConsoleMessageHandler ;
+
+#include <sofa/core/logging/PerComponentLoggingMessageHandler.h>
+using  sofa::helper::logging::MainPerComponentLoggingMessageHandler ;
 
 #include <sofa/core/logging/RichConsoleStyleMessageFormatter.h>
 using  sofa::helper::logging::RichConsoleStyleMessageFormatter ;
@@ -89,6 +111,32 @@ RS2Application::RS2Application(QObject* parent) : DefaultApplication(parent)
 
 RS2Application::~RS2Application() {}
 
+void RS2Application::prepareCommandLine(QCommandLineParser& parser)
+{
+    QCommandLineOption sceneOption({"s", "scene"}, "Load with this scene", "file");
+    QCommandLineOption animateOption({"a", "animate"}, "Start in animate mode");
+    QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Fullscreen mode");
+    QCommandLineOption widthOption("width", "Window width", "pixels");
+    QCommandLineOption heightOption("height", "Window height", "pixels");
+    QCommandLineOption logTimeOption("log", "Log time during simulation");
+    QCommandLineOption colorOption({"z", "colors"}, "Use colors on stdout and stderr (yes, no, auto)");
+    QCommandLineOption messageHandlerOption({"f", "formatting"}, "Select the message formatting to use (sofa-old, sofa-new, clang)");
+    QCommandLineOption loadPluginOption({"l", "load"}, "Load given plugins" );
+
+    parser.addOption(sceneOption);
+    parser.addOption(animateOption);
+    parser.addOption(fullscreenOption);
+    parser.addOption(widthOption);
+    parser.addOption(heightOption);
+    parser.addOption(logTimeOption);
+    parser.addOption(colorOption);
+    parser.addOption(messageHandlerOption);
+    parser.addOption(loadPluginOption);
+
+    parser.addVersionOption();
+    parser.addHelpOption();
+}
+
 bool  RS2Application::mainInitialization(QApplication& app,
                                          QQmlApplicationEngine &applicationEngine,
                                          const QString& mainScript)
@@ -134,26 +182,20 @@ bool  RS2Application::mainInitialization(QApplication& app,
         return false;
     }
 
+    // apply the app settings or use the default.ini settings if it is the
+    // first time the user launch the application or use the app.backup.ini in case of application crash
+    applySettings();
+
+    // launch the main script
+    applicationEngine.addImportPath("qrc:/");
+    applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
+    applicationEngine.load(QUrl(mainScript));
+
+
     // compute command line arguments
     QCommandLineParser parser;
 
-    QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Load with this scene", "file");
-    QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start in animate mode");
-    QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Fullscreen mode");
-    QCommandLineOption widthOption(QStringList() << "width", "Window width", "pixels");
-    QCommandLineOption heightOption(QStringList() << "height", "Window height", "pixels");
-    QCommandLineOption logTimeOption(QStringList() << "log", "Log time during simulation");
-
-    parser.addOption(sceneOption);
-    parser.addOption(animateOption);
-    parser.addOption(fullscreenOption);
-    parser.addOption(widthOption);
-    parser.addOption(heightOption);
-    parser.addOption(logTimeOption);
-
-    parser.addVersionOption();
-    parser.addHelpOption();
-
+    prepareCommandLine(parser);
     parser.parse(app.arguments());
 
     if(parser.isSet("version"))
@@ -168,20 +210,70 @@ bool  RS2Application::mainInitialization(QApplication& app,
         return true;
     }
 
-    if(parser.isSet("log")) {
+    if(parser.isSet("log")){
         sofa::helper::AdvancedTimer::setEnabled("Animate", true);
     }
 
-    // apply the app settings or use the default.ini settings if it is the
-    // first time the user launch the application or use the app.backup.ini in case of application crash
-    applySettings();
+    // alphabetical order on short name
+    //TODO(dmarchal 2017-05-05/delete in 1 year): These probably should in a separated application 'runSofaViewer'.
+    //.option(&nbMSSASamples, 'm', "msaa", "number of samples for MSAA (Multi Sampling Anti Aliasing ; value < 2 means disabled")
+    //.option(&startAnim,'a',"start","start the animation loop")
+    //.option(&nbIterations,'n',"nb_iterations","(only batch) Number of iterations of the simulation")
+    //TODO(dmarchal 2017-05-05/delete in 1 year): These seems specfic to a batch mode 'runSofaBatch'.
+    //.option(&temporaryFile,'t',"temporary","the loaded scene won't appear in history of opened files")
+    //.option(&testMode,'x',"test","select test mode with xml output after N iteration")
+    //.option(&verif,'v',"verification","load verification data for the scene")
+    //TODO(dmarchal 2017-05-05/delete in 1 year): These seems the one to support for 17.06 release of runSofa
+    //.option(&simulationType,'s',"simu","select the type of simulation (bgl, dag, tree, smp)")
+    //.option(&printFactory,'p',"factory","print factory logs")
+    //.option(&computationTimeSampling,'c',"computationTimeSampling","Frequency of display of the computation time statistics, in number of animation steps. 0 means never.")
 
-    // launch the main script
-    applicationEngine.addImportPath("qrc:/");
-    applicationEngine.addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
-    applicationEngine.load(QUrl(mainScript));
+    QString colorsStatus = "auto";
+    if(parser.isSet("colors"))
+        colorsStatus = parser.value("colors");
 
-    // apply command line arguments
+
+    if (colorsStatus == "auto")
+        Console::setColorsStatus(Console::ColorsAuto);
+    else if (colorsStatus == "yes")
+        Console::setColorsStatus(Console::ColorsEnabled);
+    else if (colorsStatus == "no")
+        Console::setColorsStatus(Console::ColorsDisabled);
+
+
+    QString messageHandler = "sofa-old";
+    if(parser.isSet("formatting"))
+        messageHandler = parser.value("formatting");
+
+    /// This activate the logging of the message in each component so this can be displayed in
+    /// a specific way in the GUI. I personally don't think this is the proper way to do that but
+    /// this is the way it was done in previous version of sofa so we will keep that for at least
+    /// one or two year (so we may have solve that around 2019).
+    /// TODO(dmarchal 2017-05-05/delete in 2 year): try a better approach.
+    MessageDispatcher::clearHandlers() ;
+    MessageDispatcher::addHandler(&MainPerComponentLoggingMessageHandler::getInstance()) ;
+
+    if (messageHandler == "sofa-old")
+    {
+        MessageDispatcher::clearHandlers() ;
+        MessageDispatcher::addHandler( new ConsoleMessageHandler() ) ;
+    }
+    else if (messageHandler == "sofa-new")
+    {
+        MessageDispatcher::clearHandlers() ;
+        MessageDispatcher::addHandler( new ConsoleMessageHandler(new RichConsoleStyleMessageFormatter()) ) ;
+    }
+    else if (messageHandler == "clang")
+    {
+        MessageDispatcher::clearHandlers() ;
+        MessageDispatcher::addHandler( new ClangMessageHandler() ) ;
+    }
+    else
+    {
+        msg_warning("RS2Application") << "Invalid formatting ‘" << messageHandler.toStdString() << "‘";
+    }
+
+    /// apply command line arguments ??? Il y a plusieurs ROOT ?
     QList<QObject*> objects = applicationEngine.rootObjects();
     foreach(QObject* object, objects)
     {
@@ -189,14 +281,14 @@ bool  RS2Application::mainInitialization(QApplication& app,
         if(!window)
             continue;
 
-        if(parser.isSet(animateOption) || parser.isSet(sceneOption))
+        if(parser.isSet("animate") || parser.isSet("scene"))
         {
             SofaScene* sofaScene = object->findChild<SofaScene*>();
-            if(parser.isSet(sceneOption))
+            if(parser.isSet("scene"))
             {
-                sofaScene->setSource(parser.value(sceneOption));
+                sofaScene->setSource(parser.value("scene"));
             }
-            if(parser.isSet(animateOption))
+            if(parser.isSet("animate"))
             {
                 sofaScene->setDefaultAnimate(true);
                 if(sofaScene->isReady())
@@ -204,13 +296,13 @@ bool  RS2Application::mainInitialization(QApplication& app,
             }
         }
 
-        if(parser.isSet(widthOption))
-            window->setWidth(parser.value(widthOption).toInt());
+        if(parser.isSet("width"))
+            window->setWidth(parser.value("width").toInt());
 
-        if(parser.isSet(heightOption))
-            window->setHeight(parser.value(heightOption).toInt());
+        if(parser.isSet("height"))
+            window->setHeight(parser.value("height").toInt());
 
-        if(parser.isSet(fullscreenOption))
+        if(parser.isSet("fullscreen"))
             window->setVisibility(QWindow::FullScreen);
     }
 
@@ -224,55 +316,11 @@ string colorsStatus = "auto";
 string messageHandler = "auto";
 bool enableInteraction = false ;
 
-sofa::helper::parse(&files, "This is runSofa2 application. Here are the command line arguments")
-// alphabetical order on short name
-//TODO(dmarchal 2017-05-05/delete in 1 year): These probably should in a separated application 'runSofaViewer'.
-//.option(&nbMSSASamples, 'm', "msaa", "number of samples for MSAA (Multi Sampling Anti Aliasing ; value < 2 means disabled")
-//.option(&startAnim,'a',"start","start the animation loop")
-//.option(&nbIterations,'n',"nb_iterations","(only batch) Number of iterations of the simulation")
-//TODO(dmarchal 2017-05-05/delete in 1 year): These seems specfic to a batch mode 'runSofaBatch'.
-//.option(&temporaryFile,'t',"temporary","the loaded scene won't appear in history of opened files")
-//.option(&testMode,'x',"test","select test mode with xml output after N iteration")
-//.option(&verif,'v',"verification","load verification data for the scene")
-//TODO(dmarchal 2017-05-05/delete in 1 year): These seems the one to support for 17.06 release of runSofa
-//.option(&simulationType,'s',"simu","select the type of simulation (bgl, dag, tree, smp)")
-//.option(&printFactory,'p',"factory","print factory logs")
-//.option(&computationTimeSampling,'c',"computationTimeSampling","Frequency of display of the computation time statistics, in number of animation steps. 0 means never.")
-//.option(&plugins,'l',"load","load given plugins")
-.option(&colorsStatus,'z',"colors","use colors on stdout and stderr (yes, no, auto)")
-.option(&messageHandler,'f',"formatting","select the message formatting to use (auto, clang, sofa, rich, test)")
-.option(&enableInteraction, 'i', "interactive", "enable interactive mode for the GUI which includes idle and mouse events (EXPERIMENTAL)");
-
-
 
 /// Make something with the command lines variables.
-if (colorsStatus == "auto")
-Console::setColorsStatus(Console::ColorsAuto);
-else if (colorsStatus == "yes")
-Console::setColorsStatus(Console::ColorsEnabled);
-else if (colorsStatus == "no")
-Console::setColorsStatus(Console::ColorsDisabled);
 
 
 ///TODO(dmarchal 2017-05-05): Use smart pointer there to avoid memory leaks !!
-if (messageHandler == "auto" || messageHandler == "sofa-old")
-{
-    MessageDispatcher::clearHandlers() ;
-    MessageDispatcher::addHandler( new ConsoleMessageHandler() ) ;
-}
-else if (messageHandler == "clang")
-{
-    MessageDispatcher::clearHandlers() ;
-    MessageDispatcher::addHandler( new ClangMessageHandler() ) ;
-}
-else if (messageHandler == "sofa-new")
-{
-    MessageDispatcher::clearHandlers() ;
-    MessageDispatcher::addHandler( new ConsoleMessageHandler(new RichConsoleStyleMessageFormatter()) ) ;
-}
-else{
-msg_warning("") << "Invalid argument ‘" << messageHandler << "‘ for ‘--formatting‘";
-}
 
 /// This activate the logging of the message in each component so this can be displayed in
 /// a specific way in the GUI. I personally don't think this is the proper way to do that but
