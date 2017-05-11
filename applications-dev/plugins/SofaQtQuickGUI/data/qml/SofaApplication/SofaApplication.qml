@@ -386,7 +386,9 @@ SofaApplication {
 
 ////////////////////////////////////////////////// MISC
 
-
+    function urlToPath(url) {
+        return  Qt.platform.os === "windows" ? Qt.resolvedUrl(url).toString().replace("file:///", "") : Qt.resolvedUrl(url).toString().replace("file://", "")
+    }
 
 //////////////////////////////////////////////////
 
