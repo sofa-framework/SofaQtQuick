@@ -27,6 +27,9 @@ using sofa::helper::OptionsGroup ;
 #include <sofa/core/objectmodel/DataFileName.h>
 using sofa::core::objectmodel::DataFileName ;
 
+#include <sofa/helper/types/RGBAColor.h>
+using sofa::helper::types::RGBAColor ;
+
 #include <sofa/helper/system/FileSystem.h>
 using sofa::helper::system::FileSystem ;
 
@@ -974,6 +977,13 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
 
     /// DataFilename are use to stores path to files.
     const DataFileName* aDataFilename = dynamic_cast<const DataFileName*>(data) ;
+
+    /// OptionsGroup are used to encode a finite set of alternatives.
+    const Data<OptionsGroup>* anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
+
+    /// OptionsGroup are used to encode a finite set of alternatives.
+    const Data<RGBAColor>* aRGBAColor =  dynamic_cast<const Data<RGBAColor>*>(data) ;
+
     if(aDataFilename)
     {
         type = "FileName" ;
@@ -983,22 +993,20 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         dmsg_info("SofaScene") << directory ;
         properties.insert("folderurl",  QString::fromStdString(directory)) ;
     }
-    else
+    else if(anOptionGroup)
     {
-        /// OptionsGroup are used to encode a finite set of alternatives.
-        const Data<OptionsGroup>* anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
-        if(anOptionGroup)
-        {
-            type = "OptionsGroup";
-            QStringList choices;
+        type = "OptionsGroup";
+        QStringList choices;
 
-            const OptionsGroup& group = anOptionGroup->getValue();
-            for(unsigned int i=0;i<group.size();++i)
-            {
-                choices.append(QString::fromStdString(group[i]));
-            }
-            properties.insert("choices", choices);
+        const OptionsGroup& group = anOptionGroup->getValue();
+        for(unsigned int i=0;i<group.size();++i)
+        {
+            choices.append(QString::fromStdString(group[i]));
         }
+        properties.insert("choices", choices);
+    }else if(aRGBAColor)
+    {
+                type = "RGBAColor";
     }
 
     QString widget(data->getWidget());
