@@ -82,11 +82,11 @@ public:
     Q_SLOT bool copyFile(const QString& source, const QString& destination);
 
     Q_SLOT QImage screenshotComponent(QQuickItem* item, const QSize& forceSize = QSize()) const;
-    Q_SLOT QImage screenshotComponent(QQmlComponent* component, const QSize& forceSize = QSize()) const;
+    Q_SLOT QImage screenshotComponent(QQmlComponent* component, const QSize& forceSize = QSize()) const; // \warning created object screenshot will be linked to the global context hence the component bindings (apart from the ones using the component context and the global context) will not be kept, prefer the version of screenshotComponent that need an item you created yourself if you need bindings with a parent context
     Q_SLOT QImage screenshotComponent(const QUrl& componentUrl, const QSize& forceSize = QSize()) const;
 
     Q_SLOT bool screenshotComponent(QQuickItem* item, const QString& destination, const QSize& forceSize = QSize()) const;
-    Q_SLOT bool screenshotComponent(QQmlComponent* component, const QString& destination, const QSize& forceSize = QSize()) const;
+    Q_SLOT bool screenshotComponent(QQmlComponent* component, const QString& destination, const QSize& forceSize = QSize()) const; // \warning created object screenshot will be linked to the global context hence the component bindings (apart from the ones using the component context and the global context) will not be kept, prefer the version of screenshotComponent that need an item you created yourself if you need bindings with a parent context
     Q_SLOT bool screenshotComponent(const QUrl& componentUrl, const QString& destination, const QSize& forceSize = QSize()) const;
 
     Q_INVOKABLE bool runPythonScript(const QString& script); // \return true if script ran successfuly, false on error
