@@ -50,7 +50,7 @@ public:
     /// \brief append a SofaComponent into the list 
     Q_INVOKABLE void append(SofaComponent* sofaComponent) { myComponentList.append(sofaComponent); }
     /// \brief retrieve a SofaComponent from the list at index i 
-    Q_INVOKABLE sofa::qtquick::SofaComponent* at(int i) { return ( i < myComponentList.size() ) ? myComponentList.at(i) : NULL; }
+    Q_INVOKABLE sofa::qtquick::SofaComponent* at(int i) { return ( i < myComponentList.size() ) ? myComponentList.at(i) : nullptr; }
     /// \brief return the size of the list 
     Q_INVOKABLE int size() { return myComponentList.size(); }
 
