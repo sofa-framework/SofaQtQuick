@@ -16,15 +16,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
+#include <qqml.h>
+#include <QQmlEngine>
 
 #include <GL/glew.h>
+
 #include "SofaComponent.h"
 #include "SofaScene.h"
 
 #include <sofa/core/ObjectFactory.h>
 
-#include <qqml.h>
-#include <QQmlEngine>
+#include "sofa/helper/logging/Message.h"
+using sofa::helper::logging::Message ;
+
 
 namespace sofa
 {
@@ -163,51 +167,55 @@ SofaData* SofaComponent::getComponentData(const QString& name) const
 
 QString SofaComponent::output() const
 {
-	const Base* base = SofaComponent::base();
-	if(base)
-		return QString::fromStdString(base->getOutputs());
+    const Base* base = SofaComponent::base();
+    if(base)
+        return QString::fromStdString(base->getLoggedMessagesAsString({Message::Info, Message::Advice}));
 
-	return QString();
+    return QString();
 }
 
 QString SofaComponent::warning() const
 {
-	const Base* base = SofaComponent::base();
-	if(base)
-		return QString::fromStdString(base->getWarnings());
+    const Base* base = SofaComponent::base();
+    if(base)
+        return QString::fromStdString(base->getLoggedMessagesAsString({Message::Deprecated,
+                                                                       Message::Warning,
+                                                                       Message::Error,
+                                                                       Message::Fatal
+                                                                      }));
 
-	return QString();
+return QString();
 }
 
 void SofaComponent::clearOutput()
 {
-	Base* base = SofaComponent::base();
-	if(base)
-	{
-		base->clearOutputs();
-	}
+    Base* base = SofaComponent::base();
+    if(base)
+    {
+        base->clearOutputs();
+    }
 }
 
 void SofaComponent::clearWarning()
 {
-	Base* base = SofaComponent::base();
-	if(base)
-	{
-		base->clearWarnings();
-	}
+    Base* base = SofaComponent::base();
+    if(base)
+    {
+        base->clearWarnings();
+    }
 }
 
 void SofaComponent::reinit()
 {
-	Base* base = SofaComponent::base();
-	if(!base)
-		return;
+    Base* base = SofaComponent::base();
+    if(!base)
+        return;
 
-	BaseObject* baseObject = dynamic_cast<BaseObject*>(base);
-	if(!baseObject)
-		return;
+    BaseObject* baseObject = dynamic_cast<BaseObject*>(base);
+    if(!baseObject)
+        return;
 
-	baseObject->reinit();
+    baseObject->reinit();
 }
 
 SofaScene* SofaComponent::sofaScene() const
@@ -217,7 +225,7 @@ SofaScene* SofaComponent::sofaScene() const
 
 bool SofaComponent::isValid() const
 {
-	return base();
+    return base();
 }
 
 Base* SofaComponent::base()

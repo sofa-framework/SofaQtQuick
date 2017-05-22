@@ -4,9 +4,11 @@ find_package(SofaFramework REQUIRED)
 
 list(APPEND SOFAQTQUICKGUI_TARGETS SofaQtQuickGUI)
 list(APPEND SOFAQTQUICKGUI_TARGETS qtQuickSofa)
+list(APPEND SOFAQTQUICKGUI_TARGETS runSofa2)
 
 sofa_add_plugin(applications-dev/plugins/SofaQtQuickGUI SofaQtQuickGUI)
 sofa_add_application(applications-dev/projects/qtQuickSofa qtQuickSofa)
+sofa_add_application(applications-dev/projects/runSofa2 runSofa2)
 
 set(SOFAQTQUICKGUI_TARGETS "")
 

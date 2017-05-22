@@ -20,19 +20,24 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 
-TextField {
+/***************************************************************************************************
+  *
+  * A widget dedicated to edit Data<OptionGroup> object.
+  * an optiongroups have a dedicated property holding the possible choices represented with
+  * string.
+  * To access these choices you can use:
+  *   - root.dataObject.properties.choices
+  *
+  *************************************************************************************************/
+ComboBox {
     id: root
 
     property var dataObject: null
 
-    readOnly: dataObject.readOnly
     enabled: !dataObject.readOnly
-    text: undefined !== dataObject.value ? dataObject.value.toString() : ""
 
-    Binding {
-        target: dataObject
-        property: "value"
-        value: root.text
-        when: !dataObject.readOnly
+
+    model: {
+        return root.dataObject.properties.choices;
     }
 }
