@@ -5,6 +5,13 @@ set(SOFAQTQUICKGUI_MAJOR_VERSION 0)
 set(SOFAQTQUICKGUI_MINOR_VERSION 1)
 set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINOR_VERSION})
 
+if(SOFA_BUILD_TESTS)
+    find_package(SofaTest QUIET)
+    if(SofaTest_FOUND)
+        add_subdirectory(SofaQtQuickGUI_test)
+    endif()
+endif()
+
 set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
