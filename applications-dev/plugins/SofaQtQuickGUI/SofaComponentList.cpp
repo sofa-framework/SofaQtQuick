@@ -44,7 +44,7 @@ SofaComponentList::SofaComponentList(SofaScene* sofaScene)
 SofaComponentList::SofaComponentList(SofaScene* sofaScene, const QList<SofaComponent*> baseList) 
     : QObject()
     , mySofaScene(sofaScene)
-    , myComponentList()
+    , myComponentList(baseList)
 {
 
 }
