@@ -40,4 +40,13 @@ ComboBox {
     model: {
         return root.dataObject.properties.choices;
     }
+
+    onActivated: {
+        dataObject.value = root.model[root.currentIndex];
+        dataObject.upload();
+    }
+
+    onModelChanged: {
+        root.currentIndex = find(root.dataObject.value);
+    }
 }
