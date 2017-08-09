@@ -305,7 +305,10 @@ ColumnLayout {
         visible: root.sofaComponent
 
         text: "Reinit"
-        onClicked: root.sofaComponent.reinit();
+        onClicked: {
+            root.sofaComponent.reinit();
+            listView.model.update();
+        }
     }
 
     Item {
