@@ -249,21 +249,22 @@ SofaViewer {
         hoverEnabled: root.interactor ? root.interactor.hoverEnabled : false
 
         onClicked: {
-            root.forceActiveFocus();
+            forceActiveFocus();
 
             if(root.interactor)
                 root.interactor.mouseClicked(mouse, root);
+
         }
 
         onDoubleClicked: {
-            root.forceActiveFocus();
+            forceActiveFocus();
 
             if(root.interactor)
                 root.interactor.mouseDoubleClicked(mouse, root);
         }
 
         onPressed: {
-            root.forceActiveFocus();
+            forceActiveFocus();
 
             if(root.interactor)
                 root.interactor.mousePressed(mouse, root);
