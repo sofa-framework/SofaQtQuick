@@ -36,8 +36,19 @@ ComboBox {
 
     enabled: !dataObject.readOnly
 
-
     model: {
-        return root.dataObject.properties.choices;
+        return dataObject.properties.choices;
+    }
+
+    onModelChanged: {
+        var values = model.toString().split(',');
+        for (var idx = 0 ; idx < values.length ; idx++)
+            if (values[idx] === dataObject.value)
+                currentIndex = idx;
+    }
+
+    onCurrentTextChanged: {
+        dataObject.value = currentText;
+        dataObject.upload();
     }
 }
