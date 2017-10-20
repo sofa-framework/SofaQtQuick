@@ -47,6 +47,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QThread>
 #include <QString>
 #include <QDir>
+#include <QSettings>
 #include <qqml.h>
 #include <qmath.h>
 #include <limits>
@@ -604,6 +605,74 @@ void SofaViewer::saveScreenshotWithResolution(const QString& path, int width, in
     ScreenshotWorker* worker = new ScreenshotWorker(this, path, width, height);
     window()->scheduleRenderJob(worker, QQuickWindow::AfterSynchronizingStage);
     window()->update();
+}
+
+void SofaViewer::saveCameraToFile(int uiId) const
+{
+    //if (!this->camera)
+    //    return;
+
+    QUrl source = mySofaScene->source();
+    QString finalFilename = source.path();
+    if (source.isLocalFile())
+        finalFilename = source.toLocalFile();
+    QString viewBasename = source.fileName() + ".qtquickview";
+    QString viewPath = source.path();
+    QString viewFilename = viewPath + ".qtquickview";
+
+    QFileInfo fileInfo(viewFilename);
+    QSettings viewSettings(viewFilename, QSettings::IniFormat);
+    QString uiIdKey = QString(uiId) + "/";
+
+    QVariant eyeVariant, targetVariant, upVariant;
+    eyeVariant.setValue(this->camera()->eye());
+    targetVariant.setValue(this->camera()->target());
+    upVariant.setValue(this->camera()->up());
+
+    viewSettings.setValue(uiIdKey + "eye", eyeVariant);
+    viewSettings.setValue(uiIdKey + "target", targetVariant);
+    viewSettings.setValue(uiIdKey + "up", upVariant);
+    viewSettings.setValue(uiIdKey + "zFar", this->camera()->zFar());
+    viewSettings.setValue(uiIdKey + "zNear", this->camera()->zNear());
+    viewSettings.setValue(uiIdKey + "orthographic", this->camera()->orthographic());
+
+
+    //file update/creation is done when QSettings is destroyed apparently
+}
+
+void SofaViewer::loadCameraFromFile(int uiId)
+{
+    QUrl source = mySofaScene->source();
+    QString finalFilename = source.path();
+    if (source.isLocalFile())
+        finalFilename = source.toLocalFile();
+    QString viewBasename = source.fileName() + ".qtquickview";
+    QString viewPath = source.path();
+    QString viewFilename = viewPath + ".qtquickview";
+
+    QFileInfo fileInfo(viewFilename);
+
+    if (!fileInfo.exists())
+        return; //TODO: inform the user somehow
+
+    QSettings viewSettings(viewFilename, QSettings::IniFormat);
+    QString uiIdKey = QString(uiId) + "/";
+
+    double zFar = viewSettings.value(uiIdKey + "zFar").toDouble();
+    double zNear = viewSettings.value(uiIdKey + "zNear").toDouble();
+    bool orthographic = viewSettings.value(uiIdKey + "orthographic").toBool();
+    QVariant eyeVariant = viewSettings.value(uiIdKey + "eye");
+    QVariant targetVariant = viewSettings.value(uiIdKey + "target");
+    QVariant upVariant = viewSettings.value(uiIdKey + "up");
+    QVector3D eye = eyeVariant.value<QVector3D>();
+    QVector3D target = targetVariant.value<QVector3D>();
+    QVector3D up = upVariant.value<QVector3D>();
+
+    this->camera()->lookAt(eye, target, up);
+    this->camera()->setZNear(zNear);
+    this->camera()->setZFar(zFar);
+    this->camera()->setOrthographic(orthographic);
+
 }
 
 QSize SofaViewer::nativeSize() const

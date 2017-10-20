@@ -49,6 +49,12 @@ SofaViewer {
         source: "qrc:/icon/alphaBackground.png"
     }
 
+    property int uiId: 0
+    property int previousUiId: uiId
+    onUiIdChanged: {
+        SofaApplication.uiSettings.replace(previousUiId, uiId);
+    }
+
     implicitWidth: 800
     implicitHeight: 600
 
@@ -60,6 +66,8 @@ SofaViewer {
 
         if(root.sofaScene && root.sofaScene.ready)
             recreateCamera();
+
+        loadCameraFromFile((Number(uiId)));
     }
 
     Component.onDestruction: {
@@ -1053,6 +1061,32 @@ SofaViewer {
                                         columns: 2
                                         rowSpacing: 0
                                         columnSpacing: 0
+                                       
+                                       Button {
+                                            Layout.fillWidth: true
+                                            Layout.preferredWidth: parent.width
+                                            text: "Save"
+
+                                            onClicked: if(camera) root.saveCameraToFile(Number(uiId))
+
+                                            ToolTip {
+                                                anchors.fill: parent
+                                                description: "Save the current view to a sidecar file"
+                                            }
+                                        }
+
+                                        Button {
+                                            Layout.fillWidth: true
+                                            Layout.preferredWidth: parent.width
+                                            text: "Reload"
+
+                                            onClicked: if(camera) root.loadCameraFromFile(Number(uiId))
+
+                                            ToolTip {
+                                                anchors.fill: parent
+                                                description: "Reload the view from data contained in a sidecar file (if present)"
+                                            }
+                                        }
 
                                         Button {
                                             Layout.fillWidth: true
@@ -1152,7 +1186,8 @@ SofaViewer {
                                                 anchors.fill: parent
                                                 description: "Isometric View"
                                             }
-                                        }
+                                        } 
+
                                     }
                                 }
                             }
