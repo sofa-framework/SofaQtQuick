@@ -9,6 +9,9 @@
         <file>icon/plus.png</file>
         <file>icon/minus.png</file>
         <file>config/default.ini</file>
+        <file>config/classic.ini</file>
+        <file>config/fullview.ini</file>
+        <file>config/quadview.ini</file>
         <file>python/BaseHeader.py</file>
         <file>python/PythonConsole.py</file>
         <file>icon/downArrow.png</file>
