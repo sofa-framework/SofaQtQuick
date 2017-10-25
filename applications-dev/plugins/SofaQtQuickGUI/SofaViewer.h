@@ -162,8 +162,11 @@ public:
     Q_INVOKABLE void saveScreenshot(const QString& path);
 	Q_INVOKABLE void saveScreenshotWithResolution(const QString& path, int width, int height);
 
-	QOpenGLFramebufferObject* getFBO() const;
+    Q_INVOKABLE void saveCameraToFile(int uiId) const;
+    Q_INVOKABLE void loadCameraFromFile(int uiId);
 
+	QOpenGLFramebufferObject* getFBO() const;
+    
 signals:
     void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
     void rootsChanged(QList<sofa::qtquick::SofaComponent> newRoots);
