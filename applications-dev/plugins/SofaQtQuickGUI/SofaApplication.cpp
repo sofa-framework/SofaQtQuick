@@ -55,6 +55,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QOpenGLFramebufferObject>
 #include <QRunnable>
 #include <QTimer>
+#include <QDirIterator>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -954,9 +955,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");
-
-    QSettings::setPath(QSettings::Format::IniFormat, QSettings::Scope::UserScope, QCoreApplication::applicationDirPath() + "/config/");
-
+    
     // initialise paths
     SofaApplication::UseDefaultSofaPath();
 
@@ -983,6 +982,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     QCommandLineParser parser;
 
     QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Load with this scene", "file");
+    QCommandLineOption guiConfigOption(QStringList() << "gc" << "guiconfig", "Load with this GUI configuration (absolute path to an ini file OR a config name)", "guiconfig");
     QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start in animate mode");
     QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Fullscreen mode");
     QCommandLineOption widthOption(QStringList() << "width", "Window width", "pixels");
@@ -990,6 +990,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     QCommandLineOption logTimeOption(QStringList() << "log", "Log time during simulation");
     
     parser.addOption(sceneOption);
+    parser.addOption(guiConfigOption);
     parser.addOption(animateOption);
     parser.addOption(fullscreenOption);
     parser.addOption(widthOption);
@@ -1016,10 +1017,55 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     if(parser.isSet("log")) {
 	sofa::helper::AdvancedTimer::setEnabled("Animate", true);
     }
-    
-// apply the app settings or use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
+
+    bool optionConfigFile = false;
+
+    //default config file
+    QString configPath = QCoreApplication::applicationDirPath() + "/config/";
+    //apply the app settings or use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
+    QSettings::setPath(QSettings::Format::IniFormat, QSettings::Scope::UserScope, configPath);
+
+    // if given as argument, use a given filepath as configuration
+    if(parser.isSet(guiConfigOption))
+    {
+        QString guiConfigOptionValue = parser.value(guiConfigOption);
+        //first search for absolute path
+        QFileInfo fileInfo(guiConfigOptionValue);
+        if(fileInfo.exists())
+        {
+            configPath = fileInfo.absoluteFilePath();
+            optionConfigFile = true;
+        }
+        else
+        {
+            //second search in the config template dir (with or without the .ini suffix)
+            QString qrcPath = ":/config/";
+            QString configName = guiConfigOptionValue.section(".", 0, 0) + ".ini";
+            qDebug() << qrcPath + configName;
+            QFileInfo fileInfo2(qrcPath + configName);
+            if (fileInfo2.exists())
+            {
+                configPath = fileInfo2.absoluteFilePath();
+                optionConfigFile = true;
+            }
+            else
+            {
+                msg_error("SofaQtQuickGUI:") << "Could not find any config from the argument " << guiConfigOptionValue.toStdString();
+            }
+        }
+    }
 
     SofaApplication::ApplySettings();
+
+    if (optionConfigFile)
+    {
+        //copy content of the given config file into the "system", as this one cant be changed later on
+        QSettings optionConfigSettings(configPath, QSettings::Format::IniFormat);
+        QSettings settings;
+        settings.clear();
+
+        CopySettings(optionConfigSettings, settings);
+    }
 
 // launch the main script
 

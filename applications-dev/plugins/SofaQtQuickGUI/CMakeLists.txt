@@ -164,6 +164,10 @@ set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "Qt Creator extra qml import path
 
 set(CONFIG_FILES
     data/config/default.ini
+    data/config/classic.ini
+    data/config/fullview.ini
+    data/config/quadview.ini
+
 )
 
 set(PYTHON_FILES
