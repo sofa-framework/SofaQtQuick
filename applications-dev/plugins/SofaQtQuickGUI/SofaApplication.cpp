@@ -56,6 +56,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QRunnable>
 #include <QTimer>
 #include <QDirIterator>
+#include <QPixmap>
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
@@ -456,14 +457,15 @@ void SofaApplication::saveScreenshot(const QString& path)
         return;
     }
 
+    QString defaultFormat = "png";
+
     QFileInfo fileInfo(path);
     QDir dir = fileInfo.dir();
     if(!dir.exists())
         dir.mkpath(".");
-
     QString newPath = fileInfo.absoluteDir().absolutePath() + "/";
     newPath += fileInfo.baseName();
-    QString suffix = "." + fileInfo.completeSuffix();
+    QString suffix = (fileInfo.completeSuffix().isEmpty()) ? "." + defaultFormat : "." + fileInfo.completeSuffix();
 
     QWindowList windows = qGuiApp->allWindows();
     QList<QQuickWindow*> quickWindows;
@@ -487,8 +489,8 @@ void SofaApplication::saveScreenshot(const QString& path)
 
         finalPath += suffix;
 
-        if(quickWindow->grabWindow().save(finalPath))
-            saved = true;
+        const QImage& screenshot = quickWindow->grabWindow();
+        saved = screenshot.save(finalPath);
     }
 
     if(!saved)
@@ -1041,7 +1043,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
             //second search in the config template dir (with or without the .ini suffix)
             QString qrcPath = ":/config/";
             QString configName = guiConfigOptionValue.section(".", 0, 0) + ".ini";
-            qDebug() << qrcPath + configName;
+
             QFileInfo fileInfo2(qrcPath + configName);
             if (fileInfo2.exists())
             {

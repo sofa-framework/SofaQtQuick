@@ -676,7 +676,7 @@ SofaViewer {
                                             title: "Path to the screenshot to save"
 
                                             onAccepted: {
-                                                var path = fileUrl.toString().replace("file://", "");
+                                                var path = SofaApplication.urlToPath(fileUrl.toString());
                                                 root.takeScreenshot(path);
                                             }
                                         }
@@ -715,7 +715,8 @@ SofaViewer {
                                             title: "Path to the movie to save"
 
                                             onAccepted: {
-                                                root.startVideoRecording(fileUrl.toString().replace("file://", ""));
+                                                var path = SofaApplication.urlToPath(fileUrl.toString());
+                                                root.startVideoRecording(path);
                                             }
 
                                             onRejected: {
