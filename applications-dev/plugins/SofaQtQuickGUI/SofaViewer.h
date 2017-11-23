@@ -31,12 +31,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QColor>
 #include <QList>
 
-#ifdef SOFA_HAVE_PNG
-#include <sofa/helper/io/ImagePNG.h>
-#else
-#include <sofa/helper/io/ImageBMP.h>
-#endif
-
 namespace sofa
 {
 
