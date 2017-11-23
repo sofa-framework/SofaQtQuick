@@ -1408,6 +1408,24 @@ public:
             if(0 == QString::fromStdString(objectIt->get()->getClassName()).compare(myTypeName, Qt::CaseInsensitive))
                 myBaseObjects.append(objectIt->get());
 
+         Node::ObjectIterator objectIt;
+         for(objectIt = node->object.begin(); objectIt != node->object.end(); ++objectIt)
+         {
+             if(0 == QString::fromStdString(objectIt->get()->getClassName()).compare(myTypeName, Qt::CaseInsensitive))
+                 myBaseObjects.append(objectIt->get());
+
+         }
+         std::vector<core::objectmodel::BaseObject*> list;
+         node->getContext()->get<core::objectmodel::BaseObject>(&list);
+         for (core::objectmodel::BaseObject* obj : list)
+         {
+             for (auto p : core::ObjectFactory::getInstance()->getEntry(myTypeName.toStdString()).creatorMap)
+             {
+                 const core::objectmodel::BaseClass* c = p.second->getClass();
+                 if (c->dynamicCast(obj))
+                     myBaseObjects.append(obj);
+             }
+         }
         return RESULT_CONTINUE;
     }
 
