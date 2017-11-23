@@ -19,8 +19,15 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaApplication.h>
 
+#ifdef __linux__
+  #include <stdlib.h>
+#endif
+
 int main(int argc, char **argv)
 {
+#ifdef __linux__
+    ::setenv("MESA_GL_VERSION_OVERRIDE", "3.0", 1);
+#endif
     // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofa::qtquick::SofaApplication::Initialization();
 
@@ -31,6 +38,7 @@ int main(int argc, char **argv)
     app.setOrganizationName("Sofa");
     app.setApplicationName("qtQuickSofa");
     app.setApplicationVersion("v1.0");
+
 
     // common settings for most sofaqtquick applications
     if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
