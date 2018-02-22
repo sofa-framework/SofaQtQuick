@@ -5,6 +5,8 @@ set(SOFAQTQUICKGUI_MAJOR_VERSION 0)
 set(SOFAQTQUICKGUI_MINOR_VERSION 1)
 set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINOR_VERSION})
 
+include(cmake/GeneratePluginConfig.cmake)
+
 if(SOFA_BUILD_TESTS)
     find_package(SofaTest QUIET)
     if(SofaTest_FOUND)
@@ -213,6 +215,12 @@ if (WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG")
 endif()
 
+set(_configPluginFileName plugin_list.conf)
+set(_defaultConfigPluginFileName "${_configPluginFileName}.default")
+set(_defaultConfigPluginFilePath "${CMAKE_BINARY_DIR}/${_pluginLocation}/${_defaultConfigPluginFileName}")
+sofa_generate_plugin_config_qtquick(${_defaultConfigPluginFilePath})
+message("Write Plugin list at ${_defaultConfigPluginFilePath}")
+
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
@@ -220,7 +228,8 @@ set(HEADER_FILES ${HEADER_FILES}
     SofaParticleInteractor.inl
 )
 
-add_definitions(-DQT_PLUGIN)
+add_definitions(-DCONFIG_PLUGIN_FILENAME=${_configPluginFileName})
+add_definitions(-DDEFAULT_CONFIG_PLUGIN_FILENAME=${_defaultConfigPluginFileName})
 
 find_package(SofaFramework REQUIRED)
 find_package(SofaPython REQUIRED)
