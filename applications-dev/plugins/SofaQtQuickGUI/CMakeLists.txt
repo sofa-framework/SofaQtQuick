@@ -18,6 +18,7 @@ set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
     SofaViewer.cpp
+    ControlledSofaViewer.cpp
     Camera.cpp
     SofaScene.cpp
     SofaComponent.cpp
@@ -40,6 +41,7 @@ set(SOURCE_FILES
     Manipulator2D_Rotation.cpp
     Manipulator3D_Translation.cpp
     Manipulator3D_Rotation.cpp
+    SofaCamera.cpp
 )
 
 set(HEADER_FILES
@@ -47,6 +49,7 @@ set(HEADER_FILES
     SofaApplication.h
     ProcessState.h
     SofaViewer.h
+    ControlledSofaViewer.h
     Camera.h
     SofaScene.h
     SofaComponent.h
@@ -69,6 +72,7 @@ set(HEADER_FILES
     Manipulator2D_Rotation.h
     Manipulator3D_Translation.h
     Manipulator3D_Rotation.h
+    SofaCamera.h
 )
 
 set(QML_FILES
@@ -105,6 +109,7 @@ set(QML_FILES
     data/qml/SofaBasics/UserInteractor.qml
     data/qml/SofaBasics/Fit.qml
     data/qml/SofaBasics/Camera.qml
+    data/qml/SofaBasics/SofaCamera.qml
     data/qml/SofaBasics/FPSItem.qml
     data/qml/SofaBasics/SofaTimeItem.qml
     data/qml/SofaBasics/ContentItem.qml
@@ -135,6 +140,7 @@ set(QML_FILES
     data/qml/SofaWidgets/qmldir
     data/qml/SofaWidgets/QML_LiveCoding.qml
     data/qml/SofaWidgets/SofaViewer.qml
+    data/qml/SofaWidgets/ControlledSofaViewer.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
     data/qml/SofaWidgets/PythonConsole.qml

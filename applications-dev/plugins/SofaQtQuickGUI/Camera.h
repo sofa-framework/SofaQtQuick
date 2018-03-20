@@ -70,9 +70,9 @@ signals:
     void modelViewChanged() const;
 
 public:
-    const QMatrix4x4& projection() const;
-    const QMatrix4x4& view() const;
-    const QMatrix4x4& model() const;
+    virtual const QMatrix4x4& projection() const;
+    virtual const QMatrix4x4& view() const;
+    virtual const QMatrix4x4& model() const;
 
     Q_INVOKABLE QVector3D eye() const				{return  model().column(3).toVector3D();}
 
@@ -80,7 +80,7 @@ public:
     Q_INVOKABLE QVector3D up() const				{return  model().column(1).toVector3D().normalized();}
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
-    Q_INVOKABLE QQuaternion orientation() const;
+    Q_INVOKABLE virtual QQuaternion orientation() const;
 
     Q_INVOKABLE double aspectRatio() const          {return myAspectRatio;}
 
@@ -137,7 +137,7 @@ private:
     void setProjectionDirty(bool dirty) const;
     void setViewDirty(bool dirty) const;
 
-private:
+protected:
     bool                myOrthographic;
     double              myOrthoLeft;
     double              myOrthoRight;
@@ -150,7 +150,7 @@ private:
 
 	mutable QMatrix4x4	myProjection;
     mutable QMatrix4x4	myView;
-    QMatrix4x4          myModel;
+    mutable QMatrix4x4  myModel;
 
     QVector3D           myTarget;
 

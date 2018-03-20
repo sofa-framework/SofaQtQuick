@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaApplication.h"
 #include "ProcessState.h"
 #include "Camera.h"
+#include "SofaCamera.h"
 #include "SofaParticleInteractor.h"
 #include "SofaPythonInteractor.h"
 #include "Manipulator.h"
@@ -40,6 +41,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaInspectorDataListModel.h"
 #include "SofaDisplayFlagsTreeModel.h"
 #include "SofaViewer.h"
+#include "ControlledSofaViewer.h"
 #include "PythonConsole.h"
 using namespace sofa::qtquick;
 
@@ -85,6 +87,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
+    qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
     qmlRegisterType<Manipulator>                                    ("Manipulator"                          , versionMajor, versionMinor, "Manipulator");
@@ -106,6 +109,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
+    qmlRegisterType<ControlledSofaViewer>                           ("ControlledSofaViewer"                 , versionMajor, versionMinor, "ControlledSofaViewer");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
 
     // registers the C++ type in the QML system with the name "Console",
