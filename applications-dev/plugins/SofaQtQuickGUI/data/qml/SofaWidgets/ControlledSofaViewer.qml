@@ -38,7 +38,10 @@ ControlledSofaViewer {
     mirroredVertically: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
-    property bool configurable: true
+    property bool configurable: true    
+    property var idComboList: ListModel {
+        id: cameraNameItems
+    }
 
     property bool transparentBackground: false
     Image {
@@ -66,6 +69,14 @@ ControlledSofaViewer {
 
         if(root.sofaScene && root.sofaScene.ready)
             recreateCamera();
+
+       //fill combobox
+       var cameraList = sofaScene.componentsByType("InteractiveCamera")
+       idComboList.clear()
+       for (var i = 0; i < cameraList.size(); ++i)
+       {
+            idComboList.append({text: cameraList.at(i).name()})
+       }
     }
 
     Component.onDestruction: {
@@ -128,6 +139,27 @@ ControlledSofaViewer {
     property bool keepCamera: false
     property bool hideBusyIndicator: false
 
+    function updateCameraFromIndex(index)
+    {
+        if(camera)
+        {
+            var listCameraInSofa = sofaScene.componentsByType("InteractiveCamera");
+            camera.sofaComponent = (sofaScene.componentsByType("InteractiveCamera").at(index));
+            if(listCameraInSofa.size() == 0)
+            {
+                console.log("No InteractiveCamera in the scene")
+            }
+            if(listCameraInSofa.size() < index)
+            {
+                console.log("Error while trying to load camera number "+ index)
+            }
+            else
+            {
+                camera.sofaComponent = listCameraInSofa.at(index);
+            }
+        }
+    }
+
     function recreateCamera() {
         if(camera && !keepCamera) {
             camera.destroy();
@@ -137,15 +169,9 @@ ControlledSofaViewer {
 
             camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
 
-            var listCameraInSofa = sofaScene.componentsByType("InteractiveCamera");
-            if(listCameraInSofa.size() > 0)
-            {
-                camera.sofaComponent = listCameraInSofa.at(0);
-            }
-            else
-            {
-                console.log("No InteractiveCamera in the scene")
-            }
+            //Todo fetch index from somewhere
+            var defaultIndex = 0;
+            updateCameraFromIndex(0);
 
             if(!keepCamera)
                 viewAll();
@@ -477,7 +503,7 @@ ControlledSofaViewer {
 
             Text {
                 Layout.fillWidth: true
-                text: "SofaViewer parameters"
+                text: "ControlledSofaViewer parameters"
                 font.bold: true
                 color: "darkblue"
             }
@@ -494,7 +520,44 @@ ControlledSofaViewer {
                         id: panelColumn
                         anchors.fill: parent
                         spacing: 5
+                        GroupBox {
+                            id: idCameraPanel
+                            implicitWidth: parent.width
+                            title: "ID"
 
+                            GridLayout {
+                                anchors.fill: parent
+                                columnSpacing: 0
+                                rowSpacing: 2
+                                columns: 2
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: "Camera"
+                                }
+
+                                RowLayout {
+                                    id: idCameraLayout
+                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.columnSpan: 2
+
+                                    ComboBox {
+                                        id: indexCameraComboBox
+                                        Layout.fillWidth: true
+
+                                        model: root.idComboList
+
+                                        onCurrentIndexChanged : switchCamera();
+
+                                        function switchCamera() {
+                                            //onsole.log("Change to " + indexViewerComboBox.currentIndex);
+                                            root.updateCameraFromIndex(indexCameraComboBox.currentIndex);
+                                            //root.xraymodel.update()
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         GroupBox {
                             id: visualPanel
                             implicitWidth: parent.width
@@ -505,8 +568,6 @@ ControlledSofaViewer {
                                 columnSpacing: 0
                                 rowSpacing: 2
                                 columns: 2
-
-    // antialiasing
 
                                 Label {
                                     Layout.fillWidth: true
@@ -577,79 +638,8 @@ ControlledSofaViewer {
                                         text: root.antialiasingSamples;
                                     }
                                 }
-
-    // background
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Background"
-                                }
-
-                                Rectangle {
-                                    Layout.preferredWidth: 48
-                                    Layout.preferredHeight: 20
-                                    Layout.alignment: Qt.AlignCenter
-                                    color: "darkgrey"
-                                    radius: 2
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        onClicked: backgroundColorPicker.open()
-                                    }
-
-                                    ColorDialog {
-                                        id: backgroundColorPicker
-                                        title: "Please choose a background color"
-                                        showAlphaChannel: true
-
-                                        property color previousColor
-                                        Component.onCompleted: {
-                                            previousColor = root.backgroundColor;
-                                            color = previousColor;
-                                        }
-
-                                        onColorChanged: root.backgroundColor = color
-
-                                        onAccepted: previousColor = color
-                                        onRejected: color = previousColor
-                                    }
-
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        anchors.margins: 2
-                                        color: Qt.rgba(root.backgroundColor.r, root.backgroundColor.g, root.backgroundColor.b, 1.0)
-
-                                        ToolTip {
-                                            anchors.fill: parent
-                                            description: "Background color"
-                                        }
-                                    }
-                                }
-
-    // background
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Frame"
-                                }
-
-                                Switch {
-                                    id: frameSwitch
-                                    Layout.alignment: Qt.AlignCenter
-                                    Component.onCompleted: checked = root.drawFrame
-
-                                    onCheckedChanged: root.drawFrame = checked;
-
-                                    ToolTip {
-                                        anchors.fill: parent
-                                        description: "Enable / Disable Scene Frame"
-                                    }
-                                }
                             }
                         }
-
-    // save screenshot / movie
-
                         GroupBox {
                             id: savePanel
                             implicitWidth: parent.width
@@ -661,8 +651,6 @@ ControlledSofaViewer {
                                 columnSpacing: 2
                                 rowSpacing: 2
                                 columns: 2
-
-        // screenshot
 
                                 Item {
                                     Layout.fillWidth: true
@@ -695,8 +683,6 @@ ControlledSofaViewer {
                                         }
                                     }
                                 }
-
-        // movie
 
                                 Item {
                                     Layout.fillWidth: true
@@ -789,423 +775,12 @@ ControlledSofaViewer {
                                 }
                             }
                         }
-
-    // camera
-
-                        GroupBox {
-                            id: cameraPanel
-                            implicitWidth: parent.width
-                            implicitHeight: cameraLayout.implicitHeight
-
-                            title: "Camera"
-
-                            Column {
-                                id: cameraLayout
-                                anchors.fill: parent
-                                spacing: 0
-
-                                GroupBox {
-                                    implicitWidth: parent.width
-                                    title: "Mode"
-                                    flat: true
-
-                                    RowLayout {
-                                        anchors.fill: parent
-                                        spacing: 0
-
-        // orthographic
-
-                                        Button {
-                                            id: orthoButton
-                                            Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-
-                                            text: "Orthographic"
-                                            checkable: true
-                                            checked: root.camera ? root.camera.orthographic : false
-                                            onCheckedChanged: if(root.camera && checked !== root.camera.orthographic) root.camera.orthographic = checked;
-
-                                            Connections {
-                                                target: root
-                                                onCameraChanged: orthoButton.update();
-                                            }
-
-                                            Connections {
-                                                target: root.camera
-                                                onOrthographicChanged: orthoButton.update();
-                                            }
-
-                                            function update() {
-                                                if(!root.camera) {
-                                                    checked = false;
-                                                    return;
-                                                }
-
-                                                if(orthoButton.checked !== root.camera.orthographic)
-                                                    orthoButton.checked = root.camera.orthographic;
-                                            }
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Orthographic Mode"
-                                            }
-                                        }
-
-        // perspective
-
-                                        Button {
-                                            id: perspectiveButton
-                                            Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-
-                                            text: "Perspective"
-                                            checkable: true
-                                            checked: root.camera ? !camera.orthographic : true
-                                            onCheckedChanged: if(root.camera && checked === root.camera.orthographic) root.camera.orthographic = !checked;
-
-                                            Connections {
-                                                target: root
-                                                onCameraChanged: perspectiveButton.update();
-                                            }
-
-                                            Connections {
-                                                target: root.camera
-                                                onOrthographicChanged: perspectiveButton.update();
-                                            }
-
-                                            function update() {
-                                                if(!root.camera) {
-                                                    checked = false;
-                                                    return;
-                                                }
-
-                                                if(perspectiveButton.checked !== !root.camera.orthographic)
-                                                    perspectiveButton.checked = !root.camera.orthographic;
-                                            }
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Perspective Mode"
-                                            }
-                                        }
-                                    }
-                                }
-
-                                GroupBox {
-                                    implicitWidth: parent.width
-                                    title: "Depth"
-                                    flat: true
-
-                                    RowLayout {
-                                        anchors.fill: parent
-
-        // near
-
-                                        Item {
-                                            Layout.fillWidth: true
-                                            Layout.preferredHeight: zNearLayout.implicitHeight
-
-                                            RowLayout {
-                                                id: zNearLayout
-                                                anchors.fill: parent
-
-                                                Label {
-                                                    text: "Near"
-                                                    Layout.preferredWidth: 30
-                                                }
-
-                                                TextField {
-                                                    id: zNearTextField
-                                                    Layout.fillWidth: true
-                                                    implicitWidth: 200
-
-                                                    enabled: root.camera
-
-                                                    Component.onCompleted: download();
-                                                    onAccepted: {
-                                                        upload();
-                                                        download();
-                                                    }
-
-                                                    validator: DoubleValidator {}
-
-                                                    Connections {
-                                                        target: root.camera
-                                                        onZNearChanged: zNearTextField.download();
-                                                    }
-
-                                                    function download() {
-                                                        if(!root.camera)
-                                                            return;
-
-                                                        zNearTextField.text = Number(root.camera.zNear).toString();
-                                                        cursorPosition = 0;
-                                                    }
-
-                                                    function upload() {
-                                                        var oldValue = Number(root.camera.zNear);
-                                                        var newValue = Number(zNearTextField.text);
-
-                                                        if(oldValue !== newValue)
-                                                            root.camera.zNear = newValue;
-                                                    }
-
-                                                    ToolTip {
-                                                        anchors.fill: parent
-                                                        description: "Depth of the camera near plane"
-                                                    }
-                                                }
-                                            }
-                                        }
-
-        // far
-
-                                        Item {
-                                            Layout.fillWidth: true
-                                            Layout.preferredHeight: zFarLayout.implicitHeight
-
-                                            RowLayout {
-                                                id: zFarLayout
-                                                anchors.fill: parent
-
-                                                TextField {
-                                                    id: zFarTextField
-                                                    Layout.fillWidth: true
-                                                    implicitWidth: 200
-
-                                                    enabled: root.camera
-
-                                                    Component.onCompleted: download();
-                                                    onAccepted: {
-                                                        upload();
-                                                        download();
-                                                    }
-
-                                                    validator: DoubleValidator {}
-
-                                                    Connections {
-                                                        target: root.camera
-                                                        onZFarChanged: zFarTextField.download();
-                                                    }
-
-                                                    function download() {
-                                                        if(!root.camera)
-                                                            return;
-
-                                                        zFarTextField.text = Number(root.camera.zFar).toString();
-                                                        cursorPosition = 0;
-                                                    }
-
-                                                    function upload() {
-                                                        var oldValue = Number(root.camera.zFar);
-                                                        var newValue = Number(zFarTextField.text);
-
-                                                        if(oldValue !== newValue)
-                                                            root.camera.zFar = newValue;
-                                                    }
-
-                                                    ToolTip {
-                                                        anchors.fill: parent
-                                                        description: "Depth of the camera far plane"
-                                                    }
-                                                }
-
-                                                Label {
-                                                    text: "Far"
-                                                    Layout.preferredWidth: 30
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-
-                                //                                Label {
-                                //                                    Layout.fillWidth: true
-                                //                                    text: "Logo"
-                                //                                }
-
-                                //                                RowLayout {
-                                //                                    Layout.fillWidth: true
-                                //                                    spacing: 0
-
-                                //                                    TextField {
-                                //                                        id: logoTextField
-                                //                                        Layout.fillWidth: true
-                                //                                        Component.onCompleted: text = root.backgroundImageSource
-                                //                                        onAccepted: root.backgroundImageSource = text
-                                //                                    }
-
-                                //                                    Button {
-                                //                                        Layout.preferredWidth: 22
-                                //                                        Layout.preferredHeight: Layout.preferredWidth
-                                //                                        iconSource: "qrc:/icon/open.png"
-
-                                //                                        onClicked: openLogoDialog.open()
-
-                                //                                        FileDialog {
-                                //                                            id: openLogoDialog
-                                //                                            title: "Please choose a logo"
-                                //                                            selectFolder: true
-                                //                                            selectMultiple: false
-                                //                                            selectExisting: true
-                                //                                            property var resultTextField
-                                //                                            onAccepted: {
-                                //                                                logoTextField.text = Qt.resolvedUrl(fileUrl)
-                                //                                                logoTextField.accepted();
-                                //                                            }
-                                //                                        }
-                                //                                    }
-                                //                                }
-
-    // view
-
-                                GroupBox {
-                                    implicitWidth: parent.width
-                                    title: "View"
-                                    flat: true
-
-                                    GridLayout {
-                                        anchors.fill: parent
-                                        columns: 2
-                                        rowSpacing: 0
-                                        columnSpacing: 0
-                                       
-                                       Button {
-                                            Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-                                            text: "Save"
-
-                                            onClicked: if(camera) root.saveCameraToFile(Number(uiId))
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Save the current view to a sidecar file"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-                                            text: "Reload"
-
-                                            onClicked: if(camera) root.loadCameraFromFile(Number(uiId))
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Reload the view from data contained in a sidecar file (if present)"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            Layout.columnSpan: 2
-                                            text: "Fit"
-
-                                            onClicked: if(camera) camera.fit(root.boundingBoxMin(), root.boundingBoxMax())
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Fit in view"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            text: "-X"
-
-                                            onClicked: if(camera) camera.viewFromLeft()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Align view along the negative X Axis"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            text: "+X"
-
-                                            onClicked: if(camera) camera.viewFromRight()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Align view along the positive X Axis"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            text: "-Y"
-
-                                            onClicked: if(camera) camera.viewFromTop()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Align view along the negative Y Axis"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            text: "+Y"
-
-                                            onClicked: if(camera) camera.viewFromBottom()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Align view along the positive Y Axis"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-                                            text: "-Z"
-
-                                            onClicked: if(camera) camera.viewFromFront()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Align view along the negative Z Axis"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            Layout.preferredWidth: parent.width
-                                            text: "+Z"
-
-                                            onClicked: if(camera) camera.viewFromBack()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Align view along the positive Z Axis"
-                                            }
-                                        }
-
-                                        Button {
-                                            Layout.fillWidth: true
-                                            Layout.columnSpan: 2
-                                            text: "Isometric"
-
-                                            onClicked: if(camera) camera.viewIsometric()
-
-                                            ToolTip {
-                                                anchors.fill: parent
-                                                description: "Isometric View"
-                                            }
-                                        } 
-
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
         }
     }
+
 
     Image {
         id: toolPanelSwitch
