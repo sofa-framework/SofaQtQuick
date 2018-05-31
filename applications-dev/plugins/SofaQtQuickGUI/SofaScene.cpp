@@ -87,6 +87,7 @@ using sofa::helper::system::FileSystem ;
 #include <QRunnable>
 #include <QGuiApplication>
 #include <QOffscreenSurface>
+#include <GL/glut.h>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -1413,43 +1414,51 @@ SofaComponent* SofaScene::component(const QString& path)
     return new SofaComponent(this, base);
 }
 
+void hasParentWithTypeName(const core::objectmodel::BaseClass* obj,
+                           const std::string& c, bool& hasParent)
+{
+  for (auto parent : obj->parents)
+  {
+    if (c == parent->className) hasParent = true;
+    hasParentWithTypeName(parent, c, hasParent);
+  }
+}
+
 class GetObjectsByTypeVisitor : public Visitor
 {
-public:
-    GetObjectsByTypeVisitor(const QString& typeName) : Visitor(sofa::core::ExecParams::defaultInstance()),
-        myTypeName(typeName)
-    {
+ public:
+  GetObjectsByTypeVisitor(const QString& typeName)
+      : Visitor(sofa::core::ExecParams::defaultInstance()), myTypeName(typeName)
+  {
+  }
 
+  virtual Result processNodeTopDown(Node* node)
+  {
+    Node::ObjectIterator objectIt;
+    for (objectIt = node->object.begin(); objectIt != node->object.end();
+         ++objectIt)
+      if (0 ==
+          QString::fromStdString(objectIt->get()->getClassName())
+              .compare(myTypeName, Qt::CaseInsensitive))
+        myBaseObjects.append(objectIt->get());
+
+    std::vector<core::objectmodel::BaseObject*> list;
+    node->getContext()->get<core::objectmodel::BaseObject>(&list);
+    for (core::objectmodel::BaseObject* obj : list)
+    {
+      bool hasParent = false;
+      hasParentWithTypeName(obj->getClass(), myTypeName.toStdString(), hasParent);
+      if (hasParent) myBaseObjects.append(obj);
     }
 
-    virtual Result processNodeTopDown(Node* node)
-    {
-        Node::ObjectIterator objectIt;
-        for(objectIt = node->object.begin(); objectIt != node->object.end(); ++objectIt)
-            if(0 == QString::fromStdString(objectIt->get()->getClassName()).compare(myTypeName, Qt::CaseInsensitive))
-                myBaseObjects.append(objectIt->get());
+    return RESULT_CONTINUE;
+  }
 
-         std::vector<core::objectmodel::BaseObject*> list;
-         node->getContext()->get<core::objectmodel::BaseObject>(&list);
-         for (core::objectmodel::BaseObject* obj : list)
-         {
-             for (auto p : core::ObjectFactory::getInstance()->getEntry(myTypeName.toStdString()).creatorMap)
-             {
-                 const core::objectmodel::BaseClass* c = p.second->getClass();
-                 if (c->dynamicCast(obj))
-                     myBaseObjects.append(obj);
-             }
-         }
+  QList<BaseObject*> baseObjects() const { return myBaseObjects; }
 
-        return RESULT_CONTINUE;
-    }
-
-    QList<BaseObject*> baseObjects() const {return myBaseObjects;}
-
-private:
-    QString myTypeName;
-    QList<BaseObject*> myBaseObjects;
-
+ private:
+  QString myTypeName;
+  QList<BaseObject*> myBaseObjects;
 };
 
 SofaComponent* SofaScene::componentByType(const QString& typeName)
