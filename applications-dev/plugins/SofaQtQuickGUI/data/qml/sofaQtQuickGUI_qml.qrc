@@ -14,6 +14,7 @@
         <file>SofaBasics/SofaTimeItem.qml</file>
         <file>SofaBasics/Fit.qml</file>
         <file>SofaBasics/Camera.qml</file>
+        <file>SofaBasics/SofaCamera.qml</file>
         <file>SofaBasics/UserInteractor.qml</file>
         <file>SofaBasics/ContentItem.qml</file>
         <file>SofaBasics/ExplicitSwitch.qml</file>
@@ -32,6 +33,7 @@
         <file>SofaWidgets/qmldir</file>
         <file>SofaWidgets/QML_LiveCoding.qml</file>
         <file>SofaWidgets/SofaViewer.qml</file>
+        <file>SofaWidgets/ControlledSofaViewer.qml</file>
         <file>SofaWidgets/ImageViewer.qml</file>
         <file>SofaWidgets/SofaDataView.qml</file>
         <file>SofaWidgets/PythonConsole.qml</file>
