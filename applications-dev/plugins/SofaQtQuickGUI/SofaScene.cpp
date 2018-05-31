@@ -171,8 +171,8 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     }
     else
         msg_info("qtSofaQuick") << "No plugin will be automatically loaded" << msgendl
-        << "- No custom list found at " << configPluginPath << msgendl
-        << "- No default list found at " << defaultConfigPluginPath;
+                                << "- No custom list found at " << configPluginPath << msgendl
+                                << "- No default list found at " << defaultConfigPluginPath;
 
 
     sofa::helper::system::PluginManager::getInstance().init();
@@ -226,15 +226,15 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
     if(0 != err)
         msg_error("SofaQtQuickGUI") << "GLEW Initialization failed with error code:" << err;
 
-    #ifdef __linux__
-        static bool glutInited = false;
-        if(!glutInited)
-        {
-            int argc = 0;
-            glutInit(&argc, NULL);
-            glutInited = true;
-        }
-    #endif
+#ifdef __linux__
+    static bool glutInited = false;
+    if(!glutInited)
+    {
+        int argc = 0;
+        glutInit(&argc, NULL);
+        glutInited = true;
+    }
+#endif
 
     // init the highlight shader program
     if(!sofaScene->myHighlightShaderProgram)
@@ -242,15 +242,15 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         sofaScene->myHighlightShaderProgram = new QOpenGLShaderProgram();
 
         sofaScene->myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-            "void main(void)\n"
-            "{\n"
-            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-            "}");
+                                                                     "void main(void)\n"
+                                                                     "{\n"
+                                                                     "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                                                                     "}");
         sofaScene->myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-            "void main(void)\n"
-            "{\n"
-            "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
-            "}");
+                                                                     "void main(void)\n"
+                                                                     "{\n"
+                                                                     "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
+                                                                     "}");
 
         sofaScene->myHighlightShaderProgram->link();
 
@@ -264,16 +264,16 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         sofaScene->myPickingShaderProgram = new QOpenGLShaderProgram();
         sofaScene->myPickingShaderProgram->create();
         sofaScene->myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-            "void main(void)\n"
-            "{\n"
-            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-            "}");
+                                                                   "void main(void)\n"
+                                                                   "{\n"
+                                                                   "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                                                                   "}");
         sofaScene->myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-            "uniform highp vec4 index;\n"
-            "void main(void)\n"
-            "{\n"
-            "   gl_FragColor = index;\n"
-            "}");
+                                                                   "uniform highp vec4 index;\n"
+                                                                   "void main(void)\n"
+                                                                   "{\n"
+                                                                   "   gl_FragColor = index;\n"
+                                                                   "}");
         sofaScene->myPickingShaderProgram->link();
 
         sofaScene->myPickingShaderProgram->moveToThread(sofaScene->thread());
@@ -370,17 +370,17 @@ private:
 
 void SofaScene::open()
 {
-// clear the qml interface
+    // clear the qml interface
 
     setPathQML("");
     setSourceQML(QUrl());
 
-// return now if a scene is already loading
+    // return now if a scene is already loading
 
     if(Status::Loading == myStatus)
         return;
 
-// reset properties
+    // reset properties
 
     setAnimate(false);
 
@@ -429,7 +429,7 @@ void SofaScene::open()
     setPath(finalFilename);
     setStatus(Status::Loading);
 
-// does scene contain PyQt ? if so, load it synchronously to avoid instantiation of a QApplication outside of the main thread
+    // does scene contain PyQt ? if so, load it synchronously to avoid instantiation of a QApplication outside of the main thread
 
     bool currentAsynchronous = myAsynchronous;
     if(myPyQtForceSynchronous && currentAsynchronous)
@@ -446,7 +446,7 @@ void SofaScene::open()
         }
     }
 
-// set the qml interface
+    // set the qml interface
 
     QString qmlFilepath = finalFilename;
     int extensionIndex = qmlFilepath.lastIndexOf('.');
@@ -467,7 +467,7 @@ void SofaScene::open()
     }
     setPathQML(QString::fromStdString(finalQmlFilepath));
 
-// python header
+    // python header
 
     QString finalHeader;
     QFile baseHeaderFile(":/python/BaseHeader.py");
@@ -484,7 +484,7 @@ void SofaScene::open()
 
     SceneLoaderPY::setHeader(finalHeader.toStdString());
 
-// load the requested scene synchronously / asynchronously
+    // load the requested scene synchronously / asynchronously
 
     QOffscreenSurface* offScreenSurface = new QOffscreenSurface();
     offScreenSurface->create();
@@ -1012,7 +1012,6 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         properties.insert("url", QString::fromStdString(aDataFilename->getFullPath())) ;
 
         const std::string& directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
-        dmsg_info("SofaScene") << directory ;
         properties.insert("folderurl",  QString::fromStdString(directory)) ;
     }
     else if(anOptionGroup)
@@ -1028,7 +1027,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         properties.insert("choices", choices);
     }else if(aRGBAColor)
     {
-                type = "RGBAColor";
+        type = "RGBAColor";
     }
 
     QString widget(data->getWidget());
@@ -1414,51 +1413,46 @@ SofaComponent* SofaScene::component(const QString& path)
     return new SofaComponent(this, base);
 }
 
-void hasParentWithTypeName(const core::objectmodel::BaseClass* obj,
-                           const std::string& c, bool& hasParent)
+bool isInstanceOf(const core::objectmodel::BaseClass* obj, const std::string& c)
 {
-  for (auto parent : obj->parents)
-  {
-    if (c == parent->className) hasParent = true;
-    hasParentWithTypeName(parent, c, hasParent);
-  }
+    if (obj->className == c)
+        return true;
+
+    for (auto parent : obj->parents)
+    {
+        if( isInstanceOf(parent, c) )
+            return true;
+    }
+    return false ;
 }
 
 class GetObjectsByTypeVisitor : public Visitor
 {
- public:
-  GetObjectsByTypeVisitor(const QString& typeName)
-      : Visitor(sofa::core::ExecParams::defaultInstance()), myTypeName(typeName)
-  {
-  }
-
-  virtual Result processNodeTopDown(Node* node)
-  {
-    Node::ObjectIterator objectIt;
-    for (objectIt = node->object.begin(); objectIt != node->object.end();
-         ++objectIt)
-      if (0 ==
-          QString::fromStdString(objectIt->get()->getClassName())
-              .compare(myTypeName, Qt::CaseInsensitive))
-        myBaseObjects.append(objectIt->get());
-
-    std::vector<core::objectmodel::BaseObject*> list;
-    node->getContext()->get<core::objectmodel::BaseObject>(&list);
-    for (core::objectmodel::BaseObject* obj : list)
+public:
+    GetObjectsByTypeVisitor(const QString& typeName)
+        : Visitor(sofa::core::ExecParams::defaultInstance()), myTypeName(typeName)
     {
-      bool hasParent = false;
-      hasParentWithTypeName(obj->getClass(), myTypeName.toStdString(), hasParent);
-      if (hasParent) myBaseObjects.append(obj);
     }
 
-    return RESULT_CONTINUE;
-  }
+    virtual Result processNodeTopDown(Node* node)
+    {
+        Node::ObjectIterator objectIt;
+        for (objectIt = node->object.begin(); objectIt != node->object.end(); ++objectIt){
+            BaseObject::SPtr obj = *objectIt;
+            if (isInstanceOf(obj->getClass(), myTypeName.toStdString()))
+            {
+                myBaseObjects.append(objectIt->get());
+            }
+        }
 
-  QList<BaseObject*> baseObjects() const { return myBaseObjects; }
+        return RESULT_CONTINUE;
+    }
 
- private:
-  QString myTypeName;
-  QList<BaseObject*> myBaseObjects;
+    QList<BaseObject*> baseObjects() const { return myBaseObjects; }
+
+private:
+    QString myTypeName;
+    QList<BaseObject*> myBaseObjects;
 };
 
 SofaComponent* SofaScene::componentByType(const QString& typeName)
@@ -1488,6 +1482,7 @@ sofa::qtquick::SofaComponentList* SofaScene::componentsByType(const QString& typ
     mySofaRootNode->execute(getObjectByTypeVisitor);
 
     const QList<BaseObject*>& baseObjects = getObjectByTypeVisitor.baseObjects();
+
     for(BaseObject* baseObject : baseObjects)
         sofaComponents->append(new SofaComponent(this, baseObject));
 
@@ -1631,8 +1626,8 @@ void SofaScene::step()
     bool oldAnimate = sofaRootNode()->getAnimate();
     if( !oldAnimate ) sofaRootNode()->setAnimate(true); // the 'animate' flag should be set even when performing only one step
     {
-    sofa::helper::AdvancedTimer::TimerVar step("Animate");
-    mySofaSimulation->animate(mySofaRootNode.get(), myDt);
+        sofa::helper::AdvancedTimer::TimerVar step("Animate");
+        mySofaSimulation->animate(mySofaRootNode.get(), myDt);
     }
     if( !oldAnimate ) sofaRootNode()->setAnimate(false); // if was only a single step, so let's remove the 'animate' flag
     else setAnimate(sofaRootNode()->getAnimate()); // the simulation can be stopped while animating
@@ -1696,10 +1691,10 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
         glGetDoublev(GL_MODELVIEW_MATRIX, _mvmatrix);
         glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
 
-//        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-//        visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
-//        visualParams->setProjectionMatrix(_projmatrix);
-//        visualParams->setModelViewMatrix(_mvmatrix);
+        //        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+        //        visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
+        //        visualParams->setProjectionMatrix(_projmatrix);
+        //        visualParams->setModelViewMatrix(_mvmatrix);
     }
 
     if(myVisualDirty)
@@ -1800,12 +1795,12 @@ SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const Q
     std::transform(tags.constBegin(), tags.constEnd(), tagList.begin(), [](const QString& tag) {return Tag(tag.toStdString());});
 
     sofa::simulation::MechanicalPickParticlesWithTagsVisitor pickVisitor(sofa::core::ExecParams::defaultInstance(),
-                                                                        sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
-                                                                        sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
-                                                                        distanceToRay,
-                                                                        distanceToRayGrowth,
-                                                                        tagList,
-                                                                        false);
+                                                                         sofa::defaulttype::Vector3(origin.x(), origin.y(), origin.z()),
+                                                                         sofa::defaulttype::Vector3(direction.x(), direction.y(), direction.z()),
+                                                                         distanceToRay,
+                                                                         distanceToRayGrowth,
+                                                                         tagList,
+                                                                         false);
 
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
@@ -1909,7 +1904,7 @@ Selectable* SofaScene::pickObject(const SofaViewer& viewer, const QPointF& ssPoi
         QVector<VisualModel*> visualModels;
         QVector<TriangleModel*> triangleModels;
 
-// write object index
+        // write object index
 
         int index = 1;
 
