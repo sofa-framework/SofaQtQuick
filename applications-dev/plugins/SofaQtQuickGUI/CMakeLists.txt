@@ -73,6 +73,7 @@ set(HEADER_FILES
     Manipulator3D_Translation.h
     Manipulator3D_Rotation.h
     SofaCamera.h
+    helper/QMathExtensions.h
 )
 
 set(QML_FILES
