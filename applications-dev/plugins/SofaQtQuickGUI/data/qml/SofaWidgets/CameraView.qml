@@ -25,20 +25,22 @@ import QtGraphicalEffects 1.0
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaInteractors 1.0
-import ControlledSofaViewer 1.0
+import CameraView 1.0
 import SofaScene 1.0
 
-ControlledSofaViewer {
+CameraView {
     id: root
 
     clip: true
-    backgroundColor: "#FF404040"
-//    backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
+    backgroundColor: {
+        console.log("COLOR IS qqqqqq " + typeof(camera.sofaComponent.getComponentData("backgroundColor").value()) )
+        "#FF404040"
+    }
     mirroredHorizontally: false
     mirroredVertically: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
-    property bool configurable: true    
+    property bool configurable: true
     property var idComboList: ListModel {
         id: cameraNameItems
     }
@@ -70,13 +72,13 @@ ControlledSofaViewer {
         if(root.sofaScene && root.sofaScene.ready)
             recreateCamera();
 
-       //fill combobox
-       var cameraList = sofaScene.componentsByType("InteractiveCamera")
-       idComboList.clear()
-       for (var i = 0; i < cameraList.size(); ++i)
-       {
+        //fill combobox
+        var cameraList = sofaScene.componentsByType("BaseCamera")
+        idComboList.clear()
+        for (var i = 0; i < cameraList.size(); ++i)
+        {
             idComboList.append({text: cameraList.at(i).name()})
-       }
+        }
     }
 
     Component.onDestruction: {
@@ -98,11 +100,10 @@ ControlledSofaViewer {
         }
     }
 
-	Action{
-		shortcut: "F5"
-		onTriggered: root.viewAll()
+    Action{
+        shortcut: "F5"
+        onTriggered: root.viewAll()
     }
-
 
     property alias busyIndicator: busyIndicator
     BusyIndicator {
@@ -125,14 +126,10 @@ ControlledSofaViewer {
         text: sofaScene ? "Error during sofa scene loading\n" + sofaScene.source.toString().replace("///", "/").replace("file:", "") : "No sofa scene object"
     }
 
-// camera
-
+    // camera
     Component {
         id: cameraComponent
-
-        SofaCamera {
-
-        }
+        SofaCamera {}
     }
 
     property bool defaultCameraOrthographic: false
@@ -143,11 +140,11 @@ ControlledSofaViewer {
     {
         if(camera)
         {
-            var listCameraInSofa = sofaScene.componentsByType("InteractiveCamera");
-            camera.sofaComponent = (sofaScene.componentsByType("InteractiveCamera").at(index));
-            if(listCameraInSofa.size() == 0)
+            var listCameraInSofa = sofaScene.componentsByType("BaseCamera");
+            camera.sofaComponent = (sofaScene.componentsByType("BaseCamera").at(index));
+            if(listCameraInSofa.size() === 0)
             {
-                console.log("No InteractiveCamera in the scene")
+                console.log("No Camera in the scene")
             }
             if(listCameraInSofa.size() < index)
             {
@@ -186,8 +183,7 @@ ControlledSofaViewer {
         }
     }
 
-// screenshot / video
-
+    // screenshot / video
     function takeScreenshot(savePath) {
         if(undefined === savePath)
             savePath = "Captured/Screen/" + root.formatDateForScreenshot() + ".png";
@@ -195,7 +191,8 @@ ControlledSofaViewer {
         if(-1 === savePath.lastIndexOf("."))
             savePath += ".png";
 
-        if(root.width.toFixed(0) == captureWidthTextField.text && root.height.toFixed(0) == captureHeightTextField.text)
+        if(root.width.toFixed(0) === captureWidthTextField.text &&
+           root.height.toFixed(0) === captureHeightTextField.text)
             root.saveScreenshot(savePath);
         else
             root.saveScreenshotWithResolution(savePath, Number(captureWidthTextField.text), Number(captureHeightTextField.text));
@@ -247,16 +244,15 @@ ControlledSofaViewer {
         }
     }
 
-// interactor
-
+    // interactor
     property alias interactor: interactorLoader.item
     property Component interactorComponent: SofaApplication.interactorComponent
 
     Loader {
         id: interactorLoader
         sourceComponent: root.interactorComponent
-//            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
-        onLoaded: {
+        onLoaded:
+        {
             var interactor = item;
             interactor.init();
         }
@@ -280,8 +276,7 @@ ControlledSofaViewer {
         }
     }
 
-// mouse interaction
-
+    // mouse interaction
     property alias mouseArea: mouseArea
     MouseArea {
         id: mouseArea
@@ -330,7 +325,7 @@ ControlledSofaViewer {
         }
     }
 
-// keyboard interaction
+    // keyboard interaction
 
     Keys.onPressed: {
         if(event.isAutoRepeat) {
@@ -362,7 +357,7 @@ ControlledSofaViewer {
         event.accepted = true;
     }
 
-// visual info
+    // visual info
 
     readonly property alias crosshairGizmo: crosshairGizmo
     Item {
@@ -451,29 +446,7 @@ ControlledSofaViewer {
         }
     }
 
-    /*Item {
-        id: circleGizmo
-        anchors.centerIn: parent
-        visible: false
-
-        opacity: 0.75
-        property color color: "red"
-        property real size: Math.min(root.width, root.height) / 2.0
-        property real thickness: 1
-
-        Rectangle {
-            anchors.centerIn: parent
-            color: "transparent"
-            border.color: circleGizmo.color
-            border.width: circleGizmo.thickness
-            width: circleGizmo.size
-            height: width
-            radius: width / 2.0
-        }
-    }*/
-
-// toolpanel
-
+    // toolpanel
     Rectangle {
         id: toolPanel
         color: "lightgrey"
@@ -503,7 +476,7 @@ ControlledSofaViewer {
 
             Text {
                 Layout.fillWidth: true
-                text: "ControlledSofaViewer parameters"
+                text: "CameraView parameters"
                 font.bold: true
                 color: "darkblue"
             }

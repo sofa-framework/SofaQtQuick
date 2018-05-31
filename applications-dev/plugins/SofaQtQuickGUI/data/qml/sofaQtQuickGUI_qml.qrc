@@ -33,7 +33,6 @@
         <file>SofaWidgets/qmldir</file>
         <file>SofaWidgets/QML_LiveCoding.qml</file>
         <file>SofaWidgets/SofaViewer.qml</file>
-        <file>SofaWidgets/ControlledSofaViewer.qml</file>
         <file>SofaWidgets/ImageViewer.qml</file>
         <file>SofaWidgets/SofaDataView.qml</file>
         <file>SofaWidgets/PythonConsole.qml</file>
@@ -77,5 +76,6 @@
         <file>SofaDataTypes/SofaDataType_FileName.qml</file>
         <file>SofaBasics/ColorChooser.qml</file>
         <file>SofaDataTypes/SofaDataType_RGBAColor.qml</file>
+        <file>SofaWidgets/CameraView.qml</file>
     </qresource>
 </RCC>

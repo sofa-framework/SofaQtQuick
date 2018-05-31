@@ -18,7 +18,7 @@ set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
     SofaViewer.cpp
-    ControlledSofaViewer.cpp
+    CameraView.cpp
     Camera.cpp
     SofaScene.cpp
     SofaComponent.cpp
@@ -49,7 +49,7 @@ set(HEADER_FILES
     SofaApplication.h
     ProcessState.h
     SofaViewer.h
-    ControlledSofaViewer.h
+    CameraView.h
     Camera.h
     SofaScene.h
     SofaComponent.h
@@ -141,7 +141,7 @@ set(QML_FILES
     data/qml/SofaWidgets/qmldir
     data/qml/SofaWidgets/QML_LiveCoding.qml
     data/qml/SofaWidgets/SofaViewer.qml
-    data/qml/SofaWidgets/ControlledSofaViewer.qml
+    data/qml/SofaWidgets/CameraView.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
     data/qml/SofaWidgets/PythonConsole.qml
@@ -158,7 +158,6 @@ set(QML_FILES
     data/qml/SofaWidgets/Message.qml
 )
 
-
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
@@ -167,9 +166,6 @@ list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaInteractors/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
 set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
-
-
-
 
 set(CONFIG_FILES
     data/config/default.ini
