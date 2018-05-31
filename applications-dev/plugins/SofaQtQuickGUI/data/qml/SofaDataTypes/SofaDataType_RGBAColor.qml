@@ -37,7 +37,7 @@ Row {
     width: parent.width
 
     property var dataObject: null
-    property var values: undefined !== dataObject.value ? dataObject.value.split(' ') : []
+    property var values: undefined !== dataObject.value ? dataObject.value[0] : []
 
     TextField {
         id: textField

@@ -31,11 +31,15 @@ import SofaScene 1.0
 CameraView {
     id: root
 
-    clip: true
-    backgroundColor: {
-        console.log("COLOR IS qqqqqq " + typeof(camera.sofaComponent.getComponentData("backgroundColor").value()) )
-        "#FF404040"
+
+    function getColorFromCamera()
+    {
+            var c = camera.sofaComponent.getComponentData("backgroundColor").value()[0]
+            return Qt.rgba(c[0],c[1],c[2],c[3])
     }
+
+    clip: true
+    backgroundColor: getColorFromCamera()
     mirroredHorizontally: false
     mirroredVertically: false
     antialiasingSamples: 2
@@ -43,15 +47,6 @@ CameraView {
     property bool configurable: true
     property var idComboList: ListModel {
         id: cameraNameItems
-    }
-
-    property bool transparentBackground: false
-    Image {
-        anchors.fill: parent
-        z: -1
-        visible: !root.transparentBackground && root.backgroundColor.a < 1.0
-        fillMode: Image.Tile
-        source: "qrc:/icon/alphaBackground.png"
     }
 
     property int uiId: 0

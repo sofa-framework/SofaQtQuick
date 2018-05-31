@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(SofaQtQuickGUI)
 
-set(SOFAQTQUICKGUI_MAJOR_VERSION 0)
-set(SOFAQTQUICKGUI_MINOR_VERSION 1)
+set(SOFAQTQUICKGUI_MAJOR_VERSION 1)
+set(SOFAQTQUICKGUI_MINOR_VERSION 0)
 set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINOR_VERSION})
 
 include(cmake/GeneratePluginConfig.cmake)
@@ -18,7 +18,8 @@ set(SOURCE_FILES
     SofaQtQuickGUI.cpp
     SofaApplication.cpp
     SofaViewer.cpp
-    CameraView.cpp
+    windows/CameraView.cpp
+    windows/EditView.cpp
     Camera.cpp
     SofaScene.cpp
     SofaComponent.cpp
@@ -49,7 +50,8 @@ set(HEADER_FILES
     SofaApplication.h
     ProcessState.h
     SofaViewer.h
-    CameraView.h
+    windows/CameraView.h
+    windows/EditView.h
     Camera.h
     SofaScene.h
     SofaComponent.h
@@ -141,7 +143,6 @@ set(QML_FILES
     data/qml/SofaWidgets/qmldir
     data/qml/SofaWidgets/QML_LiveCoding.qml
     data/qml/SofaWidgets/SofaViewer.qml
-    data/qml/SofaWidgets/CameraView.qml
     data/qml/SofaWidgets/SofaDataView.qml
     data/qml/SofaWidgets/ImageViewer.qml
     data/qml/SofaWidgets/PythonConsole.qml
@@ -154,6 +155,8 @@ set(QML_FILES
     data/qml/SofaWidgets/ColorSelector.qml
     data/qml/SofaWidgets/SofaSceneViewer.qml
 
+    data/qml/SofaWidgets/CameraView.qml
+    data/qml/SofaWidgets/EditView.qml
     data/qml/SofaWidgets/Inspector.qml
     data/qml/SofaWidgets/Message.qml
 )

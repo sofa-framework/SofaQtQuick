@@ -35,7 +35,8 @@ namespace sofa
 namespace qtquick
 {
 
-/// \class Used in a SofaViewer to locate the user point of view
+/// \class SofaCamera expose a sofa::component::BaseCamera as a QtQuick Camera.
+/// This allows to manipulate BaseCamera from QtQuick scripts.
 class SOFA_SOFAQTQUICKGUI_API SofaCamera : public Camera
 {
     Q_OBJECT

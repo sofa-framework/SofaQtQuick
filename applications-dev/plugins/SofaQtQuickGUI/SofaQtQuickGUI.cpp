@@ -41,7 +41,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaInspectorDataListModel.h"
 #include "SofaDisplayFlagsTreeModel.h"
 #include "SofaViewer.h"
-#include "CameraView.h"
+
+#include "windows/CameraView.h"
+#include "windows/EditView.h"
+
 #include "PythonConsole.h"
 using namespace sofa::qtquick;
 
@@ -85,6 +88,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qRegisterMetaType<SofaScene::Status>("Status");
     qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
 
+
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
@@ -110,6 +114,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");
+    qmlRegisterType<EditView>                                       ("EditView"                             , versionMajor, versionMinor, "EditView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
 
     // registers the C++ type in the QML system with the name "Console",
