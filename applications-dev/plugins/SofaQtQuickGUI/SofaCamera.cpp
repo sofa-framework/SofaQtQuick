@@ -26,6 +26,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <helper/QMathExtensions.h>
 using sofaqtquickgui::helper::QMath ;
 
+#include <SofaBaseVisual/BaseCamera.h>
+using sofa::component::visualmodel::BaseCamera ;
+
 namespace sofa
 {
 
@@ -62,7 +65,7 @@ void SofaCamera::setSofaComponent(qtquick::SofaComponent* sofaComponent)
     sofaComponentChanged();
 }
 
-void SofaCamera::setBaseCamera(sofa::component::visualmodel::BaseCamera* baseCamera)
+void SofaCamera::setBaseCamera(BaseCamera* baseCamera)
 {
     m_baseCamera = baseCamera;
 }
@@ -77,13 +80,11 @@ void SofaCamera::handleSofaDataChange()
     if (!baseComponent)
         return;
     
-    //Here, list all potential camera
-    QString type = QString::fromStdString(baseComponent->getTypeName());
-    if (0 == type.compare("InteractiveCamera"))
-        setBaseCamera(dynamic_cast<sofa::component::visualmodel::BaseCamera*>(baseComponent));
+    BaseCamera* camera = dynamic_cast<BaseCamera*>(baseComponent) ;
+    if (camera)
+        setBaseCamera(camera);
     else
         msg_error("SofaCamera") << "Type unknown";
-
 }
 
 const QMatrix4x4& SofaCamera::projection() const
@@ -100,12 +101,16 @@ const QMatrix4x4& SofaCamera::projection() const
 
 const QMatrix4x4& SofaCamera::view() const
 {
+
     if (!m_baseCamera)
         return QMath::Identity<QMatrix4x4>();
+
 
     double dmat[16];
     m_baseCamera->getModelViewMatrix(dmat);
     QMath::setMatrixFrom(myView, dmat);
+
+    std::cout << "HELLO camera view"  << m_baseCamera->findData("projectionMatrix")->getValueString() << std::endl ;
 
     return myView;
 }
