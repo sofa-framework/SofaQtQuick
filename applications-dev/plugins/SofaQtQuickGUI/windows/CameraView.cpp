@@ -19,6 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QQuickItem>
 #include "CameraView.h"
+#include "SofaScene.h"
 
 namespace sofa
 {
@@ -36,7 +37,25 @@ CameraView::~CameraView()
 
 }
 
+void CameraView::internalRender(int width, int height) const
+{
+    QSize size(width, height);
+    if(size.isEmpty())
+        return;
 
+    if(!myCamera)
+        return;
+
+    if(mySofaScene && mySofaScene->isReady())
+    {
+        mySofaScene->clearBuffers(size, QColor(125,125,255,255)) ;
+        mySofaScene->setupCamera(width, height, *this) ;
+        mySofaScene->setupVisualParams() ;
+        preDraw();
+        mySofaScene->drawVisuals(*this);
+        postDraw();
+    }
+}
 
 }
 }

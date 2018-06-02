@@ -185,7 +185,7 @@ public slots:
 
 protected:
     QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);
-	void internalRender(int width, int height) const;
+    virtual void internalRender(int width, int height) const;
     void renderFrame() const;
 
 private:
@@ -213,7 +213,7 @@ private:
 
     };
 
-private:
+protected:
     QOpenGLFramebufferObject*   myFBO;
     SofaScene*                  mySofaScene;
 	Camera*						myCamera;

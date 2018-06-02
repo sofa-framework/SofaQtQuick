@@ -505,7 +505,7 @@ QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
 QPair<QVector3D, QVector3D> SofaViewer::rootsBoundingBox() const
 {
 	QVector3D min, max;
-	mySofaScene->computeBoundingBox(min, max, myRoots); /*attention, ne prend en compte que le dernier élément mis dans la liste ?*/
+	mySofaScene->computeBoundingBox(min, max, myRoots); /*attention, ne prend en compte que le dernier ï¿½lï¿½ment mis dans la liste ?*/
 
 	return QPair<QVector3D, QVector3D>(min, max);
 }
@@ -762,19 +762,7 @@ void SofaViewer::internalRender(int width, int height) const
     if(size.isEmpty())
         return;
 
-
-
-    // final image will be blended using premultiplied alpha
-    glClearColor(myBackgroundColor.redF() * myBackgroundColor.alphaF(), myBackgroundColor.greenF() * myBackgroundColor.alphaF(), myBackgroundColor.blueF() * myBackgroundColor.alphaF(), myBackgroundColor.alphaF());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if(!myBackgroundImage.isNull())
-    {
-        // TODO: warning: disable lights, but why ?
-        QOpenGLPaintDevice device(size);
-        QPainter painter(&device);
-        painter.drawImage(size.width() - myBackgroundImage.width(), size.height() - myBackgroundImage.height(), myBackgroundImage);
-    }
+    mySofaScene->clearBuffers(size, myBackgroundColor, myBackgroundImage);
 
     if(!myCamera)
         return;
@@ -858,7 +846,7 @@ void SofaViewer::internalRender(int width, int height) const
         // draw the SofaScene
         {
             preDraw();
-            mySofaScene->draw(*this, roots());
+            mySofaScene->drawEditorView(*this, roots());
             postDraw();
         }
 

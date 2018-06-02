@@ -48,6 +48,9 @@ public:
 
     explicit CameraView(QQuickItem* parent = 0);
     ~CameraView();
+
+protected:
+    virtual void internalRender(int width, int height) const override ;
 };
 
 }

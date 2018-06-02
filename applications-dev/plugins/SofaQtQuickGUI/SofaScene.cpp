@@ -87,6 +87,8 @@ using sofa::helper::system::FileSystem ;
 #include <QRunnable>
 #include <QGuiApplication>
 #include <QOffscreenSurface>
+#include <QOpenGLPaintDevice>
+#include <QPainter>
 #include <GL/glut.h>
 
 #define STRINGIFY(x) #x
@@ -1653,7 +1655,175 @@ void SofaScene::reset()
     emit reseted();
 }
 
-void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& roots) const
+VisualParams* SofaScene::setupVisualParams() const
+{
+    // prepare the sofa visual params
+    VisualParams* visualParams = VisualParams::defaultInstance();
+    if(visualParams)
+    {
+        GLint _viewport[4];
+        GLdouble _mvmatrix[16], _projmatrix[16];
+
+        glGetIntegerv(GL_VIEWPORT, _viewport);
+        glGetDoublev(GL_MODELVIEW_MATRIX, _mvmatrix);
+        glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
+
+        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+        visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
+        visualParams->setProjectionMatrix(_projmatrix);
+        visualParams->setModelViewMatrix(_mvmatrix);
+    }
+    return visualParams ;
+}
+
+void SofaScene::drawManipulator(const SofaViewer& viewer) const
+{
+    for(Manipulator* manipulator : myManipulators)
+        if(manipulator)
+            manipulator->draw(viewer);
+}
+
+void SofaScene::drawSelectedComponents(VisualParams* visualParams) const
+{
+    Base* selectedBase = nullptr;
+    if(mySelectedComponent)
+        selectedBase = mySelectedComponent->base();
+
+    if(selectedBase)
+    {
+        glDepthFunc(GL_LEQUAL);
+
+        glEnable(GL_POLYGON_OFFSET_LINE);
+        glPolygonOffset(-0.2f, 0.0f);
+
+        myHighlightShaderProgram->bind();
+        {
+            VisualModel* visualModel = selectedBase->toVisualModel();
+            if(visualModel)
+            {
+                VisualStyle* visualStyle = nullptr;
+                visualModel->getContext()->get(visualStyle);
+
+                if(visualStyle)
+                    visualStyle->fwdDraw(visualParams);
+
+                sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
+                visualParams->displayFlags().setShowWireFrame(true);
+
+                visualModel->drawVisual(visualParams);
+
+                visualParams->displayFlags().setShowWireFrame(state);
+
+                if(visualStyle)
+                    visualStyle->bwdDraw(visualParams);
+            }
+            else
+            {
+                TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(selectedBase);
+                if(triangleModel)
+                {
+                    VisualStyle* visualStyle = nullptr;
+                    triangleModel->getContext()->get(visualStyle);
+
+                    if(visualStyle)
+                        visualStyle->fwdDraw(visualParams);
+
+                    sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
+                    visualParams->displayFlags().setShowWireFrame(true);
+
+                    triangleModel->draw(visualParams);
+
+                    visualParams->displayFlags().setShowWireFrame(state);
+
+                    if(visualStyle)
+                        visualStyle->bwdDraw(visualParams);
+                }
+            }
+        }
+        myHighlightShaderProgram->release();
+
+        glDisable(GL_POLYGON_OFFSET_LINE);
+
+        glDepthFunc(GL_LESS);
+    }
+    glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+}
+
+void SofaScene::clearBuffers(const QSize& size, const QColor& color, const QImage& image) const
+{
+    // final image will be blended using premultiplied alpha
+    glClearColor(color.redF() * color.alphaF(), color.greenF() * color.alphaF(), color.blueF() * color.alphaF(), color.alphaF());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if(!image.isNull())
+    {
+        QOpenGLPaintDevice device(size);
+        QPainter painter(&device);
+        painter.drawImage(size.width() - image.width(), size.height() - image.height(), image);
+    }
+}
+
+
+
+void SofaScene::setupCamera(int width, int height, const SofaViewer& viewer) const
+{
+    Camera* camera = viewer.camera() ;
+
+    // qt does not release its shader program and we do not use one so we have to release the current bound program
+    glUseProgram(0);
+
+    camera->setAspectRatio(width / (double) height);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadMatrixf(camera->projection().constData());
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadMatrixf(camera->view().constData());
+
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void SofaScene::drawVisuals(const SofaViewer& viewer) const
+{
+    if(!isReady())
+        return;
+
+    VisualParams * visualParams = setupVisualParams();
+    if(!visualParams)
+        return ;
+
+    if(myVisualDirty)
+    {
+        myVisualDirty = false;
+        mySofaSimulation->updateVisual(mySofaRootNode.get());
+    }
+
+    mySofaSimulation->draw(visualParams, mySofaRootNode.get());
+}
+
+void SofaScene::drawDebugVisuals(const SofaViewer& viewer) const
+{
+    if(!isReady())
+        return;
+
+    if(myVisualDirty)
+    {
+        myVisualDirty = false;
+        mySofaSimulation->updateVisual(mySofaRootNode.get());
+    }
+
+    VisualParams * visualParams = setupVisualParams();
+    if(!visualParams)
+        return ;
+
+    mySofaSimulation->draw(visualParams, mySofaRootNode.get());
+}
+
+
+void SofaScene::drawEditorView(const SofaViewer& viewer, const QList<SofaComponent*>& roots, bool doDrawSelected, bool doDrawManipulators) const
 {
     if(!isReady())
         return;
@@ -1680,111 +1850,29 @@ void SofaScene::draw(const SofaViewer& viewer, const QList<SofaComponent*>& root
     if(nodes.isEmpty() && roots.isEmpty())
         nodes.append(mySofaRootNode.get());
 
-    // prepare the sofa visual params
-    sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
-    if(visualParams)
-    {
-        GLint _viewport[4];
-        GLdouble _mvmatrix[16], _projmatrix[16];
-
-        glGetIntegerv(GL_VIEWPORT, _viewport);
-        glGetDoublev(GL_MODELVIEW_MATRIX, _mvmatrix);
-        glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
-
-        //        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-        //        visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
-        //        visualParams->setProjectionMatrix(_projmatrix);
-        //        visualParams->setModelViewMatrix(_mvmatrix);
-    }
+    VisualParams * visualParams = setupVisualParams();
+    if(!visualParams)
+        return ;
 
     if(myVisualDirty)
     {
         myVisualDirty = false;
-
         mySofaSimulation->updateVisual(mySofaRootNode.get());
     }
 
-    for(sofa::simulation::Node* root : nodes)
+    for(Node* node : nodes)
     {
-        if(!root)
+        if(!node)
             continue;
 
-        mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
+        mySofaSimulation->draw(visualParams, node);
     }
 
-    // highlight selected components using a specific shader
-    if(viewer.drawSelected())
-    {
-        Base* selectedBase = nullptr;
-        if(mySelectedComponent)
-            selectedBase = mySelectedComponent->base();
+    if(doDrawSelected)
+        drawSelectedComponents(visualParams) ;
 
-        if(selectedBase)
-        {
-            glDepthFunc(GL_LEQUAL);
-
-            glEnable(GL_POLYGON_OFFSET_LINE);
-            glPolygonOffset(-0.2f, 0.0f);
-
-            myHighlightShaderProgram->bind();
-            {
-                VisualModel* visualModel = selectedBase->toVisualModel();
-                if(visualModel)
-                {
-                    VisualStyle* visualStyle = nullptr;
-                    visualModel->getContext()->get(visualStyle);
-
-                    if(visualStyle)
-                        visualStyle->fwdDraw(visualParams);
-
-                    sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
-                    visualParams->displayFlags().setShowWireFrame(true);
-
-                    visualModel->drawVisual(visualParams);
-
-                    visualParams->displayFlags().setShowWireFrame(state);
-
-                    if(visualStyle)
-                        visualStyle->bwdDraw(visualParams);
-                }
-                else
-                {
-                    TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(selectedBase);
-                    if(triangleModel)
-                    {
-                        VisualStyle* visualStyle = nullptr;
-                        triangleModel->getContext()->get(visualStyle);
-
-                        if(visualStyle)
-                            visualStyle->fwdDraw(visualParams);
-
-                        sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
-                        visualParams->displayFlags().setShowWireFrame(true);
-
-                        triangleModel->draw(visualParams);
-
-                        visualParams->displayFlags().setShowWireFrame(state);
-
-                        if(visualStyle)
-                            visualStyle->bwdDraw(visualParams);
-                    }
-                }
-            }
-            myHighlightShaderProgram->release();
-
-            glDisable(GL_POLYGON_OFFSET_LINE);
-
-            glDepthFunc(GL_LESS);
-        }
-    }
-
-    glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
-
-    // draw manipulators
-    if(viewer.drawManipulators())
-        for(Manipulator* manipulator : myManipulators)
-            if(manipulator)
-                manipulator->draw(viewer);
+    if(doDrawManipulators)
+        drawManipulator(viewer) ;
 }
 
 SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots)

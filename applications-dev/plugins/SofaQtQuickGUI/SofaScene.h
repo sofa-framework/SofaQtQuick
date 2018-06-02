@@ -36,6 +36,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QSet>
 #include <QVector3D>
 #include <QUrl>
+#include <QImage>
 
 class QTimer;
 class QOpenGLShaderProgram;
@@ -63,6 +64,9 @@ class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject, private sofa::simulati
     Q_OBJECT
 
     friend class SofaViewer;
+    friend class CameraView;
+    friend class EditView;
+
     friend class PickUsingRasterizationWorker;
     friend bool LoaderProcess(SofaScene* scene, QOffscreenSurface* surface);
 
@@ -231,7 +235,8 @@ protected:
     /// \brief      Low-level drawing function
     /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
     /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
-    void draw(const SofaViewer& viewer, const QList<SofaComponent*>& roots = QList<SofaComponent*>()) const;
+    void drawEditorView(const SofaViewer& viewer, const QList<SofaComponent*>& roots = QList<SofaComponent*>(),
+              bool doDrawSelected=true, bool doDrawManipulator=true) const;
 
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
@@ -243,6 +248,19 @@ protected:
     /// \note       The best way to pick an object is to use a Viewer instead of directly call this function
     /// \return     A 'Selectable' containing the picked object
     Selectable* pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QStringList& tagList, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
+
+    void drawSelectedComponents(sofa::core::visual::VisualParams *visualParams) const ;
+    void drawManipulator(const SofaViewer& viewer) const ;
+
+    /// This is calling the drawVisual() method on each Sofa object in the scene
+    void drawVisuals(const SofaViewer& viewer) const ;
+
+    /// This is calling the draw() method on each sofa object in the scene
+    void drawDebugVisuals(const SofaViewer& viewer) const ;
+
+    sofa::core::visual::VisualParams* setupVisualParams() const;
+    void setupCamera(int width, int height, const SofaViewer& viewer) const ;
+    void clearBuffers(const QSize &size, const QColor& color, const QImage& image=QImage()) const ;
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
