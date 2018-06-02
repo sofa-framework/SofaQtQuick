@@ -26,7 +26,7 @@ namespace sofa
 namespace qtquick
 {
 
-CameraView::CameraView(QQuickItem* parent) : Inherit(parent)
+CameraView::CameraView(QQuickItem* parent) : Parent(parent)
 {
 
 }
@@ -37,6 +37,6 @@ CameraView::~CameraView()
 }
 
 
-}
 
+}
 }

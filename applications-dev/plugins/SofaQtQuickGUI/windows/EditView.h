@@ -44,7 +44,7 @@ class SOFA_SOFAQTQUICKGUI_API EditView : public SofaViewer
     Q_OBJECT
 
 public:
-    typedef SofaViewer Inherit;
+    typedef SofaViewer Parent;
 
     explicit EditView(QQuickItem* parent = 0);
     ~EditView();

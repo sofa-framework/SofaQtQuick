@@ -44,7 +44,7 @@ class SOFA_SOFAQTQUICKGUI_API CameraView : public SofaViewer
     Q_OBJECT
 
 public:
-    typedef SofaViewer Inherit;
+    typedef SofaViewer Parent;
 
     explicit CameraView(QQuickItem* parent = 0);
     ~CameraView();

@@ -26,7 +26,7 @@ namespace sofa
 namespace qtquick
 {
 
-EditView::EditView(QQuickItem* parent) : Inherit(parent)
+EditView::EditView(QQuickItem* parent) : Parent(parent)
 {
 
 }
