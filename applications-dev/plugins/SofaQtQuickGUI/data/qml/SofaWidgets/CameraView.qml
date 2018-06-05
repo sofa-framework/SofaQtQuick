@@ -31,15 +31,7 @@ import SofaScene 1.0
 CameraView {
     id: root
 
-
-    function getColorFromCamera()
-    {
-            var c = camera.sofaComponent.getComponentData("backgroundColor").value()[0]
-            return Qt.rgba(c[0],c[1],c[2],c[3])
-    }
-
     clip: true
-    backgroundColor: getColorFromCamera()
     mirroredHorizontally: false
     mirroredVertically: false
     antialiasingSamples: 2
