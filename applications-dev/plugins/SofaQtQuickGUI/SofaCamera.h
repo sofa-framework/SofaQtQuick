@@ -55,6 +55,7 @@ public:
     void setSofaComponent(sofa::qtquick::SofaComponent* sofaComponent);
 
     void setBaseCamera(sofa::component::visualmodel::BaseCamera* baseCamera);
+    sofa::component::visualmodel::BaseCamera* getBaseCamera(){ return m_baseCamera; }
 
     //Camera API
     const QMatrix4x4& projection() const override;

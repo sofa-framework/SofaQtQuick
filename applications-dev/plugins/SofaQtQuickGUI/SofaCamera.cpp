@@ -110,8 +110,6 @@ const QMatrix4x4& SofaCamera::view() const
     m_baseCamera->getModelViewMatrix(dmat);
     QMath::setMatrixFrom(myView, dmat);
 
-    std::cout << "HELLO camera view"  << m_baseCamera->findData("projectionMatrix")->getValueString() << std::endl ;
-
     return myView;
 }
 

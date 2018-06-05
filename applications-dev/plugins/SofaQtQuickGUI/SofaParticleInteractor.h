@@ -62,7 +62,7 @@ public:
 
     }
 
-    virtual void drawVisual(const VisualParams* vparams)
+    virtual void drawVisual(const VisualParams* vparams) override
     {
         const DisplayFlags backupDisplayFlags = vparams->displayFlags();
 

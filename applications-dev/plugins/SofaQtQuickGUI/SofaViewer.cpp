@@ -86,16 +86,16 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
 
     connect(this, &SofaViewer::backgroundImageSourceChanged, this, &SofaViewer::handleBackgroundImageSourceChanged);
     connect(this, SIGNAL(antialiasingSamplesChanged(int)), this, SLOT(update()));
+
+    m_visualParams = new sofa::core::visual::VisualParams() ;
+    m_visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
+    m_visualParams->setSupported(sofa::core::visual::API_OpenGL);
 }
 
 SofaViewer::~SofaViewer()
 {
-    /*sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-    if(_vparams && _vparams->drawTool())
-    {
-        delete _vparams->drawTool();
-        _vparams->drawTool() = 0;
-    }*/
+    delete m_visualParams->drawTool() ;
+    delete m_visualParams;
 
     clearRoots();
 }
@@ -767,36 +767,32 @@ void SofaViewer::internalRender(int width, int height) const
     if(!myCamera)
         return;
 
-    // set default lights
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
     {
-        glEnable(GL_LIGHT0);
-        {
-            float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
-            float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
-            float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
-            float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
+        float lightPosition[] = { 0.5f,  0.5f, 1.0f, 0.0f};
+        float lightAmbient [] = { 0.0f,  0.0f, 0.0f, 0.0f};
+        float lightDiffuse [] = { 1.0f,  1.0f, 1.0f, 1.0f};
+        float lightSpecular[] = { 0.0f,  0.0f, 0.0f, 0.0f};
 
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-            glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
-            glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
-            glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-        }
-
-        glEnable(GL_LIGHT1);
-        {
-            float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
-            float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
-            float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
-            float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
-
-            glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
-            glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
-            glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
-            glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
-        }
+        glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+        glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbient);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuse);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
     }
 
-    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT1);
+    {
+        float lightPosition[] = { -1.0f, -1.0f,-1.0f, 0.0f};
+        float lightAmbient [] = {  0.0f,  0.0f, 0.0f, 0.0f};
+        float lightDiffuse [] = { 0.25f, 0.25f, 0.5f, 0.0f};
+        float lightSpecular[] = {  0.0f,  0.0f, 0.0f, 0.0f};
+
+        glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+        glLightfv(GL_LIGHT1, GL_AMBIENT,  lightAmbient);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightDiffuse);
+        glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
+    }
 
     if(mySofaScene && mySofaScene->isReady())
     {
@@ -816,54 +812,37 @@ void SofaViewer::internalRender(int width, int height) const
         // qt does not release its shader program and we do not use one so we have to release the current bound program
         glUseProgram(0);
 
-        // prepare the sofa visual params
-        sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-        if(_vparams)
-        {
-            if(!_vparams->drawTool())
-            {
-                _vparams->drawTool() = new sofa::core::visual::DrawToolGL();
-                _vparams->setSupported(sofa::core::visual::API_OpenGL);
-            }
+        GLint _viewport[4];
+        GLdouble _mvmatrix[16], _projmatrix[16];
 
-            GLint _viewport[4];
-            GLdouble _mvmatrix[16], _projmatrix[16];
+        glGetIntegerv (GL_VIEWPORT, _viewport);
+        glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
+        glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
 
-            glGetIntegerv (GL_VIEWPORT, _viewport);
-            glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
-            glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
-
-            _vparams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-            _vparams->sceneBBox() = mySofaScene->sofaRootNode()->f_bbox.getValue();
-            _vparams->setProjectionMatrix(_projmatrix);
-            _vparams->setModelViewMatrix(_mvmatrix);
-        }
-
-        // draw the scene frame
-        if(myDrawFrame)
-            renderFrame();
-
-        // draw the SofaScene
-        {
-            preDraw();
-            mySofaScene->drawEditorView(*this, roots());
-            postDraw();
-        }
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
+        m_visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+        m_visualParams->sceneBBox() = mySofaScene->sofaRootNode()->f_bbox.getValue();
+        m_visualParams->setProjectionMatrix(_projmatrix);
+        m_visualParams->setModelViewMatrix(_mvmatrix);
     }
+
+    // draw the scene frame
+    if(myDrawFrame)
+        renderFrame();
+
+    preDraw();
+    mySofaScene->drawEditorView(*this, roots());
+    postDraw();
+
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 }
 
 void SofaViewer::renderFrame() const
 {
-    sofa::core::visual::VisualParams* _vparams = sofa::core::visual::VisualParams::defaultInstance();
-    if(!_vparams)
-        return;
-
     float size = 1.0f;
     if(mySofaScene)
         size = mySofaScene->radius() * 0.1;
@@ -871,7 +850,7 @@ void SofaViewer::renderFrame() const
     if(0.0f == size)
         size = 1.0f;
 
-    _vparams->drawTool()->drawFrame(sofa::defaulttype::Vector3(), sofa::defaulttype::Quaternion(), sofa::defaulttype::Vector3(size, size, size));
+    m_visualParams->drawTool()->drawFrame(sofa::defaulttype::Vector3(), sofa::defaulttype::Quaternion(), sofa::defaulttype::Vector3(size, size, size));
 }
 
 
@@ -879,7 +858,6 @@ SofaViewer::SofaRenderer::SofaRenderer(SofaViewer* viewer) : QQuickFramebufferOb
     myViewer(viewer),
     myAntialiasingSamples(0)
 {
-
 }
 
 QOpenGLFramebufferObject* SofaViewer::SofaRenderer::createFramebufferObject(const QSize &size)

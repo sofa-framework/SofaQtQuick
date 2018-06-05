@@ -122,6 +122,8 @@ public:
 	bool alwaysDraw() const { return myAlwaysDraw; }
 	void setAlwaysDraw(bool myAlwaysDraw);
 
+    sofa::core::visual::VisualParams* getVisualParams() const { return m_visualParams; }
+
     bool autoPaint() const { return myAutoPaint; }
     Q_SLOT void setAutoPaint(bool newAutoPaint) { if(myAutoPaint == newAutoPaint) return; myAutoPaint = newAutoPaint; autoPaintChanged(newAutoPaint); }
     Q_SIGNAL void autoPaintChanged(bool newAutoPaint);
@@ -214,9 +216,10 @@ private:
     };
 
 protected:
-    QOpenGLFramebufferObject*   myFBO;
-    SofaScene*                  mySofaScene;
-	Camera*						myCamera;
+    sofa::core::visual::VisualParams* m_visualParams {nullptr};
+    QOpenGLFramebufferObject*   myFBO                {nullptr};
+    SofaScene*                  mySofaScene          {nullptr};
+    Camera*						myCamera             {nullptr};
     QList<SofaComponent*>       myRoots;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;

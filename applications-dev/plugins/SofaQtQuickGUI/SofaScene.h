@@ -258,7 +258,7 @@ protected:
     /// This is calling the draw() method on each sofa object in the scene
     void drawDebugVisuals(const SofaViewer& viewer) const ;
 
-    sofa::core::visual::VisualParams* setupVisualParams() const;
+    sofa::core::visual::VisualParams* setupVisualParams(sofa::core::visual::VisualParams*) const;
     void setupCamera(int width, int height, const SofaViewer& viewer) const ;
     void clearBuffers(const QSize &size, const QColor& color, const QImage& image=QImage()) const ;
 

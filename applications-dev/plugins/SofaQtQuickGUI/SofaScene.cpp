@@ -64,6 +64,8 @@ using sofa::helper::system::FileSystem ;
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/simulation/DeleteVisitor.h>
 
+#include "ObjectRenderer.h"
+
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -1167,6 +1169,7 @@ bool SofaScene::setDataValue(BaseData* data, const QVariant& value)
 
     const AbstractTypeInfo* typeinfo = data->getValueTypeInfo();
 
+
     if(!value.isNull())
     {
         QVariant finalValue = value;
@@ -1655,24 +1658,23 @@ void SofaScene::reset()
     emit reseted();
 }
 
-VisualParams* SofaScene::setupVisualParams() const
+VisualParams* SofaScene::setupVisualParams(sofa::core::visual::VisualParams* visualParams) const
 {
-    // prepare the sofa visual params
-    VisualParams* visualParams = VisualParams::defaultInstance();
-    if(visualParams)
-    {
-        GLint _viewport[4];
-        GLdouble _mvmatrix[16], _projmatrix[16];
+    if(!visualParams)
+        return nullptr;
 
-        glGetIntegerv(GL_VIEWPORT, _viewport);
-        glGetDoublev(GL_MODELVIEW_MATRIX, _mvmatrix);
-        glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
+    GLint _viewport[4];
+    GLdouble _mvmatrix[16], _projmatrix[16];
 
-        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
-        visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
-        visualParams->setProjectionMatrix(_projmatrix);
-        visualParams->setModelViewMatrix(_mvmatrix);
-    }
+    glGetIntegerv(GL_VIEWPORT, _viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, _mvmatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
+
+    visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+    visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
+    visualParams->setProjectionMatrix(_projmatrix);
+    visualParams->setModelViewMatrix(_mvmatrix);
+
     return visualParams ;
 }
 
@@ -1685,10 +1687,10 @@ void SofaScene::drawManipulator(const SofaViewer& viewer) const
 
 void SofaScene::drawSelectedComponents(VisualParams* visualParams) const
 {
-    Base* selectedBase = nullptr;
-    if(mySelectedComponent)
-        selectedBase = mySelectedComponent->base();
+    if( !visualParams )
+        return ;
 
+    Base* selectedBase = mySelectedComponent->base();
     if(selectedBase)
     {
         glDepthFunc(GL_LEQUAL);
@@ -1697,49 +1699,12 @@ void SofaScene::drawSelectedComponents(VisualParams* visualParams) const
         glPolygonOffset(-0.2f, 0.0f);
 
         myHighlightShaderProgram->bind();
-        {
-            VisualModel* visualModel = selectedBase->toVisualModel();
-            if(visualModel)
-            {
-                VisualStyle* visualStyle = nullptr;
-                visualModel->getContext()->get(visualStyle);
 
-                if(visualStyle)
-                    visualStyle->fwdDraw(visualParams);
+        /// Draw the objects 'helpers' according to its type, the underlying idea is that we
+        /// want to be able to draw information about the scene when we are editting but we don't
+        /// want to hardcode this display into the components as this may depend on the application.
+        ObjectRenderer::drawBaseObject(selectedBase, visualParams, true);
 
-                sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
-                visualParams->displayFlags().setShowWireFrame(true);
-
-                visualModel->drawVisual(visualParams);
-
-                visualParams->displayFlags().setShowWireFrame(state);
-
-                if(visualStyle)
-                    visualStyle->bwdDraw(visualParams);
-            }
-            else
-            {
-                TriangleModel* triangleModel = dynamic_cast<TriangleModel*>(selectedBase);
-                if(triangleModel)
-                {
-                    VisualStyle* visualStyle = nullptr;
-                    triangleModel->getContext()->get(visualStyle);
-
-                    if(visualStyle)
-                        visualStyle->fwdDraw(visualParams);
-
-                    sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
-                    visualParams->displayFlags().setShowWireFrame(true);
-
-                    triangleModel->draw(visualParams);
-
-                    visualParams->displayFlags().setShowWireFrame(state);
-
-                    if(visualStyle)
-                        visualStyle->bwdDraw(visualParams);
-                }
-            }
-        }
         myHighlightShaderProgram->release();
 
         glDisable(GL_POLYGON_OFFSET_LINE);
@@ -1791,9 +1756,7 @@ void SofaScene::drawVisuals(const SofaViewer& viewer) const
     if(!isReady())
         return;
 
-    VisualParams * visualParams = setupVisualParams();
-    if(!visualParams)
-        return ;
+    setupVisualParams(viewer.getVisualParams());
 
     if(myVisualDirty)
     {
@@ -1801,7 +1764,7 @@ void SofaScene::drawVisuals(const SofaViewer& viewer) const
         mySofaSimulation->updateVisual(mySofaRootNode.get());
     }
 
-    mySofaSimulation->draw(visualParams, mySofaRootNode.get());
+    mySofaSimulation->draw(viewer.getVisualParams(), mySofaRootNode.get());
 }
 
 void SofaScene::drawDebugVisuals(const SofaViewer& viewer) const
@@ -1815,11 +1778,9 @@ void SofaScene::drawDebugVisuals(const SofaViewer& viewer) const
         mySofaSimulation->updateVisual(mySofaRootNode.get());
     }
 
-    VisualParams * visualParams = setupVisualParams();
-    if(!visualParams)
-        return ;
+    setupVisualParams(viewer.getVisualParams());
 
-    mySofaSimulation->draw(visualParams, mySofaRootNode.get());
+    mySofaSimulation->draw(viewer.getVisualParams(), mySofaRootNode.get());
 }
 
 
@@ -1850,9 +1811,7 @@ void SofaScene::drawEditorView(const SofaViewer& viewer, const QList<SofaCompone
     if(nodes.isEmpty() && roots.isEmpty())
         nodes.append(mySofaRootNode.get());
 
-    VisualParams * visualParams = setupVisualParams();
-    if(!visualParams)
-        return ;
+    setupVisualParams(viewer.getVisualParams());
 
     if(myVisualDirty)
     {
@@ -1865,11 +1824,11 @@ void SofaScene::drawEditorView(const SofaViewer& viewer, const QList<SofaCompone
         if(!node)
             continue;
 
-        mySofaSimulation->draw(visualParams, node);
+        mySofaSimulation->draw(viewer.getVisualParams(), node);
     }
 
     if(doDrawSelected)
-        drawSelectedComponents(visualParams) ;
+        drawSelectedComponents(viewer.getVisualParams()) ;
 
     if(doDrawManipulators)
         drawManipulator(viewer) ;
