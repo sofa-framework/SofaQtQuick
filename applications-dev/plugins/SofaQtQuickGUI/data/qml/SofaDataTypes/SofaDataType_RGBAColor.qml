@@ -46,7 +46,7 @@ Row {
         text: undefined !== dataObject.value ? dataObject.value.toString() : ""
 
         onAccepted: {
-            dataObject.value = textField.text ;
+            dataObject.value = [textField.text.split(',').map(Number)] ;
             dataObject.upload();
             colorChooser.setValueFromArray(values) ;
         }
@@ -60,11 +60,11 @@ Row {
         color : Qt.rgba(root.values[0], root.values[1], root.values[2], root.values[3])
 
         onColorChanged: {
-            textField.text =  ""+((1.0*r)).toFixed(2)
-                            +" "+((1.0*g)).toFixed(2)
-                            +" "+((1.0*b)).toFixed(2)
-                            +" "+((1.0*a)).toFixed(2);
-            dataObject.value = textField.text ;
+            textField.text = ""+((1.0*r)).toFixed(2)
+                            +", "+((1.0*g)).toFixed(2)
+                            +", "+((1.0*b)).toFixed(2)
+                            +", "+((1.0*a)).toFixed(2);
+            dataObject.value = [[r,g,b,a]] ;
             dataObject.upload();
         }
     }
