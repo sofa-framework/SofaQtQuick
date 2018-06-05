@@ -17,8 +17,15 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 #include <QQuickItem>
+#include <sofa/core/visual/VisualParams.h>
+
+#include <SofaBaseVisual/BackgroundSetting.h>
+using sofa::component::configurationsetting::BackgroundSetting ;
+
 #include "CameraView.h"
+#include "SofaCamera.h"
 #include "SofaScene.h"
 
 namespace sofa
@@ -37,20 +44,47 @@ CameraView::~CameraView()
 
 }
 
+QColor toQ(const sofa::helper::types::RGBAColor& color)
+{
+    return QColor(color.r()*255, color.g()*255, color.b()*255, color.a()*255) ;
+}
+
 void CameraView::internalRender(int width, int height) const
 {
+    if(!myCamera)
+        return ;
+
     QSize size(width, height);
     if(size.isEmpty())
         return;
 
-    if(!myCamera)
+    SofaCamera* sofaCamera = dynamic_cast<SofaCamera*>(myCamera) ;
+    if(!sofaCamera)
         return;
 
     if(mySofaScene && mySofaScene->isReady())
     {
-        mySofaScene->clearBuffers(size, QColor(125,125,255,255)) ;
+        BackgroundSetting* settings = sofaCamera->getBaseCamera()->l_background.get();
+        QColor color(128,128,244,255);
+        QImage image;
+
+        if(settings){
+            if(settings->color.isSet())
+                color=toQ( settings->color.getValue());
+
+            if(settings->image.isSet())
+            {
+                mySofaScene->clearBuffers(size, color);
+                msg_error("runSofa2::cameraview does not support yet background pictures.");
+            }
+        }
+        mySofaScene->clearBuffers(size, color, image);
         mySofaScene->setupCamera(width, height, *this) ;
-        mySofaScene->setupVisualParams() ;
+
+        /// Prepare for a pure rendrering traversal of the scene graph.
+        m_visualParams->displayFlags().setShowAll(false) ;
+        m_visualParams->displayFlags().setShowVisualModels(true) ;
+
         preDraw();
         mySofaScene->drawVisuals(*this);
         postDraw();

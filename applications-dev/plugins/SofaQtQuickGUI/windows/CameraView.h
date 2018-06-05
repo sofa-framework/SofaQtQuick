@@ -32,6 +32,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/helper/io/Image.h>
 
+////////////////////////// FORWARD DECLARATION ///////////////////////////
+namespace sofa {
+    namespace qtquick {
+        class SofaCamera;
+    }
+}
+
+//////////////////////////////// DEFINITION /////////////////////////////
 namespace sofa
 {
 namespace qtquick
