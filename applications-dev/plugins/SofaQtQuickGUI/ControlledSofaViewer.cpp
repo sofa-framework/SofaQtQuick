@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ControlledSofaViewer.h"
 
-#include <QQuickitem>
+#include <QQuickItem>
 
 namespace sofa
 {
