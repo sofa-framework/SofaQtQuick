@@ -25,6 +25,7 @@ set(SOURCE_FILES
     SofaComponent.cpp
     SofaComponentList.cpp
     SofaData.cpp
+    SofaLink.cpp
     SofaSceneListModel.cpp
     Selectable.cpp
     SelectableManipulator.cpp
@@ -58,6 +59,7 @@ set(HEADER_FILES
     SofaComponent.h
     SofaComponentList.h
     SofaData.h
+    SofaLink.h
     SofaSceneListModel.h
     Selectable.h
     SelectableManipulator.h
@@ -100,6 +102,7 @@ set(QML_FILES
     data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
+    data/qml/SofaApplication/MainStyle.qml
     data/qml/SofaBasics/qmldir
     data/qml/SofaBasics/IconButton.qml
     data/qml/SofaBasics/ToolTip.qml
@@ -250,6 +253,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CUR
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${SOFAQTQUICKGUI_VERSION})
 
 add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQMLJSDEBUGGER")
+
 
 
 if(NOT MSVC)
