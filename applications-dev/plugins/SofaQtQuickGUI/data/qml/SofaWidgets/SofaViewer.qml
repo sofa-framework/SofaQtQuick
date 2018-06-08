@@ -32,7 +32,7 @@ SofaViewer {
     id: root
 
     clip: true
-    backgroundColor: "#FF404040"
+    backgroundColor: SofaApplication.style.editviewBackgroundColor
 //    backgroundImageSource: "qrc:/icon/sofaLogoAlpha.png"
     mirroredHorizontally: false
     mirroredVertically: false
