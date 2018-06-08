@@ -32,6 +32,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaScene.h"
 #include "SofaComponent.h"
 #include "SofaData.h"
+#include "SofaLink.h"
 #include "Selectable.h"
 #include "SelectableManipulator.h"
 #include "SelectableSofaComponent.h"
@@ -83,8 +84,6 @@ static QObject* createConsole(QQmlEngine *engine,
 
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
-    //Q_ASSERT(QLatin1String(uri) == QLatin1String("SofaQtQuickGUI"));
-
     qRegisterMetaType<SofaScene::Status>("Status");
     qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
 
@@ -103,6 +102,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
     qmlRegisterUncreatableType<SofaComponentList>                   ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
     qmlRegisterUncreatableType<SofaData>                            ("SofaData"                             , versionMajor, versionMinor, "SofaData", "SofaData is not instantiable");
+    qmlRegisterUncreatableType<sofa::qtquick::SofaLink>             ("SofaLink"                             , versionMajor, versionMinor, "SofaLink", "SofaLink is not instantiable");
     qmlRegisterUncreatableType<Selectable>                          ("Selectable"                           , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
     qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator"                , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
     qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"              , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");

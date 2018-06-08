@@ -1391,6 +1391,31 @@ static BaseData* FindData_Helper(BaseNode* node, const QString& path)
     return data;
 }
 
+/// Returns a link object from its path. The path
+/// must be composed of a prefix.linkname
+QObject* SofaScene::link(const QString& fullpath)
+{
+    std::cout << "GET FROM PATH: " << fullpath.toStdString() << std::endl ;
+
+    // search for the "name" data of the component (this data is always present if the component exist)
+    QStringList splittedpath = fullpath.split('.') ;
+
+    if(splittedpath.size() != 2)
+        return nullptr ;
+
+    BaseData* data = FindData_Helper(mySofaRootNode.get(), splittedpath[0] + ".name");
+    if(!data)
+        return nullptr;
+
+    Base* base = data->getOwner();
+    if(!base)
+        return nullptr;
+
+    BaseLink* link = base->findLink(splittedpath[1].toStdString()) ;
+
+    return new SofaLink(this, base, link);
+}
+
 SofaData* SofaScene::data(const QString& path)
 {
     BaseData* data = FindData_Helper(mySofaRootNode.get(), path);

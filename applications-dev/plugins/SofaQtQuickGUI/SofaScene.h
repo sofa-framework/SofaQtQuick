@@ -24,6 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaComponent.h"
 #include "SofaComponentList.h"
 #include "SofaData.h"
+#include "SofaLink.h"
 #include "Manipulator.h"
 #include "SelectableSofaParticle.h"
 
@@ -189,6 +190,7 @@ public:
     void setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value);
 
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path);
+    Q_INVOKABLE QObject* link(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* componentByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponentList* componentsByType(const QString& typeName);
