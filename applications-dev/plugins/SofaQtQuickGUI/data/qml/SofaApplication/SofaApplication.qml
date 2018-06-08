@@ -30,6 +30,8 @@ import SofaApplicationSingleton 1.0
 SofaApplication {
     id: root
 
+    property var style : MainStyle
+
 ////////////////////////////////////////////////// SOFASCENE
 
     property var sofaScene: null
