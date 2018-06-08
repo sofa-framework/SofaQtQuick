@@ -57,6 +57,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QTimer>
 #include <QDirIterator>
 
+#include <QQmlDebuggingEnabler>
+QQmlDebuggingEnabler enabler;
+
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
 #endif
