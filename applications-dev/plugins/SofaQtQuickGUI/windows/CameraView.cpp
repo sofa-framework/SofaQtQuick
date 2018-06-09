@@ -24,6 +24,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaBaseVisual/BackgroundSetting.h>
 using sofa::component::configurationsetting::BackgroundSetting ;
 
+#include <SofaBaseVisual/BaseCamera.h>
+using sofa::component::visualmodel::BaseCamera;
+
 #include "CameraView.h"
 #include "SofaCamera.h"
 #include "SofaScene.h"
@@ -62,6 +65,9 @@ void CameraView::internalRender(int width, int height) const
     if(!sofaCamera)
         return;
 
+    BaseCamera* baseCamera = sofaCamera->getBaseCamera();
+    if(!baseCamera)
+        return;
     if(mySofaScene && mySofaScene->isReady())
     {
         BackgroundSetting* settings = sofaCamera->getBaseCamera()->l_background.get();
