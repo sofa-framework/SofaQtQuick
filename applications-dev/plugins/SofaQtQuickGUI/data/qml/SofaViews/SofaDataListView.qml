@@ -27,6 +27,19 @@ import SofaApplication 1.0
 import SofaComponent 1.0
 import SofaDataListModel 1.0                         
 
+/*
+|--------------------------------------------------------|
+| Group 1                                                |
+|   Data 1:                                              |
+|   Data 2:                                              |
+|   Data ...:                                            |
+|--------------------------------------------------------|
+| Group 2                                                |
+|   Data 1:                                              |
+|   Data 2:                                              |
+|   Data ...:                                            |
+|--------------------------------------------------------|
+*/
 ColumnLayout {
     id: root
     spacing: 0
