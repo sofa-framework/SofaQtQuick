@@ -38,8 +38,7 @@ ColumnLayout {
     property var sofaScene: SofaApplication.sofaScene
     readonly property var searchBar: searchBar
 
-// search bar
-
+    // search bar
     SofaSearchBar {
         id: searchBar
     }
@@ -212,68 +211,13 @@ ColumnLayout {
                                     opacity: 0.5
                                 }
 
-                                Menu {
+                                SofaNodeMenu
+                                {
                                     id: nodeMenu
-
-                                    property QtObject sofaData: null
-                                    property bool nodeActivated: true
-
-                                    MenuItem {
-                                        text: {
-                                            "Add node"
-                                        }
-                                        onTriggered: {
-                                            var currentRow = listView.model.computeItemRow(listView.currentIndex);
-
-                                            sofaScene.addNodeTo(listModel.getComponentById(index));
-
-                                            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
-                                        }
-                                    }
-
-                                    MenuItem {
-                                        text: {
-                                            "Delete node"
-                                        }
-                                        onTriggered: {
-                                            var currentRow = listView.model.computeItemRow(listView.currentIndex);
-
-                                            sofaScene.removeComponent(listModel.getComponentById(index));
-
-                                            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
-                                        }
-                                    }
-
-                                    MenuSeparator {}
-
-                                    MenuItem {
-                                        text: {
-                                            nodeMenu.nodeActivated ? "Desactivate" : "Activate"
-                                        }
-                                        onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
-                                    }
-
-
-
                                 }
 
-                                Menu {
+                                SofaObjectMenu {
                                     id: objectMenu
-
-                                    property QtObject sofaData: null
-
-                                    MenuItem {
-                                        text: {
-                                            "Delete object"
-                                        }
-                                        onTriggered: {
-                                            var currentRow = listView.model.computeItemRow(listView.currentIndex);
-
-                                            sofaScene.removeComponent(listModel.getComponentById(index));
-
-                                            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
-                                        }
-                                    }
                                 }
 
                                 MouseArea {
@@ -300,41 +244,8 @@ ColumnLayout {
                                             sofaDataListViewWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": listModel.getComponentById(index)});
                                     }
 
-                                    Component {
+                                    SofaWindowDataListView {
                                         id: sofaDataListViewWindowComponent
-
-                                        Window {
-                                            id: root
-                                            width: 400
-                                            height: 600
-                                            modality: Qt.NonModal
-                                            flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
-                                            visible: true
-                                            color: "lightgrey"
-
-                                            Component.onCompleted: {
-                                                width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
-                                                height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
-                                            }
-
-                                            onClosing: destroy();
-
-                                            title: sofaComponent ? ("Data of component: " + sofaComponent.name()) : "No component to visualize"
-
-                                            property var sofaScene: root.sofaScene
-                                            property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
-
-                                            Loader {
-                                                id: loader
-                                                anchors.fill: parent
-
-                                                sourceComponent: SofaDataListView {
-
-                                                    sofaScene: root.sofaScene
-                                                    sofaComponent: root.sofaComponent
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                             }

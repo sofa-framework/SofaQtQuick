@@ -1,1 +1,5 @@
+module SofaWidgets
 SofaSearchBar 1.0 SofaSearchBar.qml
+SofaNodeMenu 1.0 SofaNodeMenu.qml
+SofaObjectMenu 1.0 SofaObjectMenu.qml
+SofaWindowDataListView  SofaWindowDataListView.qml

@@ -81,5 +81,8 @@
         <file>SofaDataTypes/SofaDataType_RGBAColor.qml</file>
         <file>SofaWidgets/SofaSearchBar.qml</file>
         <file>SofaWidgets/qmldir</file>
+        <file>SofaWidgets/SofaNodeMenu.qml</file>
+        <file>SofaWidgets/SofaObjectMenu.qml</file>
+        <file>SofaWidgets/SofaWindowDataListView.qml</file>
     </qresource>
 </RCC>
