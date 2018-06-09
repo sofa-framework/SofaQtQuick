@@ -122,9 +122,9 @@ public:
         SofaLinkType,
         InfoType,
         LogType,
-        GroupType,
+        GroupType
     };
-    Q_ENUMS(Type);
+    Q_ENUMS(Type)
 
     enum Visibility {
         Expanded = 1,
@@ -164,7 +164,9 @@ private:
         NameRole = Qt::UserRole + 1,
         TypeRole,
         ValueRole,
-        VisibilityRole,
+        PathRole,
+        ReadOnlyRole,
+        VisibilityRole
     };
 
     ItemGroup* findOrCreateGroup(const QString& groupname) ;

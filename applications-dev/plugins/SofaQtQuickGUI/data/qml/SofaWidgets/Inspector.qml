@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.5
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.2
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
@@ -28,9 +28,10 @@ import SofaApplication 1.0
 import SofaComponent 1.0
 import SofaInspectorDataListModel 1.0
 
+
 /*
   |--------------------------------------------------------|
-  | Inspector                                              |
+  | Inspector                                   Debug []   |
   |--------------------------------------------------------|
   | Group 1                                                |
   |   Data 1:                                              |
@@ -51,11 +52,12 @@ import SofaInspectorDataListModel 1.0
   While each group have its own ListView.
 */
 Rectangle{
-    color: "lightgrey"
+    color: SofaApplication.style.headerBackgroundColor
     clip: true
     anchors.fill: parent
     property var sofaScene: SofaApplication.sofaScene
     property var sofaSelectedComponent: sofaScene ? sofaScene.selectedComponent : null
+    property bool showDebug : isDebug.checked
 
     /*
       Each group is composed of an header bar with the group name.
@@ -78,20 +80,21 @@ Rectangle{
 
                 state: sofaInspectorDataListModel.isGroupVisible(index) ? "expanded" : "collapsed"
                 width: parent.width
-                color: "lightgrey"
+                color: SofaApplication.style.contentBackgroundColor
                 clip: true
 
                 Component.onCompleted : {
                     state =  sofaInspectorDataListModel.isGroupVisible(index) ? "expanded" : "collapsed"
                 }
 
+                /*
                 Behavior on implicitHeight {
                     NumberAnimation {
                         easing.type: Easing.InOutCubic
                         easing.amplitude: 1.0;
                         easing.period: 1.5
                     }
-                }
+                }*/
 
                 states: [
                     State {
@@ -118,12 +121,14 @@ Rectangle{
                 |   Data ...:                                            |
                 |--------------------------------------------------------|*/
                 Column{
+                    id : group
+
                     anchors.fill: parent
                     property int theIndex: index
-
+                    property string theName : name
                     Rectangle{
                         width: theView.width
-                        height:20
+                        height: 20
                         color: "grey"
                         border.color: "darkgrey"
                         border.width: 1
@@ -194,6 +199,9 @@ Rectangle{
                                     width: theItem.width
 
                                     sourceComponent: {
+
+                                        if(isReadOnly && !showDebug)
+                                            return hiddenItem;
                                         switch(type){
                                         case 5: //sofaInspectorDataListModel.SofaDataType:
                                             return dataItem;
@@ -207,15 +215,15 @@ Rectangle{
                                         return hiddenItem;
                                     }
 
-                                    property Component hiddenItem : Rectangle {
+                                    property Component hiddenItem : Rectangle
+                                    {
                                         width : theItem.width ;
                                         height: 0;
                                         color : "yellow"
                                     }
 
-                                    property Component dataItem :
-                                        SofaDataItem {
-
+                                    property Component dataItem : SofaDataItem
+                                    {
                                         id: sofaDataItem
                                         implicitWidth : theItem.width
 
@@ -247,22 +255,53 @@ Rectangle{
                                             text: name
                                             font.italic: true
                                             verticalAlignment: Text.AlignVCenter;
-
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                onDoubleClicked: sofaDataWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": root.sofaComponent});
-                                            }
                                         }
                                         TextField {
                                             Layout.fillWidth: true
                                             Layout.fillHeight: true
-                                            Layout.preferredHeight: implicitHeight
+                                            Layout.preferredHeight: implicitHeight-4
                                             readOnly: true
+
+                                            background: Rectangle {
+                                                    color: isReadOnly ? "gray" : "white"
+                                                    border.color: "black"
+                                                    border.width: 1
+                                            }
+                                            font.pixelSize: 12
 
                                             text: value.toString().trim()
                                             onTextChanged: cursorPosition = 0;
-                                        }
 
+                                            DropArea {
+                                                   id: dropArea;
+                                                   anchors.fill: parent;
+                                                   onEntered: function(drag)
+                                                   {
+                                                       if (!isReadOnly && drag.source && drag.source.sofacomponent)
+                                                       {
+                                                           console.log("Im' "+path)
+                                                           console.log("EVT: " + drag)
+                                                           console.log("EVT: " + drag.source)
+                                                           console.log("EVT: " + drag.source.sofacomponent.getPathName())
+
+                                                           var sofalink = SofaApplication.sofaScene.link(path)
+                                                           sofalink.setValue(drag.source.sofacomponent.getPathName())
+
+                                                           parent.background.border.color = "red";
+                                                           drag.accept (Qt.CopyAction);
+                                                           console.log("onEntered");
+                                                       }
+                                                   }
+                                                   onDropped: {
+                                                       console.log ("onDropped");
+                                                   }
+                                                   onExited: {
+                                                       parent.background.border.color = "back";
+                                                       console.log ("onExited");
+                                                   }
+                                           }
+
+                                        }
 
                                         property int nameLabelWidth: childView.nameLabelImplicitWidth
                                         readonly property int nameLabelImplicitWidth: linkView.implicitWidth
@@ -286,11 +325,6 @@ Rectangle{
 
                                             text: name
                                             font.italic: true
-
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                onDoubleClicked: sofaDataWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": root.sofaComponent});
-                                            }
                                         }
                                         Text {
                                             Layout.fillWidth: true
@@ -379,21 +413,31 @@ Rectangle{
         height: parent.height
         clip:true
 
-        Rectangle{
-            width: parent.width
-            height: 20
-            color: "darkgrey"
-            Text{
-                text : "Details " + ((sofaSelectedComponent===null)? "" : "("+ sofaSelectedComponent.className() + ")")
+        /// This is the header of the inspetor.
+        RowLayout{
+            width : parent.width
+            height : 40
+            spacing: 6
+            Rectangle{
+                //width: parent.width
+                height: 20
+                color: SofaApplication.style.headerBackgroundColor
+                Text{
+                   text : "Details " + ((sofaSelectedComponent===null)? "" : "("+ sofaSelectedComponent.className() + ")")
+                   font.pixelSize: 14
+                   font.bold: true
+                }
+            }
 
-                font.pixelSize: 14
-                font.bold: true
+            CheckBox {
+                id : isDebug
             }
         }
+
         Rectangle{
             width: parent.width
             height: 22
-            color: "darkgrey"
+            color: SofaApplication.style.headerBackgroundColor
             clip: true
 
             Row{
@@ -410,15 +454,14 @@ Rectangle{
                     id: nameTextField
                     text: (sofaSelectedComponent===null)? "" : sofaSelectedComponent.name()
 
-                    style: TextFieldStyle {
-                        background: Rectangle {
+                    background: Rectangle {
                             radius: 2
-                            color: "lightgray"
+                            color: "white"
                             border.color: "grey"
                             border.width: 0
-                        }
-                        font.pixelSize: 12
                     }
+                    font.pixelSize: 12
+
                     verticalAlignment: Text.AlignVCenter;
 
                     onEditingFinished : {

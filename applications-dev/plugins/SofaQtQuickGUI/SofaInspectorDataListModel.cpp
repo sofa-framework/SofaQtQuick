@@ -77,6 +77,7 @@ void SofaInspectorDataListModel::update()
         m_groups.clear();
         m_nameindex.clear();
         const Base* base = m_selectedsofacomponent->base();
+        QStringList listinfos ;
         if(base)
         {
             // SofaData
@@ -87,13 +88,30 @@ void SofaInspectorDataListModel::update()
                 if(strlen(gname)==0){
                     gname = data->getOwnerClass() ;
                 }
-                ItemGroup* ig = findOrCreateGroup(getGroupName(QString(gname),
-                                                               baseString)) ;
-                ig->m_children.append(new Item(QString::fromStdString(data->getName()),
+
+                if( QString("Context") == QString(gname) )
+                {
+                    gname="Base";
+                }
+                else if( QString("BaseObject") == QString(gname) )
+                {
+                    gname="Base";
+                }
+
+
+                if( QString("Infos") != QString(gname) )
+                {
+                    ItemGroup* ig = findOrCreateGroup(getGroupName(QString(gname),
+                                                                   baseString)) ;
+                    ig->m_children.append(new Item(QString::fromStdString(data->getName()),
                                                QVariant::fromValue((void*)data),
                                                SofaDataType,
                                                settings.value("inspector/"+ig->m_name+"/"+QString::fromStdString(data->getName()), true).toBool()
                                                ));
+                }else
+                {
+                    listinfos.append(QString::fromStdString(data->getName()));
+                }
 
             }
 
@@ -101,11 +119,12 @@ void SofaInspectorDataListModel::update()
             ItemGroup* links = findOrCreateGroup("Links") ;
             for(BaseLink* link : base->getLinks()){
                 links->m_children.append(new Item(QString::fromStdString(link->getName()),
-                                                  QVariant::fromValue(QString::fromStdString(link->getLinkedPath())),
+                                                  QVariant::fromValue((void*)link),
                                                   SofaLinkType, true));
             }
 
             // Logs & Warnings
+            /**
             QString logName("Messages");
             ItemGroup* logs = findOrCreateGroup(logName) ;
             logs->m_children.append(new Item("info",
@@ -119,14 +138,22 @@ void SofaInspectorDataListModel::update()
                                                                                                      Message::Error,
                                                                                                      Message::Fatal})),
                                              LogType, true));
+            */
 
-            // Info
+            // Infos
             QString infoGroup = "Infos";
             ItemGroup* infos = findOrCreateGroup(infoGroup);
             infos->m_children.append(new Item("name",
                                               QString::fromStdString(base->getName()), InfoType, true));
             infos->m_children.append(new Item("class",
                                               QString::fromStdString(base->getClassName()), InfoType, true));
+
+            for(auto& info : listinfos)
+            {
+                BaseData* data = base->findData(info.toStdString()) ;
+                infos->m_children.append(new Item(QString::fromStdString(data->getName()),
+                                                  QString::fromStdString(data->getValueString()), InfoType, true));
+            }
 
             // Retrieve the group visilibity from the settings.
             for(ItemGroup* group : m_groups){
@@ -139,7 +166,7 @@ void SofaInspectorDataListModel::update()
             qStableSort(m_groups.begin(), m_groups.end(),
                         [](const ItemGroup* a, const ItemGroup* b) {return a->m_order<b->m_order;});
 
-            //TODO(dmarchal): not a big fan of alphabetical sorting.
+            // Currently sort in alphabetical sorting.If you have better suggestion. Please propose.
             for(auto& group : m_groups){
                 auto& items = group->m_children;
                 qStableSort(items.begin(), items.end(),
@@ -298,6 +325,37 @@ QVariant SofaInspectorDataListModel::data(const QModelIndex& index, int role) co
             return  QVariant::fromValue(item->m_name);
         case TypeRole:
             return QVariant(item->m_type);
+        case ReadOnlyRole:
+            if(SofaDataType == item->m_type)
+            {
+                BaseData* data = (BaseData*) item->m_data.value<void*>();
+                return QVariant::fromValue( data->isReadOnly() );
+            }
+            if(SofaLinkType == item->m_type){
+                BaseLink* link = (BaseLink*) item->m_data.value<void*>();
+                if( link == nullptr )
+                    std::cout << "nUll ptr" << std::endl ;
+                return QVariant::fromValue( link->isReadOnly() );
+            }
+            return QVariant(false);
+        case PathRole:
+            if(SofaDataType == item->m_type)
+            {
+                BaseData* data = (BaseData*) item->m_data.value<void*>();
+                return QVariant::fromValue( QString::fromStdString(data->getLinkPath()) );
+            }
+            else if(SofaLinkType == item->m_type)
+            {
+                BaseLink* link = (BaseLink*) item->m_data.value<void*>();
+                BaseObject* base = link->getOwnerBase()->toBaseObject() ;
+                if(!base){
+                    dmsg_error("SofaInspectorDataListModel") << "The link seems to be a data link. " ;
+                    return QVariant();
+                }
+                QString fullpath=QString::fromStdString( base->getPathName() + "." +link->getName() ) ;
+                return QVariant::fromValue( fullpath );
+            }
+            return QVariant::fromValue( item->m_name );
         case ValueRole:
             if(SofaDataType == item->m_type)
             {
@@ -306,8 +364,8 @@ QVariant SofaInspectorDataListModel::data(const QModelIndex& index, int role) co
             }
             else if(SofaLinkType == item->m_type)
             {
-                //BaseLink* link = (BaseLink*) item->m_data.value<void*>();
-                return item->m_data; // QVariant::fromValue(SofaScene::linkValue(link));
+                BaseLink* link = (BaseLink*) item->m_data.value<void*>();
+                return QVariant::fromValue(SofaScene::linkValue(link));
             }
             else if(LogType == item->m_type)
             {
@@ -332,7 +390,8 @@ QHash<int,QByteArray> SofaInspectorDataListModel::roleNames() const
     roles[NameRole]         = "name" ;
     roles[TypeRole]         = "type" ;
     roles[ValueRole]        = "value" ;
-
+    roles[PathRole]         = "path" ;
+    roles[ReadOnlyRole]         = "isReadOnly" ;
     return roles;
 }
 
