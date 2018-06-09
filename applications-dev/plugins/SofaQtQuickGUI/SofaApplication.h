@@ -70,6 +70,7 @@ signals:
 public:
     Q_SLOT void copyToClipboard(const QString& text);
     Q_SLOT void openInExplorer(const QString& folder) const;
+    Q_SLOT void openInEditor(const QString& fullpath, const int line) const;
 
 	Q_SLOT bool createFolder(const QString& destination);
     Q_SLOT bool removeFolder(const QString& destination);

@@ -125,6 +125,15 @@ void SofaApplication::openInExplorer(const QString& folder) const
     QDesktopServices::openUrl(QUrl::fromLocalFile(folder));
 }
 
+void SofaApplication::openInEditor(const QString& fullpath, const int lineno) const
+{
+    std::stringstream s;
+    QFileInfo f(fullpath);
+    s << f.absoluteFilePath().toStdString() << ":" << lineno ;
+    std::cout << "OPEN" << s.str() << std::endl ;
+    QProcess::execute("qtcreator", QStringList() << "-client" << QString::fromStdString(s.str()) );
+}
+
 bool SofaApplication::createFolder(const QString& destination)
 {
 	QDir dir(destination);
