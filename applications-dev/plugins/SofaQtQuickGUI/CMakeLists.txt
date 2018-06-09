@@ -135,6 +135,8 @@ set(QML_FILES
     data/qml/SofaBasics/WindowResizer.qml
     data/qml/SofaBasics/ClipPlane.qml
     data/qml/SofaBasics/ColorChooser.qml
+    data/qml/SofaWidgets/SofaSearchBar.qml
+    data/qml/SofaWidgets/qmldir
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
     data/qml/SofaInteractors/UserInteractor_Selection.qml
@@ -164,6 +166,7 @@ set(QML_FILES
     data/qml/SofaViews/EditView.qml
     data/qml/SofaViews/Inspector.qml
     data/qml/SofaViews/Message.qml
+
 )
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
@@ -172,6 +175,7 @@ list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaBasics/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaInteractors/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaViews/")
 set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
 
@@ -180,7 +184,6 @@ set(CONFIG_FILES
     data/config/classic.ini
     data/config/fullview.ini
     data/config/quadview.ini
-
 )
 
 set(PYTHON_FILES
