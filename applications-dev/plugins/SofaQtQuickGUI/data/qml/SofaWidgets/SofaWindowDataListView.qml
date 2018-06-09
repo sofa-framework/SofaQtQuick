@@ -6,6 +6,7 @@ import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneListModel 1.0
+import SofaViews 1.0
 import SofaWidgets 1.0
 
 Component {

@@ -1,3 +1,4 @@
+module SofaViews
 SofaViewer 1.0 SofaViewer.qml
 SofaDataView 1.0 SofaDataView.qml
 ImageViewer 1.0 ImageViewer.qml
