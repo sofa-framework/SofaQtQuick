@@ -877,6 +877,32 @@ bool SofaScene::addNodeTo(SofaComponent* sofaComponent)
     return false;
 }
 
+bool SofaScene::addComponent(SofaComponent* sofaComponent)
+{
+    if(!sofaComponent)
+        return false;
+
+    /// if sofaComponent is an object then the new component is a brother of this one.
+    BaseObject* baseObject = sofaComponent->base()->toBaseObject();
+    if(baseObject)
+    {
+        msg_fatal("SofaScene") << "TO IMPLEMENT" ;
+        return true;
+    }
+
+    /// if sofaComponent is a node then the new component is a child of this one.
+    BaseNode* baseNode = sofaComponent->base()->toBaseNode();
+    if(baseNode)
+    {
+        //TODO(dmarchal): to do
+        msg_fatal("SofaScene") << "TO IMPLEMENT" ;
+
+        return true;
+    }
+
+    return false;
+}
+
 
 bool SofaScene::areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB)
 {

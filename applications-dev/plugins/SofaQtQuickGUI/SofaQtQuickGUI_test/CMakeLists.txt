@@ -7,6 +7,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
     SofaApplication_test.cpp
+    SofaScene_test.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

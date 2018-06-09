@@ -13,33 +13,24 @@ Menu {
     
     property QtObject sofaData: null
     property bool nodeActivated: true
-    
+
+
+
     MenuItem {
-        text: {
-            "Add node"
-        }
+        text: "Add child"
         onTriggered: {
             var currentRow = listView.model.computeItemRow(listView.currentIndex);
-            
             sofaScene.addNodeTo(listModel.getComponentById(index));
-            
             listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
         }
     }
-    
+
     MenuItem {
-        text: {
-            "Delete node"
-        }
+        text: "Add component"
         onTriggered: {
-            var currentRow = listView.model.computeItemRow(listView.currentIndex);
-            
-            sofaScene.removeComponent(listModel.getComponentById(index));
-            
-            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
         }
     }
-    
+
     MenuSeparator {}
     
     MenuItem {
@@ -48,4 +39,16 @@ Menu {
         }
         onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
     }
+
+    MenuSeparator {}
+
+    MenuItem {
+        text: "Delete"
+        onTriggered: {
+            var currentRow = listView.model.computeItemRow(listView.currentIndex);
+            sofaScene.removeComponent(listModel.getComponentById(index));
+            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
+        }
+    }
+
 }
