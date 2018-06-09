@@ -65,8 +65,8 @@ public:
     Q_INVOKABLE QQuaternion orientation() const override;
 
 private:
-    sofa::qtquick::SofaComponent* m_sofaComponent;
-    mutable sofa::component::visualmodel::BaseCamera* m_baseCamera;
+    sofa::qtquick::SofaComponent* m_sofaComponent {nullptr};
+    mutable sofa::component::visualmodel::BaseCamera* m_baseCamera {nullptr};
 
 };
 
