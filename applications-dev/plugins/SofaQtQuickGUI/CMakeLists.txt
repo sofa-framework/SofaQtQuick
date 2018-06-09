@@ -145,25 +145,25 @@ set(QML_FILES
     data/qml/SofaManipulators/Manipulator2D_Rotation.qml
     data/qml/SofaManipulators/Manipulator3D_Translation.qml
     data/qml/SofaManipulators/Manipulator3D_Rotation.qml
-    data/qml/SofaWidgets/qmldir
-    data/qml/SofaWidgets/QML_LiveCoding.qml
-    data/qml/SofaWidgets/SofaViewer.qml
-    data/qml/SofaWidgets/SofaDataView.qml
-    data/qml/SofaWidgets/ImageViewer.qml
-    data/qml/SofaWidgets/PythonConsole.qml
-    data/qml/SofaWidgets/SofaDataListView.qml
-    data/qml/SofaWidgets/SofaSceneGraphView.qml
-    data/qml/SofaWidgets/SofaSceneToolPanel.qml
-    data/qml/SofaWidgets/SofaSimulationControl.qml
-    data/qml/SofaWidgets/SofaVisualizationControl.qml
-    data/qml/SofaWidgets/AffineTransformationController.qml
-    data/qml/SofaWidgets/ColorSelector.qml
-    data/qml/SofaWidgets/SofaSceneViewer.qml
+    data/qml/SofaViews/qmldir
+    data/qml/SofaViews/QML_LiveCoding.qml
+    data/qml/SofaViews/SofaViewer.qml
+    data/qml/SofaViews/SofaDataView.qml
+    data/qml/SofaViews/ImageViewer.qml
+    data/qml/SofaViews/PythonConsole.qml
+    data/qml/SofaViews/SofaDataListView.qml
+    data/qml/SofaViews/SofaSceneGraphView.qml
+    data/qml/SofaViews/SofaSceneToolPanel.qml
+    data/qml/SofaViews/SofaSimulationControl.qml
+    data/qml/SofaViews/SofaVisualizationControl.qml
+    data/qml/SofaViews/AffineTransformationController.qml
+    data/qml/SofaViews/ColorSelector.qml
+    data/qml/SofaViews/SofaSceneViewer.qml
 
-    data/qml/SofaWidgets/CameraView.qml
-    data/qml/SofaWidgets/EditView.qml
-    data/qml/SofaWidgets/Inspector.qml
-    data/qml/SofaWidgets/Message.qml
+    data/qml/SofaViews/CameraView.qml
+    data/qml/SofaViews/EditView.qml
+    data/qml/SofaViews/Inspector.qml
+    data/qml/SofaViews/Message.qml
 )
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
@@ -172,7 +172,7 @@ list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaBasics/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaInteractors/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
-list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaViews/")
 set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
 
 set(CONFIG_FILES

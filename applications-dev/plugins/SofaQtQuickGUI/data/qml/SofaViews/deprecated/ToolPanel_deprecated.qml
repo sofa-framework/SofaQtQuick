@@ -33,7 +33,7 @@ ColumnLayout {
 
     FolderListModel {
         id: folderListModel
-        folder: "qrc:/SofaWidgets";
+        folder: "qrc:/SofaViews";
         nameFilters: ["*.qml"]
         showDirs: false
         showFiles: false

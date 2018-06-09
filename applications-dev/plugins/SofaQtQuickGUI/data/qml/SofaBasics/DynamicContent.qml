@@ -84,7 +84,7 @@ Item {
 
     property string defaultContentName
     property string currentContentName
-    property string sourceDir: "qrc:/SofaWidgets"
+    property string sourceDir: "qrc:/SofaViews"
     property int    contentUiId: 0
 
     property var    properties
