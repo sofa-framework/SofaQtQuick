@@ -26,8 +26,6 @@ Component {
             height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
         }
         
-        onClosing: destroy();
-        
         title: sofaComponent ? ("Data of component: " + sofaComponent.name()) : "No component to visualize"
         
         property var sofaScene: root.sofaScene
