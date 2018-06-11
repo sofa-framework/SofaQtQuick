@@ -13,3 +13,4 @@ QML_LiveCoding 1.0 QML_LiveCoding.qml
 AffineTransformationController 1.0 AffineTransformationController.qml
 ColorSelector 1.0 ColorSelector.qml
 CameraView 1.0 CameraView.qml
+MessageView 1.0 Message.qml

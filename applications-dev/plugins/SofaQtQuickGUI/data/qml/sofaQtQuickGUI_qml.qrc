@@ -84,5 +84,7 @@
         <file>SofaWidgets/SofaNodeMenu.qml</file>
         <file>SofaWidgets/SofaObjectMenu.qml</file>
         <file>SofaWidgets/SofaWindowDataListView.qml</file>
+        <file>SofaWidgets/SofaWindowComponentHelp.qml</file>
+        <file>SofaWidgets/SofaWindowComponentMessages.qml</file>
     </qresource>
 </RCC>
