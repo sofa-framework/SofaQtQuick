@@ -3,3 +3,5 @@ SofaSearchBar 1.0 SofaSearchBar.qml
 SofaNodeMenu 1.0 SofaNodeMenu.qml
 SofaObjectMenu 1.0 SofaObjectMenu.qml
 SofaWindowDataListView 1.0 SofaWindowDataListView.qml
+SofaWindowComponentHelp 1.0 SofaWindowComponentHelp.qml
+SofaWindowComponentMessages 1.0 SofaWindowComponentMessages.qml
