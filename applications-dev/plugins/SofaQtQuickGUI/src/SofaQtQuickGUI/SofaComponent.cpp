@@ -52,6 +52,13 @@ SofaComponent::SofaComponent(const SofaComponent& sofaComponent) : QObject(),
 
 }
 
+SofaComponent::SofaComponent(const SofaComponent *sofaComponent) : QObject(),
+    mySofaScene(sofaComponent->sofaScene()),
+    myBase(sofaComponent->base())
+{
+
+}
+
 QString SofaComponent::name() const
 {
     const Base* base = SofaComponent::base();
@@ -238,12 +245,47 @@ const Base* SofaComponent::base() const
     const Base* base = nullptr;
 
     // check object existence
-    if(mySofaScene && myBase)
+    if(mySofaScene && myBase){
         if(mySofaScene->componentExists(myBase))
             base = myBase;
-
+    }
     return base;
 }
+
+bool SofaComponent::hasLocations() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+    {
+        return base->findData("Defined in") != nullptr ;
+    }
+    return false;
+}
+
+QString SofaComponent::getSourceLocation() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+    {
+        BaseData* data = base->findData("Defined in") ;
+        if(data)
+            return QString::fromStdString(data->getValueString());
+    }
+    return "('',0)";
+}
+
+QString SofaComponent::getCreationLocation() const
+{
+    const Base* base = SofaComponent::base();
+    if(base)
+    {
+        BaseData* data = base->findData("Instantiated in") ;
+        if(data)
+            return QString::fromStdString(data->getValueString());
+    }
+    return "('',0)";
+}
+
 
 }
 

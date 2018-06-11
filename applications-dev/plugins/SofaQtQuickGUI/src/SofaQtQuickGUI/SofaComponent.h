@@ -42,6 +42,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaComponent : public QObject
 public:
     SofaComponent(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base);
     SofaComponent(const SofaComponent& sofaComponent);
+    SofaComponent(const SofaComponent* sofaComponent);
 
 public:
     Q_INVOKABLE QString name() const;
@@ -55,6 +56,13 @@ public:
 
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent) const;
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;
+
+    /// The following three are used to get extra information about where
+    /// the component is implemented (the source location)
+    /// and where it is instanciated (the scene file location)
+    Q_INVOKABLE bool hasLocations() const ;
+    Q_INVOKABLE QString getSourceLocation() const ;
+    Q_INVOKABLE QString getCreationLocation() const ;
 
 	Q_INVOKABLE QString output() const;
 	Q_INVOKABLE QString warning() const;
@@ -80,8 +88,8 @@ private:
 
 };
 
-}
 
-}
+} /// namespace qtquick
+} /// namespace sofa
 
 #endif // SOFA_COMPONENT_H
