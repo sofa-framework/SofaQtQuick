@@ -28,13 +28,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QQuaternion>
 #include <QProcess>
 #include <QImage>
-
 class QApplication;
 class QQmlApplicationEngine;
 class QOpenGLDebugLogger;
 class QQuickWindow;
 class QQuickItem;
 class QSettings;
+
+#include <SofaQtQuickGUI/SofaComponent.h>
 
 namespace sofa
 {
@@ -66,6 +67,7 @@ public:
 
 signals:
     void overrideCursorShapeChanged();
+    void signalComponent(QString path) ;
 
 public:
     Q_SLOT void copyToClipboard(const QString& text);
