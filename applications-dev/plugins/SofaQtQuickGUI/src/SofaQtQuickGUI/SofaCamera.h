@@ -20,14 +20,16 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SofaCamera_H
 #define SofaCamera_H
 
-#include "SofaQtQuickGUI.h"
 #include <QObject>
 #include <QMatrix4x4>
 #include <QVector3D>
 #include <QPoint>
-#include <Camera.h>
-#include <SofaComponent.h>
+
 #include <SofaBaseVisual/BaseCamera.h>
+
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/SofaComponent.h>
+#include <SofaQtQuickGUI/Camera.h>
 
 namespace sofa
 {

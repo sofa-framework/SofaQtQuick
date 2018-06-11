@@ -20,8 +20,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAQTQUICK_CAMERAVIEW_H
 #define SOFAQTQUICK_CAMERAVIEW_H
 
-#include "SofaQtQuickGUI.h"
-#include "SofaViewer.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/SofaViewer.h>
 
 #include <QtQuick/QQuickFramebufferObject>
 #include <QVector3D>

@@ -82,9 +82,6 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/helper/QMathExtensions.h
 )
 
-set(HEADER_FILES ${HEADER_FILES}
-    src/SofaQtQuickGUI/SofaParticleInteractor.inl
-)
 
 
 set(QML_FILES
@@ -246,6 +243,10 @@ message("Write Plugin list at ${_defaultConfigPluginFilePath}")
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
+# We need to put the .inl after the call of qt5_wrap_cpp to avoid having the inline mocced.
+set(HEADER_FILES ${HEADER_FILES}
+    src/SofaQtQuickGUI/SofaParticleInteractor.inl
+)
 
 
 add_definitions(-DCONFIG_PLUGIN_FILENAME=${_configPluginFileName})
@@ -258,14 +259,12 @@ add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} 
 target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${SOFAQTQUICKGUI_VERSION})
 
 add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQMLJSDEBUGGER")
-
-
 
 if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
