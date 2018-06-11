@@ -141,6 +141,8 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaNodeMenu.qml
     data/qml/SofaWidgets/SofaObjectMenu.qml
     data/qml/SofaWidgets/SofaWindowDataListView.qml
+    data/qml/SofaWidgets/SofaWindowComponentHelp.qml
+    data/qml/SofaWidgets/SofaWindowComponentMessages.qml
     data/qml/SofaWidgets/qmldir
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
