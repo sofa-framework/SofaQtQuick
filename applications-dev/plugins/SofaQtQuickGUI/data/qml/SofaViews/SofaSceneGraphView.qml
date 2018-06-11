@@ -36,8 +36,17 @@ ColumnLayout {
     height: searchBar.implicitHeight + listView.contentHeight
 
     property var sofaScene: SofaApplication.sofaScene
-    readonly property var searchBar: searchBar
 
+    /// Connect the scenegraph view so that it can be notified when the SofaApplication
+    /// is trying to notify that the user is interested to get visual feedback on where componets are.
+    Connections {
+           target: SofaApplication
+           onSignalComponent: {
+               sofaScene.selectedComponent =sofaScene.component("@"+path) ;
+           }
+    }
+
+    readonly property var searchBar: searchBar
     // search bar
     SofaSearchBar {
         id: searchBar
@@ -48,13 +57,23 @@ ColumnLayout {
         Layout.preferredHeight: Math.min(root.height - searchBar.implicitHeight, listView.contentHeight)
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
+        /// Hightlight bar.
+        Component {
+                id: highlightBar
+                Rectangle {
+                    color: "lightsteelblue";
+                    radius: 5
+                }
+        }
+
         ListView {
             id: listView
             anchors.fill: parent
             clip: true
 
             currentIndex: -1
-
+            highlight: highlightBar
+            highlightFollowsCurrentItem: true
             property real rowHeight: 16
 
             Component.onCompleted: currentIndex = root.sofaScene ? listModel.getComponentId(sofaScene.selectedComponent) : 0
@@ -73,7 +92,9 @@ ColumnLayout {
                     if(listModel)
                         listModel.update();
                 }
-                onSelectedComponentChanged: listView.updateCurrentIndex();
+                onSelectedComponentChanged: {
+                    listView.updateCurrentIndex();
+                }
             }
 
             function updateCurrentIndex(index) {
@@ -112,11 +133,7 @@ ColumnLayout {
                     currentIndex = 0;
             }
 
-            highlightMoveDuration: 0
-            highlight: Rectangle {
-                color: "lightsteelblue";
-                radius: 5
-            }
+
 
             delegate: Item {
                 anchors.left: parent ? parent.left : undefined
@@ -231,6 +248,11 @@ ColumnLayout {
 
                                             if(isNode) {
                                                 nodeMenu.sofaData = component.getComponentData("activated");
+                                                if(component.hasLocations())
+                                                {
+                                                    nodeMenu.sourceLocation = component.getSourceLocation()
+                                                    nodeMenu.creationLocation = component.getCreationLocation()
+                                                }
                                                 nodeMenu.nodeActivated = nodeMenu.sofaData.value();
                                                 nodeMenu.popup();
                                             } else {
@@ -247,6 +269,8 @@ ColumnLayout {
                                     SofaWindowDataListView {
                                         id: sofaDataListViewWindowComponent
                                     }
+
+
                                 }
                             }
                         }

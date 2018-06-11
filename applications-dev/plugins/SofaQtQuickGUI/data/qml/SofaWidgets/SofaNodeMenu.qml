@@ -8,13 +8,26 @@ import SofaApplication 1.0
 import SofaSceneListModel 1.0
 import SofaWidgets 1.0
 
+
 Menu {
     id: nodeMenu
-    
-    property QtObject sofaData: null
+
+    function parsePython(c)
+    {
+        c=c.replace("(","[")
+        c=c.replace(")","]")
+        c=c.replace(/'/g,'"')
+        return JSON.parse(c)
+    }
+
     property bool nodeActivated: true
+    property QtObject sofaData: null
+    property string sourceLocation : null
+    property string creationLocation : null
 
-
+    /// Window that contains the object message. The windows is only created when the menu item
+    /// is clicked
+    SofaWindowComponentMessages { id: windowMessage }
 
     MenuItem {
         text: "Add child"
@@ -26,22 +39,61 @@ Menu {
     }
 
     MenuItem {
-        text: "Add component"
+        /// todo(dmarchal 2018-15-06) : Add a component from the factory.
+        text: "Add component (TODO)"
         onTriggered: {
+        }        
+    }
+
+    MenuItem {
+        /// todo(dmarchal 2018-15-06) : This should display the content message backlog
+        /// of the component.
+        text: "Messages (TODO)"
+        onTriggered: {
+            /// Creates and display an help window object
+            windowMessage.createObject(SofaApplication,
+                                       {"sofaScene": root.sofaScene,
+                                        "sofaComponent": listModel.getComponentById(index)});
+        }
+
+
+    }
+
+    MenuItem {
+        /// todo(dmarchal 2018-15-06) : This should display the content of the description string
+        /// provided by Sofa, classname, definition location, declaration location.
+        text: "Infos (TODO)"
+        onTriggered: {
+
         }
     }
 
     MenuSeparator {}
-    
     MenuItem {
-        text: {
-            nodeMenu.nodeActivated ? "Desactivate" : "Activate"
+        enabled: sourceLocation != null
+        text: "Go to definition"
+        onTriggered: {
+            var location = parsePython(sourceLocation)
+            SofaApplication.openInEditor(location[0], location[1])
         }
+    }
+
+    MenuItem {
+        enabled: creationLocation != null
+        text: "Go to creation"
+        onTriggered: {
+            var location = parsePython(creationLocation)
+            SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+    MenuSeparator {}
+    MenuItem {
+        text: nodeMenu.nodeActivated ? "Deactivate" : "Activate"
         onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
     }
 
     MenuSeparator {}
-
     MenuItem {
         text: "Delete"
         onTriggered: {
@@ -50,5 +102,7 @@ Menu {
             listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
         }
     }
+
+
 
 }

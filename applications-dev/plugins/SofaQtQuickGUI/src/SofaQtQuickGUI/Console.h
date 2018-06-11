@@ -33,18 +33,20 @@ namespace sofa {
             class Message;
         }
     }
+    namespace qtquick {
+        class SofaScene;
+        class SofaComponent;
+    }
 }
 
 namespace sofa {
 namespace qtquick {
 namespace console {
 
-
 // I can use 'using' because I'm in my private 'console' namespace so it
 // will not generate namespace pollution.
 using sofa::helper::logging::Message ;
 using sofa::helper::logging::MessageHandler ;
-
 
 /*******************************************************************************
  *  \class A console with features to interact on the messages.
@@ -60,6 +62,7 @@ class SOFA_SOFAQTQUICKGUI_API Console : public QAbstractListModel,
     enum {
         MSG_MESSAGE = 0,
         MSG_EMITTER,
+        MSG_EMITTER_PATH,
         MSG_FILE,
         MSG_LINE,
         MSG_TYPE,
@@ -70,7 +73,20 @@ public:
     Console(QObject *parent = 0);
     ~Console();
 
-    Q_PROPERTY(int messageCount READ getMessageCount NOTIFY messageCountChanged) ;
+    Q_PROPERTY(int messageCount READ getMessageCount NOTIFY messageCountChanged)
+    Q_PROPERTY(SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(SofaComponent* filter READ filter WRITE setFilter NOTIFY filterChanged)
+
+    /// Set the scene associated with a message queue.
+    SofaScene* m_sofaScene {nullptr} ;
+    SofaScene* sofaScene(){ return m_sofaScene; }
+    void setSofaScene(SofaScene* s){ m_sofaScene = s; }
+
+    SofaComponent* m_filter {nullptr} ;
+    /// Set a component to filter the message to return in the engine.
+    SofaComponent* filter(){ return m_filter; }
+    void setFilter(SofaComponent* c){ m_filter = c; }
+
 
     /// inherited from QAbstractListModel
     int rowCount(const QModelIndex& parent) const ;
@@ -86,6 +102,8 @@ public:
 
 signals:
     void messageCountChanged() ;
+    void sofaSceneChanged() ;
+    void filterChanged() ;
 
 private:
     sofa::helper::vector<Message> m_messages ;

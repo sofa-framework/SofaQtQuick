@@ -28,12 +28,13 @@ import SofaScene 1.0
 import SofaMessageList 1.0
 
 Column {
-    id: root
+    property var sofaScene: SofaApplication.sofaScene
+    property var sofaComponent: null
 
+    id: root
     Layout.fillWidth: true
     Layout.fillHeight: true
     anchors.fill: parent
-    property var sofaScene: SofaApplication.sofaScene
 
     Rectangle{
         id: header
@@ -95,7 +96,6 @@ Column {
                         id: viewitem
                         state: index == p1scores.currentIndex ? "s1" : "s2"
 
-
                         width: parent.width;
                         clip : true
                         Behavior on height {
@@ -121,6 +121,7 @@ Column {
                                 id: baseinfo
                                 spacing : 10
                                 height: messagetext.height
+
                                 Text{
                                     id: messagetype
                                     textFormat: Text.RichText
@@ -139,6 +140,23 @@ Column {
                                         if(type == 5)
                                             return "[<font color='#ff0000'>FATAL</font>]: "+emitter
                                     }
+
+                                    /// When we click on the emitter a visual signal is emitted
+                                    /// to indicate where is that the "source" of the message
+                                    MouseArea {
+                                        height : messagetype.height
+                                        width : messagetype.width
+
+                                        /// Change the cursor shape to apointing hand
+                                        cursorShape: Qt.PointingHandCursor
+                                        hoverEnabled: false
+
+                                        /// When the emitter is clicked, it signals that the
+                                        /// user is interested to locate the 'target' componen.
+                                        onClicked: {
+                                            SofaApplication.signalComponent(emitterpath)
+                                        }
+                                    }
                                 }
                                 Text{
                                     id: messagetext
@@ -153,9 +171,23 @@ Column {
                                 width: messagearea.width
                                 wrapMode: Text.WrapAnywhere
                                 textFormat: Text.RichText
-                                text: "Emitted from: <a href='file://"+link+"?"+line+"'>"+link+":"+line+"</a>"
-                                onLinkActivated: {
-                                    Qt.openUrlExternally(link);
+                                text: "Emitted from: <font color='#998800'>"+link+":"+line+"</font>"
+
+                                /// When we click on the emitter a visual signal is emitted
+                                /// to indicate where is that the "source" of the message
+                                MouseArea {
+                                    height : extrainfo.height
+                                    width : extrainfo.width
+
+                                    /// Change the cursor shape to apointing hand
+                                    cursorShape: Qt.PointingHandCursor
+                                    hoverEnabled: false
+
+                                    /// When the emitter is clicked, it signals that the
+                                    /// user is interested to locate the 'target' componen.
+                                    onClicked: {
+                                        SofaApplication.openInEditor(link, line)
+                                    }
                                 }
                             }
                             Rectangle{
@@ -188,28 +220,25 @@ Column {
                                     target: viewitem
                                     baseinfo.height: 15
                                     extrainfo.visible: false
-                                    height: 16
+                                    height: 18
                                     color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                                 }
                             }
                         ]
 
-                        MouseArea {
-                            id: mouse_area1
-                            z: 1
-                            hoverEnabled: false
-                            height : viewitem.height
-                            width : parent.width
-                            onClicked: {
-                                if(index == p1scores.currentIndex)
-                                    p1scores.currentIndex = -1 ;
-                                else
-                                    p1scores.currentIndex = index ;
-                            }
-                            onDoubleClicked: {
-
-                            }
-                        }
+//                        MouseArea {
+//                            id: mouse_area1
+//                            z: 1
+//                            hoverEnabled: false
+//                            height : viewitem.height
+//                            width : parent.width
+//                            onClicked: {
+//                                if(index == p1scores.currentIndex)
+//                                    p1scores.currentIndex = -1 ;
+//                                else
+//                                    p1scores.currentIndex = index ;
+//                            }
+//                        }
 
                     }
                 }

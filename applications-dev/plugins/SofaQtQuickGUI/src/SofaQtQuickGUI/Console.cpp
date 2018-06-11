@@ -33,8 +33,18 @@ using sofa::helper::logging::Message ;
 #include "sofa/core/objectmodel/Base.h"
 using sofa::helper::logging::SofaComponentInfo ;
 
+using sofa::core::objectmodel::BaseObject ;
+using sofa::core::objectmodel::BaseNode;
+
 #include "Console.h"
 
+#include <SofaQtQuickGUI/SofaComponent.h>
+using sofa::qtquick::SofaComponent ;
+
+#include <SofaQtQuickGUI/SofaApplication.h>
+using sofa::qtquick::SofaApplication ;
+
+#include <QQmlEngine>
 
 namespace sofa
 {
@@ -115,6 +125,21 @@ QVariant Console::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(item.fileInfo()->line);
     case MSG_TYPE:
         return QVariant::fromValue((int)item.type());
+    case MSG_EMITTER_PATH:{
+        SofaComponentInfo* nfo = dynamic_cast<SofaComponentInfo*>(item.componentInfo().get()) ;
+        if( nfo != nullptr )
+        {
+            if( nfo->m_component!=nullptr ){
+                const BaseObject* object = nfo->m_component->toBaseObject() ;
+                if(object)
+                    return QVariant::fromValue(QString::fromStdString(object->getPathName())) ;
+                const BaseNode* context = nfo->m_component->toBaseNode() ;
+                if(context)
+                    return QVariant::fromValue(QString::fromStdString(context->getPathName())) ;
+            }
+        }
+        QVariant::fromValue(nullptr);
+    }
     case MSG_EMITTER:{
         SofaComponentInfo* nfo = dynamic_cast<SofaComponentInfo*>(item.componentInfo().get()) ;
         if( nfo != nullptr )
@@ -140,6 +165,7 @@ QHash<int,QByteArray> Console::roleNames() const
 
     roles[MSG_MESSAGE]     = "message";
     roles[MSG_EMITTER]     = "emitter";
+    roles[MSG_EMITTER_PATH]= "emitterpath";
     roles[MSG_TYPE]        = "type";
     roles[MSG_LINE]        = "line";
     roles[MSG_FILE]        = "link";
