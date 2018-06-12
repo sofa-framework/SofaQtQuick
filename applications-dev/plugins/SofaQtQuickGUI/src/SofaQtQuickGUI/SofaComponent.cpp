@@ -143,6 +143,10 @@ QString SofaComponent::getPathName() const
         const BaseObject* baseObject = dynamic_cast<const BaseObject*>(base);
         if (baseObject)
             return QString::fromStdString(baseObject->getPathName());
+
+        const BaseNode* baseNode = dynamic_cast<const BaseNode*>(base);
+        if (baseNode)
+            return QString::fromStdString(baseNode->getPathName());
     }
     return "";
 }
