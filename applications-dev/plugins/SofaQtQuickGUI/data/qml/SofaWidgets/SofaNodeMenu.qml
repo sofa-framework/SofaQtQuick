@@ -70,22 +70,26 @@ Menu {
 
     MenuSeparator {}
     MenuItem {
-        enabled: sourceLocation != null
-        text: "Go to definition"
+        enabled: creationLocation !== null && creationLocation.length !== 0
+        text: "Go to scene"
+        onTriggered: {
+            console.trace()
+            console.log("FCT: "+creationLocation.length)
+            var location = parsePython(creationLocation)
+            SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+    MenuItem {
+        enabled: sourceLocation !== null && sourceLocation.length !== 0
+        text: "Go to implementation"
         onTriggered: {
             var location = parsePython(sourceLocation)
             SofaApplication.openInEditor(location[0], location[1])
         }
     }
 
-    MenuItem {
-        enabled: creationLocation != null
-        text: "Go to creation"
-        onTriggered: {
-            var location = parsePython(creationLocation)
-            SofaApplication.openInEditor(location[0], location[1])
-        }
-    }
+
 
     MenuSeparator {}
     MenuItem {

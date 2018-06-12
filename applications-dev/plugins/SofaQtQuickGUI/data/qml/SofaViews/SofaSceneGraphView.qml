@@ -248,7 +248,7 @@ ColumnLayout {
 
                                             if(isNode) {
                                                 nodeMenu.sofaData = component.getComponentData("activated");
-                                                if(component.hasLocations())
+                                                if(component.hasLocations()===true)
                                                 {
                                                     nodeMenu.sourceLocation = component.getSourceLocation()
                                                     nodeMenu.creationLocation = component.getCreationLocation()
