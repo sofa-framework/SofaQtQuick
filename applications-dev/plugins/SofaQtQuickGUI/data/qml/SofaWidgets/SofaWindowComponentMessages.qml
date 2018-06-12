@@ -34,7 +34,7 @@ Component {
 
             sourceComponent: MessageView {
                 sofaScene: root.sofaScene
-                sofaComponent: root.sofaComponent
+                sofaSelectedComponent: root.sofaComponent
             }
         }
     }

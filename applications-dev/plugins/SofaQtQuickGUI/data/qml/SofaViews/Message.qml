@@ -19,7 +19,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaBasics 1.0
@@ -28,8 +29,18 @@ import SofaScene 1.0
 import SofaMessageList 1.0
 
 Column {
+    property bool filterByComponent : false
+    property int numSelected: 0
+
     property var sofaScene: SofaApplication.sofaScene
-    property var sofaComponent: null
+    property var sofaSelectedComponent: sofaScene.selectedComponent
+    property string selectedComponentPath : sofaSelectedComponent ? sofaSelectedComponent.getPathName() : ""
+
+    /// We want to reset the counter of selected elements. I'm not sure how to
+    /// do that in a declarative way through properties.
+    onSofaSelectedComponentChanged: { numSelected = 0}
+    onSelectedComponentPathChanged: { numSelected = 0}
+    onFilterByComponentChanged: { numSelected = 0}
 
     id: root
     Layout.fillWidth: true
@@ -39,16 +50,17 @@ Column {
     Rectangle{
         id: header
         width: parent.width
-        height: 16
+        height: headerLayout.height
         color: "darkgrey"
         Row{
+            id: headerLayout
+            spacing: 10
             Text{
                 id: hname
-                text : "Messages (" + SofaMessageList.messageCount + ")"
+                text : "Messages (" + numSelected + "/" + SofaMessageList.messageCount + ")"
                 font.pixelSize: 12
                 font.bold: true
             }
-
             IconButton {
                 id: buttonClearHistory
                 height:12
@@ -56,6 +68,17 @@ Column {
 
                 onClicked: {
                     SofaMessageList.clear();
+                }
+            }    
+            ComboBox {
+                width: 150
+                height:16
+                style: ComboBoxStyle {
+                    font.pixelSize: 12
+                }
+                model: [ "All", "SelectedComponents" ]
+                onActivated: {
+                    filterByComponent = index!==0
                 }
             }
 
@@ -94,10 +117,25 @@ Column {
                 delegate: Component {
                     Rectangle{
                         id: viewitem
-                        state: index == p1scores.currentIndex ? "s1" : "s2"
-
+                        state: "s1"
                         width: parent.width;
                         clip : true
+
+                        /// The message is showned iff the either the message match the emitter's activeFocus:
+                        /// or filtering is disabled.
+                        visible: {
+                            if(filterByComponent && (selectedComponentPath.length != 0))
+                            {
+                                if(emitterpath === selectedComponentPath){
+                                    //numSelected++
+                                    return true
+                                }
+                                return false
+                            }
+                            //numSelected++
+                            return true
+                        }
+
                         Behavior on height {
                             NumberAnimation {
                                 easing.type: Easing.InOutCubic
@@ -206,11 +244,22 @@ Column {
 
                         states: [
                             State {
+                                name: "hidden"
+                                PropertyChanges {
+                                    target: viewitem
+                                    visible: false
+                                    height: childrenRect.height
+
+                                    color: "lightsteelblue"
+                                }
+                            },
+                            State {
                                 name: "s1"
                                 PropertyChanges {
                                     target: viewitem
                                     extrainfo.visible: true
                                     height: childrenRect.height
+
                                     color: "lightsteelblue"
                                 }
                             },
@@ -220,7 +269,9 @@ Column {
                                     target: viewitem
                                     baseinfo.height: 15
                                     extrainfo.visible: false
-                                    height: 18
+                                    //height: 18
+                                    //height: root.filterByComponent && root.sofaSelectedComponent !== emitter? 0 : childrenRect.height
+
                                     color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                                 }
                             }
