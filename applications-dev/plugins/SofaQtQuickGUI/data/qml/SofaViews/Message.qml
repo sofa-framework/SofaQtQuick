@@ -30,7 +30,6 @@ import SofaMessageList 1.0
 
 Column {
     property bool filterByComponent : false
-    property int numSelected: 0
 
     property var sofaScene: SofaApplication.sofaScene
     property var sofaSelectedComponent: sofaScene.selectedComponent
@@ -38,10 +37,6 @@ Column {
 
     /// We want to reset the counter of selected elements. I'm not sure how to
     /// do that in a declarative way through properties.
-    onSofaSelectedComponentChanged: { numSelected = 0}
-    onSelectedComponentPathChanged: { numSelected = 0}
-    onFilterByComponentChanged: { numSelected = 0}
-
     id: root
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -57,7 +52,7 @@ Column {
             spacing: 10
             Text{
                 id: hname
-                text : "Messages (" + numSelected + "/" + SofaMessageList.messageCount + ")"
+                text : "Messages (" + SofaMessageList.messageCount + ")"
                 font.pixelSize: 12
                 font.bold: true
             }
@@ -69,7 +64,7 @@ Column {
                 onClicked: {
                     SofaMessageList.clear();
                 }
-            }    
+            }
             ComboBox {
                 width: 150
                 height:16
@@ -91,7 +86,10 @@ Column {
         implicitHeight: parent.height
         color : "lightgrey"
 
+
         ScrollView {
+            id: view
+
             Layout.fillWidth: true
             width: parent.width
             height: parent.height
@@ -127,12 +125,10 @@ Column {
                             if(filterByComponent && (selectedComponentPath.length != 0))
                             {
                                 if(emitterpath === selectedComponentPath){
-                                    //numSelected++
                                     return true
                                 }
                                 return false
                             }
-                            //numSelected++
                             return true
                         }
 
@@ -144,8 +140,8 @@ Column {
                         }
 
                         onChildrenRectChanged: {
-                           if(viewitem.state=="s1")
-                               height=baseinfo.height+extrainfo.height+3
+                            if(viewitem.state=="s1")
+                                height=baseinfo.height+extrainfo.height+3
                         }
 
                         property alias baseinfo: baseinfo
@@ -277,19 +273,19 @@ Column {
                             }
                         ]
 
-//                        MouseArea {
-//                            id: mouse_area1
-//                            z: 1
-//                            hoverEnabled: false
-//                            height : viewitem.height
-//                            width : parent.width
-//                            onClicked: {
-//                                if(index == p1scores.currentIndex)
-//                                    p1scores.currentIndex = -1 ;
-//                                else
-//                                    p1scores.currentIndex = index ;
-//                            }
-//                        }
+                        //                        MouseArea {
+                        //                            id: mouse_area1
+                        //                            z: 1
+                        //                            hoverEnabled: false
+                        //                            height : viewitem.height
+                        //                            width : parent.width
+                        //                            onClicked: {
+                        //                                if(index == p1scores.currentIndex)
+                        //                                    p1scores.currentIndex = -1 ;
+                        //                                else
+                        //                                    p1scores.currentIndex = index ;
+                        //                            }
+                        //                        }
 
                     }
                 }
