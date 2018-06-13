@@ -259,13 +259,16 @@ Rectangle{
                                         TextField {
                                             Layout.fillWidth: true
                                             Layout.fillHeight: true
-                                            Layout.preferredHeight: implicitHeight-4
+                                            Layout.preferredHeight: 20 //implicitHeight-4
                                             readOnly: true
-
+                                            padding:0
+                                            topPadding:0
+                                            bottomPadding:0
                                             background: Rectangle {
-                                                    color: isReadOnly ? "gray" : "white"
-                                                    border.color: "black"
-                                                    border.width: 1
+                                                color: isReadOnly ? "lightgray" : "white"
+                                                border.color: "gray"
+                                                border.width: 1
+                                                radius: 3
                                             }
                                             font.pixelSize: 12
 
@@ -273,33 +276,33 @@ Rectangle{
                                             onTextChanged: cursorPosition = 0;
 
                                             DropArea {
-                                                   id: dropArea;
-                                                   anchors.fill: parent;
-                                                   onEntered: function(drag)
-                                                   {
-                                                       if (!isReadOnly && drag.source && drag.source.sofacomponent)
-                                                       {
-                                                           console.log("Im' "+path)
-                                                           console.log("EVT: " + drag)
-                                                           console.log("EVT: " + drag.source)
-                                                           console.log("EVT: " + drag.source.sofacomponent.getPathName())
+                                                id: dropArea;
+                                                anchors.fill: parent;
+                                                onEntered: function(drag)
+                                                {
+                                                    if (!isReadOnly && drag.source && drag.source.sofacomponent)
+                                                    {
+                                                        console.log("Im' "+path)
+                                                        console.log("EVT: " + drag)
+                                                        console.log("EVT: " + drag.source)
+                                                        console.log("EVT: " + drag.source.sofacomponent.getPathName())
 
-                                                           var sofalink = SofaApplication.sofaScene.link(path)
-                                                           sofalink.setValue(drag.source.sofacomponent.getPathName())
+                                                        var sofalink = SofaApplication.sofaScene.link(path)
+                                                        sofalink.setValue(drag.source.sofacomponent.getPathName())
 
-                                                           parent.background.border.color = "red";
-                                                           drag.accept (Qt.CopyAction);
-                                                           console.log("onEntered");
-                                                       }
-                                                   }
-                                                   onDropped: {
-                                                       console.log ("onDropped");
-                                                   }
-                                                   onExited: {
-                                                       parent.background.border.color = "back";
-                                                       console.log ("onExited");
-                                                   }
-                                           }
+                                                        parent.background.border.color = "red";
+                                                        drag.accept (Qt.CopyAction);
+                                                        console.log("onEntered");
+                                                    }
+                                                }
+                                                onDropped: {
+                                                    console.log ("onDropped");
+                                                }
+                                                onExited: {
+                                                    parent.background.border.color = "back";
+                                                    console.log ("onExited");
+                                                }
+                                            }
 
                                         }
 
@@ -408,88 +411,60 @@ Rectangle{
         }
     }
 
-    Column{
+    Rectangle
+    {
+        id: header
         width: parent.width
-        height: parent.height
-        clip:true
+        height: 20
 
-        /// This is the header of the inspetor.
-        RowLayout{
-            width : parent.width
-            height : 40
-            spacing: 6
-            Rectangle{
-                //width: parent.width
-                height: 20
-                color: SofaApplication.style.headerBackgroundColor
-                Text{
-                   text : "Details " + ((sofaSelectedComponent===null)? "" : "("+ sofaSelectedComponent.className() + ")")
-                   font.pixelSize: 14
-                   font.bold: true
-                }
+        /// This is the header of the inspector.
+        Rectangle{
+            id: header1
+            anchors.left: header.left
+            anchors.top: header.top
+            width : header.width
+            height : 20
+            color: SofaApplication.style.headerBackgroundColor
+
+            Text{
+                id: detailsArea
+                anchors.top : header1.top
+                anchors.left : header1.left
+                anchors.verticalCenter: header1.verticalCenter
+                text : "Details " + ((sofaSelectedComponent===null)? "" : "("+ sofaSelectedComponent.className() + ")")
+                font.pixelSize: 14
+                font.bold: true
             }
-
+            Label {
+                id: showAllLabel
+                anchors.right: isDebug.left
+                anchors.verticalCenter: header1.verticalCenter
+                text: "Show all:"
+            }
             CheckBox {
                 id : isDebug
+                anchors.right: header1.right
+                anchors.verticalCenter: header1.verticalCenter
             }
         }
+    }
 
-        Rectangle{
-            width: parent.width
-            height: 22
-            color: SofaApplication.style.headerBackgroundColor
-            clip: true
+    ScrollView {
+        anchors.top: header.bottom
+        width: parent.width
+        height: parent.height - 42
+        // TODO(dmarchal): fix the following constant.
 
-            Row{
-                Text{
-                    id: nameText
-                    height: 20
-                    text : "name:"
-                    font.pixelSize: 12
-                    verticalAlignment: Text.AlignVCenter
-                }
-                TextField {
-                    implicitWidth: 200
-                    implicitHeight: 22
-                    id: nameTextField
-                    text: (sofaSelectedComponent===null)? "" : sofaSelectedComponent.name()
-
-                    background: Rectangle {
-                            radius: 2
-                            color: "white"
-                            border.color: "grey"
-                            border.width: 0
-                    }
-                    font.pixelSize: 12
-
-                    verticalAlignment: Text.AlignVCenter;
-
-                    onEditingFinished : {
-                        sofaSelectedComponent.beginDataChange() ;
-                        sofaSelectedComponent.setName(text)
-                        sofaSelectedComponent.endDataChange() ;
-                    }
-                }
-            }
-        }
-
-        ScrollView {
+        ListView {
+            id : theView
+            anchors.fill: parent
             Layout.fillWidth: true
-            width: parent.width
-            // TODO(dmarchal): fix the following constant.
-            height: parent.height - 42
+            Layout.preferredHeight: contentHeight
+            clip: true
+            property var sofaScene: SofaApplication.sofaScene
+            property var sofaSelectedComponent: sofaScene ? sofaScene.selectedComponent : null
 
-            ListView {
-                id : theView
-                anchors.fill: parent
-                Layout.fillWidth: true
-                Layout.preferredHeight: contentHeight
-                clip: true
-                property var sofaScene: SofaApplication.sofaScene
-                property var sofaSelectedComponent: sofaScene ? sofaScene.selectedComponent : null
-
-                model : visualModel
-            }
+            model : visualModel
         }
     }
 }
