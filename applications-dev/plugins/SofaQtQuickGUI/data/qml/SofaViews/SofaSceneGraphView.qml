@@ -37,19 +37,21 @@ ColumnLayout {
 
     property var sofaScene: SofaApplication.sofaScene
 
-    /// Connect the scenegraph view so that it can be notified when the SofaApplication
-    /// is trying to notify that the user is interested to get visual feedback on where componets are.
-    Connections {
-           target: SofaApplication
-           onSignalComponent: {
-               sofaScene.selectedComponent =sofaScene.component("@"+path) ;
-           }
-    }
-
     readonly property var searchBar: searchBar
     // search bar
     SofaSearchBar {
         id: searchBar
+    }
+
+    /// Connect the scenegraph view so that it can be notified when the SofaApplication
+    /// is trying to notify that the user is interested to get visual feedback on where componets are.
+    Connections {
+        target: SofaApplication
+        onSignalComponent: {
+            var c = sofaScene.component("@"+path)
+            if(c)
+                sofaScene.selectedComponent = c
+        }
     }
 
     ScrollView {
@@ -57,22 +59,17 @@ ColumnLayout {
         Layout.preferredHeight: Math.min(root.height - searchBar.implicitHeight, listView.contentHeight)
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
-        /// Hightlight bar.
-        Component {
-                id: highlightBar
-                Rectangle {
-                    color: "lightsteelblue";
-                    radius: 5
-                }
-        }
-
         ListView {
             id: listView
             anchors.fill: parent
             clip: true
 
             currentIndex: -1
-            highlight: highlightBar
+            highlight: Rectangle {
+                color: "lightsteelblue"
+                radius: 5
+            }
+
             highlightFollowsCurrentItem: true
             property real rowHeight: 16
 
@@ -269,8 +266,6 @@ ColumnLayout {
                                     SofaWindowDataListView {
                                         id: sofaDataListViewWindowComponent
                                     }
-
-
                                 }
                             }
                         }

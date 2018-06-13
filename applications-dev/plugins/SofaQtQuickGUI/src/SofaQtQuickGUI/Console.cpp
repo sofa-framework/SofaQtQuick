@@ -138,7 +138,7 @@ QVariant Console::data(const QModelIndex& index, int role) const
                     return QVariant::fromValue(QString::fromStdString(context->getPathName())) ;
             }
         }
-        QVariant::fromValue(nullptr);
+        return QVariant::fromValue(nullptr);
     }
     case MSG_EMITTER:{
         SofaComponentInfo* nfo = dynamic_cast<SofaComponentInfo*>(item.componentInfo().get()) ;
