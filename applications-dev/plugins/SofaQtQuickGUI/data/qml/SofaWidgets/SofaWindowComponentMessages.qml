@@ -5,11 +5,12 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
-import SofaSceneListModel 1.0
+//import SofaSceneListModel 1.0
 import SofaViews 1.0
 
 Component {
     Window {
+        property var sofaComponent: null
         id: root
         width: 400
         height: 600
@@ -18,23 +19,17 @@ Component {
         visible: true
         color: "lightgrey"
 
-        Component.onCompleted: {
-            width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
-            height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
-        }
-
         title: sofaComponent ? ("Messages for component: " + sofaComponent.name()) : "No component to visualize"
 
-        property var sofaScene: root.sofaScene
-        property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
+        //property var sofaScene: root.sofaScene
+        //property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
 
         Loader {
             id: loader
             anchors.fill: parent
-
             sourceComponent: MessageView {
-                sofaScene: root.sofaScene
-                sofaSelectedComponent: root.sofaComponent
+                filterByComponent: true
+                sofaSelectedComponent: sofaComponent
             }
         }
     }

@@ -52,8 +52,7 @@ Menu {
         onTriggered: {
             /// Creates and display an help window object
             windowMessage.createObject(SofaApplication,
-                                       {"sofaScene": root.sofaScene,
-                                        "sofaComponent": listModel.getComponentById(index)});
+                                       {"sofaComponent": listModel.getComponentById(index)});
         }
 
 
@@ -74,7 +73,6 @@ Menu {
         text: "Go to scene"
         onTriggered: {
             console.trace()
-            console.log("FCT: "+creationLocation.length)
             var location = parsePython(creationLocation)
             SofaApplication.openInEditor(location[0], location[1])
         }

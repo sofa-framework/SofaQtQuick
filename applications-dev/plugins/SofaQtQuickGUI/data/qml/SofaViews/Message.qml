@@ -26,7 +26,6 @@ import QtQuick.Dialogs 1.1
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaScene 1.0
-import SofaMessageList 1.0
 
 Column {
     property bool filterByComponent : false
@@ -52,7 +51,7 @@ Column {
             spacing: 10
             Text{
                 id: hname
-                text : "Messages (" + SofaMessageList.messageCount + ")"
+                text : "Messages (" + SofaApplication.sofaMessageList.messageCount + ")"
                 font.pixelSize: 12
                 font.bold: true
             }
@@ -62,7 +61,7 @@ Column {
                 iconSource: "qrc:/icon/invalid.png"
 
                 onClicked: {
-                    SofaMessageList.clear();
+                    SofaApplication.sofaMessageList.clear();
                 }
             }
             ComboBox {
@@ -71,6 +70,7 @@ Column {
                 style: ComboBoxStyle {
                     font.pixelSize: 12
                 }
+                currentIndex: filterByComponent? 1 : 0
                 model: [ "All", "SelectedComponents" ]
                 onActivated: {
                     filterByComponent = index!==0
@@ -97,14 +97,14 @@ Column {
             ListView {
                 anchors.fill: parent
                 id: p1scores
-                model: SofaMessageList
+                model: SofaApplication.sofaMessageList
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
                 focus: true
 
                 Connections {
-                    target : SofaMessageList
+                    target : SofaApplication.sofaMessageList
                     onRowsRemoved : {
                         if( p1scores.currentIndex <= 0 ){
                             p1scores.currentIndex = -1
@@ -162,17 +162,17 @@ Column {
                                     text: {
                                         // Info=0, Advice, Deprecated, Warning, Error, Fatal,
                                         if(type == 0)
-                                            return "[<font color='#00ff00'>INFO</font>]: "+emitter
+                                            return "[<font color='#00ff00'>INFO</font>]: <font color='#998800'><u>"+emitter+"</font>"
                                         if(type == 1)
-                                            return "[<font color='#00ff00'>ADVICE</font>]: "+emitter
+                                            return "[<font color='#00ff00'>ADVICE</font>]: <font color='#998800'><u>"+emitter+"</font>"
                                         if(type == 2)
-                                            return "[<font color='#ff0000'>DEPRECATED</font>]: "+emitter
+                                            return "[<font color='#ff0000'>DEPRECATED</font>]: <font color='#998800'><u>"+emitter+"</font>"
                                         if(type == 3)
-                                            return "[<font color='#998800'>WARNING</font>]: "+emitter
+                                            return "[<font color='#998800'>WARNING</font>]: <font color='#998800'><u>"+emitter+"</font>"
                                         if(type == 4)
-                                            return "[<font color='#ff0000'>ERROR</font>]: "+emitter
+                                            return "[<font color='#ff0000'>ERROR</font>]: <font color='#998800'><u>"+emitter+"</font>"
                                         if(type == 5)
-                                            return "[<font color='#ff0000'>FATAL</font>]: "+emitter
+                                            return "[<font color='#ff0000'>FATAL</font>]: <font color='#998800'><u>"+emitter+"</font>"
                                     }
 
                                     /// When we click on the emitter a visual signal is emitted
@@ -183,11 +183,15 @@ Column {
 
                                         /// Change the cursor shape to apointing hand
                                         cursorShape: Qt.PointingHandCursor
-                                        hoverEnabled: false
+                                        hoverEnabled: true
+
+                                        onEntered: { sofaScene.statusMessage = "Left-click to select the message emitter." }
+                                        onExited: { sofaScene.statusMessage = "" }
 
                                         /// When the emitter is clicked, it signals that the
                                         /// user is interested to locate the 'target' componen.
                                         onClicked: {
+                                            sofaScene.statusMessage = "Click to select message emitter."
                                             SofaApplication.signalComponent(emitterpath)
                                         }
                                     }
@@ -215,7 +219,10 @@ Column {
 
                                     /// Change the cursor shape to apointing hand
                                     cursorShape: Qt.PointingHandCursor
-                                    hoverEnabled: false
+                                    hoverEnabled: true
+
+                                    onEntered: { sofaScene.statusMessage = "Left-click to open this file in an external text editor." }
+                                    onExited: { sofaScene.statusMessage = "" }
 
                                     /// When the emitter is clicked, it signals that the
                                     /// user is interested to locate the 'target' componen.
@@ -238,17 +245,7 @@ Column {
                             }
                         }
 
-                        states: [
-                            State {
-                                name: "hidden"
-                                PropertyChanges {
-                                    target: viewitem
-                                    visible: false
-                                    height: childrenRect.height
-
-                                    color: "lightsteelblue"
-                                }
-                            },
+                        states: [                           
                             State {
                                 name: "s1"
                                 PropertyChanges {
@@ -266,27 +263,10 @@ Column {
                                     baseinfo.height: 15
                                     extrainfo.visible: false
                                     //height: 18
-                                    //height: root.filterByComponent && root.sofaSelectedComponent !== emitter? 0 : childrenRect.height
-
                                     color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                                 }
                             }
                         ]
-
-                        //                        MouseArea {
-                        //                            id: mouse_area1
-                        //                            z: 1
-                        //                            hoverEnabled: false
-                        //                            height : viewitem.height
-                        //                            width : parent.width
-                        //                            onClicked: {
-                        //                                if(index == p1scores.currentIndex)
-                        //                                    p1scores.currentIndex = -1 ;
-                        //                                else
-                        //                                    p1scores.currentIndex = index ;
-                        //                            }
-                        //                        }
-
                     }
                 }
                 highlightFollowsCurrentItem: true
