@@ -174,7 +174,6 @@ void SofaInspectorDataListModel::update()
             }
 
         }
-
     }
 }
 
@@ -183,17 +182,10 @@ void SofaInspectorDataListModel::setSofaSelectedComponent(SofaComponent* newSofa
     if(newSofaComponent == m_selectedsofacomponent)
         return;
 
-    if(m_selectedsofacomponent!=nullptr)
-        disconnect(m_selectedsofacomponent, SIGNAL(dataHasChanged()),
-                   this, SLOT(handleDataHasChanged()));
-
     m_selectedsofacomponent = newSofaComponent;
 
     if(newSofaComponent == nullptr)
         return ;
-
-    connect(m_selectedsofacomponent, SIGNAL(dataHasChanged()),
-            this, SLOT(handleDataHasChanged()));
 
     beginResetModel();
     update();
