@@ -5,24 +5,24 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
-//import SofaSceneListModel 1.0
 import SofaViews 1.0
 
+///////////////////////////////////////////////////////////////////////////:
+/// This windows contains a MessageView that is configured to show only
+/// the message for a given component.
+///////////////////////////////////////////////////////////////////////////:
 Component {
     Window {
         property var sofaComponent: null
         id: root
-        width: 400
-        height: 600
+        width: 600
+        height: 400
         modality: Qt.NonModal
         flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
         visible: true
         color: "lightgrey"
 
         title: sofaComponent ? ("Messages for component: " + sofaComponent.name()) : "No component to visualize"
-
-        //property var sofaScene: root.sofaScene
-        //property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
 
         Loader {
             id: loader

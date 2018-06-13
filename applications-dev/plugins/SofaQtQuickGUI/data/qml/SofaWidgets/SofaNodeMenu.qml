@@ -46,9 +46,7 @@ Menu {
     }
 
     MenuItem {
-        /// todo(dmarchal 2018-15-06) : This should display the content message backlog
-        /// of the component.
-        text: "Messages (TODO)"
+        text: "Messages"
         onTriggered: {
             /// Creates and display an help window object
             windowMessage.createObject(SofaApplication,
