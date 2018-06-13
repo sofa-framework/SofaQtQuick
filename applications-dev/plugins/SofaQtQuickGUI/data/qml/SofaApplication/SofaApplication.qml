@@ -26,6 +26,7 @@ import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
+import SofaMessageList 1.0
 
 SofaApplication {
     id: root
@@ -33,8 +34,8 @@ SofaApplication {
     property var style : MainStyle
 
     ////////////////////////////////////////////////// SOFASCENE
-
     property var sofaScene: null
+    property QtObject sofaMessageList : SofaMessageList
 
     property var sceneSettings: Settings {
         category: "scene"
