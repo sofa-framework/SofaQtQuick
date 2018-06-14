@@ -170,7 +170,7 @@ public:
     Q_INVOKABLE bool reinitComponent(const QString& path);
     Q_INVOKABLE bool addComponent(SofaComponent* sofaComponent);
     Q_INVOKABLE bool removeComponent(SofaComponent* sofaComponent);
-    Q_INVOKABLE bool addNodeTo(SofaComponent* sofaComponent);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* addNodeTo(sofa::qtquick::SofaComponent* sofaComponent);
 
     Q_INVOKABLE bool areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
     Q_INVOKABLE bool areInSameBranch(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);

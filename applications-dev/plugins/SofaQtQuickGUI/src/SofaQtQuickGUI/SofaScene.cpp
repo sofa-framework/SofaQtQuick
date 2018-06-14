@@ -849,20 +849,17 @@ bool SofaScene::removeComponent(SofaComponent* sofaComponent)
 }
 
 
-bool SofaScene::addNodeTo(SofaComponent* sofaComponent)
+SofaComponent* SofaScene::addNodeTo(SofaComponent* sofaComponent)
 {
-    msg_info("SofaScene") << "add a new Node !!! " ;
-
     if(!sofaComponent)
-        return false;
+        return nullptr;
 
     // if component is an object
     BaseObject* baseObject = sofaComponent->base()->toBaseObject();
     if(baseObject)
     {
         dmsg_info("SofaScene") << "This shouldn't happen" ;
-
-        return false;
+        return nullptr;
     }
 
     // if component is a node
@@ -870,11 +867,11 @@ bool SofaScene::addNodeTo(SofaComponent* sofaComponent)
     if(baseNode)
     {
         Node::SPtr node = static_cast<Node*>(baseNode);
-        node->createChild("NEWNODE") ;
-        return true;
+        Node::SPtr newnode = node->createChild("NEWNODE") ;
+        return new SofaComponent(this, newnode.get());
     }
 
-    return false;
+    return nullptr;
 }
 
 bool SofaScene::addComponent(SofaComponent* sofaComponent)
