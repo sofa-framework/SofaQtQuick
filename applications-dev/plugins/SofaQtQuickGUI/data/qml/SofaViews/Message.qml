@@ -29,9 +29,9 @@ import SofaScene 1.0
 
 Column {
     property bool filterByComponent : false
-
     property var sofaScene: SofaApplication.sofaScene
     property var sofaSelectedComponent: sofaScene.selectedComponent
+    property alias showEmittingLocation: buttonShowEmittingLocation.checked
     property string selectedComponentPath : sofaSelectedComponent ? sofaSelectedComponent.getPathName() : ""
 
     /// We want to reset the counter of selected elements. I'm not sure how to
@@ -44,39 +44,57 @@ Column {
     Rectangle{
         id: header
         width: parent.width
-        height: headerLayout.height
-        color: "darkgrey"
-        Row{
-            id: headerLayout
-            spacing: 10
-            Text{
-                id: hname
-                text : "Messages (" + SofaApplication.sofaMessageList.messageCount + ")"
+        height: 20
+        color: SofaApplication.style.headerBackgroundColor
+
+        Text{
+            id: hname
+            anchors.left: header.left
+            anchors.top: header.top
+            anchors.bottom: header.bottom
+            font.pixelSize: 12
+            font.bold: true
+            text : "Messages (" + SofaApplication.sofaMessageList.messageCount + ")"
+        }
+        IconButton {
+            id: buttonClearHistory
+            anchors.left: hname.right
+            anchors.top: header.top
+            anchors.bottom: header.bottom
+            iconSource: "qrc:/icon/invalid.png"
+            onClicked: SofaApplication.sofaMessageList.clear();
+        }
+        ComboBox {
+            anchors.left: buttonClearHistory.right
+            anchors.top: header.top
+            anchors.bottom: header.bottom
+            width: 150
+            style: ComboBoxStyle {
                 font.pixelSize: 12
-                font.bold: true
             }
-            IconButton {
-                id: buttonClearHistory
-                height:12
-                iconSource: "qrc:/icon/invalid.png"
-
-                onClicked: {
-                    SofaApplication.sofaMessageList.clear();
-                }
+            currentIndex: filterByComponent? 1 : 0
+            model: [ "All", "SelectedComponents" ]
+            onActivated: {
+                filterByComponent = index!==0
             }
-            ComboBox {
-                width: 150
-                height:16
-                style: ComboBoxStyle {
-                    font.pixelSize: 12
-                }
-                currentIndex: filterByComponent? 1 : 0
-                model: [ "All", "SelectedComponents" ]
-                onActivated: {
-                    filterByComponent = index!==0
-                }
-            }
-
+        }
+        Text {
+            id: checkBoxLabel
+            text : "Show details:"
+            anchors.right: buttonShowEmittingLocation.left
+            anchors.top: header.top
+            anchors.bottom: header.bottom
+            anchors.leftMargin: 6
+            anchors.rightMargin: 6
+        }
+        CheckBox {
+            id: buttonShowEmittingLocation
+            anchors.right: header.right
+            anchors.top: header.top
+            anchors.bottom: header.bottom
+            anchors.leftMargin: 6
+            anchors.rightMargin: 6
+            checked: true
         }
     }
 
@@ -115,7 +133,7 @@ Column {
                 delegate: Component {
                     Rectangle{
                         id: viewitem
-                        state: "s1"
+                        state: showEmittingLocation ? "s1" : "s2"
                         width: parent.width;
                         clip : true
 
@@ -180,18 +198,17 @@ Column {
                                     MouseArea {
                                         height : messagetype.height
                                         width : messagetype.width
-
+                                        enabled: emitterpath != null
                                         /// Change the cursor shape to apointing hand
                                         cursorShape: Qt.PointingHandCursor
                                         hoverEnabled: true
 
-                                        onEntered: { sofaScene.statusMessage = "Left-click to select the message emitter." }
+                                        onEntered: { sofaScene.statusMessage = "Left-click to select ["+emitterpath+"]" }
                                         onExited: { sofaScene.statusMessage = "" }
 
                                         /// When the emitter is clicked, it signals that the
                                         /// user is interested to locate the 'target' componen.
                                         onClicked: {
-                                            sofaScene.statusMessage = "Click to select message emitter."
                                             SofaApplication.signalComponent(emitterpath)
                                         }
                                     }
@@ -245,14 +262,13 @@ Column {
                             }
                         }
 
-                        states: [                           
+                        states: [
                             State {
                                 name: "s1"
                                 PropertyChanges {
                                     target: viewitem
                                     extrainfo.visible: true
                                     height: childrenRect.height
-
                                     color: "lightsteelblue"
                                 }
                             },
@@ -260,9 +276,8 @@ Column {
                                 name: "s2"
                                 PropertyChanges {
                                     target: viewitem
-                                    baseinfo.height: 15
                                     extrainfo.visible: false
-                                    //height: 18
+                                    height: childrenRect.height
                                     color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
                                 }
                             }
