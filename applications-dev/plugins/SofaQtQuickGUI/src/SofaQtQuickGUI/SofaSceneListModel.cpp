@@ -21,7 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QStack>
 #include <iostream>
-
+#include <algorithm>
 namespace sofa
 {
 
@@ -92,6 +92,7 @@ SofaSceneListModel::Item SofaSceneListModel::buildNodeItem(SofaSceneListModel::I
 
     item.parent = parent;
     item.multiparent = node->getNbParents() > 1;
+    item.firstparent = node->getNbParents()>0? node->getParents()[0] == parent->node : true ;
     item.depth = parent ? parent->depth + 1 : 0;
     item.base = node;
     item.object = 0;
@@ -229,6 +230,7 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
 
     const Item& item = myItems[row];
     bool multiparent = item.multiparent;
+    bool firstparent = item.firstparent;
     int depth = item.depth;
     int visibility = item.visibility;
     Base* base = item.base;
@@ -246,6 +248,8 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(QString::fromStdString(base->getName()));
     case MultiParentRole:
         return QVariant::fromValue(multiparent);
+    case FirstParentRole:
+        return QVariant::fromValue(firstparent);
     case DepthRole:
         return QVariant::fromValue(depth);
     case VisibilityRole:
@@ -269,6 +273,7 @@ QHash<int,QByteArray> SofaSceneListModel::roleNames() const
 
     roles[NameRole]         = "name";
     roles[MultiParentRole]  = "multiparent";
+    roles[FirstParentRole]  = "firstparent";
     roles[DepthRole]        = "depth";
     roles[VisibilityRole]   = "visibility";
     roles[TypeRole]         = "type";
@@ -463,68 +468,75 @@ bool SofaSceneListModel::isAncestor(SofaSceneListModel::Item* ancestor, SofaScen
     return false;
 }
 
+unsigned int SofaSceneListModel::countChildrenOf(const SofaSceneListModel::Item& a)
+{
+    if(a.children.empty())
+        return 0;
+    unsigned int count = a.children.size() ;
+    for(auto c : a.children)
+        count += countChildrenOf(*c) ;
+    return count;
+}
+
 void SofaSceneListModel::addChild(Node* parent, Node* child)
 {
     if(!child)
         return;
 
-    //std::cerr << "++" << child->getName().c_str() << "(" << child << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
-
+    /// Add a child as a root node.
     if(!parent)
     {
+        dmsg_info("SofaSceneListModel") << "add a root node : " << child->getName() ;
         beginInsertRows(QModelIndex(), 0, 0);
-
         myItems.append(buildNodeItem(0, child));
-
         endInsertRows();
+        MutationListener::addChild(parent, child);
+        return ;
     }
-    else
+
+    auto parentItemIt = std::find_if(myItems.begin(), myItems.end(), [parent](const Item& a){ return parent == a.base; });
+    /// Check if the parent is in the Item list, otherwise we have nothing to do;
+    if( parentItemIt == myItems.end() )
     {
-        bool alreadyAdded = false;
+        dmsg_info("SofaSceneListModel") << "The parent is not in the item list : " << parent->getName();
+        return;
+    }
+    Item& parentItem = *parentItemIt;
+    unsigned int parentIdx0 = parentItemIt-myItems.begin();
 
-        QList<Item>::iterator parentItemIt = myItems.begin();
-        while(parentItemIt != myItems.end())
-        {
-            if(parent == parentItemIt->base)
-            {
-                Item* parentItem = &*parentItemIt;
+    /// Check if the child is already in the Item list, if this is the case, then we just have nothing to do
+    /// because this is indicating the it was already added.
+    auto firstChildIt = parentItemIt++ ;
+    auto lastChildIt = firstChildIt+parentItem.children.size() ;
+    if( std::find_if(firstChildIt, lastChildIt, [child](const Item& a){ return child == a.base; }) != lastChildIt )
+    {
+        dmsg_info("SofaSceneListModel") << "Already added in the item list: " << child->getName();
+        return;
+    }
 
-                QList<Item>::iterator itemIt = parentItemIt;
-                while(++itemIt != myItems.end())
-                {
-                    Item* childItem = &*itemIt;
-                    if(childItem->base == child)
-                    {
-                        alreadyAdded = true;
-                        break;
-                    }
+    unsigned int numChildren = countChildrenOf(parentItem) ;
 
-                    if(!isAncestor(parentItem, childItem))
-                        break;
-                }
+    dmsg_info("SofaSceneListModel") << "Adding child node : " << child->getName() << " to " << parent->getName()
+                                    << " number of child is: " << lastChildIt - myItems.begin() << " while " << numChildren ;
 
-                if(alreadyAdded)
-                    break;
+    auto insertIterator = firstChildIt+numChildren+1 ;
+    auto newChildItemIt = myItems.insert(insertIterator, buildNodeItem(&parentItem, child));
 
-                int count = itemIt - myItems.begin();
+    dmsg_info("SofaSceneListModel") << "At desired address: " << (insertIterator)-myItems.begin() ;
+    dmsg_info("SofaSceneListModel") << "At address: " << (newChildItemIt)-myItems.begin() ;
 
-                QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildNodeItem(parentItem, child));
-                parentItem->children.append(&*childItemIt);
+    int idx = newChildItemIt-myItems.begin() ;
 
-                parentItemIt = childItemIt;
+    parentItem.children.append(&*newChildItemIt);
+    bool hidden = newChildItemIt->visibility & Visibility::Hidden;
+    if(!hidden)
+    {
+        beginInsertRows(QModelIndex(), idx, idx);
+        endInsertRows();
 
-                bool hidden = childItemIt->visibility & Visibility::Hidden;
-                if(!hidden)
-                {
-                    beginInsertRows(QModelIndex(), count, count);
-                    endInsertRows();
-                }
-
-                break;
-            }
-            else
-                ++parentItemIt;
-        }
+        unsigned int parentIdx = parentItemIt-myItems.begin();
+        dataChanged(createIndex(parentIdx0, 0), createIndex(parentIdx, 0));
+        std::cout << "UPDATE DATA..." <<  parentIdx << "  " << parentIdx0 <<  std::endl ;
     }
 
     MutationListener::addChild(parent, child);
@@ -622,6 +634,7 @@ void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
                 bool hidden = childItemIt->visibility & Visibility::Hidden;
                 if(!hidden)
                 {
+                    std::cout << "ADDING OBJET " << object->getName() << " to " << parent->getName() << " at " << childItemIt-myItems.begin() << std::endl ;
                     beginInsertRows(QModelIndex(), count, count);
                     endInsertRows();
                 }

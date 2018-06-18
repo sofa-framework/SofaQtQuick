@@ -43,18 +43,59 @@ ColumnLayout {
         id: searchBar
     }
 
+    Item {
+        property bool isActive: false
+        property int  index: 0
+        id: componentSignaler
+        property color color: "blue"
+        property QtObject component: null
+
+        Timer {
+            id : timer
+            interval : 300
+            triggeredOnStart : true
+            onTriggered: {
+                componentSignaler.isActive = running
+                if(!running){
+                    signallingAnimation.stop()
+                    if(componentSignaler.component)
+                       sofaScene.selectedComponent = componentSignaler.component
+                }
+            }
+        }
+
+        function start(i,c){
+            componentSignaler.component = c
+            componentSignaler.index = i
+            timer.start()
+            signallingAnimation.start()
+        }
+
+        ColorAnimation on color {
+            id: signallingAnimation
+            from: "white"
+            to: "lightsteelblue"
+            duration: 150
+            alwaysRunToEnd: true
+            loops: Animation.Infinite
+        }
+    }
+
     /// Connect the scenegraph view so that it can be notified when the SofaApplication
     /// is trying to notify that the user is interested to get visual feedback on where componets are.
     Connections {
         target: SofaApplication
         onSignalComponent: {
             var c = sofaScene.component("@"+path)
-            if(c)
-                sofaScene.selectedComponent = c
+            if(c){
+                var i = listModel.getComponentId(c)
+                componentSignaler.start(i, c)
+            }
         }
     }
 
     ScrollView {
+        anchors.top: searchBar.bottom
         Layout.fillWidth: true
         Layout.preferredHeight: Math.min(root.height - searchBar.implicitHeight, listView.contentHeight)
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
@@ -110,7 +151,6 @@ ColumnLayout {
 
                 if(index >= 0)
                     listView.currentIndex = index;
-
                 updateCurrentIndex.locked = false;
             }
 
@@ -130,8 +170,6 @@ ColumnLayout {
                     currentIndex = 0;
             }
 
-
-
             delegate: Item {
                 anchors.left: parent ? parent.left : undefined
                 anchors.right: parent ? parent.right : undefined
@@ -140,132 +178,157 @@ ColumnLayout {
                 opacity: !(SofaSceneListModel.Disabled & visibility) ? 1.0 : 0.5
 
                 Item {
+                    id: item
                     anchors.fill: parent
-                    anchors.leftMargin: depth * listView.rowHeight
+                    anchors.leftMargin: depth * 12
+
+                    /// The small symbol that can be click to expand/collapse the children of a hierarchy
+                    Image {
+                        id: itemOpenClose
+                        anchors.left : parent.left
+                        width: 16
+                        height: 16
+                        visible:  {
+                            if(isNode)
+                                return true
+                            return false
+                        }
+
+                        source: {
+                            if(undefined !== multiparent && multiparent)
+                            {
+                                if(!firstparent)
+                                   return "qrc:/icon/linkArrow.png"
+                            }
+                            if(SofaSceneListModel.Collapsed & visibility)
+                                return "qrc:/icon/rightArrow.png"
+                            return "qrc:/icon/downArrow.png"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            //enabled: isNode ? collapsible : false
+                            onClicked: {
+                                var currentRow = listView.model.computeItemRow(listView.currentIndex);
+                                listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
+                                listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
+                                root.searchBar.updateFilteredRows();
+                            }
+                        }
+                    }
 
                     RowLayout {
-                        anchors.fill: parent
-                        spacing: 0
+                        anchors.left: itemOpenClose.right
+                        spacing: 2
 
-                        Image {
-                            Layout.preferredWidth: 16
-                            Layout.preferredHeight: Layout.preferredWidth
-                            visible: undefined !== collapsible ? collapsible : false
+                        Item {
+                            implicitHeight: 8
+                            implicitWidth: 12
+                            Rectangle {
+                                id: colorIcon
+                                implicitHeight: 8
+                                implicitWidth: 8
 
-                            source: SofaSceneListModel.Collapsed & visibility ? "qrc:/icon/rightArrow.png" : "qrc:/icon/downArrow.png"
-
-                            MouseArea {
-                                anchors.fill: parent
-                                enabled: undefined !== collapsible ? collapsible : false
-                                onClicked: {
-                                    var currentRow = listView.model.computeItemRow(listView.currentIndex);
-                                    listView.model.setCollapsed(index, !(SofaSceneListModel.Collapsed & visibility))
-
-                                    listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
-                                    root.searchBar.updateFilteredRows();
-                                }
+                                radius: isNode ? implicitHeight*0.5 : 0
+                                color: isNode ? "gray" : Qt.lighter("#FF" + Qt.md5(type).slice(4, 10), 1.5)
+                                border.width: 1
+                                border.color: "black"
+                            }
+                            Rectangle {
+                                anchors.left: colorIcon.left
+                                anchors.leftMargin: 4
+                                visible: (undefined !== multiparent ? multiparent : false)
+                                implicitHeight: 8
+                                implicitWidth: 8
+                                radius: isNode ? implicitHeight*0.5 : 0
+                                color: "gray"
+                                opacity: 0.5
+                                border.width: 1
+                                border.color: "black"
+                            }
+                            Image {
+                                anchors.left: parent.left
+                                height: 8
+                                width: 8
+                                visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
+                                source: "qrc:/icon/disabled.png"
+                                opacity: 1.0
                             }
                         }
 
-                        RowLayout {
+                        Text {
+                            text: ((undefined !== isNode ? !isNode : false) && type && 0 !== type.length ? type + " - ": "") + (name && 0 !== name.length ? name : "")
+                            color: isNode? "black" : Qt.lighter("black",1.2)
                             Layout.fillWidth: true
-                            Layout.preferredHeight: listView.rowHeight
-                            spacing: 2
+                            font.italic: (undefined !== multiparent ? !firstparent : false)
 
-                            RowLayout {
-                                Layout.fillHeight: true
-                                spacing: 0
-
-                                Image {
-                                    visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
-                                    Layout.preferredWidth: listView.rowHeight
-                                    Layout.preferredHeight: Layout.preferredWidth
-
-                                    source: "qrc:/icon/disabled.png"
+                            Rectangle {
+                                id: sa
+                                implicitWidth: parent.implicitWidth
+                                implicitHeight: parent.implicitHeight
+                                z: -1
+                                visible: {
+                                    if( 0 === searchBar.filteredRows.length ){
+                                        if( componentSignaler.isActive && index === componentSignaler.index)
+                                        {
+                                            return true
+                                        }
+                                        return false;
+                                    }
+                                    return -1 !== searchBar.filteredRows.indexOf(index)
                                 }
-                                Rectangle {
-                                    id: colorIcon
 
-                                    Layout.preferredWidth: listView.rowHeight * 0.5
-                                    Layout.preferredHeight: Layout.preferredWidth
-
-                                    radius: isNode ? Layout.preferredWidth * 0.5 : 0
-
-                                    color: isNode ? "black" : Qt.lighter("#FF" + Qt.md5(type).slice(4, 10), 1.5)
-                                    border.width: 1
-                                    border.color: "black"
-                                }
-                                Rectangle {
-                                    visible: (undefined !== multiparent ? multiparent : false)
-                                    Layout.preferredWidth: listView.rowHeight * 0.5
-                                    Layout.preferredHeight: Layout.preferredWidth
-
-                                    radius: isNode ? Layout.preferredWidth * 0.5 : 0
-
-                                    color: colorIcon.color
-                                    border.width: 1
-                                    border.color: "black"
-                                }
+                                color: componentSignaler.color
+                                opacity: 0.5
                             }
 
-                            Text {
-                                text: ((undefined !== isNode ? !isNode : false) && type && 0 !== type.length ? type + " - ": "") + (name && 0 !== name.length ? name : "")
-                                color: Qt.darker(Qt.rgba((depth * 6) % 9 / 8.0, depth % 9 / 8.0, (depth * 3) % 9 / 8.0, 1.0), 1.5)
-                                font.bold: undefined !== isNode ? isNode : false
+                            SofaNodeMenu
+                            {
+                                id: nodeMenu
+                            }
 
-                                Layout.fillWidth: true
+                            SofaObjectMenu {
+                                id: objectMenu
+                            }
 
-                                Rectangle {
-                                    implicitWidth: parent.implicitWidth
-                                    implicitHeight: parent.implicitHeight
-                                    z: -1
-                                    visible: 0 === searchBar.filteredRows.length ? false : -1 !== searchBar.filteredRows.indexOf(index)
+                            MouseArea {
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                onClicked: {
+                                    if(mouse.button === Qt.LeftButton) {
+                                        listView.updateCurrentIndex(index);
+                                    } else if(mouse.button === Qt.RightButton) {
+                                        var component = listModel.getComponentById(index);
 
-                                    color: "yellow"
-                                    opacity: 0.5
-                                }
-
-                                SofaNodeMenu
-                                {
-                                    id: nodeMenu
-                                }
-
-                                SofaObjectMenu {
-                                    id: objectMenu
-                                }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                    onClicked: {
-                                        if(mouse.button === Qt.LeftButton) {
-                                            listView.updateCurrentIndex(index);
-                                        } else if(mouse.button === Qt.RightButton) {
-                                            var component = listModel.getComponentById(index);
-
-                                            if(isNode) {
-                                                nodeMenu.sofaData = component.getComponentData("activated");
-                                                if(component.hasLocations()===true)
-                                                {
-                                                    nodeMenu.sourceLocation = component.getSourceLocation()
-                                                    nodeMenu.creationLocation = component.getCreationLocation()
-                                                }
-                                                nodeMenu.nodeActivated = nodeMenu.sofaData.value();
-                                                nodeMenu.popup();
-                                            } else {
-                                                objectMenu.popup();
+                                        if(isNode) {
+                                            nodeMenu.sofaData = component.getComponentData("activated");
+                                            if(component.hasLocations()===true)
+                                            {
+                                                nodeMenu.sourceLocation = component.getSourceLocation()
+                                                nodeMenu.creationLocation = component.getCreationLocation()
                                             }
+                                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
+                                            nodeMenu.popup();
+                                        } else {
+                                            objectMenu.popup();
                                         }
                                     }
+                                }
 
-                                    onDoubleClicked: {
-                                        if(mouse.button === Qt.LeftButton)
-                                            sofaDataListViewWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": listModel.getComponentById(index)});
+                                onDoubleClicked: {
+                                    if(mouse.button === Qt.LeftButton){
+                                         if(undefined !== multiparent ? multiparent : false){
+                                            var srcNode = listModel.getComponentById(index)
+                                            var t=sofaScene.component("@"+srcNode.getPathName())
+                                            var i=listModel.getComponentId(t)
+                                            componentSignaler.start(i, t)
+                                         }
                                     }
+                                    //sofaDataListViewWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": listModel.getComponentById(index)});
+                                }
 
-                                    SofaWindowDataListView {
-                                        id: sofaDataListViewWindowComponent
-                                    }
+                                SofaWindowDataListView {
+                                    id: sofaDataListViewWindowComponent
                                 }
                             }
                         }

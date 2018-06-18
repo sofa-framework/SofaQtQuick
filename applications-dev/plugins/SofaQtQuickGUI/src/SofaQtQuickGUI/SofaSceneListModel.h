@@ -96,6 +96,7 @@ private:
     enum {
         NameRole = Qt::UserRole + 1,
         MultiParentRole,
+        FirstParentRole,
         DepthRole,
         VisibilityRole,
         TypeRole,
@@ -109,6 +110,7 @@ private:
             parent(0),
             children(0),
             multiparent(false),
+            firstparent(true),
             depth(0),
             visibility(0),
             base(0),
@@ -121,6 +123,7 @@ private:
         Item*                                   parent;
         QVector<Item*>                          children;
         bool                                    multiparent;
+        bool                                    firstparent;
         int                                     depth;
         int                                     visibility;
 
@@ -129,6 +132,7 @@ private:
         sofa::core::objectmodel::BaseNode*      node;
     };
 
+    unsigned int countChildrenOf(const Item& a) ;
     Item buildNodeItem(Item* parent, sofa::core::objectmodel::BaseNode* node) const;
     Item buildObjectItem(Item* parent, sofa::core::objectmodel::BaseObject* object) const;
 

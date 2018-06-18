@@ -33,8 +33,10 @@ Menu {
         text: "Add child"
         onTriggered: {
             var currentRow = listView.model.computeItemRow(listView.currentIndex);
-            sofaScene.addNodeTo(listModel.getComponentById(index));
-            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
+            var newnode = sofaScene.addNodeTo(listModel.getComponentById(index))
+            if(newnode){
+                SofaApplication.signalComponent(newnode.getPathName());
+            }
         }
     }
 
