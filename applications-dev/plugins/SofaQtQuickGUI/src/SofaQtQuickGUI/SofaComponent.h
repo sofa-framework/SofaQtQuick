@@ -20,9 +20,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFA_COMPONENT_H
 #define SOFA_COMPONENT_H
 
+#include <sofa/simulation/Simulation.h>
+
 #include "SofaQtQuickGUI.h"
 #include "SofaData.h"
-#include <sofa/simulation/Simulation.h>
 
 namespace sofa
 {
@@ -53,6 +54,7 @@ public:
     Q_INVOKABLE QString description() const;
     Q_INVOKABLE QString providerName() const;
     Q_INVOKABLE QString getPathName() const;
+    Q_INVOKABLE QObject* parent() ;
 
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent) const;
     Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;

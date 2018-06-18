@@ -256,6 +256,16 @@ const Base* SofaComponent::base() const
     return base;
 }
 
+QObject* SofaComponent::parent()
+{
+    BaseNode* base = dynamic_cast<BaseNode*>(SofaComponent::base());
+    std::cout << "ICI" << (long long)base << std::endl ;
+    if(base && base->getParents().size())
+        return new SofaComponent(mySofaScene, base->getParents()[0]);
+
+    return nullptr;
+}
+
 bool SofaComponent::hasLocations() const
 {
     const Base* base = SofaComponent::base();
