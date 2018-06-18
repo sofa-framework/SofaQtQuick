@@ -41,6 +41,17 @@ Menu {
     }
 
     MenuItem {
+        text: "Add sibling"
+        onTriggered: {
+            var currentRow = listView.model.computeItemRow(listView.currentIndex);
+            var newnode = sofaScene.addNodeTo(listModel.getComponentById(index).parent())
+            if(newnode){
+                SofaApplication.signalComponent(newnode.getPathName());
+            }
+        }
+    }
+
+    MenuItem {
         /// todo(dmarchal 2018-15-06) : Add a component from the factory.
         text: "Add component (TODO)"
         onTriggered: {
@@ -91,6 +102,7 @@ Menu {
 
     MenuSeparator {}
     MenuItem {
+        enabled: (multiparent)? firstparent : true
         text: nodeMenu.nodeActivated ? "Deactivate" : "Activate"
         onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
     }
