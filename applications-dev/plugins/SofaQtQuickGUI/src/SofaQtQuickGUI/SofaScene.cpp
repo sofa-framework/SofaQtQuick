@@ -867,7 +867,15 @@ SofaComponent* SofaScene::addNodeTo(SofaComponent* sofaComponent)
     if(baseNode)
     {
         Node::SPtr node = static_cast<Node*>(baseNode);
-        Node::SPtr newnode = node->createChild("NEWNODE") ;
+        Node::SPtr newnode;
+        std::string name = "NEWNODE" ;
+        if(node->getChild(name)){
+            int id=1;
+            while(node->getChild( name+std::to_string(id) )){id++;}
+            newnode = node->createChild(name+std::to_string(id)) ;
+        }else{
+            newnode = node->createChild(name) ;
+        }
         return new SofaComponent(this, newnode.get());
     }
 
