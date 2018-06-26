@@ -35,16 +35,17 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaDisplayFlagsTreeModel.cpp
     src/SofaQtQuickGUI/SofaPythonInteractor.cpp
     src/SofaQtQuickGUI/SofaInspectorDataListModel.cpp
+    src/SofaQtQuickGUI/SofaFactory.cpp
     src/SofaQtQuickGUI/Console.cpp
     src/SofaQtQuickGUI/PythonConsole.cpp
     src/SofaQtQuickGUI/SofaParticleInteractor.cpp
-    src/SofaQtQuickGUI/Manipulator.cpp
-    src/SofaQtQuickGUI/Manipulator2D_Translation.cpp
-    src/SofaQtQuickGUI/Manipulator2D_Rotation.cpp
-    src/SofaQtQuickGUI/Manipulator3D_Translation.cpp
-    src/SofaQtQuickGUI/Manipulator3D_Rotation.cpp
+    src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
+    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.cpp
+    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.cpp
+    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.cpp
+    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.cpp
     src/SofaQtQuickGUI/SofaCamera.cpp
-    src/SofaQtQuickGUI/ObjectRenderer.cpp
+    src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
 )
 
 set(HEADER_FILES
@@ -69,16 +70,17 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaDisplayFlagsTreeModel.h
     src/SofaQtQuickGUI/SofaPythonInteractor.h
     src/SofaQtQuickGUI/SofaInspectorDataListModel.h
+    src/SofaQtQuickGUI/SofaFactory.h
     src/SofaQtQuickGUI/Console.h
     src/SofaQtQuickGUI/PythonConsole.h
     src/SofaQtQuickGUI/SofaParticleInteractor.h
-    src/SofaQtQuickGUI/Manipulator.h
-    src/SofaQtQuickGUI/Manipulator2D_Translation.h
-    src/SofaQtQuickGUI/Manipulator2D_Rotation.h
-    src/SofaQtQuickGUI/Manipulator3D_Translation.h
-    src/SofaQtQuickGUI/Manipulator3D_Rotation.h
+    src/SofaQtQuickGUI/Manipulators/Manipulator.h
+    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h
+    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h
+    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h
+    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.h
     src/SofaQtQuickGUI/SofaCamera.h
-    src/SofaQtQuickGUI/ObjectRenderer.h
+    src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/helper/QMathExtensions.h
 )
 
@@ -143,6 +145,7 @@ set(QML_FILES
     data/qml/SofaWidgets/SofaWindowDataListView.qml
     data/qml/SofaWidgets/SofaWindowComponentHelp.qml
     data/qml/SofaWidgets/SofaWindowComponentMessages.qml
+    data/qml/SofaWidgets/PopupWindowCreateComponent.qml
     data/qml/SofaWidgets/qmldir
     data/qml/SofaInteractors/qmldir
     data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
@@ -229,6 +232,7 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 add_definitions(${Qt5QuickControls2_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
+
 
 if (WIN32)
     # Does not work with Visual Studio config generation

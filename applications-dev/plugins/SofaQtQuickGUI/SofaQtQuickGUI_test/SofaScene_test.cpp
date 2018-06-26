@@ -1,17 +1,15 @@
-#include <sofa/helper/testing/BaseTest.h>
-using sofa::helper::testing::BaseTest ;
+#include "SofaScene_test.h"
 
-
-class SofaScene_test : public BaseTest
-{
+class Toto : public BaseTest{
 public:
-    void checkGetComponents(){
-
+    void qtTests(){
+        SofaScene_test t;
+        QTest::qExec(&t, {"-platform offscreen"});
     }
 };
 
-TEST_F(SofaScene_test, checkGetComponents)
+TEST_F(Toto, qtTests)
 {
-    checkGetComponents() ;
+    Toto::qtTests();
 }
 
