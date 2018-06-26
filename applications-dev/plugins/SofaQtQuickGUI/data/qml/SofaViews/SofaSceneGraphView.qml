@@ -325,7 +325,6 @@ ColumnLayout {
                                             componentSignaler.start(i, t)
                                          }
                                     }
-                                    //sofaDataListViewWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": listModel.getComponentById(index)});
                                 }
 
                                 SofaWindowDataListView {
