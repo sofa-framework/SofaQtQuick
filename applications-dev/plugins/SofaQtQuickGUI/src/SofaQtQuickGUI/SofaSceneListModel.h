@@ -67,9 +67,9 @@ protected:
     Q_INVOKABLE int computeModelRow(int itemIndex) const;
     Q_INVOKABLE int computeItemRow(int modelIndex) const;
     int computeItemRow(const QModelIndex& index) const;
-    int	rowCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-    QHash<int, QByteArray> roleNames() const;
+    int	rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE QVariant get(int row) const;
 
@@ -87,10 +87,13 @@ signals:
     void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
 
 protected:
-    void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
-    void removeChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
-    void addObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object);
-    void removeObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object);
+
+    /// The following function are inhereted from MutationLister
+    virtual void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
+    virtual void removeChild(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
+    virtual void addObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object) override;
+    virtual void removeObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object)override;
+
 
 private:
     enum {

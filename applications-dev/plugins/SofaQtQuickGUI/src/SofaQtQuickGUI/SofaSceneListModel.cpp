@@ -520,26 +520,24 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
                                     << " number of child is: " << lastChildIt - myItems.begin() << " while " << numChildren ;
 
     auto insertIterator = firstChildIt+numChildren+1 ;
+    int idx = insertIterator-myItems.begin() ;
+    dmsg_info("SofaSceneListModel") << "At desired address: " << idx ;
+
+    //beginInsertRows(QModelIndex(), idx-1, idx-1);
     auto newChildItemIt = myItems.insert(insertIterator, buildNodeItem(&parentItem, child));
 
-    dmsg_info("SofaSceneListModel") << "At desired address: " << (insertIterator)-myItems.begin() ;
-    dmsg_info("SofaSceneListModel") << "At address: " << (newChildItemIt)-myItems.begin() ;
-
-    int idx = newChildItemIt-myItems.begin() ;
-
     parentItem.children.append(&*newChildItemIt);
-    bool hidden = newChildItemIt->visibility & Visibility::Hidden;
-    if(!hidden)
-    {
-        beginInsertRows(QModelIndex(), idx, idx);
-        endInsertRows();
+    //bool hidden = newChildItemIt->visibility & Visibility::Hidden;
+    //if(!hidden)
+    //{
 
-        unsigned int parentIdx = parentItemIt-myItems.begin();
-        dataChanged(createIndex(parentIdx0, 0), createIndex(parentIdx, 0));
-        std::cout << "UPDATE DATA..." <<  parentIdx << "  " << parentIdx0 <<  std::endl ;
-    }
+    //endInsertRows();
 
-    MutationListener::addChild(parent, child);
+    unsigned int parentIdx = parentItemIt-myItems.begin();
+    //dataChanged(createIndex(parentIdx0, 0), createIndex(parentIdx, 0));
+    //}
+
+   MutationListener::addChild(parent, child);
 }
 
 void SofaSceneListModel::removeChild(Node* parent, Node* child)
