@@ -29,6 +29,10 @@ Menu {
     /// is clicked
     SofaWindowComponentMessages { id: windowMessage }
 
+    /// Windows which contains the component creator helper widget with auto-search in
+    /// the factory and other database.
+    PopupWindowCreateComponent { id: popupWindowCreateComponent }
+
     MenuItem {
         text: "Add child"
         onTriggered: {
@@ -55,7 +59,20 @@ Menu {
         /// todo(dmarchal 2018-15-06) : Add a component from the factory.
         text: "Add component (TODO)"
         onTriggered: {
-        }        
+            popupWindowCreateComponent.createObject(SofaApplication,
+                                                    {"sofaComponent": listModel.getComponentById(index)});
+
+        }
+    }
+
+    /// Shows a popup with the Data list view.
+    MenuItem {
+        text: "Data"
+        onTriggered: {
+            sofaDataListViewWindowComponent.createObject(SofaApplication,
+                                                         {"sofaScene": root.sofaScene,
+                                                          "sofaComponent": listModel.getComponentById(index)});
+        }
     }
 
     MenuItem {
@@ -65,8 +82,6 @@ Menu {
             windowMessage.createObject(SofaApplication,
                                        {"sofaComponent": listModel.getComponentById(index)});
         }
-
-
     }
 
     MenuItem {

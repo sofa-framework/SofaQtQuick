@@ -86,5 +86,6 @@
         <file>SofaWidgets/SofaWindowDataListView.qml</file>
         <file>SofaWidgets/SofaWindowComponentHelp.qml</file>
         <file>SofaWidgets/SofaWindowComponentMessages.qml</file>
+        <file>SofaWidgets/PopupWindowCreateComponent.qml</file>
     </qresource>
 </RCC>
