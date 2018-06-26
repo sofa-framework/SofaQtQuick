@@ -38,5 +38,6 @@
         <file>icon/rotate.png</file>
         <file>icon/undo.png</file>
         <file>icon/redo.png</file>
+        <file>icon/linkArrow.png</file>
     </qresource>
 </RCC>

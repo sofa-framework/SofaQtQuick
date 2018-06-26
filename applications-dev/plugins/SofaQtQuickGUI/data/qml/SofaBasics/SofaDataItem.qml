@@ -99,7 +99,6 @@ Item {
         dataObject.value        = object.value;
 
         dataObject.initing      = false;
-
         dataObject.modified     = false;
 
         dataObject.updated();
@@ -229,11 +228,6 @@ Item {
                     dataObject.modified = false;
                 }
             }
-
-//            Item {
-//                Layout.fillWidth: true
-//                Layout.fillHeight: true
-//            }
         }
 
         Item {
@@ -311,21 +305,5 @@ Item {
                 description: "Update the data value"
             }
         }
-
-        /*Image {
-            id: requestUpdate
-            Layout.preferredWidth: 12
-            Layout.preferredHeight: Layout.preferredWidth + 1
-            visible: dataObject.modified
-            verticalAlignment: Image.AlignBottom
-            fillMode: Image.PreserveAspectFit
-
-            source: "qrc:/icon/rightArrow.png"
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.updateData();
-            }
-        }*/
     }
 }

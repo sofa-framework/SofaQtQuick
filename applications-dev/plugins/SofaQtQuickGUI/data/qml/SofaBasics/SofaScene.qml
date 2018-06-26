@@ -37,6 +37,7 @@ SofaScene {
     }
 
     Component.onDestruction: {
+
         if(root === SofaApplication.sofaScene)
             SofaApplication.sofaScene = null;
     }
@@ -50,6 +51,7 @@ SofaScene {
             statusMessage = 'SofaScene loading "' + root.path + '" please wait';
             break;
         case SofaScene.Unloading:
+            SofaApplication.sofaMessageList.clear()
             statusMessage = 'SofaScene releasing "' + root.path + '" please wait';
             break;
         case SofaScene.Error:
