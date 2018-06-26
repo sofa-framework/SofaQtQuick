@@ -511,23 +511,6 @@ void SofaScene::open()
 
         loaderThread->start();
 
-        /*
-        QWindowList windows = qGuiApp->topLevelWindows();
-        for(QWindow* window : windows)
-        {
-            QQuickWindow* quickWindow = qobject_cast<QQuickWindow*>(window);
-            if(quickWindow)
-            {
-                window()->scheduleRenderJob(loaderThread, QQuickWindow::AfterSynchronizingStage);
-                window()->update();
-                break;
-            }
-        }
-
-        // TODO: add a timeout
-        while(!finished)
-            qApp->processEvents(QEventLoop::WaitForMoreEvents);
-        */
     }
     else
     {
@@ -882,7 +865,7 @@ SofaComponent* SofaScene::addNodeTo(SofaComponent* sofaComponent)
     return nullptr;
 }
 
-bool SofaScene::addComponent(SofaComponent* sofaComponent)
+bool SofaScene::createAndAddComponentTo(SofaComponent* sofaComponent, QString name)
 {
     if(!sofaComponent)
         return false;
@@ -991,10 +974,12 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
     if(typeinfo->Text())
     {
         type = "string";
+        properties.insert("autoUpdate", true);
     }
     else if(typeinfo->Scalar())
     {
         type = "number";
+        properties.insert("autoUpdate", true);
         properties.insert("step", 0.1);
         properties.insert("decimals", 14);
     }
@@ -1009,6 +994,7 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
         {
             type = "number";
             properties.insert("decimals", 0);
+            properties.insert("autoUpdate", true);
             if(std::string::npos != typeinfo->name().find("unsigned"))
                 properties.insert("min", 0);
         }
@@ -1060,9 +1046,12 @@ QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
             choices.append(QString::fromStdString(group[i]));
         }
         properties.insert("choices", choices);
+        properties.insert("autoUpdate", true);
+
     }else if(aRGBAColor)
     {
         type = "RGBAColor";
+        properties.insert("autoUpdate", true);
     }
 
     QString widget(data->getWidget());
