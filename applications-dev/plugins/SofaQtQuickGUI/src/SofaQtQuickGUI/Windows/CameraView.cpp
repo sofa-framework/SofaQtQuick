@@ -92,7 +92,7 @@ void CameraView::internalRender(int width, int height) const
         m_visualParams->displayFlags().setShowVisualModels(true) ;
 
         preDraw();
-        mySofaScene->drawVisuals(*this);
+        drawVisuals();
         postDraw();
     }
 }

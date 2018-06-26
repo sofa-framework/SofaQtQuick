@@ -73,6 +73,22 @@ public:
 
     Q_INVOKABLE sofa::qtquick::SofaScene* sofaScene() const;
 
+    static bool hasTag(sofa::core::objectmodel::Base* base, const QStringList& tags)
+    {
+        if(!base)
+            return false;
+
+        if(tags.isEmpty())
+            return true;
+
+        for(const QString& tag : tags)
+            if(base->hasTag(sofa::core::objectmodel::Tag(tag.toStdString())))
+                return true;
+
+        return false;
+    }
+
+
 public slots:
 	void clearOutput();
 	void clearWarning();
