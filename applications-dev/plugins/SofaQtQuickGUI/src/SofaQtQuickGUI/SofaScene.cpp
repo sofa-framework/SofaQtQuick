@@ -37,6 +37,9 @@ using sofa::helper::system::FileSystem ;
 #include <sofa/core/objectmodel/Tag.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
 #include <sofa/core/objectmodel/KeyreleasedEvent.h>
+#include <sofa/core/objectmodel/MouseEvent.h>
+using sofa::core::objectmodel::MouseEvent ;
+
 #include <sofa/core/objectmodel/GUIEvent.h>
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/system/FileSystem.h>
@@ -1649,6 +1652,63 @@ void SofaScene::prepareSceneForDrawing()
 
     mySofaSimulation->updateVisual(mySofaRootNode.get());
     myVisualDirty = false;
+}
+
+void SofaScene::onMouseMove(double x, double y)
+{
+    if(!isReady())
+        return;
+
+    MouseEvent event(MouseEvent::Move, x, y);
+    sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
+}
+
+void SofaScene::onMousePressed(int button, double x, double y)
+{
+    if(!isReady())
+        return;
+
+    MouseEvent::State s;
+    switch(button)
+    {
+        case 1:
+            s = MouseEvent::LeftPressed ;
+            break;
+        case 2:
+            s = MouseEvent::RightPressed ;
+            break;
+        case 4:
+            s = MouseEvent::MiddlePressed ;
+            break;
+        default:
+            s = MouseEvent::AnyExtraButtonPressed ;
+            break;
+    }
+    MouseEvent event(s, x, y);
+    sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
+
+}
+
+void SofaScene::onMouseReleased(int button, double x, double y)
+{
+    MouseEvent::State s;
+    switch(button)
+    {
+        case 1:
+            s = MouseEvent::LeftReleased ;
+            break;
+        case 2:
+            s = MouseEvent::RightReleased ;
+            break;
+        case 4:
+            s = MouseEvent::MiddleReleased ;
+            break;
+        default:
+            s = MouseEvent::AnyExtraButtonReleased ;
+            break;
+    }
+    MouseEvent event(s, x, y);
+    sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
 }
 
 void SofaScene::onKeyPressed(char key)

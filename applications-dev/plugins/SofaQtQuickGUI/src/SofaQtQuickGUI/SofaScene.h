@@ -224,6 +224,10 @@ public slots:
     void onKeyPressed(char key);
     void onKeyReleased(char key);
 
+    void onMouseMove(double x, double y) ;
+    void onMousePressed(int button, double x, double y) ;
+    void onMouseReleased(int button, double x, double y) ;
+
 signals:
     void stepBegin();
     void stepEnd();

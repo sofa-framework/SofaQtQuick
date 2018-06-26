@@ -88,9 +88,9 @@ EditView {
         }
     }
 
-	Action{
-		shortcut: "F5"
-		onTriggered: root.viewAll()
+    Action{
+        shortcut: "F5"
+        onTriggered: root.viewAll()
     }
 
 
@@ -115,7 +115,7 @@ EditView {
         text: sofaScene ? "Error during sofa scene loading\n" + sofaScene.source.toString().replace("///", "/").replace("file:", "") : "No sofa scene object"
     }
 
-// camera
+    // camera
 
     Component {
         id: cameraComponent
@@ -151,7 +151,7 @@ EditView {
         }
     }
 
-// screenshot / video
+    // screenshot / video
 
     function takeScreenshot(savePath) {
         if(undefined === savePath)
@@ -212,7 +212,7 @@ EditView {
         }
     }
 
-// interactor
+    // interactor
 
     property alias interactor: interactorLoader.item
     property Component interactorComponent: SofaApplication.interactorComponent
@@ -220,7 +220,7 @@ EditView {
     Loader {
         id: interactorLoader
         sourceComponent: root.interactorComponent
-//            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
+        //            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
         onLoaded: {
             var interactor = item;
             interactor.init();
@@ -245,8 +245,7 @@ EditView {
         }
     }
 
-// mouse interaction
-
+    // mouse interaction forwarding to the interactor
     property alias mouseArea: mouseArea
     MouseArea {
         id: mouseArea
@@ -295,16 +294,12 @@ EditView {
         }
     }
 
-// keyboard interaction
-
+    // keyboard interaction
     Keys.onPressed: {
         if(event.isAutoRepeat) {
             event.accepted = true;
             return;
         }
-
-        if(root.sofaScene)
-            root.sofaScene.keyPressed(event);
 
         if(root.interactor)
             root.interactor.keyPressed(event, root);
@@ -318,17 +313,13 @@ EditView {
             return;
         }
 
-        if(root.sofaScene)
-            root.sofaScene.keyReleased(event);
-
         if(root.interactor)
             root.interactor.keyReleased(event, root);
 
         event.accepted = true;
     }
 
-// visual info
-
+    // visual info
     readonly property alias crosshairGizmo: crosshairGizmo
     Item {
         id: crosshairGizmo
@@ -437,7 +428,7 @@ EditView {
         }
     }*/
 
-// toolpanel
+    // toolpanel
 
     Rectangle {
         id: toolPanel
@@ -497,7 +488,7 @@ EditView {
                                 rowSpacing: 2
                                 columns: 2
 
-    // antialiasing
+                                // antialiasing
 
                                 Label {
                                     Layout.fillWidth: true
@@ -569,7 +560,7 @@ EditView {
                                     }
                                 }
 
-    // background
+                                // background
 
                                 Label {
                                     Layout.fillWidth: true
@@ -617,7 +608,7 @@ EditView {
                                     }
                                 }
 
-    // background
+                                // background
 
                                 Label {
                                     Layout.fillWidth: true
@@ -639,7 +630,7 @@ EditView {
                             }
                         }
 
-    // save screenshot / movie
+                        // save screenshot / movie
 
                         GroupBox {
                             id: savePanel
@@ -653,7 +644,7 @@ EditView {
                                 rowSpacing: 2
                                 columns: 2
 
-        // screenshot
+                                // screenshot
 
                                 Item {
                                     Layout.fillWidth: true
@@ -687,7 +678,7 @@ EditView {
                                     }
                                 }
 
-        // movie
+                                // movie
 
                                 Item {
                                     Layout.fillWidth: true
@@ -781,7 +772,7 @@ EditView {
                             }
                         }
 
-    // camera
+                        // camera
 
                         GroupBox {
                             id: cameraPanel
@@ -804,7 +795,7 @@ EditView {
                                         anchors.fill: parent
                                         spacing: 0
 
-        // orthographic
+                                        // orthographic
 
                                         Button {
                                             id: orthoButton
@@ -842,7 +833,7 @@ EditView {
                                             }
                                         }
 
-        // perspective
+                                        // perspective
 
                                         Button {
                                             id: perspectiveButton
@@ -890,7 +881,7 @@ EditView {
                                     RowLayout {
                                         anchors.fill: parent
 
-        // near
+                                        // near
 
                                         Item {
                                             Layout.fillWidth: true
@@ -949,7 +940,7 @@ EditView {
                                             }
                                         }
 
-        // far
+                                        // far
 
                                         Item {
                                             Layout.fillWidth: true
@@ -1049,7 +1040,7 @@ EditView {
                                 //                                    }
                                 //                                }
 
-    // view
+                                // view
 
                                 GroupBox {
                                     implicitWidth: parent.width
@@ -1061,8 +1052,8 @@ EditView {
                                         columns: 2
                                         rowSpacing: 0
                                         columnSpacing: 0
-                                       
-                                       Button {
+
+                                        Button {
                                             Layout.fillWidth: true
                                             Layout.preferredWidth: parent.width
                                             text: "Save"
@@ -1186,7 +1177,7 @@ EditView {
                                                 anchors.fill: parent
                                                 description: "Isometric View"
                                             }
-                                        } 
+                                        }
 
                                     }
                                 }
