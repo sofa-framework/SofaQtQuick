@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaViewer.h"
 #include "SofaScene.h"
-#include "Manipulator.h"
+#include "Manipulators/Manipulator.h"
 
 #include <sofa/simulation/Node.h>
 #include <sofa/core/visual/VisualParams.h>

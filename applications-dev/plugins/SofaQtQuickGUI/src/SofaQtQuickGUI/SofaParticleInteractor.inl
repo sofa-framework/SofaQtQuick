@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaParticleInteractor.h"
 #include "SofaScene.h"
 #include "SofaViewer.h"
-#include "Manipulator.h"
+#include "Manipulators/Manipulator.h"
 
 #include <sofa/core/visual/VisualModel.h>
 #include <sofa/simulation/MechanicalVisitor.h>

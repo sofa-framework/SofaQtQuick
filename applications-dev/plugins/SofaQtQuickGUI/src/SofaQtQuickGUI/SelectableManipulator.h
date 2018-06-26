@@ -22,7 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaQtQuickGUI.h"
 #include "Selectable.h"
-#include "Manipulator.h"
+#include "Manipulators/Manipulator.h"
 
 namespace sofa
 {
