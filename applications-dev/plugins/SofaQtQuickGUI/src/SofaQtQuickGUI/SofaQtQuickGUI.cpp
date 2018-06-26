@@ -33,6 +33,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaComponent.h"
 #include "SofaData.h"
 #include "SofaLink.h"
+#include "SofaViewer.h"
 #include "Selectable.h"
 #include "SelectableManipulator.h"
 #include "SelectableSofaComponent.h"
@@ -41,10 +42,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Models/SofaDataListModel.h"
 #include "Models/SofaInspectorDataListModel.h"
 #include "Models/SofaDisplayFlagsTreeModel.h"
-#include "SofaViewer.h"
-
-#include "windows/CameraView.h"
-#include "windows/EditView.h"
+#include "Windows/CameraView.h"
+#include "Windows/EditView.h"
 
 #include "PythonConsole.h"
 using namespace sofa::qtquick;

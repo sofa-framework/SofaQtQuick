@@ -23,7 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <qmath.h>
 #include <iostream>
 
-#include <SofaQtQuickGUI/helper/QMathExtensions.h>
+#include <SofaQtQuickGUI/Helper/QMathExtensions.h>
 using sofaqtquickgui::helper::QMath ;
 
 #include <SofaBaseVisual/BaseCamera.h>

@@ -18,8 +18,8 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaQtQuickGUI.cpp
     src/SofaQtQuickGUI/SofaApplication.cpp
     src/SofaQtQuickGUI/SofaViewer.cpp
-    src/SofaQtQuickGUI/windows/CameraView.cpp
-    src/SofaQtQuickGUI/windows/EditView.cpp
+    src/SofaQtQuickGUI/Windows/CameraView.cpp
+    src/SofaQtQuickGUI/Windows/EditView.cpp
     src/SofaQtQuickGUI/Camera.cpp
     src/SofaQtQuickGUI/SofaScene.cpp
     src/SofaQtQuickGUI/SofaComponent.cpp
@@ -54,8 +54,8 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaCamera.h
     src/SofaQtQuickGUI/ProcessState.h
     src/SofaQtQuickGUI/SofaViewer.h
-    src/SofaQtQuickGUI/windows/CameraView.h
-    src/SofaQtQuickGUI/windows/EditView.h
+    src/SofaQtQuickGUI/Windows/CameraView.h
+    src/SofaQtQuickGUI/Windows/EditView.h
     src/SofaQtQuickGUI/Camera.h
     src/SofaQtQuickGUI/SofaScene.h
     src/SofaQtQuickGUI/SofaComponent.h
@@ -81,7 +81,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.h
     src/SofaQtQuickGUI/Models/SofaSceneListModel.h
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
-    src/SofaQtQuickGUI/helper/QMathExtensions.h
+    src/SofaQtQuickGUI/Helper/QMathExtensions.h
 )
 
 

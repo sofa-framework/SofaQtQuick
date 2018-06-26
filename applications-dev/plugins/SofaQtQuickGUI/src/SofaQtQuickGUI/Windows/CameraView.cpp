@@ -27,7 +27,7 @@ using sofa::component::configurationsetting::BackgroundSetting ;
 #include <SofaBaseVisual/BaseCamera.h>
 using sofa::component::visualmodel::BaseCamera;
 
-#include <SofaQtQuickGUI/windows/CameraView.h>
+#include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/SofaCamera.h>
 #include <SofaQtQuickGUI/SofaScene.h>
 
