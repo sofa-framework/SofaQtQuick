@@ -26,15 +26,11 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaComponentList.cpp
     src/SofaQtQuickGUI/SofaData.cpp
     src/SofaQtQuickGUI/SofaLink.cpp
-    src/SofaQtQuickGUI/SofaSceneListModel.cpp
     src/SofaQtQuickGUI/Selectable.cpp
     src/SofaQtQuickGUI/SelectableManipulator.cpp
     src/SofaQtQuickGUI/SelectableSofaComponent.cpp
     src/SofaQtQuickGUI/SelectableSofaParticle.cpp
-    src/SofaQtQuickGUI/SofaDataListModel.cpp
-    src/SofaQtQuickGUI/SofaDisplayFlagsTreeModel.cpp
     src/SofaQtQuickGUI/SofaPythonInteractor.cpp
-    src/SofaQtQuickGUI/SofaInspectorDataListModel.cpp
     src/SofaQtQuickGUI/SofaFactory.cpp
     src/SofaQtQuickGUI/Console.cpp
     src/SofaQtQuickGUI/PythonConsole.cpp
@@ -44,6 +40,10 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.cpp
+    src/SofaQtQuickGUI/Models/SofaDataListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.cpp
+    src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneListModel.cpp
     src/SofaQtQuickGUI/SofaCamera.cpp
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
 )
@@ -51,6 +51,7 @@ set(SOURCE_FILES
 set(HEADER_FILES
     src/SofaQtQuickGUI/SofaQtQuickGUI.h
     src/SofaQtQuickGUI/SofaApplication.h
+    src/SofaQtQuickGUI/SofaCamera.h
     src/SofaQtQuickGUI/ProcessState.h
     src/SofaQtQuickGUI/SofaViewer.h
     src/SofaQtQuickGUI/windows/CameraView.h
@@ -61,25 +62,24 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaComponentList.h
     src/SofaQtQuickGUI/SofaData.h
     src/SofaQtQuickGUI/SofaLink.h
-    src/SofaQtQuickGUI/SofaSceneListModel.h
     src/SofaQtQuickGUI/Selectable.h
     src/SofaQtQuickGUI/SelectableManipulator.h
     src/SofaQtQuickGUI/SelectableSofaComponent.h
     src/SofaQtQuickGUI/SelectableSofaParticle.h
-    src/SofaQtQuickGUI/SofaDataListModel.h
-    src/SofaQtQuickGUI/SofaDisplayFlagsTreeModel.h
     src/SofaQtQuickGUI/SofaPythonInteractor.h
-    src/SofaQtQuickGUI/SofaInspectorDataListModel.h
     src/SofaQtQuickGUI/SofaFactory.h
     src/SofaQtQuickGUI/Console.h
     src/SofaQtQuickGUI/PythonConsole.h
-    src/SofaQtQuickGUI/SofaParticleInteractor.h
+    src/SofaQtQuickGUI/SofaParticleInteractor.h    
     src/SofaQtQuickGUI/Manipulators/Manipulator.h
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h
     src/SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h
     src/SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.h
-    src/SofaQtQuickGUI/SofaCamera.h
+    src/SofaQtQuickGUI/Models/SofaDataListModel.h
+    src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h
+    src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.h
+    src/SofaQtQuickGUI/Models/SofaSceneListModel.h
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/helper/QMathExtensions.h
 )
