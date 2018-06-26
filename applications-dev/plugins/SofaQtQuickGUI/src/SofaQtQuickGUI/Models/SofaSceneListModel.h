@@ -20,13 +20,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFASCENELISTMODEL_H
 #define SOFASCENELISTMODEL_H
 
-#include "SofaQtQuickGUI.h"
-#include "SofaScene.h"
+#include <QAbstractListModel>
+#include <QQmlParserStatus>
 
 #include <sofa/simulation/MutationListener.h>
 
-#include <QAbstractListModel>
-#include <QQmlParserStatus>
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/SofaScene.h>
 
 namespace sofa
 {

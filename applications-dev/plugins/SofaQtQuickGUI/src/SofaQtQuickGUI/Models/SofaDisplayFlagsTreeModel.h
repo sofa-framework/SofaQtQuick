@@ -20,11 +20,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFADISPLAYFLAGSTREEMODEL_H
 #define SOFADISPLAYFLAGSTREEMODEL_H
 
-#include "SofaQtQuickGUI.h"
-#include "SofaScene.h"
-#include "SofaSceneListModel.h"
-
 #include <QAbstractItemModel>
+
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/SofaScene.h>
+#include "SofaSceneListModel.h"
 
 class QTimer;
 class QVector3D;

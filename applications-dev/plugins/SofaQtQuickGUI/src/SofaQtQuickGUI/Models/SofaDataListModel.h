@@ -20,14 +20,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFADATALISTMODEL_H
 #define SOFADATALISTMODEL_H
 
-#include "SofaQtQuickGUI.h"
-#include "SofaScene.h"
-#include "SofaSceneListModel.h"
+#include <QAbstractListModel>
+#include <QList>
 
 #include <sofa/core/objectmodel/Base.h>
 
-#include <QAbstractListModel>
-#include <QList>
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/SofaScene.h>
+#include "SofaSceneListModel.h"
 
 class QTimer;
 class QVector3D;
