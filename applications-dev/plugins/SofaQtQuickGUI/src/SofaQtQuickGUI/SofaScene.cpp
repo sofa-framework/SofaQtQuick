@@ -64,7 +64,7 @@ using sofa::helper::system::FileSystem ;
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/simulation/DeleteVisitor.h>
 
-#include "ObjectRenderer.h"
+#include "Rendering/ObjectRenderer.h"
 
 #include <array>
 #include <sstream>
