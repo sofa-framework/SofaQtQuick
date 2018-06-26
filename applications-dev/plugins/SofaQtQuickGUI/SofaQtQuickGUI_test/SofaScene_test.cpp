@@ -1,30 +1,76 @@
+#include <sofa/helper/testing/BaseTest.h>
+using sofa::helper::testing::BaseTest ;
+
+#include <SofaQtQuickGUI/SofaScene.h>
+using sofa::qtquick::SofaScene ;
+
+#include <sofa/helper/testing/BaseTest.h>
+
 #include "SofaScene_test.h"
-#include <QtTest/QTest>
 
-class SofaScene_test : public QObject, public BaseTest
+void SofaScene_qtTests::initTestCase()
 {
-    Q_OBJECT
+    m_qmltypes=new SofaQtQuickGUI(nullptr) ;
+}
 
-private slots:
-    void initTestCase()
-    { qDebug("called before everything else"); }
-
-    void myFirstTest()
-    {
-        SofaScene scene;
-        scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test1.xml")));
-        //scene.animate();
-
-    }
-    void mySecondTest()
-    { QVERIFY(1 != 2); }
-    void cleanupTestCase()
-    { qDebug("called after myFirstTest and mySecondTest"); }
-};
-
-
-TEST_F(SofaScene_test, qtTests)
+void SofaScene_qtTests::loadAScene()
 {
-    QTest::qExec(this) ;
+    SofaScene scene;
+
+    QVERIFY(!scene.isReady());
+    scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_minimal.xml")));
+
+    int cpt = 0;
+    while(!scene.isReady() && cpt < 5){ sleep(1); cpt++; };
+    QVERIFY2(cpt < 5, "Loading of the scene timed out after 5 seconds.");
+}
+
+void SofaScene_qtTests::testSceneQueries()
+{
+    SofaScene scene;
+
+    QVERIFY(!scene.isReady());
+    scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_minimal.xml")));
+
+    int cpt = 0;
+    while(!scene.isReady() && cpt < 5){ sleep(1); cpt++; };
+    QVERIFY2(cpt < 5, "Loading of the scene timed out after 5 seconds.");
+
+    std::cout << scene.dumpGraph().toStdString() << std::endl;
+
+    QVERIFY( scene.component("@/") != nullptr ) ;
+    QVERIFY( scene.component("@/child1") != nullptr ) ;
+    QVERIFY( scene.component("@/child2") != nullptr ) ;
+    QVERIFY( scene.component("@/child1/child11") != nullptr ) ;
+    QVERIFY( scene.component("@/child2/child11") == nullptr ) ;
+}
+
+void SofaScene_qtTests::loadInvalidScene()
+{
+    SofaScene scene;
+
+    QVERIFY(!scene.isReady());
+    scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_broken.xml")));
+    QVERIFY(!scene.isReady());
+}
+
+void SofaScene_qtTests::loadMissingScene()
+{
+    SofaScene scene;
+
+    QVERIFY(!scene.isReady());
+    scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/not_existing.xml")));
+    QVERIFY(!scene.isReady());
+}
+
+void SofaScene_qtTests::cleanupTestCase()
+{
+    delete m_qmltypes ;
+}
+
+TEST(SofaScene_tests, qtTest)
+{
+    SofaScene_qtTests tests;
+    QTest::qExec(&tests,{"-platform offscreen"}) ;
 }
 

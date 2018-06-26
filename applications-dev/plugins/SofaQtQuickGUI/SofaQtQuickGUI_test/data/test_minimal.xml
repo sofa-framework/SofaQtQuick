@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<Node name="root" gravity="0 -1000 0" dt="0.04">
+        <Node name="child1">
+                <Node name="child11">
+                </Node>
+        </Node>
+        <Node name="child2">
+        </Node>
+</Node>

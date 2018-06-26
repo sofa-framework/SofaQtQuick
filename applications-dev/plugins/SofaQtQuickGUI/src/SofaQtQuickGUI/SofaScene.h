@@ -110,8 +110,11 @@ public:
     const QString& header() const                               {return myHeader;}
     void setHeader(const QString& newHeader);
 
-    const QUrl& source() const                                  {return mySource;}
+    /// set the url of the scene, when changed the SofaScene object will goes through
+    /// the following states: Unloaded, Null, Loading, Ready.
+    /// On error the scene status is set to Error and a new source has to be set.
     void setSource(const QUrl& newSource);
+    const QUrl& source() const                                  {return mySource;}
 
     const QUrl& sourceQML() const                               {return mySourceQML;}
     void setSourceQML(const QUrl& newSourceQML);
