@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Manipulator.h"
-#include "SofaViewer.h"
+#include "../SofaViewer.h"
 
 #include <GL/glew.h>
 #include <QMatrix4x4>

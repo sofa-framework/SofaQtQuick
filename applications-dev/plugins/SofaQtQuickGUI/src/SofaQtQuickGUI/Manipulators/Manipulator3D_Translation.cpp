@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Manipulator2D_Translation.h"
-#include "SofaViewer.h"
+#include "Manipulator3D_Translation.h"
+#include "../SofaViewer.h"
 
 #include <QApplication>
 #include <GL/glew.h>
@@ -31,18 +31,18 @@ namespace sofa
 namespace qtquick
 {
 
-Manipulator2D_Translation::Manipulator2D_Translation(QObject* parent) : Manipulator(parent),
-    myAxis("xy")
+Manipulator3D_Translation::Manipulator3D_Translation(QObject* parent) : Manipulator(parent),
+    myAxis("xyz")
 {
 
 }
 
-Manipulator2D_Translation::~Manipulator2D_Translation()
+Manipulator3D_Translation::~Manipulator3D_Translation()
 {
 
 }
 
-void Manipulator2D_Translation::setAxis(QString newAxis)
+void Manipulator3D_Translation::setAxis(QString newAxis)
 {
     if(newAxis == myAxis)
         return;
@@ -52,17 +52,17 @@ void Manipulator2D_Translation::setAxis(QString newAxis)
     axisChanged(newAxis);
 }
 
-void Manipulator2D_Translation::draw(const SofaViewer& viewer) const
+void Manipulator3D_Translation::draw(const SofaViewer& viewer) const
 {
     internalDraw(viewer, false);
 }
 
-void Manipulator2D_Translation::pick(const SofaViewer& viewer) const
+void Manipulator3D_Translation::pick(const SofaViewer& viewer) const
 {
     internalDraw(viewer, true);
 }
 
-void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPicking) const
+void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPicking) const
 {
     if(!visible())
         return;
@@ -73,36 +73,48 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
 
     bool xAxis = (-1 != myAxis.indexOf('x'));
     bool yAxis = (-1 != myAxis.indexOf('y'));
+    bool zAxis = (-1 != myAxis.indexOf('z'));
+    int axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0) + (zAxis ? 1 : 0);
 
-    int axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0);
-
-    if(0 == axisNum)
+    if(0 == axisNum || 3 == axisNum)
         return;
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadIdentity();
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadIdentity();
 
-    QVector4D position = camera->projection() * camera->view() * QVector4D(Manipulator::position(), 1.0);
-    position /= position.w();
+    glTranslatef(position().x(), position().y(), position().z());
 
-    glTranslatef(position.x(), position.y(), position.z());
-    glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
+    QVector3D axis = QVector3D(0.0, 0.0, 1.0);
+    if(xAxis)
+        axis = QVector3D(1.0, 0.0, 0.0);
+    else if(yAxis)
+        axis = QVector3D(0.0, 1.0, 0.0);
 
     // object
-    float height = 0.125f;
+    float height = 0.2f;
+    {
+        QVector4D p0 = camera->projection() * camera->view() * QVector4D(position(), 1.0);
+        QVector4D p1 = camera->projection() * camera->view() * QVector4D(position() + camera->up(), 1.0);
+        QVector3D direction = ((p1 / p1.w() - p0 / p0.w()).toVector3D());
 
-    float width = height * 0.1f;
+        height *= 1.0 / direction.length();
+    }
+
+    float width = height * 0.05f;
     if(isPicking)
         width *= 2.5f;
 
-    QColor color(xAxis ? 255 : 0, yAxis ? 255 : 0, (xAxis && yAxis) ? 255 : 0);
+    glDisable(GL_CULL_FACE);
+
+    glLineWidth(width);
+
+    QColor color(xAxis ? 255 : 0, yAxis ? 255 : 0, zAxis ? 255 : 0);
     glColor3f(color.redF(), color.greenF(), color.blueF());
 
+    glEnable(GL_POLYGON_OFFSET_FILL);
     glEnable(GL_COLOR_MATERIAL);
 
     // draw arrows
@@ -110,10 +122,13 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
     {
         width *= 0.5f;
 
-        glRotated(-90.0, 1.0, 0.0, 0.0);
+        if(xAxis || yAxis)
+            glRotated(-90.0, 1.0, 0.0, 0.0);
 
         if(xAxis)
             glRotated(90.0, 0.0, 1.0, 0.0);
+
+        glPolygonOffset(-1.0f, -1.0f);
 
         glBegin(GL_QUADS);
         {
@@ -122,26 +137,45 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
             glVertex3f( 0.0,            0.0,          height - width);
             glVertex3f( 0.0,            0.0,          height + width);
 
+            glVertex3f(-0.2 * height, width,            0.8 * height);
+            glVertex3f(-0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.0,         -width,                 height );
+            glVertex3f( 0.0,          width,                 height );
+
             glVertex3f( 0.0,            0.0,          height + width);
             glVertex3f( 0.0,            0.0,          height - width);
             glVertex3f( 0.2 * height,   0.0,    0.8 * height - width);
             glVertex3f( 0.2 * height,   0.0,    0.8 * height + width);
 
+            glVertex3f( 0.0,          width,                  height);
+            glVertex3f( 0.0,         -width,                  height);
+            glVertex3f( 0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.2 * height, width,            0.8 * height);
+
             glVertex3f(       -width,   0.0,          height - width);
             glVertex3f(       -width,   0.0,                   width);
             glVertex3f(        width,   0.0,                   width);
             glVertex3f(        width,   0.0,          height - width);
+
+            glVertex3f(       0.0,   -width,          height - width);
+            glVertex3f(       0.0,   -width,                   width);
+            glVertex3f(       0.0,    width,                   width);
+            glVertex3f(       0.0,    width,          height - width);
         }
         glEnd();
     }
-    else // draw quad
+    else // draw quad surrounded by lines
     {
         height *= 0.33f;
         if(isPicking)
             height *= 1.25f;
 
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(-1.0f, -1.0f);
+        if(!xAxis)
+            glRotated(-90.0, 0.0, 1.0, 0.0);
+        else if(!yAxis)
+            glRotated(90.0, 1.0, 0.0, 0.0);
+
+        glPolygonOffset(-1.0f, -3.0f);
 
         glBegin(GL_QUADS);
         {
@@ -151,11 +185,14 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
             glVertex3f(height, height, 0.0);
         }
         glEnd();
-
-        glDisable(GL_POLYGON_OFFSET_FILL);
     }
 
     glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+
+    glLineWidth(1.0f);
+
+    glEnable(GL_CULL_FACE);
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();

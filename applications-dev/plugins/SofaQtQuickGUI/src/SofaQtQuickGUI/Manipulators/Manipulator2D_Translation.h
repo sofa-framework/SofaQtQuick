@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MANIPULATOR2D_ROTATION_H
-#define MANIPULATOR2D_ROTATION_H
+#ifndef MANIPULATOR2D_TRANSLATION_H
+#define MANIPULATOR2D_TRANSLATION_H
 
-#include "SofaQtQuickGUI.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 #include "Manipulator.h"
 
 #include <QObject>
@@ -31,18 +31,24 @@ namespace sofa
 namespace qtquick
 {
 
-/// \class A view space manipulator allowing us to rotate things around the X or Y axis
-class SOFA_SOFAQTQUICKGUI_API Manipulator2D_Rotation : public Manipulator
+/// \class A view space manipulator allowing us to translate things along X and / or Y axis
+class SOFA_SOFAQTQUICKGUI_API Manipulator2D_Translation : public Manipulator
 {
     Q_OBJECT
 
 public:
-    explicit Manipulator2D_Rotation(QObject* parent = 0);
-    ~Manipulator2D_Rotation();
+    explicit Manipulator2D_Translation(QObject* parent = 0);
+    ~Manipulator2D_Translation();
 
 public:
-    Q_INVOKABLE void setMark(float fromAngle, float toAngle);
-    Q_INVOKABLE void unsetMark();
+    Q_PROPERTY(QString axis READ axis WRITE setAxis NOTIFY axisChanged)
+
+public:
+    QString axis() const {return myAxis;}
+    void setAxis(QString newAxis);
+
+signals:
+    void axisChanged(QString newAxis);
 
 public slots:
     virtual void draw(const SofaViewer& viewer) const;
@@ -52,9 +58,7 @@ private:
     void internalDraw(const SofaViewer& viewer, bool isPicking = false) const;
 
 private:
-    bool  myDisplayMark;
-    float myFromMarkAngle;
-    float myToMarkAngle;
+    QString myAxis;
 
 };
 
@@ -62,4 +66,4 @@ private:
 
 }
 
-#endif // MANIPULATOR2D_ROTATION_H
+#endif // MANIPULATOR2D_TRANSLATION_H

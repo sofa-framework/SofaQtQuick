@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MANIPULATOR2D_TRANSLATION_H
-#define MANIPULATOR2D_TRANSLATION_H
+#ifndef MANIPULATOR3D_TRANSLATION_H
+#define MANIPULATOR3D_TRANSLATION_H
 
-#include "SofaQtQuickGUI.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 #include "Manipulator.h"
 
 #include <QObject>
@@ -31,14 +31,14 @@ namespace sofa
 namespace qtquick
 {
 
-/// \class A view space manipulator allowing us to translate things along X and / or Y axis
-class SOFA_SOFAQTQUICKGUI_API Manipulator2D_Translation : public Manipulator
+/// \class An object or world space manipulator allowing us to translate things along X, Y and / or the Z axis
+class SOFA_SOFAQTQUICKGUI_API Manipulator3D_Translation : public Manipulator
 {
     Q_OBJECT
 
 public:
-    explicit Manipulator2D_Translation(QObject* parent = 0);
-    ~Manipulator2D_Translation();
+    explicit Manipulator3D_Translation(QObject* parent = 0);
+    ~Manipulator3D_Translation();
 
 public:
     Q_PROPERTY(QString axis READ axis WRITE setAxis NOTIFY axisChanged)
@@ -66,4 +66,4 @@ private:
 
 }
 
-#endif // MANIPULATOR2D_TRANSLATION_H
+#endif // MANIPULATOR3D_TRANSLATION_H

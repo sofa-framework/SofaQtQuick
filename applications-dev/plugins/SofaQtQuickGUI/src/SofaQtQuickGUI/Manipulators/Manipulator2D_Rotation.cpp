@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Manipulator2D_Rotation.h"
-#include "SofaViewer.h"
+#include "../SofaViewer.h"
 
 #include <QApplication>
 #include <GL/glew.h>
