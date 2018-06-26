@@ -80,12 +80,12 @@ void CameraView::internalRender(int width, int height) const
 
             if(settings->image.isSet())
             {
-                mySofaScene->clearBuffers(size, color);
+                clearBuffers(size, color);
                 msg_error("runSofa2::cameraview does not support yet background pictures.");
             }
         }
-        mySofaScene->clearBuffers(size, color, image);
-        mySofaScene->setupCamera(width, height, *this) ;
+        clearBuffers(size, color, image);
+        setupCamera(width, height, *this) ;
 
         /// Prepare for a pure rendrering traversal of the scene graph.
         m_visualParams->displayFlags().setShowAll(false) ;

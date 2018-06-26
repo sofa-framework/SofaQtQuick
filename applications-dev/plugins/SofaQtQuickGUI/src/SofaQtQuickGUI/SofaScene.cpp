@@ -67,7 +67,6 @@ using sofa::helper::system::FileSystem ;
 #include <array>
 #include <sstream>
 #include <qqml.h>
-#include <QtCore/QCoreApplication>
 #include <QVector3D>
 #include <QStack>
 #include <QFile>
@@ -75,20 +74,7 @@ using sofa::helper::system::FileSystem ;
 #include <QString>
 #include <QUrl>
 #include <QThread>
-#include <QSequentialIterable>
-#include <QJSValue>
-#include <QDebug>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLFramebufferObject>
-#include <QOpenGLContext>
-#include <QQuickWindow>
 #include <QRunnable>
-#include <QGuiApplication>
-#include <QOffscreenSurface>
-#include <QOpenGLPaintDevice>
-#include <QPainter>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -1592,40 +1578,6 @@ void SofaScene::reset()
 }
 
 
-void SofaScene::clearBuffers(const QSize& size, const QColor& color, const QImage& image) const
-{
-    // final image will be blended using premultiplied alpha
-    glClearColor(color.redF() * color.alphaF(), color.greenF() * color.alphaF(), color.blueF() * color.alphaF(), color.alphaF());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if(!image.isNull())
-    {
-        QOpenGLPaintDevice device(size);
-        QPainter painter(&device);
-        painter.drawImage(size.width() - image.width(), size.height() - image.height(), image);
-    }
-}
-
-void SofaScene::setupCamera(int width, int height, const SofaViewer& viewer) const
-{
-    Camera* camera = viewer.camera() ;
-
-    // qt does not release its shader program and we do not use one so we have to release the current bound program
-    glUseProgram(0);
-
-    camera->setAspectRatio(width / (double) height);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadMatrixf(camera->projection().constData());
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadMatrixf(camera->view().constData());
-
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_TEXTURE_2D);
-}
 
 SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots)
 {

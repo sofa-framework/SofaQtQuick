@@ -645,6 +645,42 @@ void SofaViewer::drawEditorView(const QList<SofaComponent*>& roots,
 }
 
 
+
+void SofaViewer::clearBuffers(const QSize& size, const QColor& color, const QImage& image) const
+{
+    // final image will be blended using premultiplied alpha
+    glClearColor(color.redF() * color.alphaF(), color.greenF() * color.alphaF(), color.blueF() * color.alphaF(), color.alphaF());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if(!image.isNull())
+    {
+        QOpenGLPaintDevice device(size);
+        QPainter painter(&device);
+        painter.drawImage(size.width() - image.width(), size.height() - image.height(), image);
+    }
+}
+
+void SofaViewer::setupCamera(int width, int height, const SofaViewer& viewer) const
+{
+    Camera* camera = viewer.camera() ;
+
+    // qt does not release its shader program and we do not use one so we have to release the current bound program
+    glUseProgram(0);
+
+    camera->setAspectRatio(width / (double) height);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadMatrixf(camera->projection().constData());
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadMatrixf(camera->view().constData());
+
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_TEXTURE_2D);
+}
+
 void SofaViewer::drawSelectedComponents(sofa::core::visual::VisualParams* visualParams) const
 {
     if( !visualParams )
@@ -1148,7 +1184,7 @@ void SofaViewer::internalRender(int width, int height) const
     if(size.isEmpty())
         return;
 
-    mySofaScene->clearBuffers(size, myBackgroundColor, myBackgroundImage);
+    clearBuffers(size, myBackgroundColor, myBackgroundImage);
 
     if(!myCamera)
         return;

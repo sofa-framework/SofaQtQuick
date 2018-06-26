@@ -201,6 +201,9 @@ protected:
     void drawVisuals() const ;
     void drawDebugVisuals() const ;
 
+
+    void clearBuffers(const QSize& size, const QColor& color, const QImage& image=QImage()) const ;
+    void setupCamera(int width, int height, const SofaViewer& viewer) const ;
     void checkAndInit() ;
 
 private:
