@@ -117,6 +117,7 @@ public:
 
     bool isLoading() const                                      {return Status::Loading == myStatus;}
     bool isReady() const                                        {return Status::Ready == myStatus;}
+    bool isOnError() const                                      {return Status::Error == myStatus;}
 
     const QString& header() const                               {return myHeader;}
     void setHeader(const QString& newHeader);

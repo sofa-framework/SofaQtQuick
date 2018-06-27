@@ -8,6 +8,9 @@ using sofa::qtquick::SofaScene ;
 
 #include "SofaScene_test.h"
 
+#include <chrono>
+#include <thread>
+
 void SofaScene_qtTests::initTestCase()
 {
     m_qmltypes=new SofaQtQuickGUI(nullptr) ;
@@ -21,8 +24,8 @@ void SofaScene_qtTests::loadAScene()
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_minimal.xml")));
 
     int cpt = 0;
-    while(!scene.isReady() && cpt < 5){ sleep(1); cpt++; };
-    QVERIFY2(cpt < 5, "Loading of the scene timed out after 5 seconds.");
+    while(!scene.isReady() && cpt < 50){ std::this_thread::sleep_for(std::chrono::milliseconds(100)); cpt++; };
+    QVERIFY2(cpt < 50, "Loading of the scene timed out after 5 seconds.");
 }
 
 void SofaScene_qtTests::testSceneQueries()
@@ -33,8 +36,8 @@ void SofaScene_qtTests::testSceneQueries()
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_minimal.xml")));
 
     int cpt = 0;
-    while(!scene.isReady() && cpt < 5){ sleep(1); cpt++; };
-    QVERIFY2(cpt < 5, "Loading of the scene timed out after 5 seconds.");
+    while(!scene.isReady() && cpt < 50){ std::this_thread::sleep_for(std::chrono::milliseconds(100)); cpt++; };
+    QVERIFY2(cpt < 50, "Loading of the scene timed out after 5 seconds.");
 
     std::cout << scene.dumpGraph().toStdString() << std::endl;
 
@@ -51,6 +54,11 @@ void SofaScene_qtTests::loadInvalidScene()
 
     QVERIFY(!scene.isReady());
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_broken.xml")));
+
+    int cpt = 0;
+    while(!scene.isOnError() && cpt < 50){ std::this_thread::sleep_for(std::chrono::milliseconds(100)); cpt++; };
+
+    QVERIFY2(cpt < 50, "Loading of the scene timed out after 5 seconds.");
     QVERIFY(!scene.isReady());
 }
 
@@ -60,6 +68,10 @@ void SofaScene_qtTests::loadMissingScene()
 
     QVERIFY(!scene.isReady());
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/not_existing.xml")));
+    int cpt = 0;
+    while(!scene.isOnError() && cpt < 50){ std::this_thread::sleep_for(std::chrono::milliseconds(100)); cpt++; };
+    QVERIFY2(cpt < 50, "Loading of the scene timed out after 5 seconds.");
+
     QVERIFY(!scene.isReady());
 }
 
