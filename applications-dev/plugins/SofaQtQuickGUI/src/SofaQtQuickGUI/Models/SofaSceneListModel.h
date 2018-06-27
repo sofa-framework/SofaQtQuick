@@ -35,6 +35,8 @@ namespace qtquick
 {
 
 /// \class A Model of the sofa scene graph allowing us to show the graph in a ListView
+/// The model is not implementing any visualization feature like collapsing or hidding
+/// some information. Those have to be implemented by in an external proxying model.
 class SofaSceneListModel : public QAbstractListModel, private sofa::simulation::MutationListener
 {
     Q_OBJECT
@@ -44,14 +46,6 @@ public:
     ~SofaSceneListModel();
 
     Q_INVOKABLE void update();
-
-    Q_ENUMS(Visibility)
-    enum Visibility {
-        Visible     = 0,
-        Collapsed   = 1,
-        Hidden      = 2,
-        Disabled    = 4
-    };
 
 public slots:
     void clear();
@@ -72,10 +66,6 @@ protected:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE QVariant get(int row) const;
-
-    Q_INVOKABLE void setDisabled(int modelRow, bool disabled);
-    Q_INVOKABLE void setCollapsed(int modelRow, bool value);
-
     Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentById(int row) const;
     Q_INVOKABLE int getComponentId(sofa::qtquick::SofaComponent*) const;
 
@@ -101,10 +91,8 @@ private:
         MultiParentRole,
         FirstParentRole,
         DepthRole,
-        VisibilityRole,
         TypeRole,
         IsNodeRole,
-        CollapsibleRole
     };
 
     struct Item
@@ -115,7 +103,6 @@ private:
             multiparent(false),
             firstparent(true),
             depth(0),
-            visibility(0),
             base(0),
             object(0),
             node(0)
@@ -128,7 +115,6 @@ private:
         bool                                    multiparent;
         bool                                    firstparent;
         int                                     depth;
-        int                                     visibility;
 
         sofa::core::objectmodel::Base*          base;
         sofa::core::objectmodel::BaseObject*    object;

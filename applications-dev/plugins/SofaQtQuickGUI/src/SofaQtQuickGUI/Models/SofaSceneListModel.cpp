@@ -98,17 +98,6 @@ SofaSceneListModel::Item SofaSceneListModel::buildNodeItem(SofaSceneListModel::I
     item.object = 0;
     item.node = node;
 
-    BaseContext* baseContext = item.node->getContext();
-    item.visibility = Visible;
-    if(parent)
-    {
-        if(parent->visibility & (Collapsed | Hidden))
-            item.visibility |= Hidden;
-
-        if(parent->visibility & (Disabled) || !baseContext->isActive())
-            item.visibility |= Disabled;
-    }
-
     return item;
 }
 
@@ -122,16 +111,6 @@ SofaSceneListModel::Item SofaSceneListModel::buildObjectItem(SofaSceneListModel:
     item.base = object;
     item.object = object;
     item.node = parent->node;
-
-    item.visibility = Visible;
-    if(parent)
-    {
-        if(parent->visibility & (Collapsed | Hidden))
-            item.visibility |= Hidden;
-
-        if(parent->visibility & Disabled)
-            item.visibility |= Disabled;
-    }
 
     return item;
 }
@@ -160,8 +139,8 @@ int SofaSceneListModel::computeModelRow(int itemRow) const
         int currentItemRow = 0;
         for(const Item& item : myItems)
         {
-            if(!(item.visibility & Visibility::Hidden))
-                ++currentModelRow;
+            SOFA_UNUSED(item);
+            ++currentModelRow;
 
             if(currentItemRow == itemRow)
                 return currentModelRow;
@@ -178,12 +157,11 @@ int SofaSceneListModel::computeItemRow(int modelRow) const
     if(modelRow >= 0)
     {
         int currentModelRow = -1;
-
         int currentItemRow = 0;
         for(const Item& item : myItems)
         {
-            if(!(item.visibility & Visibility::Hidden))
-                ++currentModelRow;
+            SOFA_UNUSED(item);
+            ++currentModelRow;
 
             if(currentModelRow == modelRow)
                 return currentItemRow;
@@ -205,14 +183,7 @@ int SofaSceneListModel::computeItemRow(const QModelIndex& index) const
 
 int SofaSceneListModel::rowCount(const QModelIndex & /*parent*/) const
 {
-    int count = 0;
-    for(const Item& item : myItems)
-    {
-        if(!(item.visibility & Visibility::Hidden))
-            ++count;
-    }
-
-    return count;
+    return myItems.size() ;
 }
 
 QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
@@ -232,7 +203,6 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
     bool multiparent = item.multiparent;
     bool firstparent = item.firstparent;
     int depth = item.depth;
-    int visibility = item.visibility;
     Base* base = item.base;
     BaseObject* object = item.object;
 
@@ -252,14 +222,10 @@ QVariant SofaSceneListModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(firstparent);
     case DepthRole:
         return QVariant::fromValue(depth);
-    case VisibilityRole:
-        return QVariant::fromValue(visibility);
     case TypeRole:
         return QVariant::fromValue(QString::fromStdString(base->getClass()->className));
     case IsNodeRole:
         return QVariant::fromValue(0 == object);
-    case CollapsibleRole:
-        return QVariant::fromValue(0 == object && item.children.size() != 0);
     default:
         msg_error("SofaQtQuickGUI") << "Role unknown";
     }
@@ -275,10 +241,8 @@ QHash<int,QByteArray> SofaSceneListModel::roleNames() const
     roles[MultiParentRole]  = "multiparent";
     roles[FirstParentRole]  = "firstparent";
     roles[DepthRole]        = "depth";
-    roles[VisibilityRole]   = "visibility";
     roles[TypeRole]         = "type";
     roles[IsNodeRole]       = "isNode";
-    roles[CollapsibleRole]  = "collapsible";
 
     return roles;
 }
@@ -298,115 +262,6 @@ QVariant SofaSceneListModel::get(int row) const
         object.insert(roleIt.value(), data(createIndex(row, 0), roleIt.key()));
 
     return object;
-}
-
-void SofaSceneListModel::setDisabled(int modelRow, bool disabled)
-{
-    int itemRow = computeItemRow(modelRow);
-    if(-1 == itemRow)
-    {
-        msg_error("SofaQtQuickGUI") << "Invalid index " << itemRow;
-        return;
-    }
-
-    int oldCount = rowCount();
-
-    Item& item = myItems[itemRow];
-
-    BaseContext* baseContext = item.node->getContext();
-    if(disabled)
-    {
-        baseContext->setActive(false);
-        item.visibility |= Visibility::Disabled;
-    }
-    else
-    {
-        baseContext->setActive(true);
-        item.visibility &= ~Visibility::Disabled;
-    }
-
-    QStack<Item*> children;
-    for(int i = 0; i < item.children.size(); ++i)
-        children.append(item.children[i]);
-
-    while(!children.isEmpty())
-    {
-        Item* child = children.pop();
-        if(disabled)
-            child->visibility |= Disabled;
-        else
-            child->visibility &= ~Disabled;
-    }
-
-    int newCount = rowCount();
-
-    // TODO: can be optimized
-
-    dataChanged(createIndex(modelRow, 0), createIndex(qMin(oldCount, newCount) - 1, 0));
-
-    if(newCount > oldCount)
-    {
-        beginInsertRows(QModelIndex(), oldCount, newCount - 1);
-        endInsertRows();
-    }
-    else if(newCount < oldCount)
-    {
-        beginRemoveRows(QModelIndex(), newCount, oldCount - 1);
-        endRemoveRows();
-    }
-}
-
-void SofaSceneListModel::setCollapsed(int modelRow, bool collapsed)
-{
-    int itemRow = computeItemRow(modelRow);
-    if(-1 == itemRow)
-    {
-        msg_error("SofaQtQuickGUI") << "Invalid index " << itemRow;
-        return;
-    }
-
-    int oldCount = rowCount();
-
-    Item& item = myItems[itemRow];
-
-    if(collapsed)
-        item.visibility |= Visibility::Collapsed;
-    else
-        item.visibility &= ~Visibility::Collapsed;
-
-    QStack<Item*> children;
-    for(int i = 0; i < item.children.size(); ++i)
-        children.append(item.children[i]);
-
-    while(!children.isEmpty())
-    {
-        Item* child = children.pop();
-        if(collapsed)
-            child->visibility |= Hidden;
-        else
-            child->visibility &= ~Hidden;
-
-        if(!(Collapsed & child->visibility))
-            for(int i = 0; i < child->children.size(); ++i)
-                children.append(child->children[i]);
-    }
-
-    int newCount = rowCount();
-
-    // TODO: can be optimized
-
-    dataChanged(createIndex(modelRow, 0), createIndex(qMin(oldCount, newCount) - 1, 0));
-
-    if(newCount > oldCount)
-    {
-        beginInsertRows(QModelIndex(), oldCount, newCount - 1);
-        endInsertRows();
-    }
-    else if(newCount < oldCount)
-    {
-        beginRemoveRows(QModelIndex(), newCount, oldCount - 1);
-        endRemoveRows();
-    }
 }
 
 SofaComponent* SofaSceneListModel::getComponentById(int modelRow) const
@@ -502,7 +357,6 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
         return;
     }
     Item& parentItem = *parentItemIt;
-    unsigned int parentIdx0 = parentItemIt-myItems.begin();
 
     /// Check if the child is already in the Item list, if this is the case, then we just have nothing to do
     /// because this is indicating the it was already added.
@@ -523,21 +377,13 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
     int idx = insertIterator-myItems.begin() ;
     dmsg_info("SofaSceneListModel") << "At desired address: " << idx ;
 
-    //beginInsertRows(QModelIndex(), idx-1, idx-1);
+    beginInsertRows(QModelIndex(), idx, idx);
     auto newChildItemIt = myItems.insert(insertIterator, buildNodeItem(&parentItem, child));
 
     parentItem.children.append(&*newChildItemIt);
-    //bool hidden = newChildItemIt->visibility & Visibility::Hidden;
-    //if(!hidden)
-    //{
+    endInsertRows();
 
-    //endInsertRows();
-
-    unsigned int parentIdx = parentItemIt-myItems.begin();
-    //dataChanged(createIndex(parentIdx0, 0), createIndex(parentIdx, 0));
-    //}
-
-   MutationListener::addChild(parent, child);
+    MutationListener::addChild(parent, child);
 }
 
 void SofaSceneListModel::removeChild(Node* parent, Node* child)
@@ -547,8 +393,6 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
 
     MutationListener::removeChild(parent, child);
 
-    //std::cerr << "--" << child->getName().c_str() << "(" << child << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
-
     QList<Item>::iterator itemIt = myItems.begin();
     while(itemIt != myItems.end())
     {
@@ -557,8 +401,6 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
             Item* parentItem = itemIt->parent;
             if((!parent && !parentItem) || (parent && parentItem && parent == parentItem->base))
             {
-                //std::cerr << &*itemIt << std::endl;
-
                 if(parentItem)
                 {
                     int index = parentItem->children.indexOf(&*itemIt);
@@ -566,16 +408,7 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
                         parentItem->children.remove(index);
                 }
 
-                int count = itemIt - myItems.begin();
-                bool hidden = itemIt->visibility & Visibility::Hidden;
-
                 itemIt = myItems.erase(itemIt);
-
-                if(!hidden)
-                {
-                    beginRemoveRows(QModelIndex(), count, count);
-                    endRemoveRows();
-                }
 
                 break;
             }
@@ -589,17 +422,10 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
     }
 }
 
-//void SceneListModel::moveChild(Node* previous, Node* parent, Node* child)
-//{
-
-//}
-
 void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
-
-    //std::cerr << "+" << object->getName().c_str() << "(" << object << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
 
     bool alreadyAdded = false;
     for(auto it = myItems.begin(); it != myItems.end(); ++it)
@@ -623,19 +449,9 @@ void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
                     if(parentItem != itemIt->parent || !itemIt->object)
                         break;
 
-                int count = itemIt - myItems.begin();
-
                 QList<Item>::iterator childItemIt = myItems.insert(itemIt, buildObjectItem(parentItem, object));
                 parentItem->children.append(&*childItemIt);
                 parentItemIt = childItemIt;
-
-                bool hidden = childItemIt->visibility & Visibility::Hidden;
-                if(!hidden)
-                {
-                    std::cout << "ADDING OBJET " << object->getName() << " to " << parent->getName() << " at " << childItemIt-myItems.begin() << std::endl ;
-                    beginInsertRows(QModelIndex(), count, count);
-                    endInsertRows();
-                }
 
                 break;
             }
@@ -654,8 +470,6 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
 
     MutationListener::removeObject(parent, object);
 
-    //std::cerr << "-" << object->getName().c_str() << "(" << object << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
-
     QList<Item>::iterator itemIt = myItems.begin();
     while(itemIt != myItems.end())
     {
@@ -664,7 +478,6 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
             Item* parentItem = itemIt->parent;
             if(parentItem && parent == parentItem->base)
             {
-                //std::cerr << &*itemIt << " - " << &*itemIt->parent << std::endl;
                 if(parentItem)
                 {
                     int index = parentItem->children.indexOf(&*itemIt);
@@ -673,17 +486,7 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
                         parentItem->children.remove(index);
                 }
 
-                int count = itemIt - myItems.begin();
-                bool hidden = itemIt->visibility & Visibility::Hidden;
-
                 itemIt = myItems.erase(itemIt);
-
-                if(!hidden)
-                {
-                    beginRemoveRows(QModelIndex(), count, count);
-                    endRemoveRows();
-                }
-
                 break;
             }
             else

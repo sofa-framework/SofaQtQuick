@@ -99,7 +99,7 @@ static QObject* createSofaFactory(QQmlEngine *engine,
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
     qRegisterMetaType<SofaScene::Status>("Status");
-    qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
+    //qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
 
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
