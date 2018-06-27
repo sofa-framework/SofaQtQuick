@@ -6,13 +6,14 @@ find_package(Qt5Test REQUIRED)
 set(HEADER_FILES
     modeltest.h
     SofaScene_test.h
+    SofaSceneModel_test.h
 )
 
 set(SOURCE_FILES
     modeltest.cpp
     SofaApplication_test.cpp
     SofaScene_test.cpp
-    #SofaSceneModel_test.cpp
+    SofaSceneModel_test.cpp
 )
 
 add_definitions("-DSOFAQTQUICK_TEST_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/data\"")
