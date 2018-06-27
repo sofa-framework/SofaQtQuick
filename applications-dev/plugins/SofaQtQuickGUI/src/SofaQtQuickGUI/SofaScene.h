@@ -44,6 +44,17 @@ class QOpenGLShaderProgram;
 class QOpenGLFramebufferObject;
 class QOffscreenSurface;
 
+namespace sofa {
+    namespace simulation {
+        namespace _scenechecking_ {
+            class SceneCheckerVisitor ;
+        }
+        namespace scenechecking {
+            using _scenechecking_::SceneCheckerVisitor ;
+        }
+    }
+}
+
 namespace sofa
 {
 
@@ -245,6 +256,7 @@ public:
     /// Call that before rendering any sofa scene. This insure that the texture & meshes are updated.
     void prepareSceneForDrawing() ;
 
+    sofa::simulation::scenechecking::SceneCheckerVisitor* m_scenechecker;
 protected:
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
@@ -280,6 +292,7 @@ private:
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
     SofaComponent*                              mySelectedComponent;
+
 };
 
 }

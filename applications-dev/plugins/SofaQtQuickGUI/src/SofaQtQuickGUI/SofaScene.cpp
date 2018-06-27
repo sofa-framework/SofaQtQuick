@@ -65,7 +65,18 @@ using sofa::core::objectmodel::MouseEvent ;
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/simulation/DeleteVisitor.h>
 
-#include "Rendering/ObjectRenderer.h"
+////////////////// Include the checkers to validate the scene and warn users ///////////////////////
+#include <SofaGraphComponent/SceneCheckerVisitor.h>
+using sofa::simulation::scenechecking::SceneCheckerVisitor;
+#include <SofaGraphComponent/SceneCheckAPIChange.h>
+using sofa::simulation::scenechecking::SceneCheckAPIChange;
+#include <SofaGraphComponent/SceneCheckMissingRequiredPlugin.h>
+using sofa::simulation::scenechecking::SceneCheckMissingRequiredPlugin;
+#include <SofaGraphComponent/SceneCheckDuplicatedName.h>
+using sofa::simulation::scenechecking::SceneCheckDuplicatedName;
+#include <SofaGraphComponent/SceneCheckUsingAlias.h>
+using sofa::simulation::scenechecking::SceneCheckUsingAlias;
+
 
 #include <array>
 #include <sstream>
@@ -117,6 +128,11 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     mySelectedManipulator(nullptr),
     mySelectedComponent(nullptr)
 {
+    m_scenechecker=new SceneCheckerVisitor(ExecParams::defaultInstance());
+    m_scenechecker->addCheck(SceneCheckAPIChange::newSPtr());
+    m_scenechecker->addCheck(SceneCheckDuplicatedName::newSPtr());
+    m_scenechecker->addCheck(SceneCheckMissingRequiredPlugin::newSPtr());
+    m_scenechecker->addCheck(SceneCheckUsingAlias::newSPtr());
 
     sofa::simulation::graph::init();
     sofa::component::initComponentBase();
@@ -174,6 +190,8 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
 
 SofaScene::~SofaScene()
 {
+    delete m_scenechecker ;
+
     setSource(QUrl());
 
     if(mySofaSimulation == sofa::simulation::getSimulation())
@@ -191,12 +209,15 @@ bool LoaderProcess(SofaScene* sofaScene)
     if( sofaScene->sofaRootNode() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
-
         sofaScene->addChild(0, sofaScene->sofaRootNode().get());
 
         if(sofaScene->sofaRootNode()->getAnimate() || sofaScene->defaultAnimate())
             sofaScene->setAnimate(true);
 
+        /// Validating the scene using the following scene checker. This is usefull to
+        /// warn user about common mistake like having duplicated names, missing required plugins
+        /// using alias and API changes.
+        sofaScene->m_scenechecker->validate(sofaScene->sofaRootNode().get());
         sofaScene->setStatus(SofaScene::Status::Ready);
 
         if(!sofaScene->pathQML().isEmpty())
