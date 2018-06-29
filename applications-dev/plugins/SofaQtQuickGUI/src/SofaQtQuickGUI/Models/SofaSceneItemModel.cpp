@@ -116,7 +116,6 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
                 qWarning() << "Inavlid row number" ;
                 return QModelIndex();
             }
-            std::cout << "ROWn " << nrow << std::endl ;
             auto childNode = currentNode->child[nrow].get();
             b=childNode;
             int c = (childNode->getFirstParent() != currentNode) ;

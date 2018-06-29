@@ -63,6 +63,17 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const override ;
     virtual QHash<int, QByteArray> roleNames() const override;
 
+    enum class Roles
+    {
+        Name = Qt::UserRole + 1,
+        TypeName,
+        IsNode,
+        IsMultiParent,
+        HasMultiParent,
+        IsEnabled,
+        Row
+    };
+
 protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
@@ -79,17 +90,6 @@ protected:
     QModelIndex index(simulation::Node *node) const ;
 
     SofaScene*                      m_scene {nullptr};
-
-    enum class Roles
-    {
-        Name = Qt::UserRole + 1,
-        TypeName,
-        IsNode,
-        IsMultiParent,
-        HasMultiParent,
-        IsEnabled,
-        Row
-    };
 };
 
 } /// namespace _sofasceneitemmodel_

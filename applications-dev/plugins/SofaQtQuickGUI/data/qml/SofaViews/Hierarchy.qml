@@ -25,6 +25,7 @@ import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneItemModel 1.0
+import SofaSceneItemProxy 1.0
 import SofaWidgets 1.0
 
 Rectangle {
@@ -170,8 +171,12 @@ Rectangle {
             title: "Hierarchy"
             role: "name"
         }
-        model: SofaSceneItemModel {
-            sofaScene: root.sofaScene
+
+        model: SofaSceneItemProxy
+        {
+            model : SofaSceneItemModel {
+                sofaScene: root.sofaScene
+            }
         }
     }
 
