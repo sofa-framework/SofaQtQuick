@@ -14,3 +14,5 @@ AffineTransformationController 1.0 AffineTransformationController.qml
 ColorSelector 1.0 ColorSelector.qml
 CameraView 1.0 CameraView.qml
 MessageView 1.0 Message.qml
+SceneGraph 1.0 SceneGraph.qml
+Hierarchy 1.0 Hierarchy.qml

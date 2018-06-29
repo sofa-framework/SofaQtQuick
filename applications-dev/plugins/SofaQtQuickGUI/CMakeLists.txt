@@ -44,6 +44,8 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.cpp
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.cpp
     src/SofaQtQuickGUI/Models/SofaSceneListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneListProxy.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneItemModel.cpp
     src/SofaQtQuickGUI/SofaCamera.cpp
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
@@ -81,11 +83,12 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.h
     src/SofaQtQuickGUI/Models/SofaSceneListModel.h
+    src/SofaQtQuickGUI/Models/SofaSceneListProxy.h
+    src/SofaQtQuickGUI/Models/SofaSceneItemModel.h
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/Rendering/SceneRenderer.h
     src/SofaQtQuickGUI/Helper/QMathExtensions.h
 )
-
 
 
 set(QML_FILES
@@ -173,12 +176,12 @@ set(QML_FILES
     data/qml/SofaViews/AffineTransformationController.qml
     data/qml/SofaViews/ColorSelector.qml
     data/qml/SofaViews/SofaSceneViewer.qml
-
     data/qml/SofaViews/CameraView.qml
     data/qml/SofaViews/EditView.qml
     data/qml/SofaViews/Inspector.qml
     data/qml/SofaViews/Message.qml
-
+    data/qml/SofaViews/SceneGraph.qml
+    data/qml/SofaViews/Hierarchy.qml
 )
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
