@@ -2,15 +2,12 @@
 
 #include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 
-class SofaScene_qtTests : public QObject
+class SofaSceneModel_qtTests : public QObject
 {
     Q_OBJECT
 private slots:
     void initTestCase() ;
-    void loadAScene() ;
-    void loadInvalidScene() ;
-    void loadMissingScene() ;
-    void testSceneQueries() ;
+    void testAll() ;
     void cleanupTestCase() ;
 
 private:

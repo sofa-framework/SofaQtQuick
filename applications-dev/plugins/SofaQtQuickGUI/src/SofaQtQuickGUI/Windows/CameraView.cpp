@@ -27,7 +27,7 @@ using sofa::component::configurationsetting::BackgroundSetting ;
 #include <SofaBaseVisual/BaseCamera.h>
 using sofa::component::visualmodel::BaseCamera;
 
-#include <SofaQtQuickGUI/windows/CameraView.h>
+#include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/SofaCamera.h>
 #include <SofaQtQuickGUI/SofaScene.h>
 
@@ -80,19 +80,19 @@ void CameraView::internalRender(int width, int height) const
 
             if(settings->image.isSet())
             {
-                mySofaScene->clearBuffers(size, color);
+                clearBuffers(size, color);
                 msg_error("runSofa2::cameraview does not support yet background pictures.");
             }
         }
-        mySofaScene->clearBuffers(size, color, image);
-        mySofaScene->setupCamera(width, height, *this) ;
+        clearBuffers(size, color, image);
+        setupCamera(width, height, *this) ;
 
         /// Prepare for a pure rendrering traversal of the scene graph.
         m_visualParams->displayFlags().setShowAll(false) ;
         m_visualParams->displayFlags().setShowVisualModels(true) ;
 
         preDraw();
-        mySofaScene->drawVisuals(*this);
+        drawVisuals();
         postDraw();
     }
 }

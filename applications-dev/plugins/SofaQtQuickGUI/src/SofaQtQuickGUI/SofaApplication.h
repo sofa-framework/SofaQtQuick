@@ -131,6 +131,7 @@ public:
     Q_INVOKABLE QVariantList quaternionSwingTwistDecomposition(const QQuaternion& q, const QVector3D& direction);
 
 public:
+    static void InitOpenGL();
     static void SetOpenGLDebugContext();    // must be call before the window has been shown
     static void UseOpenGLDebugLogger();     // must be call after a valid opengl debug context has been made current
 

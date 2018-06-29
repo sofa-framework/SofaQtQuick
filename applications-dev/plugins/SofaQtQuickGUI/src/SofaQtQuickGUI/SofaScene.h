@@ -44,6 +44,17 @@ class QOpenGLShaderProgram;
 class QOpenGLFramebufferObject;
 class QOffscreenSurface;
 
+namespace sofa {
+    namespace simulation {
+        namespace _scenechecking_ {
+            class SceneCheckerVisitor ;
+        }
+        namespace scenechecking {
+            using _scenechecking_::SceneCheckerVisitor ;
+        }
+    }
+}
+
 namespace sofa
 {
 
@@ -69,7 +80,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject, private sofa::simulati
     friend class EditView;
 
     friend class PickUsingRasterizationWorker;
-    friend bool LoaderProcess(SofaScene* scene, QOffscreenSurface* surface);
+    friend bool LoaderProcess(SofaScene* scene);
 
 public:
     explicit SofaScene(QObject *parent = 0);
@@ -106,12 +117,16 @@ public:
 
     bool isLoading() const                                      {return Status::Loading == myStatus;}
     bool isReady() const                                        {return Status::Ready == myStatus;}
+    bool isOnError() const                                      {return Status::Error == myStatus;}
 
     const QString& header() const                               {return myHeader;}
     void setHeader(const QString& newHeader);
 
-    const QUrl& source() const                                  {return mySource;}
+    /// set the url of the scene, when changed the SofaScene object will goes through
+    /// the following states: Unloaded, Null, Loading, Ready.
+    /// On error the scene status is set to Error and a new source has to be set.
     void setSource(const QUrl& newSource);
+    const QUrl& source() const                                  {return mySource;}
 
     const QUrl& sourceQML() const                               {return mySourceQML;}
     void setSourceQML(const QUrl& newSourceQML);
@@ -221,6 +236,10 @@ public slots:
     void onKeyPressed(char key);
     void onKeyReleased(char key);
 
+    void onMouseMove(double x, double y) ;
+    void onMousePressed(int button, double x, double y) ;
+    void onMouseReleased(int button, double x, double y) ;
+
 signals:
     void stepBegin();
     void stepEnd();
@@ -235,36 +254,15 @@ public:
     const sofa::simulation::Node::SPtr& sofaRootNode() const {return mySofaRootNode;}
     sofa::simulation::Node::SPtr& sofaRootNode() {return mySofaRootNode;}
 
-protected:
-    /// \brief      Low-level drawing function
-    /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
-    /// \note       The best way to display a 'Scene' is to use a 'Viewer' instead of directly call this function
-    void drawEditorView(const SofaViewer& viewer, const QList<SofaComponent*>& roots = QList<SofaComponent*>(),
-              bool doDrawSelected=true, bool doDrawManipulator=true) const;
+    /// Call that before rendering any sofa scene. This insure that the texture & meshes are updated.
+    void prepareSceneForDrawing() ;
 
+    sofa::simulation::scenechecking::SceneCheckerVisitor* m_scenechecker;
+protected:
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
     /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaComponent where it belongs
     SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
-
-    /// \brief      Low-level function for color index picking
-    /// \attention  Require an opengl context bound to a surface, viewport / projection / modelview must have been set
-    /// \note       The best way to pick an object is to use a Viewer instead of directly call this function
-    /// \return     A 'Selectable' containing the picked object
-    Selectable* pickObject(const SofaViewer& viewer, const QPointF& ssPoint, const QStringList& tagList, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
-
-    void drawSelectedComponents(sofa::core::visual::VisualParams *visualParams) const ;
-    void drawManipulator(const SofaViewer& viewer) const ;
-
-    /// This is calling the drawVisual() method on each Sofa object in the scene
-    void drawVisuals(const SofaViewer& viewer) const ;
-
-    /// This is calling the draw() method on each sofa object in the scene
-    void drawDebugVisuals(const SofaViewer& viewer) const ;
-
-    sofa::core::visual::VisualParams* setupVisualParams(sofa::core::visual::VisualParams*) const;
-    void setupCamera(int width, int height, const SofaViewer& viewer) const ;
-    void clearBuffers(const QSize &size, const QColor& color, const QImage& image=QImage()) const ;
 
 protected:
     void addChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
@@ -279,7 +277,8 @@ private:
     QUrl                                        mySourceQML;
     QString                                     myPath;
     QString                                     myPathQML;
-    mutable bool                                myVisualDirty;
+    mutable bool                                myVisualDirty {true} ;
+    mutable bool                                myTextureAreDirty {true} ;
     double                                      myDt;
     bool                                        myAnimate;
     bool                                        myDefaultAnimate;
@@ -295,10 +294,6 @@ private:
     Manipulator*                                mySelectedManipulator;
     SofaComponent*                              mySelectedComponent;
 
-    //TODO(dmarchal) this shouldn't be in a SofaScene class. SofaApplication sound a better place ?
-    QOpenGLShaderProgram*                       myHighlightShaderProgram;
-    QOpenGLShaderProgram*                       myPickingShaderProgram;
-    QOpenGLFramebufferObject*                   myPickingFBO;
 };
 
 }

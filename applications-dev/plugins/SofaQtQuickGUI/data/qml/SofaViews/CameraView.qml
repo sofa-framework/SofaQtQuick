@@ -24,7 +24,6 @@ import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
 import SofaBasics 1.0
 import SofaApplication 1.0
-import SofaInteractors 1.0
 import CameraView 1.0
 import SofaScene 1.0
 
@@ -85,11 +84,6 @@ CameraView {
             else
                 focus = false;
         }
-    }
-
-    Action{
-        shortcut: "F5"
-        onTriggered: root.viewAll()
     }
 
     property alias busyIndicator: busyIndicator
@@ -231,38 +225,6 @@ CameraView {
         }
     }
 
-    // interactor
-    property alias interactor: interactorLoader.item
-    property Component interactorComponent: SofaApplication.interactorComponent
-
-    Loader {
-        id: interactorLoader
-        sourceComponent: root.interactorComponent
-        onLoaded:
-        {
-            var interactor = item;
-            interactor.init();
-        }
-    }
-
-    Image {
-        id: handIcon
-        source: "qrc:/icon/hand.png"
-        visible: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor.interacting : false
-        antialiasing: true
-
-        Connections {
-            target: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor : null
-            onInteractorPositionChanged: {
-                var position = root.mapFromWorld(sofaScene.sofaParticleInteractor.interactorPosition)
-                if(position.z > 0.0 && position.z < 1.0) {
-                    handIcon.x = position.x - 6;
-                    handIcon.y = position.y - 2;
-                }
-            }
-        }
-    }
-
     // mouse interaction
     property alias mouseArea: mouseArea
     MouseArea {
@@ -270,50 +232,33 @@ CameraView {
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
         enabled: sofaScene && sofaScene.ready
-        hoverEnabled: root.interactor ? root.interactor.hoverEnabled : false
-
-        onClicked: {
-            forceActiveFocus();
-
-            if(root.interactor)
-                root.interactor.mouseClicked(mouse, root);
-
-        }
-
-        onDoubleClicked: {
-            forceActiveFocus();
-
-            if(root.interactor)
-                root.interactor.mouseDoubleClicked(mouse, root);
-        }
 
         onPressed: {
             forceActiveFocus();
 
-            if(root.interactor)
-                root.interactor.mousePressed(mouse, root);
+            if(root.sofaScene)
+                root.sofaScene.mousePressed(mouse, root);
         }
 
         onReleased: {
-            if(root.interactor)
-                root.interactor.mouseReleased(mouse, root);
+            if(root.sofaScene)
+                root.sofaScene.mouseReleased(mouse, root);
         }
 
         onWheel: {
-            if(root.interactor)
-                root.interactor.mouseWheel(wheel, root);
+            if(root.sofaScene)
+                root.sofaScene.mouseWheel(wheel, root);
 
             wheel.accepted = true;
         }
 
         onPositionChanged: {
-            if(root.interactor)
-                root.interactor.mouseMoved(mouse, root);
+            if(root.sofaScene)
+                root.sofaScene.mouseMove(mouse, root);
         }
     }
 
-    // keyboard interaction
-
+    // keyboard interaction forwarded to the sofaScene.
     Keys.onPressed: {
         if(event.isAutoRepeat) {
             event.accepted = true;
@@ -322,9 +267,6 @@ CameraView {
 
         if(root.sofaScene)
             root.sofaScene.keyPressed(event);
-
-        if(root.interactor)
-            root.interactor.keyPressed(event, root);
 
         event.accepted = true;
     }
@@ -337,9 +279,6 @@ CameraView {
 
         if(root.sofaScene)
             root.sofaScene.keyReleased(event);
-
-        if(root.interactor)
-            root.interactor.keyReleased(event, root);
 
         event.accepted = true;
     }

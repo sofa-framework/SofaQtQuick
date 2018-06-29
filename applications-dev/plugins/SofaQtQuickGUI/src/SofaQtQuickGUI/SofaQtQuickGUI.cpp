@@ -33,18 +33,19 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaComponent.h"
 #include "SofaData.h"
 #include "SofaLink.h"
+#include "SofaViewer.h"
 #include "Selectable.h"
 #include "SelectableManipulator.h"
 #include "SelectableSofaComponent.h"
 #include "SelectableSofaParticle.h"
-#include "SofaSceneListModel.h"
-#include "SofaDataListModel.h"
-#include "SofaInspectorDataListModel.h"
-#include "SofaDisplayFlagsTreeModel.h"
-#include "SofaViewer.h"
-
-#include "windows/CameraView.h"
-#include "windows/EditView.h"
+#include "Models/SofaSceneListModel.h"
+#include "Models/SofaSceneListProxy.h"
+#include "Models/SofaSceneItemModel.h"
+#include "Models/SofaDataListModel.h"
+#include "Models/SofaInspectorDataListModel.h"
+#include "Models/SofaDisplayFlagsTreeModel.h"
+#include "Windows/CameraView.h"
+#include "Windows/EditView.h"
 
 #include "PythonConsole.h"
 using namespace sofa::qtquick;
@@ -100,7 +101,7 @@ static QObject* createSofaFactory(QQmlEngine *engine,
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
     qRegisterMetaType<SofaScene::Status>("Status");
-    qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
+    //qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
 
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
@@ -123,7 +124,9 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"              , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");
     qmlRegisterUncreatableType<SelectableSofaParticle>              ("SelectableSofaParticle"               , versionMajor, versionMinor, "SelectableSofaParticle", "SelectableSofaParticle is not instantiable");
     qmlRegisterUncreatableType<ProcessState>                        ("ProcessState"                         , versionMajor, versionMinor, "ProcessState", "ProcessState is not instantiable");
-    qmlRegisterType<SofaSceneListModel>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
+    //qmlRegisterType<SofaSceneListModel>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
+    qmlRegisterType<SofaSceneListProxy>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
+    qmlRegisterType<SofaSceneItemModel>                             ("SofaSceneItemModel"                   , versionMajor, versionMinor, "SofaSceneItemModel");
     qmlRegisterType<SofaDataListModel>                              ("SofaDataListModel"                    , versionMajor, versionMinor, "SofaDataListModel");
     qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");

@@ -149,8 +149,11 @@ public:
     Q_INVOKABLE sofa::qtquick::SelectableSofaParticle*    pickParticle(const QPointF& ssPoint) const;
 	Q_INVOKABLE sofa::qtquick::SelectableSofaParticle*    pickParticleWithTags(const QPointF& ssPoint, const QStringList& tags) const;
 
-    Q_INVOKABLE sofa::qtquick::Selectable*                pickObject(const QPointF& ssPoint);
-	Q_INVOKABLE sofa::qtquick::Selectable*                pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags);
+    sofa::qtquick::Selectable* pickObject(const QPointF& ssPoint,
+                                          const QStringList& tags,
+                                          const QList<SofaComponent*>& roots) ;
+    Q_INVOKABLE sofa::qtquick::Selectable*                pickObject(const QPointF& ssPoint) ;
+    Q_INVOKABLE sofa::qtquick::Selectable*                pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags) ;
 
     Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;
 	Q_INVOKABLE QPair<QVector3D, QVector3D> rootsBoundingBox() const;
@@ -181,7 +184,6 @@ signals:
 
     void preDraw() const;
     void postDraw() const;
-
 public slots:
     void viewAll(float radiusFactor = 1.0f); // radiusFactor scales the bounding box used to compute the zoom level
 
@@ -189,6 +191,20 @@ protected:
     QSGNode* updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData);
     virtual void internalRender(int width, int height) const;
     void renderFrame() const;
+
+    sofa::core::visual::VisualParams* setupVisualParams(sofa::core::visual::VisualParams* visualParams) const ;
+    void drawManipulator(const SofaViewer& viewer) const ;
+    void drawEditorView(const QList<SofaComponent*>& roots,
+                        bool doDrawSelected, bool doDrawManipulators) const ;
+    void drawSelectedComponents(sofa::core::visual::VisualParams* visualParams) const ;
+
+    void drawVisuals() const ;
+    void drawDebugVisuals() const ;
+
+
+    void clearBuffers(const QSize& size, const QColor& color, const QImage& image=QImage()) const ;
+    void setupCamera(int width, int height, const SofaViewer& viewer) const ;
+    void checkAndInit() ;
 
 private:
     QRect nativeRect() const;
@@ -213,11 +229,16 @@ private:
         SofaViewer* myViewer;
         int         myAntialiasingSamples;
 
+
+
     };
 
 protected:
     sofa::core::visual::VisualParams* m_visualParams {nullptr};
     QOpenGLFramebufferObject*   myFBO                {nullptr};
+    QOpenGLFramebufferObject*   myPickingFBO         {nullptr};
+    QOpenGLShaderProgram*       myHighlightShaderProgram {nullptr};
+    QOpenGLShaderProgram*       myPickingShaderProgram   {nullptr};
     SofaScene*                  mySofaScene          {nullptr};
     Camera*						myCamera             {nullptr};
     QList<SofaComponent*>       myRoots;
