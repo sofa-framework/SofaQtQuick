@@ -92,7 +92,7 @@ private:
         FirstParentRole,
         DepthRole,
         TypeRole,
-        IsNodeRole,
+        IsNodeRole
     };
 
     struct Item
