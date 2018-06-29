@@ -89,5 +89,6 @@
         <file>SofaWidgets/PopupWindowCreateComponent.qml</file>
         <file>SofaViews/SceneGraph.qml</file>
         <file>SofaViews/Hierarchy.qml</file>
+        <file>SofaViews/ExampleView.qml</file>
     </qresource>
 </RCC>

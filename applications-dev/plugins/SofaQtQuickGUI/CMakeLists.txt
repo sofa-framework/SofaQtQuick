@@ -182,6 +182,7 @@ set(QML_FILES
     data/qml/SofaViews/Message.qml
     data/qml/SofaViews/SceneGraph.qml
     data/qml/SofaViews/Hierarchy.qml
+    data/qml/SofaViews/ExampleView.qml
 )
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
