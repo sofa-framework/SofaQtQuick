@@ -104,7 +104,7 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
         {
             b=static_cast<sofa::core::objectmodel::Base*>(currentNode->object[row].get());
             newIndex=createIndex(row, 0, b);
-            //qDebug() << "index query " << current << " : " << row << ", " << column << " node: "
+            //qDebug() << "index query " << parent << " : " << row << ", " << column << " node: "
             //         << QString::fromStdString(currentNode->getName()) << " => object " << newIndex << "  " << currentNode->object[row].get()->toBaseNode() ;
         }
         else
@@ -113,15 +113,15 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
             /// We change the row id so it fit inside the child array.
             int nrow = row - currentNode->object.size();
             if(nrow>=currentNode->child.size()){
-                qWarning() << "Inavlid row number" ;
+                qWarning() << "Invalid row number" ;
                 return QModelIndex();
             }
             auto childNode = currentNode->child[nrow].get();
             b=childNode;
             int c = (childNode->getFirstParent() != currentNode) ;
             newIndex=createIndex(row, c, b);
-            //qDebug() << "index query " << current << " : " << row << ", " << column << " node: "
-            //         << QString::fromStdString(currentNode->getName()) << " => node " << newIndex  << "  " << currentNode->child[row].get()->toBaseNode() ;
+            //qDebug() << "index query " << parent << " : " << row << ", " << column << " node: "
+            //         << QString::fromStdString(currentNode->getName()) << " => node " << newIndex  << "  " ;
         }
         //qDebug() << "index for "<< QString::fromStdString(b->getName()) << " is " << newIndex ;
 
@@ -135,7 +135,12 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
 
 QModelIndex SofaSceneItemModel::index(Node* node) const
 {
+    /// By convention any invalid query returns QModelIndex()
     if(node==nullptr)
+        return QModelIndex();
+
+    /// In case the node is the root node we return QModelIndex()
+    if(node->getFirstParent()==nullptr)
         return QModelIndex();
 
     Node* parentNode=static_cast<Node*>(node->getFirstParent());
@@ -303,7 +308,7 @@ size_t rrowCount(Node* parent)
 
 void SofaSceneItemModel::addChild(Node* target, Node* child)
 {
-    //msg_info("b") << "=========== Adding a child node to: " << target->getName();
+    msg_info("b") << "=========== Adding a child node to: " << target->getName();
 
     /// Who is changing
     QModelIndex parentIndex = index(target) ;
@@ -313,9 +318,7 @@ void SofaSceneItemModel::addChild(Node* target, Node* child)
 //    qDebug() << "       child location is: " << i ;
 
     beginInsertRows(parentIndex, i, i);
-
     MutationListener::addChild(target,child);
-
 }
 
 void SofaSceneItemModel::addChildDone(Node* target, Node* child)
