@@ -1,0 +1,19 @@
+module SofaViews
+SofaViewer 1.0 SofaViewer.qml
+SofaDataView 1.0 SofaDataView.qml
+ImageViewer 1.0 ImageViewer.qml
+PythonConsole 1.0 PythonConsole.qml
+SofaDataListView 1.0 SofaDataListView.qml
+SofaSceneGraphView 1.0 SofaSceneGraphView.qml
+SofaSceneToolPanel 1.0 SofaSceneToolPanel.qml
+SofaSimulationControl 1.0 SofaSimulationControl.qml
+SofaVisualizationControl 1.0 SofaVisualizationControl.qml
+SofaMessageView 1.0 SofaMessageView.qml
+QML_LiveCoding 1.0 QML_LiveCoding.qml
+AffineTransformationController 1.0 AffineTransformationController.qml
+ColorSelector 1.0 ColorSelector.qml
+CameraView 1.0 CameraView.qml
+MessageView 1.0 Message.qml
+SceneGraph 1.0 SceneGraph.qml
+Hierarchy 1.0 Hierarchy.qml
+ExampleView 1.0 ExampleView.qml
