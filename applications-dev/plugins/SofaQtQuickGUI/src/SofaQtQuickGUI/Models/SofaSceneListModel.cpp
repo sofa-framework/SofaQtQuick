@@ -341,7 +341,6 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
     /// Add a child as a root node.
     if(!parent)
     {
-        dmsg_info("SofaSceneListModel") << "add a root node : " << child->getName() ;
         beginInsertRows(QModelIndex(), 0, 0);
         myItems.append(buildNodeItem(0, child));
         endInsertRows();
@@ -353,7 +352,6 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
     /// Check if the parent is in the Item list, otherwise we have nothing to do;
     if( parentItemIt == myItems.end() )
     {
-        dmsg_info("SofaSceneListModel") << "The parent is not in the item list : " << parent->getName();
         return;
     }
     Item& parentItem = *parentItemIt;
@@ -364,18 +362,13 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
     auto lastChildIt = firstChildIt+parentItem.children.size() ;
     if( std::find_if(firstChildIt, lastChildIt, [child](const Item& a){ return child == a.base; }) != lastChildIt )
     {
-        dmsg_info("SofaSceneListModel") << "Already added in the item list: " << child->getName();
         return;
     }
 
     unsigned int numChildren = countChildrenOf(parentItem) ;
 
-    dmsg_info("SofaSceneListModel") << "Adding child node : " << child->getName() << " to " << parent->getName()
-                                    << " number of child is: " << lastChildIt - myItems.begin() << " while " << numChildren ;
-
     auto insertIterator = firstChildIt+numChildren+1 ;
     int idx = insertIterator-myItems.begin() ;
-    dmsg_info("SofaSceneListModel") << "At desired address: " << idx ;
 
     beginInsertRows(QModelIndex(), idx, idx);
     auto newChildItemIt = myItems.insert(insertIterator, buildNodeItem(&parentItem, child));

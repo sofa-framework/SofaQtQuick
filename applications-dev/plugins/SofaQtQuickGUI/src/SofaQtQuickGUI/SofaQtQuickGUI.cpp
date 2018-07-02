@@ -41,6 +41,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Models/SofaSceneListModel.h"
 #include "Models/SofaSceneListProxy.h"
 #include "Models/SofaSceneItemModel.h"
+#include "Models/SofaSceneItemProxy.h"
 #include "Models/SofaDataListModel.h"
 #include "Models/SofaInspectorDataListModel.h"
 #include "Models/SofaDisplayFlagsTreeModel.h"
@@ -127,6 +128,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     //qmlRegisterType<SofaSceneListModel>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaSceneListProxy>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaSceneItemModel>                             ("SofaSceneItemModel"                   , versionMajor, versionMinor, "SofaSceneItemModel");
+    qmlRegisterType<SofaSceneItemProxy>                            ("SofaSceneItemProxy"                   , versionMajor, versionMinor, "SofaSceneItemProxy");
     qmlRegisterType<SofaDataListModel>                              ("SofaDataListModel"                    , versionMajor, versionMinor, "SofaDataListModel");
     qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");

@@ -46,6 +46,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Models/SofaSceneListModel.cpp
     src/SofaQtQuickGUI/Models/SofaSceneListProxy.cpp
     src/SofaQtQuickGUI/Models/SofaSceneItemModel.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneItemProxy.cpp
     src/SofaQtQuickGUI/SofaCamera.cpp
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
@@ -85,6 +86,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Models/SofaSceneListModel.h
     src/SofaQtQuickGUI/Models/SofaSceneListProxy.h
     src/SofaQtQuickGUI/Models/SofaSceneItemModel.h
+    src/SofaQtQuickGUI/Models/SofaSceneItemProxy.h
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/Rendering/SceneRenderer.h
     src/SofaQtQuickGUI/Helper/QMathExtensions.h
