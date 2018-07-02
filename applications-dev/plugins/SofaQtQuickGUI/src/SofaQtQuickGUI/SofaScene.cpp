@@ -403,6 +403,7 @@ void SofaScene::open()
             else
             {
                 setDt(mySofaRootNode->getDt());
+                this->myTextureAreDirty=true;
             }
 
             loaderThread->deleteLater();
@@ -418,6 +419,7 @@ void SofaScene::open()
         else
         {
             setDt(mySofaRootNode->getDt());
+            this->myTextureAreDirty=true;
         }
     }
 }
@@ -1664,12 +1666,14 @@ void SofaScene::prepareSceneForDrawing()
 {
     if(myTextureAreDirty)
     {
+        std::cout<< "Dirty textures: " << std::endl ;
         mySofaSimulation->initTextures(mySofaRootNode.get());
         myTextureAreDirty=false;
     }
 
-    if(!myVisualDirty)
+    if(!myVisualDirty){
         return ;
+    }
 
     mySofaSimulation->updateVisual(mySofaRootNode.get());
     myVisualDirty = false;
