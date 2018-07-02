@@ -25,7 +25,7 @@ import QtQuick.Controls.Styles 1.3
 import SofaScene 1.0
 import SofaBasics 1.0
 import SofaApplication 1.0
-import SofaWidgets 1.0
+import SofaViews 1.0
 
 ApplicationWindow {
     id: root
@@ -91,7 +91,7 @@ ApplicationWindow {
         sourceComponent: Component {
             DynamicContent {
                 defaultContentName: "SofaViewer"
-                sourceDir: "qrc:/SofaWidgets"
+                sourceDir: "qrc:/SofaViews"
                 properties: {"sofaScene": root.sofaScene, "drawFrame": false}
             }
         }

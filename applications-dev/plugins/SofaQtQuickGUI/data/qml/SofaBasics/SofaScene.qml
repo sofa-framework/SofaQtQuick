@@ -50,6 +50,7 @@ SofaScene {
             statusMessage = 'SofaScene loading "' + root.path + '" please wait';
             break;
         case SofaScene.Unloading:
+            SofaApplication.sofaMessageList.clear()
             statusMessage = 'SofaScene releasing "' + root.path + '" please wait';
             break;
         case SofaScene.Error:
@@ -74,14 +75,29 @@ SofaScene {
     // by default there is no particle-interactor
     property var sofaParticleInteractor: null
 
+    function mousePressed(mouseState, emitter)
+    {
+        onMousePressed(mouseState.button, mouseState.x, mouseState.y);
+    }
+
+    function mouseReleased(mouseState, emitter)
+    {
+        onMouseReleased(mouseState.button, mouseState.x, mouseState.y);
+    }
+
+
+    function mouseMove(mouseState, emitter)
+    {
+        onMouseMove(mouseState.x, mouseState.y);
+    }
+
     function keyPressed(event) {
-        if(event.modifiers & Qt.ShiftModifier)
-            onKeyPressed(event.key);
+        console.log("KEY PRESSED");
+        onKeyPressed(event.key);
     }
 
     function keyReleased(event) {
-        //if(event.modifiers & Qt.ShiftModifier)
-            onKeyReleased(event.key);
+        onKeyReleased(event.key);
     }
 
     property var resetAction: Action {
@@ -93,17 +109,17 @@ SofaScene {
 
     // SOFACOMPONENT
 
-    /// \note you can use data with a SofaComponent and fill the name of the data or directly put the data path in the data field and not use the name parameter
+    /// \note you can use data with a SofaComponent and fill the name of the data or directly put
+    /// the data path in the data field and not use the name parameter
     function dataValue(data, name) {
         if(!Qt.isQtObject(data))
             return onDataValueByPath(data);
-        else
-            return onDataValueByComponent(data, name);
-
-        console.debug("ERROR: SofaScene - using dataValue with an invalid number of arguments:", arguments.length);
+        return onDataValueByComponent(data, name);
     }
 
-    /// \note you can use data with a SofaComponent and fill the name of the data or directly put the data path in the data field and not use the name parameter (just ignore it), the other parameters will be taken as the values to set
+    /// \note you can use data with a SofaComponent and fill the name of the data or directly put
+    /// the data path in the data field and not use the name parameter (just ignore it), the other
+    /// parameters will be taken as the values to set
     function setDataValue(data, name) {
         var argumentBegin = Qt.isQtObject(data) ? 2 : 1;
         if(arguments.length > argumentBegin){
@@ -117,7 +133,8 @@ SofaScene {
                 return onSetDataValueByComponent(data, name, packedArguments);
         }
 
-        console.debug("ERROR: SofaScene - using setDataValue with an invalid number of arguments:", arguments.length);
+        console.debug("ERROR: SofaScene - using setDataValue with an invalid number of arguments:",
+                      arguments.length);
     }
 
     ///// MANIPULATOR
@@ -133,8 +150,8 @@ SofaScene {
 
         // if the added manipulator is a compound also add its children manipulators
         if(manipulator.manipulators && 0 !== manipulator.manipulators.length)
-            for(var i = 0; i < manipulator.manipulators.length; ++i)
-                addManipulator(manipulator.manipulators[i]);
+            for(var ii = 0; ii < manipulator.manipulators.length; ++ii)
+                addManipulator(manipulator.manipulators[ii]);
 
         return manipulator;
     }
@@ -196,13 +213,15 @@ SofaScene {
         root.manipulators = [];
     }
 
-    ///// INTERFACE
 
+    ///// INTERFACE
     readonly property Loader interfaceLoader: Loader {
         id: interfaceLoader
         asynchronous: false
 
-        // delay the load of the interface to one frame to let the cache be trimmed in order to load the scene interface from scratch without reusing the previous loaded one in case of a scene reloading
+        // delay the load of the interface to one frame to let the cache be trimmed in order to load
+        // the scene interface from scratch without reusing the previous loaded one in case of a
+        // scene reloading
         Timer {
             id: loadInterfaceTimer
             interval: 1

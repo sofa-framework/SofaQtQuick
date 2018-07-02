@@ -1,1 +1,2 @@
 singleton SofaApplication 1.0 SofaApplication.qml
+singleton MainStyle 1.0 MainStyle.qml
