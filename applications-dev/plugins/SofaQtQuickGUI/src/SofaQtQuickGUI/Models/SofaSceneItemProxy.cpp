@@ -30,14 +30,34 @@ SofaSceneItemProxy::SofaSceneItemProxy(QObject* parent) :
 {
     setFilterKeyColumn(0);
     setRecursiveFilteringEnabled(true);
+    setDynamicSortFilter(true);
 }
 
 
 bool SofaSceneItemProxy::filterAcceptsRow(int sourceRow,
         const QModelIndex &sourceParent) const
 {
-    return sourceModel()->data(sourceModel()->index(sourceRow, 0,sourceParent),
-                               static_cast<int>(SofaSceneItemModel::Roles::IsNode)).toBool();
+    QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent) ;
+
+    /// If requested we only show the nodes in the graph.
+    if(m_showOnlyNodes)
+    {
+        /// The data() for Role::iSNode is returning the adequate information.
+        /// the implementation is very simple and we can probably accelerate it a bit
+        /// by using more "bare metal" object instead index() & data() function.
+        return sourceModel()->data(sourceIndex,
+                                   static_cast<int>(SofaSceneItemModel::Roles::IsNode)).toBool();
+    }
+
+    if(m_filters.contains(sourceParent))
+    {
+        qDebug() << "Filter " << sourceModel()->data(sourceIndex,
+                                                     static_cast<int>(SofaSceneItemModel::Roles::IsNode)).toBool();
+        return sourceModel()->data(sourceIndex,
+                                   static_cast<int>(SofaSceneItemModel::Roles::IsNode)).toBool();
+    }
+
+    return true;
 }
 
 SofaSceneItemProxy::~SofaSceneItemProxy()
@@ -45,16 +65,22 @@ SofaSceneItemProxy::~SofaSceneItemProxy()
 
 }
 
-void SofaSceneItemProxy::setDisabled(int modelRow, bool value)
+void SofaSceneItemProxy::flipComponentVisibility(const QModelIndex index)
 {
+    QModelIndex srcindex = mapToSource(index);
+    if(!m_filters.contains(srcindex))
+       m_filters.insert(srcindex, false);
+    else
+       m_filters.remove(srcindex);
 
+    invalidateFilter();
 }
 
-void SofaSceneItemProxy::setCollapsed(int modelRow, bool value)
+void SofaSceneItemProxy::showOnlyNodes(bool value)
 {
-
+    m_showOnlyNodes=value;
+    invalidateFilter();
 }
-
 
 } ///namespace qtquick
 } ///namespace sofa

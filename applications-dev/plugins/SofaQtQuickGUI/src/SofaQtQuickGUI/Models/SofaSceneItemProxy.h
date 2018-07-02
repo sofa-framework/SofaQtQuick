@@ -34,8 +34,9 @@ class SofaSceneItemProxy : public QSortFilterProxyModel
 {
     Q_OBJECT
 
-    Q_INVOKABLE void setDisabled(int modelRow, bool value);
-    Q_INVOKABLE void setCollapsed(int modelRow, bool value);
+public:
+    Q_INVOKABLE void flipComponentVisibility(QModelIndex index);
+    Q_INVOKABLE void showOnlyNodes(bool value);
 
     Q_PROPERTY(QAbstractItemModel* model READ sourceModel WRITE setSourceModel )
 
@@ -46,6 +47,10 @@ public:
     /// Inherited from QSortFilterProxyModel by overriding it we can implement
     /// custom filtering rules.
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+
+private:
+    QHash<QModelIndex, bool> m_filters ;
+    bool                     m_showOnlyNodes {false};
 };
 
 }
