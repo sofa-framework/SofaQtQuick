@@ -87,7 +87,6 @@ using sofa::helper::system::FileSystem ;
 #include <QRunnable>
 #include <QGuiApplication>
 #include <QOffscreenSurface>
-#include <GL/glut.h>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -225,16 +224,6 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
     GLenum err = glewInit();
     if(0 != err)
         msg_error("SofaQtQuickGUI") << "GLEW Initialization failed with error code:" << err;
-
-    #ifdef __linux__
-        static bool glutInited = false;
-        if(!glutInited)
-        {
-            int argc = 0;
-            glutInit(&argc, NULL);
-            glutInited = true;
-        }
-    #endif
 
     // init the highlight shader program
     if(!sofaScene->myHighlightShaderProgram)
