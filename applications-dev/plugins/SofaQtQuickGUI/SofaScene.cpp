@@ -33,6 +33,8 @@ using sofa::helper::types::RGBAColor ;
 #include <sofa/helper/system/FileSystem.h>
 using sofa::helper::system::FileSystem ;
 
+#include <sofa/helper/AdvancedTimer.h>
+
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/Tag.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
