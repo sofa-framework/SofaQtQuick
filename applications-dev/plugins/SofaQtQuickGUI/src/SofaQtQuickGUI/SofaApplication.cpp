@@ -997,7 +997,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     QQuickStyle::setStyle("Material");
 
     // color console
-    sofa::helper::Console::setColorsStatus(sofa::helper::Console::ColorsEnabled);
+    sofa::helper::console::setStatus(sofa::helper::console::Status::On);
 
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
     qputenv("QSG_RENDER_LOOP", "basic");

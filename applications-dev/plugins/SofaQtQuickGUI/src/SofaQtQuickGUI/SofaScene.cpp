@@ -33,6 +33,8 @@ using sofa::helper::types::RGBAColor ;
 #include <sofa/helper/system/FileSystem.h>
 using sofa::helper::system::FileSystem ;
 
+#include <sofa/helper/AdvancedTimer.h>
+
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/objectmodel/Tag.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
@@ -89,6 +91,8 @@ using sofa::simulation::scenechecking::SceneCheckUsingAlias;
 #include <QUrl>
 #include <QThread>
 #include <QRunnable>
+#include <QGuiApplication>
+#include <QOffscreenSurface>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -204,6 +208,88 @@ bool LoaderProcess(SofaScene* sofaScene)
 {
     if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
+
+    if(!QOpenGLContext::currentContext())
+    {
+        // create an opengl context
+        QOpenGLContext* openglContext = new QOpenGLContext();
+
+        // share its resources with the global context
+        QOpenGLContext* sharedOpenglContext = QOpenGLContext::globalShareContext();
+        if(sharedOpenglContext)
+            openglContext->setShareContext(sharedOpenglContext);
+
+        if(!openglContext->create())
+            qFatal("Cannot create an OpenGL Context needed to init SofaScene");
+
+        if(!offscreenSurface->isValid())
+            qFatal("Cannot create an OpenGL Surface needed to init SofaScene");
+
+        openglContext->makeCurrent(offscreenSurface);
+    }
+
+    //qDebug() << "OpenGL" << QOpenGLContext::currentContext()->format().majorVersion() << "." << QOpenGLContext::currentContext()->format().minorVersion();
+
+    GLenum err = glewInit();
+    if(0 != err)
+        msg_error("SofaQtQuickGUI") << "GLEW Initialization failed with error code:" << err;
+
+    // init the highlight shader program
+    if(!sofaScene->myHighlightShaderProgram)
+    {
+        sofaScene->myHighlightShaderProgram = new QOpenGLShaderProgram();
+
+        sofaScene->myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        sofaScene->myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
+            "}");
+
+        sofaScene->myHighlightShaderProgram->link();
+
+        sofaScene->myHighlightShaderProgram->moveToThread(sofaScene->thread());
+        sofaScene->myHighlightShaderProgram->setParent(sofaScene);
+    }
+
+    // init the picking shader program
+    if(!sofaScene->myPickingShaderProgram)
+    {
+        sofaScene->myPickingShaderProgram = new QOpenGLShaderProgram();
+        sofaScene->myPickingShaderProgram->create();
+        sofaScene->myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+            "void main(void)\n"
+            "{\n"
+            "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+            "}");
+        sofaScene->myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+            "uniform highp vec4 index;\n"
+            "void main(void)\n"
+            "{\n"
+            "   gl_FragColor = index;\n"
+            "}");
+        sofaScene->myPickingShaderProgram->link();
+
+        sofaScene->myPickingShaderProgram->moveToThread(sofaScene->thread());
+        sofaScene->myPickingShaderProgram->setParent(sofaScene);
+    }
+
+    // prepare the sofa visual params
+    sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+    if(visualParams)
+    {
+        if(!visualParams->drawTool())
+        {
+            visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
+            visualParams->setSupported(sofa::core::visual::API_OpenGL);
+        }
+
+        visualParams->displayFlags().setShowVisualModels(true);
+    }
 
     sofaScene->sofaRootNode() = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData());
     if( sofaScene->sofaRootNode() )
