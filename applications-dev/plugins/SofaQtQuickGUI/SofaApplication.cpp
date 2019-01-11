@@ -955,7 +955,9 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");
-    
+    // Necessary for standalone builds (out-of-sofa without install)
+    app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../SofaQtQuickGUI/");
+
     // initialise paths
     SofaApplication::UseDefaultSofaPath();
 
