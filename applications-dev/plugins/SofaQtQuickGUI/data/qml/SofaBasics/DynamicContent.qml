@@ -17,11 +17,11 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick 2.5
+import QtQuick.Controls 2.3
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import QtQuick.Controls.Styles 1.2
 import QtQuick.Window 2.2
 import Qt.labs.folderlistmodel 2.1
 import Qt.labs.settings 1.0
@@ -84,7 +84,7 @@ Item {
 
     property string defaultContentName
     property string currentContentName
-    property string sourceDir: "qrc:/SofaWidgets"
+    property string sourceDir: "qrc:/SofaViews"
     property int    contentUiId: 0
 
     property var    properties
@@ -174,191 +174,194 @@ Item {
     Item {
         anchors.fill: parent
 
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 0
+        Rectangle {
+            id: toolBar
+            color: "lightgrey"
 
-            Item {
-                id: loaderLocation
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                visible: contentItem
+            height: 30
+            anchors.left: parent.anchors.left
+            anchors.right: parent.anchors.right
+            anchors.top: parent.anchors.top
 
-                property Item contentItem
+            RowLayout {
+                id: toolBarLayout
+                spacing: 2
 
-                onContentItemChanged: {
-                    refreshStandbyItem();
+                ComboBox {
+                    id: comboBox
+                    textRole: "fileBaseName"
+
+                    model: ListModel {
+                        id: listModel
+                    }
+
+                    onCurrentIndexChanged: {
+                        loaderLocation.refresh();
+                    }
                 }
 
-                property string errorMessage
-                function refresh() {
-                    if(-1 === comboBox.currentIndex || comboBox.currentIndex >= listModel.count)
-                        return;
+                /// Open a new windows with this content.
+                Button {
+                    icon.source: "qrc:/icon/subWindow.png"
+                    onClicked: {
+                        windowComponent.createObject(SofaApplication, {"source": listModel.get(comboBox.currentIndex).filePath});
+                    }
 
-                    var currentData = listModel.get(comboBox.currentIndex);
-                    if(currentData) {
-                        var source = listModel.get(comboBox.currentIndex).filePath;
+                    Component {
+                        id: windowComponent
 
-                        if(root.currentContentName === comboBox.currentText && null !== loaderLocation.contentItem)
-                            return;
+                        Window {
+                            id: window
+                            width: 400
+                            height: 600
+                            modality: Qt.NonModal
+                            flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                            visible: true
+                            color: "lightgrey"
 
-                        root.currentContentName = comboBox.currentText;
-
-                        if(loaderLocation.contentItem) {
-                            if(undefined !== loaderLocation.contentItem.setNoSettings)
-                                loaderLocation.contentItem.setNoSettings();
-
-                            loaderLocation.contentItem.destroy();
-                            loaderLocation.contentItem = null;
-                        }
-
-                        var contentComponent = Qt.createComponent(source);
-                        if(contentComponent.status === Component.Error) {
-                            loaderLocation.errorMessage = contentComponent.errorString();
-                            refreshStandbyItem();
-                        } else {
-                            if(0 === root.contentUiId)
-                                root.contentUiId = SofaApplication.uiSettings.generate();
-
-                            var contentProperties = root.properties;
-                            if(!contentProperties)
-                                contentProperties = {};
-
-                            contentProperties["uiId"] = root.contentUiId;
-                            contentProperties["anchors.fill"] = loaderLocation;
-                            var content = contentComponent.createObject(loaderLocation, contentProperties);
-
-                            if(undefined !== content.uiId)
-                                root.contentUiId = Qt.binding(function() {return content.uiId;});
-                            else
-                            {
-                                SofaApplication.uiSettings.remove(root.contentUiId);
-                                root.contentUiId = 0;
+                            Component.onCompleted: {
+                                width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
+                                height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
                             }
 
-                            loaderLocation.contentItem = content;
+                            onClosing: destroy();
+
+                            property url source
+
+                            Loader {
+                                id: loader
+                                anchors.fill: parent
+
+                                source: window.source
+                            }
                         }
                     }
                 }
-
-                function refreshStandbyItem() {
-                    if(contentItem) {
-                        d.timer.stop();
-                        errorLabel.visible = false;
-                    } else {
-                        d.timer.start();
-                    }
-                }
-            }
-
-            Rectangle {
-                id: errorLabel
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                color: "#555555"
-                visible: false
 
                 Label {
-                    anchors.fill: parent
-                    color: "red"
-                    visible: 0 !== loaderLocation.errorMessage.length
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-
-                    text: "An error occurred, the content could not be loaded ! Reason: " + loaderLocation.errorMessage
-                    wrapMode: Text.WordWrap
-                    font.bold: true
+                    id: showAllLabel
+                    anchors.right: checkBoxEditting.left
+                    anchors.verticalCenter:  toolBar.verticalCenter
+                    text: "Edit:"
                 }
-            }
-
-            Rectangle {
-                id: toolBar
-                Layout.fillWidth: true
-                Layout.preferredHeight: visible ? 22 : 0
-                color: "lightgrey"
-                visible: false
-
-                Flickable {
-                    anchors.fill: parent
-                    anchors.leftMargin: 32
-                    contentWidth: toolBarLayout.implicitWidth
-
-                    RowLayout {
-                        id: toolBarLayout
-                        height: parent.height
-                        spacing: 2
-
-                        ComboBox {
-                            id: comboBox
-                            Layout.preferredWidth: 150
-                            Layout.preferredHeight: 20
-                            textRole: "fileBaseName"
-                            style: ComboBoxStyle {}
-
-                            model: ListModel {
-                                id: listModel
-                            }
-
-                            onCurrentIndexChanged: {
-                                loaderLocation.refresh();
-                            }
-                        }
-
-                        Button {
-                            iconSource: "qrc:/icon/subWindow.png"
-                            Layout.preferredWidth: Layout.preferredHeight
-                            Layout.preferredHeight: 20
-
-                            onClicked: windowComponent.createObject(SofaApplication, {"source": listModel.get(comboBox.currentIndex).filePath});
-
-                            Component {
-                                id: windowComponent
-
-                                Window {
-                                    id: window
-                                    width: 400
-                                    height: 600
-                                    modality: Qt.NonModal
-                                    flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
-                                    visible: true
-                                    color: "lightgrey"
-
-                                    Component.onCompleted: {
-                                        width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
-                                        height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
-                                    }
-
-                                    onClosing: destroy();
-
-                                    property url source
-
-                                    Loader {
-                                        id: loader
-                                        anchors.fill: parent
-
-                                        source: window.source
-                                    }
-                                }
-                            }
-                        }
-                    }
+                CheckBox {
+                    id : checkBoxEditting
+                    anchors.right:  toolBar.right
+                    anchors.verticalCenter:  toolBar.verticalCenter
                 }
             }
         }
 
-        Image {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.bottomMargin: 3
-            anchors.leftMargin: 16
-            source: toolBar.visible ? "qrc:/icon/minus.png" : "qrc:/icon/plus.png"
-            width: 12
-            height: width
+        Item {
+            id: loaderLocation
+            anchors.top : toolBar.bottom
+            anchors.left : parent.left
+            anchors.right : parent.right
+            anchors.bottom : parent.bottom
+            visible: contentItem
 
-            MouseArea {
+            property Item contentItem
+
+            onContentItemChanged: {
+                refreshStandbyItem();
+            }
+
+            property string errorMessage
+            function refresh() {
+                if(-1 === comboBox.currentIndex || comboBox.currentIndex >= listModel.count)
+                    return;
+
+                var currentData = listModel.get(comboBox.currentIndex);
+                if(currentData) {
+                    var source = listModel.get(comboBox.currentIndex).filePath;
+
+                    if(root.currentContentName === comboBox.currentText && null !== loaderLocation.contentItem)
+                        return;
+
+                    root.currentContentName = comboBox.currentText;
+
+                    if(loaderLocation.contentItem) {
+                        if(undefined !== loaderLocation.contentItem.setNoSettings)
+                            loaderLocation.contentItem.setNoSettings();
+
+                        loaderLocation.contentItem.destroy();
+                        loaderLocation.contentItem = null;
+                    }
+
+                    var contentComponent = Qt.createComponent(source);
+                    if(contentComponent.status === Component.Error) {
+                        loaderLocation.errorMessage = contentComponent.errorString();
+                        refreshStandbyItem();
+                    } else {
+                        if(0 === root.contentUiId)
+                            root.contentUiId = SofaApplication.uiSettings.generate();
+
+                        var contentProperties = root.properties;
+                        if(!contentProperties)
+                            contentProperties = {};
+
+                        contentProperties["uiId"] = root.contentUiId;
+                        contentProperties["anchors.fill"] = loaderLocation;
+                        var content = contentComponent.createObject(loaderLocation, contentProperties);
+
+                        if(undefined !== content.uiId)
+                            root.contentUiId = Qt.binding(function() {return content.uiId;});
+                        else
+                        {
+                            SofaApplication.uiSettings.remove(root.contentUiId);
+                            root.contentUiId = 0;
+                        }
+
+                        loaderLocation.contentItem = content;
+                    }
+                }
+            }
+
+            function refreshStandbyItem() {
+                if(contentItem) {
+                    d.timer.stop();
+                    errorLabel.visible = false;
+                } else {
+                    d.timer.start();
+                }
+            }
+        }
+
+
+        Rectangle {
+            id: errorLabel
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#555555"
+            visible: false
+
+            Label {
                 anchors.fill: parent
-                onClicked: toolBar.visible = !toolBar.visible
+                color: "red"
+                visible: 0 !== loaderLocation.errorMessage.length
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
+                text: "An error occurred, the content could not be loaded ! Reason: " + loaderLocation.errorMessage
+                wrapMode: Text.WordWrap
+                font.bold: true
             }
         }
     }
 }
+
+
+//        Image {
+//            anchors.bottom: parent.bottom
+//            anchors.left: parent.left
+//            anchors.bottomMargin: 3
+//            anchors.leftMargin: 16
+//            source: toolBar.visible ? "qrc:/icon/minus.png" : "qrc:/icon/plus.png"
+//            width: 12
+//            height: width
+
+//            MouseArea {
+//                anchors.fill: parent
+//                onClicked: toolBar.visible = !toolBar.visible
+//            }
+//        }

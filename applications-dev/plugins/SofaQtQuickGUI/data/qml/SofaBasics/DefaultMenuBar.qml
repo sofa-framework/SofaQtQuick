@@ -29,8 +29,6 @@ MenuBar {
     property var sofaScene: null
 
     property list<QtObject> objects: [
-
-        // action
         Action {
             id: openAction
             text: "&Open..."
@@ -109,7 +107,7 @@ MenuBar {
         MenuItem {action: openAction}
         Menu {
             id: recentMenu
-            title: "Recent sofa scenes"
+            title: "Open recent"
 
             visible: 0 !== items.length
 
@@ -151,42 +149,41 @@ MenuBar {
         }
 
         MenuItem {action: reloadAction}
-        //MenuItem {action: saveAction}
-        //MenuItem {action: saveAsAction}
+        MenuItem { text: "Save (TODO)"; enabled : false }
+        MenuItem { text: "Save as...(TODO)"; enabled : false }
+        MenuItem { text: "Export as...(TODO)"; enabled : false }
         MenuSeparator {}
         MenuItem {action: exitAction}
     }
 
     Menu {
-        title: "&Simulation"
-        visible: true
-        enabled: sofaScene && sofaScene.ready
-
-        MenuItem {action: simulateAction}
-    }
-
-/*
-    Menu {
         title: "&Edit"
-        //MenuItem {action: cutAction}
-        //MenuItem {action: copyAction}
-        //MenuItem {action: pasteAction}
-        //MenuSeparator {}
-        MenuItem {
-            text: "Empty"
-            enabled: false
-        }
+        MenuItem { text : "Cut (TODO)"; enabled : false }
+        MenuItem { text : "Copy (TODO)"; enabled : false }
+        MenuItem { text : "Paste (TODO)"; enabled : false }
     }
+
     Menu {
-        title: "&View"
-        MenuItem {
-            text: "Empty"
-            enabled: false
-        }
+        title: "&Scene"
+        MenuItem { text: "Reload (TODO)"; enabled : false}
+        MenuSeparator {}
+        MenuItem { text: "Play (TODO)"; enabled : false}
+        MenuItem { text: "Pause (TODO)"; enabled : false}
+        MenuItem { text: "Stop (TODO)"; enabled : false }
+        MenuSeparator {}
+        MenuItem { text: "Add node (TODO)"; enabled : false}
+        MenuItem { text: "Add object (TODO)"; enabled : false}
     }
-*/
+
+    Menu {
+        title: "&Windows"
+        MenuItem { text: "Plugins store (TODO)"; enabled : false}
+    }
+
     Menu {
         title: "&Help"
+        MenuItem { text: "Help (TODO)"; enabled : false }
+        MenuItem { text: "Tutorials (TODO)"; enabled : false }
         MenuItem {action: aboutAction}
     }
 }

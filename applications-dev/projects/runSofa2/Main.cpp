@@ -18,13 +18,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <SofaQtQuickGUI/SofaApplication.h>
-
+#include <QtWebView/QtWebView>
 int main(int argc, char **argv)
 {
     // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofa::qtquick::SofaApplication::Initialization();
 
     QApplication app(argc, argv);
+    QtWebView::initialize();
     QQmlApplicationEngine applicationEngine;
 
     // application specific settings
