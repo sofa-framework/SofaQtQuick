@@ -57,13 +57,8 @@ ApplicationWindow {
         }
     }
 
-//    style: ApplicationWindowStyle {
-//        background: null
-//    }
-
     Component.onCompleted: {
         showNormal();
-        //showFullScreen();
     }
 
     // dialog

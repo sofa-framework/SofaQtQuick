@@ -18,7 +18,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include <GL/glut.h>
 
 #include "SofaApplication.h"
 #include "SofaScene.h"
@@ -957,15 +956,6 @@ void SofaApplication::InitOpenGL()
     if(0 != err)
         msg_error("SofaQtQuickGUI") << "GLEW Initialization failed with error code:" << err;
 
-#ifdef __linux__
-    static bool glutInited = false;
-    if(!glutInited)
-    {
-        int argc = 0;
-        glutInit(&argc, NULL);
-        glutInited = true;
-    }
-#endif
 }
 
 void SofaApplication::Instanciate(QQmlApplicationEngine& applicationEngine)
@@ -994,7 +984,7 @@ class UseOpenGLDebugLoggerRunnable : public QRunnable
 bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
     // application style
-    QQuickStyle::setStyle("Material");
+    QQuickStyle::setStyle("Fusion");
 
     // color console
     sofa::helper::Console::setColorsStatus(sofa::helper::Console::ColorsEnabled);

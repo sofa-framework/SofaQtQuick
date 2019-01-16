@@ -90,5 +90,6 @@
         <file>SofaViews/SceneGraph.qml</file>
         <file>SofaViews/Hierarchy.qml</file>
         <file>SofaViews/ExampleView.qml</file>
+        <file>SofaViews/WebBrowserView.qml</file>
     </qresource>
 </RCC>

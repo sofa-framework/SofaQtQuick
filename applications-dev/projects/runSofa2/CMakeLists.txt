@@ -33,7 +33,7 @@ if(WIN32)
 endif()
 
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml WebView REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
 # make sure to use QT > 5.0
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -41,12 +41,14 @@ include_directories(${Qt5Gui_INCLUDE_DIRS})
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 include_directories(${Qt5Qml_INCLUDE_DIRS})
 include_directories(${Qt5Quick_INCLUDE_DIRS})
+include_directories(${Qt5WebView_INCLUDE_DIRS})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${Qt5Gui_DEFINITIONS})
 add_definitions(${Qt5Widgets_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
+add_definitions(${Qt5WebView_DEFINITIONS})
 
 find_package(SofaFramework REQUIRED)
 find_package(SofaQtQuickGUI REQUIRED)
@@ -56,7 +58,7 @@ qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
-target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick)
+target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::WebView)
 
 sofa_install_targets(SofaGui ${PROJECT_NAME} "")
 

@@ -17,3 +17,4 @@ MessageView 1.0 Message.qml
 SceneGraph 1.0 SceneGraph.qml
 Hierarchy 1.0 Hierarchy.qml
 ExampleView 1.0 ExampleView.qml
+WebBrowserView 1.0 WebBrowserView.qml

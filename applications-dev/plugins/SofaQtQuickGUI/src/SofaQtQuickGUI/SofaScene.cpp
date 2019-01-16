@@ -56,11 +56,6 @@ using sofa::core::objectmodel::MouseEvent ;
 #include <SofaPython/PythonScriptController.h>
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
-#include <SofaComponentCommon/initComponentCommon.h>
-#include <SofaComponentBase/initComponentBase.h>
-#include <SofaComponentGeneral/initComponentGeneral.h>
-#include <SofaComponentAdvanced/initComponentAdvanced.h>
-#include <SofaComponentMisc/initComponentMisc.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/simulation/DeleteVisitor.h>
@@ -135,15 +130,6 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     m_scenechecker->addCheck(SceneCheckUsingAlias::newSPtr());
 
     sofa::simulation::graph::init();
-    sofa::component::initComponentBase();
-    sofa::component::initComponentCommon();
-    sofa::component::initComponentGeneral();
-    sofa::component::initComponentAdvanced();
-    sofa::component::initComponentMisc();
-
-    sofa::core::ExecParams::defaultInstance()->setAspectID(0);
-    sofa::core::ObjectFactory::ClassEntry::SPtr classVisualModel;
-    sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
 
     myStepTimer->setInterval(0);
     mySofaSimulation = sofa::simulation::graph::getSimulation();
@@ -151,12 +137,16 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     // plugins
     QVector<QString> plugins;
     plugins.append("SofaPython");
-
+    plugins.append("SofaAllCommonComponents");
     for(const QString& plugin : plugins)
     {
         std::string s = plugin.toStdString();
         sofa::helper::system::PluginManager::getInstance().loadPlugin(s);
     }
+
+    sofa::core::ExecParams::defaultInstance()->setAspectID(0);
+    sofa::core::ObjectFactory::ClassEntry::SPtr classVisualModel;
+    sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
 
     //Autoload
     std::string configPluginPath = sofa::helper::system::PluginRepository.getFirstPath() + "/" + TOSTRING(CONFIG_PLUGIN_FILENAME);

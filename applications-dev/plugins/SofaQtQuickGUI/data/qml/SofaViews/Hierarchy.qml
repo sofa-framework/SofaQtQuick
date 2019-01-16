@@ -187,7 +187,7 @@ Rectangle {
                 onClicked: {
                     if(mouse.button === Qt.LeftButton) {
                         console.log("TODO-implement click to change selection")
-                        //listView.updateCurrentIndex(index);
+                        listView.updateCurrentIndex(index);
                     } else if(mouse.button === Qt.RightButton) {
                         //var component = listModel.getComponentById(index);
 
