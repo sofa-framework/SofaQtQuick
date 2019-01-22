@@ -27,18 +27,33 @@ import Qt.labs.folderlistmodel 2.1
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
 
+//TODO(dmarchal 10/01/2019): move the file model into a separated file
+//TODO(dmarchal 10/01/2019): move the drop down menu into a separated file
+
+/// DynamicContent panel, is a widget that contains one of the SofaViews
+/// with a menu to select the view to display.
 Item {
     id: root
     clip: true
 
     readonly property bool isDynamicContent: true
 
+    property string defaultContentName
+    property string currentContentName
+    property string sourceDir: "qrc:/SofaViews"
+    property int    contentUiId: 0
+    property var    properties
+
     property int uiId: 0
     property int previousUiId: uiId
+
     onUiIdChanged: {
         SofaApplication.uiSettings.replace(previousUiId, uiId);
     }
 
+    /// This timer is started if there is a problem while loading the view.
+    /// if this happens, the view is reloaded each 200ms in case it is fixed.
+    /// TODO(dmarchal 10/01/2019) Isn't there better way to do that ?
     QtObject {
         id: d
 
@@ -82,14 +97,6 @@ Item {
         uiId = 0;
     }
 
-    property string defaultContentName
-    property string currentContentName
-    property string sourceDir: "qrc:/SofaViews"
-    property int    contentUiId: 0
-
-    property var    properties
-
-    onCurrentContentNameChanged: folderListModel.update()
     Component.onCompleted: {
         if(0 === root.uiId) {
             if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId) {
@@ -105,20 +112,17 @@ Item {
         init();
     }
 
+    ListModel {
+        id: listModel
+    }
+
     FolderListModel {
         id: folderListModel
         nameFilters: ["*.qml"]
         showDirs: false
-        showFiles: false
+        showFiles: true
         sortField: FolderListModel.Name
         folder: root.sourceDir
-
-        property var delayedUpdateTimer: Timer {
-            interval: 1
-            repeat: false
-            running: true
-            onTriggered: folderListModel.showFiles = true;
-        }
 
         onCountChanged: update();
 
@@ -132,41 +136,39 @@ Item {
             showFiles = true;
         }
 
+
+
         function update() {
+
+            console.log("UPDATE LIST FROM FILE");
+            var currentContentIndex = comboBox.currentIndex;
+            var currentContentName = comboBox.currentText
             listModel.clear();
-
             var contentSet = false;
-
-            var previousIndex = comboBox.currentIndex;
             for(var i = 0; i < count; ++i)
             {
                 var fileBaseName = get(i, "fileBaseName");
                 var filePath = get(i, "filePath").toString();
+
                 if(-1 !== folder.toString().indexOf("qrc:"))
                     filePath = "qrc" + filePath;
 
-                listModel.insert(i, {"fileBaseName": fileBaseName, "filePath": filePath});
-
-                if(0 === root.currentContentName.localeCompare(fileBaseName)) {
-                    comboBox.currentIndex = i;
-                    contentSet = true;
-                }
+                listModel.append({"fileBaseName": fileBaseName, "filePath": filePath});
             }
 
-            if(!contentSet) {
-                for(var i = 0; i < count; ++i)
+            /// TODO(dmarchal 10/01/2019) search if filename match the one to display.
+            if(!contentSet)
+            {
+                for(var i = 0; i < listModel.count; ++i)
                 {
                     var fileBaseName = get(i, "fileBaseName");
-
-                    if(0 === defaultContentName.localeCompare(fileBaseName)) {
+                    if(0 === currentContentName.localeCompare(fileBaseName)) {
                         comboBox.currentIndex = i;
                         break;
                     }
                 }
             }
-
-            if(count > 0 && previousIndex === comboBox.currentIndex)
-                loaderLocation.refresh();
+            listModel.reset();
         }
     }
 
@@ -191,12 +193,30 @@ Item {
                     id: comboBox
                     textRole: "fileBaseName"
 
-                    model: ListModel {
-                        id: listModel
-                    }
-
+                    model: folderListModel
+                    currentIndex: 0
                     onCurrentIndexChanged: {
                         loaderLocation.refresh();
+                    }
+
+                    //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
+                    function findIndex(model, criteria) {
+                      for(var i = 0; i < model.count; ++i) { if (criteria(model.get(i))) return i }
+                      return null
+                    }
+
+                    Component.onCompleted: function()
+                    {
+                        console.log("COUCOUCOUCOCU")
+                        var c = find(model, function(item) {
+                            console.log("COMPARE "+ item )
+
+                            return item.fileName === root.currentContentName} );
+                        if(c)
+                            currentIndex = c
+
+                        console.log("COUCOUCOUCOCU INDEX: " + c)
+
                     }
                 }
 
@@ -252,6 +272,7 @@ Item {
             }
         }
 
+        /// This is the content of the view.
         Item {
             id: loaderLocation
             anchors.top : toolBar.bottom
@@ -261,24 +282,17 @@ Item {
             visible: contentItem
 
             property Item contentItem
-
-            onContentItemChanged: {
-                refreshStandbyItem();
-            }
-
             property string errorMessage
-            function refresh() {
+
+            function refresh()
+            {
                 if(-1 === comboBox.currentIndex || comboBox.currentIndex >= listModel.count)
                     return;
 
                 var currentData = listModel.get(comboBox.currentIndex);
-                if(currentData) {
+                if(currentData)
+                {
                     var source = listModel.get(comboBox.currentIndex).filePath;
-
-                    if(root.currentContentName === comboBox.currentText && null !== loaderLocation.contentItem)
-                        return;
-
-                    root.currentContentName = comboBox.currentText;
 
                     if(loaderLocation.contentItem) {
                         if(undefined !== loaderLocation.contentItem.setNoSettings)
@@ -317,7 +331,8 @@ Item {
                 }
             }
 
-            function refreshStandbyItem() {
+            function refreshStandbyItem()
+            {
                 if(contentItem) {
                     d.timer.stop();
                     errorLabel.visible = false;
@@ -325,9 +340,14 @@ Item {
                     d.timer.start();
                 }
             }
+
+            onContentItemChanged: {
+                refreshStandbyItem();
+            }
         }
 
-
+        /// Error view to indicate that something was wrong while loading the view.
+        /// TODO(dmarchal 10/01/2019) Move that into a dedicated component.
         Rectangle {
             id: errorLabel
             Layout.fillWidth: true
@@ -350,18 +370,3 @@ Item {
     }
 }
 
-
-//        Image {
-//            anchors.bottom: parent.bottom
-//            anchors.left: parent.left
-//            anchors.bottomMargin: 3
-//            anchors.leftMargin: 16
-//            source: toolBar.visible ? "qrc:/icon/minus.png" : "qrc:/icon/plus.png"
-//            width: 12
-//            height: width
-
-//            MouseArea {
-//                anchors.fill: parent
-//                onClicked: toolBar.visible = !toolBar.visible
-//            }
-//        }
