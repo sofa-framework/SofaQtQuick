@@ -43,6 +43,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Models/SofaSceneItemModel.h"
 #include "Models/SofaSceneItemProxy.h"
 #include "Models/SofaDataListModel.h"
+#include "Models/SofaViewListModel.h"
 #include "Models/SofaInspectorDataListModel.h"
 #include "Models/SofaDisplayFlagsTreeModel.h"
 #include "Windows/CameraView.h"
@@ -97,13 +98,21 @@ static QObject* createSofaFactory(QQmlEngine *engine,
     return new SofaFactory() ;
 }
 
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createSofaViewListModel(QQmlEngine *engine,
+                              QJSEngine *scriptEngine){
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return new SofaViewListModel() ;
+}
+
 
 
 void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 {
     qRegisterMetaType<SofaScene::Status>("Status");
-    //qRegisterMetaType<SofaSceneListModel::Visibility>("Visibility");
-
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
@@ -125,7 +134,6 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"              , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");
     qmlRegisterUncreatableType<SelectableSofaParticle>              ("SelectableSofaParticle"               , versionMajor, versionMinor, "SelectableSofaParticle", "SelectableSofaParticle is not instantiable");
     qmlRegisterUncreatableType<ProcessState>                        ("ProcessState"                         , versionMajor, versionMinor, "ProcessState", "ProcessState is not instantiable");
-    //qmlRegisterType<SofaSceneListModel>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaSceneListProxy>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaSceneItemModel>                             ("SofaSceneItemModel"                   , versionMajor, versionMinor, "SofaSceneItemModel");
     qmlRegisterType<SofaSceneItemProxy>                            ("SofaSceneItemProxy"                   , versionMajor, versionMinor, "SofaSceneItemProxy");
@@ -149,4 +157,9 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
                                           "SofaFactory",
                                           createSofaFactory );            /// exported Name.
 
+    /// registers the C++ type in the QML system with the name "SofaFactory",
+    qmlRegisterSingletonType<SofaViewListModel>("SofaViewListModel",                  /// char* uri
+                                          versionMajor, versionMinor,     /// int majorVersion
+                                          "SofaViewListModel",
+                                          createSofaViewListModel );            /// exported Name.
 }
