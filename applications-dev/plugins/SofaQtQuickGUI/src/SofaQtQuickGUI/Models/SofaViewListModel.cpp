@@ -21,6 +21,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 
+#include <QResource>
+#include <QDir>
 
 #include "SofaViewListModel.h"
 #include <sofa/helper/logging/Messaging.h>
@@ -42,14 +44,18 @@ SofaViewListModel::~SofaViewListModel()
 {
 
 }
-
+#define STRINGIFY(x) #x
 void SofaViewListModel::update()
 {
     beginResetModel();
 
     myItems.clear();
-    myItems.append(Item("Set1","File1"));
-    myItems.append(Item("Set2","File2"));
+
+    QDir d {SOFAQTQUICK_DIRECTORY_VIEW};
+    for(auto& entry : d.entryInfoList({"*.qml"}))
+    {
+        myItems.append(Item(entry.fileName(), entry.absoluteFilePath()));
+    }
 
     endResetModel();
 }
