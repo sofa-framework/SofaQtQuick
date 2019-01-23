@@ -3,10 +3,11 @@ project(runSofa2)
 
 set(SOURCE_FILES
     Main.cpp
+    QMLAppEngine.cpp
 )
 
 set(HEADER_FILES
-    ""
+    QMLAppEngine.h
 )
 
 set(QML_FILES
@@ -42,6 +43,7 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS})
 include_directories(${Qt5Qml_INCLUDE_DIRS})
 include_directories(${Qt5Quick_INCLUDE_DIRS})
 include_directories(${Qt5WebView_INCLUDE_DIRS})
+include_directories(/usr/include/qmllive)
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${Qt5Gui_DEFINITIONS})
@@ -56,9 +58,13 @@ find_package(SofaQtQuickGUI REQUIRED)
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/")
+set(QML_IMPORT_PATH "${QML_IMPORT_PATH};${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
+
+
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
-target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::WebView)
+target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::WebView qmllive)
 
-sofa_install_targets(SofaGui ${PROJECT_NAME} "")
+sofa_install_targets(${PROJECT_NAME} ${PROJECT_NAME} "")
 
