@@ -3,11 +3,10 @@ project(runSofa2)
 
 set(SOURCE_FILES
     Main.cpp
-    QMLAppEngine.cpp
 )
 
 set(HEADER_FILES
-    QMLAppEngine.h
+  ""
 )
 
 set(QML_FILES

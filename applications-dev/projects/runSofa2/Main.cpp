@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
     QApplication app(argc, argv);
     QtWebView::initialize();
-    MyQmlApplicationEngine applicationEngine("qrc:/qml/Main.qml");
+    QQmlApplicationEngine applicationEngine;
 
     // application specific settings
     app.setOrganizationName("Sofa Consortium");
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     node.setFallbackView(&fallbackView);
 
     // Tell it where file updates should be stored relative to
-    node.setWorkspace(app.applicationDirPath(),
+    node.setWorkspace(QString("/home/bruno/dev/SOFA/plugins/sofaqtquick/applications-dev/plugins/SofaQtQuick/data/qml/"),
                       LiveNodeEngine::AllowUpdates | LiveNodeEngine::UpdatesAsOverlay);
 
     // Listen to IPC call from remote QmlLive Bench
@@ -66,7 +66,8 @@ int main(int argc, char **argv)
 
     // Advanced use: let it know the initially loaded QML component (do this
     // only after registering to receiver!)
-    node.usePreloadedDocument(applicationEngine.mainQml(), applicationEngine.mainWindow(), applicationEngine.warnings());
+    QList<QQmlError> warnings;
+    node.usePreloadedDocument(QUrl(QStringLiteral("qrc:/Main.qml")).toString(), qobject_cast<QQuickWindow *>(applicationEngine.rootObjects().first()), warnings);
 #endif
 
     return app.exec();
