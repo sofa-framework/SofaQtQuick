@@ -20,7 +20,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/SofaApplication.h>
 #include <QtWebView/QtWebView>
 
-#include "QMLAppEngine.h"
+#ifndef QT_NO_DEBUG
+#include <qmllive/remotereceiver.h>
+#include <qmllive/livenodeengine.h>
+#endif
 
 int main(int argc, char **argv)
 {
