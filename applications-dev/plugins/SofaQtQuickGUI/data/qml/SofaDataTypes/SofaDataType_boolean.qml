@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
+import QtQuick.Controls 2.0
 
 ColumnLayout {
     id: root
@@ -32,7 +33,7 @@ ColumnLayout {
         Layout.minimumWidth: control.implicitWidth
         Layout.preferredHeight: control.implicitHeight
 
-        ExplicitSwitch {
+        CheckBox {
             id: control
             anchors.centerIn: parent
             enabled: !dataObject.readOnly
