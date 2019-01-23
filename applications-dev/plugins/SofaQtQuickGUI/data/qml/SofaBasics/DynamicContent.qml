@@ -23,9 +23,9 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import QtQuick.Window 2.2
-import Qt.labs.folderlistmodel 2.1
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
+import SofaViewListModel 1.0
 
 //TODO(dmarchal 10/01/2019): move the file model into a separated file
 //TODO(dmarchal 10/01/2019): move the drop down menu into a separated file
@@ -37,6 +37,7 @@ Item {
     clip: true
 
     readonly property bool isDynamicContent: true
+    property QtObject listModel: SofaViewListModel
 
     property string defaultContentName
     property string currentContentName
@@ -112,65 +113,6 @@ Item {
         init();
     }
 
-    ListModel {
-        id: listModel
-    }
-
-    FolderListModel {
-        id: folderListModel
-        nameFilters: ["*.qml"]
-        showDirs: false
-        showFiles: true
-        sortField: FolderListModel.Name
-        folder: root.sourceDir
-
-        onCountChanged: update();
-
-        property var sceneConnections: Connections {
-            target: SofaApplication.sofaScene
-            onReadyChanged: if(SofaApplication.sofaScene.ready) folderListModel.refresh();
-        }
-
-        function refresh() {
-            showFiles = false;
-            showFiles = true;
-        }
-
-
-
-        function update() {
-
-            console.log("UPDATE LIST FROM FILE");
-            var currentContentIndex = comboBox.currentIndex;
-            var currentContentName = comboBox.currentText
-            listModel.clear();
-            var contentSet = false;
-            for(var i = 0; i < count; ++i)
-            {
-                var fileBaseName = get(i, "fileBaseName");
-                var filePath = get(i, "filePath").toString();
-
-                if(-1 !== folder.toString().indexOf("qrc:"))
-                    filePath = "qrc" + filePath;
-
-                listModel.append({"fileBaseName": fileBaseName, "filePath": filePath});
-            }
-
-            /// TODO(dmarchal 10/01/2019) search if filename match the one to display.
-            if(!contentSet)
-            {
-                for(var i = 0; i < listModel.count; ++i)
-                {
-                    var fileBaseName = get(i, "fileBaseName");
-                    if(0 === currentContentName.localeCompare(fileBaseName)) {
-                        comboBox.currentIndex = i;
-                        break;
-                    }
-                }
-            }
-            listModel.reset();
-        }
-    }
 
     readonly property alias contentItem: loaderLocation.contentItem
     Item {
@@ -191,9 +133,9 @@ Item {
 
                 ComboBox {
                     id: comboBox
-                    textRole: "fileBaseName"
+                    textRole: "name"
 
-                    model: folderListModel
+                    model: listModel
                     currentIndex: 0
                     onCurrentIndexChanged: {
                         loaderLocation.refresh();

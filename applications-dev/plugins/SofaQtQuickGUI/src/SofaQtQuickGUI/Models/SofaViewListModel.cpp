@@ -35,7 +35,7 @@ SofaViewListModel::SofaViewListModel(QObject* parent) :
     QAbstractListModel(parent),
     myItems()
 {
-
+    update();
 }
 
 SofaViewListModel::~SofaViewListModel()
@@ -70,7 +70,6 @@ QVariant SofaViewListModel::data(const QModelIndex& index, int role) const
     if(index.row() >= myItems.size())
         return QVariant("");
 
-
     const Item& item = myItems[index.row()];
 
     switch(static_cast<Role>(role))
@@ -89,7 +88,7 @@ QHash<int,QByteArray> SofaViewListModel::roleNames() const
     QHash<int,QByteArray> roles;
 
     roles[static_cast<int>(Role::Name)]         = "name";
-    roles[static_cast<int>(Role::FilePath)]        = "filePath";
+    roles[static_cast<int>(Role::FilePath)]     = "filePath";
 
     return roles;
 }
