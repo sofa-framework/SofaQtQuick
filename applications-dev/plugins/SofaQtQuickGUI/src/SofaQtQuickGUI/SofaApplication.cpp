@@ -695,7 +695,7 @@ void SofaApplication::SetOpenGLDebugContext()
 void SofaApplication::UseOpenGLDebugLogger()
 {
     QOpenGLContext *ctx = QOpenGLContext::currentContext();
-    if(0 == ctx) {
+    if(nullptr == ctx) {
         msg_error("SofaQtQuickGUI") << "SofaApplication::initializeDebugLogger has been called without a valid opengl context made current";
         return;
     }
@@ -1019,7 +1019,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     QPluginLoader pluginLoader(pluginName);
 
     // first call to instance() initialize the plugin
-    if(0 == pluginLoader.instance()) {
+    if(nullptr == pluginLoader.instance()) {
         qCritical() << pluginLoader.errorString();
         qCritical() << "ERROR: SofaQtQuickGUI plugin has not been found "<<pluginName;
         return false;
