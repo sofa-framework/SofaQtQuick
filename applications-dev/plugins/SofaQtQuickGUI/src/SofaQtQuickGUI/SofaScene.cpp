@@ -20,6 +20,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaScene.h"
 #include "SofaViewer.h"
 #include "SelectableManipulator.h"
+#include "RuntimeViewer.h"
+
 
 #include <sofa/helper/OptionsGroup.h>
 using sofa::helper::OptionsGroup ;
@@ -1596,6 +1598,69 @@ void SofaScene::reset()
     emit reseted();
 }
 
+/// TODO(dmarchal): this function is cut&pasted from draw(SofaViewer&) one...but it should evolved
+/// to be more specific (if not then we should use a template or proper inheritence to factor this code)
+void SofaScene::draw(const RuntimeViewer& /*viewer*/, const QList<SofaComponent*>& roots) const
+{
+    if(!isReady())
+        return;
+
+    QList<sofa::simulation::Node*> nodes;
+    nodes.reserve(roots.size());
+    for(SofaComponent* sofaComponent : roots)
+        if(sofaComponent)
+        {
+            sofa::core::objectmodel::Base* base = sofaComponent->base();
+            if(base)
+            {
+                Node* node = down_cast<Node>(base->toBaseNode());
+                if(!node->visualLoop)
+                {
+                    msg_warning("SofaQtQuickGUI")  << "SofaViewer: The node \"" << node->getPathName() << "\" has been selected for visualization but will be skipped because it contains no VisualManagerLoop";
+                    continue;
+                }
+
+                nodes.append(node);
+            }
+        }
+
+    if(nodes.isEmpty() && roots.isEmpty())
+        nodes.append(mySofaRootNode.get());
+
+    // prepare the sofa visual params
+    sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+    if(visualParams)
+    {
+        GLint _viewport[4];
+        GLdouble _mvmatrix[16], _projmatrix[16];
+
+        glGetIntegerv(GL_VIEWPORT, _viewport);
+        glGetDoublev(GL_MODELVIEW_MATRIX, _mvmatrix);
+        glGetDoublev(GL_PROJECTION_MATRIX, _projmatrix);
+
+        //        visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+        //        visualParams->sceneBBox() = mySofaRootNode->f_bbox.getValue();
+        //        visualParams->setProjectionMatrix(_projmatrix);
+        //        visualParams->setModelViewMatrix(_mvmatrix);
+    }
+
+    if(myVisualDirty)
+    {
+        myVisualDirty = false;
+
+        mySofaSimulation->updateVisual(mySofaRootNode.get());
+    }
+
+    for(sofa::simulation::Node* root : nodes)
+    {
+        if(!root)
+            continue;
+
+        mySofaSimulation->draw(sofa::core::visual::VisualParams::defaultInstance(), root);
+    }
+
+    glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+}
 
 
 SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots)

@@ -58,6 +58,10 @@ using sofa::qtquick::console::Console ;
 #include "SofaFactory.h"
 using sofa::qtquick::SofaFactory ;
 
+#include "RuntimeViewer.h"
+#include "LiveFileMonitor.h"
+using sofa::qtquick::livefilemonitor::LiveFileMonitor;
+
 #include <sofa/helper/system/PluginManager.h>
 
 const int versionMajor = 1;
@@ -87,6 +91,16 @@ static QObject* createConsole(QQmlEngine *engine,
     Q_UNUSED(scriptEngine)
     return new Console() ;
 }
+
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createAnInstanceOfLiveFileMonitor(QQmlEngine *engine,
+                                                  QJSEngine *scriptEngine){
+    Q_UNUSED(scriptEngine)
+    return new LiveFileMonitor(engine) ;
+}
+
 
 // Following the doc on creating a singleton component
 // we need to have function that return the singleton instance.
@@ -144,6 +158,7 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");
     qmlRegisterType<EditView>                                       ("EditView"                             , versionMajor, versionMinor, "EditView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
+    qmlRegisterType<RuntimeViewer>                                  ("RuntimeViewer"                        , versionMajor, versionMinor, "RuntimeViewer");
 
     /// registers the C++ type in the QML system with the name "Console",
     qmlRegisterSingletonType<Console>("SofaMessageList",                  /// char* uri
@@ -162,4 +177,11 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
                                           versionMajor, versionMinor,     /// int majorVersion
                                           "SofaViewListModel",
                                           createSofaViewListModel );            /// exported Name.
+
+    qmlRegisterSingletonType<LiveFileMonitor>("LiveFileMonitorSingleton",            // char* uri
+                                          versionMajor, versionMinor,   // minor/major version number
+                                          "LiveFileMonitorSingleton",       // exported name
+                                          createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
+                                          );
+
 }
