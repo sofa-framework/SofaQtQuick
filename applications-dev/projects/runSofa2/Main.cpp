@@ -25,6 +25,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <qmllive/livenodeengine.h>
 #endif
 
+#include <runSofa2/runSofa2.h>
+
 int main(int argc, char **argv)
 {
     // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
@@ -43,9 +45,6 @@ int main(int argc, char **argv)
     if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
 
-    if (!qEnvironmentVariableIsSet("MY_APP_ENABLE_QMLLIVE"))
-        return app.exec();
-
 #if defined(QT_NO_DEBUG)
     qWarning() << "QmlLive support was disabled at compile time";
 #else
@@ -59,7 +58,7 @@ int main(int argc, char **argv)
     node.setFallbackView(&fallbackView);
 
     // Tell it where file updates should be stored relative to
-    node.setWorkspace(QString("/home/bruno/dev/SOFA/plugins/sofaqtquick/applications-dev/plugins/SofaQtQuick/data/qml/"),
+    node.setWorkspace(QString(QMLLIVE_WORKSPACE_PATH),
                       LiveNodeEngine::AllowUpdates | LiveNodeEngine::UpdatesAsOverlay);
 
     // Listen to IPC call from remote QmlLive Bench
@@ -70,7 +69,8 @@ int main(int argc, char **argv)
     // Advanced use: let it know the initially loaded QML component (do this
     // only after registering to receiver!)
     QList<QQmlError> warnings;
-    node.usePreloadedDocument(QUrl(QStringLiteral("qrc:/Main.qml")).toString(), qobject_cast<QQuickWindow *>(applicationEngine.rootObjects().first()), warnings);
+    node.usePreloadedDocument(QUrl(QStringLiteral("projects/runSofa2/data/qml/Main.qml")).toString(),
+                              qobject_cast<QQuickWindow *>(applicationEngine.rootObjects().first()), warnings);
 #endif
 
     return app.exec();

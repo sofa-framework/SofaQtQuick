@@ -57,8 +57,14 @@ find_package(SofaQtQuickGUI REQUIRED)
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
-list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/")
+# path to the live coding workspace (sofaqtquick/applications-dev) Must be the root of all editable qml files
+# Set the same path for the qmllivebench workspace dir
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../")
 set(QML_IMPORT_PATH "${QML_IMPORT_PATH};${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
+
+set(QMLLIVE_WORKSPACE_PATH \"${CMAKE_CURRENT_LIST_DIR}/../../\")
+configure_file("${PROJECT_NAME}.h.in" "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h")
+install(FILES "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h" DESTINATION "include/${PROJECT_NAME}" COMPONENT headers)
 
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
