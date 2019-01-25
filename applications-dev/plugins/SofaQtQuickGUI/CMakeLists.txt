@@ -195,9 +195,8 @@ set(QML_FILES
     data/qml/SofaViews/Hierarchy.qml
     data/qml/SofaViews/ExampleView.qml
     data/qml/SofaViews/WebBrowserView.qml
-
+    data/qml/SofaViews/LiveInterfaceEditor.qml
     data/qml/SofaWidgets/RuntimeViewer.qml
-    data/qml/SofaWidgets/LiveInterfaceEditor.qml
     data/qml/SofaWidgets/BaseWidgetExample.qml
     data/qml/SofaWidgets/SceneToolsPanel.qml
 )

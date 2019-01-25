@@ -35,7 +35,9 @@ using sofa::helper::system::FileMonitor ;
 using sofa::helper::system::FileEventListener ;
 
 #include <sofa/helper/system/FileSystem.h>
-using sofa::helper::system::FileSystem ;
+#include <sofa/helper/system/FileMonitor.h>
+using sofa::helper::system::FileSystem;
+using sofa::helper::system::FileMonitor;
 
 #include "LiveFileMonitor.h"
 
@@ -54,18 +56,13 @@ LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
 
     msg_info("LiveFileMonitor") << "Creating a LiveFileMonitor singleton with data directory '"
                                 << SOFA_SOFAQTQUICKGUI_SRC_DIR << "'" ;
-
-    m_filesystemwatcher = new QFileSystemWatcher() ;
-    connect( m_filesystemwatcher, SIGNAL(fileChanged(QString)),
-             this, SLOT(hasChanged(QString)));
-
     std::vector<std::string> files;
     std::string path = std::string(SOFA_SOFAQTQUICKGUI_SRC_DIR)+"SofaWidgets/";
     FileSystem::listDirectory(path, files, ".qml") ;
 
     m_files = QStringList() ;
-    for(auto& filename : files){
-        m_filesystemwatcher->addPath(QString::fromStdString(path+"/"+filename)) ;
+    for(auto& filename : files) {
+        sofa::helper::system::FileMonitor::addFile(path+"/"+filename, this);
     }
 
     QTimer *timer = new QTimer(this);
@@ -77,8 +74,6 @@ LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
 
 LiveFileMonitor::~LiveFileMonitor()
 {
-    if(m_filesystemwatcher!=nullptr)
-        delete m_filesystemwatcher ;
 }
 
 void LiveFileMonitor::update()
@@ -86,11 +81,11 @@ void LiveFileMonitor::update()
     FileMonitor::updates(0) ;
 }
 
-void LiveFileMonitor::hasChanged(const QString& filename)
+void LiveFileMonitor::fileHasChanged(const std::string& filename)
 {
     m_engine->clearComponentCache();
     m_files.clear();
-    m_files.push_back(filename);
+    m_files.push_back(QString::fromStdString(filename));
     emit filesChanged();
 }
 

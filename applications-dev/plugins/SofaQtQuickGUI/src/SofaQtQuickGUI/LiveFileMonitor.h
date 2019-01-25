@@ -25,6 +25,9 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #include <QFileSystemWatcher>
 
 #include "SofaQtQuickGUI.h"
+#include <sofa/helper/system/FileSystem.h>
+#include <sofa/helper/system/FileMonitor.h>
+using sofa::helper::system::FileEventListener;
 
 class QQmlEngine;
 
@@ -37,11 +40,12 @@ namespace qtquick
 namespace livefilemonitor
 {
 
+
 /*******************************************************************************
  *  \class live file monitor.
  *  It monitor files at regular intervals and updates QML preview of them.
  ******************************************************************************/
-class SOFA_SOFAQTQUICKGUI_API LiveFileMonitor : public QObject
+class SOFA_SOFAQTQUICKGUI_API LiveFileMonitor : public QObject, public FileEventListener
 {
 public:
     Q_OBJECT
@@ -53,11 +57,11 @@ public:
     explicit LiveFileMonitor(QQmlEngine* q, QObject *parent = nullptr) ;
     virtual ~LiveFileMonitor() ;
 
+    void fileHasChanged(const std::string& filename);
     QStringList files() const ;
 
 private slots:
     void update() ;
-    void hasChanged(const QString& filename);
 
 signals:
     void filesChanged() ;
@@ -65,8 +69,6 @@ signals:
 private:
     QQmlEngine*  m_engine;
     QStringList m_files;
-
-    QFileSystemWatcher* m_filesystemwatcher {nullptr};
 };
 
 }
