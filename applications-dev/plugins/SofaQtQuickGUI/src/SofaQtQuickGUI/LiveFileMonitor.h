@@ -69,6 +69,7 @@ signals:
 private:
     QQmlEngine*  m_engine;
     QStringList m_files;
+    void addPathToMonitor(const std::string& filename);
 };
 
 }

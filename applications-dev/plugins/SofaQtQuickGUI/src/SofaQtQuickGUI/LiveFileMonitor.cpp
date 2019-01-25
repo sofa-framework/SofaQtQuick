@@ -50,20 +50,39 @@ namespace qtquick
 namespace livefilemonitor
 {
 
+void LiveFileMonitor::addPathToMonitor(const std::string& path)
+{
+    std::string p = path;
+    if (p.back() == '/')
+        p.pop_back();
+    std::vector<std::string> files;
+    FileSystem::listDirectory(p, files) ;
+    for(auto& filename: files)
+    {
+        if (FileSystem::isDirectory(p + "/" + filename))
+        {
+            addPathToMonitor(p + "/" + filename) ;
+        }
+        else
+        {
+            if (FileSystem::isFile(p + "/" + filename) && FileSystem::getExtension(filename) == "qml")
+            {
+                sofa::helper::system::FileMonitor::addFile(p + "/" + filename, this);
+            }
+        }
+    }
+}
+
 LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
 {
     Q_UNUSED(parent);
 
     msg_info("LiveFileMonitor") << "Creating a LiveFileMonitor singleton with data directory '"
                                 << SOFA_SOFAQTQUICKGUI_SRC_DIR << "'" ;
-    std::vector<std::string> files;
-    std::string path = std::string(SOFA_SOFAQTQUICKGUI_SRC_DIR)+"SofaWidgets/";
-    FileSystem::listDirectory(path, files, ".qml") ;
-
     m_files = QStringList() ;
-    for(auto& filename : files) {
-        sofa::helper::system::FileMonitor::addFile(path+"/"+filename, this);
-    }
+
+    std::string path(SOFA_SOFAQTQUICKGUI_SRC_DIR);
+    addPathToMonitor(path);
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
