@@ -44,6 +44,7 @@ public:
     ~SofaViewListModel();
 
     Q_INVOKABLE void update();
+    Q_INVOKABLE QVariantMap get(int row);
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;

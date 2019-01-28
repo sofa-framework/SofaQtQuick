@@ -86,7 +86,7 @@ QVariant SofaViewListModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(item.filePath);
     }
 
-    return QVariant("INVALID");
+    return QVariant("INVALID ROLE");
 }
 
 QHash<int,QByteArray> SofaViewListModel::roleNames() const
@@ -97,6 +97,20 @@ QHash<int,QByteArray> SofaViewListModel::roleNames() const
     roles[static_cast<int>(Role::FilePath)]     = "filePath";
 
     return roles;
+}
+
+QVariantMap SofaViewListModel::get(int row)
+{
+    QHash<int,QByteArray> names = roleNames();
+    QHashIterator<int, QByteArray> i(names);
+    QVariantMap res;
+    while (i.hasNext()) {
+        i.next();
+        QModelIndex idx = index(row, 0);
+        QVariant data = idx.data(i.key());
+        res[i.value()] = data;
+    }
+    return res;
 }
 
 }

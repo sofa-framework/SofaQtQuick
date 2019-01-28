@@ -143,22 +143,18 @@ Item {
 
                     //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
                     function findIndex(model, criteria) {
-                      for(var i = 0; i < model.count; ++i) { if (criteria(model.get(i))) return i }
-                      return null
+                        for(var i = 0; i < model.count; ++i) { if (criteria(model.get(i))) return i }
+                        return null
                     }
 
                     Component.onCompleted: function()
                     {
-                        console.log("COUCOUCOUCOCU")
                         var c = find(model, function(item) {
                             console.log("COMPARE "+ item )
 
                             return item.fileName === root.currentContentName} );
                         if(c)
                             currentIndex = c
-
-                        console.log("COUCOUCOUCOCU INDEX: " + c)
-
                     }
                 }
 
@@ -244,7 +240,7 @@ Item {
                         loaderLocation.contentItem = null;
                     }
 
-                    var contentComponent = Qt.createComponent(source);
+                    var contentComponent = Qt.createComponent("file://"+source);
                     if(contentComponent.status === Component.Error) {
                         loaderLocation.errorMessage = contentComponent.errorString();
                         refreshStandbyItem();
@@ -267,7 +263,6 @@ Item {
                             SofaApplication.uiSettings.remove(root.contentUiId);
                             root.contentUiId = 0;
                         }
-
                         loaderLocation.contentItem = content;
                     }
                 }
