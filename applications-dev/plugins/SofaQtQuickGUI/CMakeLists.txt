@@ -51,6 +51,9 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaCamera.cpp
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
+
+    src/SofaQtQuickGUI/RuntimeViewer.cpp
+    src/SofaQtQuickGUI/LiveFileMonitor.cpp
 )
 
 set(HEADER_FILES
@@ -92,6 +95,10 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/Rendering/SceneRenderer.h
     src/SofaQtQuickGUI/Helper/QMathExtensions.h
+
+    src/SofaQtQuickGUI/RuntimeViewer.h
+    src/SofaQtQuickGUI/LiveFileMonitor.h
+
 )
 
 
@@ -188,8 +195,13 @@ set(QML_FILES
     data/qml/SofaViews/Hierarchy.qml
     data/qml/SofaViews/ExampleView.qml
     data/qml/SofaViews/WebBrowserView.qml
-
+    data/qml/SofaViews/LiveInterfaceEditor.qml
+    data/qml/SofaWidgets/RuntimeViewer.qml
+    data/qml/SofaWidgets/BaseWidgetExample.qml
+    data/qml/SofaWidgets/SceneToolsPanel.qml
 )
+
+add_definitions("-DSOFA_SOFAQTQUICKGUI_SRC_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
