@@ -54,7 +54,7 @@ void SofaViewListModel::update()
     QDir d {SOFAQTQUICK_DIRECTORY_VIEW};
     for(auto& entry : d.entryInfoList({"*.qml"}))
     {
-        myItems.append(Item(entry.fileName(), entry.absoluteFilePath()));
+        myItems.append(Item(entry.baseName(), entry.absoluteFilePath()));
     }
 
     endResetModel();
