@@ -87,14 +87,13 @@
         <file>SofaWidgets/SofaWindowComponentHelp.qml</file>
         <file>SofaWidgets/SofaWindowComponentMessages.qml</file>
         <file>SofaWidgets/PopupWindowCreateComponent.qml</file>
-
         <file>SofaWidgets/RuntimeViewer.qml</file>
         <file>SofaWidgets/SceneToolsPanel.qml</file>
-	<file>SofaViews/LiveInterfaceEditor.qml</file>
-
+        <file>SofaViews/LiveInterfaceEditor.qml</file>
         <file>SofaViews/SceneGraph.qml</file>
         <file>SofaViews/Hierarchy.qml</file>
         <file>SofaViews/ExampleView.qml</file>
         <file>SofaViews/WebBrowserView.qml</file>
+        <file>SofaBasics/DynamicContent_Error.qml</file>
     </qresource>
 </RCC>

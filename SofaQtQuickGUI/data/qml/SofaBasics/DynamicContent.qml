@@ -1,5 +1,6 @@
-/*
+/*******************************************************************
 Copyright 2015, Anatoscope
+Copyright 2019, CNRS
 
 This file is part of sofaqtquick.
 
@@ -15,8 +16,12 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+*******************************************************************/
+/*******************************************************************
+ * Contributors:
+ *   - Olivier Carre (Anatoscope) initial version
+ *   - damien.marchal@univ-lille.fr (CNRS) deep refactoring
+ *******************************************************************/
 import QtQuick 2.5
 import QtQuick.Controls 2.3
 import QtQuick.Controls.Styles 1.4
@@ -27,16 +32,25 @@ import Qt.labs.settings 1.0
 import SofaApplication 1.0
 import SofaViewListModel 1.0
 
+
+
 //TODO(dmarchal 10/01/2019): move the file model into a separated file
 //TODO(dmarchal 10/01/2019): move the drop down menu into a separated file
 
-/// DynamicContent panel, is a widget that contains one of the SofaViews
-/// with a menu to select the view to display.
+/// DynamicContent is a widget that contains one of the SofaViews
+/// with a menu to select which is the view to display.
 Item {
-    id: root
-    clip: true
 
-    readonly property bool isDynamicContent: true
+    //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
+    //TODO(dmarchal: 28/01/2019 unify the function so it can work with any object having a "lenght" property
+    function findIndex(model, criteria) {
+        for(var i = 0; i < model.count(); ++i) { if (criteria(model.get(i))) return i }
+        return null
+    }
+
+    /// SofaViewListModel is a Singleton that hold the list of views (name, path)
+    /// to expose into the view selector. The model is implemented in C++
+    /// and inherit from QAbstractItemModel
     property QtObject listModel: SofaViewListModel
 
     property string defaultContentName
@@ -45,87 +59,63 @@ Item {
     property int    contentUiId: 0
     property var    properties
 
-    property int uiId: 0
+    property int uiId: bootstrap()
     property int previousUiId: uiId
 
-    onUiIdChanged: {
+    readonly property alias contentItem: loaderLocation.contentItem
+    readonly property bool isDynamicContent: true
+
+    id: root
+    clip: true
+    anchors.fill: parent
+
+    onUiIdChanged:
+    {
+        console.log("UI-CHANGED from " + previousUiId + " to " + uiId)
         SofaApplication.uiSettings.replace(previousUiId, uiId);
     }
 
-    /// This timer is started if there is a problem while loading the view.
-    /// if this happens, the view is reloaded each 200ms in case it is fixed.
-    /// TODO(dmarchal 10/01/2019) Isn't there better way to do that ?
-    QtObject {
-        id: d
-
-        property Timer timer: Timer {
-            interval: 200
-            running: false
-            repeat: false
-            onTriggered: errorLabel.visible = true
-        }
-    }
-
+    /// This stores the setting for this view.
     Settings {
         id: uiSettings
         category: 0 !== root.uiId ? "ui_" + root.uiId : "dummy"
 
-        property string sourceDir
-        property string defaultContentName
-        property string currentContentName
-        property int    contentUiId
+        property alias sourceDir : root.sourceDir
+        property alias defaultContentName : root.defaultContentName
+        property alias currentContentName : root.currentContentName
+        property alias contentUiId : root.contentUiId
     }
 
-    function init() {
-        uiSettings.contentUiId          = Qt.binding(function() {return root.contentUiId;});
-        uiSettings.sourceDir            = Qt.binding(function() {return root.sourceDir;});
-        uiSettings.defaultContentName   = Qt.binding(function() {return root.defaultContentName;});
-        uiSettings.currentContentName   = Qt.binding(function() {return root.currentContentName;});
-    }
-
-    function load() {
-        if(0 === uiId)
-            return;
-
-        root.contentUiId        = uiSettings.contentUiId;
-        root.sourceDir          = uiSettings.sourceDir;
-        root.defaultContentName = uiSettings.defaultContentName;
-        root.currentContentName = uiSettings.currentContentName;
-    }
-
-    function setNoSettings() {
-        SofaApplication.uiSettings.remove(uiId);
-        uiId = 0;
-    }
-
-    Component.onCompleted: {
-        if(0 === root.uiId) {
-            if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId) {
-                root.uiId = parent.contentUiId;
-                load();
-            }
-            else
-                root.uiId = SofaApplication.uiSettings.generate();
+    /// Initialize the view.
+    function bootstrap()
+    {
+        // If the view is created from one that already has a parent set we duplicate
+        /// it.
+        if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId)
+        {
+            root.uiId = parent.contentUiId;
         }
         else
-            load();
-
-        init();
+        {
+            /// Otherwise we create a new view ID.
+            root.uiId = SofaApplication.uiSettings.generate();
+        }
     }
 
-
-    readonly property alias contentItem: loaderLocation.contentItem
     Item {
         anchors.fill: parent
 
+        /////////////////////////////////////////////////////////
+        // The toolbar containing a dropdown menu and some
+        // button and checkbox.
+        /////////////////////////////////////////////////////////
         Rectangle {
             id: toolBar
-            color: "lightgrey"
-
-            height: 30
-            anchors.left: parent.anchors.left
-            anchors.right: parent.anchors.right
-            anchors.top: parent.anchors.top
+            color: "grey"
+            height: 32
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
 
             RowLayout {
                 id: toolBarLayout
@@ -134,27 +124,28 @@ Item {
                 ComboBox {
                     id: comboBox
                     textRole: "name"
-
                     model: listModel
+                    width: 100
                     currentIndex: 0
-                    onCurrentIndexChanged: {
-                        loaderLocation.refresh();
+                    onCurrentIndexChanged:
+                    {
+                        loaderLocation.refresh(listModel.get(currentIndex));
+                        root.currentContentName = currentContentName;
                     }
 
-                    //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
-                    function findIndex(model, criteria) {
-                        for(var i = 0; i < model.count; ++i) { if (criteria(model.get(i))) return i }
-                        return null
+                    function findIndexFor(name)
+                    {
+                        var c = findIndex(model, function(item) {
+                            return item.name === name
+                        });
+                        return c;
                     }
 
                     Component.onCompleted: function()
                     {
-                        var c = find(model, function(item) {
-                            console.log("COMPARE "+ item )
-
-                            return item.fileName === root.currentContentName} );
-                        if(c)
-                            currentIndex = c
+                        /// search in the model if there is one item with the
+                        /// same name as in the combobox.
+                        currentIndex = findIndexFor(root.currentContentName);
                     }
                 }
 
@@ -162,13 +153,16 @@ Item {
                 Button {
                     icon.source: "qrc:/icon/subWindow.png"
                     onClicked: {
-                        windowComponent.createObject(SofaApplication, {"source": listModel.get(comboBox.currentIndex).filePath});
+                        windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
+                                                                       "title" : comboBox.currentText });
                     }
 
                     Component {
                         id: windowComponent
 
                         Window {
+                            property url source
+
                             id: window
                             width: 400
                             height: 600
@@ -176,20 +170,11 @@ Item {
                             flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                             visible: true
                             color: "lightgrey"
-
-                            Component.onCompleted: {
-                                width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
-                                height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
-                            }
-
                             onClosing: destroy();
-
-                            property url source
 
                             Loader {
                                 id: loader
                                 anchors.fill: parent
-
                                 source: window.source
                             }
                         }
@@ -200,7 +185,7 @@ Item {
                     id: showAllLabel
                     anchors.right: checkBoxEditting.left
                     anchors.verticalCenter:  toolBar.verticalCenter
-                    text: "Edit:"
+                    text: "Live Coding:"
                 }
                 CheckBox {
                     id : checkBoxEditting
@@ -222,86 +207,50 @@ Item {
             property Item contentItem
             property string errorMessage
 
-            function refresh()
+            /// @brief refresh the content "area" of the view with the given name
+            function refresh(viewEntry)
             {
-                if(-1 === comboBox.currentIndex || comboBox.currentIndex >= listModel.count)
-                    return;
+                if(!viewEntry)
+                    return
 
-                var currentData = listModel.get(comboBox.currentIndex);
-                if(currentData)
+                var name = viewEntry.name;
+                var source = viewEntry.filePath;
+
+                /// Check if there is an existing view loaded
+                /// If this is the case the view should be destroyed and the content set
+                /// to null.
+                if(loaderLocation.contentItem) {
+                    loaderLocation.contentItem.destroy();
+                    loaderLocation.contentItem = null;
+                }
+
+
+                /// Load the component from a qml file.
+                var contentComponent = Qt.createComponent("file://"+source);
+                if(contentComponent.status === Component.Error)
                 {
-                    var source = listModel.get(comboBox.currentIndex).filePath;
-
-                    if(loaderLocation.contentItem) {
-                        if(undefined !== loaderLocation.contentItem.setNoSettings)
-                            loaderLocation.contentItem.setNoSettings();
-
-                        loaderLocation.contentItem.destroy();
-                        loaderLocation.contentItem = null;
-                    }
-
-                    var contentComponent = Qt.createComponent("file://"+source);
-                    if(contentComponent.status === Component.Error) {
-                        loaderLocation.errorMessage = contentComponent.errorString();
-                        refreshStandbyItem();
-                    } else {
-                        if(0 === root.contentUiId)
-                            root.contentUiId = SofaApplication.uiSettings.generate();
-
-                        var contentProperties = root.properties;
-                        if(!contentProperties)
-                            contentProperties = {};
-
-                        contentProperties["uiId"] = root.contentUiId;
-                        contentProperties["anchors.fill"] = loaderLocation;
-                        var content = contentComponent.createObject(loaderLocation, contentProperties);
-
-                        if(undefined !== content.uiId)
-                            root.contentUiId = Qt.binding(function() {return content.uiId;});
-                        else
-                        {
-                            SofaApplication.uiSettings.remove(root.contentUiId);
-                            root.contentUiId = 0;
-                        }
-                        loaderLocation.contentItem = content;
-                    }
+                    ///TODO(dmarchal 28/01/2019) Fix loader.
+                    loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation);
+                    return;
                 }
-            }
 
-            function refreshStandbyItem()
-            {
-                if(contentItem) {
-                    d.timer.stop();
-                    errorLabel.visible = false;
-                } else {
-                    d.timer.start();
+                /// Create an uid in the SofaApplication settings.
+                if(root.contentUiId === 0)
+                {
+                    console.log("generate a contentUID")
+                    root.contentUiId = SofaApplication.uiSettings.generate();
                 }
-            }
 
-            onContentItemChanged: {
-                refreshStandbyItem();
-            }
-        }
+                ///TODO(dmarchal 28/01/2019) I don't understand what is this for.
+                var contentProperties = root.properties;
+                if(!contentProperties)
+                    contentProperties = {};
 
-        /// Error view to indicate that something was wrong while loading the view.
-        /// TODO(dmarchal 10/01/2019) Move that into a dedicated component.
-        Rectangle {
-            id: errorLabel
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            color: "#555555"
-            visible: false
+                contentProperties["anchors.fill"] = loaderLocation;
+                var content = contentComponent.createObject(loaderLocation, contentProperties);
 
-            Label {
-                anchors.fill: parent
-                color: "red"
-                visible: 0 !== loaderLocation.errorMessage.length
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-
-                text: "An error occurred, the content could not be loaded ! Reason: " + loaderLocation.errorMessage
-                wrapMode: Text.WordWrap
-                font.bold: true
+                loaderLocation.contentItem = content;
+                root.currentContentName = name;
             }
         }
     }

@@ -54,10 +54,15 @@ void SofaViewListModel::update()
     QDir d {SOFAQTQUICK_DIRECTORY_VIEW};
     for(auto& entry : d.entryInfoList({"*.qml"}))
     {
-        myItems.append(Item(entry.fileName(), entry.absoluteFilePath()));
+        myItems.append(Item(entry.baseName(), entry.absoluteFilePath()));
     }
 
     endResetModel();
+}
+
+int	SofaViewListModel::count() const
+{
+    return myItems.size();
 }
 
 int	SofaViewListModel::rowCount(const QModelIndex & /*parent*/) const
