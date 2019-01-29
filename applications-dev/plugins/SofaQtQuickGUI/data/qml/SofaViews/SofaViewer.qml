@@ -49,12 +49,6 @@ SofaViewer {
         source: "qrc:/icon/alphaBackground.png"
     }
 
-    property int uiId: 0
-    property int previousUiId: uiId
-    onUiIdChanged: {
-        SofaApplication.uiSettings.replace(previousUiId, uiId);
-    }
-
     implicitWidth: 800
     implicitHeight: 600
 
