@@ -34,7 +34,6 @@ import SofaViewListModel 1.0
 
 
 
-
 //TODO(dmarchal 10/01/2019): move the file model into a separated file
 //TODO(dmarchal 10/01/2019): move the drop down menu into a separated file
 
@@ -85,15 +84,6 @@ Item {
         property alias defaultContentName : root.defaultContentName
         property alias currentContentName : root.currentContentName
         property alias contentUiId : root.contentUiId
-
-        function saveSettings()
-        {
-            console.log("SAVING SETTINGS =>"+root.currentContentName)
-            uiSettings.sourceDir = root.sourceDir
-            uiSettings.defaultContentName=root.defaultContentName
-            uiSettings.currentContentName = root.currentContentName
-            uiSettings.contentUiId = root.contentUiId
-        }
     }
 
     /// Initialize the view.
@@ -141,7 +131,7 @@ Item {
                     {
                         loaderLocation.refresh(listModel.get(currentIndex));
                         root.currentContentName = currentContentName;
-                        uiSettings.saveSettings();
+                        //uiSettings.saveSettings();
                     }
 
                     function findIndexFor(name)
@@ -231,7 +221,6 @@ Item {
 
                 var name = viewEntry.name;
                 var source = viewEntry.filePath;
-                console.log("refresh from "  + source)
 
                 /// Check if there is an existing view loaded
                 /// If this is the case the view should be destroyed and the content set
@@ -241,23 +230,24 @@ Item {
                     loaderLocation.contentItem = null;
                 }
 
+
+                /// Load the component from a qml file.
                 var contentComponent = Qt.createComponent("file://"+source);
                 if(contentComponent.status === Component.Error)
                 {
-                    console.log("error")
-                    loaderLocation.errorMessage = contentComponent.errorString();
+                    ///TODO(dmarchal 28/01/2019) Fix loader.
+                    loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation);
                     return;
                 }
 
-                console.log("On load root.contentUiuID " + root.contentUiId);
-
                 /// Create an uid in the SofaApplication settings.
-                if(0 === root.contentUiId)
+                if(root.contentUiId === 0)
                 {
                     console.log("generate a contentUID")
                     root.contentUiId = SofaApplication.uiSettings.generate();
                 }
 
+                ///TODO(dmarchal 28/01/2019) I don't understand what is this for.
                 var contentProperties = root.properties;
                 if(!contentProperties)
                     contentProperties = {};
@@ -267,28 +257,6 @@ Item {
 
                 loaderLocation.contentItem = content;
                 root.currentContentName = name;
-            }
-        }
-
-        /// Error view to indicate that something was wrong while loading the view.
-        /// TODO(dmarchal 10/01/2019) Move that into a dedicated component.
-        Rectangle {
-            id: errorLabel
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            color: "#555555"
-            visible: false
-
-            Label {
-                anchors.fill: parent
-                color: "red"
-                visible: 0 !== loaderLocation.errorMessage.length
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-
-                text: "An error occurred, the content could not be loaded ! Reason: " + loaderLocation.errorMessage
-                wrapMode: Text.WordWrap
-                font.bold: true
             }
         }
     }
