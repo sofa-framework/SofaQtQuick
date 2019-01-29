@@ -50,7 +50,6 @@ add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 add_definitions(${Qt5WebView_DEFINITIONS})
 
-find_package(SofaFramework REQUIRED)
 find_package(SofaQtQuickGUI REQUIRED)
 
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
@@ -60,5 +59,5 @@ add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QR
 
 target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::WebView)
 
-sofa_install_targets(SofaGui ${PROJECT_NAME} "")
-
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
+  RUNTIME DESTINATION bin COMPONENT applications)

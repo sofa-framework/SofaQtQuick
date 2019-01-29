@@ -78,10 +78,10 @@ LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
     Q_UNUSED(parent);
 
     msg_info("LiveFileMonitor") << "Creating a LiveFileMonitor singleton with data directory '"
-                                << SOFA_SOFAQTQUICKGUI_SRC_DIR << "'" ;
+                                << SOFAQTQUICKGUI_QML_DIR << "'" ;
     m_files = QStringList() ;
 
-    std::string path(SOFA_SOFAQTQUICKGUI_SRC_DIR);
+    std::string path(SOFAQTQUICKGUI_QML_DIR);
     addPathToMonitor(path);
 
     QTimer *timer = new QTimer(this);
