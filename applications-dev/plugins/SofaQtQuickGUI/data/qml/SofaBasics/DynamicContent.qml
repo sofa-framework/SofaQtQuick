@@ -131,7 +131,6 @@ Item {
                     {
                         loaderLocation.refresh(listModel.get(currentIndex));
                         root.currentContentName = currentContentName;
-                        //uiSettings.saveSettings();
                     }
 
                     function findIndexFor(name)
@@ -154,7 +153,8 @@ Item {
                 Button {
                     icon.source: "qrc:/icon/subWindow.png"
                     onClicked: {
-                        windowComponent.createObject(SofaApplication, {"source": listModel.get(comboBox.currentIndex).filePath});
+                        windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
+                                                                       "title" : comboBox.currentText });
                     }
 
                     Component {
@@ -170,12 +170,6 @@ Item {
                             flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                             visible: true
                             color: "lightgrey"
-
-                            Component.onCompleted: {
-                                width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
-                                height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
-                            }
-
                             onClosing: destroy();
 
                             Loader {
