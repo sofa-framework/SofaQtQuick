@@ -60,6 +60,11 @@ void SofaViewListModel::update()
     endResetModel();
 }
 
+int	SofaViewListModel::count() const
+{
+    return myItems.size();
+}
+
 int	SofaViewListModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return myItems.size();
