@@ -127,7 +127,7 @@ SofaApplication {
     }
 
     ////////////////////////////////////////////////// SETTINGS
-
+    /// This stores all the created view in the UI.
     property var uiSettings: Settings {
         category: "ui"
 
