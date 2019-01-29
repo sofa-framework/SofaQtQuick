@@ -34,6 +34,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaPython/PythonEnvironment.h>
 
 #include <QQuickStyle>
+#include <QStyleFactory>
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQmlContext>
@@ -59,6 +60,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QRunnable>
 #include <QTimer>
 #include <QDirIterator>
+#include <QPalette>
 
 
 #include <QQmlDebuggingEnabler>
@@ -983,8 +985,13 @@ class UseOpenGLDebugLoggerRunnable : public QRunnable
 
 bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
-    // application style
-    QQuickStyle::setStyle("Fusion");
+//    // application style
+    QQuickStyle::setStyle("fusion");
+    QStyle *style = QStyleFactory::create("fusion");
+    if (!style) {
+        return false;
+    }
+    app.setStyle(style);
 
     // color console
     sofa::helper::console::setStatus(sofa::helper::console::Status::On);

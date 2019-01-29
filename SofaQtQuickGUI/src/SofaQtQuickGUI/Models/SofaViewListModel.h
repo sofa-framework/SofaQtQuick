@@ -44,6 +44,7 @@ public:
     ~SofaViewListModel();
 
     Q_INVOKABLE void update();
+    Q_INVOKABLE QVariantMap get(int row);
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
@@ -58,7 +59,7 @@ private:
 
     struct Item
     {
-        Item(const char* a_name, const char* a_filePath) :
+        Item(const QString& a_name, const QString& a_filePath) :
             name(a_name),
             filePath(a_filePath)
         {

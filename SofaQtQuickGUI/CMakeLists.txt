@@ -233,7 +233,8 @@ if(WIN32)
     endif()
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml WebEngine REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml WebEngine  REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
 include_directories(${Qt5Gui_INCLUDE_DIRS})
@@ -242,7 +243,7 @@ include_directories(${Qt5QuickControls2_INCLUDE_DIRS})
 include_directories(${Qt5Qml_INCLUDE_DIRS})
 include_directories(${Qt5Quick_INCLUDE_DIRS})
 include_directories(${Qt5Quick_INCLUDE_DIRS})
-
+include_directories(${Qt5QmlLive_INCLUDE_DIRS})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${Qt5Gui_DEFINITIONS})
@@ -285,6 +286,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CUR
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQMLJSDEBUGGER")
+
+##TODO(dmarchal) A virer et remplacer par des vrai resources.
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DSOFAQTQUICK_DIRECTORY_VIEW=\"${CMAKE_CURRENT_SOURCE_DIR}/data/qml/SofaViews\"")
+
 
 if(NOT MSVC)
   target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")

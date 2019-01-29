@@ -21,6 +21,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 
+#include <QResource>
+#include <QDir>
 
 #include "SofaViewListModel.h"
 #include <sofa/helper/logging/Messaging.h>
@@ -35,21 +37,25 @@ SofaViewListModel::SofaViewListModel(QObject* parent) :
     QAbstractListModel(parent),
     myItems()
 {
-
+    update();
 }
 
 SofaViewListModel::~SofaViewListModel()
 {
 
 }
-
+#define STRINGIFY(x) #x
 void SofaViewListModel::update()
 {
     beginResetModel();
 
     myItems.clear();
-    myItems.append(Item("Set1","File1"));
-    myItems.append(Item("Set2","File2"));
+
+    QDir d {SOFAQTQUICK_DIRECTORY_VIEW};
+    for(auto& entry : d.entryInfoList({"*.qml"}))
+    {
+        myItems.append(Item(entry.fileName(), entry.absoluteFilePath()));
+    }
 
     endResetModel();
 }
@@ -70,7 +76,6 @@ QVariant SofaViewListModel::data(const QModelIndex& index, int role) const
     if(index.row() >= myItems.size())
         return QVariant("");
 
-
     const Item& item = myItems[index.row()];
 
     switch(static_cast<Role>(role))
@@ -81,7 +86,7 @@ QVariant SofaViewListModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(item.filePath);
     }
 
-    return QVariant("INVALID");
+    return QVariant("INVALID ROLE");
 }
 
 QHash<int,QByteArray> SofaViewListModel::roleNames() const
@@ -89,9 +94,23 @@ QHash<int,QByteArray> SofaViewListModel::roleNames() const
     QHash<int,QByteArray> roles;
 
     roles[static_cast<int>(Role::Name)]         = "name";
-    roles[static_cast<int>(Role::FilePath)]        = "filePath";
+    roles[static_cast<int>(Role::FilePath)]     = "filePath";
 
     return roles;
+}
+
+QVariantMap SofaViewListModel::get(int row)
+{
+    QHash<int,QByteArray> names = roleNames();
+    QHashIterator<int, QByteArray> i(names);
+    QVariantMap res;
+    while (i.hasNext()) {
+        i.next();
+        QModelIndex idx = index(row, 0);
+        QVariant data = idx.data(i.key());
+        res[i.value()] = data;
+    }
+    return res;
 }
 
 }
