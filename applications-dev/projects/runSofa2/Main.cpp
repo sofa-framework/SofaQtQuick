@@ -19,12 +19,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaApplication.h>
 #include <QtWebView/QtWebView>
-
-#ifndef QT_NO_DEBUG
-#include <qmllive/remotereceiver.h>
-#include <qmllive/livenodeengine.h>
-#endif
-
 #include <runSofa2/runSofa2.h>
 
 int main(int argc, char **argv)
@@ -44,34 +38,6 @@ int main(int argc, char **argv)
     // common settings for most sofaqtquick applications
     if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
-
-#if defined(QT_NO_DEBUG)
-    qWarning() << "QmlLive support was disabled at compile time";
-#else
-    LiveNodeEngine node;
-
-    // Let QmlLive know your runtime
-    node.setQmlEngine(&applicationEngine);
-
-    // Allow it to display QML components with non-QQuickWindow root object
-    QQuickView fallbackView(&applicationEngine, nullptr);
-    node.setFallbackView(&fallbackView);
-
-    // Tell it where file updates should be stored relative to
-    node.setWorkspace(QString(QMLLIVE_WORKSPACE_PATH),
-                      LiveNodeEngine::AllowUpdates | LiveNodeEngine::UpdatesAsOverlay);
-
-    // Listen to IPC call from remote QmlLive Bench
-    RemoteReceiver receiver;
-    receiver.registerNode(&node);
-    receiver.listen(10234);
-
-    // Advanced use: let it know the initially loaded QML component (do this
-    // only after registering to receiver!)
-    QList<QQmlError> warnings;
-    node.usePreloadedDocument(QUrl(QStringLiteral("projects/runSofa2/data/qml/Main.qml")).toString(),
-                              qobject_cast<QQuickWindow *>(applicationEngine.rootObjects().first()), warnings);
-#endif
 
     return app.exec();
 }
