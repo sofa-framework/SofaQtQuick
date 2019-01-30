@@ -195,9 +195,9 @@ set(QML_FILES
     data/qml/SofaViews/ExampleView.qml
     data/qml/SofaViews/WebBrowserView.qml
     data/qml/SofaViews/LiveInterfaceEditor.qml
-    data/qml/SofaWidgets/RuntimeViewer.qml
-    data/qml/SofaWidgets/BaseWidgetExample.qml
-    data/qml/SofaWidgets/SceneToolsPanel.qml
+    data/qml/SofaViews/BaseWidgetExample.qml
+    data/qml/SofaViews/SceneToolsPanel.qml
+
 )
 
 add_definitions("-DSOFA_SOFAQTQUICKGUI_SRC_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")

@@ -7,5 +7,3 @@ SofaWindowComponentHelp 1.0 SofaWindowComponentHelp.qml
 SofaWindowComponentMessages 1.0 SofaWindowComponentMessages.qml
 PopupWindowCreateComponent 1.0 PopupWindowCreateComponent.qml
 
-BaseWidgetExample 1.0 BaseWidgetExample.qml
-SceneToolsPanel 1.0 SceneToolsPanel.qml
