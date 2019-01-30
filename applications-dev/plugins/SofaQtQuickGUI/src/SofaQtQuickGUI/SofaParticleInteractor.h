@@ -21,7 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #define SOFAPARTICLEINTERACTOR_H
 
 #include <QObject>
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 

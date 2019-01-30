@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAQTQUICK_EDITVIEW_H
 #define SOFAQTQUICK_EDITVIEW_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaViewer.h>
 
 #include <QtQuick/QQuickFramebufferObject>

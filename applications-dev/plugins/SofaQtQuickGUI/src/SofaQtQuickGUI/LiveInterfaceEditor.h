@@ -23,7 +23,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #include <QStringList>
 #include <QObject>
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 
 namespace sofa
 {

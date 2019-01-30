@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef MANIPULATOR2D_ROTATION_H
 #define MANIPULATOR2D_ROTATION_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
 #include <QObject>

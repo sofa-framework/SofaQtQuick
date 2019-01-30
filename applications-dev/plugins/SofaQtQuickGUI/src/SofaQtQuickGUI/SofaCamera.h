@@ -27,7 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaBaseVisual/BaseCamera.h>
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Camera.h>
 

@@ -9,17 +9,18 @@ using sofa::qtquick::SofaSceneListModel ;
 
 #include <QApplication>
 
+#include <SofaQtQuickGUI/QmlPluginSofa.h>
+using sofaqtquick::QmlPluginSofa;
+
 #include "modeltest.h"
 #include "SofaSceneModel_test.h"
 
 #include <chrono>
 #include <thread>
 
-void  SofaSceneModel_qtTests::initTestCase(){
-      m_qmltypes=new SofaQtQuickGUI(nullptr) ;
-}
-void  SofaSceneModel_qtTests::cleanupTestCase(){
-    delete m_qmltypes ;
+SofaSceneModel_qtTests::SofaSceneModel_qtTests()
+{
+    QmlPluginSofa::Init();
 }
 
 void  SofaSceneModel_qtTests::testAll(){

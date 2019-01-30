@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFA_LINK_H
 #define SOFA_LINK_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 //#include <SofaQtQuickGUI/SofaScene.h>
 

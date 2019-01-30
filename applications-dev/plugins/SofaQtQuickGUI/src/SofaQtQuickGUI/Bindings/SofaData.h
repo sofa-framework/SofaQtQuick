@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFA_DATA_H
 #define SOFA_DATA_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 
 #include <sofa/simulation/Simulation.h>
 #include <QVariantMap>

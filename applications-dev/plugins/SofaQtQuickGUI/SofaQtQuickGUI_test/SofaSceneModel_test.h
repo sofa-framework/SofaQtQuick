@@ -1,15 +1,13 @@
 #include <QtTest/QTest>
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/QmlPluginSofa.h>
 
 class SofaSceneModel_qtTests : public QObject
 {
     Q_OBJECT
-private slots:
-    void initTestCase() ;
-    void testAll() ;
-    void cleanupTestCase() ;
+public:
+    SofaSceneModel_qtTests();
 
-private:
-    SofaQtQuickGUI* m_qmltypes {nullptr};
+private slots:
+    void testAll() ;
 };

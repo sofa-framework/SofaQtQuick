@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAAPPLICATION_H
 #define SOFAAPPLICATION_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 
 #include <QApplication>
 #include <QQmlApplicationEngine>

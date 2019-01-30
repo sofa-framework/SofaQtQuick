@@ -25,7 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/core/objectmodel/Base.h>
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaScene.h>
 #include "SofaSceneListModel.h"
 

@@ -26,7 +26,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QAbstractItemModel>
 #include <sofa/simulation/MutationListener.h>
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaScene.h>
 
 namespace sofa

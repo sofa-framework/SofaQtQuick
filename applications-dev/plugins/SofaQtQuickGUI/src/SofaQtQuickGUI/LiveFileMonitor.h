@@ -24,7 +24,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #include <QObject>
 #include <QFileSystemWatcher>
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/FileMonitor.h>
 using sofa::helper::system::FileEventListener;

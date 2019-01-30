@@ -20,7 +20,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <QAbstractListModel>
 
 #include <sofa/helper/vector.h>

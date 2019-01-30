@@ -20,7 +20,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAQTQUICKSOFA_SOFAFACTORY_H
 #define SOFAQTQUICKSOFA_SOFAFACTORY_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <QAbstractListModel>
 #include <QStringList>
 

@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAVIEWER_H
 #define SOFAVIEWER_H
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Camera.h>
 #include <SofaQtQuickGUI/SelectableSofaParticle.h>
 

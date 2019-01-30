@@ -4,16 +4,18 @@ using sofa::helper::testing::BaseTest ;
 #include <SofaQtQuickGUI/SofaScene.h>
 using sofa::qtquick::SofaScene ;
 
-#include <sofa/helper/testing/BaseTest.h>
+#include <SofaQtQuickGUI/QmlPluginSofa.h>
+using sofaqtquick::QmlPluginSofa;
 
+#include <sofa/helper/testing/BaseTest.h>
 #include "SofaScene_test.h"
 
 #include <chrono>
 #include <thread>
 
-void SofaScene_qtTests::initTestCase()
+SofaScene_qtTests::SofaScene_qtTests()
 {
-    m_qmltypes=new SofaQtQuickGUI(nullptr) ;
+    QmlPluginSofa::Init();
 }
 
 void SofaScene_qtTests::loadAScene()
@@ -73,11 +75,6 @@ void SofaScene_qtTests::loadMissingScene()
     QVERIFY2(cpt < 50, "Loading of the scene timed out after 5 seconds.");
 
     QVERIFY(!scene.isReady());
-}
-
-void SofaScene_qtTests::cleanupTestCase()
-{
-    delete m_qmltypes ;
 }
 
 TEST(SofaScene_tests, qtTest)

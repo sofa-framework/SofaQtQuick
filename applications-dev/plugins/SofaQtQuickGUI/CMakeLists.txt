@@ -15,7 +15,7 @@ if(SOFA_BUILD_TESTS)
 endif()
 
 set(SOURCE_FILES
-    src/SofaQtQuickGUI/SofaQtQuickGUI.cpp
+    src/SofaQtQuickGUI/QmlPluginSofa.cpp
     src/SofaQtQuickGUI/SofaApplication.cpp
     src/SofaQtQuickGUI/SofaViewer.cpp
     src/SofaQtQuickGUI/Windows/CameraView.cpp
@@ -58,7 +58,8 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
-    src/SofaQtQuickGUI/SofaQtQuickGUI.h
+    src/SofaQtQuickGUI/config.h
+    src/SofaQtQuickGUI/QmlPluginSofa.h
     src/SofaQtQuickGUI/SofaApplication.h
     src/SofaQtQuickGUI/SofaCamera.h
     src/SofaQtQuickGUI/ProcessState.h

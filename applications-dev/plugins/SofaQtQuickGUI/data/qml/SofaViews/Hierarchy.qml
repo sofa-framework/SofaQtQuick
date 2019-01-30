@@ -36,9 +36,7 @@ Rectangle {
     enabled: sofaScene ? sofaScene.ready : false
 
     property var sofaScene: SofaApplication.sofaScene
-
     readonly property var searchBar: searchBar
-
 
     //    Item {
     //        property bool isActive: false

@@ -135,10 +135,11 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     m_scenechecker->addCheck(SceneCheckMissingRequiredPlugin::newSPtr());
     m_scenechecker->addCheck(SceneCheckUsingAlias::newSPtr());
 
-    sofa::simulation::graph::init();
-
     myStepTimer->setInterval(0);
+
+    sofa::simulation::graph::init();
     mySofaSimulation = sofa::simulation::graph::getSimulation();
+    mySofaRootNode = mySofaSimulation->createNewNode("root");
 
     // plugins
     QVector<QString> plugins;
