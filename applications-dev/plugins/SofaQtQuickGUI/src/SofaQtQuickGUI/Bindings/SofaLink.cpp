@@ -21,9 +21,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 
-#include "SofaLink.h"
-#include "SofaComponent.h"
-#include "SofaScene.h"
+#include <SofaQtQuickGUI/Bindings/SofaLink.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/SofaScene.h>
 
 #include <QString>
 

@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAAPPLICATION_H
 #define SOFAAPPLICATION_H
 
-#include "SofaQtQuickGUI.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -35,7 +35,7 @@ class QQuickWindow;
 class QQuickItem;
 class QSettings;
 
-#include <SofaQtQuickGUI/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 
 namespace sofa
 {

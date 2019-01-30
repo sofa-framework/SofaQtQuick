@@ -17,28 +17,28 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 */
-#include "sofa/helper/logging/Messaging.h"
-#include "sofa/helper/logging/MessageDispatcher.h"
+#include <sofa/helper/logging/Messaging.h>
+#include <sofa/helper/logging/MessageDispatcher.h>
 using sofa::helper::logging::MessageDispatcher ;
 
-#include "sofa/helper/logging/MessageFormatter.h"
+#include <sofa/helper/logging/MessageFormatter.h>
 using sofa::helper::logging::MessageFormatter ;
 
-#include "sofa/helper/logging/MessageHandler.h"
+#include <sofa/helper/logging/MessageHandler.h>
 using sofa::helper::logging::MessageHandler ;
 
-#include "sofa/helper/logging/Message.h"
+#include <sofa/helper/logging/Message.h>
 using sofa::helper::logging::Message ;
 
-#include "sofa/core/objectmodel/Base.h"
+#include <sofa/core/objectmodel/Base.h>
 using sofa::helper::logging::SofaComponentInfo ;
 
 using sofa::core::objectmodel::BaseObject ;
 using sofa::core::objectmodel::BaseNode;
 
-#include "Console.h"
+#include <SofaQtQuickGUI/Console.h>
 
-#include <SofaQtQuickGUI/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 using sofa::qtquick::SofaComponent ;
 
 #include <SofaQtQuickGUI/SofaApplication.h>

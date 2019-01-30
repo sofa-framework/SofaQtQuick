@@ -71,7 +71,6 @@ Item {
 
     onUiIdChanged:
     {
-        console.log("UI-CHANGED from " + previousUiId + " to " + uiId)
         SofaApplication.uiSettings.replace(previousUiId, uiId);
     }
 
@@ -121,7 +120,8 @@ Item {
                 id: toolBarLayout
                 spacing: 2
 
-                ComboBox {
+                ComboBox
+                {
                     id: comboBox
                     textRole: "name"
                     model: listModel
@@ -150,11 +150,12 @@ Item {
                 }
 
                 /// Open a new windows with this content.
-                Button {
+                Button
+                {
                     icon.source: "qrc:/icon/subWindow.png"
                     onClicked: {
                         windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
-                                                                       "title" : comboBox.currentText });
+                                                         "title" : comboBox.currentText });
                     }
 
                     Component {
@@ -184,13 +185,13 @@ Item {
                 Label {
                     id: showAllLabel
                     anchors.right: checkBoxEditting.left
-                    anchors.verticalCenter:  toolBar.verticalCenter
+                    anchors.verticalCenter:  parent.verticalCenter
                     text: "Live Coding:"
                 }
                 CheckBox {
                     id : checkBoxEditting
-                    anchors.right:  toolBar.right
-                    anchors.verticalCenter:  toolBar.verticalCenter
+                    anchors.right:  parent.right
+                    anchors.verticalCenter:  parent.verticalCenter
                 }
             }
         }

@@ -20,9 +20,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFA_LINK_H
 #define SOFA_LINK_H
 
-#include "SofaQtQuickGUI.h"
-#include "SofaComponent.h"
-//#include "SofaScene.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+//#include <SofaQtQuickGUI/SofaScene.h>
 
 ////////////////////////////// FORWARD DECLARATION //////////////////////////////////////////
 namespace sofa {

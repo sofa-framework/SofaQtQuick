@@ -24,9 +24,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef RUNTIMEVIEWER_H
 #define RUNTIMEVIEWER_H
 
-#include "SofaQtQuickGUI.h"
-#include "Camera.h"
-#include "SelectableSofaParticle.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/Camera.h>
+#include <SofaQtQuickGUI/SelectableSofaParticle.h>
 
 #include <QtQuick/QQuickFramebufferObject>
 #include <QVector3D>

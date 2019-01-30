@@ -18,9 +18,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "SofaParticleInteractor.inl"
-#include "SofaScene.h"
-#include "SofaViewer.h"
-#include "Manipulators/Manipulator.h"
+#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaViewer.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/VisualModel.h>

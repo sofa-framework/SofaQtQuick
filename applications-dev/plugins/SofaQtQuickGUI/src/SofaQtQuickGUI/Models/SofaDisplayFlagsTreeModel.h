@@ -24,7 +24,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 #include <SofaQtQuickGUI/SofaScene.h>
-#include "SofaSceneListModel.h"
 
 class QTimer;
 class QVector3D;

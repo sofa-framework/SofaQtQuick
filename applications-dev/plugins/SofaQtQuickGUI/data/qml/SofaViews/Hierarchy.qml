@@ -99,6 +99,7 @@ Rectangle {
         anchors.right: parent.right
     }
 
+
     TreeView {
         id : treeView
         anchors.top: searchBar.bottom
@@ -106,6 +107,19 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
+
+
+        SofaSceneItemModel
+        {
+            id: basemodel
+            sofaScene: root.sofaScene
+        }
+
+        model:  SofaSceneItemProxy
+        {
+            id: sceneModel
+            model : basemodel
+        }
 
         itemDelegate: Item {
             property bool multiparent : false
@@ -171,28 +185,29 @@ Rectangle {
                 text: name  //+ "(" + model.row + "/"+ styleData.row + ")"
             }
 
+
             SofaNodeMenu
             {
                 id: nodeMenu
+                model: basemodel
+                currentIndex: sceneModel.mapToSource(styleData.index)
             }
 
-            SofaObjectMenu {
+            SofaObjectMenu
+            {
                 id: objectMenu
             }
-
 
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: {
-                    if(mouse.button === Qt.LeftButton) {
+                    if(mouse.button === Qt.LeftButton)
+                    {
                         console.log("TODO-implement click to change selection")
-                        listView.updateCurrentIndex(index);
                     } else if(mouse.button === Qt.RightButton) {
-                        //var component = listModel.getComponentById(index);
-
                         if(isNode) {
-                            nodeMenu.sofaData = component.getComponentData("activated");
+                            //nodeMenu.sofaData = component.getComponentData("activated");
                             //if(component.hasLocations()===true)
                             //{
                             //    nodeMenu.sourceLocation = component.getSourceLocation()
@@ -206,7 +221,6 @@ Rectangle {
                     }
                 }
             }
-
         }
 
         TableViewColumn {
@@ -214,12 +228,7 @@ Rectangle {
             role: "name"
         }
 
-        model:  SofaSceneItemProxy {
-            id: sceneModel
-            model : SofaSceneItemModel {
-                sofaScene: root.sofaScene
-            }
-        }
+
     }
 
     CheckBox {

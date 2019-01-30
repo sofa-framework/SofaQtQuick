@@ -21,12 +21,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <GL/glew.h>
 
-#include "SofaComponent.h"
-#include "SofaScene.h"
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/SofaScene.h>
 
 #include <sofa/core/ObjectFactory.h>
 
-#include "sofa/helper/logging/Message.h"
+#include <sofa/helper/logging/Message.h>
 using sofa::helper::logging::Message ;
 
 
@@ -59,7 +59,7 @@ SofaComponent::SofaComponent(const SofaComponent *sofaComponent) : QObject(),
 
 }
 
-QString SofaComponent::name() const
+QString SofaComponent::getName() const
 {
     const Base* base = SofaComponent::base();
     if(base)

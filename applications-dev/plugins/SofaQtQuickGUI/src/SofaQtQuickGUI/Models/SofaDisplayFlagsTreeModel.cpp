@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SofaDisplayFlagsTreeModel.h"
+#include <SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h>
 
 #include <sofa/helper/accessor.h>
 #include <SofaBaseVisual/VisualStyle.h>

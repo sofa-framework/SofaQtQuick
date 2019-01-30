@@ -22,8 +22,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/simulation/Simulation.h>
 
-#include "SofaQtQuickGUI.h"
-#include "SofaData.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
 
 namespace sofa
 {
@@ -46,7 +46,7 @@ public:
     SofaComponent(const SofaComponent* sofaComponent);
 
 public:
-    Q_INVOKABLE QString name() const;
+    Q_INVOKABLE QString getName() const;
     Q_INVOKABLE QStringList tags() const;
     Q_INVOKABLE QString className() const;
     Q_INVOKABLE QString namespaceName() const;

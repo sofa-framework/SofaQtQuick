@@ -22,7 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaPython/PythonMacros.h>
 
-#include "SofaQtQuickGUI.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 #include <QObject>
 #include <QString>
 #include <QSet>

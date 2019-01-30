@@ -22,7 +22,7 @@ Component {
         visible: true
         color: "lightgrey"
 
-        title: sofaComponent ? ("Messages for component: " + sofaComponent.name()) : "No component to visualize"
+        title: sofaComponent ? ("Messages for component: " + sofaComponent.getName()) : "No component to visualize"
 
         Loader {
             id: loader

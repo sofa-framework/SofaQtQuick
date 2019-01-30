@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QQuickItem>
-#include "EditView.h"
+#include <SofaQtQuickGUI/Windows/EditView.h>
 
 namespace sofa
 {

@@ -17,49 +17,49 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SofaQtQuickGUI.h"
-#include "SofaApplication.h"
-#include "ProcessState.h"
-#include "Camera.h"
-#include "SofaCamera.h"
-#include "SofaParticleInteractor.h"
-#include "SofaPythonInteractor.h"
-#include "Manipulators/Manipulator.h"
-#include "Manipulators/Manipulator2D_Translation.h"
-#include "Manipulators/Manipulator2D_Rotation.h"
-#include "Manipulators/Manipulator3D_Translation.h"
-#include "Manipulators/Manipulator3D_Rotation.h"
-#include "SofaScene.h"
-#include "SofaComponent.h"
-#include "SofaData.h"
-#include "SofaLink.h"
-#include "SofaViewer.h"
-#include "Selectable.h"
-#include "SelectableManipulator.h"
-#include "SelectableSofaComponent.h"
-#include "SelectableSofaParticle.h"
-#include "Models/SofaSceneListModel.h"
-#include "Models/SofaSceneListProxy.h"
-#include "Models/SofaSceneItemModel.h"
-#include "Models/SofaSceneItemProxy.h"
-#include "Models/SofaDataListModel.h"
-#include "Models/SofaViewListModel.h"
-#include "Models/SofaInspectorDataListModel.h"
-#include "Models/SofaDisplayFlagsTreeModel.h"
-#include "Windows/CameraView.h"
-#include "Windows/EditView.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/SofaApplication.h>
+#include <SofaQtQuickGUI/ProcessState.h>
+#include <SofaQtQuickGUI/Camera.h>
+#include <SofaQtQuickGUI/SofaCamera.h>
+#include <SofaQtQuickGUI/SofaParticleInteractor.h>
+#include <SofaQtQuickGUI/SofaPythonInteractor.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.h>
+#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
+#include <SofaQtQuickGUI/Bindings/SofaLink.h>
+#include <SofaQtQuickGUI/SofaViewer.h>
+#include <SofaQtQuickGUI/Selectable.h>
+#include <SofaQtQuickGUI/SelectableManipulator.h>
+#include <SofaQtQuickGUI/SelectableSofaComponent.h>
+#include <SofaQtQuickGUI/SelectableSofaParticle.h>
+#include <SofaQtQuickGUI/Models/SofaSceneListModel.h>
+#include <SofaQtQuickGUI/Models/SofaSceneListProxy.h>
+#include <SofaQtQuickGUI/Models/SofaSceneItemModel.h>
+#include <SofaQtQuickGUI/Models/SofaSceneItemProxy.h>
+#include <SofaQtQuickGUI/Models/SofaDataListModel.h>
+#include <SofaQtQuickGUI/Models/SofaViewListModel.h>
+#include <SofaQtQuickGUI/Models/SofaInspectorDataListModel.h>
+#include <SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h>
+#include <SofaQtQuickGUI/Windows/CameraView.h>
+#include <SofaQtQuickGUI/Windows/EditView.h>
 
-#include "PythonConsole.h"
+#include <SofaQtQuickGUI/PythonConsole.h>
 using namespace sofa::qtquick;
 
-#include "Console.h"
+#include <SofaQtQuickGUI/Console.h>
 using sofa::qtquick::console::Console ;
 
-#include "SofaFactory.h"
+#include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofa::qtquick::SofaFactory ;
 
-#include "RuntimeViewer.h"
-#include "LiveFileMonitor.h"
+#include <SofaQtQuickGUI/RuntimeViewer.h>
+#include <SofaQtQuickGUI/LiveFileMonitor.h>
 using sofa::qtquick::livefilemonitor::LiveFileMonitor;
 
 #include <sofa/helper/system/PluginManager.h>

@@ -235,6 +235,15 @@ int SofaSceneItemModel::columnCount(const QModelIndex &index) const
     return 1;
 }
 
+sofa::qtquick::SofaComponent* SofaSceneItemModel::getComponentFromIndex(const QModelIndex& index) const
+{
+    if (!index.isValid())
+        return nullptr;
+
+    sofa::core::objectmodel::Base* currentBase=static_cast<sofa::core::objectmodel::Base*>(index.internalPointer());
+    return new SofaComponent(m_scene, currentBase);
+}
+
 QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
 {    
     //qDebug() << "data: " << index << "role " << role ;
@@ -291,7 +300,7 @@ QHash<int, QByteArray> SofaSceneItemModel::roleNames() const
             { (int)Roles::IsMultiParent, "isMultiParent" },
             { (int)Roles::HasMultiParent, "hasMultiParent" },
             { (int)Roles::IsEnabled, "isEnabled" },
-            { (int)Roles::Row, "row" },
+            { (int)Roles::Row, "row" }
                                            }};
     return mapping;
 }
@@ -331,9 +340,15 @@ SofaScene* SofaSceneItemModel::sofaScene() const
 }
 
 void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
-{
-    std::cout << "setSofaScene: " << std::endl;
-    if(m_scene){
+{    
+    if(m_scene)
+    {
+        if(m_scene->sofaRootNode().get()==nullptr)
+        {
+            //TODO(dmarchal 30/01/2019) Fix ME.
+            dmsg_error("SofaSceneItemModel") << "How can this happens !" ;
+            return;
+        }
         LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
         {
             /// The cast is ok as long as the only kind of node we are manipulating are inherited from
@@ -346,8 +361,12 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
     }
 
     m_scene = newScene;
-
-
+    if(m_scene->sofaRootNode().get()==nullptr)
+    {
+        //TODO(dmarchal 30/01/2019) Fix ME.
+        dmsg_error("SofaSceneItemModel") << "How can this happens !" ;
+        return;
+    }
     LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
     {
         /// The cast is ok as long as the only kind of node we are manipulating are inherited from

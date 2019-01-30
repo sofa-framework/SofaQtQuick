@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAPYTHONINTERACTOR_H
 #define SOFAPYTHONINTERACTOR_H
 
-#include "SofaQtQuickGUI.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 #include <QObject>
 #include <QQmlParserStatus>
 #include <QMap>

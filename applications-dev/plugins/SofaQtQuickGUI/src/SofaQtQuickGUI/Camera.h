@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "SofaQtQuickGUI.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 #include <QObject>
 #include <QMatrix4x4>
 #include <QVector3D>
@@ -38,50 +38,21 @@ class SOFA_SOFAQTQUICKGUI_API Camera : public QObject
     Q_OBJECT
 
 public:
-	explicit Camera(QObject* parent = 0);
+    explicit Camera(QObject* parent = nullptr);
 	~Camera();
 
-public:
     Q_PROPERTY(double zNear READ zNear WRITE setZNear NOTIFY zNearChanged)
     Q_PROPERTY(double zFar READ zFar WRITE setZFar NOTIFY zFarChanged)
     Q_PROPERTY(bool orthographic READ orthographic WRITE setOrthographic NOTIFY orthographicChanged)
     Q_PROPERTY(QVector3D target READ target WRITE setTarget NOTIFY targetChanged)
 
-public:
-    double zNear() const;
-    void setZNear(double newZNear);
-
-    double zFar() const;
-    void setZFar(double newZFar);
-
-    bool orthographic() const {return myOrthographic;}
-    void setOrthographic(bool orthographic);
-
-    QVector3D target() const {return myTarget;}
-    void setTarget(const QVector3D& target);
-
-signals:
-    void zNearChanged(double);
-    void zFarChanged(double);
-    void orthographicChanged(bool);
-    void targetChanged(const QVector3D&);
-
-    void projectionChanged() const;
-    void modelViewChanged() const;
-
-public:
-    virtual const QMatrix4x4& projection() const;
-    virtual const QMatrix4x4& view() const;
-    virtual const QMatrix4x4& model() const;
 
     Q_INVOKABLE QVector3D eye() const				{return  model().column(3).toVector3D();}
-
     Q_INVOKABLE QVector3D direction() const			{return -model().column(2).toVector3D().normalized();}
     Q_INVOKABLE QVector3D up() const				{return  model().column(1).toVector3D().normalized();}
     Q_INVOKABLE QVector3D right() const				{return  model().column(0).toVector3D().normalized();}
 
     Q_INVOKABLE virtual QQuaternion orientation() const;
-
     Q_INVOKABLE double aspectRatio() const          {return myAspectRatio;}
 
     /// @return depth in normalized device coordinate (ndc) space
@@ -114,7 +85,10 @@ public:
 
     Q_SLOT void alignCameraAxis();
 
-public:
+    virtual const QMatrix4x4& projection() const;
+    virtual const QMatrix4x4& view() const;
+    virtual const QMatrix4x4& model() const;
+
     double orthoLeft() const    {return myOrthoLeft;}
     double orthoRight() const   {return myOrthoRight;}
     double orthoBottom() const  {return myOrthoBottom;}
@@ -127,15 +101,26 @@ public:
 
     void setPerspectiveFovY(double fovY);
     void setAspectRatio(double aspectRatio);
+    double zNear() const;
+    void setZNear(double newZNear);
 
-private:
-    void computeOrthographic();
-    void computeModel();
+    double zFar() const;
+    void setZFar(double newZFar);
 
-    QVector3D computeNearestAxis(QVector3D axis,int& nearAxisIndex, int caseTested = -1);
+    bool orthographic() const {return myOrthographic;}
+    void setOrthographic(bool orthographic);
 
-    void setProjectionDirty(bool dirty) const;
-    void setViewDirty(bool dirty) const;
+    QVector3D target() const {return myTarget;}
+    void setTarget(const QVector3D& target);
+
+signals:
+    void zNearChanged(double);
+    void zFarChanged(double);
+    void orthographicChanged(bool);
+    void targetChanged(const QVector3D&);
+
+    void projectionChanged() const;
+    void modelViewChanged() const;
 
 protected:
     bool                myOrthographic;
@@ -156,6 +141,15 @@ protected:
 
 	mutable bool		myProjectionDirty;
     mutable bool		myViewDirty;
+
+private:
+    void computeOrthographic();
+    void computeModel();
+
+    QVector3D computeNearestAxis(QVector3D axis,int& nearAxisIndex, int caseTested = -1);
+
+    void setProjectionDirty(bool dirty) const;
+    void setViewDirty(bool dirty) const;
 };
 
 inline double Camera::zNear() const

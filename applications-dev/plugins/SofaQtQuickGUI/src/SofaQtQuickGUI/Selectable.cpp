@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include "Selectable.h"
+#include <SofaQtQuickGUI/Selectable.h>
 
 namespace sofa
 {

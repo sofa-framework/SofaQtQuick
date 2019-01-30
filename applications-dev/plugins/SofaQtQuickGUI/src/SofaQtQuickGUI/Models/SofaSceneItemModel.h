@@ -45,11 +45,15 @@ namespace _sofasceneitemmodel_
 class SofaSceneItemModel : public QAbstractItemModel, private MutationListener
 {
     Q_OBJECT
-    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene)
 
 public:
-    SofaSceneItemModel(QObject* parent = 0);
-    ~SofaSceneItemModel();
+    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene)
+
+    ///@brief Returns the sofa component corresponding to the provided index.
+    Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentFromIndex(const QModelIndex& index) const;
+
+    SofaSceneItemModel(QObject* parent = nullptr);
+    ~SofaSceneItemModel() override;
 
     SofaScene* sofaScene() const;
     void setSofaScene(SofaScene* newScene);
@@ -78,8 +82,8 @@ protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
     /// charge of notifying the change using the QAbstractItemModel.
-    virtual void addChild(Node* parent, Node* child) override;
-    virtual void addChildDone(Node* parent, Node* child) ; // override;
+    void addChild(Node* parent, Node* child) override;
+    void addChildDone(Node* parent, Node* child) override;
 
     //virtual void removeChild(Node* parent, Node* child) override;
     //virtual void addObject(Node* parent, sofa::core::objectmodel::BaseObject* object) override;

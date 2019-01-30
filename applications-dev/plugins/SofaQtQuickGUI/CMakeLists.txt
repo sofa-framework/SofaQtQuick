@@ -22,19 +22,19 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Windows/EditView.cpp
     src/SofaQtQuickGUI/Camera.cpp
     src/SofaQtQuickGUI/SofaScene.cpp
-    src/SofaQtQuickGUI/SofaComponent.cpp
     src/SofaQtQuickGUI/SofaComponentList.cpp
-    src/SofaQtQuickGUI/SofaData.cpp
-    src/SofaQtQuickGUI/SofaLink.cpp
     src/SofaQtQuickGUI/Selectable.cpp
     src/SofaQtQuickGUI/SelectableManipulator.cpp
     src/SofaQtQuickGUI/SelectableSofaComponent.cpp
     src/SofaQtQuickGUI/SelectableSofaParticle.cpp
     src/SofaQtQuickGUI/SofaPythonInteractor.cpp
-    src/SofaQtQuickGUI/SofaFactory.cpp
     src/SofaQtQuickGUI/Console.cpp
     src/SofaQtQuickGUI/PythonConsole.cpp
     src/SofaQtQuickGUI/SofaParticleInteractor.cpp
+    src/SofaQtQuickGUI/Bindings/SofaFactory.cpp
+    src/SofaQtQuickGUI/Bindings/SofaComponent.cpp
+    src/SofaQtQuickGUI/Bindings/SofaData.cpp
+    src/SofaQtQuickGUI/Bindings/SofaLink.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.cpp
@@ -54,6 +54,7 @@ set(SOURCE_FILES
 
     src/SofaQtQuickGUI/RuntimeViewer.cpp
     src/SofaQtQuickGUI/LiveFileMonitor.cpp
+
 )
 
 set(HEADER_FILES
@@ -66,19 +67,19 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Windows/EditView.h
     src/SofaQtQuickGUI/Camera.h
     src/SofaQtQuickGUI/SofaScene.h
-    src/SofaQtQuickGUI/SofaComponent.h
     src/SofaQtQuickGUI/SofaComponentList.h
-    src/SofaQtQuickGUI/SofaData.h
-    src/SofaQtQuickGUI/SofaLink.h
     src/SofaQtQuickGUI/Selectable.h
     src/SofaQtQuickGUI/SelectableManipulator.h
     src/SofaQtQuickGUI/SelectableSofaComponent.h
     src/SofaQtQuickGUI/SelectableSofaParticle.h
     src/SofaQtQuickGUI/SofaPythonInteractor.h
-    src/SofaQtQuickGUI/SofaFactory.h
     src/SofaQtQuickGUI/Console.h
     src/SofaQtQuickGUI/PythonConsole.h
-    src/SofaQtQuickGUI/SofaParticleInteractor.h    
+    src/SofaQtQuickGUI/SofaParticleInteractor.h
+    src/SofaQtQuickGUI/Bindings/SofaFactory.h
+    src/SofaQtQuickGUI/Bindings/SofaComponent.h
+    src/SofaQtQuickGUI/Bindings/SofaData.h
+    src/SofaQtQuickGUI/Bindings/SofaLink.h
     src/SofaQtQuickGUI/Manipulators/Manipulator.h
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h
@@ -95,10 +96,8 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/Rendering/SceneRenderer.h
     src/SofaQtQuickGUI/Helper/QMathExtensions.h
-
     src/SofaQtQuickGUI/RuntimeViewer.h
     src/SofaQtQuickGUI/LiveFileMonitor.h
-
 )
 
 

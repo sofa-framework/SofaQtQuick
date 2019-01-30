@@ -17,12 +17,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SOFAQTQUICKSOFA_SOFAFACTORY_H
-#define SOFAQTQUICKSOFA_SOFAFACTORY_H
 
-#include "SofaQtQuickGUI.h"
-#include <QAbstractListModel>
-#include <QStringList>
+#include <sofa/core/ObjectFactory.h>
+using sofa::core::ObjectFactory ;
+
+#include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 
 namespace sofa
 {
@@ -31,35 +30,37 @@ namespace qtquick
 namespace _sofafactory_
 {
 
-/// The SofaFactory object is in charge of exposing to QML
-/// the functionallies of the ObjectFactory including the
-/// list of object that can be created.
-class SOFA_SOFAQTQUICKGUI_API SofaFactory : public QObject
+SofaFactory::SofaFactory(QObject *parent) : QObject(parent)
 {
-    Q_OBJECT
+    setFilter("");
+}
 
-public:
-    SofaFactory(QObject *parent = 0);
-    ~SofaFactory();
+SofaFactory::~SofaFactory(){}
 
-    Q_PROPERTY(QStringList components READ getComponents NOTIFY listChanged)
+void SofaFactory::setFilter(const QString& s)
+{
+    m_filter = s ;
 
-    Q_INVOKABLE QStringList getComponents() ;
-    Q_INVOKABLE void setFilter(const QString& c) ;
+    /// Recompute the filtered list.
+    std::vector<ObjectFactory::ClassEntry::SPtr> entries ;
+    ObjectFactory::getInstance()->getAllEntries(entries) ;
 
-signals:
-    void listChanged();
+    m_filteredList.clear();
+    for (size_t i=0; i<entries.size(); i++){
+        QString cname = QString::fromStdString(entries[i]->className) ;
+        if( m_filter.isEmpty() || cname.contains(m_filter) )
+            m_filteredList.push_back(cname);
+    }
 
-private:
-    QString m_filter ;
-    QStringList m_filteredList ;
-};
+    emit listChanged() ;
+}
+
+QStringList SofaFactory::getComponents()
+{
+    return m_filteredList ;
+}
 
 } /// _sofafactory_
-
-    using _sofafactory_::SofaFactory ;
-
 } /// qtquick
 } /// sofa
 
-#endif /// SOFAQTQUICKSOFA_SOFAFACTORY_H

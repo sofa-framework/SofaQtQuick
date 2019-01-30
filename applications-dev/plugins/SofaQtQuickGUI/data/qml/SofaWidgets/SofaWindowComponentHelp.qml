@@ -26,7 +26,7 @@ Component {
             height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
         }
         
-        title: sofaComponent ? ("Data of component: " + sofaComponent.name()) : "No component to visualize"
+        title: sofaComponent ? ("Data of component: " + sofaComponent.getName()) : "No component to visualize"
         
         property var sofaScene: root.sofaScene
         property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null

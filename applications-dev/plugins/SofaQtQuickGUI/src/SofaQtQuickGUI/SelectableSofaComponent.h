@@ -20,9 +20,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SELECTABLE_SOFA_COMPONENT_H
 #define SELECTABLE_SOFA_COMPONENT_H
 
-#include "SofaQtQuickGUI.h"
-#include "Selectable.h"
-#include "SofaComponent.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/Selectable.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 
 namespace sofa
 {

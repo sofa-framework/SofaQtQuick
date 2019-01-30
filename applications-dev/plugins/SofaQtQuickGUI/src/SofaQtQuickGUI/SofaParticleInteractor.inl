@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SofaParticleInteractor.h"
-#include "SofaScene.h"
-#include "SofaViewer.h"
-#include "Manipulators/Manipulator.h"
+#include <SofaQtQuickGUI/SofaParticleInteractor.h>
+#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaViewer.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
 #include <sofa/core/visual/VisualModel.h>
 #include <sofa/simulation/MechanicalVisitor.h>

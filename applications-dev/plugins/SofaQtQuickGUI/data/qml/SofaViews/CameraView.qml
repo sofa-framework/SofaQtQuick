@@ -63,7 +63,7 @@ CameraView {
         idComboList.clear()
         for (var i = 0; i < cameraList.size(); ++i)
         {
-            idComboList.append({text: cameraList.at(i).name()})
+            idComboList.append({text: cameraList.at(i).getName()})
         }
     }
 

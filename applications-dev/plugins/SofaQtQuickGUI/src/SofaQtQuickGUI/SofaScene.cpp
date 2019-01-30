@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SofaScene.h"
-#include "SofaViewer.h"
-#include "SelectableManipulator.h"
-#include "RuntimeViewer.h"
+#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaViewer.h>
+#include <SofaQtQuickGUI/SelectableManipulator.h>
+#include <SofaQtQuickGUI/RuntimeViewer.h>
 
 
 #include <sofa/helper/OptionsGroup.h>
@@ -198,6 +198,7 @@ SofaScene::~SofaScene()
 
 bool LoaderProcess(SofaScene* sofaScene)
 {
+    std::cout << "LOAD PROCESS" << std::endl ;
     if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
 

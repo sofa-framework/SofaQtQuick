@@ -18,8 +18,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include "SofaComponentList.h"
-#include "SofaScene.h"
+#include <SofaQtQuickGUI/SofaComponentList.h>
+#include <SofaQtQuickGUI/SofaScene.h>
 
 #include <sofa/core/ObjectFactory.h>
 

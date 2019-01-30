@@ -18,9 +18,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <GL/glew.h>
-#include "SofaData.h"
-#include "SofaComponent.h"
-#include "SofaScene.h"
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/SofaScene.h>
 
 #include <QString>
 

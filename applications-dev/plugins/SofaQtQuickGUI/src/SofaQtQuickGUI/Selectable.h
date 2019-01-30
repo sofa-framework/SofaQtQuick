@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SELECTABLE_H
 #define SELECTABLE_H
 
-#include "SofaQtQuickGUI.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
 #include <QObject>
 #include <QVector3D>
 

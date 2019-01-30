@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SofaPythonInteractor.h"
-#include "SofaScene.h"
-#include "SofaComponent.h"
-#include "PythonConsole.h"
+#include <SofaQtQuickGUI/SofaPythonInteractor.h>
+#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/PythonConsole.h>
 
 #include <SofaPython/PythonScriptFunction.h>
 #include <SofaPython/PythonScriptController.h>

@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SofaViewer.h"
-#include "SofaScene.h"
-#include "Manipulators/Manipulator.h"
+#include <SofaQtQuickGUI/SofaViewer.h>
+#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
 #include <sofa/simulation/Node.h>
 #include <sofa/core/visual/VisualParams.h>
@@ -66,7 +66,7 @@ using sofa::qtquick::ObjectRenderer;
 #include <SofaBaseVisual/VisualStyle.h>
 using sofa::component::visualmodel::VisualStyle;
 
-#include "SelectableManipulator.h"
+#include <SofaQtQuickGUI/SelectableManipulator.h>
 
 #include <SofaQtQuickGUI/SofaApplication.h>
 
@@ -1031,9 +1031,6 @@ void SofaViewer::saveScreenshotWithResolution(const QString& path, int width, in
 
 void SofaViewer::saveCameraToFile(int uiId) const
 {
-    //if (!this->camera)
-    //    return;
-
     QUrl source = mySofaScene->source();
     QString finalFilename = source.path();
     if (source.isLocalFile())
@@ -1047,16 +1044,16 @@ void SofaViewer::saveCameraToFile(int uiId) const
     QString uiIdKey = QString(uiId) + "/";
 
     QVariant eyeVariant, targetVariant, upVariant;
-    eyeVariant.setValue(this->camera()->eye());
-    targetVariant.setValue(this->camera()->target());
-    upVariant.setValue(this->camera()->up());
+    eyeVariant.setValue(camera()->eye());
+    targetVariant.setValue(camera()->target());
+    upVariant.setValue(camera()->up());
 
     viewSettings.setValue(uiIdKey + "eye", eyeVariant);
     viewSettings.setValue(uiIdKey + "target", targetVariant);
     viewSettings.setValue(uiIdKey + "up", upVariant);
-    viewSettings.setValue(uiIdKey + "zFar", this->camera()->zFar());
-    viewSettings.setValue(uiIdKey + "zNear", this->camera()->zNear());
-    viewSettings.setValue(uiIdKey + "orthographic", this->camera()->orthographic());
+    viewSettings.setValue(uiIdKey + "zFar", camera()->zFar());
+    viewSettings.setValue(uiIdKey + "zNear", camera()->zNear());
+    viewSettings.setValue(uiIdKey + "orthographic", camera()->orthographic());
 
 
     //file update/creation is done when QSettings is destroyed apparently
@@ -1090,11 +1087,10 @@ void SofaViewer::loadCameraFromFile(int uiId)
     QVector3D target = targetVariant.value<QVector3D>();
     QVector3D up = upVariant.value<QVector3D>();
 
-    this->camera()->lookAt(eye, target, up);
-    this->camera()->setZNear(zNear);
-    this->camera()->setZFar(zFar);
-    this->camera()->setOrthographic(orthographic);
-
+    camera()->lookAt(eye, target, up);
+    camera()->setZNear(zNear);
+    camera()->setZFar(zFar);
+    camera()->setOrthographic(orthographic);
 }
 
 QSize SofaViewer::nativeSize() const

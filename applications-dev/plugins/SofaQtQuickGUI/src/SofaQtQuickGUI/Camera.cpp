@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Camera.h"
+#include <SofaQtQuickGUI/Camera.h>
 
 #include <qqml.h>
 #include <qmath.h>

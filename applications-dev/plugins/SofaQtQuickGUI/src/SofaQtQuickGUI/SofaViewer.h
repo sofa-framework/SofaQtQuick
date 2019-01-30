@@ -20,9 +20,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFAVIEWER_H
 #define SOFAVIEWER_H
 
-#include "SofaQtQuickGUI.h"
-#include "Camera.h"
-#include "SelectableSofaParticle.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/Camera.h>
+#include <SofaQtQuickGUI/SelectableSofaParticle.h>
 
 #include <QtQuick/QQuickFramebufferObject>
 #include <QVector3D>
@@ -64,7 +64,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaViewer : public QQuickFramebufferObject
     friend class SofaRenderer;
 
 public:
-    explicit SofaViewer(QQuickItem* parent = 0);
+    explicit SofaViewer(QQuickItem* parent = nullptr);
     ~SofaViewer();
 
 public:

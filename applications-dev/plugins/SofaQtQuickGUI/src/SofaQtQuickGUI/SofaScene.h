@@ -20,13 +20,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef SOFASCENE_H
 #define SOFASCENE_H
 
-#include "SofaQtQuickGUI.h"
-#include "SofaComponent.h"
-#include "SofaComponentList.h"
-#include "SofaData.h"
-#include "SofaLink.h"
-#include "Manipulators/Manipulator.h"
-#include "SelectableSofaParticle.h"
+#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/SofaComponentList.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
+#include <SofaQtQuickGUI/Bindings/SofaLink.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator.h>
+#include <SofaQtQuickGUI/SelectableSofaParticle.h>
 
 #include <sofa/simulation/Simulation.h>
 #include <sofa/simulation/MutationListener.h>
@@ -71,7 +71,8 @@ class SofaViewer;
 class RuntimeViewer;
 class PickUsingRasterizationWorker;
 
-/// \class QtQuick wrapper for a Sofa scene, allowing us to simulate, modify and draw (basic function) a Sofa scene
+/// \class QtQuick wrapper for a Sofa scene, allowing us to simulate,
+/// modify and draw (basic function) a Sofa scene
 class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject, private sofa::simulation::MutationListener
 {
     Q_OBJECT

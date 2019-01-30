@@ -27,7 +27,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/helper/logging/Messaging.h>
 
-#include "SofaApplication.h"
+#include <SofaQtQuickGUI/SofaApplication.h>
 using sofa::qtquick::SofaApplication ;
 
 #include <sofa/helper/system/FileMonitor.h>

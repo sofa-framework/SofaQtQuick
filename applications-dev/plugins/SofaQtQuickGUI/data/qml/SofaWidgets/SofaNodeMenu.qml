@@ -20,6 +20,8 @@ Menu {
         return JSON.parse(c)
     }
 
+    property var model: null;     ///< The model from which we can get the objects.
+    property var currentIndex;    ///< The index in the model.
     property bool nodeActivated: true
     property QtObject sofaData: null
     property string sourceLocation : null
@@ -36,8 +38,7 @@ Menu {
     MenuItem {
         text: "Add child"
         onTriggered: {
-            var currentRow = listView.model.computeItemRow(listView.currentIndex);
-            var newnode = sofaScene.addNodeTo(listModel.getComponentById(index))
+            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentIndex))
             if(newnode){
                 SofaApplication.signalComponent(newnode.getPathName());
             }
@@ -47,8 +48,7 @@ Menu {
     MenuItem {
         text: "Add sibling"
         onTriggered: {
-            var currentRow = listView.model.computeItemRow(listView.currentIndex);
-            var newnode = sofaScene.addNodeTo(listModel.getComponentById(index).parent())
+            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentIndex).parent())
             if(newnode){
                 SofaApplication.signalComponent(newnode.getPathName());
             }
@@ -60,8 +60,7 @@ Menu {
         text: "Add component (TODO)"
         onTriggered: {
             popupWindowCreateComponent.createObject(SofaApplication,
-                                                    {"sofaComponent": listModel.getComponentById(index)});
-
+                                                    {"sofaComponent": model.getComponentFromIndex(currentIndex)});
         }
     }
 
@@ -71,7 +70,7 @@ Menu {
         onTriggered: {
             sofaDataListViewWindowComponent.createObject(SofaApplication,
                                                          {"sofaScene": root.sofaScene,
-                                                          "sofaComponent": listModel.getComponentById(index)});
+                                                          "sofaComponent": model.getComponentFromIndex(currentIndex)});
         }
     }
 
@@ -80,7 +79,7 @@ Menu {
         onTriggered: {
             /// Creates and display an help window object
             windowMessage.createObject(SofaApplication,
-                                       {"sofaComponent": listModel.getComponentById(index)});
+                                       {"sofaComponent": model.getComponentFromIndex(currentIndex)});
         }
     }
 
@@ -89,14 +88,14 @@ Menu {
         /// provided by Sofa, classname, definition location, declaration location.
         text: "Infos (TODO)"
         onTriggered: {
-
+            console.log("TODO")
         }
     }
 
     MenuSeparator {}
     MenuItem {
         enabled: creationLocation !== null && creationLocation.length !== 0
-        text: "Go to scene"
+        text: "Go to scene (TODO)"
         onTriggered: {
             console.trace()
             var location = parsePython(creationLocation)
@@ -106,7 +105,7 @@ Menu {
 
     MenuItem {
         enabled: sourceLocation !== null && sourceLocation.length !== 0
-        text: "Go to implementation"
+        text: "Go to implementation (TODO)"
         onTriggered: {
             var location = parsePython(sourceLocation)
             SofaApplication.openInEditor(location[0], location[1])
@@ -127,7 +126,7 @@ Menu {
         text: "Delete"
         onTriggered: {
             var currentRow = listView.model.computeItemRow(listView.currentIndex);
-            sofaScene.removeComponent(listModel.getComponentById(index));
+            sofaScene.removeComponent(model.getComponentById(index));
             listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
         }
     }

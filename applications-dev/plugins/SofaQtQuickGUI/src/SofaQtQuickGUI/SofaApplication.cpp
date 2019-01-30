@@ -19,9 +19,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <GL/glew.h>
 
-#include "SofaApplication.h"
-#include "SofaScene.h"
-#include "ProcessState.h"
+#include <SofaQtQuickGUI/SofaApplication.h>
+#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/ProcessState.h>
 
 #include <sofa/helper/system/FileSystem.h>
 #include <sofa/helper/system/FileRepository.h>
