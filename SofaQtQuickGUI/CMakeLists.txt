@@ -1,9 +1,5 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(SofaQtQuickGUI)
-
-set(${PROJECT_NAME}_MAJOR_VERSION 1)
-set(${PROJECT_NAME}_MINOR_VERSION 0)
-set(${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION})
+cmake_minimum_required(VERSION 3.0.0)
+project(SofaQtQuickGUI VERSION 1.0)
 
 find_package(SofaFramework REQUIRED)
 find_package(SofaPython REQUIRED)
@@ -295,7 +291,10 @@ if(NOT MSVC)
   target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
 
-sofa_create_package(${PROJECT_NAME} ${${PROJECT_NAME}_VERSION} ${PROJECT_NAME} ${PROJECT_NAME})
+sofa_generate_package(NAME ${PROJECT_NAME}
+  VERSION ${${PROJECT_NAME}_VERSION}
+  TARGETS ${PROJECT_NAME}
+  INCLUDES ${PROJECT_NAME})
 
 if(SOFA_BUILD_TESTS)
     find_package(SofaTest QUIET)
