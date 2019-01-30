@@ -28,9 +28,13 @@ import SofaInteractors 1.0
 import EditView 1.0
 import SofaScene 1.0
 
-EditView {
-    id: root
+EditView
+{
+    readonly property string docstring :
+        "This view is rendering your scene using a camera controlled by the sofa application you are
+         using. It is possible to edit or move the camera location in this view ."
 
+    id: root
     clip: true
     backgroundColor: "#FF404040"
     mirroredHorizontally: false

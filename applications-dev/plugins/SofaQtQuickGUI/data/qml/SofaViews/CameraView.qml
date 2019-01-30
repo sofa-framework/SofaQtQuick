@@ -28,6 +28,11 @@ import CameraView 1.0
 import SofaScene 1.0
 
 CameraView {
+    readonly property string docstring :
+        "This view is rendering your scene from the camera defined in your scene. <br>
+         It is not possible to edit or move the camera location in this view unless <br>
+         your scene contains user interactions specific components."
+
     id: root
 
     clip: true
