@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import QtQml.Models 2.2
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
@@ -106,6 +107,13 @@ Rectangle {
         anchors.bottom: parent.bottom
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
+        selection: ItemSelectionModel {
+            model: treeView.model
+        }
+
+        onSelectionChanged: {
+            console.log("SELECTION CANGED");
+        }
 
         SofaSceneItemModel
         {
@@ -127,12 +135,15 @@ Rectangle {
             property bool isNode: model ? model.isNode : false
             property bool hasMultiParent : model ? model.hasMultiParent : false
             property bool isMultiParent : model ? model.isMultiParent : false
+            property bool isSelected: false
+
 
             Item {
                 id: icon
                 anchors.verticalCenter: parent.verticalCenter
                 implicitHeight: 8
                 implicitWidth: 12
+
 
                 Rectangle {
                     id: colorIcon
@@ -202,7 +213,10 @@ Rectangle {
                 onClicked: {
                     if(mouse.button === Qt.LeftButton)
                     {
-                        console.log("TODO-implement click to change selection")
+                        var srcIndex = sceneModel.mapToSource(styleData.index)
+                        sofaScene.selectedComponent = basemodel.getComponentFromIndex(srcIndex)
+
+                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
                     } else if(mouse.button === Qt.RightButton) {
                         if(isNode) {
                             //nodeMenu.sofaData = component.getComponentData("activated");
