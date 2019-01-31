@@ -9,8 +9,8 @@ using sofa::qtquick::SofaSceneListModel ;
 
 #include <QApplication>
 
-#include <SofaQtQuickGUI/QmlPluginSofa.h>
-using sofaqtquick::QmlPluginSofa;
+#include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
+using sofaqtquick::SofaQtQuickQmlModule;
 
 #include "modeltest.h"
 #include "SofaSceneModel_test.h"
@@ -20,7 +20,7 @@ using sofaqtquick::QmlPluginSofa;
 
 SofaSceneModel_qtTests::SofaSceneModel_qtTests()
 {
-    QmlPluginSofa::Init();
+    SofaQtQuickQmlModule::RegisterTypes();
 }
 
 void  SofaSceneModel_qtTests::testAll(){

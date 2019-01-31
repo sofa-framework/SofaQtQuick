@@ -4,8 +4,8 @@ using sofa::helper::testing::BaseTest ;
 #include <SofaQtQuickGUI/SofaScene.h>
 using sofa::qtquick::SofaScene ;
 
-#include <SofaQtQuickGUI/QmlPluginSofa.h>
-using sofaqtquick::QmlPluginSofa;
+#include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
+using sofaqtquick::SofaQtQuickQmlModule;
 
 #include <sofa/helper/testing/BaseTest.h>
 #include "SofaScene_test.h"
@@ -15,7 +15,7 @@ using sofaqtquick::QmlPluginSofa;
 
 SofaScene_qtTests::SofaScene_qtTests()
 {
-    QmlPluginSofa::Init();
+    SofaQtQuickQmlModule::RegisterTypes();
 }
 
 void SofaScene_qtTests::loadAScene()

@@ -60,6 +60,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QTimer>
 #include <QDirIterator>
 
+#include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
+using sofaqtquick::SofaQtQuickQmlModule;
 
 #include <QQmlDebuggingEnabler>
 QQmlDebuggingEnabler enabler;
@@ -924,8 +926,6 @@ bool SofaApplication::Initialization()
     format.setSamples(4);
     QSurfaceFormat::setDefaultFormat(format);
 
-
-
     return true;
 }
 
@@ -1011,23 +1011,11 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     sofa::helper::system::DataRepository.addFirstPath((QCoreApplication::applicationDirPath() + "/../data").toStdString());
     sofa::helper::system::DataRepository.addFirstPath((QCoreApplication::applicationDirPath() + "/../" + app.applicationName() + "Data").toStdString());
 
-    // plugin initialization
-    QString pluginName("SofaQtQuickGUI");
-#ifndef NDEBUG
-    pluginName += "_d";
-#endif
-    QPluginLoader pluginLoader(pluginName);
-
-    // first call to instance() initialize the plugin
-    if(nullptr == pluginLoader.instance()) {
-        qCritical() << pluginLoader.errorString();
-        qCritical() << "ERROR: SofaQtQuickGUI plugin has not been found "<<pluginName;
-        return false;
-    }
+    /// Register the Sofa Binding into the QML Types system.
+    SofaQtQuickQmlModule::RegisterTypes();
 
     // compute command line arguments
     QCommandLineParser parser;
-
     QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Load with this scene", "file");
     QCommandLineOption guiConfigOption(QStringList() << "gc" << "guiconfig", "Load with this GUI configuration (absolute path to an ini file OR a config name)", "guiconfig");
     QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start in animate mode");

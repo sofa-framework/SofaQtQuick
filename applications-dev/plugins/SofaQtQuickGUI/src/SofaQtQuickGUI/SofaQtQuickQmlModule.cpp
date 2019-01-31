@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <SofaQtQuickGUI/SofaQtQuickGUI.h>
+#include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
 #include <SofaQtQuickGUI/SofaApplication.h>
 #include <SofaQtQuickGUI/ProcessState.h>
 #include <SofaQtQuickGUI/Camera.h>
@@ -58,29 +58,22 @@ using sofa::qtquick::console::Console ;
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofa::qtquick::SofaFactory ;
 
-#include <SofaQtQuickGUI/RuntimeViewer.h>
 #include <SofaQtQuickGUI/LiveFileMonitor.h>
 using sofa::qtquick::livefilemonitor::LiveFileMonitor;
 
 #include <sofa/helper/system/PluginManager.h>
 
-const int versionMajor = 1;
-const int versionMinor = 0;
 
-SofaQtQuickGUI::SofaQtQuickGUI(QObject *parent) : QQmlExtensionPlugin(parent)
-{
-    init();
-}
-
-void SofaQtQuickGUI::init()
+void initRessources()
 {
     Q_INIT_RESOURCE(sofaQtQuickGUI_qml);
     Q_INIT_RESOURCE(sofaQtQuickGUI_resources);
-
-    registerTypes("SofaQtQuickGUI");
-
-    sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
 }
+
+namespace sofaqtquick
+{
+const int versionMajor = 1;
+const int versionMinor = 0;
 
 // Following the doc on creating a singleton component
 // we need to have function that return the singleton instance.
@@ -101,12 +94,11 @@ static QObject* createAnInstanceOfLiveFileMonitor(QQmlEngine *engine,
     return new LiveFileMonitor(engine) ;
 }
 
-
 // Following the doc on creating a singleton component
 // we need to have function that return the singleton instance.
 // see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
 static QObject* createSofaFactory(QQmlEngine *engine,
-                              QJSEngine *scriptEngine){
+                                  QJSEngine *scriptEngine){
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
     return new SofaFactory() ;
@@ -116,15 +108,13 @@ static QObject* createSofaFactory(QQmlEngine *engine,
 // we need to have function that return the singleton instance.
 // see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
 static QObject* createSofaViewListModel(QQmlEngine *engine,
-                              QJSEngine *scriptEngine){
+                                        QJSEngine *scriptEngine){
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
     return new SofaViewListModel() ;
 }
 
-
-
-void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
+void registerSofaTypesToQml(const char* /*uri*/)
 {
     qRegisterMetaType<SofaScene::Status>("Status");
 
@@ -158,7 +148,6 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");
     qmlRegisterType<EditView>                                       ("EditView"                             , versionMajor, versionMinor, "EditView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
-    qmlRegisterType<RuntimeViewer>                                  ("RuntimeViewer"                        , versionMajor, versionMinor, "RuntimeViewer");
 
     /// registers the C++ type in the QML system with the name "Console",
     qmlRegisterSingletonType<Console>("SofaMessageList",                  /// char* uri
@@ -174,14 +163,27 @@ void SofaQtQuickGUI::registerTypes(const char* /*uri*/)
 
     /// registers the C++ type in the QML system with the name "SofaFactory",
     qmlRegisterSingletonType<SofaViewListModel>("SofaViewListModel",                  /// char* uri
-                                          versionMajor, versionMinor,     /// int majorVersion
-                                          "SofaViewListModel",
-                                          createSofaViewListModel );            /// exported Name.
+                                                versionMajor, versionMinor,     /// int majorVersion
+                                                "SofaViewListModel",
+                                                createSofaViewListModel );            /// exported Name.
 
     qmlRegisterSingletonType<LiveFileMonitor>("LiveFileMonitorSingleton",            // char* uri
-                                          versionMajor, versionMinor,   // minor/major version number
-                                          "LiveFileMonitorSingleton",       // exported name
-                                          createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
-                                          );
+                                              versionMajor, versionMinor,   // minor/major version number
+                                              "LiveFileMonitorSingleton",       // exported name
+                                              createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
+                                              );
 
 }
+
+void SofaQtQuickQmlModule::RegisterTypes()
+{
+    static bool inited=false;
+    if(!inited){
+        initRessources();
+        registerSofaTypesToQml("SofaQtQuickGUI");
+        sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
+        inited=true;
+    }
+}
+
+} /// namespace sofaqtquick
