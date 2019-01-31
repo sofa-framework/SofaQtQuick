@@ -28,7 +28,8 @@ import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
 import SofaMessageList 1.0
 
-SofaApplication {
+SofaApplication
+{
     id: root
 
     property var style : MainStyle

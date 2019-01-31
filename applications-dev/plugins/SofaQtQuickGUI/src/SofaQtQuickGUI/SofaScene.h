@@ -165,6 +165,7 @@ signals:
     void loaded();                                      /// scene has been loaded and is ready
     void aboutToUnload();                               /// scene is being to be unloaded
     void statusChanged(Status newStatus);
+    void rootNodeChanged();
     void headerChanged(const QString& newHeader);
     void sourceChanged(const QUrl& newSource);
     void sourceQMLChanged(const QUrl& newSourceQML);

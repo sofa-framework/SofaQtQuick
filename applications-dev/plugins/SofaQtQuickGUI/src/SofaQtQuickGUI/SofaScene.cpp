@@ -197,7 +197,6 @@ SofaScene::~SofaScene()
 
 bool LoaderProcess(SofaScene* sofaScene)
 {
-    std::cout << "LOAD PROCESS" << std::endl ;
     if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
 
@@ -362,7 +361,6 @@ void SofaScene::open()
     std::string finalQmlFilepath = qmlFilepath.toLatin1().constData();
     if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath, "", nullptr))
     {
-        // TODO: for backward compatibility only, we try to load the file myscene.ext.qml instead of juste myscene.qml
         finalQmlFilepath = (finalFilename + ".qml").toLatin1().constData();
         if(!sofa::helper::system::DataRepository.findFile(finalQmlFilepath, "", nullptr))
             finalQmlFilepath.clear();
@@ -372,7 +370,6 @@ void SofaScene::open()
     setPathQML(QString::fromStdString(finalQmlFilepath));
 
     // python header
-
     QString finalHeader;
     QFile baseHeaderFile(":/python/BaseHeader.py");
     if(!baseHeaderFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -416,6 +413,7 @@ void SofaScene::open()
             setDt(mySofaRootNode->getDt());
         }
     }
+    emit rootNodeChanged();
 }
 
 void SofaScene::handleStatusChange(SofaScene::Status newStatus)

@@ -196,8 +196,8 @@ int SofaSceneItemModel::rowCount(const QModelIndex &index) const
         Node* currentNode = static_cast<Node*>(currentBase->toBaseNode());
         int numRows = currentNode->child.size() + currentNode->object.size();
 
-//        qDebug() << "     " << index << " node: " << QString::fromStdString(currentNode->getName())
-//                    << "  => " << numRows;
+        //        qDebug() << "     " << index << " node: " << QString::fromStdString(currentNode->getName())
+        //                    << "  => " << numRows;
 
         return numRows;
     }
@@ -312,14 +312,14 @@ size_t rrowCount(Node* parent)
 
 void SofaSceneItemModel::addChild(Node* target, Node* child)
 {
-    //msg_info("b") << "=========== Adding a child node to: " << target->getName();
+    msg_info("b") << "=========== Adding a child node to: " << target->getName();
 
     /// Who is changing
     QModelIndex parentIndex = index(target) ;
     int i = rrowCount(target);
 
-//    qDebug() << "  target is: " << parentIndex;
-//    qDebug() << "       child location is: " << i ;
+    //    qDebug() << "  target is: " << parentIndex;
+    //    qDebug() << "       child location is: " << i ;
 
     beginInsertRows(parentIndex, i, i);
 
@@ -333,7 +333,6 @@ void SofaSceneItemModel::addChildDone(Node* target, Node* child)
     //msg_info("b") << "========== Adding a child done: " << child->getName();
 }
 
-
 SofaScene* SofaSceneItemModel::sofaScene() const
 {
     return m_scene;
@@ -341,14 +340,18 @@ SofaScene* SofaSceneItemModel::sofaScene() const
 
 void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
 {    
-    if(m_scene)
+    m_scene = newScene;
+
+    /// The scene passed to this model is tracked to monitor if its status has changed.
+    /// If this is the case then the model needs to be reseted.
+    connect(m_scene, &SofaScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
+}
+
+void SofaSceneItemModel::handleRootNodeChange()
+{    
+    if(m_root.get()!=nullptr)
     {
-        if(m_scene->sofaRootNode().get()==nullptr)
-        {
-            //TODO(dmarchal 30/01/2019) Fix ME.
-            dmsg_error("SofaSceneItemModel") << "How can this happens !" ;
-            return;
-        }
+        /// First remove this object from the previsouly loaded root.
         LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
         {
             /// The cast is ok as long as the only kind of node we are manipulating are inherited from
@@ -357,16 +360,10 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
             node->removeListener(this);
             msg_info("Listener") << "Remove listener: " << node->getName() ;
         });
-        m_scene->sofaRootNode()->execute(lambda);
+        m_root->execute(lambda);
     }
-
-    m_scene = newScene;
-    if(m_scene->sofaRootNode().get()==nullptr)
-    {
-        //TODO(dmarchal 30/01/2019) Fix ME.
-        dmsg_error("SofaSceneItemModel") << "How can this happens !" ;
-        return;
-    }
+    /// Flip the old pointer.
+    m_root = m_scene->sofaRootNode();
     LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
     {
         /// The cast is ok as long as the only kind of node we are manipulating are inherited from
@@ -375,8 +372,12 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
         node->addListener(this);
         msg_info("Listener") << "Adding listener: " << node->getName() ;
     });
-    m_scene->sofaRootNode()->execute(lambda);
+    m_root->execute(lambda);
+
+    beginResetModel();
+    endResetModel();
 }
+
 
 } /// namespace _sofasceneitemmodel_
 } /// namespace qtquick

@@ -78,6 +78,9 @@ public:
         Row
     };
 
+protected slots:
+    void handleRootNodeChange();
+
 protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
@@ -94,6 +97,7 @@ protected:
     QModelIndex index(simulation::Node *node) const ;
 
     SofaScene*                      m_scene {nullptr};
+    sofa::simulation::Node::SPtr    m_root  {nullptr};
 };
 
 } /// namespace _sofasceneitemmodel_

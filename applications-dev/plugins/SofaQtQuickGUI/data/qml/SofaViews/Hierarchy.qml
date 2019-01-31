@@ -110,7 +110,7 @@ Rectangle {
         SofaSceneItemModel
         {
             id: basemodel
-            sofaScene: root.sofaScene
+            sofaScene: root.sofaScene;
         }
 
         model:  SofaSceneItemProxy
