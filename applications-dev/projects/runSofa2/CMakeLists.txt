@@ -50,7 +50,6 @@ add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 add_definitions(${Qt5WebView_DEFINITIONS})
 
-find_package(SofaFramework REQUIRED)
 find_package(SofaQtQuickGUI REQUIRED)
 
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC

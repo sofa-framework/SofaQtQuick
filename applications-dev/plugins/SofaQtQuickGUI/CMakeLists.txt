@@ -1,18 +1,5 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(SofaQtQuickGUI)
-
-set(SOFAQTQUICKGUI_MAJOR_VERSION 1)
-set(SOFAQTQUICKGUI_MINOR_VERSION 0)
-set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINOR_VERSION})
-
-include(cmake/GeneratePluginConfig.cmake)
-
-if(SOFA_BUILD_TESTS)
-    find_package(SofaTest QUIET)
-    if(SofaTest_FOUND)
-        add_subdirectory(SofaQtQuickGUI_test)
-    endif()
-endif()
+cmake_minimum_required(VERSION 3.0)
+project(SofaQtQuickGUI VERSION 1.0)
 
 set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.cpp
@@ -198,7 +185,7 @@ set(QML_FILES
 
 )
 
-add_definitions("-DSOFA_SOFAQTQUICKGUI_SRC_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")
+add_definitions("-DSOFAQTQUICKGUI_QML_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
@@ -264,12 +251,6 @@ if (WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG")
 endif()
 
-set(_configPluginFileName plugin_list.conf)
-set(_defaultConfigPluginFileName "${_configPluginFileName}.default")
-set(_defaultConfigPluginFilePath "${CMAKE_BINARY_DIR}/${_pluginLocation}/${_defaultConfigPluginFileName}")
-sofa_generate_plugin_config_qtquick(${_defaultConfigPluginFilePath})
-message("Write Plugin list at ${_defaultConfigPluginFilePath}")
-
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
@@ -277,10 +258,6 @@ qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 set(HEADER_FILES ${HEADER_FILES}
     src/SofaQtQuickGUI/SofaParticleInteractor.inl
 )
-
-
-add_definitions(-DCONFIG_PLUGIN_FILENAME=${_configPluginFileName})
-add_definitions(-DDEFAULT_CONFIG_PLUGIN_FILENAME=${_defaultConfigPluginFileName})
 
 find_package(SofaFramework REQUIRED)
 find_package(SofaPython REQUIRED)
@@ -290,7 +267,6 @@ target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaCompone
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${SOFAQTQUICKGUI_VERSION})
 
 add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")
@@ -299,20 +275,17 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQMLJSDEBUGGER")
 ##TODO(dmarchal) A virer et remplacer par des vrai resources.
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DSOFAQTQUICK_DIRECTORY_VIEW=\"${CMAKE_CURRENT_SOURCE_DIR}/data/qml/SofaViews\"")
 
-
 if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
 
 
 ## Install rules for the library; CMake package configurations files
-sofa_create_package(${PROJECT_NAME} ${SOFAQTQUICKGUI_VERSION} ${PROJECT_NAME} ${PROJECT_NAME})
+sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDES ${PROJECT_NAME})
 
-## Install rules for the resources
-install(DIRECTORY examples/ DESTINATION share/sofa/plugins/${PROJECT_NAME})
-
-## Hand-crafted install rules for the headers, to preserve the directory structure
-foreach(HEADER ${HEADER_FILES})
-    string(REGEX MATCH "(.*)[/\\]" DIR ${HEADER})
-    install(FILES ${HEADER} DESTINATION "include/${PROJECT_NAME}/${DIR}")
-endforeach(HEADER HEADERS)
+if(SOFA_BUILD_TESTS)
+    find_package(SofaTest QUIET)
+    if(SofaTest_FOUND)
+        add_subdirectory(SofaQtQuickGUI_test)
+    endif()
+endif()

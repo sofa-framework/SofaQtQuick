@@ -153,24 +153,6 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     sofa::core::ObjectFactory::ClassEntry::SPtr classVisualModel;
     sofa::core::ObjectFactory::AddAlias("VisualModel", "OglModel", true, &classVisualModel);
 
-    //Autoload
-    std::string configPluginPath = sofa::helper::system::PluginRepository.getFirstPath() + "/" + TOSTRING(CONFIG_PLUGIN_FILENAME);
-    std::string defaultConfigPluginPath = sofa::helper::system::PluginRepository.getFirstPath() + "/" + TOSTRING(DEFAULT_CONFIG_PLUGIN_FILENAME);
-    if (sofa::helper::system::DataRepository.findFile(configPluginPath))
-    {
-        msg_info("qtSofaQuick") << "Loading automatically custom plugin list from " << configPluginPath;
-        sofa::helper::system::PluginManager::getInstance().readFromIniFile(configPluginPath);
-    }
-    else if (sofa::helper::system::DataRepository.findFile(defaultConfigPluginPath))
-    {
-        msg_info("qtSofaQuick") << "Loading automatically default plugin list from " << defaultConfigPluginPath;
-        sofa::helper::system::PluginManager::getInstance().readFromIniFile(defaultConfigPluginPath);
-    }
-    else
-        msg_info("qtSofaQuick") << "No plugin will be automatically loaded" << msgendl
-                                << "- No custom list found at " << configPluginPath << msgendl
-                                << "- No default list found at " << defaultConfigPluginPath;
-
 
     sofa::helper::system::PluginManager::getInstance().init();
 
