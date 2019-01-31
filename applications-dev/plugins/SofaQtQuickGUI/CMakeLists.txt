@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 project(SofaQtQuickGUI VERSION 1.0)
 
+find_package(SofaFramework REQUIRED)
+find_package(SofaPython REQUIRED)
+
 set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.cpp
     src/SofaQtQuickGUI/SofaApplication.cpp
@@ -259,16 +262,12 @@ set(HEADER_FILES ${HEADER_FILES}
     src/SofaQtQuickGUI/SofaParticleInteractor.inl
 )
 
-find_package(SofaFramework REQUIRED)
-find_package(SofaPython REQUIRED)
-
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES})
 target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine)
 
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")
 
-add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "-DSOFA_BUILD_SOFAQTQUICKGUI")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQMLJSDEBUGGER")
 
@@ -278,7 +277,6 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "-DSOFAQTQUICK_DIRECTORY_VIEW=
 if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
-
 
 ## Install rules for the library; CMake package configurations files
 sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDES ${PROJECT_NAME})
