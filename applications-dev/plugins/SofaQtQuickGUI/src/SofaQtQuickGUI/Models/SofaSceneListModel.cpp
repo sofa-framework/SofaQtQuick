@@ -55,13 +55,13 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
     if(mySofaScene)
     {
         if(mySofaScene->isReady())
-            addChild(0, mySofaScene->sofaRootNode().get());
+            addChildBegin(0, mySofaScene->sofaRootNode().get());
 
         connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
             clear();
 
             if(SofaScene::Ready == mySofaScene->status())
-                addChild(0, mySofaScene->sofaRootNode().get());
+                addChildBegin(0, mySofaScene->sofaRootNode().get());
         });
     }
 }
@@ -333,7 +333,7 @@ unsigned int SofaSceneListModel::countChildrenOf(const SofaSceneListModel::Item&
     return count;
 }
 
-void SofaSceneListModel::addChild(Node* parent, Node* child)
+void SofaSceneListModel::beginAddChild(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -344,7 +344,6 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
         beginInsertRows(QModelIndex(), 0, 0);
         myItems.append(buildNodeItem(0, child));
         endInsertRows();
-        MutationListener::addChild(parent, child);
         return ;
     }
 
@@ -375,16 +374,12 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
 
     parentItem.children.append(&*newChildItemIt);
     endInsertRows();
-
-    MutationListener::addChild(parent, child);
 }
 
-void SofaSceneListModel::removeChild(Node* parent, Node* child)
+void SofaSceneListModel::endRemoveChild(Node* parent, Node* child)
 {
     if(!child)
         return;
-
-    MutationListener::removeChild(parent, child);
 
     QList<Item>::iterator itemIt = myItems.begin();
     while(itemIt != myItems.end())
@@ -415,7 +410,7 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
     }
 }
 
-void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
+void SofaSceneListModel::beginAddObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
@@ -452,16 +447,12 @@ void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
                 ++parentItemIt;
         }
     }
-
-    MutationListener::addObject(parent, object);
 }
 
-void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
+void SofaSceneListModel::endRemoveObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
-
-    MutationListener::removeObject(parent, object);
 
     QList<Item>::iterator itemIt = myItems.begin();
     while(itemIt != myItems.end())
