@@ -279,7 +279,7 @@ if(NOT MSVC)
 endif()
 
 ## Install rules for the library; CMake package configurations files
-sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDES ${PROJECT_NAME})
+sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_ROOT_DIR ${PROJECT_NAME})
 
 if(SOFA_BUILD_TESTS)
     find_package(SofaTest QUIET)
