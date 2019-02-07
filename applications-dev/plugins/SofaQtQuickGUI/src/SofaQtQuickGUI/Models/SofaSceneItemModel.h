@@ -85,8 +85,8 @@ protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
     /// charge of notifying the change using the QAbstractItemModel.
-    void addChild(Node* parent, Node* child) override;
-    void addChildDone(Node* parent, Node* child) override;
+    void beginAddChild(Node* parent, Node* child) override;
+    void endAddChild(Node* parent, Node* child) override;
 
     //virtual void removeChild(Node* parent, Node* child) override;
     //virtual void addObject(Node* parent, sofa::core::objectmodel::BaseObject* object) override;

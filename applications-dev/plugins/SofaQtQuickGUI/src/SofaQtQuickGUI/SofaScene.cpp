@@ -186,7 +186,7 @@ bool LoaderProcess(SofaScene* sofaScene)
     if( sofaScene->sofaRootNode() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
-        sofaScene->addChild(0, sofaScene->sofaRootNode().get());
+        sofaScene->addChildBegin(nullptr, sofaScene->sofaRootNode().get());
 
         if(sofaScene->sofaRootNode()->getAnimate() || sofaScene->defaultAnimate())
             sofaScene->setAnimate(true);
@@ -1724,42 +1724,34 @@ void SofaScene::onKeyReleased(char key)
     sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
 }
 
-void SofaScene::addChild(Node* parent, Node* child)
+void SofaScene::beginAddChild(Node* parent, Node* child)
 {
     if(!child)
         return;
 
     myBases.insert(child);
-
-    MutationListener::addChild(parent, child);
 }
 
-void SofaScene::removeChild(Node* parent, Node* child)
+void SofaScene::endRemoveChild(Node* parent, Node* child)
 {
     if(!child)
         return;
 
-    MutationListener::removeChild(parent, child);
-
     myBases.remove(child);
 }
 
-void SofaScene::addObject(Node* parent, BaseObject* object)
+void SofaScene::beginAddObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
 
     myBases.insert(object);
-
-    MutationListener::addObject(parent, object);
 }
 
-void SofaScene::removeObject(Node* parent, BaseObject* object)
+void SofaScene::endRemoveObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
-
-    MutationListener::removeObject(parent, object);
 
     myBases.remove(object);
 }
