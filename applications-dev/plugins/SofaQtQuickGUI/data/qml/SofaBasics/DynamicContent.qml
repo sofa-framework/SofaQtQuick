@@ -184,14 +184,12 @@ Item {
 
                 Label {
                     id: showAllLabel
-                    anchors.right: checkBoxEditting.left
-                    anchors.verticalCenter:  parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
                     text: "Live Coding:"
                 }
                 CheckBox {
                     id : checkBoxEditting
-                    anchors.right:  parent.right
-                    anchors.verticalCenter:  parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
                 }
             }
         }

@@ -31,7 +31,6 @@ import SofaWidgets 1.0
 
 Rectangle {
     id: root
-    color : "red"
     anchors.fill : parent
 
     enabled: sofaScene ? sofaScene.ready : false
