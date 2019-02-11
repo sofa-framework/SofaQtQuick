@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/SofaApplication.h>
 #include <QtWebView/QtWebView>
 #include <runSofa2/runSofa2.h>
+#include <QQuickStyle>
 
 int main(int argc, char **argv)
 {
@@ -29,6 +30,7 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
     QtWebView::initialize();
     QQmlApplicationEngine applicationEngine;
+    QQuickStyle::setStyle("Imagine");
 
     // application specific settings
     app.setOrganizationName("Sofa Consortium");

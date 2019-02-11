@@ -33,7 +33,7 @@ if(WIN32)
 endif()
 
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml WebView REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml WebView REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
 # make sure to use QT > 5.0
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -67,7 +67,7 @@ install(FILES "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h" DE
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
-target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::WebView)
+target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::WebView)
 
 sofa_install_targets(${PROJECT_NAME} ${PROJECT_NAME} "")
 

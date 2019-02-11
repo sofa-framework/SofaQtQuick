@@ -983,9 +983,6 @@ class UseOpenGLDebugLoggerRunnable : public QRunnable
 
 bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
-    // application style
-    QQuickStyle::setStyle("Fusion");
-
     // color console
     sofa::helper::console::setStatus(sofa::helper::console::Status::On);
 
