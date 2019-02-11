@@ -26,7 +26,7 @@ import SofaApplication 1.0
 
 ToolBar {
     id: root
-    implicitHeight: 25
+    height: 28
 
     property var sofaScene: SofaApplication.sofaScene
 
@@ -42,14 +42,13 @@ ToolBar {
     enabled: sofaScene ? sofaScene.ready : false
 
     Row {
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        id: mainrow
         spacing: 5
+        anchors.fill: parent
 
         Text {
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
             text: "Interaction"
+            anchors.verticalCenter: parent.verticalCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
             color: "darkblue"
@@ -57,8 +56,6 @@ ToolBar {
 
         Row {
             id: interactorPositioner
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
 
             Component {
                 id: interactorButtonComponent
@@ -68,6 +65,7 @@ ToolBar {
                     property string interactorName
                     property Component interactorComponent
 
+                    height: root.height - 3
                     width: implicitWidth + 10
 
                     text: interactorName
@@ -111,14 +109,11 @@ ToolBar {
 
         Row {
             id: simulationControlTools
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
             spacing: 5
 
             ToolButton {
                 id: animateButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                height: root.height - 3
 
                 iconSource: animateButton.checked ? "qrc:/icon/stopButton.png" : "qrc:/icon/playButton.png"
                 tooltip: animateButton.checked ? "Stop" : "Animate"
@@ -137,8 +132,7 @@ ToolBar {
 
             ToolButton {
                 id: stepButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                height: root.height - 3
 
                 iconSource: "qrc:/icon/stepButton.png"
                 tooltip: "Step"
@@ -151,8 +145,7 @@ ToolBar {
 
             ToolButton {
                 id: resetButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                height: root.height - 3
 
                 iconSource: "qrc:/icon/resetButton.png"
                 tooltip: "Reset the sofa scene"
@@ -163,12 +156,14 @@ ToolBar {
                 }
             }
 
-            RowLayout {
+            Row {
                 Label {
                     text: "DT (s)"
+                    anchors.verticalCenter: parent.verticalCenter
                 }
                 TextField {
                     id: dtSpinBox
+                    height: root.height - 3
                     Layout.preferredWidth: 68
                     validator: DoubleValidator {bottom: 0}
                     text: root.sofaScene ? root.sofaScene.dt.toString() : Number(0.04).toString()
@@ -184,15 +179,12 @@ ToolBar {
 
         Row {
             id: captureLayout
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
             spacing: 5
 
             ToolButton {
                 id: screenshotButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
                 iconSource: "qrc:/icon/screenshot.png"
+                height: root.height - 5
 
                 checked: false
                 checkable: false
