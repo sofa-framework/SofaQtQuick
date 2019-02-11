@@ -65,7 +65,7 @@ ApplicationWindow {
     property FileDialog openSofaSceneDialog: openSofaSceneDialog
     FileDialog {
         id: openSofaSceneDialog
-        nameFilters: ["SofaScene files (*.xml *.scn *.pscn *.py *.simu *)"]
+        nameFilters: ["SofaScene files (*.xml *.scn *.pyscn *.py *.simu *)"]
         onAccepted: sofaScene.source = fileUrl;
     }
 
