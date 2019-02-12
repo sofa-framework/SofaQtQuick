@@ -111,7 +111,7 @@ Rectangle {
         }
 
         onSelectionChanged: {
-            console.log("SELECTION CANGED");
+            console.log("SELECTION CHANGED");
         }
 
         SofaSceneItemModel

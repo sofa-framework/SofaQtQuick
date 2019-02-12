@@ -42,6 +42,13 @@ import LiveFileMonitorSingleton 1.0
 /// with a menu to select which is the view to display.
 Item {
 
+    /// Refreshing the view every time a file is modified
+    property var files : LiveFileMonitorSingleton.files
+    onFilesChanged: {
+        loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
+    }
+
+
     //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
     //TODO(dmarchal: 28/01/2019 unify the function so it can work with any object having a "lenght" property
     function findIndex(model, criteria) {
@@ -136,21 +143,8 @@ Item {
                         root.currentContentName = currentContentName;
                     }
 
-                    Item {
-                        id: reloadedFilesContainerTMP
-                        visible: false
-                    }
-
                     property var files : LiveFileMonitorSingleton.files
                     onFilesChanged: {
-                        var reloadedComponent = Qt.createComponent("file://" + files +"?t="+Date.now())
-                        if (reloadedComponent.status == Component.Ready)
-                        {
-                            reloadedComponent.createObject(reloadedFilesContainerTMP)
-                            console.error(files + " updated!")
-                        }
-                        else
-                            console.error("FAILED TO UPDATE " + files)
                         loaderLocation.refresh(listModel.get(currentIndex))
                     }
 
@@ -175,10 +169,8 @@ Item {
                 {
                     icon.source: "qrc:/icon/subWindow.png"
                     onClicked: {
-                        console.error("loading" + "file://"+listModel.get(comboBox.currentIndex).filePath + "<br />")
                         windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
                                                          "title" : comboBox.currentText });
-                        console.error("done")
                     }
 
                     Component {
@@ -248,7 +240,7 @@ Item {
 
 
                 /// Load the component from a qml file.
-                console.error("Loading file://"+source)
+                console.log("Loading file://"+source)
                 var contentComponent = Qt.createComponent("file://"+source);
                 if(contentComponent.status === Component.Error)
                 {

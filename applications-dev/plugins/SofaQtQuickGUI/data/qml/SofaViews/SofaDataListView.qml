@@ -25,7 +25,7 @@ import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaComponent 1.0
-import SofaDataListModel 1.0                         
+import SofaDataListModel 1.0
 
 /*
 |--------------------------------------------------------|
