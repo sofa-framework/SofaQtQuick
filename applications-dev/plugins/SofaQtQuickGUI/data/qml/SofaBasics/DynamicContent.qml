@@ -32,6 +32,7 @@ import Qt.labs.settings 1.0
 import SofaApplication 1.0
 import SofaViewListModel 1.0
 
+import LiveFileMonitorSingleton 1.0
 
 
 //TODO(dmarchal 10/01/2019): move the file model into a separated file
@@ -120,6 +121,7 @@ Item {
                 id: toolBarLayout
                 spacing: 2
 
+
                 ComboBox
                 {
                     id: comboBox
@@ -127,10 +129,29 @@ Item {
                     model: listModel
                     width: 100
                     currentIndex: 0
+
                     onCurrentIndexChanged:
                     {
                         loaderLocation.refresh(listModel.get(currentIndex));
                         root.currentContentName = currentContentName;
+                    }
+
+                    Item {
+                        id: reloadedFilesContainerTMP
+                        visible: false
+                    }
+
+                    property var files : LiveFileMonitorSingleton.files
+                    onFilesChanged: {
+                        var reloadedComponent = Qt.createComponent("file://" + files +"?t="+Date.now())
+                        if (reloadedComponent.status == Component.Ready)
+                        {
+                            reloadedComponent.createObject(reloadedFilesContainerTMP)
+                            console.error(files + " updated!")
+                        }
+                        else
+                            console.error("FAILED TO UPDATE " + files)
+                        loaderLocation.refresh(listModel.get(currentIndex))
                     }
 
                     function findIndexFor(name)
@@ -154,8 +175,10 @@ Item {
                 {
                     icon.source: "qrc:/icon/subWindow.png"
                     onClicked: {
+                        console.error("loading" + "file://"+listModel.get(comboBox.currentIndex).filePath + "<br />")
                         windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
                                                          "title" : comboBox.currentText });
+                        console.error("done")
                     }
 
                     Component {
@@ -225,11 +248,12 @@ Item {
 
 
                 /// Load the component from a qml file.
+                console.error("Loading file://"+source)
                 var contentComponent = Qt.createComponent("file://"+source);
                 if(contentComponent.status === Component.Error)
                 {
                     ///TODO(dmarchal 28/01/2019) Fix loader.
-                    loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation);
+                    loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation.contentItem);
                     return;
                 }
 
