@@ -16,8 +16,10 @@ set(SOURCE_FILES
     SofaSceneModel_test.cpp
 )
 
+
 add_definitions("-DSOFAQTQUICK_TEST_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/data\"")
 
+set(MOC_FILES)
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${MOC_FILES})
