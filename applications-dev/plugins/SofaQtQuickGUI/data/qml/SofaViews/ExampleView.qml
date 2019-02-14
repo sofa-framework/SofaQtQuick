@@ -38,7 +38,7 @@ Rectangle
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width/2
         height: parent.height/2
-        color:"lightgray"
+        color:"#787878"
 
         Text {
             text: "This is a demonstration widget"

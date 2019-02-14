@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.3
+import SofaBasics 1.0
 
 ColumnLayout {
     id: root

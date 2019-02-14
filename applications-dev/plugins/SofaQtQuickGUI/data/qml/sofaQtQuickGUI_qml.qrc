@@ -93,5 +93,9 @@
         <file>SofaViews/ExampleView.qml</file>
         <file>SofaViews/WebBrowserView.qml</file>
         <file>SofaBasics/DynamicContent_Error.qml</file>
+        <file>SofaBasics/TextField.qml</file>
+        <file>SofaBasics/SpinBox.qml</file>
+        <file>SofaBasics/CheckBox.qml</file>
+        <file>SofaBasics/Button.qml</file>
     </qresource>
 </RCC>

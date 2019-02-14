@@ -21,6 +21,7 @@ import QtQuick 2.2
 import QtQuick.Controls 1.3
 import QtQuick.Dialogs 1.0
 import QtQuick.Layouts 1.0
+import SofaBasics 1.0
 
 
 /***************************************************************************************************

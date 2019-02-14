@@ -22,6 +22,7 @@ import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
 import SofaApplication 1.0
 import SofaData 1.0
+import SofaBasics 1.0
 
 ColumnLayout {
     id: root

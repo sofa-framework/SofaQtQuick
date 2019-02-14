@@ -268,18 +268,7 @@ Item {
                                             TextField {
                                                 Layout.fillWidth: true
                                                 Layout.fillHeight: true
-                                                Layout.preferredHeight: 20 //implicitHeight-4
                                                 readOnly: true
-                                                padding:0
-                                                topPadding:0
-                                                bottomPadding:0
-                                                background: Rectangle {
-                                                    color: isReadOnly ? "lightgray" : "white"
-                                                    border.color: "gray"
-                                                    border.width: 1
-                                                    radius: 3
-                                                }
-                                                font.pixelSize: 12
 
                                                 text: value.toString().trim()
                                                 onTextChanged: cursorPosition = 0;

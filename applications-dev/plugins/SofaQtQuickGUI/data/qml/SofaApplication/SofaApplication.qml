@@ -27,6 +27,7 @@ import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
 import SofaMessageList 1.0
+//import SofaBasics 1.0
 
 SofaApplication
 {

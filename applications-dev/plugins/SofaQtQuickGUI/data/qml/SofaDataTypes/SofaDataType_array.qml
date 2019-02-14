@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
+import SofaBasics 1.0
 
 ColumnLayout {
     id: root
@@ -278,10 +279,10 @@ ColumnLayout {
                     }
                     SpinBox {
                         id: rowNumber
-                        enabled: !root.dataObject.readOnly && showEditButton.checked
+                        editable: !root.dataObject.readOnly && showEditButton.checked
                         Layout.fillWidth: true
                         value: root.dataObject.value.length
-                        onEditingFinished: {
+                        onValueChanged : {
                             if(value === root.dataObject.value.length)
                                 return;
 
@@ -299,8 +300,8 @@ ColumnLayout {
                                 loader.item.populate();
                         }
 
-                        minimumValue: 0
-                        maximumValue: Number.MAX_VALUE
+                        from : 0
+                        to : Number.MAX_VALUE
                     }
                     Button {
                         id: showEditButton

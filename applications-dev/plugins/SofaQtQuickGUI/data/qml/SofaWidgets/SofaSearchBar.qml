@@ -51,7 +51,7 @@ RowLayout {
         if(filteredRows.length === i)
             listView.updateCurrentIndex(filteredRows[0]);
     }
-    
+
     TextField {
         id: searchBarTextField
         Layout.fillWidth: true

@@ -39,5 +39,8 @@
         <file>icon/undo.png</file>
         <file>icon/redo.png</file>
         <file>icon/linkArrow.png</file>
+        <file>icon/check.png</file>
+        <file>icon/spinboxRight.png</file>
+        <file>icon/spinboxLeft.png</file>
     </qresource>
 </RCC>

@@ -31,6 +31,7 @@ import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
 import SofaViewListModel 1.0
+// import SofaBasics 1.0
 
 import LiveFileMonitorSingleton 1.0
 
@@ -185,7 +186,7 @@ Item {
                             modality: Qt.NonModal
                             flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                             visible: true
-                            color: "lightgrey"
+                            color: "#787878"
                             onClosing: destroy();
 
                             Loader {
