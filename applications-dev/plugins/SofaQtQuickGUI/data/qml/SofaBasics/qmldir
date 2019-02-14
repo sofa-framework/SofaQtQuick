@@ -35,3 +35,5 @@ TextField 1.0 TextField.qml
 SpinBox 1.0 SpinBox.qml
 CheckBox 1.0 CheckBox.qml
 Button 1.0 Button.qml
+ComboBox 1.0 ComboBox.qml
+GroupBox 1.0 GroupBox.qml

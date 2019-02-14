@@ -8,6 +8,7 @@ CheckBox {
     implicitWidth: 16
     checkable: true
     hoverEnabled: true
+
     property Gradient enabledGradient: Gradient {
         GradientStop { position: 0.0; color: "#636363" }
         GradientStop { position: 1.0; color: "#373737" }
@@ -47,7 +48,6 @@ CheckBox {
     }
 
     background: Rectangle {
-//        z : 2
         id: backgroundRect
         radius: 4
         border.color: control.checkable ? "#393939" : "#808080";
@@ -56,43 +56,30 @@ CheckBox {
 
     onHoveredChanged: {
         if (control.hovered) {
-            console.error("hovered")
             if (control.checkable) {
-                console.error("checkable")
                 if (!control.checked) {
-                    console.error("!checked")
                     backgroundRect.gradient = enabledHoverGradient
                 } else {
-                    console.error("checked")
                     backgroundRect.gradient = enabledHoverGradientReversed
                 }
             } else {
-                console.error("!checkable")
                 if (!control.checked) {
-                    console.error("!checked")
                     backgroundRect.gradient = disabledHoverGradient
                 } else {
-                    console.error("checked")
                     backgroundRect.gradient = disabledHoverGradientReversed
                 }
             }
         } else {
-            console.error("!hovered")
             if (control.checkable) {
-                console.error("checkable")
                 if (!control.checked) {
-                    console.error("!checked")
                     backgroundRect.gradient = enabledGradient
                 } else {
-                    console.error("checked")
                     backgroundRect.gradient = enabledGradientReversed
                 }
             } else {
                 if (!control.checked) {
-                    console.error("!checked")
                     backgroundRect.gradient = disabledGradient
                 } else {
-                    console.error("checked")
                     backgroundRect.gradient = disabledGradientReversed
                 }
             }

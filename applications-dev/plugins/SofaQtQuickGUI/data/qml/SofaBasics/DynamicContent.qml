@@ -23,7 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  *   - damien.marchal@univ-lille.fr (CNRS) deep refactoring
  *******************************************************************/
 import QtQuick 2.5
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
@@ -31,7 +31,7 @@ import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
 import SofaViewListModel 1.0
-// import SofaBasics 1.0
+import SofaBasics 1.0
 
 import LiveFileMonitorSingleton 1.0
 
@@ -168,7 +168,10 @@ Item {
                 /// Open a new windows with this content.
                 Button
                 {
-                    icon.source: "qrc:/icon/subWindow.png"
+                    Image {
+                        anchors.centerIn: parent
+                        source: "qrc:/icon/subWindow.png"
+                    }
                     onClicked: {
                         windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
                                                          "title" : comboBox.currentText });

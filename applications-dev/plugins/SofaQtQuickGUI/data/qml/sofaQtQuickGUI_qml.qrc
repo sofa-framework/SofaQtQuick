@@ -97,5 +97,7 @@
         <file>SofaBasics/SpinBox.qml</file>
         <file>SofaBasics/CheckBox.qml</file>
         <file>SofaBasics/Button.qml</file>
+        <file>SofaBasics/GroupBox.qml</file>
+        <file>SofaBasics/ComboBox.qml</file>
     </qresource>
 </RCC>

@@ -18,11 +18,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import SofaApplication 1.0
 import SofaData 1.0
-// import SofaBasics 1.0
+import SofaBasics 1.0
 
 Item {
     id: root
@@ -172,7 +172,7 @@ Item {
                     id: linkTextField
                     Layout.fillWidth: true
                     placeholderText: "Link: @./path/component." + dataObject.name
-                    textColor: 0 === dataObject.link.length ? "black" : "green"
+                    color: 0 === dataObject.link.length ? "black" : "green"
                     text: dataObject.link
 
                     onTextChanged: updateLink();
@@ -260,9 +260,6 @@ Item {
 
         CheckBox {
             id: trackButton
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: Layout.preferredWidth
-            Layout.alignment: Qt.AlignTop
             visible: root.showTrackButton && 0 !== dataObject.name.length
             checked: false
 

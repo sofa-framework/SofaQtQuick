@@ -4,20 +4,19 @@ import QtGraphicalEffects 1.0
 
 Button {
     id: control
-    text: qsTr("Button")
     hoverEnabled: true
     enabled: true
     property Gradient enabledGradient: Gradient {
-        GradientStop { position: 0.0; color: "#a6a6a6" }
-        GradientStop { position: 1.0; color: "#8a8a8a" }
+        GradientStop { position: 0.0; color: "#c6c6c6" }
+        GradientStop { position: 1.0; color: "#aaaaaa" }
     }
     property Gradient disabledGradient: Gradient {
         GradientStop { position: 0.0; color: "#797979" }
         GradientStop { position: 1.0; color: "#999999" }
     }
     property Gradient enabledHoverGradient: Gradient {
-        GradientStop { position: 0.0; color: "#b6b6b6" }
-        GradientStop { position: 1.0; color: "#9a9a9a" }
+        GradientStop { position: 0.0; color: "#d6d6d6" }
+        GradientStop { position: 1.0; color: "#bababa" }
     }
 
     property Gradient disabledHoverGradient: Gradient {
@@ -49,11 +48,13 @@ Button {
         }
     }
 
+    leftPadding: 7
+    rightPadding: leftPadding
     contentItem: Text {
         text: control.text
         font: control.font
         opacity: enabled ? 1.0 : 0.3
-        color: control.down ? "#DDDDDD" : "#black"
+        color: control.down ? "#DDDDDD" : "black"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -61,13 +62,13 @@ Button {
 
     background: Rectangle {
         id: backgroundRect
-        implicitWidth: 100
+        implicitWidth: 20
         implicitHeight: 20
         opacity: enabled ? 1 : 0.3
         border.color: "#393939"
         border.width: 1
         radius: 4
-        gradient: control.checkable ?  enabledGradient : disabledGradient;
+        gradient: control.enabled ?  enabledGradient : disabledGradient;
     }
     DropShadow {
         anchors.fill: backgroundRect
