@@ -21,6 +21,7 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.3
 import SofaBasics 1.0
+import SofaColorScheme 1.0
 
 ColumnLayout {
     id: root
@@ -64,6 +65,8 @@ ColumnLayout {
                 value: root.values[textField0.index]
                 when: !dataObject.readOnly
             }
+
+            position: cornerPositions["TopLeft"]
         }
 
         TextField {
@@ -89,6 +92,7 @@ ColumnLayout {
                 value: root.values[textField1.index]
                 when: !dataObject.readOnly
             }
+            position: cornerPositions["Middle"]
         }
 
         TextField {
@@ -114,6 +118,7 @@ ColumnLayout {
                 value: root.values[textField2.index]
                 when: !dataObject.readOnly
             }
+            position: cornerPositions["TopRight"]
         }
     }
 
@@ -150,6 +155,8 @@ ColumnLayout {
                 value: root.values[textField3.index]
                 when: !dataObject.readOnly
             }
+            position: cornerPositions["BottomLeft"]
+
         }
 
         TextField {
@@ -175,6 +182,7 @@ ColumnLayout {
                 value: root.values[textField4.index]
                 when: !dataObject.readOnly
             }
+            position: cornerPositions["Middle"]
         }
 
         TextField {
@@ -200,6 +208,7 @@ ColumnLayout {
                 value: root.values[textField5.index]
                 when: !dataObject.readOnly
             }
+            position: cornerPositions["BottomRight"]
         }
     }
 }

@@ -1,79 +1,26 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.4
+import SofaColorScheme 1.0
 
 ComboBox {
-    id: control
+    property alias cornerPositions: backgroundID.cornerPositions
 
+    id: control
     implicitHeight: 20
     implicitWidth: 100
-
+    enabled: true
 //    model: ["Cats", "Dogs", "Bunnies"]
     hoverEnabled: true
 
 
-    property Gradient enabledGradient: Gradient {
-        GradientStop { position: 0.0; color: "#636363" }
-        GradientStop { position: 1.0; color: "#373737" }
-    }
-
-    property Gradient disabledGradient: Gradient {
-        GradientStop { position: 0.0; color: "#797979" }
-        GradientStop { position: 1.0; color: "#999999" }
-    }
-    property Gradient enabledHoverGradient: Gradient {
-        GradientStop { position: 0.0; color: "#737373" }
-        GradientStop { position: 1.0; color: "#474747" }
-    }
-
-    property Gradient disabledHoverGradient: Gradient {
-        GradientStop { position: 0.0; color: "#909090" }
-        GradientStop { position: 1.0; color: "#999999" }
-    }
-
-    property Gradient enabledGradientDown: Gradient {
-        GradientStop { position: 1.0; color: "#636363" }
-        GradientStop { position: 0.0; color: "#373737" }
-    }
-
-    property Gradient disabledGradientDown: Gradient {
-        GradientStop { position: 1.0; color: "#797979" }
-        GradientStop { position: 0.0; color: "#999999" }
-    }
-    property Gradient enabledHoverGradientDown: Gradient {
-        GradientStop { position: 1.0; color: "#737373" }
-        GradientStop { position: 0.0; color: "#474747" }
-    }
-
-    property Gradient disabledHoverGradientDown: Gradient {
-        GradientStop { position: 1.0; color: "#909090" }
-        GradientStop { position: 0.0; color: "#999999" }
-    }
-
     onDownChanged: {
-        if (control.hovered) {
-            if (control.down)
-                backgroundRect.gradient = control.enabled ? enabledHoverGradientDown : disabledHoverGradientDown
-            else
-                backgroundRect.gradient = control.enabled ? enabledHoverGradient : disabledHoverGradient
-        } else {
-            if (control.down)
-                backgroundRect.gradient = control.enabled ? enabledGradientDown : disabledGradientDown
-            else
-                backgroundRect.gradient = control.enabled ? enabledGradient : disabledGradient
-        }
+        backgroundID.setControlState(enabled, hovered, down)
     }
     onHoveredChanged: {
-        if (control.hovered) {
-            if (control.down)
-                backgroundRect.gradient = control.enabled ? enabledHoverGradientDown : disabledHoverGradientDown
-            else
-                backgroundRect.gradient = control.enabled ? enabledHoverGradient : disabledHoverGradient
-        } else {
-            if (control.down)
-                backgroundRect.gradient = control.enabled ? enabledGradientDown : disabledGradientDown
-            else
-                backgroundRect.gradient = control.enabled ? enabledGradient : disabledGradient
-        }
+        backgroundID.setControlState(enabled, hovered, down)
+    }
+    Component.onCompleted: {
+        backgroundID.setControlState(enabled, hovered, down)
     }
 
     /// TODO @bmarques: Fix modelData bug
@@ -126,15 +73,13 @@ ComboBox {
         elide: Text.ElideRight
     }
 
-    background: Rectangle {
-        id: backgroundRect
+    background: ControlsBackground {
+        id: backgroundID
         implicitWidth: 50
         implicitHeight: 20
         height: 20
-        border.color: control.down ? "#17a81a" : "#21be2b"
-        border.width: control.visualFocus ? 2 : 1
-        radius: 4
-        gradient: control.enabled ?  enabledGradient : disabledGradient;
+        borderColor: control.enabled ? "#393939" : "#808080";
+        controlType: controlTypes["ComboBox"]
     }
 
     popup: Popup {

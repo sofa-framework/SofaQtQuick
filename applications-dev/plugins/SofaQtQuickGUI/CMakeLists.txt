@@ -110,8 +110,15 @@ set(QML_FILES
     data/qml/SofaApplication/qmldir
     data/qml/SofaApplication/SofaApplication.qml
     data/qml/SofaApplication/MainStyle.qml
+    data/qml/SofaColorScheme/qmldir
+    data/qml/SofaColorScheme/ColorScheme.qml
+    data/qml/SofaColorScheme/ControlsBackground.qml
     data/qml/SofaBasics/qmldir
-    data/qml/SofaBasics/IconButton.qml
+    data/qml/SofaBasics/Button.qml
+    data/qml/SofaBasics/SpinBox.qml
+    data/qml/SofaBasics/TextField.qml
+    data/qml/SofaBasics/ComboBox.qml
+    data/qml/SofaBasics/CheckBox.qml
     data/qml/SofaBasics/ToolTip.qml
     data/qml/SofaBasics/BubbleToolTip.qml
     data/qml/SofaBasics/DefaultStatusBar.qml
@@ -185,7 +192,6 @@ set(QML_FILES
     data/qml/SofaViews/LiveInterfaceEditor.qml
     data/qml/SofaViews/BaseWidgetExample.qml
     data/qml/SofaViews/SceneToolsPanel.qml
-
 )
 
 add_definitions("-DSOFAQTQUICKGUI_QML_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")
@@ -194,6 +200,7 @@ list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaBasics/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaColorScheme/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaInteractors/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
