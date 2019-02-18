@@ -4,14 +4,16 @@ import SofaColorScheme 1.0
 
 ComboBox {
     property alias cornerPositions: backgroundID.cornerPositions
+    property bool sizeToContents: true
+    property int modelWidth: 40
 
     id: control
     implicitHeight: 20
-    implicitWidth: 100
+    width: 100
+    implicitWidth: (sizeToContents) ? (modelWidth + 2*leftPadding + 2*rightPadding + canvas.width) : width
     enabled: true
-//    model: ["Cats", "Dogs", "Bunnies"]
+    model: ["Cats", "Dogs", "Bunnies"]
     hoverEnabled: true
-
 
     onDownChanged: {
         backgroundID.setControlState(enabled, hovered, down)
@@ -23,20 +25,15 @@ ComboBox {
         backgroundID.setControlState(enabled, hovered, down)
     }
 
-    /// TODO @bmarques: Fix modelData bug
-//    delegate: ItemDelegate {
-//        width: control.width
-//        height: 20
-//        opacity: 0.4
-//        contentItem: Text {
-//            text: modelData
-//            color: "black"
-//            font: control.font
-//            elide: Text.ElideRight
-//            verticalAlignment: Text.AlignVCenter
-//        }
-//        highlighted: control.highlightedIndex === index
-//    }
+    delegate: ItemDelegate {
+        width: control.width
+        text: control.textRole ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole]) : modelData
+        font.weight: control.currentIndex === index ? Font.DemiBold : Font.Normal
+        font.family: control.font.family
+        font.pointSize: control.font.pointSize
+        highlighted: control.highlightedIndex === index
+        hoverEnabled: control.hoverEnabled
+    }
 
     indicator: Canvas {
         id: canvas
@@ -75,8 +72,6 @@ ComboBox {
 
     background: ControlsBackground {
         id: backgroundID
-        implicitWidth: 50
-        implicitHeight: 20
         height: 20
         borderColor: control.enabled ? "#393939" : "#808080";
         controlType: controlTypes["ComboBox"]
@@ -84,7 +79,7 @@ ComboBox {
 
     popup: Popup {
         y: control.height - 1
-        width: control.width
+        implicitWidth: control.width
         implicitHeight: contentItem.implicitHeight
         padding: 0
 
@@ -103,5 +98,27 @@ ComboBox {
             radius: 4
             color: "transparent"
         }
+    }
+
+    TextMetrics {
+        id: textMetrics
+    }
+
+    function getModelWidth() {
+        if (!model)
+            return
+        textMetrics.font = control.font
+        for(var i = 0; i < model.length; i++) {
+            if (textRole) {
+                textMetrics.text = model.get(i)[textRole]
+            }
+            else
+                textMetrics.text = model[i]
+            modelWidth = Math.max(textMetrics.width, modelWidth)
+        }
+    }
+
+    onModelChanged: {
+        getModelWidth()
     }
 }

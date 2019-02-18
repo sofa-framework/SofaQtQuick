@@ -18,8 +18,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.0
+import QtQuick.Controls 1.4
 import SofaBasics 1.0
 
 ColumnLayout {
@@ -186,7 +186,7 @@ ColumnLayout {
             RowLayout {
                 id: rowLayout
                 //width: parent.width
-                spacing: 0
+                spacing: -1
                 enabled: !root.dataObject.readOnly
 
                 property var fields: []
@@ -204,7 +204,14 @@ ColumnLayout {
 
                     fields = [];
                     for(var i = 0; i < values.length; ++i)
+                    {
                         fields[i] = textFieldComponent.createObject(rowLayout, {index: i});
+                        if (i == 0)
+                            fields[i].position = fields[i].cornerPositions['Left']
+                        else if (i === values.length -1)
+                            fields[i].position = fields[i].cornerPositions['Right']
+
+                    }
 
                     update();
                 }
@@ -227,7 +234,8 @@ ColumnLayout {
                         Layout.fillHeight: true
                         Layout.alignment: Qt.AlignTop
                         readOnly: root.dataObject.readOnly
-                        enabled: !root.dataObject.readOnly
+                        enabled: !root.dataObject.readOnlyTableViewColumn
+                        position: cornerPositions['Middle']
 
                         property int index
                         onTextChanged: {
@@ -255,7 +263,6 @@ ColumnLayout {
                 readOnly: root.dataObject.readOnly
                 enabled: !root.dataObject.readOnly
                 text: undefined !== root.dataObject.value ? root.dataObject.value.toString() : ""
-
                 Binding {
                     target: root.dataObject
                     property: "value"
@@ -273,9 +280,9 @@ ColumnLayout {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
-
+                    spacing: -1
                     Text {
-                        text: "Size"
+                        text: "Size "
                     }
                     SpinBox {
                         id: rowNumber
@@ -302,11 +309,13 @@ ColumnLayout {
 
                         from : 0
                         to : Number.MAX_VALUE
+                        position: cornerPositions["Left"]
                     }
                     Button {
                         id: showEditButton
                         text: "Edit"
                         checkable: true
+                        position: cornerPositions["Right"]
                     }
                 }
 

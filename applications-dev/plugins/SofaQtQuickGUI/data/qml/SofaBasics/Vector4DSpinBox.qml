@@ -1,6 +1,6 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.0
+import SofaBasics 1.0
 
 GridLayout {
     id: root
@@ -33,44 +33,44 @@ GridLayout {
     property int    preferredWidth:     20
     property bool   fillWidth:          true
 
-    SpinBox {
+    DoubleSpinBox {
         id: vxSpinBox
         Layout.fillWidth:               root.fillWidth
         Layout.preferredWidth:          root.preferredWidth
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                   root.minimumValue
+        realTo:                   root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                          0.0
+        realStepSize:                       root.stepSize
     }
-    SpinBox {
+    DoubleSpinBox {
         id: vySpinBox
         Layout.fillWidth:               root.fillWidth
         Layout.preferredWidth:          root.preferredWidth
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                   root.minimumValue
+        realTo:                   root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                          0.0
+        realStepSize:                       root.stepSize
     }
-    SpinBox {
+    DoubleSpinBox {
         id: vzSpinBox
         Layout.fillWidth:               root.fillWidth
         Layout.preferredWidth:          root.preferredWidth
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                   root.minimumValue
+        realTo:                   root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                          0.0
+        realStepSize:                       root.stepSize
     }
-    SpinBox {
+    DoubleSpinBox {
         id: vwSpinBox
         Layout.fillWidth:               root.fillWidth
         Layout.preferredWidth:          root.preferredWidth
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                   root.minimumValue
+        realTo:                   root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                          0.0
+        realStepSize:                       root.stepSize
     }
 }

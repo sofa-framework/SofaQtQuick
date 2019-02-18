@@ -19,13 +19,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
 import SofaBasics 1.0
 import SofaColorScheme 1.0
 
 ColumnLayout {
     id: root
-    spacing: 0
+    spacing: -1
 
     property var dataObject: null
 
@@ -34,12 +34,12 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: 0
+        spacing: -1
 
         Text {
             id: minLabel
             Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
-            text: "Min"
+            text: "Min "
         }
 
         TextField {
@@ -124,11 +124,11 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        spacing: 0
+        spacing: -1
 
         Text {
             id: maxLabel
-            text: "Max"
+            text: "Max "
             Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
         }
 

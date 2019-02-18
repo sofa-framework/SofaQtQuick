@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
@@ -70,14 +70,14 @@ RowLayout {
             anchors.fill: parent
             anchors.margins: 2
             iconSource: "qrc:/icon/previous.png"
-            
+
             onClicked: searchBar.previousFilteredRow();
         }
     }
     Item {
         Layout.preferredWidth: Layout.preferredHeight
         Layout.preferredHeight: searchBarTextField.implicitHeight
-        
+
         IconButton {
             id: nextSearchButton
             anchors.fill: parent

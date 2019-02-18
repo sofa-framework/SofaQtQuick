@@ -18,15 +18,15 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaApplication 1.0
+import SofaBasics 1.0
 
 ToolBar {
     id: root
-    height: 28
+    height: 25
 
     property var sofaScene: SofaApplication.sofaScene
 
@@ -51,7 +51,7 @@ ToolBar {
             anchors.verticalCenter: parent.verticalCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
-            color: "darkblue"
+            color: "steelblue"
         }
 
         Row {
@@ -116,7 +116,7 @@ ToolBar {
                 height: root.height - 3
 
                 iconSource: animateButton.checked ? "qrc:/icon/stopButton.png" : "qrc:/icon/playButton.png"
-                tooltip: animateButton.checked ? "Stop" : "Animate"
+//                ToolTip.text: animateButton.checked ? "Stop" : "Animate"
                 checkable: true
                 checked: false
                 onCheckedChanged: if(sofaScene) sofaScene.animate = animateButton.checked
@@ -135,7 +135,7 @@ ToolBar {
                 height: root.height - 3
 
                 iconSource: "qrc:/icon/stepButton.png"
-                tooltip: "Step"
+//                ToolTip.text: "Step"
 
                 onClicked: {
                     if(sofaScene)
@@ -148,7 +148,7 @@ ToolBar {
                 height: root.height - 3
 
                 iconSource: "qrc:/icon/resetButton.png"
-                tooltip: "Reset the sofa scene"
+//                ToolTip.text: "Reset the sofa scene"
 
                 onClicked: {
                     if(sofaScene)
@@ -211,10 +211,7 @@ ToolBar {
                     color: "white"
                 }
 
-                ToolTip {
-                    anchors.fill: parent
-                    description: "Save screenshot"
-                }
+//                ToolTip.text: "Save screenshot"
             }
 
             ToolButton {
@@ -256,10 +253,7 @@ ToolBar {
                     color: "white"
                 }
 
-                ToolTip {
-                    anchors.fill: parent
-                    description: "Save video"
-                }
+//                ToolTip.text: "Save video"
             }
         }
     }

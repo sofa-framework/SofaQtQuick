@@ -11,11 +11,12 @@ TextField {
     placeholderText: qsTr("None")
     color: readOnly ? "#464646" : "black"
     leftPadding: 7
+    rightPadding: 7
     hoverEnabled: true
 
     background: ControlsBackground {
         id: backgroundID
-        implicitWidth: 150
+        implicitWidth: 50
         implicitHeight: 20
 
         borderColor: control.readOnly ? "#393939" : "#505050";

@@ -152,7 +152,7 @@ Rectangle {
         height: gridID.height / 2
         border.color: borderColor
         gradient: gridID.currentGradients.bottomGradient
-        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Right"] || gridID.position === cornerPositions["BottomRight"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
+        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Right"] || gridID.position === cornerPositions["BottomRight"] || gridID.position === cornerPositions["Single"] ? 4 : 0)
     }
 }
 

@@ -201,6 +201,7 @@ Item {
 
                     if(root.sofaData) {
                         var type = root.type;
+                        console.error(type)
                         var properties = root.properties;
 
                         if(0 === type.length) {

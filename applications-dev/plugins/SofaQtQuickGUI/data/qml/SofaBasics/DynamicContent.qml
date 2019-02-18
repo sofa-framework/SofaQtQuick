@@ -121,30 +121,27 @@ Item {
         Rectangle {
             id: toolBar
             color: "grey"
-            height: 32
+            height: 24
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
 
             RowLayout {
                 id: toolBarLayout
+                y: 2
                 spacing: 2
-
                 ComboBox
                 {
                     id: comboBox
                     textRole: "name"
                     model: listModel
-                    width: 100
+                    sizeToContents: true
                     currentIndex: 0
 
                     onCurrentIndexChanged:
                     {
-                        console.error("A")
                         loaderLocation.refresh(listModel.get(currentIndex));
-                        console.error("B")
                         root.currentContentName = currentContentName;
-                        console.error("C")
                     }
 
                     property var files : LiveFileMonitorSingleton.files
@@ -164,9 +161,7 @@ Item {
                     {
                         /// search in the model if there is one item with the
                         /// same name as in the combobox.
-                        console.error("D")
                         currentIndex = findIndexFor(root.currentContentName);
-                        console.error("E")
                     }
                 }
 
@@ -254,7 +249,7 @@ Item {
                 var contentComponent = Qt.createComponent("file://"+source);
                 if(contentComponent.status === Component.Error)
                 {
-                    console.error("error")
+//                    console.error("error")
                     ///TODO(dmarchal 28/01/2019) Fix loader.
                     loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation.contentItem);
                     return;
@@ -263,7 +258,7 @@ Item {
                 /// Create an uid in the SofaApplication settings.
                 if(root.contentUiId === 0)
                 {
-                    console.error("generate a contentUID")
+//                    console.error("generate a contentUID")
                     root.contentUiId = SofaApplication.uiSettings.generate();
                 }
 
@@ -273,9 +268,9 @@ Item {
                     contentProperties = {};
 
                 contentProperties["anchors.fill"] = loaderLocation;
-                console.error("createObject")
+//                console.error("createObject")
                 var content = contentComponent.createObject(loaderLocation, contentProperties);
-                console.error("DONE")
+//                console.error("DONE")
 
                 loaderLocation.contentItem = content;
                 root.currentContentName = name;

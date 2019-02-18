@@ -1,9 +1,8 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.3
-import QtQuick.Controls.Styles 1.3
-import QtQuick.Layouts 1.1
-import QtQuick.Dialogs 1.2
+import QtQuick.Controls 2.4
+import QtQuick.Layouts 1.3
 import SofaBasics 1.0
+import QtQuick.Dialogs 1.2
 
 GridLayout {
 
@@ -130,13 +129,13 @@ GridLayout {
         }
 
         // uniform scale
-        SpinBox {
+        DoubleSpinBox {
             id: uniformScaleSpinBox
-            minimumValue: 0
-            maximumValue: 9999999.0
-            value: 1
+            realFrom: 0
+            realTo: 9999999.0
+            realValue: 1
             decimals: root.decimals
-            stepSize: root.stepSize
+            realStepSize: root.stepSize
             suffix: "Uniform"
 
             Layout.fillWidth: true

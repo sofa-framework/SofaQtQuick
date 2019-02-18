@@ -5,21 +5,25 @@ import SofaColorScheme 1.0
 
 SpinBox {
     property alias cornerPositions: backgroundID.cornerPositions
+    property alias position: backgroundID.position
 
     id: control
     value: 50
-    editable: true
+    editable: false
     leftPadding: 20
+    rightPadding: 20
     hoverEnabled: true
+    height: 20
+    implicitHeight: 20
 
     onActiveFocusChanged: {
-        backgroundID.setControlState(control.enabled && !control.readOnly, control.hovered, control.activeFocus)
+        backgroundID.setControlState(control.enabled && control.editable, control.hovered, control.activeFocus)
     }
     onHoveredChanged: {
-        backgroundID.setControlState(control.enabled && !control.readOnly, control.hovered, control.activeFocus)
+        backgroundID.setControlState(control.enabled && control.editable, control.hovered, control.activeFocus)
     }
     Component.onCompleted: {
-        backgroundID.setControlState(control.enabled && !control.readOnly, control.hovered, control.activeFocus)
+        backgroundID.setControlState(control.enabled && control.editable, control.hovered, control.activeFocus)
     }
 
     contentItem: TextInput {
@@ -58,7 +62,7 @@ SpinBox {
 
     background: ControlsBackground {
         id: backgroundID
-        implicitWidth: 150
+        implicitWidth: 40
         implicitHeight: 20
 
         borderColor: control.readOnly ? "#393939" : "#505050";

@@ -344,6 +344,7 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
     /// The scene passed to this model is tracked to monitor if its status has changed.
     /// If this is the case then the model needs to be reseted.
     connect(m_scene, &SofaScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
+    emit sofaSceneChanged();
 }
 
 void SofaSceneItemModel::handleRootNodeChange()
