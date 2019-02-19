@@ -39,3 +39,5 @@ Button 1.0 Button.qml
 ComboBox 1.0 ComboBox.qml
 GroupBox 1.0 GroupBox.qml
 ToolButton 1.0 ToolButton.qml
+GBRect 1.0 GBRect.qml
+MenuBar 1.0 MenuBar.qml

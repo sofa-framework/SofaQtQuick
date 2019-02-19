@@ -22,49 +22,11 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaApplication 1.0
+import SofaBasics 1.0
 
 MenuBar {
     id: menuBar
 
-    height: 25
-
-    hoverEnabled: true
-    function replaceText(txt) {
-        var index = txt.indexOf("&");
-        if(index >= 0)
-            txt = txt.replace(txt.substr(index, 2), ("<u>" + txt.substr(index + 1, 1) +"</u>"));
-        return txt;
-    }
-    delegate: MenuBarItem {
-        id: menuBarItem
-        contentItem: Text {
-            text: replaceText(menuBarItem.text)
-            font: menuBarItem.font
-            opacity: enabled ? 1.0 : 0.3
-            color: "black"
-            horizontalAlignment: Text.AlignLeft
-            elide: Text.ElideRight
-        }
-
-        background: Rectangle {
-            y: 2
-            height: 20
-            radius: 4
-            opacity: enabled ? 1.0 : 0.2
-            color: menuBarItem.highlighted ? "lightblue" : "transparent"
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: "lightblue" }
-                GradientStop { position: 0.9; color: "lightblue" }
-                GradientStop { position: 1.0; color: "white" }
-            }
-        }
-    }
-
-    background: Rectangle {
-        implicitWidth: 25
-        implicitHeight: 25
-        color: "grey"
-    }
     property var sofaScene: null
 
     property list<QtObject> objects: [
@@ -99,7 +61,6 @@ MenuBar {
             onTriggered: sofaScene.reload();
 //            tooltip: "Reload the Sofa Scene"
         },
-
         Action
         {
             id: exitAction
@@ -107,7 +68,6 @@ MenuBar {
             shortcut: "Ctrl+Q"
             onTriggered: close()
         },
-
         Action {
             id: simulateAction
             text: "&Simulate"
@@ -141,14 +101,14 @@ MenuBar {
 
     Menu {
         title: "&File"
-        visible: true
-
+//        visible: true
         MenuItem {action: openAction}
         Menu {
             id: recentMenu
             title: "Open recent"
             property var items: []
             visible: 0 !== items.length
+
 
 //            function update() {
 //                recentMenu.items.clear();
@@ -170,7 +130,6 @@ MenuBar {
 //                    if(50 === recentMenu.items.length)
 //                        break;
 //                }
-
 //                if(0 === recentMenu.items.length)
 //                    return;
 

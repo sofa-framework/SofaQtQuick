@@ -11,6 +11,8 @@ Item {
 
     property alias position: spinbox.position
     property alias position: spinbox.cornerPositions
+    property alias prefix: spinbox.prefix
+    property alias suffix: spinbox.suffix
 
     SpinBox{
         property real factor: Math.pow(10, decimals)

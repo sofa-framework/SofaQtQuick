@@ -23,6 +23,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaApplication 1.0
 import SofaBasics 1.0
+import SofaColorScheme 1.0
 
 ToolBar {
     id: root
@@ -42,21 +43,25 @@ ToolBar {
     enabled: sofaScene ? sofaScene.ready : false
 
     Row {
+        anchors.verticalCenter: parent.verticalCenter
         id: mainrow
         spacing: 5
         anchors.fill: parent
 
         Text {
-            text: "Interaction"
+            text: " Interaction"
             anchors.verticalCenter: parent.verticalCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
-            color: "steelblue"
+            color: "lightgrey"
         }
-
+        ToolSeparator {
+            anchors.verticalCenter: parent.verticalCenter
+        }
         Row {
             id: interactorPositioner
-
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: -1
             Component {
                 id: interactorButtonComponent
 
@@ -84,7 +89,10 @@ ToolBar {
                         if(interactorName === SofaApplication.interactorName)
                             interactorButton.checked = true;
                         else
+                        {
                             interactorButton.checked = false;
+                            interactorButton.set
+                        }
                     }
                 }
             }
@@ -99,9 +107,11 @@ ToolBar {
                     children[i].destroy();
 
                 var interactorComponentMap = SofaApplication.interactorComponentMap;
+                var tmpIncubator
                 for(var key in interactorComponentMap)
                     if(interactorComponentMap.hasOwnProperty(key)) {
                         var incubator = interactorButtonComponent.incubateObject(interactorPositioner, {interactorName: key, interactorComponent: interactorComponentMap[key]});
+                        tmpIncubator = incubator
                         incubator.forceCompletion();
                     }
             }
@@ -109,13 +119,13 @@ ToolBar {
 
         Row {
             id: simulationControlTools
-            spacing: 5
+            spacing: -1
+            anchors.verticalCenter: parent.verticalCenter
 
             ToolButton {
                 id: animateButton
-                height: root.height - 3
-
-                iconSource: animateButton.checked ? "qrc:/icon/stopButton.png" : "qrc:/icon/playButton.png"
+                width: 22
+                iconSource: animateButton.checked ? "qrc:/icon/pause.png" : "qrc:/icon/play.png"
 //                ToolTip.text: animateButton.checked ? "Stop" : "Animate"
                 checkable: true
                 checked: false
@@ -132,9 +142,8 @@ ToolBar {
 
             ToolButton {
                 id: stepButton
-                height: root.height - 3
-
-                iconSource: "qrc:/icon/stepButton.png"
+                width: 22
+                iconSource: "qrc:/icon/step.png"
 //                ToolTip.text: "Step"
 
                 onClicked: {
@@ -145,9 +154,9 @@ ToolBar {
 
             ToolButton {
                 id: resetButton
-                height: root.height - 3
+                width: 22
 
-                iconSource: "qrc:/icon/resetButton.png"
+                iconSource: "qrc:/icon/replay.png"
 //                ToolTip.text: "Reset the sofa scene"
 
                 onClicked: {
@@ -155,10 +164,16 @@ ToolBar {
                         sofaScene.reset();
                 }
             }
+            ToolSeparator {
+                anchors.verticalCenter: parent.verticalCenter
+            }
 
             Row {
+                anchors.verticalCenter: parent.verticalCenter
+
                 Label {
-                    text: "DT (s)"
+                    color: "black"
+                    text: "DT (s) "
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 TextField {
@@ -179,12 +194,14 @@ ToolBar {
 
         Row {
             id: captureLayout
-            spacing: 5
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: -1
 
             ToolButton {
                 id: screenshotButton
                 iconSource: "qrc:/icon/screenshot.png"
                 height: root.height - 5
+                width: 22
 
                 checked: false
                 checkable: false
@@ -203,14 +220,6 @@ ToolBar {
                     }
                 }
 
-                Rectangle {
-                    anchors.fill: parent
-                    visible: screenshotButton.checked
-                    z: -1
-                    radius: 5
-                    color: "white"
-                }
-
 //                ToolTip.text: "Save screenshot"
             }
 
@@ -219,6 +228,7 @@ ToolBar {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 iconSource: "qrc:/icon/movieRecording.png"
+                width: 22
 
                 checked: false
                 checkable: true
@@ -245,16 +255,25 @@ ToolBar {
                     }
                 }
 
-                Rectangle {
-                    anchors.fill: parent
-                    visible: movieButton.checked
-                    z: -1
-                    radius: 5
-                    color: "white"
-                }
-
 //                ToolTip.text: "Save video"
             }
+        }
+    }
+    background: Rectangle {
+        color: hovered ? "#757575" : "#686868"
+        border.color: "black"
+
+        GBRect {
+            anchors.top: parent.top
+            anchors.topMargin: 1
+            implicitHeight: parent.implicitHeight - 1
+            implicitWidth: parent.implicitWidth + 2
+            borderWidth: 1
+            borderGradient: Gradient {
+                GradientStop { position: 0.0; color: "#7a7a7a" }
+                GradientStop { position: 1.0; color: "#5c5c5c" }
+            }
+            color: "transparent"
         }
     }
 }

@@ -13,13 +13,16 @@ Button {
     property alias cornerPositions: backgroundID.cornerPositions
 
     onDownChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, control.down)
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    onCheckedChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
     }
     onHoveredChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, control.down)
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
     }
     Component.onCompleted: {
-        backgroundID.setControlState(control.enabled, control.hovered, control.down)
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
     }
 
     leftPadding: 7
@@ -28,7 +31,7 @@ Button {
         text: control.text
         font: control.font
         opacity: enabled ? 1.0 : 0.4
-        color: control.down ? "#DDDDDD" : "black"
+        color: checkable ? (control.checked ? "black" : "#DDDDDD") : (control.down ? "#DDDDDD" : "black")
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -37,7 +40,7 @@ Button {
     property alias position: backgroundID.position
     background: ControlsBackground {
         id: backgroundID
-        controlType: controlTypes["Button"]
+        controlType: checkable ? controlTypes["ToggleButton"] : controlTypes["Button"]
         borderColor: enabled ? "#595959" : "#898989"
     }
 //    DropShadow {

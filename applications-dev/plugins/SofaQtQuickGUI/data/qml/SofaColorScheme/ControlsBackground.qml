@@ -21,7 +21,8 @@ Rectangle {
                                     "Button": 0,
                                     "ComboBox": 1,
                                     "CheckBox": 2,
-                                    "InputField": 3
+                                    "InputField": 3,
+                                    "ToggleButton": 4
                                 })
 
     property int controlType: controlTypes["Button"]
@@ -29,7 +30,7 @@ Rectangle {
     property string borderColor: "#595959"
 
     ColorScheme { id: colorScheme }
-    property Item currentcontrolType: (controlType === controlTypes["Button"]) ? colorScheme.button : (controlType === controlTypes["ComboBox"]) ? colorScheme.comboBox : (controlType === controlTypes["CheckBox"]) ? colorScheme.checkBox : colorScheme.inputField
+    property Item currentcontrolType: (controlType === controlTypes["Button"]) ? colorScheme.button : (controlType === controlTypes["ComboBox"]) ? colorScheme.comboBox : (controlType === controlTypes["CheckBox"]) ? colorScheme.checkBox : (controlType === controlTypes["ToggleButton"]) ? colorScheme.toggleButton : colorScheme.inputField
     property Item currentGradients: currentcontrolType.enabled
 
     implicitWidth: (controlType === controlTypes["CheckBox"]) ? 16 : 20

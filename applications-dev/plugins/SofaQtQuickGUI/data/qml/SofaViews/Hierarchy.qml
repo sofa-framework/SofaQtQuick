@@ -25,9 +25,9 @@ import QtQuick.Window 2.2
 import SofaApplication 1.0
 import SofaSceneItemModel 1.0
 import SofaSceneItemProxy 1.0
-import SofaBasics 1.0
 import SofaWidgets 1.0
 import QtQuick.Controls 1.4
+import SofaBasics 1.0
 
 Rectangle {
     id: root
@@ -242,9 +242,10 @@ Rectangle {
 
     CheckBox {
         anchors.top: treeView.anchors.top
+        anchors.topMargin: 3
         anchors.right: treeView.anchors.right
         anchors.rightMargin: +30
-        checked: true
+        checked: false
         onCheckedChanged: {
             sceneModel.showOnlyNodes(checked)
         }

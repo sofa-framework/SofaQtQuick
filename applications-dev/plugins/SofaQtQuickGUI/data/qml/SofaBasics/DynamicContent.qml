@@ -31,8 +31,8 @@ import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
 import SofaViewListModel 1.0
-import SofaColorScheme 1.0
 import SofaBasics 1.0
+import SofaColorScheme 1.0
 
 import LiveFileMonitorSingleton 1.0
 
@@ -118,9 +118,16 @@ Item {
         // The toolbar containing a dropdown menu and some
         // button and checkbox.
         /////////////////////////////////////////////////////////
-        Rectangle {
+        GBRect {
             id: toolBar
-            color: "grey"
+            color: "#757575"
+            border.color: "black"
+
+            borderWidth: 1
+            borderGradient: Gradient {
+                GradientStop { position: 0.0; color: "#7a7a7a" }
+                GradientStop { position: 1.0; color: "#5c5c5c" }
+            }
             height: 24
             anchors.left: parent.left
             anchors.right: parent.right
@@ -206,6 +213,7 @@ Item {
                     id: showAllLabel
                     Layout.alignment: Qt.AlignVCenter
                     text: "Live Coding:"
+                    color: "black"
                 }
                 CheckBox {
                     id : checkBoxEditting

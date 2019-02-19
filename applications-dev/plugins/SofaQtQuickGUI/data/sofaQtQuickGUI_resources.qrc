@@ -42,5 +42,9 @@
         <file>icon/check.png</file>
         <file>icon/spinboxRight.png</file>
         <file>icon/spinboxLeft.png</file>
+        <file>icon/step.png</file>
+        <file>icon/pause.png</file>
+        <file>icon/play.png</file>
+        <file>icon/replay.png</file>
     </qresource>
 </RCC>

@@ -21,6 +21,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import SofaApplication 1.0
+import SofaBasics 1.0
+import SofaColorScheme 1.0
 
 ToolBar {
     id: root
@@ -53,7 +55,7 @@ ToolBar {
         anchors.fill: parent
 
         Rectangle {
-            Layout.fillHeight: true
+//            Layout.fillHeight: true
             Layout.preferredWidth: fpsItem.implicitWidth + 10
             color: "transparent"
             border.width: 1
@@ -62,14 +64,20 @@ ToolBar {
 
             FPSItem {
                 id: fpsItem
+                color: "black"
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
         }
+        Rectangle {
+            width: 1
+            height: 16
+            border.color: "grey"
+            color: "transparent"
+        }
 
         Rectangle {
-            Layout.fillHeight: true
             Layout.preferredWidth: sofaTimeItem.implicitWidth + 10
             color: "transparent"
             border.width: 1
@@ -81,12 +89,18 @@ ToolBar {
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                color: "black"
             }
+        }
+        Rectangle {
+            width: 1
+            height: 16
+            border.color: "grey"
+            color: "transparent"
         }
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.fillHeight: true
             Layout.minimumWidth: 256
             color: "transparent"
             border.width: 1
@@ -99,7 +113,25 @@ ToolBar {
                 anchors.margins: 5
                 verticalAlignment: Text.AlignVCenter
                 text: root.statusMessage
+                color: "black"
             }
+        }
+    }
+    background: Rectangle {
+        color: hovered ? "#757575" : "#686868"
+        border.color: "black"
+
+        GBRect {
+            anchors.top: parent.top
+            anchors.topMargin: 1
+            implicitHeight: parent.implicitHeight - 1
+            implicitWidth: parent.implicitWidth + 2
+            borderWidth: 1
+            borderGradient: Gradient {
+                GradientStop { position: 0.0; color: "#7a7a7a" }
+                GradientStop { position: 1.0; color: "#5c5c5c" }
+            }
+            color: "transparent"
         }
     }
 }

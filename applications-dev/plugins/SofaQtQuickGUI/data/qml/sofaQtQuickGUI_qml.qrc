@@ -104,5 +104,7 @@
         <file>SofaViews/WebBrowserView.qml</file>
         <file>SofaBasics/ToolButton.qml</file>
         <file>SofaBasics/DoubleSpinBox.qml</file>
+        <file>SofaBasics/MenuBar.qml</file>
+        <file>SofaColorScheme/GBRect.qml</file>
     </qresource>
 </RCC>

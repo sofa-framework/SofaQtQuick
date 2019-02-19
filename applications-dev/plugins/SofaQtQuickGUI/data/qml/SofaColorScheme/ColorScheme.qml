@@ -341,4 +341,103 @@ Item {
             }
         }
     }
+
+
+
+
+    property Item toggleButton : Item{
+        property Item enabled: Item {
+            property Gradient totalGradient: Gradient {
+                GradientStop { position: 0.0; color: "#545454" }
+                GradientStop { position: 1.0; color: "#373737" }
+            }
+            property Gradient topGradient: Gradient {
+                GradientStop { position: 0.0; color: "#575757" }
+                GradientStop { position: 1.0; color: "#444444" }
+            }
+            property Gradient middleGradient: Gradient {
+                GradientStop { position: 0.0; color: "#474747" }
+                GradientStop { position: 1.0; color: "#3c3c3c" }
+            }
+            property Gradient bottomGradient: Gradient {
+                GradientStop { position: 0.0; color: "#444444" }
+                GradientStop { position: 1.0; color: "#373737" }
+            }
+        }
+        property Item disabled: Item {
+            property Gradient totalGradient: Gradient {
+                GradientStop { position: 0.0; color: "#797979" }
+                GradientStop { position: 1.0; color: "#999999" }
+            }
+            property Gradient topGradient: Gradient {
+                GradientStop { position: 0.0; color: "#797979" }
+                GradientStop { position: 1.0; color: "#898989" }
+            }
+            property Gradient middleGradient: Gradient {
+                GradientStop { position: 0.0; color: "#808080" }
+                GradientStop { position: 1.0; color: "#909090" }
+            }
+            property Gradient bottomGradient: Gradient {
+                GradientStop { position: 0.0; color: "#898989" }
+                GradientStop { position: 1.0; color: "#999999" }
+            }
+        }
+
+        property Item enabledHover: Item {
+            property Gradient totalGradient: Gradient {
+                GradientStop { position: 0.0; color: "#737373" }
+                GradientStop { position: 1.0; color: "#474747" }
+            }
+            property Gradient topGradient: Gradient {
+                GradientStop { position: 0.0; color: "#737373" }
+                GradientStop { position: 1.0; color: "#626262" }
+            }
+            property Gradient middleGradient: Gradient {
+                GradientStop { position: 0.0; color: "#666666" }
+                GradientStop { position: 1.0; color: "#585858" }
+            }
+            property Gradient bottomGradient: Gradient {
+                GradientStop { position: 0.0; color: "#5e5e5e" }
+                GradientStop { position: 1.0; color: "#474747" }
+            }
+        }
+
+        property Item pressed: Item {
+            property Gradient totalGradient: Gradient {
+                GradientStop { position: 0.0; color: "#546ab9" }
+                GradientStop { position: 1.0; color: "#7088d5" }
+            }
+            property Gradient topGradient: Gradient {
+                GradientStop { position: 0.0; color: "#546ab9" }
+                GradientStop { position: 1.0; color: "#6278c5" }
+            }
+            property Gradient middleGradient: Gradient {
+                GradientStop { position: 0.0; color: "#4a74b6" }
+                GradientStop { position: 1.0; color: "#5680c2" }
+            }
+            property Gradient bottomGradient: Gradient {
+                GradientStop { position: 0.0; color: "#6278c5" }
+                GradientStop { position: 1.0; color: "#7088d5" }
+            }
+        }
+        property Item pressedHover: Item {
+            property Gradient totalGradient: Gradient {
+                GradientStop { position: 0.0; color: "#546ab9" }
+                GradientStop { position: 1.0; color: "#7088d5" }
+            }
+            property Gradient topGradient: Gradient {
+                GradientStop { position: 0.0; color: "#546ab9" }
+                GradientStop { position: 1.0; color: "#6278c5" }
+            }
+            property Gradient middleGradient: Gradient {
+                GradientStop { position: 0.0; color: "#4a74b6" }
+                GradientStop { position: 1.0; color: "#5680c2" }
+            }
+            property Gradient bottomGradient: Gradient {
+                GradientStop { position: 0.0; color: "#6278c5" }
+                GradientStop { position: 1.0; color: "#7088d5" }
+            }
+        }
+    }
+
 }
