@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import SofaApplication 1.0
 import SofaParticleInteractor 1.0
 import SofaScene 1.0
@@ -104,7 +104,7 @@ SofaScene {
         text: "&Reset"
         shortcut: "Ctrl+Alt+R"
         onTriggered: root.reset();
-        tooltip: "Reset the simulation"
+//        ToolTip.text: qsTr("Save the active project")
     }
 
     // SOFACOMPONENT

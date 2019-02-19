@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 import QtQuick 2.7
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2

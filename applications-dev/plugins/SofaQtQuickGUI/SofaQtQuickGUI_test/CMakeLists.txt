@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
 project(SofaQtQuickGUI_test)
+find_package(SofaFramework REQUIRED)
+find_package(SofaTest REQUIRED)
+find_package(SofaGTestMain REQUIRED)
 find_package(Qt5Test REQUIRED)
 
 set(HEADER_FILES

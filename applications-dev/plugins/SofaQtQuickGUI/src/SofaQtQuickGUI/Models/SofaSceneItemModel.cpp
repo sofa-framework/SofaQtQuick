@@ -64,17 +64,18 @@ SofaSceneItemModel::SofaSceneItemModel(QObject* parent) : QAbstractItemModel(par
 
 SofaSceneItemModel::~SofaSceneItemModel()
 {
-    if(m_scene){
-        LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
-        {
-            /// The cast is ok as long as the only kind of node we are manipulating are inherited from
-            /// Node (as are the DAGNode).
-            Node* node = static_cast<Node*>(basenode);
-            node->removeListener(this);
-            msg_info("Listener") << "Remove listener: " << node->getName() ;
-        });
-        m_scene->sofaRootNode()->execute(lambda);
-    }
+    /// This code seems to cause crashes on Hierarchy view refresh
+//    if(m_scene){
+//        LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
+//        {
+//            /// The cast is ok as long as the only kind of node we are manipulating are inherited from
+//            /// Node (as are the DAGNode).
+//            Node* node = static_cast<Node*>(basenode);
+//            node->removeListener(this);
+////            msg_info("Listener") << "Remove listener: " << node->getName() ;
+//        });
+//        m_scene->sofaRootNode()->execute(lambda);
+//    }
 
 }
 
@@ -343,6 +344,7 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
     /// The scene passed to this model is tracked to monitor if its status has changed.
     /// If this is the case then the model needs to be reseted.
     connect(m_scene, &SofaScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
+    emit sofaSceneChanged();
 }
 
 void SofaSceneItemModel::handleRootNodeChange()

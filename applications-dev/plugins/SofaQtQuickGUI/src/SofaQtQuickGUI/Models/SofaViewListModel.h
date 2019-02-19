@@ -46,6 +46,7 @@ public:
     Q_INVOKABLE void update();
     Q_INVOKABLE int count() const ;
     Q_INVOKABLE QVariantMap get(int row);
+    Q_PROPERTY(int length READ count)
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;

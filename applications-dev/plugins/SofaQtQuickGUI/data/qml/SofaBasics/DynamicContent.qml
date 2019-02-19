@@ -23,7 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  *   - damien.marchal@univ-lille.fr (CNRS) deep refactoring
  *******************************************************************/
 import QtQuick 2.5
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
@@ -31,7 +31,10 @@ import QtQuick.Window 2.2
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
 import SofaViewListModel 1.0
+import SofaBasics 1.0
+import SofaColorScheme 1.0
 
+import LiveFileMonitorSingleton 1.0
 
 
 //TODO(dmarchal 10/01/2019): move the file model into a separated file
@@ -40,6 +43,13 @@ import SofaViewListModel 1.0
 /// DynamicContent is a widget that contains one of the SofaViews
 /// with a menu to select which is the view to display.
 Item {
+
+    /// Refreshing the view every time a file is modified
+    property var files : LiveFileMonitorSingleton.files
+    onFilesChanged: {
+        loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
+    }
+
 
     //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
     //TODO(dmarchal: 28/01/2019 unify the function so it can work with any object having a "lenght" property
@@ -108,29 +118,42 @@ Item {
         // The toolbar containing a dropdown menu and some
         // button and checkbox.
         /////////////////////////////////////////////////////////
-        Rectangle {
+        GBRect {
             id: toolBar
-            color: "grey"
-            height: 32
+            color: "#757575"
+            border.color: "black"
+
+            borderWidth: 1
+            borderGradient: Gradient {
+                GradientStop { position: 0.0; color: "#7a7a7a" }
+                GradientStop { position: 1.0; color: "#5c5c5c" }
+            }
+            height: 24
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
 
             RowLayout {
                 id: toolBarLayout
+                y: 2
                 spacing: 2
-
                 ComboBox
                 {
                     id: comboBox
                     textRole: "name"
                     model: listModel
-                    width: 100
+                    sizeToContents: true
                     currentIndex: 0
+
                     onCurrentIndexChanged:
                     {
                         loaderLocation.refresh(listModel.get(currentIndex));
                         root.currentContentName = currentContentName;
+                    }
+
+                    property var files : LiveFileMonitorSingleton.files
+                    onFilesChanged: {
+                        loaderLocation.refresh(listModel.get(currentIndex))
                     }
 
                     function findIndexFor(name)
@@ -152,7 +175,11 @@ Item {
                 /// Open a new windows with this content.
                 Button
                 {
-                    icon.source: "qrc:/icon/subWindow.png"
+                    position: cornerPositions["Single"]
+                    Image {
+                        anchors.centerIn: parent
+                        source: "qrc:/icon/subWindow.png"
+                    }
                     onClicked: {
                         windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
                                                          "title" : comboBox.currentText });
@@ -170,7 +197,7 @@ Item {
                             modality: Qt.NonModal
                             flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                             visible: true
-                            color: "lightgrey"
+                            color: "#787878"
                             onClosing: destroy();
 
                             Loader {
@@ -184,14 +211,13 @@ Item {
 
                 Label {
                     id: showAllLabel
-                    anchors.right: checkBoxEditting.left
-                    anchors.verticalCenter:  parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
                     text: "Live Coding:"
+                    color: "black"
                 }
                 CheckBox {
                     id : checkBoxEditting
-                    anchors.right:  parent.right
-                    anchors.verticalCenter:  parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
                 }
             }
         }
@@ -227,18 +253,20 @@ Item {
 
 
                 /// Load the component from a qml file.
+                console.error("Loading file://"+source)
                 var contentComponent = Qt.createComponent("file://"+source);
                 if(contentComponent.status === Component.Error)
                 {
+//                    console.error("error")
                     ///TODO(dmarchal 28/01/2019) Fix loader.
-                    loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation);
+                    loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation.contentItem);
                     return;
                 }
 
                 /// Create an uid in the SofaApplication settings.
                 if(root.contentUiId === 0)
                 {
-                    console.log("generate a contentUID")
+//                    console.error("generate a contentUID")
                     root.contentUiId = SofaApplication.uiSettings.generate();
                 }
 
@@ -248,7 +276,9 @@ Item {
                     contentProperties = {};
 
                 contentProperties["anchors.fill"] = loaderLocation;
+//                console.error("createObject")
                 var content = contentComponent.createObject(loaderLocation, contentProperties);
+//                console.error("DONE")
 
                 loaderLocation.contentItem = content;
                 root.currentContentName = name;

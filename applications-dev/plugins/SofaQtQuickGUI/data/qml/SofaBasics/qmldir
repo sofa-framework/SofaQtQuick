@@ -31,3 +31,13 @@ singleton MementoManager 1.0 MementoManager.qml
 ClipPlane 1.0 ClipPlane.qml
 WindowResizer 1.0 WindowResizer.qml
 ColorChooser 1.0 ColorChooser.qml
+TextField 1.0 TextField.qml
+SpinBox 1.0 SpinBox.qml
+DoubleSpinBox 1.0 DoubleSpinBox.qml
+CheckBox 1.0 CheckBox.qml
+Button 1.0 Button.qml
+ComboBox 1.0 ComboBox.qml
+GroupBox 1.0 GroupBox.qml
+ToolButton 1.0 ToolButton.qml
+GBRect 1.0 GBRect.qml
+MenuBar 1.0 MenuBar.qml

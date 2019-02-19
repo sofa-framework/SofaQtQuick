@@ -1,9 +1,12 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.2
-import QtQuick.Layouts 1.0
+import QtQuick.Controls 2.4
+import QtQuick.Layouts 1.3
+
+import SofaBasics 1.0
 
 GridLayout {
     id: root
+    margins: -1
 
     property alias  vx:                 vxSpinBox.value
     property alias  vy:                 vySpinBox.value
@@ -29,24 +32,27 @@ GridLayout {
     property int    preferredWidth:     20
     property bool   fillWidth:          true
 
-    SpinBox {
+    DoubleSpinBox {
         id: vxSpinBox
         Layout.fillWidth:               root.fillWidth
         Layout.preferredWidth:          root.preferredWidth
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                       root.minimumValue
+        realTo:                         root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                      0.0
+        realStepSize:                   root.stepSize
+
+        position: cornerPositions["Left"]
     }
-    SpinBox {
+    DoubleSpinBox {
         id: vySpinBox
         Layout.fillWidth:               root.fillWidth
         Layout.preferredWidth:          root.preferredWidth
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                       root.minimumValue
+        realTo:                         root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                      0.0
+        realStepSize:                   root.stepSize
+        position: cornerPositions["Right"]
     }
 }

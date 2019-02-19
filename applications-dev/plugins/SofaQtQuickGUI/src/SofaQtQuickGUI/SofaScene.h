@@ -84,7 +84,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject, private sofa::simulati
     friend bool LoaderProcess(SofaScene* scene);
 
 public:
-    explicit SofaScene(QObject *parent = 0);
+    explicit SofaScene(QObject *parent = nullptr);
     ~SofaScene();
 
 public:

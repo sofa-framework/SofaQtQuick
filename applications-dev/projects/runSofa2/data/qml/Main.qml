@@ -18,14 +18,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import QtQuick.Controls.Styles 1.3
 import SofaScene 1.0
-import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaViews 1.0
+import SofaBasics 1.0
 
 ApplicationWindow {
     id: root
@@ -74,7 +73,7 @@ ApplicationWindow {
         sofaScene: root.sofaScene
     }
 
-    toolBar: DefaultToolBar {
+    header: DefaultToolBar {
         id: toolBar
         sofaScene: root.sofaScene
     }
@@ -92,7 +91,7 @@ ApplicationWindow {
         }
     }
 
-    statusBar: DefaultStatusBar {
+    footer: DefaultStatusBar {
         id: statusBar
         sofaScene: root.sofaScene
     }

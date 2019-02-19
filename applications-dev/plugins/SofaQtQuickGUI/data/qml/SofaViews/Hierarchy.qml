@@ -19,19 +19,18 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQml.Models 2.2
 import QtQuick 2.0
-import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
-import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneItemModel 1.0
 import SofaSceneItemProxy 1.0
 import SofaWidgets 1.0
+import QtQuick.Controls 1.4
+import SofaBasics 1.0
 
 Rectangle {
     id: root
-    color : "red"
     anchors.fill : parent
 
     enabled: sofaScene ? sofaScene.ready : false
@@ -39,7 +38,7 @@ Rectangle {
     property var sofaScene: SofaApplication.sofaScene
     readonly property var searchBar: searchBar
 
-    //    Item {
+/*    //    Item {
     //        property bool isActive: false
     //        property int  index: 0
     //        id: componentSignaler
@@ -88,7 +87,7 @@ Rectangle {
     //                componentSignaler.start(i, c)
     //            }
     //        }
-    //    }
+    //    } */
 
     // search bar
     SofaSearchBar {
@@ -112,7 +111,7 @@ Rectangle {
         }
 
         onSelectionChanged: {
-            console.log("SELECTION CANGED");
+            console.log("SELECTION CHANGED");
         }
 
         SofaSceneItemModel
@@ -174,15 +173,15 @@ Rectangle {
                     border.width: 1
                     border.color: "black"
                 }
-                //                    Image {
-                //                        anchors.horizontalCenter: parent.horizontalCenter
-                //                        anchors.verticalCenter: colorIcon.verticalCenter
-                //                        height: 16
-                //                        width: 16
-                //                        visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
-                //                        source: "qrc:/icon/disabled.png"
-                //                        opacity: 1.0
-                //                    }
+//                //                    Image {
+//                //                        anchors.horizontalCenter: parent.horizontalCenter
+//                //                        anchors.verticalCenter: colorIcon.verticalCenter
+//                //                        height: 16
+//                //                        width: 16
+//                //                        visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
+//                //                        source: "qrc:/icon/disabled.png"
+//                //                        opacity: 1.0
+//                //                    }
             }
 
             Text {
@@ -195,12 +194,12 @@ Rectangle {
             }
 
 
-            SofaNodeMenu
-            {
-                id: nodeMenu
-                model: basemodel
-                currentIndex: sceneModel.mapToSource(styleData.index)
-            }
+//            SofaNodeMenu
+//            {
+//                id: nodeMenu
+//                model: basemodel
+//                currentIndex: sceneModel.mapToSource(styleData.index)
+//            }
 
             SofaObjectMenu
             {
@@ -239,17 +238,14 @@ Rectangle {
             title: "Hierarchy"
             role: "name"
         }
-
-
     }
 
     CheckBox {
         anchors.top: treeView.anchors.top
+        anchors.topMargin: 3
         anchors.right: treeView.anchors.right
         anchors.rightMargin: +30
-        checked: true
-        width : 16
-        height : 16
+        checked: false
         onCheckedChanged: {
             sceneModel.showOnlyNodes(checked)
         }

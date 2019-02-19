@@ -21,7 +21,7 @@ Contributors:
 */
 
 import QtQuick 2.2
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.0
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
@@ -33,7 +33,7 @@ import SofaBasics 1.0
   *************************************************************************************************/
 Row {
     id: root
-    spacing : 10
+    spacing : -1
     width: parent.width
 
     property var dataObject: null

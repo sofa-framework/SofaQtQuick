@@ -39,5 +39,12 @@
         <file>icon/undo.png</file>
         <file>icon/redo.png</file>
         <file>icon/linkArrow.png</file>
+        <file>icon/check.png</file>
+        <file>icon/spinboxRight.png</file>
+        <file>icon/spinboxLeft.png</file>
+        <file>icon/step.png</file>
+        <file>icon/pause.png</file>
+        <file>icon/play.png</file>
+        <file>icon/replay.png</file>
     </qresource>
 </RCC>

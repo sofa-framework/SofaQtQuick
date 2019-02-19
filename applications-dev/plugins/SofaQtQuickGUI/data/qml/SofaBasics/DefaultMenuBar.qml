@@ -18,10 +18,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaApplication 1.0
+import SofaBasics 1.0
 
 MenuBar {
     id: menuBar
@@ -34,7 +35,7 @@ MenuBar {
             text: "&Open..."
             shortcut: "Ctrl+O"
             onTriggered: openSofaSceneDialog.open();
-            tooltip: "Open a SofaScene"
+//            tooltip: "Open a SofaScene"
         },
 
         Action {
@@ -50,7 +51,7 @@ MenuBar {
             id: clearRecentAction
             text: "&Clear"
             onTriggered: SofaApplication.sceneSettings.clearRecents();
-            tooltip: "Clear history"
+//            tooltip: "Clear history"
         },
 
         Action {
@@ -58,9 +59,8 @@ MenuBar {
             text: "&Reload"
             shortcut: "Ctrl+R"
             onTriggered: sofaScene.reload();
-            tooltip: "Reload the Sofa Scene"
+//            tooltip: "Reload the Sofa Scene"
         },
-
         Action
         {
             id: exitAction
@@ -68,12 +68,11 @@ MenuBar {
             shortcut: "Ctrl+Q"
             onTriggered: close()
         },
-
         Action {
             id: simulateAction
             text: "&Simulate"
             shortcut: "Space"
-            tooltip: "Open a Sofa Scene"
+//            tooltip: "Open a Sofa Scene"
             checkable: true
             checked: false
             onTriggered: if(sofaScene) sofaScene.animate = checked
@@ -95,52 +94,51 @@ MenuBar {
         {
             id: aboutAction
             text: "&About"
-            tooltip: "What is this application ?"
+//            tooltip: "What is this application ?"
             onTriggered: aboutDialog.visible = true;
         }
     ]
 
     Menu {
         title: "&File"
-        visible: true
-
+//        visible: true
         MenuItem {action: openAction}
         Menu {
             id: recentMenu
             title: "Open recent"
-
+            property var items: []
             visible: 0 !== items.length
 
-            function update() {
-                recentMenu.clear();
-                var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
-                if(0 === sofaSceneRecentsList.length)
-                    return;
 
-                for(var j = 0; j < sofaSceneRecentsList.length; ++j) {
-                    var sofaSceneSource = sofaSceneRecentsList[j];
-                    if(0 === sofaSceneSource.length)
-                        continue;
+//            function update() {
+//                recentMenu.items.clear();
+//                var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
+//                if(0 === sofaSceneRecentsList.length)
+//                    return;
 
-                    var sofaSceneName = sofaSceneSource.replace(/^.*[//\\]/m, "");
-                    var title = j.toString() + " - " + sofaSceneName + " - \"" + sofaSceneSource + "\"";
+//                for(var j = 0; j < sofaSceneRecentsList.length; ++j) {
+//                    var sofaSceneSource = sofaSceneRecentsList[j];
+//                    if(0 === sofaSceneSource.length)
+//                        continue;
 
-                    var openRecentItem = recentMenu.addItem(title);
-                    openRecentItem.action = openRecentAction;
+//                    var sofaSceneName = sofaSceneSource.replace(/^.*[//\\]/m, "");
+//                    var title = j.toString() + " - " + sofaSceneName + " - \"" + sofaSceneSource + "\"";
 
-                    if(50 === recentMenu.items.length)
-                        break;
-                }
+//                    var openRecentItem = recentMenu.addItem(title);
+//                    openRecentItem.action = openRecentAction;
 
-                if(0 === recentMenu.items.length)
-                    return;
+//                    if(50 === recentMenu.items.length)
+//                        break;
+//                }
+//                if(0 === recentMenu.items.length)
+//                    return;
 
-                recentMenu.addSeparator();
-                var clearRecentItem = recentMenu.addItem("Clear");
-                clearRecentItem.action = clearRecentAction;
-            }
+//                recentMenu.addSeparator();
+//                var clearRecentItem = recentMenu.addItem("Clear");
+//                clearRecentItem.action = clearRecentAction;
+//            }
 
-            Component.onCompleted: recentMenu.update()
+//            Component.onCompleted: recentMenu.update()
 
             Connections {
                 target: SofaApplication.sceneSettings

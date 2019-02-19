@@ -18,31 +18,25 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
-import QtQuick.Controls.Styles 1.1
+import QtQuick.Controls 2.4
 
-Button {
-    id: root
-
-    implicitWidth: 32
-    implicitHeight: 32
-
-    style: ButtonStyle {
-        background: null
-        label: null
-    }
+Button {    
+    hoverEnabled: true
+    property string iconSource: "qrc:/icon/next.png"
 
     Image {
         id: image
         anchors.fill: parent
-        source: root.iconSource
+        source: iconSource
         fillMode: Image.PreserveAspectFit
-
         Rectangle {
             anchors.fill: parent
-            opacity: 0.5
-            color: "lightgrey"
-            visible: root.pressed
+            opacity: pressed ? 0.2 : 0.8
+            color: pressed ? "white" : "lightgrey"
+            visible: pressed || hovered
         }
+    }
+    background: Rectangle {
+        color: "transparent"
     }
 }

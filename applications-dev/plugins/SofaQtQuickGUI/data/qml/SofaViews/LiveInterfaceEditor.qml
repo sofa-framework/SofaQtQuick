@@ -17,13 +17,13 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import SofaBasics 1.0
 import SofaApplication 1.0
-
+import QtQuick.Controls 1.4
 import LiveFileMonitorSingleton 1.0
+import SofaBasics 1.0
 
 /*
     A Panel that monitor the SofaWidget directory to detect changes and automagically

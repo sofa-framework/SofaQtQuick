@@ -47,7 +47,7 @@ class SofaSceneItemModel : public QAbstractItemModel, private MutationListener
     Q_OBJECT
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene)
+    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
 
     ///@brief Returns the sofa component corresponding to the provided index.
     Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentFromIndex(const QModelIndex& index) const;
@@ -77,6 +77,9 @@ public:
         IsEnabled,
         Row
     };
+
+signals:
+    void sofaSceneChanged();
 
 protected slots:
     void handleRootNodeChange();

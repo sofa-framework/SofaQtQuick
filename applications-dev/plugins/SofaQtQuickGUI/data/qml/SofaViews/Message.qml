@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
@@ -69,9 +69,6 @@ Column {
             anchors.top: header.top
             anchors.bottom: header.bottom
             width: 150
-            style: ComboBoxStyle {
-                font.pixelSize: 12
-            }
             currentIndex: filterByComponent? 1 : 0
             model: [ "All", "SelectedComponents" ]
             onActivated: {

@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 pragma Singleton
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
@@ -27,6 +27,7 @@ import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
 import SofaMessageList 1.0
+//import SofaBasics 1.0
 
 SofaApplication
 {
