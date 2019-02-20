@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
-import QtQuick.Controls 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaApplication 1.0
@@ -91,7 +91,6 @@ ToolBar {
                         else
                         {
                             interactorButton.checked = false;
-                            interactorButton.set
                         }
                     }
                 }
@@ -143,6 +142,7 @@ ToolBar {
             ToolButton {
                 id: stepButton
                 width: 22
+                checkable: false
                 iconSource: "qrc:/icon/step.png"
 //                ToolTip.text: "Step"
 
@@ -155,6 +155,7 @@ ToolBar {
             ToolButton {
                 id: resetButton
                 width: 22
+                checkable: false
 
                 iconSource: "qrc:/icon/replay.png"
 //                ToolTip.text: "Reset the sofa scene"
@@ -203,7 +204,6 @@ ToolBar {
                 height: root.height - 5
                 width: 22
 
-                checked: false
                 checkable: false
 
                 onClicked: saveScreenshotDialog.open();
@@ -225,8 +225,6 @@ ToolBar {
 
             ToolButton {
                 id: movieButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
                 iconSource: "qrc:/icon/movieRecording.png"
                 width: 22
 

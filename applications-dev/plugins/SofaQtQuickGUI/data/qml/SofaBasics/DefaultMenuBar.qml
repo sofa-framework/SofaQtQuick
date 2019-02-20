@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
-import QtQuick.Controls 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaApplication 1.0
@@ -99,46 +99,43 @@ MenuBar {
         }
     ]
 
-    Menu {
+    SofaMenu {
         title: "&File"
-//        visible: true
-        MenuItem {action: openAction}
-        Menu {
+        SofaMenuItem {action: openAction}
+        SofaMenu {
             id: recentMenu
             title: "Open recent"
             property var items: []
             visible: 0 !== items.length
+            function update() {
+                recentMenu.items.clear();
+                var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
+                if(0 === sofaSceneRecentsList.length)
+                    return;
 
+                for(var j = 0; j < sofaSceneRecentsList.length; ++j) {
+                    var sofaSceneSource = sofaSceneRecentsList[j];
+                    if(0 === sofaSceneSource.length)
+                        continue;
 
-//            function update() {
-//                recentMenu.items.clear();
-//                var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
-//                if(0 === sofaSceneRecentsList.length)
-//                    return;
+                    var sofaSceneName = sofaSceneSource.replace(/^.*[//\\]/m, "");
+                    var title = j.toString() + " - " + sofaSceneName + " - \"" + sofaSceneSource + "\"";
 
-//                for(var j = 0; j < sofaSceneRecentsList.length; ++j) {
-//                    var sofaSceneSource = sofaSceneRecentsList[j];
-//                    if(0 === sofaSceneSource.length)
-//                        continue;
+                    var openRecentItem = recentMenu.addItem(title);
+                    openRecentItem.action = openRecentAction;
 
-//                    var sofaSceneName = sofaSceneSource.replace(/^.*[//\\]/m, "");
-//                    var title = j.toString() + " - " + sofaSceneName + " - \"" + sofaSceneSource + "\"";
+                    if(50 === recentMenu.items.length)
+                        break;
+                }
+                if(0 === recentMenu.items.length)
+                    return;
 
-//                    var openRecentItem = recentMenu.addItem(title);
-//                    openRecentItem.action = openRecentAction;
+                recentMenu.addSeparator();
+                var clearRecentItem = recentMenu.addItem("Clear");
+                clearRecentItem.action = clearRecentAction;
+            }
 
-//                    if(50 === recentMenu.items.length)
-//                        break;
-//                }
-//                if(0 === recentMenu.items.length)
-//                    return;
-
-//                recentMenu.addSeparator();
-//                var clearRecentItem = recentMenu.addItem("Clear");
-//                clearRecentItem.action = clearRecentAction;
-//            }
-
-//            Component.onCompleted: recentMenu.update()
+            Component.onCompleted: recentMenu.update()
 
             Connections {
                 target: SofaApplication.sceneSettings
@@ -146,42 +143,43 @@ MenuBar {
             }
         }
 
-        MenuItem {action: reloadAction}
-        MenuItem { text: "Save (TODO)"; enabled : false }
-        MenuItem { text: "Save as...(TODO)"; enabled : false }
-        MenuItem { text: "Export as...(TODO)"; enabled : false }
+        SofaMenuItem {action: reloadAction}
+        SofaMenuItem { enabled: false; text: "Save (TODO)" }
+        SofaMenuItem { text: "Save as...(TODO)"; enabled : false }
+        SofaMenuItem { text: "Export as...(TODO)"; enabled : false }
         MenuSeparator {}
-        MenuItem {action: exitAction}
+        SofaMenuItem {action: exitAction}
     }
 
-    Menu {
+
+    SofaMenu {
         title: "&Edit"
-        MenuItem { text : "Cut (TODO)"; enabled : false }
-        MenuItem { text : "Copy (TODO)"; enabled : false }
-        MenuItem { text : "Paste (TODO)"; enabled : false }
+        SofaMenuItem { text: "Cut (TODO)"; enabled: false }
+        SofaMenuItem { text : "Copy (TODO)"; enabled : false }
+        SofaMenuItem { text : "Paste (TODO)"; enabled : false }
     }
 
-    Menu {
+    SofaMenu {
         title: "&Scene"
-        MenuItem { text: "Reload (TODO)"; enabled : false}
+        SofaMenuItem { text: "Reload (TODO)"; enabled : false}
         MenuSeparator {}
-        MenuItem { text: "Play (TODO)"; enabled : false}
-        MenuItem { text: "Pause (TODO)"; enabled : false}
-        MenuItem { text: "Stop (TODO)"; enabled : false }
+        SofaMenuItem { text: "Play (TODO)"; enabled : true; checkable: true; checked: true}
+        SofaMenuItem { text: "Pause (TODO)"; enabled : false; checkable: true; checked: false}
+        SofaMenuItem { text: "Stop (TODO)"; enabled : false }
         MenuSeparator {}
-        MenuItem { text: "Add node (TODO)"; enabled : false}
-        MenuItem { text: "Add object (TODO)"; enabled : false}
+        SofaMenuItem { text: "Add node (TODO)"; enabled : false}
+        SofaMenuItem { text: "Add object (TODO)"; enabled : false}
     }
 
-    Menu {
+    SofaMenu {
         title: "&Windows"
-        MenuItem { text: "Plugins store (TODO)"; enabled : false}
+        SofaMenuItem { text: "Plugins store (TODO)"; enabled : true}
     }
 
-    Menu {
+    SofaMenu {
         title: "&Help"
-        MenuItem { text: "Help (TODO)"; enabled : false }
-        MenuItem { text: "Tutorials (TODO)"; enabled : false }
-        MenuItem {action: aboutAction}
+        SofaMenuItem { text: "Help (TODO)"; enabled : false }
+        SofaMenuItem { text: "Tutorials (TODO)"; enabled : false }
+        SofaMenuItem {action: aboutAction}
     }
 }

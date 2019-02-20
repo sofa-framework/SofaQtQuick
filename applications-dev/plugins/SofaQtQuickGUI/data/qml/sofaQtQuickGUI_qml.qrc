@@ -106,5 +106,7 @@
         <file>SofaBasics/DoubleSpinBox.qml</file>
         <file>SofaBasics/MenuBar.qml</file>
         <file>SofaColorScheme/GBRect.qml</file>
+        <file>SofaBasics/SofaMenu.qml</file>
+        <file>SofaBasics/SofaMenuItem.qml</file>
     </qresource>
 </RCC>
