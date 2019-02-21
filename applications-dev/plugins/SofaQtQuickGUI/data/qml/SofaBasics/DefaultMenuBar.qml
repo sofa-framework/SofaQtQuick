@@ -35,7 +35,6 @@ MenuBar {
             text: "&Open..."
             shortcut: "Ctrl+O"
             onTriggered: openSofaSceneDialog.open();
-//            tooltip: "Open a SofaScene"
         },
 
         Action {
@@ -51,7 +50,6 @@ MenuBar {
             id: clearRecentAction
             text: "&Clear"
             onTriggered: SofaApplication.sceneSettings.clearRecents();
-//            tooltip: "Clear history"
         },
 
         Action {
@@ -59,7 +57,6 @@ MenuBar {
             text: "&Reload"
             shortcut: "Ctrl+R"
             onTriggered: sofaScene.reload();
-//            tooltip: "Reload the Sofa Scene"
         },
         Action
         {
@@ -72,7 +69,6 @@ MenuBar {
             id: simulateAction
             text: "&Simulate"
             shortcut: "Space"
-//            tooltip: "Open a Sofa Scene"
             checkable: true
             checked: false
             onTriggered: if(sofaScene) sofaScene.animate = checked
@@ -94,14 +90,19 @@ MenuBar {
         {
             id: aboutAction
             text: "&About"
-//            tooltip: "What is this application ?"
             onTriggered: aboutDialog.visible = true;
         }
     ]
 
     SofaMenu {
         title: "&File"
-        SofaMenuItem {action: openAction}
+        SofaMenuItem {
+            action: openAction
+            ToolTip {
+                text: "Open a Scene file"
+                description: "accepted formats: .scn | .pyscn | .py"
+            }
+        }
         SofaMenu {
             id: recentMenu
             title: "Open recent"
@@ -131,10 +132,9 @@ MenuBar {
                     return;
 
                 recentMenu.addSeparator();
-                var clearRecentItem = recentMenu.addItem("Clear");
+                var clearRecentItem = recentMenu.addItem("Clear Recent");
                 clearRecentItem.action = clearRecentAction;
             }
-
             Component.onCompleted: recentMenu.update()
 
             Connections {
@@ -143,7 +143,12 @@ MenuBar {
             }
         }
 
-        SofaMenuItem {action: reloadAction}
+        SofaMenuItem {
+            action: reloadAction
+            ToolTip {
+                text: "Reload the Sofa Scene"
+            }
+        }
         SofaMenuItem { enabled: false; text: "Save (TODO)" }
         SofaMenuItem { text: "Save as...(TODO)"; enabled : false }
         SofaMenuItem { text: "Export as...(TODO)"; enabled : false }
@@ -180,6 +185,11 @@ MenuBar {
         title: "&Help"
         SofaMenuItem { text: "Help (TODO)"; enabled : false }
         SofaMenuItem { text: "Tutorials (TODO)"; enabled : false }
-        SofaMenuItem {action: aboutAction}
+        SofaMenuItem {
+            action: aboutAction
+            ToolTip {
+                text: "About runSofa2"
+            }
+        }
     }
 }

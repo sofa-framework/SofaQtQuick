@@ -219,6 +219,10 @@ Item {
                 CheckBox {
                     id : checkBoxEditting
                     Layout.alignment: Qt.AlignVCenter
+                    ToolTip {
+                        text: "Live Coding"
+                        description: "Activates Live coding on the current view"
+                    }
                 }
             }
         }

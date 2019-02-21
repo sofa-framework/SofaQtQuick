@@ -494,7 +494,6 @@ CameraView {
                                     }
 
                                     ToolTip {
-                                        anchors.fill: parent
                                         description: "Enable / Disable Antialiasing\n\nNote : You must resize your window before the changes will take effect"
                                     }
                                 }
@@ -531,7 +530,6 @@ CameraView {
                                         }
 
                                         ToolTip {
-                                            anchors.fill: parent
                                             description: "Change the number of samples used for antialiasing\n\nNote : You must resize your window before the changes will take effect"
                                         }
                                     }
@@ -582,7 +580,6 @@ CameraView {
                                         }
 
                                         ToolTip {
-                                            anchors.fill: parent
                                             description: "Save screenshot"
                                         }
                                     }
@@ -622,7 +619,6 @@ CameraView {
                                         }
 
                                         ToolTip {
-                                            anchors.fill: parent
                                             description: "Save video"
                                         }
                                     }

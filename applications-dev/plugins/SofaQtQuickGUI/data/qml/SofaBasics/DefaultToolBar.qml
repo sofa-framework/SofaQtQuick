@@ -125,7 +125,11 @@ ToolBar {
                 id: animateButton
                 width: 22
                 iconSource: animateButton.checked ? "qrc:/icon/pause.png" : "qrc:/icon/play.png"
-//                ToolTip.text: animateButton.checked ? "Stop" : "Animate"
+                ToolTip {
+                    text: animateButton.checked ? "Stop" : "Animate"
+                    description: "Starts / Stop the animation loop"
+
+                }
                 checkable: true
                 checked: false
                 onCheckedChanged: if(sofaScene) sofaScene.animate = animateButton.checked
@@ -144,7 +148,10 @@ ToolBar {
                 width: 22
                 checkable: false
                 iconSource: "qrc:/icon/step.png"
-//                ToolTip.text: "Step"
+                ToolTip {
+                    text: "Step"
+                    description: "Performs a single simulation step"
+                }
 
                 onClicked: {
                     if(sofaScene)
@@ -158,7 +165,10 @@ ToolBar {
                 checkable: false
 
                 iconSource: "qrc:/icon/replay.png"
-//                ToolTip.text: "Reset the sofa scene"
+                ToolTip {
+                    text: "Reset"
+                    description: "Reset the simulation (from memory). To update a modified scene use File->Reload"
+                }
 
                 onClicked: {
                     if(sofaScene)
@@ -220,7 +230,10 @@ ToolBar {
                     }
                 }
 
-//                ToolTip.text: "Save screenshot"
+                ToolTip {
+                    text: "Save screenshot"
+                    description: "Captures a screenshot and saves it on the filesystem"
+                }
             }
 
             ToolButton {
@@ -253,7 +266,11 @@ ToolBar {
                     }
                 }
 
-//                ToolTip.text: "Save video"
+                ToolTip {
+                    text: "Video Capture"
+                    description: "Records a video of the simulation (until next press on this button)"
+
+                }
             }
         }
     }

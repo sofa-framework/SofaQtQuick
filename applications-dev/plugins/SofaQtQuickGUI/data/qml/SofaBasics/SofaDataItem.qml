@@ -137,7 +137,7 @@ Item {
         columnSpacing: 1
         rowSpacing: 1
 
-        Text {
+        Label {
             id: nameLabel
             Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
             Layout.fillHeight: true
@@ -145,16 +145,20 @@ Item {
             visible: root.showName
             text: dataObject.name + " "
             font.italic: true
+            color: "black"
 
             MouseArea {
+                id: dataLabelMouseArea
+                hoverEnabled: true
                 anchors.fill: parent
                 onDoubleClicked: root.doubleClickedOnLabel();
             }
-
             ToolTip {
-                anchors.fill: parent
+                text: dataObject.name
                 description: dataObject.description
+                visible: dataLabelMouseArea.containsMouse
             }
+
         }
 
         ColumnLayout {
@@ -244,8 +248,7 @@ Item {
                 checked: 0 !== dataObject.link.length
 
                 ToolTip {
-                    anchors.fill: parent
-                    description: "Link the data with another"
+                    text: "Link the data to another"
                 }
 
                 onClicked: updateLink()
@@ -265,8 +268,7 @@ Item {
             onClicked: root.updateObject();
 
             ToolTip {
-                anchors.fill: parent
-                description: "Track the data value during simulation"
+                text: "Track the data value during simulation"
             }
 
             Timer {
@@ -285,7 +287,6 @@ Item {
             onClicked: root.updateObject();
 
             ToolTip {
-                anchors.fill: parent
                 description: "Undo changes in the data value"
             }
         }
@@ -298,7 +299,6 @@ Item {
             onClicked: root.updateData();
 
             ToolTip {
-                anchors.fill: parent
                 description: "Update the data value"
             }
         }

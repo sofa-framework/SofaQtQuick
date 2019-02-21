@@ -515,7 +515,6 @@ EditView
                                     }
 
                                     ToolTip {
-                                        anchors.fill: parent
                                         description: "Enable / Disable Antialiasing\n\nNote : You must resize your window before the changes will take effect"
                                     }
                                 }
@@ -552,7 +551,6 @@ EditView
                                         }
 
                                         ToolTip {
-                                            anchors.fill: parent
                                             description: "Change the number of samples used for antialiasing\n\nNote : You must resize your window before the changes will take effect"
                                         }
                                     }
@@ -606,7 +604,6 @@ EditView
                                         color: Qt.rgba(root.backgroundColor.r, root.backgroundColor.g, root.backgroundColor.b, 1.0)
 
                                         ToolTip {
-                                            anchors.fill: parent
                                             description: "Background color"
                                         }
                                     }
@@ -627,7 +624,6 @@ EditView
                                     onCheckedChanged: root.drawFrame = checked;
 
                                     ToolTip {
-                                        anchors.fill: parent
                                         description: "Enable / Disable Scene Frame"
                                     }
                                 }
@@ -676,7 +672,6 @@ EditView
                                         }
 
                                         ToolTip {
-                                            anchors.fill: parent
                                             description: "Save screenshot"
                                         }
                                     }
@@ -718,7 +713,6 @@ EditView
                                         }
 
                                         ToolTip {
-                                            anchors.fill: parent
                                             description: "Save video"
                                         }
                                     }
@@ -793,7 +787,7 @@ EditView
                                 GroupBox {
                                     implicitWidth: parent.width
                                     title: "Mode"
-//                                    flat: true
+                                    //                                    flat: true
 
                                     RowLayout {
                                         anchors.fill: parent
@@ -832,7 +826,6 @@ EditView
                                             }
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Orthographic Mode"
                                             }
                                         }
@@ -870,7 +863,6 @@ EditView
                                             }
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Perspective Mode"
                                             }
                                         }
@@ -880,7 +872,7 @@ EditView
                                 GroupBox {
                                     implicitWidth: parent.width
                                     title: "Depth"
-//                                    flat: true
+                                    //                                    flat: true
 
                                     RowLayout {
                                         anchors.fill: parent
@@ -937,7 +929,6 @@ EditView
                                                     }
 
                                                     ToolTip {
-                                                        anchors.fill: parent
                                                         description: "Depth of the camera near plane"
                                                     }
                                                 }
@@ -991,7 +982,6 @@ EditView
                                                     }
 
                                                     ToolTip {
-                                                        anchors.fill: parent
                                                         description: "Depth of the camera far plane"
                                                     }
                                                 }
@@ -1049,7 +1039,7 @@ EditView
                                 GroupBox {
                                     implicitWidth: parent.width
                                     title: "View"
-//                                    flat: true
+                                    //                                    flat: true
 
                                     GridLayout {
                                         anchors.fill: parent
@@ -1065,7 +1055,6 @@ EditView
                                             onClicked: if(camera) root.saveCameraToFile(Number(uiId))
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Save the current view to a sidecar file"
                                             }
                                         }
@@ -1078,7 +1067,6 @@ EditView
                                             onClicked: if(camera) root.loadCameraFromFile(Number(uiId))
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Reload the view from data contained in a sidecar file (if present)"
                                             }
                                         }
@@ -1091,7 +1079,6 @@ EditView
                                             onClicked: if(camera) camera.fit(root.boundingBoxMin(), root.boundingBoxMax())
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Fit in view"
                                             }
                                         }
@@ -1103,7 +1090,6 @@ EditView
                                             onClicked: if(camera) camera.viewFromLeft()
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Align view along the negative X Axis"
                                             }
                                         }
@@ -1115,7 +1101,6 @@ EditView
                                             onClicked: if(camera) camera.viewFromRight()
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Align view along the positive X Axis"
                                             }
                                         }
@@ -1127,7 +1112,6 @@ EditView
                                             onClicked: if(camera) camera.viewFromTop()
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Align view along the negative Y Axis"
                                             }
                                         }
@@ -1139,7 +1123,6 @@ EditView
                                             onClicked: if(camera) camera.viewFromBottom()
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Align view along the positive Y Axis"
                                             }
                                         }
@@ -1152,7 +1135,6 @@ EditView
                                             onClicked: if(camera) camera.viewFromFront()
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Align view along the negative Z Axis"
                                             }
                                         }
@@ -1165,7 +1147,6 @@ EditView
                                             onClicked: if(camera) camera.viewFromBack()
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Align view along the positive Z Axis"
                                             }
                                         }
@@ -1178,11 +1159,9 @@ EditView
                                             onClicked: if(camera) camera.viewIsometric()
 
                                             ToolTip {
-                                                anchors.fill: parent
                                                 description: "Isometric View"
                                             }
                                         }
-
                                     }
                                 }
                             }

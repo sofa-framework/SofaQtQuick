@@ -32,7 +32,7 @@ Row {
         onClicked: MementoManager.undoAction();
 
         ToolTip {
-            description: MementoManager.undoActionName
+            text: MementoManager.undoActionName
         }
     }
     Button {
@@ -42,7 +42,7 @@ Row {
         onClicked: MementoManager.redoAction();
 
         ToolTip {
-            description: MementoManager.redoActionName
+            text: MementoManager.redoActionName
         }
     }
     Button {
@@ -53,7 +53,7 @@ Row {
         onClicked: snapshotMenu.popup();
 
         ToolTip {
-            description: 'Browse action history'
+            text: 'Browse action history'
         }
 
         Menu {
