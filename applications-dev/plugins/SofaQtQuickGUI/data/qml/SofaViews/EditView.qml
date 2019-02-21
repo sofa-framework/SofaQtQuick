@@ -373,7 +373,7 @@ EditView
         }
     }
 
-    property bool highlightIfFocused: SofaApplication.SofaViewers.length > 1
+    property bool highlightIfFocused: SofaApplication.SofaViewers ? SofaApplication.SofaViewers.length > 1 : false
     Rectangle {
         id: borderHighlighting
         anchors.fill: parent
@@ -536,7 +536,7 @@ EditView
                                         to: 4
 
                                         function downloadValue() {
-                                            value = Math.min((root.antialiasingSamples >= 1 ? Math.log(root.antialiasingSamples) / Math.log(2.0) : minimumValue), maximumValue);
+                                            value = Math.min((root.antialiasingSamples >= 1 ? Math.log(root.antialiasingSamples) / Math.log(2.0) : from), to);
                                         }
 
                                         function uploadValue(newValue) {

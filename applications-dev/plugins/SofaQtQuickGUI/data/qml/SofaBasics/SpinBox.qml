@@ -28,6 +28,16 @@ SpinBox {
         backgroundID.setControlState(control.enabled && control.editable, control.hovered, control.activeFocus)
     }
 
+    function formatText(value, locale, prefix, suffix) {
+        var str = ""
+        if (prefix !== "")
+            str += qsTr(prefix)
+        str += qsTr("%1").arg(value)
+        if (suffix !== "")
+            str += qsTr(suffix)
+        return str
+    }
+
     contentItem: Rectangle {
         anchors.fill: parent
         color: "transparent"
@@ -35,14 +45,7 @@ SpinBox {
             id: inputText
             z: 2
             anchors.centerIn: parent
-            text: function(value, locale, prefix, suffix) {
-                var str = ""
-                if (prefix !== "")
-                    str += qsTr(prefix)
-                str += qsTr("%1").arg(value)
-                if (suffix !== "")
-                    str += qsTr(suffix)
-            }
+            text: formatText(value, locale, prefix, suffix)
             font: control.font
             color: control.editable ? "black" : "#464646"
             //        selectionColor: "#21be2b"

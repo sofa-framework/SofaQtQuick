@@ -258,11 +258,9 @@ Item {
 
 
                 /// Load the component from a qml file.
-                console.error("Loading file://"+source)
                 var contentComponent = Qt.createComponent("file://"+source);
                 if(contentComponent.status === Component.Error)
                 {
-//                    console.error("error")
                     ///TODO(dmarchal 28/01/2019) Fix loader.
                     loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation.contentItem);
                     return;
@@ -271,7 +269,6 @@ Item {
                 /// Create an uid in the SofaApplication settings.
                 if(root.contentUiId === 0)
                 {
-//                    console.error("generate a contentUID")
                     root.contentUiId = SofaApplication.uiSettings.generate();
                 }
 
@@ -281,9 +278,7 @@ Item {
                     contentProperties = {};
 
                 contentProperties["anchors.fill"] = loaderLocation;
-//                console.error("createObject")
                 var content = contentComponent.createObject(loaderLocation, contentProperties);
-//                console.error("DONE")
 
                 loaderLocation.contentItem = content;
                 root.currentContentName = name;

@@ -142,7 +142,7 @@ Item {
 
                             width: theView.width
                             height: 26
-                            color: "#727272"
+                            color: SofaApplication.style.contentBackgroundColor
                             Rectangle {
                                 width: theView.width - 20
                                 height: 1
@@ -176,7 +176,6 @@ Item {
                                     height:20
                                     text: name
                                     color: "black"
-
                                     MouseArea {
                                         id: mouse_area1
                                         z: 1
@@ -193,6 +192,7 @@ Item {
                                         }
                                     }
                                 }
+
                             }
                         }
 
@@ -449,8 +449,8 @@ Item {
                     anchors.left : header1.left
                     anchors.verticalCenter: header1.verticalCenter
                     text : "Details " + ((topRect.sofaSelectedComponent===null)? "" : "("+ topRect.sofaSelectedComponent.className() + ")")
-//                    font.pixelSize: 14
-//                    font.bold: true
+                    //                    font.pixelSize: 14
+                    //                    font.bold: true
                     color: "black"
                 }
                 Label {
