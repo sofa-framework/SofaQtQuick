@@ -13,20 +13,6 @@ ToolButton {
     width: 20
     text: " "
 
-    onDownChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    onCheckedChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    onHoveredChanged: {
-        console.error(backgroundID.controlType)
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    Component.onCompleted: {
-        console.error(backgroundID.controlType)
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
     leftPadding: 7
     rightPadding: leftPadding
 
@@ -63,5 +49,17 @@ ToolButton {
         position: cornerPositions["Middle"]
         controlType: control.checkable ? controlTypes["ToggleButton"] : controlTypes["Button"]
         borderColor: control.enabled ? "#595959" : "#898989"
+    }
+    onDownChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    onCheckedChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    onHoveredChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    Component.onCompleted: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
     }
 }

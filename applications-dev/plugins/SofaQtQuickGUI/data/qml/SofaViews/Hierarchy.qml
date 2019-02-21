@@ -19,6 +19,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQml.Models 2.2
 import QtQuick 2.0
+import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
@@ -27,18 +29,20 @@ import SofaSceneItemModel 1.0
 import SofaSceneItemProxy 1.0
 import SofaWidgets 1.0
 import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 import SofaBasics 1.0
+import SofaColorScheme 1.0
 
 Rectangle {
     id: root
     anchors.fill : parent
-
+    color: SofaApplication.style.contentBackgroundColor
     enabled: sofaScene ? sofaScene.ready : false
 
     property var sofaScene: SofaApplication.sofaScene
     readonly property var searchBar: searchBar
 
-/*    //    Item {
+    /*    //    Item {
     //        property bool isActive: false
     //        property int  index: 0
     //        id: componentSignaler
@@ -106,6 +110,44 @@ Rectangle {
         anchors.bottom: parent.bottom
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
 
+        alternatingRowColors: true
+        rowDelegate: Rectangle {
+            color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
+        }
+        style: TreeViewStyle {
+            headerDelegate: GBRect {
+                color: "#757575"
+                border.color: "black"
+                borderWidth: 1
+                borderGradient: Gradient {
+                    GradientStop { position: 0.0; color: "#7a7a7a" }
+                    GradientStop { position: 1.0; color: "#5c5c5c" }
+                }
+                height: 20
+                width: textItem.implicitWidth
+                Text {
+                    id: textItem
+                    anchors.fill: parent
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: styleData.textAlignment
+                    anchors.leftMargin: 12
+                    text: styleData.value
+                    elide: Text.ElideRight
+                    color: textColor
+                    renderType: Text.NativeRendering
+                }
+            }
+
+            branchDelegate: ColorImage {
+                id: groupBoxArrow
+                y: 1
+                source: styleData.isExpanded ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
+                width: 14
+                height: 14
+                color: "#393939"
+            }
+            backgroundColor: SofaApplication.style.contentBackgroundColor
+        }
         selection: ItemSelectionModel {
             model: treeView.model
         }
@@ -173,15 +215,15 @@ Rectangle {
                     border.width: 1
                     border.color: "black"
                 }
-//                //                    Image {
-//                //                        anchors.horizontalCenter: parent.horizontalCenter
-//                //                        anchors.verticalCenter: colorIcon.verticalCenter
-//                //                        height: 16
-//                //                        width: 16
-//                //                        visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
-//                //                        source: "qrc:/icon/disabled.png"
-//                //                        opacity: 1.0
-//                //                    }
+                //                //                    Image {
+                //                //                        anchors.horizontalCenter: parent.horizontalCenter
+                //                //                        anchors.verticalCenter: colorIcon.verticalCenter
+                //                //                        height: 16
+                //                //                        width: 16
+                //                //                        visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
+                //                //                        source: "qrc:/icon/disabled.png"
+                //                //                        opacity: 1.0
+                //                //                    }
             }
 
             Text {
@@ -194,12 +236,12 @@ Rectangle {
             }
 
 
-//            SofaNodeMenu
-//            {
-//                id: nodeMenu
-//                model: basemodel
-//                currentIndex: sceneModel.mapToSource(styleData.index)
-//            }
+            //            SofaNodeMenu
+            //            {
+            //                id: nodeMenu
+            //                model: basemodel
+            //                currentIndex: sceneModel.mapToSource(styleData.index)
+            //            }
 
             SofaObjectMenu
             {
@@ -237,12 +279,20 @@ Rectangle {
         TableViewColumn {
             title: "Hierarchy"
             role: "name"
+
         }
     }
 
+    Label {
+        anchors.right: nodesCheckBox.left
+        anchors.bottom: nodesCheckBox.bottom
+        text: "Show only nodes: "
+    }
+
     CheckBox {
+        id: nodesCheckBox
         anchors.top: treeView.anchors.top
-        anchors.topMargin: 3
+        anchors.topMargin: 1
         anchors.right: treeView.anchors.right
         anchors.rightMargin: +30
         checked: false

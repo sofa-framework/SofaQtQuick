@@ -132,7 +132,6 @@ Item {
     GridLayout {
         id: layout
         anchors.fill: parent
-
         columns: 4
 
         columnSpacing: 1

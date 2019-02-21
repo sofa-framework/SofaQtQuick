@@ -168,7 +168,8 @@ Item {
                     {
                         /// search in the model if there is one item with the
                         /// same name as in the combobox.
-                        currentIndex = findIndexFor(root.currentContentName);
+                        if (findIndexFor(root.currentContentName))
+                            currentIndex = findIndexFor(root.currentContentName);
                     }
                 }
 
@@ -230,6 +231,10 @@ Item {
             anchors.right : parent.right
             anchors.bottom : parent.bottom
             visible: contentItem
+            Rectangle {
+                anchors.fill: parent
+                color: SofaApplication.style.contentBackgroundColor
+            }
 
             property Item contentItem
             property string errorMessage
