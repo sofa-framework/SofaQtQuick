@@ -77,6 +77,7 @@ SofaSceneItemModel::~SofaSceneItemModel()
 //        m_scene->sofaRootNode()->execute(lambda);
 //    }
 
+    m_root->removeListener(this);
 }
 
 QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &parent) const
