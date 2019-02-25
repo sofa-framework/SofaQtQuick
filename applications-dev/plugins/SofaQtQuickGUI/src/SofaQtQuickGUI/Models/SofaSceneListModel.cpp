@@ -333,7 +333,7 @@ unsigned int SofaSceneListModel::countChildrenOf(const SofaSceneListModel::Item&
     return count;
 }
 
-void SofaSceneListModel::beginAddChild(Node* parent, Node* child)
+void SofaSceneListModel::onAddChildBegin(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -376,7 +376,7 @@ void SofaSceneListModel::beginAddChild(Node* parent, Node* child)
     endInsertRows();
 }
 
-void SofaSceneListModel::endRemoveChild(Node* parent, Node* child)
+void SofaSceneListModel::onRemoveChildEnd(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -410,7 +410,7 @@ void SofaSceneListModel::endRemoveChild(Node* parent, Node* child)
     }
 }
 
-void SofaSceneListModel::beginAddObject(Node* parent, BaseObject* object)
+void SofaSceneListModel::onAddObjectBegin(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
@@ -449,7 +449,7 @@ void SofaSceneListModel::beginAddObject(Node* parent, BaseObject* object)
     }
 }
 
-void SofaSceneListModel::endRemoveObject(Node* parent, BaseObject* object)
+void SofaSceneListModel::onRemoveObjectEnd(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
