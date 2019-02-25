@@ -21,7 +21,7 @@ Menu {
     }
 
     property var model: null;     ///< The model from which we can get the objects.
-    property var currentIndex;    ///< The index in the model.
+    property var currentModelIndex;    ///< The index in the model.
     property bool nodeActivated: true
     property QtObject sofaData: null
     property string sourceLocation : null
@@ -38,7 +38,7 @@ Menu {
     MenuItem {
         text: "Add child"
         onTriggered: {
-            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentIndex))
+            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentModelIndex))
             if(newnode){
                 SofaApplication.signalComponent(newnode.getPathName());
             }
@@ -48,7 +48,7 @@ Menu {
     MenuItem {
         text: "Add sibling"
         onTriggered: {
-            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentIndex).parent())
+            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentModelIndex).parent())
             if(newnode){
                 SofaApplication.signalComponent(newnode.getPathName());
             }
@@ -60,7 +60,7 @@ Menu {
         text: "Add component (TODO)"
         onTriggered: {
             popupWindowCreateComponent.createObject(SofaApplication,
-                                                    {"sofaComponent": model.getComponentFromIndex(currentIndex)});
+                                                    {"sofaComponent": model.getComponentFromIndex(currentModelIndex)});
         }
     }
 
@@ -70,7 +70,7 @@ Menu {
         onTriggered: {
             sofaDataListViewWindowComponent.createObject(SofaApplication,
                                                          {"sofaScene": root.sofaScene,
-                                                          "sofaComponent": model.getComponentFromIndex(currentIndex)});
+                                                          "sofaComponent": model.getComponentFromIndex(currentModelIndex)});
         }
     }
 
@@ -79,7 +79,7 @@ Menu {
         onTriggered: {
             /// Creates and display an help window object
             windowMessage.createObject(SofaApplication,
-                                       {"sofaComponent": model.getComponentFromIndex(currentIndex)});
+                                       {"sofaComponent": model.getComponentFromIndex(currentModelIndex)});
         }
     }
 
@@ -116,7 +116,7 @@ Menu {
 
     MenuSeparator {}
     MenuItem {
-        enabled: (multiparent)? firstparent : true
+        enabled: true //(multiparent)? firstparent : true
         text: nodeMenu.nodeActivated ? "Deactivate" : "Activate"
         onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
     }
@@ -125,7 +125,7 @@ Menu {
     MenuItem {
         text: "Delete"
         onTriggered: {
-            var currentRow = listView.model.computeItemRow(listView.currentIndex);
+            var currentRow = listView.model.computeItemRow(listView.currentModelIndex);
             sofaScene.removeComponent(model.getComponentById(index));
             listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
         }

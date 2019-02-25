@@ -235,7 +235,6 @@ sofa::qtquick::SofaComponent* SofaSceneItemModel::getComponentFromIndex(const QM
     if(!currentBase)
         return nullptr;
 
-    msg_error("Test") << "WTF: " << currentBase->getName() ;
     return new SofaComponent(m_scene, currentBase);
 }
 

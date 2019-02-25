@@ -235,38 +235,41 @@ Rectangle {
                 text: name  //+ "(" + model.row + "/"+ styleData.row + ")"
             }
 
-
-            //            SofaNodeMenu
-            //            {
-            //                id: nodeMenu
-            //                model: basemodel
-            //                currentIndex: sceneModel.mapToSource(styleData.index)
-            //            }
+            SofaNodeMenu
+            {
+                id: nodeMenu
+                model: basemodel
+                currentModelIndex: sceneModel.mapToSource(styleData.index)
+            }
 
             SofaObjectMenu
             {
                 id: objectMenu
             }
 
-            MouseArea {
+            MouseArea
+            {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked: {
+                onClicked:
+                {
+                    var srcIndex = sceneModel.mapToSource(styleData.index)
+                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
+
                     if(mouse.button === Qt.LeftButton)
                     {
-                        var srcIndex = sceneModel.mapToSource(styleData.index)
-                        sofaScene.selectedComponent = basemodel.getComponentFromIndex(srcIndex)
-
+                        sofaScene.selectedComponent = theComponent
                         treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
                     } else if(mouse.button === Qt.RightButton) {
-                        if(isNode) {
-                            //nodeMenu.sofaData = component.getComponentData("activated");
-                            //if(component.hasLocations()===true)
-                            //{
-                            //    nodeMenu.sourceLocation = component.getSourceLocation()
-                            //    nodeMenu.creationLocation = component.getCreationLocation()
-                            //}
-                            //nodeMenu.nodeActivated = nodeMenu.sofaData.value();
+                        if(isNode)
+                        {
+                            nodeMenu.sofaData = theComponent.getComponentData("activated");
+                            if(theComponent.hasLocations()===true)
+                            {
+                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
+                                nodeMenu.creationLocation = theComponent.getCreationLocation()
+                            }
+                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
                             nodeMenu.popup();
                         } else {
                             objectMenu.popup();
