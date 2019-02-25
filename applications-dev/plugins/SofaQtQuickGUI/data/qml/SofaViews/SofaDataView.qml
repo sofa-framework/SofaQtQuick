@@ -141,7 +141,6 @@ ColumnLayout {
                             onClicked: sofaDataItem.updateObject();
 
                             ToolTip {
-                                anchors.fill: parent
                                 description: "Track the data value during simulation"
                             }
 
@@ -162,7 +161,6 @@ ColumnLayout {
                 SofaDataItem {
                     id: sofaDataItem
                     Layout.fillWidth: true
-                    //Layout.preferredHeight: implicitHeight
                     Layout.margins: 2
                     visible: sofaData
 

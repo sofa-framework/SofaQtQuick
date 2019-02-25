@@ -17,8 +17,9 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.2
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
@@ -55,9 +56,11 @@ Item {
 
     Rectangle {
         id: topRect
-        color: SofaApplication.style.headerBackgroundColor
+        color: SofaApplication.style.contentBackgroundColor
         clip: true
         anchors.fill: parent
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
         property var sofaScene: SofaApplication.sofaScene
         property var sofaSelectedComponent: sofaScene ? sofaScene.selectedComponent : null
         property bool showDebug : isDebug.checked
@@ -111,14 +114,14 @@ Item {
                             name: "expanded"
                             PropertyChanges {
                                 target: theItem
-                                implicitHeight: childView.childHeight + 20
+                                implicitHeight: childView.childHeight + 26
                             }
                         },
                         State {
                             name: "collapsed"
                             PropertyChanges {
                                 target: theItem
-                                implicitHeight: 20
+                                implicitHeight: 26
                             }
                         }
                     ]
@@ -132,31 +135,47 @@ Item {
                 |--------------------------------------------------------|*/
                     Column{
                         id : group
-
                         anchors.fill: parent
                         property int theIndex: index
                         property string theName : name
                         Rectangle{
+
                             width: theView.width
-                            height: 20
-                            color: "grey"
-                            border.color: "darkgrey"
-                            border.width: 1
+                            height: 26
+                            color: SofaApplication.style.contentBackgroundColor
+                            Rectangle {
+                                width: theView.width - 20
+                                height: 1
+                                color: "#393939"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
+                            Rectangle {
+                                y: 1
+                                width: theView.width - 20
+                                height: 1
+                                color: "#959595"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                            }
                             Row{
+                                y: 2
                                 width: parent.width
                                 height: parent.height
-                                Text{
+                                ColorImage {
+                                    id: groupBoxArrow
+                                    y: 4
+                                    source: theItem.state ==="collapsed" ? "qrc:/icon/rightArrow.png" : "qrc:/icon/downArrow.png"
+                                    width: 14
+                                    height: 14
+                                    color: "#393939"
+                                }
+
+                                Label{
                                     id: titleText
-                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
                                     width: theView.width-20
                                     height:20
-                                    color: "darkblue"
-
-                                    font.bold: true
-                                    font.pixelSize: 14
-
                                     text: name
-
+                                    color: "black"
                                     MouseArea {
                                         id: mouse_area1
                                         z: 1
@@ -173,12 +192,12 @@ Item {
                                         }
                                     }
                                 }
+
                             }
                         }
 
                         ListView{
                             property int childHeight: contentHeight
-
                             property int nameLabelWidth : 100
                             property int nameLabelImplicitWidth : 100
                             id: childView
@@ -422,7 +441,7 @@ Item {
                 anchors.top: header.top
                 width : header.width
                 height : 20
-                color: SofaApplication.style.headerBackgroundColor
+                color: SofaApplication.style.contentBackgroundColor
 
                 Text{
                     id: detailsArea
@@ -430,14 +449,16 @@ Item {
                     anchors.left : header1.left
                     anchors.verticalCenter: header1.verticalCenter
                     text : "Details " + ((topRect.sofaSelectedComponent===null)? "" : "("+ topRect.sofaSelectedComponent.className() + ")")
-                    font.pixelSize: 14
-                    font.bold: true
+                    //                    font.pixelSize: 14
+                    //                    font.bold: true
+                    color: "black"
                 }
                 Label {
                     id: showAllLabel
                     anchors.right: isDebug.left
                     anchors.verticalCenter: header1.verticalCenter
-                    text: "Show all:"
+                    text: "Show all: "
+                    color: "black"
                 }
                 CheckBox {
                     id : isDebug

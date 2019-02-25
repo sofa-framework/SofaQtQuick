@@ -1,9 +1,8 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
-import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneListModel 1.0
 import SofaWidgets 1.0

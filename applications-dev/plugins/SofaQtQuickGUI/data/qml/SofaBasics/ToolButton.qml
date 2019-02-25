@@ -13,18 +13,6 @@ ToolButton {
     width: 20
     text: " "
 
-    onDownChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    onCheckedChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    onHoveredChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    Component.onCompleted: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
     leftPadding: 7
     rightPadding: leftPadding
 
@@ -32,7 +20,7 @@ ToolButton {
         text: control.text
         font: control.font
         opacity: enabled ? 1.0 : 0.4
-        color: checkable ? (control.checked ? "black" : "#DDDDDD") : (control.down ? "#DDDDDD" : "black")
+        color: control.checkable ? (control.checked ? "black" : "#DDDDDD") : (control.down ? "#DDDDDD" : "black")
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -59,7 +47,19 @@ ToolButton {
     background: ControlsBackground {
         id: backgroundID
         position: cornerPositions["Middle"]
-        controlType: checkable ? controlTypes["ToggleButton"] : controlTypes["Button"]
-        borderColor: enabled ? "#595959" : "#898989"
+        controlType: control.checkable ? controlTypes["ToggleButton"] : controlTypes["Button"]
+        borderColor: control.enabled ? "#595959" : "#898989"
+    }
+    onDownChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    onCheckedChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    onHoveredChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    Component.onCompleted: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
     }
 }

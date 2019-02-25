@@ -43,33 +43,21 @@ Rectangle {
         if (!enabled)
         {
             if (hovered && gridID.currentcontrolType.disabledHover)
-            {
                 currentGradients = gridID.currentcontrolType.disabledHover
-            }
             else
-            {
                 currentGradients = gridID.currentcontrolType.disabled
-            }
         } else {
             if (pressed)
             {
                 if (hovered && gridID.currentcontrolType.pressedHover)
-                {
                     currentGradients = gridID.currentcontrolType.pressedHover
-                }
                 else
-                {
                     currentGradients = gridID.currentcontrolType.pressed
-                }
             }
             else if (hovered)
-            {
                 currentGradients = gridID.currentcontrolType.enabledHover
-            }
             else
-            {
                 currentGradients = gridID.currentcontrolType.enabled
-            }
         }
     }
     Rectangle {
@@ -137,15 +125,7 @@ Rectangle {
         gradient: gridID.currentGradients.middleGradient
     }
     Rectangle {
-        id: bottomLeft
-        y: gridID.height / 2
-        width: gridID.width / 2
-        height: gridID.height / 2
-        border.color: borderColor
-        gradient: gridID.currentGradients.bottomGradient
-        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Left"] || gridID.position === cornerPositions["BottomLeft"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
-    }
-    Rectangle {
+        z: 2
         id: bottomRight
         x: gridID.width / 2
         y: gridID.height / 2
@@ -153,7 +133,17 @@ Rectangle {
         height: gridID.height / 2
         border.color: borderColor
         gradient: gridID.currentGradients.bottomGradient
-        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Right"] || gridID.position === cornerPositions["BottomRight"] || gridID.position === cornerPositions["Single"] ? 4 : 0)
+        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Right"] || gridID.position === cornerPositions["BottomRight"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
+    }
+    Rectangle {
+        z: 2
+        id: bottomLeft
+        y: gridID.height / 2
+        width: gridID.width / 2
+        height: gridID.height / 2
+        border.color: borderColor
+        gradient: gridID.currentGradients.bottomGradient
+        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Left"] || gridID.position === cornerPositions["BottomLeft"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
     }
 }
 

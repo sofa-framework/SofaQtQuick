@@ -12,19 +12,6 @@ Button {
 
     property alias cornerPositions: backgroundID.cornerPositions
 
-    onDownChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    onCheckedChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    onHoveredChanged: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-    Component.onCompleted: {
-        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
-    }
-
     leftPadding: 7
     rightPadding: leftPadding
     contentItem: Text {
@@ -43,13 +30,16 @@ Button {
         controlType: checkable ? controlTypes["ToggleButton"] : controlTypes["Button"]
         borderColor: enabled ? "#595959" : "#898989"
     }
-//    DropShadow {
-//        anchors.fill: backgroundID
-//        horizontalOffset: 0
-//        verticalOffset: 1
-//        radius: 4.0
-//        samples: 17
-//        color: "#10000000"
-//        source: backgroundID
-//    }
+    onDownChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    onCheckedChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    onHoveredChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
+    Component.onCompleted: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
 }

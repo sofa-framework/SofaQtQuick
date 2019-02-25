@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
-import QtQuick.Controls 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaApplication 1.0
@@ -91,7 +91,6 @@ ToolBar {
                         else
                         {
                             interactorButton.checked = false;
-                            interactorButton.set
                         }
                     }
                 }
@@ -126,7 +125,11 @@ ToolBar {
                 id: animateButton
                 width: 22
                 iconSource: animateButton.checked ? "qrc:/icon/pause.png" : "qrc:/icon/play.png"
-//                ToolTip.text: animateButton.checked ? "Stop" : "Animate"
+                ToolTip {
+                    text: animateButton.checked ? "Stop" : "Animate"
+                    description: "Starts / Stop the animation loop"
+
+                }
                 checkable: true
                 checked: false
                 onCheckedChanged: if(sofaScene) sofaScene.animate = animateButton.checked
@@ -143,8 +146,12 @@ ToolBar {
             ToolButton {
                 id: stepButton
                 width: 22
+                checkable: false
                 iconSource: "qrc:/icon/step.png"
-//                ToolTip.text: "Step"
+                ToolTip {
+                    text: "Step"
+                    description: "Performs a single simulation step"
+                }
 
                 onClicked: {
                     if(sofaScene)
@@ -155,9 +162,13 @@ ToolBar {
             ToolButton {
                 id: resetButton
                 width: 22
+                checkable: false
 
                 iconSource: "qrc:/icon/replay.png"
-//                ToolTip.text: "Reset the sofa scene"
+                ToolTip {
+                    text: "Reset"
+                    description: "Reset the simulation (from memory). To update a modified scene use File->Reload"
+                }
 
                 onClicked: {
                     if(sofaScene)
@@ -203,7 +214,6 @@ ToolBar {
                 height: root.height - 5
                 width: 22
 
-                checked: false
                 checkable: false
 
                 onClicked: saveScreenshotDialog.open();
@@ -220,13 +230,14 @@ ToolBar {
                     }
                 }
 
-//                ToolTip.text: "Save screenshot"
+                ToolTip {
+                    text: "Save screenshot"
+                    description: "Captures a screenshot and saves it on the filesystem"
+                }
             }
 
             ToolButton {
                 id: movieButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
                 iconSource: "qrc:/icon/movieRecording.png"
                 width: 22
 
@@ -255,7 +266,11 @@ ToolBar {
                     }
                 }
 
-//                ToolTip.text: "Save video"
+                ToolTip {
+                    text: "Video Capture"
+                    description: "Records a video of the simulation (until next press on this button)"
+
+                }
             }
         }
     }

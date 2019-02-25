@@ -46,5 +46,9 @@
         <file>icon/pause.png</file>
         <file>icon/play.png</file>
         <file>icon/replay.png</file>
+        <file>icon/menuArrow.png</file>
+        <file>icon/menuCheckBoxChecked.png</file>
+        <file>icon/menuCheckBox.png</file>
+        <file>icon/menuArrowDown.png</file>
     </qresource>
 </RCC>
