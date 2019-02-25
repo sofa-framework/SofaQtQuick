@@ -311,7 +311,7 @@ size_t rrowCount(Node* parent)
     return parent->child.size() + parent->object.size() ;
 }
 
-void SofaSceneItemModel::beginAddChild(Node* target, Node* child)
+void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)
 {
     msg_info("b") << "=========== Adding a child node to: " << target->getName();
 
@@ -326,7 +326,7 @@ void SofaSceneItemModel::beginAddChild(Node* target, Node* child)
 
 }
 
-void SofaSceneItemModel::endAddChild(Node* target, Node* child)
+void SofaSceneItemModel::onAddChildEnd(Node* target, Node* child)
 {
     endInsertRows();
     //msg_info("b") << "========== Adding a child done: " << child->getName();
