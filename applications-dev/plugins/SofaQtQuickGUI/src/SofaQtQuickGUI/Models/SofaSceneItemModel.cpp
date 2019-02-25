@@ -64,20 +64,8 @@ SofaSceneItemModel::SofaSceneItemModel(QObject* parent) : QAbstractItemModel(par
 
 SofaSceneItemModel::~SofaSceneItemModel()
 {
-    /// This code seems to cause crashes on Hierarchy view refresh
-//    if(m_scene){
-//        LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
-//        {
-//            /// The cast is ok as long as the only kind of node we are manipulating are inherited from
-//            /// Node (as are the DAGNode).
-//            Node* node = static_cast<Node*>(basenode);
-//            node->removeListener(this);
-////            msg_info("Listener") << "Remove listener: " << node->getName() ;
-//        });
-//        m_scene->sofaRootNode()->execute(lambda);
-//    }
-
-    m_root->removeListener(this);
+    if(m_root!=nullptr)
+        m_root->removeListener(this);
 }
 
 QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &parent) const
@@ -247,6 +235,7 @@ sofa::qtquick::SofaComponent* SofaSceneItemModel::getComponentFromIndex(const QM
     if(!currentBase)
         return nullptr;
 
+    msg_error("Test") << "WTF: " << currentBase->getName() ;
     return new SofaComponent(m_scene, currentBase);
 }
 
@@ -354,30 +343,18 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
 
 void SofaSceneItemModel::handleRootNodeChange()
 {    
+    /// At this step the m_root member is still containing the old
+    /// scene that will be removed.
     if(m_root.get()!=nullptr)
     {
-        /// First remove this object from the previsouly loaded root.
-        LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
-        {
-            /// The cast is ok as long as the only kind of node we are manipulating are inherited from
-            /// Node (as are the DAGNode).
-            Node* node = static_cast<Node*>(basenode);
-            node->removeListener(this);
-            msg_info("Listener") << "Remove listener: " << node->getName() ;
-        });
-        m_root->execute(lambda);
+        m_root->removeListener(this);
     }
+
     /// Flip the old pointer.
     m_root = m_scene->sofaRootNode();
-    LambdaVisitor lambda([this](sofa::core::objectmodel::BaseNode* basenode)
-    {
-        /// The cast is ok as long as the only kind of node we are manipulating are inherited from
-        /// Node (as are the DAGNode).
-        Node* node = static_cast<Node*>(basenode);
-        node->addListener(this);
-        msg_info("Listener") << "Adding listener: " << node->getName() ;
-    });
-    m_root->execute(lambda);
+
+    /// Register now the listener to the new scene graph.
+    m_root->addListener(this);
 
     beginResetModel();
     endResetModel();
