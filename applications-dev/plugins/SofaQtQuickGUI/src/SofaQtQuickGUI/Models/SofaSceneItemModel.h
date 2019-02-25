@@ -91,10 +91,6 @@ protected:
     void onAddChildBegin(Node* parent, Node* child) override;
     void onAddChildEnd(Node* parent, Node* child) override;
 
-    //virtual void removeChild(Node* parent, Node* child) override;
-    //virtual void addObject(Node* parent, sofa::core::objectmodel::BaseObject* object) override;
-    //virtual void removeObject(Node* parent, sofa::core::objectmodel::BaseObject* object)override;
-
     /// Returns the ndex associated to the given node.
     /// If the node parameter is nullptr returns an invalid model index.
     QModelIndex index(simulation::Node *node) const ;

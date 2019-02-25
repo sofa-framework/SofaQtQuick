@@ -249,9 +249,12 @@ const Base* SofaComponent::base() const
     const Base* base = nullptr;
 
     // check object existence
-    if(mySofaScene && myBase){
+    if(mySofaScene && myBase)
+    {
         if(mySofaScene->componentExists(myBase))
+        {
             base = myBase;
+        }
     }
     return base;
 }
@@ -259,7 +262,6 @@ const Base* SofaComponent::base() const
 QObject* SofaComponent::parent()
 {
     BaseNode* base = dynamic_cast<BaseNode*>(SofaComponent::base());
-    std::cout << "ICI" << (long long)base << std::endl ;
     if(base && base->getParents().size())
         return new SofaComponent(mySofaScene, base->getParents()[0]);
 

@@ -1724,7 +1724,7 @@ void SofaScene::onKeyReleased(char key)
     sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
 }
 
-void SofaScene::beginAddChild(Node* parent, Node* child)
+void SofaScene::onAddChildBegin(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -1732,7 +1732,7 @@ void SofaScene::beginAddChild(Node* parent, Node* child)
     myBases.insert(child);
 }
 
-void SofaScene::endRemoveChild(Node* parent, Node* child)
+void SofaScene::onRemoveChildBegin(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -1740,7 +1740,7 @@ void SofaScene::endRemoveChild(Node* parent, Node* child)
     myBases.remove(child);
 }
 
-void SofaScene::beginAddObject(Node* parent, BaseObject* object)
+void SofaScene::onAddObjectBegin(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
@@ -1748,7 +1748,7 @@ void SofaScene::beginAddObject(Node* parent, BaseObject* object)
     myBases.insert(object);
 }
 
-void SofaScene::endRemoveObject(Node* parent, BaseObject* object)
+void SofaScene::onRemoveObjectBegin(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;

@@ -242,6 +242,10 @@ sofa::qtquick::SofaComponent* SofaSceneItemModel::getComponentFromIndex(const QM
         return nullptr;
 
     sofa::core::objectmodel::Base* currentBase=static_cast<sofa::core::objectmodel::Base*>(index.internalPointer());
+
+    if(!currentBase)
+        return nullptr;
+
     return new SofaComponent(m_scene, currentBase);
 }
 

@@ -267,10 +267,10 @@ protected:
     SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
 
 protected:
-    void beginAddChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
-    void endRemoveChild(sofa::simulation::Node* parent, sofa::simulation::Node* child);
-    void beginAddObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object);
-    void endRemoveObject(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object);
+    void onAddChildBegin(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
+    void onRemoveChildBegin(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
+    void onAddObjectBegin(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object) override;
+    void onRemoveObjectBegin(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object) override;
 
 private:
     Status                                      myStatus;
