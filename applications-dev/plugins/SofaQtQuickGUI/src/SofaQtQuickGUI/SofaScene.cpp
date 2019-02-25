@@ -108,7 +108,7 @@ using namespace sofa::simulation;
 
 typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
 
-SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
+SofaScene::SofaScene(QObject *parent) : QObject(parent),
     myStatus(Status::Null),
     mySource(),
     mySourceQML(),
@@ -122,7 +122,6 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     myPyQtForceSynchronous(true),
     mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
-    myBases(),
     myManipulators(),
     mySelectedManipulator(nullptr),
     mySelectedComponent(nullptr)
@@ -160,9 +159,6 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     connect(this, &SofaScene::sourceChanged, this, &SofaScene::open);
     connect(this, &SofaScene::animateChanged, myStepTimer, [&](bool newAnimate) {newAnimate ? myStepTimer->start() : myStepTimer->stop();});
     connect(this, &SofaScene::statusChanged, this, &SofaScene::handleStatusChange);
-    connect(this, &SofaScene::aboutToUnload, this, [&]() {myBases.clear();});
-
-    connect(myStepTimer, &QTimer::timeout, this, &SofaScene::step);
 }
 
 SofaScene::~SofaScene()
@@ -186,7 +182,6 @@ bool LoaderProcess(SofaScene* sofaScene)
     if( sofaScene->sofaRootNode() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
-        sofaScene->addChildBegin(nullptr, sofaScene->sofaRootNode().get());
 
         if(sofaScene->sofaRootNode()->getAnimate() || sofaScene->defaultAnimate())
             sofaScene->setAnimate(true);
@@ -276,9 +271,7 @@ void SofaScene::open()
     if(mySofaRootNode)
     {
         setStatus(Status::Unloading);
-
         aboutToUnload();
-
         mySofaSimulation->unload(mySofaRootNode);
     }
 
@@ -1414,11 +1407,6 @@ sofa::qtquick::SofaComponentList* SofaScene::componentsByType(const QString& typ
     return sofaComponents;
 }
 
-bool SofaScene::componentExists(const sofa::core::objectmodel::Base* base) const
-{
-    return myBases.contains(base);
-}
-
 SofaComponent* SofaScene::root()
 {
     if(!mySofaSimulation)
@@ -1724,37 +1712,6 @@ void SofaScene::onKeyReleased(char key)
     sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &keyEvent);
 }
 
-void SofaScene::onAddChildBegin(Node* parent, Node* child)
-{
-    if(!child)
-        return;
-
-    myBases.insert(child);
-}
-
-void SofaScene::onRemoveChildBegin(Node* parent, Node* child)
-{
-    if(!child)
-        return;
-
-    myBases.remove(child);
-}
-
-void SofaScene::onAddObjectBegin(Node* parent, BaseObject* object)
-{
-    if(!object || !parent)
-        return;
-
-    myBases.insert(object);
-}
-
-void SofaScene::onRemoveObjectBegin(Node* parent, BaseObject* object)
-{
-    if(!object || !parent)
-        return;
-
-    myBases.remove(object);
-}
 
 }
 

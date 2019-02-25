@@ -246,17 +246,13 @@ Base* SofaComponent::base()
 
 const Base* SofaComponent::base() const
 {
-    const Base* base = nullptr;
-
     // check object existence
     if(mySofaScene && myBase)
     {
-        if(mySofaScene->componentExists(myBase))
-        {
-            base = myBase;
-        }
+        return myBase;
     }
-    return base;
+
+    return nullptr;
 }
 
 QObject* SofaComponent::parent()

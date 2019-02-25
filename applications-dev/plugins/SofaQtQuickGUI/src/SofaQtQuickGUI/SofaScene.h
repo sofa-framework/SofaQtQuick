@@ -72,7 +72,7 @@ class PickUsingRasterizationWorker;
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate,
 /// modify and draw (basic function) a Sofa scene
-class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject, private sofa::simulation::MutationListener
+class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject
 {
     Q_OBJECT
 
@@ -215,8 +215,6 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaComponentList* componentsByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponent* root();
 
-    bool componentExists(const sofa::core::objectmodel::Base* base) const;
-
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
     Q_INVOKABLE sofa::qtquick::SofaComponent* retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module = "");
@@ -266,12 +264,6 @@ protected:
     /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaComponent where it belongs
     SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
 
-protected:
-    void onAddChildBegin(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
-    void onRemoveChildBegin(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
-    void onAddObjectBegin(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object) override;
-    void onRemoveObjectBegin(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object) override;
-
 private:
     Status                                      myStatus;
     QString                                     myHeader;
@@ -290,12 +282,10 @@ private:
     sofa::simulation::Simulation*               mySofaSimulation;
     sofa::simulation::Node::SPtr                mySofaRootNode;
     QTimer*                                     myStepTimer;
-    QSet<const sofa::core::objectmodel::Base*>  myBases;                        /// \todo For each base, reference a unique SofaComponent and use it in QML as a wrapper
 
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
     SofaComponent*                              mySelectedComponent;
-
 };
 
 }
