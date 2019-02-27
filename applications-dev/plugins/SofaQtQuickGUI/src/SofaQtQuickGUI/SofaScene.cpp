@@ -55,7 +55,7 @@ using sofa::core::objectmodel::MouseEvent ;
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <SofaPython/SceneLoaderPY.h>
-#include <SofaPython/PythonScriptController.h>
+//#include <SofaPython/PythonScriptController.h>
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
@@ -103,7 +103,6 @@ using namespace sofa::core;
 using namespace sofa::core::objectmodel;
 using namespace sofa::core::visual;
 using namespace sofa::component::visualmodel;
-using namespace sofa::component::controller;
 using namespace sofa::simulation;
 
 typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
@@ -1331,6 +1330,21 @@ SofaComponent* SofaScene::component(const QString& path)
     return new SofaComponent(this, base);
 }
 
+SofaBase* SofaScene::get(const QString& path)
+{
+    /// search for the "name" data of the component (this data is always present if the component exist)
+    BaseData* data = FindData_Helper(mySofaRootNode.get(), path + ".name");
+
+    if(!data)
+        return nullptr;
+
+    Base* base = data->getOwner();
+    if(!base)
+        return nullptr;
+
+    return new SofaBase(base);
+}
+
 bool isInstanceOf(const core::objectmodel::BaseClass* obj, const std::string& c)
 {
     if (obj->className == c)
@@ -1433,6 +1447,7 @@ SofaComponent* SofaScene::visualStyleComponent()
     return nullptr;
 }
 
+/*
 SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module)
 {
     Base* base = context->base();
@@ -1467,7 +1482,7 @@ SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context,
 
 
     return nullptr;
-}
+}*/
 
 QVariant SofaScene::onDataValueByPath(const QString& path) const
 {
