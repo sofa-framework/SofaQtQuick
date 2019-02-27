@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
 project(SofaQtQuickGUI VERSION 1.0)
 
+set (CMAKE_CXX_STANDARD 17)
+
 find_package(SofaFramework REQUIRED)
 find_package(SofaPython REQUIRED)
 
 set(SOURCE_FILES
+    src/SofaQtQuickGUI/DataHelper.cpp
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.cpp
     src/SofaQtQuickGUI/SofaApplication.cpp
     src/SofaQtQuickGUI/SofaViewer.cpp
@@ -23,6 +26,9 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaParticleInteractor.cpp
     src/SofaQtQuickGUI/Bindings/SofaFactory.cpp
     src/SofaQtQuickGUI/Bindings/SofaComponent.cpp
+    src/SofaQtQuickGUI/Bindings/SofaBase.cpp
+    src/SofaQtQuickGUI/Bindings/SofaBaseObject.cpp
+    src/SofaQtQuickGUI/Bindings/SofaNode.cpp
     src/SofaQtQuickGUI/Bindings/SofaData.cpp
     src/SofaQtQuickGUI/Bindings/SofaLink.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
@@ -47,6 +53,7 @@ set(SOURCE_FILES
 
 set(HEADER_FILES
     src/SofaQtQuickGUI/config.h
+    src/SofaQtQuickGUI/DataHelper.h
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.h
     src/SofaQtQuickGUI/SofaApplication.h
     src/SofaQtQuickGUI/SofaCamera.h
@@ -67,6 +74,9 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaParticleInteractor.h
     src/SofaQtQuickGUI/Bindings/SofaFactory.h
     src/SofaQtQuickGUI/Bindings/SofaComponent.h
+    src/SofaQtQuickGUI/Bindings/SofaBase.h
+    src/SofaQtQuickGUI/Bindings/SofaBaseObject.h
+    src/SofaQtQuickGUI/Bindings/SofaNode.h
     src/SofaQtQuickGUI/Bindings/SofaData.h
     src/SofaQtQuickGUI/Bindings/SofaLink.h
     src/SofaQtQuickGUI/Manipulators/Manipulator.h
@@ -89,114 +99,12 @@ set(HEADER_FILES
 )
 
 
-set(QML_FILES
-    data/qml/SofaDataTypes/qmldir
-    data/qml/SofaDataTypes/SofaDataType_notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_boolean.qml
-    data/qml/SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_array.qml
-    data/qml/SofaDataTypes/SofaDataType_boolean.qml
-    data/qml/SofaDataTypes/SofaDataType_BoundingBox.qml
-    data/qml/SofaDataTypes/SofaDataType_Material.qml
-    data/qml/SofaDataTypes/SofaDataType_OptionsGroup.qml
-    data/qml/SofaDataTypes/SofaDataType_FileName.qml
-    data/qml/SofaDataTypes/SofaDataType_graph_linear.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_graph.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_number.qml
-    data/qml/SofaDataTypes/SofaDataType_poissonRatio.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_string.qml
-    data/qml/SofaDataTypes/SofaDataType_RGBAColor.qml
-    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
-    data/qml/SofaApplication/qmldir
-    data/qml/SofaApplication/SofaApplication.qml
-    data/qml/SofaApplication/MainStyle.qml
-    data/qml/SofaColorScheme/qmldir
-    data/qml/SofaColorScheme/ColorScheme.qml
-    data/qml/SofaColorScheme/ControlsBackground.qml
-    data/qml/SofaBasics/qmldir
-    data/qml/SofaBasics/Button.qml
-    data/qml/SofaBasics/SpinBox.qml
-    data/qml/SofaBasics/TextField.qml
-    data/qml/SofaBasics/ComboBox.qml
-    data/qml/SofaBasics/CheckBox.qml
-    data/qml/SofaBasics/ToolTip.qml
-    data/qml/SofaBasics/BubbleToolTip.qml
-    data/qml/SofaBasics/DefaultStatusBar.qml
-    data/qml/SofaBasics/DefaultToolBar.qml
-    data/qml/SofaBasics/DefaultMenuBar.qml
-    data/qml/SofaBasics/SofaScene.qml
-    data/qml/SofaBasics/SofaSceneInterface.qml
-    data/qml/SofaBasics/SofaDataItem.qml
-    data/qml/SofaBasics/SofaPythonInteractor.qml
-    data/qml/SofaBasics/UserInteractor.qml
-    data/qml/SofaBasics/Fit.qml
-    data/qml/SofaBasics/Camera.qml
-    data/qml/SofaBasics/SofaCamera.qml
-    data/qml/SofaBasics/FPSItem.qml
-    data/qml/SofaBasics/SofaTimeItem.qml
-    data/qml/SofaBasics/ContentItem.qml
-    data/qml/SofaBasics/ExplicitSwitch.qml
-    data/qml/SofaBasics/RangeSlider.qml
-    data/qml/SofaBasics/CollapsibleGroupBox.qml
-    data/qml/SofaBasics/Vector2DSpinBox.qml
-    data/qml/SofaBasics/Vector3DSpinBox.qml
-    data/qml/SofaBasics/Vector4DSpinBox.qml
-    data/qml/SofaBasics/DynamicSplitView.qml
-    data/qml/SofaBasics/DynamicContent.qml
-    data/qml/SofaBasics/MementoBar.qml
-    data/qml/SofaBasics/MementoObject.qml
-    data/qml/SofaBasics/MementoManager.qml
-    data/qml/SofaBasics/WindowResizer.qml
-    data/qml/SofaBasics/ClipPlane.qml
-    data/qml/SofaBasics/ColorChooser.qml
-    data/qml/SofaWidgets/SofaSearchBar.qml
-    data/qml/SofaWidgets/SofaNodeMenu.qml
-    data/qml/SofaWidgets/SofaObjectMenu.qml
-    data/qml/SofaWidgets/SofaWindowDataListView.qml
-    data/qml/SofaWidgets/SofaWindowComponentHelp.qml
-    data/qml/SofaWidgets/SofaWindowComponentMessages.qml
-    data/qml/SofaWidgets/PopupWindowCreateComponent.qml
-    data/qml/SofaWidgets/qmldir
-    data/qml/SofaInteractors/qmldir
-    data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
-    data/qml/SofaInteractors/UserInteractor_Selection.qml
-    data/qml/SofaInteractors/UserInteractor_SofaParticleInteractor.qml
-    data/qml/SofaManipulators/qmldir
-    data/qml/SofaManipulators/Manipulator.qml
-    data/qml/SofaManipulators/Manipulator2D_Translation.qml
-    data/qml/SofaManipulators/Manipulator2D_Rotation.qml
-    data/qml/SofaManipulators/Manipulator3D_Translation.qml
-    data/qml/SofaManipulators/Manipulator3D_Rotation.qml
-    data/qml/SofaViews/qmldir
-    data/qml/SofaViews/QML_LiveCoding.qml
-    data/qml/SofaViews/SofaViewer.qml
-    data/qml/SofaViews/SofaDataView.qml
-    data/qml/SofaViews/ImageViewer.qml
-    data/qml/SofaViews/PythonConsole.qml
-    data/qml/SofaViews/SofaDataListView.qml
-    data/qml/SofaViews/SofaSceneGraphView.qml
-    data/qml/SofaViews/SofaSceneToolPanel.qml
-    data/qml/SofaViews/SofaSimulationControl.qml
-    data/qml/SofaViews/SofaVisualizationControl.qml
-    data/qml/SofaViews/AffineTransformationController.qml
-    data/qml/SofaViews/ColorSelector.qml
-    data/qml/SofaViews/SofaSceneViewer.qml
-    data/qml/SofaViews/CameraView.qml
-    data/qml/SofaViews/EditView.qml
-    data/qml/SofaViews/Inspector.qml
-    data/qml/SofaViews/Message.qml
-    data/qml/SofaViews/SceneGraph.qml
-    data/qml/SofaViews/Hierarchy.qml
-    data/qml/SofaViews/ExampleView.qml
-    data/qml/SofaViews/WebBrowserView.qml
-    data/qml/SofaViews/LiveInterfaceEditor.qml
-    data/qml/SofaViews/BaseWidgetExample.qml
-    data/qml/SofaViews/SceneToolsPanel.qml
-)
+
 
 add_definitions("-DSOFAQTQUICKGUI_QML_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/GTest/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaBasics/")
