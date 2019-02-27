@@ -108,5 +108,7 @@
         <file>SofaColorScheme/GBRect.qml</file>
         <file>SofaBasics/SofaMenu.qml</file>
         <file>SofaBasics/SofaMenuItem.qml</file>
+        <file>GTest/GTest.qml</file>
+        <file>GTest/qmldir</file>
     </qresource>
 </RCC>

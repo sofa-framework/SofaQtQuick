@@ -50,5 +50,7 @@
         <file>icon/menuCheckBoxChecked.png</file>
         <file>icon/menuCheckBox.png</file>
         <file>icon/menuArrowDown.png</file>
+        <file>qml/GTest/GTest.qml</file>
+        <file>qml/GTest/qmldir</file>
     </qresource>
 </RCC>

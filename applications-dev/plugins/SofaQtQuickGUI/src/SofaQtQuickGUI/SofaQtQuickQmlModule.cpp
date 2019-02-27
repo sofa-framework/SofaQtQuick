@@ -30,9 +30,17 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.h>
 #include <SofaQtQuickGUI/SofaScene.h>
+
+/// Bindings from c++ to QML/Javascript
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
+using sofaqtquick::bindings::SofaBase;
+
+#include <SofaQtQuickGUI/Bindings/SofaNode.h>
+using sofaqtquick::bindings::SofaNode;
+
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/Selectable.h>
 #include <SofaQtQuickGUI/SelectableManipulator.h>
@@ -48,6 +56,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h>
 #include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/Windows/EditView.h>
+
 
 #include <SofaQtQuickGUI/PythonConsole.h>
 using namespace sofa::qtquick;
@@ -140,7 +149,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterUncreatableType<ProcessState>                        ("ProcessState"                         , versionMajor, versionMinor, "ProcessState", "ProcessState is not instantiable");
     qmlRegisterType<SofaSceneListProxy>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaSceneItemModel>                             ("SofaSceneItemModel"                   , versionMajor, versionMinor, "SofaSceneItemModel");
-    qmlRegisterType<SofaSceneItemProxy>                            ("SofaSceneItemProxy"                   , versionMajor, versionMinor, "SofaSceneItemProxy");
+    qmlRegisterType<SofaSceneItemProxy>                             ("SofaSceneItemProxy"                   , versionMajor, versionMinor, "SofaSceneItemProxy");
     qmlRegisterType<SofaDataListModel>                              ("SofaDataListModel"                    , versionMajor, versionMinor, "SofaDataListModel");
     qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
@@ -148,6 +157,22 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");
     qmlRegisterType<EditView>                                       ("EditView"                             , versionMajor, versionMinor, "EditView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
+
+    qmlRegisterUncreatableType<SofaBase> ("Sofa.Core.Base",
+                                          versionMajor, versionMinor,
+                                          "Base",
+                                          QString("It is not possible to create a Sofa.Core.Base object"));
+
+    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaData> ("Sofa.Core.Data",
+                                          versionMajor, versionMinor,
+                                          "Data",
+                                          QString("It is not possible to create a Sofa.Core.BaseData object"));
+
+
+    qmlRegisterType<SofaNode> ("Sofa.Core.Node",
+                                          versionMajor, versionMinor,
+                                          "Node");
+
 
     /// registers the C++ type in the QML system with the name "Console",
     qmlRegisterSingletonType<Console>("SofaMessageList",                  /// char* uri
