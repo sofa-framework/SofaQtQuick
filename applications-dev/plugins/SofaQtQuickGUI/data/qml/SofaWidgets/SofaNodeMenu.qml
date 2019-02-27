@@ -112,22 +112,20 @@ Menu {
         }
     }
 
-
-
     MenuSeparator {}
     MenuItem {
         enabled: true //(multiparent)? firstparent : true
         text: nodeMenu.nodeActivated ? "Deactivate" : "Activate"
-        onTriggered: listView.model.setDisabled(index, nodeMenu.nodeActivated);
+        onTriggered: model.getComponentByIndex(currentModelIndex).flipActivate(); //model.setDisabled(currentModelIndex, nodeMenu.nodeActivated);
     }
 
     MenuSeparator {}
     MenuItem {
         text: "Delete"
         onTriggered: {
-            var currentRow = listView.model.computeItemRow(listView.currentModelIndex);
-            sofaScene.removeComponent(model.getComponentById(index));
-            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
+            var currentRow = model.computeItemRow(currentModelIndex);
+            sofaScene.removeComponent(model.getComponentByIndex(currentModelIndex));
+            model.updateCurrentIndex(model.computeModelRow(currentRow));
         }
     }
 
