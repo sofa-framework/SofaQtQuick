@@ -54,8 +54,7 @@ SofaSceneItemModel::~SofaSceneItemModel()
 
 QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (enableDebug)
-        qDebug() << "index query " << parent << " : " << row << ", " << column ;
+//        qDebug() << "index query " << parent << " : " << row << ", " << column ;
 
     sofa::core::objectmodel::Base* currentBase ;
     if (!parent.isValid())
@@ -120,8 +119,7 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
 
 QModelIndex SofaSceneItemModel::index(Node* node) const
 {
-    if (enableDebug)
-        qDebug() << "index query for node " << QString::fromStdString(node->getName());
+//        qDebug() << "index query for node " << QString::fromStdString(node->getName());
     if(node==nullptr)
     {
         return QModelIndex();
@@ -140,8 +138,7 @@ QModelIndex SofaSceneItemModel::index(Node* node) const
 
 QModelIndex SofaSceneItemModel::index(Node* parent, sofa::core::objectmodel::BaseObject* obj) const
 {
-    if (enableDebug)
-        qDebug() << "Object index query (" << QString::fromStdString(parent->getName()) << ", " << QString::fromStdString(obj->getName()) <<  ")";
+//        qDebug() << "Object index query (" << QString::fromStdString(parent->getName()) << ", " << QString::fromStdString(obj->getName()) <<  ")";
 
     if(obj == nullptr || parent == nullptr)
         return QModelIndex();
@@ -153,8 +150,8 @@ QModelIndex SofaSceneItemModel::index(Node* parent, sofa::core::objectmodel::Bas
 
 QModelIndex SofaSceneItemModel::parent(const QModelIndex &index) const
 {
-    if (enableDebug)
-        qDebug() << "parent query (" << index << "): " << QString::fromStdString(static_cast<sofa::core::objectmodel::Base*>(index.internalPointer())->getName());
+//        qDebug() << "parent query (" << index << "): " << QString::fromStdString(static_cast<sofa::core::objectmodel::Base*>(index.internalPointer())->getName());
+
     if(!index.isValid())
         return QModelIndex();
     sofa::core::objectmodel::Base* currentBase = static_cast<sofa::core::objectmodel::Base*>(index.internalPointer()) ;
@@ -171,7 +168,7 @@ QModelIndex SofaSceneItemModel::parent(const QModelIndex &index) const
         QModelIndex idx;
         if(grandparentNode==nullptr)
         {
-            return createIndex(0, 0, static_cast<Base*>(m_root->toBaseNode()));
+            return createIndex(0, 0, static_cast<Base*>(m_scene->sofaRootNode().get()));
         }
         else
         {
@@ -189,8 +186,7 @@ QModelIndex SofaSceneItemModel::parent(const QModelIndex &index) const
 
 int SofaSceneItemModel::rowCount(const QModelIndex &index) const
 {   
-    if (enableDebug)
-        qDebug() << "rowCount " << index ;
+//        qDebug() << "rowCount " << index ;
 
     sofa::core::objectmodel::Base* currentBase ;
     if (!index.isValid())
@@ -258,8 +254,7 @@ sofa::qtquick::SofaComponent* SofaSceneItemModel::getComponentFromIndex(const QM
 
 QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
 {    
-    if (enableDebug)
-        qDebug() << "data: " << index << "role " << role ;
+//        qDebug() << "data: " << index << "role " << role ;
     sofa::core::objectmodel::Base* currentBase;
     sofa::core::objectmodel::BaseNode* currentNode;
 
@@ -345,10 +340,10 @@ void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)
 
 //    qDebug() << "parent index: " << parentIndex;
 
-
-    msg_info("Pointer Values: ") << "New node: " << child << " " << child->getName() << "\nParent: " << target << " " << target->getName()  << "\nRoot: " << m_root.get() << " " << m_root->getName() ;
-
-    enableDebug = true;
+    if (child->child.size())
+    {
+        msg_info("Pointer Values: ") << "New node: " << child << " " << child->getName() << "\nParent: " << target << " " << target->getName()  << "\nRoot: " << m_root.get() << " " << m_root->getName() ;
+    }
     beginInsertRows(parentIndex, i, i + int(rrowCount_recurse(child)));
 }
 
@@ -358,7 +353,6 @@ void SofaSceneItemModel::onAddChildEnd(Node* target, Node* child)
     SOFA_UNUSED(child);
     endInsertRows();
 
-    enableDebug = false;
 //    qDebug() << "child index: " << index(child);
 //    msg_info("e") << "========== " << child->getName() << "added at row" << index(child).row() << " ==========";
 }
@@ -436,7 +430,6 @@ SofaScene* SofaSceneItemModel::sofaScene() const
 void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
 {    
     m_scene = newScene;
-    msg_info("SofaSceneItemModel") << this << " Setting sofaScene. Again.";
 
     /// The scene passed to this model is tracked to monitor if its status has changed.
     /// If this is the case then the model needs to be reseted.
@@ -446,7 +439,6 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
 
 void SofaSceneItemModel::handleRootNodeChange()
 {    
-    enableDebug = false;
     /// At this step the m_root member is still containing the old
     /// scene that will be removed.
     if(m_root.get()!=nullptr)

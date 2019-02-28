@@ -105,7 +105,6 @@ protected:
 
     SofaScene*                      m_scene {nullptr};
     sofa::simulation::Node::SPtr    m_root  {nullptr};
-    bool enableDebug;
 };
 
 } /// namespace _sofasceneitemmodel_
