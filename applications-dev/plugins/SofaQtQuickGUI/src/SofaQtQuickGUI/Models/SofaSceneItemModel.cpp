@@ -57,7 +57,6 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
     if (enableDebug)
         qDebug() << "index query " << parent << " : " << row << ", " << column ;
 
-    QModelIndex validParent = parent;
     sofa::core::objectmodel::Base* currentBase ;
     if (!parent.isValid())
     {
@@ -73,7 +72,7 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
             return QModelIndex();
         }
     }
-    currentBase=static_cast<sofa::core::objectmodel::Base*>(validParent.internalPointer());
+    currentBase=static_cast<sofa::core::objectmodel::Base*>(parent.internalPointer());
 
     if(currentBase->toBaseNode())
     {
@@ -100,7 +99,7 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
             size_t nrow = size_t(row) - currentNode->object.size();
             if(nrow >= currentNode->child.size())
             {
-                qWarning() << "Inavlid row number =>" << row << column << validParent;
+                qWarning() << "Inavlid row number =>" << row << column << parent;
                 return QModelIndex();
             }
             auto childNode = currentNode->child[unsigned(nrow)].get();
@@ -159,10 +158,10 @@ QModelIndex SofaSceneItemModel::parent(const QModelIndex &index) const
     if(!index.isValid())
         return QModelIndex();
     sofa::core::objectmodel::Base* currentBase = static_cast<sofa::core::objectmodel::Base*>(index.internalPointer()) ;
-    if(currentBase->toBaseNode())
+    if (currentBase && currentBase->toBaseNode())
     {
         Node* currentNode = static_cast<Node*>(currentBase->toBaseNode());
-        if(currentNode->getNbParents()==0)
+        if(!currentNode->getFirstParent())
             return QModelIndex();
 
         //qDebug() << "   a: " << QString::fromStdString(currentNode->getName());
@@ -184,6 +183,7 @@ QModelIndex SofaSceneItemModel::parent(const QModelIndex &index) const
 
         return idx;
     }
+    qDebug() << "SofaSceneItemModel::parent: invalid index!" << index;
     return QModelIndex();
 }
 
