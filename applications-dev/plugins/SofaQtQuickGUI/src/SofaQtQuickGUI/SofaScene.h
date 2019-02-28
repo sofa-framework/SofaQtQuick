@@ -16,12 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
-
-#ifndef SOFASCENE_H
-#define SOFASCENE_H
+#pragma once
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
+
 #include <SofaQtQuickGUI/SofaComponentList.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>
@@ -69,6 +69,8 @@ namespace qtquick
 class SofaScene;
 class SofaViewer;
 class PickUsingRasterizationWorker;
+
+using sofaqtquick::bindings::SofaBase;
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate,
 /// modify and draw (basic function) a Sofa scene
@@ -180,6 +182,14 @@ signals:
     void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
 public:
+    /// Returns an object, a node or a data according to its scene path.
+    ///
+    /// Examples:
+    ///    get("/root")
+    ///    get("/root/myObject")
+    ///    get("/root/myObject.data")
+    Q_INVOKABLE SofaBase* get(const QString& path);
+
     Q_INVOKABLE double radius() const;
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max, const QList<SofaComponent*>& roots) const;
@@ -217,7 +227,8 @@ public:
 
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
-    Q_INVOKABLE sofa::qtquick::SofaComponent* retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module = "");
+
+    ///Q_INVOKABLE sofa::qtquick::SofaComponent* retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module = "");
 
 protected:
     Q_INVOKABLE QVariant onDataValueByPath(const QString& path) const; /// \note From QML: directly call 'dataValue'
@@ -292,4 +303,3 @@ private:
 
 }
 
-#endif // SOFASCENE_H

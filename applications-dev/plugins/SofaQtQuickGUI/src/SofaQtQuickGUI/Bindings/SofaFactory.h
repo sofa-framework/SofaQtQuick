@@ -23,6 +23,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <QAbstractListModel>
 #include <QStringList>
+#include "SofaNode.h"
 
 namespace sofa
 {
@@ -30,6 +31,7 @@ namespace qtquick
 {
 namespace _sofafactory_
 {
+using sofaqtquick::bindings::SofaNode;
 
 /// The SofaFactory object is in charge of exposing to QML
 /// the functionallies of the ObjectFactory including the
@@ -47,6 +49,9 @@ public:
     Q_INVOKABLE QStringList getComponents() ;
     Q_INVOKABLE void setFilter(const QString& c) ;
 
+    Q_INVOKABLE QObject* createNode();
+
+
 signals:
     void listChanged();
 
@@ -57,7 +62,7 @@ private:
 
 } /// _sofafactory_
 
-    using _sofafactory_::SofaFactory ;
+using _sofafactory_::SofaFactory ;
 
 } /// qtquick
 } /// sofa
