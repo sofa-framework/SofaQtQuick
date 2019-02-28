@@ -55,13 +55,13 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
     if(mySofaScene)
     {
         if(mySofaScene->isReady())
-            addChildBegin(0, mySofaScene->sofaRootNode().get());
+            onAddChildBegin(0, mySofaScene->sofaRootNode().get());
 
         connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
             clear();
 
             if(SofaScene::Ready == mySofaScene->status())
-                addChildBegin(0, mySofaScene->sofaRootNode().get());
+                onAddChildBegin(0, mySofaScene->sofaRootNode().get());
         });
     }
 }

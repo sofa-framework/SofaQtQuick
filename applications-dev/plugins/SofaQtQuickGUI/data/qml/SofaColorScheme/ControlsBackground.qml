@@ -66,8 +66,8 @@ Rectangle {
         width: gridID.width / 2
         height: gridID.height / 2
         border.color: borderColor
-        radius: (gridID.position === cornerPositions["Top"] || gridID.position === cornerPositions["Left"] || gridID.position === cornerPositions["TopLeft"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
         gradient: gridID.currentGradients.topGradient
+        radius: (gridID.position === 0 || gridID.position === 1 || gridID.position === 2 || gridID.position === 4) ? 4 : 0
     }
     Rectangle {
         z: 2
@@ -77,7 +77,7 @@ Rectangle {
         border.color: borderColor
         anchors.left: topLeft.right
         gradient: gridID.currentGradients.topGradient
-        radius: (gridID.position === cornerPositions["Top"] || gridID.position === cornerPositions["Right"] || gridID.position === cornerPositions["TopRight"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
+        radius: (gridID.position === 0 || gridID.position === 2 || gridID.position === 3 || gridID.position === 6) ? 4 : 0
     }
     Rectangle {
         z: 3
@@ -133,7 +133,7 @@ Rectangle {
         height: gridID.height / 2
         border.color: borderColor
         gradient: gridID.currentGradients.bottomGradient
-        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Right"] || gridID.position === cornerPositions["BottomRight"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
+        radius: (gridID.position === 0 || gridID.position === 6 || gridID.position === 8 || gridID.position === 9) ? 4 : 0
     }
     Rectangle {
         z: 2
@@ -143,7 +143,7 @@ Rectangle {
         height: gridID.height / 2
         border.color: borderColor
         gradient: gridID.currentGradients.bottomGradient
-        radius: (gridID.position === cornerPositions["Bottom"] || gridID.position === cornerPositions["Left"] || gridID.position === cornerPositions["BottomLeft"] || gridID.position === cornerPositions["Single"]) ? 4 : 0
+        radius: (gridID.position === 0 || gridID.position === 4 || gridID.position === 7 || gridID.position === 8) ? 4 : 0
     }
 }
 

@@ -90,13 +90,22 @@ protected:
     /// charge of notifying the change using the QAbstractItemModel.
     void onAddChildBegin(Node* parent, Node* child) override;
     void onAddChildEnd(Node* parent, Node* child) override;
+    void onRemoveChildBegin(Node* parent, Node* child) override;
+    void onRemoveChildEnd(Node* parent, Node* child) override;
+
+    void onAddObjectBegin(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onAddObjectEnd(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onRemoveObjectBegin(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onRemoveObjectEnd(Node* parent, core::objectmodel::BaseObject* obj) override;
 
     /// Returns the ndex associated to the given node.
     /// If the node parameter is nullptr returns an invalid model index.
     QModelIndex index(simulation::Node *node) const ;
+    QModelIndex index(simulation::Node *node, sofa::core::objectmodel::BaseObject* obj) const ;
 
     SofaScene*                      m_scene {nullptr};
     sofa::simulation::Node::SPtr    m_root  {nullptr};
+    bool enableDebug;
 };
 
 } /// namespace _sofasceneitemmodel_

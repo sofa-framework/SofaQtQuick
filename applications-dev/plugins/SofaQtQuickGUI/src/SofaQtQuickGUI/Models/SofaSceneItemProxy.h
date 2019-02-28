@@ -38,9 +38,10 @@ public:
     Q_INVOKABLE void flipComponentVisibility(QModelIndex index);
     Q_INVOKABLE void showOnlyNodes(bool value);
 
-    Q_PROPERTY(QAbstractItemModel* model READ sourceModel WRITE setSourceModel )
+    Q_PROPERTY(QAbstractItemModel* model READ sourceModel WRITE setSourceModel)
 
 public:
+
     SofaSceneItemProxy(QObject* parent = 0);
     virtual ~SofaSceneItemProxy();
 
