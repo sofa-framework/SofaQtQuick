@@ -34,5 +34,8 @@ class BaseData;
 namespace sofaqtquick::helper
 {
     using sofa::core::objectmodel::BaseData;
-    QVariant createQVariant(const BaseData*);
+    QVariant createQVariantFromData(const BaseData*);
+
+    // TODO: WARNING : do not use data->read anymore but directly the correct set*Type*Value(...)
+    bool setDataValueFromQVariant(BaseData* data, const QVariant& value);
 }
