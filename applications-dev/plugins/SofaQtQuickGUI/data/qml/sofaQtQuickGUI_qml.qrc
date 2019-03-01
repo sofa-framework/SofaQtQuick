@@ -82,6 +82,7 @@
         <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
         <file>SofaBasics/Vector2DSpinBox.qml</file>
         <file>SofaBasics/Vector4DSpinBox.qml</file>
+	<file>SofaBasics/SidePanel.qml</file>
         <file>SofaViews/SofaSceneViewer.qml</file>
         <file>SofaViews/EditView.qml</file>
         <file>SofaViews/CameraView.qml</file>
@@ -108,8 +109,7 @@
         <file>SofaColorScheme/GBRect.qml</file>
         <file>SofaBasics/SofaMenu.qml</file>
         <file>SofaBasics/SofaMenuItem.qml</file>
-        <file>GTest/GTest.qml</file>
-        <file>GTest/qmldir</file>
-        <file>SofaBasics/SidePanel.qml</file>
+        <file>QmlGTestCase/qmldir</file>
+        <file>QmlGTestCase/QmlGTestCase.qml</file>
     </qresource>
 </RCC>

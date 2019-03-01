@@ -31,6 +31,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Bindings/SofaNode.cpp
     src/SofaQtQuickGUI/Bindings/SofaData.cpp
     src/SofaQtQuickGUI/Bindings/SofaLink.cpp
+    src/SofaQtQuickGUI/Helper/QGTest.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.cpp
@@ -47,7 +48,6 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaCamera.cpp
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
-
     src/SofaQtQuickGUI/LiveFileMonitor.cpp
 )
 
@@ -95,6 +95,8 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/Rendering/SceneRenderer.h
     src/SofaQtQuickGUI/Helper/QMathExtensions.h
+    src/SofaQtQuickGUI/Helper/QGTest.h
+
     src/SofaQtQuickGUI/LiveFileMonitor.h
 )
 

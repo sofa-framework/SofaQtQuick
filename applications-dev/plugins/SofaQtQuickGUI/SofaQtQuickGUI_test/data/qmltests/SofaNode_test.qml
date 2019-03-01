@@ -1,26 +1,10 @@
 import QtQuick 2.12
 import SofaFactory 1.0
 import Sofa.Core.Node 1.0
+import QmlGTestCase 1.0
 
-Item
+QmlGTestCase
 {
-    function assert_eq(a,b)
-    {
-        if(a!==b)
-            console.exception("FAILURE: expecting '"+b+"' got '"+a+"'");
-    }
-    function assert_neq(a,b)
-    {
-        if(a===b)
-            console.exception("FAILURE: expecting '"+b+"' not '"+a+"'");
-    }
-
-    function expect_eq(a, b)
-    {
-        console.log("COUCOU ... affiche");
-        console.exception("FAILURE: expecting "+a+" got "+b);
-    }
-
     function tst_gets()
     {
         var n = SofaFactory.createNode()
