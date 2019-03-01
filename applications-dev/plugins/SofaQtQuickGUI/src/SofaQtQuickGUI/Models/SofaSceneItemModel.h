@@ -105,6 +105,10 @@ protected:
 
     SofaScene*                      m_scene {nullptr};
     sofa::simulation::Node::SPtr    m_root  {nullptr};
+
+private:
+    void removeNodeContent(Node* node);
+    void addNodeContent(Node* node);
 };
 
 } /// namespace _sofasceneitemmodel_
