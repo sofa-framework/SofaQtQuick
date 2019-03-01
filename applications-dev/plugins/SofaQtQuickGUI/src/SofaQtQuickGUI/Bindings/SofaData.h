@@ -35,18 +35,23 @@ namespace sofaqtquick::bindings
         class SofaData : public QObject
         {
             Q_OBJECT
-            Q_PROPERTY(QVariant value READ value)
+            Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
 
         public:
             SofaData(BaseData* self);
 
             QVariant value() const;
-            void setValue(const QVariant& value);
+            bool setValue(const QVariant& value);
+
+        signals:
+            void valueChanged(QVariant& newValue);
 
         private:
-            BaseData* m_self;
+            BaseData* m_self {nullptr};
         };
     }
+
+    /// Import SofaData from its private namespace into the public one.
     using _sofadata_::SofaData;
 }
 
