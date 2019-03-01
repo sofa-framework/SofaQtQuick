@@ -27,6 +27,7 @@ import SofaApplication 1.0
 import SofaInteractors 1.0
 import EditView 1.0
 import SofaScene 1.0
+import SofaColorScheme 1.0
 
 EditView
 {
@@ -434,19 +435,24 @@ EditView
 
     // toolpanel
 
-    Rectangle {
+    GBRect {
         id: toolPanel
-        color: "lightgrey"
+//        color: "lightgrey"
         anchors.top: toolPanelSwitch.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.topMargin: -6
-        anchors.bottomMargin: 20
+        anchors.topMargin: -25
+        anchors.bottomMargin: 0
         anchors.rightMargin: -radius
         width: 250
-        radius: 5
-        visible: false
-        opacity: 0.9
+//        cornerRadius: 4
+        visible: true
+        borderWidth: 1
+        borderGradient: Gradient {
+            GradientStop { position: 0.0; color: "#7a7a7a" }
+            GradientStop { position: 1.0; color: "#5c5c5c" }
+        }
+        color: SofaApplication.style.contentBackgroundColor
 
         // avoid mouse event propagation through the toolpanel to the sofa viewer
         MouseArea {
@@ -458,14 +464,16 @@ EditView
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: toolPanel.radius / 2
-            anchors.rightMargin: anchors.margins - toolPanel.anchors.rightMargin
+            anchors.rightMargin: 10
+            anchors.leftMargin: 10
             spacing: 2
 
             Text {
+                Layout.topMargin: 10
                 Layout.fillWidth: true
                 text: "SofaViewer parameters"
-                font.bold: true
-                color: "darkblue"
+                font.bold: false
+                color: "black"
             }
 
             ScrollView {
@@ -499,9 +507,9 @@ EditView
                                     text: "Antialiasing"
                                 }
 
-                                Switch {
+                                CheckBox {
                                     id: antialiasingSwitch
-                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.alignment: Qt.AlignRight
                                     Component.onCompleted: checked = (0 !== root.antialiasingSamples)
                                     
                                     onCheckedChanged: {
@@ -515,7 +523,8 @@ EditView
                                     }
 
                                     ToolTip {
-                                        description: "Enable / Disable Antialiasing\n\nNote : You must resize your window before the changes will take effect"
+                                        text: "Enable / Disable Antialiasing"
+                                        description: "Note : You must resize your window before the changes will take effect"
                                     }
                                 }
 
@@ -551,7 +560,8 @@ EditView
                                         }
 
                                         ToolTip {
-                                            description: "Change the number of samples used for antialiasing\n\nNote : You must resize your window before the changes will take effect"
+                                            text: "Change the number of samples used for antialiasing"
+                                            description: "Note : You must resize your window before the changes will take effect"
                                         }
                                     }
 
@@ -572,7 +582,7 @@ EditView
                                 Rectangle {
                                     Layout.preferredWidth: 48
                                     Layout.preferredHeight: 20
-                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.alignment: Qt.AlignRight
                                     color: "darkgrey"
                                     radius: 2
 
@@ -604,7 +614,7 @@ EditView
                                         color: Qt.rgba(root.backgroundColor.r, root.backgroundColor.g, root.backgroundColor.b, 1.0)
 
                                         ToolTip {
-                                            description: "Background color"
+                                            text: "Background color"
                                         }
                                     }
                                 }
@@ -616,15 +626,15 @@ EditView
                                     text: "Frame"
                                 }
 
-                                Switch {
+                                CheckBox {
                                     id: frameSwitch
-                                    Layout.alignment: Qt.AlignCenter
+                                    Layout.alignment: Qt.AlignRight
                                     Component.onCompleted: checked = root.drawFrame
 
                                     onCheckedChanged: root.drawFrame = checked;
 
                                     ToolTip {
-                                        description: "Enable / Disable Scene Frame"
+                                        text: "Enable / Disable Scene Frame"
                                     }
                                 }
                             }
@@ -640,8 +650,8 @@ EditView
 
                             GridLayout {
                                 anchors.fill: parent
-                                columnSpacing: 2
-                                rowSpacing: 2
+                                columnSpacing: -1
+//                                rowSpacing: -1
                                 columns: 2
 
                                 // screenshot
@@ -656,6 +666,7 @@ EditView
                                         text: "Screenshot"
                                         checked: false
                                         checkable: false
+                                        position: cornerPositions['Left']
 
                                         onClicked: saveScreenshotDialog.open();
 
@@ -672,7 +683,7 @@ EditView
                                         }
 
                                         ToolTip {
-                                            description: "Save screenshot"
+                                            text: "Save screenshot"
                                         }
                                     }
                                 }
@@ -689,6 +700,7 @@ EditView
                                         text: "Movie"
                                         checked: false
                                         checkable: true
+                                        position: cornerPositions['Right']
 
                                         onClicked: {
                                             if(checked)
@@ -726,16 +738,16 @@ EditView
                                 }
 
                                 RowLayout {
-                                    Layout.fillWidth: true
 
-                                    Label {
-                                        text: "X"
-                                    }
+//                                    Label {
+//                                        text: "X"
+//                                    }
 
                                     TextField {
                                         id: captureWidthTextField
                                         Layout.fillWidth: true
                                         validator: IntValidator {bottom: 1}
+                                        position: cornerPositions['Left']
 
                                         text: "1"
                                     }
@@ -744,14 +756,15 @@ EditView
                                 RowLayout {
                                     Layout.fillWidth: true
 
-                                    Label {
-                                        text: " Y"
-                                    }
+//                                    Label {
+//                                        text: " Y"
+//                                    }
 
                                     TextField {
                                         id: captureHeightTextField
                                         Layout.fillWidth: true
                                         validator: IntValidator {bottom: 1}
+                                        position: cornerPositions['Right']
 
                                         text: "1"
                                     }
@@ -791,7 +804,7 @@ EditView
 
                                     RowLayout {
                                         anchors.fill: parent
-                                        spacing: 0
+                                        spacing: -1
 
                                         // orthographic
 
@@ -799,6 +812,7 @@ EditView
                                             id: orthoButton
                                             Layout.fillWidth: true
                                             Layout.preferredWidth: parent.width
+                                            position: cornerPositions['Left']
 
                                             text: "Orthographic"
                                             checkable: true
@@ -836,6 +850,7 @@ EditView
                                             id: perspectiveButton
                                             Layout.fillWidth: true
                                             Layout.preferredWidth: parent.width
+                                            position: cornerPositions['Right']
 
                                             text: "Perspective"
                                             checkable: true
@@ -876,8 +891,8 @@ EditView
 
                                     RowLayout {
                                         anchors.fill: parent
-
                                         // near
+                                        spacing: -1
 
                                         Item {
                                             Layout.fillWidth: true
@@ -896,6 +911,7 @@ EditView
                                                     id: zNearTextField
                                                     Layout.fillWidth: true
                                                     implicitWidth: 200
+                                                    position: cornerPositions['Left']
 
                                                     enabled: root.camera
 
@@ -949,6 +965,7 @@ EditView
                                                     id: zFarTextField
                                                     Layout.fillWidth: true
                                                     implicitWidth: 200
+                                                    position: cornerPositions['Right']
 
                                                     enabled: root.camera
 
@@ -1044,14 +1061,14 @@ EditView
                                     GridLayout {
                                         anchors.fill: parent
                                         columns: 2
-                                        rowSpacing: 0
-                                        columnSpacing: 0
+                                        rowSpacing: -1
+                                        columnSpacing: -1
 
                                         Button {
                                             Layout.fillWidth: true
                                             Layout.preferredWidth: parent.width
                                             text: "Save"
-
+                                            position: cornerPositions['Left']
                                             onClicked: if(camera) root.saveCameraToFile(Number(uiId))
 
                                             ToolTip {
@@ -1063,6 +1080,7 @@ EditView
                                             Layout.fillWidth: true
                                             Layout.preferredWidth: parent.width
                                             text: "Reload"
+                                            position: cornerPositions['Right']
 
                                             onClicked: if(camera) root.loadCameraFromFile(Number(uiId))
 
@@ -1070,11 +1088,16 @@ EditView
                                                 description: "Reload the view from data contained in a sidecar file (if present)"
                                             }
                                         }
+                                        Rectangle {
+                                            color: "transparent"
+                                            height: 5
+                                        }
 
                                         Button {
                                             Layout.fillWidth: true
                                             Layout.columnSpan: 2
                                             text: "Fit"
+                                            position: cornerPositions['Top']
 
                                             onClicked: if(camera) camera.fit(root.boundingBoxMin(), root.boundingBoxMax())
 
@@ -1086,6 +1109,7 @@ EditView
                                         Button {
                                             Layout.fillWidth: true
                                             text: "-X"
+                                            position: cornerPositions['Middle']
 
                                             onClicked: if(camera) camera.viewFromLeft()
 
@@ -1097,6 +1121,7 @@ EditView
                                         Button {
                                             Layout.fillWidth: true
                                             text: "+X"
+                                            position: cornerPositions['Middle']
 
                                             onClicked: if(camera) camera.viewFromRight()
 
@@ -1108,6 +1133,7 @@ EditView
                                         Button {
                                             Layout.fillWidth: true
                                             text: "-Y"
+                                            position: cornerPositions['Middle']
 
                                             onClicked: if(camera) camera.viewFromTop()
 
@@ -1119,6 +1145,7 @@ EditView
                                         Button {
                                             Layout.fillWidth: true
                                             text: "+Y"
+                                            position: cornerPositions['Middle']
 
                                             onClicked: if(camera) camera.viewFromBottom()
 
@@ -1131,6 +1158,7 @@ EditView
                                             Layout.fillWidth: true
                                             Layout.preferredWidth: parent.width
                                             text: "-Z"
+                                            position: cornerPositions['Middle']
 
                                             onClicked: if(camera) camera.viewFromFront()
 
@@ -1143,6 +1171,7 @@ EditView
                                             Layout.fillWidth: true
                                             Layout.preferredWidth: parent.width
                                             text: "+Z"
+                                            position: cornerPositions['Middle']
 
                                             onClicked: if(camera) camera.viewFromBack()
 
@@ -1155,6 +1184,7 @@ EditView
                                             Layout.fillWidth: true
                                             Layout.columnSpan: 2
                                             text: "Isometric"
+                                            position: cornerPositions['Bottom']
 
                                             onClicked: if(camera) camera.viewIsometric()
 

@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.4
+import SofaApplication 1.0
 import SofaColorScheme 1.0
 
 Rectangle {
@@ -28,6 +29,9 @@ Rectangle {
     property int controlType: controlTypes["Button"]
     property int position: cornerPositions["Single"]
     property string borderColor: "#595959"
+    property int cornerRadius: 4
+    property string backgroundColor: SofaApplication.style.contentBackgroundColor
+    property bool noGradient: false
 
     ColorScheme { id: colorScheme }
     property Item currentcontrolType: (controlType === controlTypes["Button"]) ? colorScheme.button : (controlType === controlTypes["ComboBox"]) ? colorScheme.comboBox : (controlType === controlTypes["CheckBox"]) ? colorScheme.checkBox : (controlType === controlTypes["ToggleButton"]) ? colorScheme.toggleButton : colorScheme.inputField
@@ -66,8 +70,9 @@ Rectangle {
         width: gridID.width / 2
         height: gridID.height / 2
         border.color: borderColor
-        gradient: gridID.currentGradients.topGradient
-        radius: (gridID.position === 0 || gridID.position === 1 || gridID.position === 2 || gridID.position === 4) ? 4 : 0
+        gradient: noGradient ? null : gridID.currentGradients.topGradient
+        radius: (gridID.position === 0 || gridID.position === 1 || gridID.position === 2 || gridID.position === 4) ? cornerRadius : 0
+        color: gridID.backgroundColor
     }
     Rectangle {
         z: 2
@@ -76,8 +81,9 @@ Rectangle {
         height: gridID.height / 2
         border.color: borderColor
         anchors.left: topLeft.right
-        gradient: gridID.currentGradients.topGradient
-        radius: (gridID.position === 0 || gridID.position === 2 || gridID.position === 3 || gridID.position === 6) ? 4 : 0
+        gradient: noGradient ? null : gridID.currentGradients.topGradient
+        radius: (gridID.position === 0 || gridID.position === 2 || gridID.position === 3 || gridID.position === 6) ? cornerRadius : 0
+        color: gridID.backgroundColor
     }
     Rectangle {
         z: 3
@@ -88,6 +94,7 @@ Rectangle {
 
         anchors.left: topLeft.right
         anchors.leftMargin: -(gridID.width / 6)
+        color: gridID.backgroundColor
     }
     Rectangle {
         z: 3
@@ -100,7 +107,8 @@ Rectangle {
         anchors.leftMargin: -(gridID.width / 6)
         anchors.top: topLeft.top
         anchors.topMargin: 1
-        gradient: gridID.currentGradients.totalGradient
+        gradient: noGradient ? null : gridID.currentGradients.totalGradient
+        color: gridID.backgroundColor
     }
     Rectangle {
         z: 3
@@ -111,6 +119,7 @@ Rectangle {
         anchors.left: topLeft.left
         anchors.top: topLeft.bottom
         anchors.topMargin: -(gridID.height / 6)
+        color: gridID.backgroundColor
     }
     Rectangle {
         z: 3
@@ -122,7 +131,8 @@ Rectangle {
         anchors.leftMargin: 1
         anchors.top: topLeft.bottom
         anchors.topMargin: -(gridID.height / 6)
-        gradient: gridID.currentGradients.middleGradient
+        gradient: noGradient ? null : gridID.currentGradients.middleGradient
+        color: gridID.backgroundColor
     }
     Rectangle {
         z: 2
@@ -132,8 +142,9 @@ Rectangle {
         width: gridID.width / 2
         height: gridID.height / 2
         border.color: borderColor
-        gradient: gridID.currentGradients.bottomGradient
-        radius: (gridID.position === 0 || gridID.position === 6 || gridID.position === 8 || gridID.position === 9) ? 4 : 0
+        gradient: noGradient ? null : gridID.currentGradients.bottomGradient
+        radius: (gridID.position === 0 || gridID.position === 6 || gridID.position === 8 || gridID.position === 9) ? cornerRadius : 0
+        color: gridID.backgroundColor
     }
     Rectangle {
         z: 2
@@ -142,8 +153,9 @@ Rectangle {
         width: gridID.width / 2
         height: gridID.height / 2
         border.color: borderColor
-        gradient: gridID.currentGradients.bottomGradient
-        radius: (gridID.position === 0 || gridID.position === 4 || gridID.position === 7 || gridID.position === 8) ? 4 : 0
+        gradient: noGradient ? null : gridID.currentGradients.bottomGradient
+        radius: (gridID.position === 0 || gridID.position === 4 || gridID.position === 7 || gridID.position === 8) ? cornerRadius : 0
+        color: gridID.backgroundColor
     }
 }
 
