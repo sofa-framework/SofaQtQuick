@@ -167,12 +167,12 @@ ToolBar {
                 iconSource: "qrc:/icon/replay.png"
                 ToolTip {
                     text: "Reset"
-                    description: "Reset the simulation (from memory). To update a modified scene use File->Reload"
+                    description: "Reloads the simulation from the scene files"
                 }
 
                 onClicked: {
                     if(sofaScene)
-                        sofaScene.reset();
+                        sofaScene.reload();
                 }
             }
             ToolSeparator {

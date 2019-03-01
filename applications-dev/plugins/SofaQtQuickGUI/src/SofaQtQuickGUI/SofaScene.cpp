@@ -158,6 +158,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent),
     connect(this, &SofaScene::sourceChanged, this, &SofaScene::open);
     connect(this, &SofaScene::animateChanged, myStepTimer, [&](bool newAnimate) {newAnimate ? myStepTimer->start() : myStepTimer->stop();});
     connect(this, &SofaScene::statusChanged, this, &SofaScene::handleStatusChange);
+    connect(myStepTimer, &QTimer::timeout, this, &SofaScene::step);
 }
 
 SofaScene::~SofaScene()
@@ -200,9 +201,6 @@ bool LoaderProcess(SofaScene* sofaScene)
         sofaScene->setStatus(SofaScene::Status::Error);
         return false;
     }
-
-    sofaScene->setStatus(SofaScene::Status::Error);
-    return false;
 }
 
 
