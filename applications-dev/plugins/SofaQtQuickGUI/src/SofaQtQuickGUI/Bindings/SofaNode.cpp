@@ -29,10 +29,16 @@ namespace sofaqtquick::bindings::_sofanode_
 
 SofaNode::SofaNode(QObject *parent)
 {
+    SOFA_UNUSED(parent);
     m_self = sofa::core::objectmodel::New<DAGNode>("unnamed");
 }
 
-SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent) { m_self = self; }
+SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent)
+{
+    SOFA_UNUSED(parent);
+    m_self = self;
+}
+
 SofaNode::~SofaNode(){}
 
 

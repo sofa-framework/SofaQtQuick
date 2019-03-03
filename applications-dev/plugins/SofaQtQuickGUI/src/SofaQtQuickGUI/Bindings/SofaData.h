@@ -44,7 +44,7 @@ namespace sofaqtquick::bindings
             bool setValue(const QVariant& value);
 
         signals:
-            void valueChanged(QVariant& newValue);
+            void valueChanged(const QVariant& newValue);
 
         private:
             BaseData* m_self {nullptr};

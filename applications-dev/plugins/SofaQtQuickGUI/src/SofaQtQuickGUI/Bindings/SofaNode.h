@@ -41,10 +41,9 @@ namespace _sofanode_
 using sofaqtquick::bindings::SofaBase;
 using sofa::simulation::graph::DAGNode;
 
-/// QtQuick wrapper for a sofa base allowing us to share a component in a QML context
+/// QtQuick wrapper to sofa::Base
 class SOFA_SOFAQTQUICKGUI_API SofaNode : public SofaBase
 {
-    //Q_OBJECT
 public:
     SofaNode(QObject *parent = nullptr);
     SofaNode(DAGNode::SPtr self, QObject *parent = nullptr);

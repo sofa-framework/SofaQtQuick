@@ -38,7 +38,12 @@ QVariant SofaData::value() const
 
 bool SofaData::setValue(const QVariant& value)
 {
-    return sofaqtquick::helper::setDataValueFromQVariant(m_self, value);
+    if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
+    {
+        emit valueChanged(value);
+        return true;
+    }
+    return false;
 }
 
 

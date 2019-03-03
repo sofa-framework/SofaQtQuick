@@ -51,36 +51,27 @@ public:
     Q_INVOKABLE QString getClassName() const;
     Q_INVOKABLE QString getTemplateName() const;
 
+    /// get a data from its name
     Q_INVOKABLE QObject* getData(const QString& name) const;
+
+    /// The following three are used to get extra information about where
+    /// the component is implemented (the source location)
+    /// and where it is instanciated (the scene file location)
+    Q_INVOKABLE bool hasLocations() const ;
+    Q_INVOKABLE QString getSourceLocation() const ;
+    Q_INVOKABLE QString getCreationLocation() const ;
+
+    Q_INVOKABLE QString output() const;
+    Q_INVOKABLE void clearOutput() const;
+
+    Q_INVOKABLE QString warning() const;
+    Q_INVOKABLE void clearWarning() const;
 
 protected:
     SofaBase();
 
     Base::SPtr m_self; ///< Hold are reference to the real sofa object.
 };
-
-
-//SP_CLASS_METHOD_DOC(Base,addData, "Adds an existing data field to the current object")
-//SP_CLASS_METHOD_DOC(Base,findData, "Returns the data field if there is one associated \n"
-//                                   "with the provided name and downcasts it to the lowest known type. \n"
-//                                   "Returns None otherwhise.")
-//SP_CLASS_METHOD_DOC(Base,findLink, "Returns a link field if there is one associated \n"
-//                                   "with the provided name, returns None otherwhise")
-//SP_CLASS_METHOD_DOC(Base,getData, "Returns the data field if there is one associated \n"
-//                              "with the provided name but don't downcasts it to the lowest known type. \n"
-//                              "Returns None is there is no field with this name.")
-//SP_CLASS_METHOD_DOC(Base,getLink, "Returns the link field if there is one associated \n"
-//                              "with the provided name but. \n"
-//                              "Returns None is there is no field with this name.")
-//SP_CLASS_METHOD(Base,__dir__)
-//SP_CLASS_METHOD_DOC(Base,getDataFields, "Returns a list with the *content* of all the data fields converted in python"
-//                                        " type. \n")
-//SP_CLASS_METHOD_DOC(Base,getListOfDataFields, "Returns the list of data fields.")
-//SP_CLASS_METHOD_DOC(Base,getListOfLinks, "Returns the list of link fields.")
-//SP_CLASS_METHOD(Base,downCast)
-
-//SP_CLASS_METHODS_END;
-
 
 } /// namespace _sofabase_
 
