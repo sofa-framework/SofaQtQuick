@@ -88,6 +88,10 @@ protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
     /// charge of notifying the change using the QAbstractItemModel.
+//    bool frozen;
+//    void onStepBegin(Node* root) override;
+//    void onStepEnd(Node* root) override;
+
     void onAddChildBegin(Node* parent, Node* child) override;
     void onAddChildEnd(Node* parent, Node* child) override;
     void onRemoveChildBegin(Node* parent, Node* child) override;

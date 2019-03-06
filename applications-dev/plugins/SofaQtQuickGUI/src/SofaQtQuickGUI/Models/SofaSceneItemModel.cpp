@@ -330,8 +330,27 @@ size_t rrowCount_recurse(Node* node)
     return i + node->object.size() ;
 }
 
+
+//void SofaSceneItemModel::onStepBegin(Node* root)
+//{
+//    msg_info("MutationListener") << "onStepBegin";
+//    SOFA_UNUSED(root);
+////    frozen = true;
+//}
+
+//void SofaSceneItemModel::onStepEnd(Node* root)
+//{
+//    msg_info("MutationListener") << "onStepEnd";
+////    frozen = false;
+//    SOFA_UNUSED(root);
+////    frozen = true;
+//}
+
 void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)
 {
+//    if (frozen)
+//        return;
+    SOFA_UNUSED(child);
     QModelIndex parentIndex = index(target);
     int i = int(rrowCount(target));
 
