@@ -109,7 +109,6 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
-
         alternatingRowColors: true
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
@@ -153,7 +152,7 @@ Rectangle {
         }
 
         onSelectionChanged: {
-            console.log("SELECTION CHANGED");
+
         }
 
         SofaSceneItemModel
@@ -177,7 +176,6 @@ Rectangle {
             property bool hasMultiParent : model ? model.hasMultiParent : false
             property bool isMultiParent : model ? model.isMultiParent : false
             property bool isSelected: false
-
 
             Item {
                 id: icon

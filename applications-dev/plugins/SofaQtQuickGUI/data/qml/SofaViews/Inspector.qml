@@ -167,6 +167,18 @@ Item {
                                     width: 14
                                     height: 14
                                     color: "#393939"
+                                    MouseArea {
+                                        id: mouse_area2
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            if(theItem.state === "expanded")
+                                                theItem.state = "collapsed"
+                                            else
+                                                theItem.state = "expanded"
+
+                                            visualModel.theModel.setVisibility(index, !(theItem.state==="collapsed"))
+                                        }
+                                    }
                                 }
 
                                 Label{
