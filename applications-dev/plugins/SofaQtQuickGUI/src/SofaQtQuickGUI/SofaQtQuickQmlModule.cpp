@@ -21,7 +21,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/SofaApplication.h>
 #include <SofaQtQuickGUI/ProcessState.h>
 #include <SofaQtQuickGUI/Camera.h>
-#include <SofaQtQuickGUI/SofaCamera.h>
 #include <SofaQtQuickGUI/SofaParticleInteractor.h>
 #include <SofaQtQuickGUI/SofaPythonInteractor.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
@@ -32,6 +31,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/SofaScene.h>
 
 /// Bindings from c++ to QML/Javascript
+#include <SofaQtQuickGUI/Bindings/SofaCamera.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>

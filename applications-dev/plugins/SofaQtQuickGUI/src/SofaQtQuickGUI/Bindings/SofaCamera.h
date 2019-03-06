@@ -16,9 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
-
-#ifndef SofaCamera_H
-#define SofaCamera_H
+#pragma once
 
 #include <QObject>
 #include <QMatrix4x4>
@@ -31,11 +29,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Camera.h>
 
-namespace sofa
+namespace sofaqtquick::binding
 {
 
-namespace qtquick
-{
+using sofa::qtquick::SofaScene;
+using sofa::qtquick::Camera;
 
 /// \class SofaCamera expose a sofa::component::BaseCamera as a QtQuick Camera.
 /// This allows to manipulate BaseCamera from QtQuick scripts.
@@ -51,8 +49,9 @@ private slots:
     void handleSofaDataChange();
 
 public:
-    explicit SofaCamera(QObject* parent = 0);
-    ~SofaCamera();
+    explicit SofaCamera(QObject* parent = nullptr);
+    ~SofaCamera() override;
+
     sofa::qtquick::SofaComponent* sofaComponent() const;
     void setSofaComponent(sofa::qtquick::SofaComponent* sofaComponent);
 
@@ -65,15 +64,12 @@ public:
     const QMatrix4x4& model() const override;
 
     Q_INVOKABLE QQuaternion orientation() const override;
+    Q_INVOKABLE bool bindCameraFromScene(const SofaScene* scene, const size_t index);
 
 private:
     sofa::qtquick::SofaComponent* m_sofaComponent {nullptr};
     mutable sofa::component::visualmodel::BaseCamera* m_baseCamera {nullptr};
-
 };
 
 }
 
-}
-
-#endif // SofaCamera_H

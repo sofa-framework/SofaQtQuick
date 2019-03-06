@@ -33,10 +33,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/io/Image.h>
 
 ////////////////////////// FORWARD DECLARATION ///////////////////////////
-namespace sofa {
-    namespace qtquick {
+namespace sofaqtquick::binding
+{
         class SofaCamera;
-    }
 }
 
 //////////////////////////////// DEFINITION /////////////////////////////
@@ -44,6 +43,8 @@ namespace sofa
 {
 namespace qtquick
 {
+
+using sofaqtquick::binding::SofaCamera;
 
 /// \class Display a Sofa Scene in a QQuickFramebufferObject using the camera parameters
 /// that comes from the Sofa Scene.
@@ -54,8 +55,8 @@ class SOFA_SOFAQTQUICKGUI_API CameraView : public SofaViewer
 public:
     typedef SofaViewer Parent;
 
-    explicit CameraView(QQuickItem* parent = 0);
-    ~CameraView();
+    explicit CameraView(QQuickItem* parent = nullptr);
+    ~CameraView() override;
 
 protected:
     virtual void internalRender(int width, int height) const override ;

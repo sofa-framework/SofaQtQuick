@@ -25,6 +25,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/PythonConsole.cpp
     src/SofaQtQuickGUI/SofaParticleInteractor.cpp
     src/SofaQtQuickGUI/Bindings/SofaFactory.cpp
+    src/SofaQtQuickGUI/Bindings/SofaCamera.cpp
     src/SofaQtQuickGUI/Bindings/SofaComponent.cpp
     src/SofaQtQuickGUI/Bindings/SofaBase.cpp
     src/SofaQtQuickGUI/Bindings/SofaBaseObject.cpp
@@ -45,7 +46,6 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Models/SofaSceneItemModel.cpp
     src/SofaQtQuickGUI/Models/SofaSceneItemProxy.cpp
     src/SofaQtQuickGUI/Models/SofaViewListModel.cpp
-    src/SofaQtQuickGUI/SofaCamera.cpp
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
     src/SofaQtQuickGUI/LiveFileMonitor.cpp
@@ -56,7 +56,6 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/DataHelper.h
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.h
     src/SofaQtQuickGUI/SofaApplication.h
-    src/SofaQtQuickGUI/SofaCamera.h
     src/SofaQtQuickGUI/ProcessState.h
     src/SofaQtQuickGUI/SofaViewer.h
     src/SofaQtQuickGUI/Windows/CameraView.h
@@ -74,6 +73,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaParticleInteractor.h
     src/SofaQtQuickGUI/Bindings/SofaFactory.h
     src/SofaQtQuickGUI/Bindings/SofaComponent.h
+    src/SofaQtQuickGUI/Bindings/SofaCamera.h
     src/SofaQtQuickGUI/Bindings/SofaBase.h
     src/SofaQtQuickGUI/Bindings/SofaBaseObject.h
     src/SofaQtQuickGUI/Bindings/SofaNode.h
