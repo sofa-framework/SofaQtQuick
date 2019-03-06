@@ -32,6 +32,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import SofaBasics 1.0
 import SofaColorScheme 1.0
+import Qt.labs.settings 1.0
 
 Rectangle {
     id: root
@@ -165,6 +166,38 @@ Rectangle {
         {
             id: sceneModel
             model : basemodel
+
+            onModelReset: {
+
+                console.error("ModelReset")
+
+                for(var key in nodeSettings.nodeState) {
+                    if (nodeSettings.nodeState[key]) {
+                        console.error(key + "is expanded")
+                        treeView.expand(key)
+                    }
+                }
+            }
+
+            onModelAboutToBeReset: {
+                console.error("ModelAboutToBeReset")
+            }
+
+        }
+
+        Settings {
+            id: nodeSettings
+            category: "Hierarchy"
+            property var nodeState: ({})
+        }
+
+        onExpanded: {
+            console.error("expanded")
+            nodeSettings.nodeState[index] = treeView.isExpanded(index)
+        }
+        onCollapsed: {
+            console.error("collapsed")
+            nodeSettings.nodeState[index] = treeView.isExpanded(index)
         }
 
         itemDelegate: Item {

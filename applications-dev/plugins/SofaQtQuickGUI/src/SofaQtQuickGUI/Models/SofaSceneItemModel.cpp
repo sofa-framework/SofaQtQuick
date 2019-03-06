@@ -331,20 +331,22 @@ size_t rrowCount_recurse(Node* node)
 }
 
 
-//void SofaSceneItemModel::onStepBegin(Node* root)
-//{
-//    msg_info("MutationListener") << "onStepBegin";
-//    SOFA_UNUSED(root);
-////    frozen = true;
-//}
+void SofaSceneItemModel::onStepBegin(Node* root)
+{
+    msg_info("MutationListener") << "onStepBegin";
+    SOFA_UNUSED(root);
+//    frozen = true;
+}
 
-//void SofaSceneItemModel::onStepEnd(Node* root)
-//{
-//    msg_info("MutationListener") << "onStepEnd";
-////    frozen = false;
-//    SOFA_UNUSED(root);
-////    frozen = true;
-//}
+void SofaSceneItemModel::onStepEnd(Node* root)
+{
+    msg_info("MutationListener") << "onStepEnd";
+//    frozen = false;
+    SOFA_UNUSED(root);
+    beginResetModel();
+    endResetModel();
+//    frozen = true;
+}
 
 void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)
 {
