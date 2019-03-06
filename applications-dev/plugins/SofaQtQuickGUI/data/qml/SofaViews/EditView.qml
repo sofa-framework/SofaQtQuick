@@ -444,7 +444,7 @@ EditView
         anchors.topMargin: -25
         anchors.bottomMargin: 0
         anchors.rightMargin: -radius
-        width: 250
+        implicitWidth: 250
 //        cornerRadius: 4
         visible: true
         borderWidth: 1
@@ -460,15 +460,42 @@ EditView
             acceptedButtons: Qt.AllButtons
             onWheel: wheel.accepted = true
         }
+        MouseArea {
+            property int oldMouseX
+
+            id: resizeArea
+            anchors.left: parent.left
+            anchors.leftMargin: -2
+            width: 4
+            height: parent.height
+            hoverEnabled: true
+            onHoveredChanged: {
+                cursorShape = Qt.SizeHorCursor
+            }
+
+            onPressed: {
+                oldMouseX = mouseX
+            }
+
+            onPositionChanged: {
+                if (pressed) {
+                    if(toolPanel.implicitWidth < 20) {
+                        toolPanel.implicitWidth = 250
+                        toolPanel.visible = false
+                    }
+                    else toolPanel.implicitWidth = toolPanel.implicitWidth + (oldMouseX - mouseX)
+                }
+            }
+        }
 
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: toolPanel.radius / 2
-            anchors.rightMargin: 10
-            anchors.leftMargin: 10
+//            anchors.rightMargin: 10
             spacing: 2
 
             Text {
+                Layout.leftMargin: 10
                 Layout.topMargin: 10
                 Layout.fillWidth: true
                 text: "SofaViewer parameters"
@@ -481,8 +508,13 @@ EditView
                 Layout.fillHeight: true
 
                 Flickable {
+                    id: flick
                     anchors.fill: parent
                     contentHeight: panelColumn.implicitHeight
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "transparent"
+                    }
 
                     Column {
                         id: panelColumn
@@ -491,7 +523,9 @@ EditView
 
                         GroupBox {
                             id: visualPanel
-                            implicitWidth: parent.width
+
+                            anchors.left: panelColumn.left
+                            anchors.right: panelColumn.right
                             title: "Visual"
 
                             GridLayout {
@@ -532,6 +566,7 @@ EditView
                                     id: antialiasingLayout
                                     Layout.alignment: Qt.AlignCenter
                                     Layout.columnSpan: 2
+                                    Layout.fillWidth: true
 
                                     Slider {
                                         id: antialiasingSlider
@@ -725,7 +760,7 @@ EditView
                                         }
 
                                         ToolTip {
-                                            description: "Save video"
+                                            text: "Save video"
                                         }
                                     }
                                 }
@@ -840,7 +875,7 @@ EditView
                                             }
 
                                             ToolTip {
-                                                description: "Orthographic Mode"
+                                                text: "Orthographic Mode"
                                             }
                                         }
 
@@ -878,7 +913,7 @@ EditView
                                             }
 
                                             ToolTip {
-                                                description: "Perspective Mode"
+                                                text: "Perspective Mode"
                                             }
                                         }
                                     }
@@ -945,7 +980,7 @@ EditView
                                                     }
 
                                                     ToolTip {
-                                                        description: "Depth of the camera near plane"
+                                                        text: "Depth of the camera near plane"
                                                     }
                                                 }
                                             }
@@ -999,7 +1034,7 @@ EditView
                                                     }
 
                                                     ToolTip {
-                                                        description: "Depth of the camera far plane"
+                                                        text: "Depth of the camera far plane"
                                                     }
                                                 }
 
@@ -1072,7 +1107,7 @@ EditView
                                             onClicked: if(camera) root.saveCameraToFile(Number(uiId))
 
                                             ToolTip {
-                                                description: "Save the current view to a sidecar file"
+                                                text: "Save the current view to a sidecar file"
                                             }
                                         }
 
@@ -1085,7 +1120,7 @@ EditView
                                             onClicked: if(camera) root.loadCameraFromFile(Number(uiId))
 
                                             ToolTip {
-                                                description: "Reload the view from data contained in a sidecar file (if present)"
+                                                text: "Reload the view from data contained in a sidecar file (if present)"
                                             }
                                         }
                                         Rectangle {
@@ -1102,7 +1137,7 @@ EditView
                                             onClicked: if(camera) camera.fit(root.boundingBoxMin(), root.boundingBoxMax())
 
                                             ToolTip {
-                                                description: "Fit in view"
+                                                text: "Fit in view"
                                             }
                                         }
 
@@ -1114,7 +1149,7 @@ EditView
                                             onClicked: if(camera) camera.viewFromLeft()
 
                                             ToolTip {
-                                                description: "Align view along the negative X Axis"
+                                                text: "Align view along the negative X Axis"
                                             }
                                         }
 
@@ -1126,7 +1161,7 @@ EditView
                                             onClicked: if(camera) camera.viewFromRight()
 
                                             ToolTip {
-                                                description: "Align view along the positive X Axis"
+                                                text: "Align view along the positive X Axis"
                                             }
                                         }
 
@@ -1138,7 +1173,7 @@ EditView
                                             onClicked: if(camera) camera.viewFromTop()
 
                                             ToolTip {
-                                                description: "Align view along the negative Y Axis"
+                                                text: "Align view along the negative Y Axis"
                                             }
                                         }
 
@@ -1150,7 +1185,7 @@ EditView
                                             onClicked: if(camera) camera.viewFromBottom()
 
                                             ToolTip {
-                                                description: "Align view along the positive Y Axis"
+                                                text: "Align view along the positive Y Axis"
                                             }
                                         }
 
@@ -1163,7 +1198,7 @@ EditView
                                             onClicked: if(camera) camera.viewFromFront()
 
                                             ToolTip {
-                                                description: "Align view along the negative Z Axis"
+                                                text: "Align view along the negative Z Axis"
                                             }
                                         }
 
@@ -1176,7 +1211,7 @@ EditView
                                             onClicked: if(camera) camera.viewFromBack()
 
                                             ToolTip {
-                                                description: "Align view along the positive Z Axis"
+                                                text: "Align view along the positive Z Axis"
                                             }
                                         }
 
@@ -1189,7 +1224,7 @@ EditView
                                             onClicked: if(camera) camera.viewIsometric()
 
                                             ToolTip {
-                                                description: "Isometric View"
+                                                text: "Isometric View"
                                             }
                                         }
                                     }
