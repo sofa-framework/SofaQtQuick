@@ -81,6 +81,7 @@ public:
 
 signals:
     void sofaSceneChanged();
+    void modelHasReset();
 
 protected slots:
     void handleRootNodeChange();

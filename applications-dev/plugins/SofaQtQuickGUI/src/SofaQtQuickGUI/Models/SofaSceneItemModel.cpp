@@ -355,12 +355,23 @@ void SofaSceneItemModel::onStepBegin(Node* root)
 
 void SofaSceneItemModel::onStepEnd(Node* root)
 {
+    static clock_t startTime = clock();
+    static clock_t testTime;
+    static clock_t timePassed;
+    static double secondsPassed = 0;
     msg_info("MutationListener") << "onStepEnd";
 //    frozen = false;
     SOFA_UNUSED(root);
-    beginResetModel();
-    endResetModel();
-//    frozen = true;
+
+    testTime = clock();
+    timePassed = startTime - testTime;
+    secondsPassed = timePassed / double(CLOCKS_PER_SEC);
+    if (secondsPassed >= 1.0)
+    {
+        beginResetModel();
+        endResetModel();
+        emit modelHasReset();
+    }
 }
 
 void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)

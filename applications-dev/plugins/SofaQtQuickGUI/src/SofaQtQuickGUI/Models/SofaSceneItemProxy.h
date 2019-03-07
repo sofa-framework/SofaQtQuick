@@ -42,6 +42,12 @@ public:
 
 public:
 
+    void setSourceModel(QAbstractItemModel* model) override
+    {
+        connect((SofaSceneItemModel*)model, &SofaSceneItemModel::modelHasReset, this, &SofaSceneItemProxy::modelHasReset);
+        QSortFilterProxyModel::setSourceModel(model);
+    }
+
     SofaSceneItemProxy(QObject* parent = 0);
     virtual ~SofaSceneItemProxy();
 
@@ -49,6 +55,8 @@ public:
     /// custom filtering rules.
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 
+signals:
+    void modelHasReset();
 private:
     QHash<QModelIndex, bool> m_filters ;
     bool                     m_showOnlyNodes {false};

@@ -167,26 +167,18 @@ Rectangle {
             id: sceneModel
             model : basemodel
 
-            onModelReset: {
+            onModelHasReset: {
                 console.error("ModelReset")
-
                 for (var key in nodeSettings.nodeState) {
                     if (nodeSettings.nodeState[key]) {
 
                         var idx = null
                         console.error("re-expanding " + key)
                         idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
-                        console.error("Component of " + key + " is " + sofaScene.node(key).getPathName())
-                        console.error("index of " + key + " is " + idx)
                         treeView.expand(idx)
                     }
                 }
             }
-
-            onModelAboutToBeReset: {
-                console.error("ModelAboutToBeReset")
-            }
-
         }
 
         Settings {
@@ -195,20 +187,18 @@ Rectangle {
             property var nodeState: ({})
         }
 
-        onExpanded: {
+        function storeExpandedState(index) {
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getComponentFromIndex(srcIndex)
-            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" expanded. Index is " + index)
-
-
+            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" expanded")
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
         }
-        onCollapsed: {
-            var srcIndex = sceneModel.mapToSource(index)
-            var theComponent = basemodel.getComponentFromIndex(srcIndex)
 
-            nodeSettings.nodeState[theComponent.getPathName()] = treeView.isExpanded(index)
-            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" collapsed. Index is " + index)
+        onExpanded: {
+            storeExpandedState(index)
+        }
+        onCollapsed: {
+            storeExpandedState(index)
         }
 
         itemDelegate: Item {
