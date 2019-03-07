@@ -174,12 +174,10 @@ Rectangle {
                     if (nodeSettings.nodeState[key]) {
 
                         var idx = null
-                        console.error(key + " is expanded")
-                        if (key === "/")
-                            idx = basemodel.getIndexFromComponent(sofaScene.root())
-                        else
-                            idx = basemodel.getIndexFromComponent(sofaScene.component(key))
-                        console.error(idx)
+                        console.error("re-expanding " + key)
+                        idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
+                        console.error("Component of " + key + " is " + sofaScene.node(key).getPathName())
+                        console.error("index of " + key + " is " + idx)
                         treeView.expand(idx)
                     }
                 }
@@ -200,17 +198,17 @@ Rectangle {
         onExpanded: {
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getComponentFromIndex(srcIndex)
-            console.error(theComponent.getPathName()+" expanded")
+            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" expanded. Index is " + index)
 
 
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
         }
         onCollapsed: {
-            console.error(" collapsed")
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getComponentFromIndex(srcIndex)
 
             nodeSettings.nodeState[theComponent.getPathName()] = treeView.isExpanded(index)
+            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" collapsed. Index is " + index)
         }
 
         itemDelegate: Item {

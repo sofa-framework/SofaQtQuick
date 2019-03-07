@@ -220,6 +220,7 @@ public:
 
     Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path);
     Q_INVOKABLE QObject* link(const QString& path);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* node(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* componentByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponentList* componentsByType(const QString& typeName);

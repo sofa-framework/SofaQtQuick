@@ -1313,19 +1313,46 @@ SofaData* SofaScene::data(const QString& path)
     return new SofaData(this, base, data);
 }
 
+SofaComponent* SofaScene::node(const QString& path)
+{
+    std::string p = path.toStdString();
+    if (p[0] != '/')
+        return nullptr;
+
+    p = p.substr(1);
+    if (p == "")
+        return new SofaComponent(this, mySofaRootNode.get());
+
+    Node* ret = nullptr;
+    Node* parent = mySofaRootNode.get();
+    while (p != "")
+    {
+        std::string nodeName = p.substr(0, p.find('/'));
+        ret = parent->getChild(nodeName);
+        if (p.find('/') == std::string::npos)
+            p = "";
+        else
+            p = p.substr(p.find('/') +1);
+        parent = ret;
+    }
+    if (!ret)
+        return nullptr;
+    return new SofaComponent(this, ret);
+}
+
 SofaComponent* SofaScene::component(const QString& path)
 {
-    /// search for the "name" data of the component (this data is always present if the component exist)
-    BaseData* data = FindData_Helper(mySofaRootNode.get(), path + ".name");
-
-    if(!data)
+    for (auto& child : mySofaRootNode->child)
+        std::cout << child->getName() << std::endl;
+    Base::SPtr base;
+    mySofaRootNode->get<Base>(base, path.toStdString());
+    if (!base.get())
+    {
+        std::cout << "No component found for " << path.toStdString() << std::endl;
         return nullptr;
+    }
 
-    Base* base = data->getOwner();
-    if(!base)
-        return nullptr;
-
-    return new SofaComponent(this, base);
+    return new SofaComponent(this, base.get());
 }
 
 SofaBase* SofaScene::get(const QString& path)
