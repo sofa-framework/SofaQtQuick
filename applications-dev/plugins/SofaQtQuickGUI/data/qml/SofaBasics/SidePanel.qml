@@ -20,7 +20,7 @@ Item {
         //        color: "lightgrey"
         anchors.fill: parent
         //        cornerRadius: 4
-        visible: true
+        visible: false
         borderWidth: 1
         borderGradient: Gradient {
             GradientStop { position: 0.0; color: "#7a7a7a" }
