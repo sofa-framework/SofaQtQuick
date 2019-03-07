@@ -51,6 +51,7 @@ public:
 
     ///@brief Returns the sofa component corresponding to the provided index.
     Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentFromIndex(const QModelIndex& index) const;
+    Q_INVOKABLE QModelIndex getIndexFromComponent(sofa::qtquick::SofaComponent* index) const;
 
     SofaSceneItemModel(QObject* parent = nullptr);
     ~SofaSceneItemModel() override;
@@ -87,7 +88,7 @@ protected slots:
 protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
-    /// charge of notifying the change using the QAbstractItemModel.
+    /// charge of notifying the cbasehange using the QAbstractItemModel.
 //    bool frozen;
     void onStepBegin(Node* root) override;
     void onStepEnd(Node* root) override;

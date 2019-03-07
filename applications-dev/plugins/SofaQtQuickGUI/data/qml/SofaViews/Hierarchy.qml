@@ -168,13 +168,19 @@ Rectangle {
             model : basemodel
 
             onModelReset: {
-
                 console.error("ModelReset")
 
-                for(var key in nodeSettings.nodeState) {
+                for (var key in nodeSettings.nodeState) {
                     if (nodeSettings.nodeState[key]) {
-                        console.error(key + "is expanded")
-                        treeView.expand(key)
+
+                        var idx = null
+                        console.error(key + " is expanded")
+                        if (key === "/")
+                            idx = basemodel.getIndexFromComponent(sofaScene.root())
+                        else
+                            idx = basemodel.getIndexFromComponent(sofaScene.component(key))
+                        console.error(idx)
+                        treeView.expand(idx)
                     }
                 }
             }
@@ -192,12 +198,19 @@ Rectangle {
         }
 
         onExpanded: {
-            console.error("expanded")
-            nodeSettings.nodeState[index] = treeView.isExpanded(index)
+            var srcIndex = sceneModel.mapToSource(index)
+            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+            console.error(theComponent.getPathName()+" expanded")
+
+
+            nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
         }
         onCollapsed: {
-            console.error("collapsed")
-            nodeSettings.nodeState[index] = treeView.isExpanded(index)
+            console.error(" collapsed")
+            var srcIndex = sceneModel.mapToSource(index)
+            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+
+            nodeSettings.nodeState[theComponent.getPathName()] = treeView.isExpanded(index)
         }
 
         itemDelegate: Item {
@@ -263,7 +276,7 @@ Rectangle {
                 color: styleData.textColor
                 font.italic: hasMultiParent
                 elide: styleData.elideMode
-                text: name  //+ "(" + model.row + "/"+ styleData.row + ")"
+                text: name //+ "(" + model.row + "/"+ styleData.row + ")"
             }
 
             SofaNodeMenu

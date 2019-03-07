@@ -254,6 +254,21 @@ sofa::qtquick::SofaComponent* SofaSceneItemModel::getComponentFromIndex(const QM
     return new SofaComponent(m_scene, currentBase);
 }
 
+QModelIndex SofaSceneItemModel::getIndexFromComponent(sofa::qtquick::SofaComponent* component) const
+{
+    if (component)
+    {
+        sofa::simulation::Node* node=dynamic_cast<sofa::simulation::Node*>(component->base());
+        if(node)
+            return index(node);
+
+        sofa::core::objectmodel::BaseObject* obj = dynamic_cast<sofa::core::objectmodel::BaseObject*>(component->base());
+        if(obj)
+            return index(static_cast<Node*>(obj->getContext()->toBaseNode()), obj);
+    }
+    return QModelIndex();
+}
+
 QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
 {    
 //        qDebug() << "data: " << index << "role " << role ;
