@@ -1,7 +1,8 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import SofaApplication 1.0
 import SofaColorScheme 1.0
+import QtGraphicalEffects 1.12
 
 Rectangle {
     id: gridID
@@ -108,7 +109,7 @@ Rectangle {
         anchors.top: topLeft.top
         anchors.topMargin: 1
         gradient: noGradient ? null : gridID.currentGradients.totalGradient
-        color: gridID.backgroundColor
+        color: gridID.borderColor === "transparent" ? "transparent" : gridID.backgroundColor
     }
     Rectangle {
         z: 3
@@ -132,7 +133,7 @@ Rectangle {
         anchors.top: topLeft.bottom
         anchors.topMargin: -(gridID.height / 6)
         gradient: noGradient ? null : gridID.currentGradients.middleGradient
-        color: gridID.backgroundColor
+        color: gridID.borderColor === "transparent" ? "transparent" : gridID.backgroundColor
     }
     Rectangle {
         z: 2

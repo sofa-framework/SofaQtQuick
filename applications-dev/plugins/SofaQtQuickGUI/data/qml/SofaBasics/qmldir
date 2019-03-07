@@ -41,4 +41,5 @@ GroupBox 1.0 GroupBox.qml
 ToolButton 1.0 ToolButton.qml
 GBRect 1.0 GBRect.qml
 MenuBar 1.0 MenuBar.qml
+SidePanel 1.0 SidePanel.qml
 
