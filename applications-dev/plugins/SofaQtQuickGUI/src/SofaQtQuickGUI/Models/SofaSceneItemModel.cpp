@@ -348,34 +348,32 @@ size_t rrowCount_recurse(Node* node)
 
 void SofaSceneItemModel::onStepBegin(Node* root)
 {
-    msg_info("MutationListener") << "onStepBegin";
     SOFA_UNUSED(root);
-//    frozen = true;
 }
 
 void SofaSceneItemModel::onStepEnd(Node* root)
 {
-    static clock_t startTime = clock();
-    static clock_t testTime;
-    static clock_t timePassed;
-    static double secondsPassed = 0;
-    msg_info("MutationListener") << "onStepEnd";
-//    frozen = false;
     SOFA_UNUSED(root);
+    static clock_t startTime = clock();
 
-    testTime = clock();
-    timePassed = startTime - testTime;
-    secondsPassed = timePassed / double(CLOCKS_PER_SEC);
-    if (secondsPassed >= 1.0)
+    clock_t testTime = clock();
+    clock_t timePassed = testTime - startTime;
+    double secondsPassed = timePassed / double(CLOCKS_PER_SEC);
+    if (secondsPassed >= 0.2)
     {
+        startTime = testTime;
         beginResetModel();
+//        msg_info("MutationListener") << "sending resetModel() signal";
         endResetModel();
+//        msg_info("MutationListener") << "sending modelHasReset() signal";
         emit modelHasReset();
+//        msg_info("MutationListener") << "refreshed treeView";
     }
 }
 
 void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)
 {
+    return;
 //    if (frozen)
 //        return;
     SOFA_UNUSED(child);
@@ -417,6 +415,7 @@ void SofaSceneItemModel::addNodeContent(Node* node)
 
 void SofaSceneItemModel::onAddChildEnd(Node* target, Node* child)
 {
+    return;
     SOFA_UNUSED(target);
     SOFA_UNUSED(child);
 
@@ -450,6 +449,7 @@ void SofaSceneItemModel::removeNodeContent(Node* node)
 
 void SofaSceneItemModel::onRemoveChildBegin(Node* parent, Node* child)
 {
+    return;
 //    msg_info("b") << "======== Removing child node " << child->getName() << " from: " << parent->getName();
 
     QModelIndex parentIndex = index(parent);
@@ -466,6 +466,7 @@ void SofaSceneItemModel::onRemoveChildBegin(Node* parent, Node* child)
 
 void SofaSceneItemModel::onRemoveChildEnd(Node* parent, Node* child)
 {
+    return;
     SOFA_UNUSED(child);
     SOFA_UNUSED(parent);
     endRemoveRows();
@@ -476,6 +477,7 @@ void SofaSceneItemModel::onRemoveChildEnd(Node* parent, Node* child)
 
 void SofaSceneItemModel::onAddObjectBegin(Node* parent, core::objectmodel::BaseObject* obj)
 {
+    return;
     SOFA_UNUSED(obj);
 //    msg_info("b") << "============= Adding object " << obj->getName() << " to: " << parent->getName();
     QModelIndex parentIndex = index(parent);
@@ -489,6 +491,7 @@ void SofaSceneItemModel::onAddObjectBegin(Node* parent, core::objectmodel::BaseO
 }
 void SofaSceneItemModel::onAddObjectEnd(Node* parent, core::objectmodel::BaseObject* obj)
 {
+    return;
     SOFA_UNUSED(obj);
     SOFA_UNUSED(parent);
     endInsertRows();
@@ -496,6 +499,7 @@ void SofaSceneItemModel::onAddObjectEnd(Node* parent, core::objectmodel::BaseObj
 }
 void SofaSceneItemModel::onRemoveObjectBegin(Node* parent, core::objectmodel::BaseObject* obj)
 {
+    return;
 //    msg_info("b") << "============= Removing object " << obj->getName() << " from: " << parent->getName();
     QModelIndex parentIndex = index(parent);
     int objIndex = index(parent, obj).row();
@@ -507,6 +511,7 @@ void SofaSceneItemModel::onRemoveObjectBegin(Node* parent, core::objectmodel::Ba
 }
 void SofaSceneItemModel::onRemoveObjectEnd(Node* parent, core::objectmodel::BaseObject* obj)
 {
+    return;
     SOFA_UNUSED(obj);
     SOFA_UNUSED(parent);
     endRemoveRows();
@@ -527,6 +532,7 @@ void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
     /// If this is the case then the model needs to be reseted.
     connect(m_scene, &SofaScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
     emit sofaSceneChanged();
+    emit handleRootNodeChange();
 }
 
 void SofaSceneItemModel::handleRootNodeChange()

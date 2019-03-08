@@ -168,12 +168,12 @@ Rectangle {
             model : basemodel
 
             onModelHasReset: {
-                console.error("ModelReset")
+//                console.error("ModelReset")
                 for (var key in nodeSettings.nodeState) {
                     if (nodeSettings.nodeState[key]) {
 
                         var idx = null
-                        console.error("re-expanding " + key)
+//                        console.error("re-expanding " + key)
                         idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
                         treeView.expand(idx)
                     }
@@ -190,7 +190,7 @@ Rectangle {
         function storeExpandedState(index) {
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getComponentFromIndex(srcIndex)
-            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" expanded")
+//            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" expanded")
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
         }
 
