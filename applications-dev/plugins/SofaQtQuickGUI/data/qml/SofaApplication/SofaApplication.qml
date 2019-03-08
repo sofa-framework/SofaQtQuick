@@ -39,6 +39,11 @@ SofaApplication
     property var sofaScene: null
     property QtObject sofaMessageList : SofaMessageList
 
+    property var nodeSettings: Settings {
+        category: "Hierarchy"
+        property string nodeState: ""
+    }
+
     property var sceneSettings: Settings {
         category: "scene"
 

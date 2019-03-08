@@ -552,6 +552,7 @@ void SofaSceneItemModel::handleRootNodeChange()
 
     beginResetModel();
     endResetModel();
+    emit modelHasReset();
 
 }
 

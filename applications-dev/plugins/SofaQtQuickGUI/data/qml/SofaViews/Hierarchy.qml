@@ -41,6 +41,8 @@ Rectangle {
     enabled: sofaScene ? sofaScene.ready : false
 
     property var sofaScene: SofaApplication.sofaScene
+
+
     readonly property var searchBar: searchBar
 
     /*    //    Item {
@@ -152,10 +154,6 @@ Rectangle {
             model: treeView.model
         }
 
-        onSelectionChanged: {
-
-        }
-
         SofaSceneItemModel
         {
             id: basemodel
@@ -168,16 +166,7 @@ Rectangle {
             model : basemodel
 
             onModelHasReset: {
-//                console.error("ModelReset")
-                for (var key in nodeSettings.nodeState) {
-                    if (nodeSettings.nodeState[key]) {
-
-                        var idx = null
-//                        console.error("re-expanding " + key)
-                        idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
-                        treeView.expand(idx)
-                    }
-                }
+                treeView.restoreNodeState()
             }
         }
 
@@ -187,11 +176,46 @@ Rectangle {
             property var nodeState: ({})
         }
 
+        function getExpandedState()
+        {
+            var nsArray = SofaApplication.nodeSettings.nodeState.split(';')
+            for (var idx in nsArray)
+            {
+                if (nsArray[idx] !== "")
+                {
+                    var key = nsArray[idx].split(":")[0]
+                    var value = nsArray[idx].split(":")[1]
+                    nodeSettings.nodeState[key] = value
+                }
+            }
+        }
+
+        function restoreNodeState() {
+            if (Object.keys(nodeSettings.nodeState).length === 0 && SofaApplication.nodeSettings.nodeState !== "")
+                getExpandedState()
+            for (var key in nodeSettings.nodeState) {
+                if (nodeSettings.nodeState[key]) {
+                    var idx = null
+                    idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
+                    treeView.expand(idx)
+                }
+            }
+        }
+
         function storeExpandedState(index) {
+
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getComponentFromIndex(srcIndex)
-//            console.error((theComponent.getPathName() !== "" ? theComponent.getPathName() : "/") +" expanded")
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
+
+            var i = 0;
+            SofaApplication.nodeSettings.nodeState = ""
+            for (var key in nodeSettings.nodeState) {
+                if (i !== 0)
+                    SofaApplication.nodeSettings.nodeState += ";"
+                SofaApplication.nodeSettings.nodeState += key + ":" + (nodeSettings.nodeState[key] ? "1" : "0")
+                i++
+            }
         }
 
         onExpanded: {
