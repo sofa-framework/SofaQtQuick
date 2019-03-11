@@ -95,14 +95,20 @@ const QMatrix4x4& SofaCamera::projection() const
 {
     if (!m_baseCamera)
         return Camera::projection();
-    // return QMath::Identity<QMatrix4x4>();
-    
+
     double dmat[16];
     m_baseCamera->getProjectionMatrix(dmat);
     QMath::setMatrixFrom(myProjection, dmat);
 
     return myProjection;
 }
+
+void SofaCamera::setPixelResolution(double width, double height)
+{
+    if(m_baseCamera != nullptr)
+        m_baseCamera->setViewport(width,height);
+}
+
 
 const QMatrix4x4& SofaCamera::view() const
 {
@@ -134,12 +140,19 @@ QQuaternion SofaCamera::orientation() const
 
 bool SofaCamera::bindCameraFromScene(const SofaScene* scene, const size_t index)
 {
+    if(scene==nullptr)
+        return false;
+
     auto& node = scene->sofaRootNode();
+    if(node==nullptr)
+        return false;
+
     auto cameras = node->getTreeObjects<BaseCamera>();
     if(index < cameras.size())
         return false;
 
     m_baseCamera = cameras[index];
+
     return true;
 }
 

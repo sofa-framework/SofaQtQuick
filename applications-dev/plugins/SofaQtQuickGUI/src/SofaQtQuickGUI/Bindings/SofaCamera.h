@@ -62,6 +62,7 @@ public:
     const QMatrix4x4& projection() const override;
     const QMatrix4x4& view() const override;
     const QMatrix4x4& model() const override;
+    void setPixelResolution(double width, double height);
 
     Q_INVOKABLE QQuaternion orientation() const override;
     Q_INVOKABLE bool bindCameraFromScene(const SofaScene* scene, const size_t index);

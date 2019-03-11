@@ -101,6 +101,7 @@ public:
 
     void setPerspectiveFovY(double fovY);
     void setAspectRatio(double aspectRatio);
+    virtual void setPixelResolution(double width, double height) {}
     double zNear() const;
     void setZNear(double newZNear);
 

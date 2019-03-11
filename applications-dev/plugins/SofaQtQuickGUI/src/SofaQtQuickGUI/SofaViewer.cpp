@@ -668,6 +668,7 @@ void SofaViewer::setupCamera(int width, int height, const SofaViewer& viewer) co
     glUseProgram(0);
 
     camera->setAspectRatio(width / (double) height);
+    camera->setPixelResolution(width, height);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
