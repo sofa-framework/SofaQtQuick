@@ -29,6 +29,7 @@
         <file>SofaBasics/DynamicContent.qml</file>
         <file>SofaBasics/SofaDataItem.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
+        <file>SofaBasics/ToolButton.qml</file>
         <file>SofaBasics/BubbleToolTip.qml</file>
         <file>SofaBasics/MementoBar.qml</file>
         <file>SofaBasics/MementoManager.qml</file>
@@ -70,6 +71,7 @@
         <file>SofaBasics/Vector2DSpinBox.qml</file>
         <file>SofaBasics/Vector4DSpinBox.qml</file>
 	<file>SofaBasics/SidePanel.qml</file>
+        <file>SofaViews/qmldir</file>
         <file>SofaViews/CameraView.qml</file>
         <file>SofaViews/EditView.qml</file>
         <file>SofaViews/Hierarchy.qml</file>
