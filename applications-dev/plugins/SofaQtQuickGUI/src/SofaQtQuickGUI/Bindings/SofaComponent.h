@@ -17,9 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOFA_COMPONENT_H
-#define SOFA_COMPONENT_H
-
+#pragma once
 #include <sofa/simulation/Simulation.h>
 
 #include <SofaQtQuickGUI/config.h>
@@ -110,4 +108,3 @@ private:
 } /// namespace qtquick
 } /// namespace sofa
 
-#endif // SOFA_COMPONENT_H
