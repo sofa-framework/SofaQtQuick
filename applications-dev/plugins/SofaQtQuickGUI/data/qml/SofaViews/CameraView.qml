@@ -40,6 +40,9 @@ CameraView {
     mirroredVertically: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
+    property int minimumValue: 2
+    property int maximumValue: 16
+
     property bool configurable: true
     property var idComboList: ListModel {
         id: cameraNameItems
