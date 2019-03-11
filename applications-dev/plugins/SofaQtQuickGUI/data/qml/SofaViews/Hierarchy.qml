@@ -228,12 +228,12 @@ Rectangle {
         itemDelegate: Item {
             property bool multiparent : false
             property bool isDisabled : false
-            property string name : model ? model.name : ""
-            property string typename : model ? model.typename : ""
-            property bool isNode: model ? model.isNode : false
-            property bool hasMultiParent : model ? model.hasMultiParent : false
-            property bool isMultiParent : model ? model.isMultiParent : false
             property bool isSelected: false
+            property string name : model && model.name ? model.name : ""
+            property string typename : model && model.typename ? model.typename : ""
+            property bool isNode: model && model.isNode ? model.isNode : false
+            property bool hasMultiParent : model && model.hasMultiParent ? model.hasMultiParent : false
+            property bool isMultiParent : model && model.isMultiParent ? model.isMultiParent : false
 
             Item {
                 id: icon

@@ -28,6 +28,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaScene.h>
+#include <thread>
+#include <mutex>
 
 namespace sofa
 {
@@ -82,18 +84,17 @@ public:
 signals:
     void sofaSceneChanged();
     void modelHasReset();
+    void resetRequired();
 
 protected slots:
     void handleRootNodeChange();
+    void onResetRequired();
 
 protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
     /// charge of notifying the cbasehange using the QAbstractItemModel.
 //    bool frozen;
-    void onStepBegin(Node* root) override;
-    void onStepEnd(Node* root) override;
-
     void onAddChildBegin(Node* parent, Node* child) override;
     void onAddChildEnd(Node* parent, Node* child) override;
     void onRemoveChildBegin(Node* parent, Node* child) override;
@@ -109,12 +110,19 @@ protected:
     QModelIndex index(simulation::Node *node) const ;
     QModelIndex index(simulation::Node *node, sofa::core::objectmodel::BaseObject* obj) const ;
 
+
     SofaScene*                      m_scene {nullptr};
     sofa::simulation::Node::SPtr    m_root  {nullptr};
 
 private:
+    void modelRefreshThread();
     void removeNodeContent(Node* node);
     void addNodeContent(Node* node);
+
+    std::mutex m_lock;
+    std::thread m_thread;
+    bool m_isRefreshThreadRunning;
+    bool m_needsRefresh;
 };
 
 } /// namespace _sofasceneitemmodel_
