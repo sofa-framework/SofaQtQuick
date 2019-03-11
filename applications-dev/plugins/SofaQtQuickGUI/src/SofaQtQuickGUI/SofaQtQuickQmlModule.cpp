@@ -126,6 +126,8 @@ static QObject* createSofaViewListModel(QQmlEngine *engine,
 void registerSofaTypesToQml(const char* /*uri*/)
 {
     qRegisterMetaType<SofaScene::Status>("Status");
+    qRegisterMetaType<size_t>("const size_t");
+    qRegisterMetaType<SofaScene*>("const SofaScene*");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplication");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
