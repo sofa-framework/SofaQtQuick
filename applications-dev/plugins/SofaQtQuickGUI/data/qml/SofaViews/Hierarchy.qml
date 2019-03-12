@@ -194,11 +194,9 @@ Rectangle {
             if (Object.keys(nodeSettings.nodeState).length === 0 && SofaApplication.nodeSettings.nodeState !== "")
                 getExpandedState()
             for (var key in nodeSettings.nodeState) {
-                if (nodeSettings.nodeState[key]) {
-                    var idx = null
-                    idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
-                    treeView.expand(idx)
-                }
+                var idx = null
+                idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
+                treeView.expand(idx)
             }
         }
 
