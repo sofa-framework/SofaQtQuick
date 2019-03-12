@@ -4,6 +4,7 @@ import QtGraphicalEffects 1.0
 Rectangle {
     id: root
     property Gradient borderGradient
+    property bool isHorizontal: false
     property int borderWidth: 0
 
 
@@ -21,7 +22,13 @@ Rectangle {
                 id: borderFill
                 radius: root.radius
                 anchors.fill: parent
-                gradient: root.borderGradient
+                LinearGradient {
+                    source: parent
+                    anchors.fill: parent
+                    start: Qt.point(0, 0)
+                    end: isHorizontal ? Qt.point(parent.width, 0) : Qt.point(0, parent.width)
+                    gradient: root.borderGradient
+                }
                 visible: false
             }
 
