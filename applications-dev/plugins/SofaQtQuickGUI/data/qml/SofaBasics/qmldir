@@ -42,4 +42,4 @@ ToolButton 1.0 ToolButton.qml
 GBRect 1.0 GBRect.qml
 MenuBar 1.0 MenuBar.qml
 SidePanel 1.0 SidePanel.qml
-
+TreeView 1.0 TreeView.qml

@@ -21,7 +21,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaApplication 1.0
-import QtQuick.Controls 1.4
+import QtQuick.Controls 1.4 as QQC1
 import LiveFileMonitorSingleton 1.0
 import SofaBasics 1.0
 
@@ -29,7 +29,7 @@ import SofaBasics 1.0
     A Panel that monitor the SofaWidget directory to detect changes and automagically
     update its content to show the result for a nice live coding workflow.
 */
-SplitView {
+QQC1.SplitView {
     id: root
     orientation: Qt.Horizontal
     property var files : LiveFileMonitorSingleton.files

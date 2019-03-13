@@ -28,12 +28,14 @@ import SofaApplication 1.0
 import SofaSceneItemModel 1.0
 import SofaSceneItemProxy 1.0
 import SofaWidgets 1.0
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 import SofaBasics 1.0
 import SofaColorScheme 1.0
 import Qt.labs.settings 1.0
 import QtGraphicalEffects 1.12
+import QtQuick.Controls 1.4 as QQC1
+import QtQuick.Controls.Styles 1.4 as QQCS1
+import SofaComponent 1.0
+import SofaData 1.0
 
 Rectangle {
     id: root
@@ -105,7 +107,6 @@ Rectangle {
         anchors.right: parent.right
     }
 
-
     TreeView {
         id : treeView
         anchors.top: searchBar.bottom
@@ -117,7 +118,7 @@ Rectangle {
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
         }
-        style: TreeViewStyle {
+        style: QQCS1.TreeViewStyle {
             headerDelegate: GBRect {
                 color: "#757575"
                 border.color: "black"
@@ -304,6 +305,7 @@ Rectangle {
         }
 
         itemDelegate: Item {
+            id: itemDelegateID
             property bool multiparent : false
             property bool isDisabled : false
             property bool isSelected: false
@@ -369,55 +371,115 @@ Rectangle {
                 text: name //+ "(" + model.row + "/"+ styleData.row + ")"
             }
 
-            SofaNodeMenu
-            {
-                id: nodeMenu
-                model: basemodel
-                currentModelIndex: sceneModel.mapToSource(styleData.index)
-            }
+//            MouseArea
+//            {
+//                id: mouseAreaItemID
+//                anchors.fill: parent
+//                acceptedButtons: Qt.LeftButton | Qt.RightButton
+//                onClicked:
+//                {
+//                    var srcIndex = sceneModel.mapToSource(styleData.index)
+//                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
 
-            SofaObjectMenu
-            {
-                id: objectMenu
-            }
-
-            MouseArea
-            {
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked:
-                {
-                    var srcIndex = sceneModel.mapToSource(styleData.index)
-                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
-
-                    if(mouse.button === Qt.LeftButton)
-                    {
-                        sofaScene.selectedComponent = theComponent
-                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
-                    } else if(mouse.button === Qt.RightButton) {
-                        if(isNode)
-                        {
-                            nodeMenu.sofaData = theComponent.getComponentData("activated");
-                            if(theComponent.hasLocations()===true)
-                            {
-                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
-                                nodeMenu.creationLocation = theComponent.getCreationLocation()
-                            }
-                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
-                            nodeMenu.popup();
-                        } else {
-                            objectMenu.popup();
-                        }
-                    }
-                }
-            }
+//                    if(mouse.button === Qt.LeftButton)
+//                    {
+//                        sofaScene.selectedComponent = theComponent
+//                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
+//                    } else if(mouse.button === Qt.RightButton) {
+//                        if(isNode)
+//                        {
+//                            nodeMenu.sofaData = theComponent.getComponentData("activated");
+//                            if(theComponent.hasLocations()===true)
+//                            {
+//                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
+//                                nodeMenu.creationLocation = theComponent.getCreationLocation()
+//                            }
+//                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
+//                            nodeMenu.popup();
+//                        } else {
+//                            objectMenu.popup();
+//                        }
+//                    }
+//                }
+//            }
         }
-
-        TableViewColumn {
+        QQC1.TableViewColumn {
             title: "Hierarchy"
             role: "name"
 
         }
+
+        SofaNodeMenu
+        {
+            id: nodeMenu
+            model: basemodel
+            currentModelIndex: undefined
+        }
+
+        SofaObjectMenu
+        {
+            id: objectMenu
+            model: basemodel
+            currentModelIndex: undefined
+        }
+
+        mouser.acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+        mouser.onClicked:
+        {
+            var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
+            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+            if(mouse.button === Qt.LeftButton)
+            {
+                sofaScene.selectedComponent = theComponent
+            } else if (mouse.button === Qt.RightButton) {
+                if(theComponent.isNode())
+                {
+                    nodeMenu.currentModelIndex = srcIndex
+                    nodeMenu.activated = theComponent.getComponentData("activated");
+                    if(theComponent.hasLocations()===true)
+                    {
+                        nodeMenu.sourceLocation = theComponent.getSourceLocation()
+                        nodeMenu.creationLocation = theComponent.getCreationLocation()
+                    }
+                    nodeMenu.nodeActivated = nodeMenu.activated.value();
+                    nodeMenu.popup();
+                } else {
+                    objectMenu.currentModelIndex = srcIndex
+                    objectMenu.name = theComponent.getComponentData("name");
+                    objectMenu.popup();
+                }
+            }
+        }
+
+//        mouser.onPressAndHold: {
+//            overlay.visible = true
+//            overlay.implicitHeight = treeView.indexAt(0, y).height
+//            overlay.implicitWidth = treeView.indexAt(0, y).width
+//            overlay.anchors.verticalCenter = treeView.indexAt(0, y).verticalCenter
+//            overlay.anchors.horizontalCenter = treeView.indexAt(0, y).horizontalCenter
+//            console.error(overlay.width + " " + overlay.height)
+//        }
+//        mouser.onReleased: {
+//            overlay.visible = false
+//            parent = overlay.Drag.target !== null ? overlay.Drag.target : mouser
+//        }
+//        mouser.drag.target: overlay
+//        Rectangle {
+//            id: overlay
+//            color: "#50FFF000"
+
+//            visible: false
+//            Drag.active: mouseAreaItemID.drag.active
+//            Drag.hotSpot.x: implicitWidth / 2
+//            Drag.hotSpot.y: implicitHeight / 2
+//            states: State {
+//                when: mouseAreaItemID.drag.active
+//                ParentChange { target: overlay; parent: treeView }
+//                AnchorChanges { target: overlay; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
+//            }
+//        }
+
     }
 
     Label {

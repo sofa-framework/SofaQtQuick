@@ -111,5 +111,6 @@
         <file>GTest/GTest.qml</file>
         <file>GTest/qmldir</file>
         <file>SofaBasics/SidePanel.qml</file>
+        <file>SofaBasics/TreeView.qml</file>
     </qresource>
 </RCC>

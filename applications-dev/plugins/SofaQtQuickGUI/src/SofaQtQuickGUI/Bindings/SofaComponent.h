@@ -47,6 +47,7 @@ public:
 
 public:
     Q_INVOKABLE QString getName() const;
+    Q_INVOKABLE bool isNode() const;
     Q_INVOKABLE QStringList tags() const;
     Q_INVOKABLE QString className() const;
     Q_INVOKABLE QString namespaceName() const;
