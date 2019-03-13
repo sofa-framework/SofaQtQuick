@@ -1329,6 +1329,8 @@ SofaComponent* SofaScene::node(const QString& path)
     {
         std::string nodeName = p.substr(0, p.find('/'));
         ret = parent->getChild(nodeName);
+        if (!ret)
+            return nullptr;
         if (p.find('/') == std::string::npos)
             p = "";
         else

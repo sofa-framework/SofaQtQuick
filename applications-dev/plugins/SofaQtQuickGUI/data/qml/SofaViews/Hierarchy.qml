@@ -149,6 +149,53 @@ Rectangle {
                 color: "#393939"
             }
             backgroundColor: SofaApplication.style.contentBackgroundColor
+
+            scrollBarBackground: Rectangle {
+                border.color: "#3f3f3f"
+                radius: 6
+                implicitWidth: 12
+                implicitHeight: 12
+                gradient: Gradient {
+                    GradientStop { position: 1.0; color: "#565656" }
+                    GradientStop { position: 0.0; color: "#5d5d5d" }
+                }
+            }
+
+            corner: null
+            scrollToClickedPosition: true
+            transientScrollBars: false
+            frame: Rectangle {
+                color: "transparent"
+            }
+
+            handle: Item {
+                implicitWidth: 12
+                implicitHeight: 12
+                GBRect {
+                    border.color: "#3f3f3f"
+                    gradient: Gradient {
+//                        GradientStop { position: 1.0; color: "#565656" }
+//                        GradientStop { position: 0.0; color: "#5d5d5d" }
+                        GradientStop { position: 1.0; color: "#979797" }
+                        GradientStop { position: 0.0; color: "#7b7b7b" }
+                    }
+                    borderGradient: Gradient {
+                        //                        GradientStop { position: 1.0; color: "#565656" }
+                        //                        GradientStop { position: 0.0; color: "#5d5d5d" }
+                        GradientStop { position: 1.0; color: "#444444" }
+                        GradientStop { position: 0.0; color: "#515151" }
+                    }
+
+                    radius: 6
+                    anchors.fill: parent
+                }
+            }
+            incrementControl: Rectangle {
+                visible: false
+            }
+            decrementControl: Rectangle {
+                visible: false
+            }
         }
         selection: ItemSelectionModel {
             model: treeView.model
@@ -194,7 +241,8 @@ Rectangle {
             if (Object.keys(nodeSettings.nodeState).length === 0 && SofaApplication.nodeSettings.nodeState !== "")
                 getExpandedState()
             for (var key in nodeSettings.nodeState) {
-                if (nodeSettings.nodeState[key]) {
+                if (nodeSettings.nodeState[key] === "1")
+                {
                     var idx = null
                     idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
                     treeView.expand(idx)
@@ -203,11 +251,9 @@ Rectangle {
         }
 
         function storeExpandedState(index) {
-
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getComponentFromIndex(srcIndex)
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
-
             var i = 0;
             SofaApplication.nodeSettings.nodeState = ""
             for (var key in nodeSettings.nodeState) {
