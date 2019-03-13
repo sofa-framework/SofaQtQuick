@@ -23,33 +23,43 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <runSofa2/runSofa2.h>
 #include <QQuickStyle>
 
-void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
+
+    const char* file="undefined";
+    if(context.file)
+        file=context.file;
+
+    const char* function="runSofa";
+    if(context.function)
+        function=context.function;
+
     switch (type) {
     case QtDebugMsg:
-        dmsg_info_withfile("runSofa2", context.file, context.line) << localMsg.constData();
+        dmsg_info_withfile(function, file, context.line) << localMsg.constData();
         break;
     case QtInfoMsg:
-        msg_info_withfile("runSofa2", context.file, context.line) << localMsg.constData();
+        msg_info_withfile(function, file, context.line) << localMsg.constData();
         break;
     case QtWarningMsg:
-        msg_warning_withfile("runSofa2", context.file, context.line) << localMsg.constData();
+        msg_warning_withfile(function, file, context.line) << localMsg.constData();
         break;
     case QtCriticalMsg:
-        msg_error_withfile("runSofa2", context.file, context.line) << localMsg.constData();
+        msg_error_withfile(function, file, context.line) << localMsg.constData();
         break;
     case QtFatalMsg:
-        msg_error_withfile("runSofa2", context.file, context.line) << localMsg.constData();
-        //abort();
+        msg_error_withfile(function, file, context.line) << localMsg.constData();
+        abort();
     }
 }
 
 int main(int argc, char **argv)
 {
-    qInstallMessageHandler(myMessageOutput); // Install the handler
+    /// Install the handler the Sofa message hook into the Qt messaging system.
+    qInstallMessageHandler(convertQMessagesToSofa);
 
-    // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
+    /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofa::qtquick::SofaApplication::Initialization();
 
     QApplication app(argc, argv);
@@ -57,13 +67,12 @@ int main(int argc, char **argv)
     QQmlApplicationEngine applicationEngine;
     QQuickStyle::setStyle("Imagine");
 
-    // application specific settings
+    /// application specific settings
     app.setOrganizationName("Sofa Consortium");
     app.setApplicationName("runSofa2");
     app.setApplicationVersion("v1.0");
 
-
-    // common settings for most sofaqtquick applications
+    /// common settings for most sofaqtquick applications
     if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
 
