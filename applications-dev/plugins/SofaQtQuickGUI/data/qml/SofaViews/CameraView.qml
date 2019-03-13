@@ -153,10 +153,8 @@ CameraView {
         }
         if(!camera)
         {
-            console.log("MISSING SOFA CAMERA")
             camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
             camera.bindCameraFromScene(root.SofaScene, 0);
-            console.log("MISSING SOFA CAMERA => "+camera)
 
             //Todo fetch index from somewhere
             var defaultIndex = 0;
