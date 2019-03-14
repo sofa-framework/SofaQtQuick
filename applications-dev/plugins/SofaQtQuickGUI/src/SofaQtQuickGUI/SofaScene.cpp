@@ -74,7 +74,6 @@ using sofa::simulation::scenechecking::SceneCheckDuplicatedName;
 #include <SofaGraphComponent/SceneCheckUsingAlias.h>
 using sofa::simulation::scenechecking::SceneCheckUsingAlias;
 
-
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -193,7 +192,11 @@ bool LoaderProcess(SofaScene* sofaScene)
         sofaScene->setStatus(SofaScene::Status::Ready);
 
         if(!sofaScene->pathQML().isEmpty())
+        {
+            std::cout << "VALUE... " << sofaScene->pathQML().toStdString() << std::endl << std::endl;
             sofaScene->setSourceQML(QUrl::fromLocalFile(sofaScene->pathQML()));
+            sofaScene->addCanvas(QUrl::fromLocalFile(sofaScene->pathQML()));
+        }
         return true;
     }
     else
@@ -248,6 +251,7 @@ private:
 void SofaScene::open()
 {
     // clear the qml interface
+    unloadAllCanvas();
 
     setPathQML("");
     setSourceQML(QUrl());
@@ -1585,6 +1589,23 @@ void SofaScene::reset()
     mySofaSimulation->reset(mySofaRootNode.get());
     myVisualDirty = true;
     emit reseted();
+}
+
+void SofaScene::addCanvas(const QUrl& canvas)
+{
+    m_canvas.push_back(canvas);
+    emit notifyCanvasChanged();
+}
+
+void SofaScene::unloadAllCanvas()
+{
+    m_canvas.clear();
+    emit notifyCanvasChanged();
+}
+
+QUrlList SofaScene::readCanvas()
+{
+    return m_canvas;
 }
 
 SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots)

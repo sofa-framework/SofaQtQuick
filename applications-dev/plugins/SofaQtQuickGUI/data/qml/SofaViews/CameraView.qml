@@ -687,6 +687,7 @@ CameraView {
 
     QmlUIArea
     {
+        canvasSources: SofaApplication.sofaScene.canvas
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom

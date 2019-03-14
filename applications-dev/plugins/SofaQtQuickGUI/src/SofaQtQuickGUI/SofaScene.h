@@ -72,6 +72,8 @@ class PickUsingRasterizationWorker;
 
 using sofaqtquick::bindings::SofaBase;
 
+typedef QList<QUrl> QUrlList;
+
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate,
 /// modify and draw (basic function) a Sofa scene
 class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject
@@ -92,6 +94,9 @@ public:
 public:
     Q_PROPERTY(sofa::qtquick::SofaScene::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
+
+    Q_PROPERTY(QUrlList canvas READ readCanvas NOTIFY notifyCanvasChanged)
+
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
     Q_PROPERTY(QString path READ path NOTIFY pathChanged)
@@ -124,6 +129,11 @@ public:
 
     const QString& header() const                               {return myHeader;}
     void setHeader(const QString& newHeader);
+
+    /// get the list of url pointing to the canvas currently associated with the
+    /// current scene.
+    QUrlList readCanvas();
+    void addCanvas(const QUrl& canvas);
 
     /// set the url of the scene, when changed the SofaScene object will goes through
     /// the following states: Unloaded, Null, Loading, Ready.
@@ -164,6 +174,8 @@ public:
     QQmlListProperty<sofa::qtquick::Manipulator> manipulators();
 
 signals:
+    void notifyCanvasChanged();
+
     void loaded();                                      /// scene has been loaded and is ready
     void aboutToUnload();                               /// scene is being to be unloaded
     void statusChanged(Status newStatus);
@@ -264,6 +276,7 @@ signals:
 private slots:
     void open();
     void handleStatusChange(Status newStatus);
+    void unloadAllCanvas();
 
 public:
     sofa::simulation::Simulation* sofaSimulation() const {return mySofaSimulation;}
@@ -302,6 +315,8 @@ private:
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
     SofaComponent*                              mySelectedComponent;
+
+    QUrlList                                    m_canvas;
 };
 
 }

@@ -27,6 +27,26 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 namespace sofaqtquick::qmlui
 {
+    typedef QList<QUrl> QUrlList;
+
+    class QmlUIManager : public QObject
+    {
+        Q_OBJECT
+
+    public:
+        Q_INVOKABLE void loadCanvasFrom(const QUrl& filename);
+
+      signals:
+        void notifyLoadCanvasFrom(const QUrl& filename);
+    };
+
+    class QmlUIManagerSingleton : public QObject
+    {
+    public:
+        static QmlUIManager* GetInstance();
+        static void LoadCanvasFrom(const QUrl& filename);
+    };
+
     /// Load UI element interfaces into a QML view.
     ///
     /// The QmlUILoader should be associated to a QML widget
@@ -41,8 +61,13 @@ namespace sofaqtquick::qmlui
 
     public:
         QmlUILoader(QObject* parent=nullptr);
+        ~QmlUILoader() override;
 
-        /// Attach a qml context o this loader.
-        Q_INVOKABLE void bindContext();
+    public slots:
+        void resetAndLoadAll(const QUrlList& list);
+        void load(const QUrl& filename);
+
+    private:
+        QList<QQuickItem*> m_loadedItems;
     };
 }

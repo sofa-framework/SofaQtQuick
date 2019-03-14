@@ -26,19 +26,20 @@ import SofaRuntime.QmlUILoader 1.0
 
 Item
 {
-    id : qmluiarea
+    /// In iterable set of url pointing to the different canvas to Loader
+    /// interactively in the current widget
+    property var canvasSources
 
-    /// Instanciate the
+    /// When the canvasSource change we need to reload all the canvas from
+    /// their source file.
+    onCanvasSourcesChanged:
+    {
+        loader.resetAndLoadAll(canvasSources);
+    }
+
+    /// Load UI Canvas from files.
     QmlUILoader
     {
         id: loader
     }
-
-    Text
-    {
-        text : "QmlUIArea"
-    }
-
-
-    Component.onCompleted: { loader.bindContext(this); }
 }
