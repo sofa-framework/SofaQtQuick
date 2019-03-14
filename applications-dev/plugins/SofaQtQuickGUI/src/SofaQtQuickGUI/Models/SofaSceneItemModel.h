@@ -95,8 +95,9 @@ protected:
     /// change in the scene this model is exposing. When called this function is function is in
     /// charge of notifying the cbasehange using the QAbstractItemModel.
 //    bool frozen;
-    void onAddChildBegin(Node* parent, Node* child) override;
-    void onAddChildEnd(Node* parent, Node* child) override;
+
+    void onAddChildBegin(Node* parent, Node* child, unsigned index) override;
+    void onAddChildEnd(Node* parent, Node* child, unsigned index) override;
     void onRemoveChildBegin(Node* parent, Node* child) override;
     void onRemoveChildEnd(Node* parent, Node* child) override;
 

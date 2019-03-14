@@ -59,6 +59,12 @@ SofaComponent::SofaComponent(const SofaComponent *sofaComponent) : QObject(),
 
 }
 
+bool SofaComponent::isNode() const
+{
+    return dynamic_cast<const sofa::simulation::Node*>(SofaComponent::base());
+}
+
+
 QString SofaComponent::getName() const
 {
     const Base* base = SofaComponent::base();

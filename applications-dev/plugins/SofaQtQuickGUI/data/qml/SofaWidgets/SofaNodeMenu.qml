@@ -6,6 +6,8 @@ import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneListModel 1.0
+import SofaComponent 1.0
+import SofaData 1.0
 import SofaWidgets 1.0
 
 
@@ -23,7 +25,7 @@ Menu {
     property var model: null;     ///< The model from which we can get the objects.
     property var currentModelIndex;    ///< The index in the model.
     property bool nodeActivated: true
-    property QtObject sofaData: null
+    property SofaData activated: null
     property string sourceLocation : null
     property string creationLocation : null
 
@@ -116,16 +118,16 @@ Menu {
     MenuItem {
         enabled: true //(multiparent)? firstparent : true
         text: nodeMenu.nodeActivated ? "Deactivate" : "Activate"
-        onTriggered: model.getComponentByIndex(currentModelIndex).flipActivate(); //model.setDisabled(currentModelIndex, nodeMenu.nodeActivated);
+        onTriggered: parent.activated.setValue(nodeMenu.nodeActivated);
     }
 
     MenuSeparator {}
     MenuItem {
         text: "Delete"
         onTriggered: {
-            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getComponentByIndex(currentModelIndex));
-            model.updateCurrentIndex(model.computeModelRow(currentRow));
+//            var currentRow = model.computeItemRow(currentModelIndex);
+            sofaScene.removeComponent(model.getComponentFromIndex(currentModelIndex));
+//            model.updateCurrentIndex(model.computeModelRow(currentRow));
         }
     }
 

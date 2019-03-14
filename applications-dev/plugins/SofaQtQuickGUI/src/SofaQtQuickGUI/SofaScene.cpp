@@ -1315,31 +1315,10 @@ SofaData* SofaScene::data(const QString& path)
 
 SofaComponent* SofaScene::node(const QString& path)
 {
-    std::string p = path.toStdString();
-    if (p[0] != '/')
+    Node* node = mySofaRootNode->getNodeInGraph(path.toStdString());
+    if (!node)
         return nullptr;
-
-    p = p.substr(1);
-    if (p == "")
-        return new SofaComponent(this, mySofaRootNode.get());
-
-    Node* ret = nullptr;
-    Node* parent = mySofaRootNode.get();
-    while (p != "")
-    {
-        std::string nodeName = p.substr(0, p.find('/'));
-        ret = parent->getChild(nodeName);
-        if (!ret)
-            return nullptr;
-        if (p.find('/') == std::string::npos)
-            p = "";
-        else
-            p = p.substr(p.find('/') +1);
-        parent = ret;
-    }
-    if (!ret)
-        return nullptr;
-    return new SofaComponent(this, ret);
+    return new SofaComponent(this, node);
 }
 
 SofaComponent* SofaScene::component(const QString& path)

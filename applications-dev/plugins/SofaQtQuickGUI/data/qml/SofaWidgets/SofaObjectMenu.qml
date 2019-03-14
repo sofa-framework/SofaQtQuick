@@ -5,23 +5,26 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 import SofaApplication 1.0
 import SofaSceneListModel 1.0
+import SofaComponent 1.0
+import SofaData 1.0
 import SofaWidgets 1.0
 
 Menu {
     id: objectMenu
-    
-    property QtObject sofaData: null
-    
+
+    property var model: null;     ///< The model from which we can get the objects.
+    property var currentModelIndex;    ///< The index in the model.
+    property SofaData name: null
+
     MenuItem {
         text: {
             "Delete object"
         }
         onTriggered: {
-            var currentRow = listView.model.computeItemRow(listView.currentIndex);
-            
-            sofaScene.removeComponent(listModel.getComponentById(index));
-            
-            listView.updateCurrentIndex(listView.model.computeModelRow(currentRow));
+            var component = model.getComponentFromIndex(currentIndex)
+//            var currentRow = model.computeItemRow(currentModelIndex);
+            sofaScene.removeComponent(model.getComponentFromIndex(currentModelIndex));
+//            model.updateCurrentIndex(model.computeModelRow(currentRow));
         }
     }
 }

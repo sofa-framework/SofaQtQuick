@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
-import QtQuick.Controls 1.4
+import QtQuick.Controls 1.4 as QQC1
 import SofaBasics 1.0
 
 ColumnLayout {
@@ -57,12 +57,12 @@ ColumnLayout {
 
         Component {
             id: staticInStaticTableView
-            TableView {
+            QQC1.TableView {
                 id: tableView
 
                 Component {
                     id: columnComponent
-                    TableViewColumn {
+                    QQC1.TableViewColumn {
                         movable: false
                         resizable: false
                         horizontalAlignment: Text.AlignHCenter
@@ -72,7 +72,7 @@ ColumnLayout {
 
                 Component {
                     id: columnLines
-                    TableViewColumn {
+                    QQC1.TableViewColumn {
                         movable: false
                         resizable: false
                         horizontalAlignment: Text.AlignHCenter

@@ -28,11 +28,14 @@ import SofaApplication 1.0
 import SofaSceneItemModel 1.0
 import SofaSceneItemProxy 1.0
 import SofaWidgets 1.0
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
 import SofaBasics 1.0
 import SofaColorScheme 1.0
 import Qt.labs.settings 1.0
+import QtGraphicalEffects 1.12
+import QtQuick.Controls 1.4 as QQC1
+import QtQuick.Controls.Styles 1.4 as QQCS1
+import SofaComponent 1.0
+import SofaData 1.0
 
 Rectangle {
     id: root
@@ -104,7 +107,6 @@ Rectangle {
         anchors.right: parent.right
     }
 
-
     TreeView {
         id : treeView
         anchors.top: searchBar.bottom
@@ -116,7 +118,7 @@ Rectangle {
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
         }
-        style: TreeViewStyle {
+        style: QQCS1.TreeViewStyle {
             headerDelegate: GBRect {
                 color: "#757575"
                 border.color: "black"
@@ -150,14 +152,33 @@ Rectangle {
             }
             backgroundColor: SofaApplication.style.contentBackgroundColor
 
-            scrollBarBackground: Rectangle {
+            scrollBarBackground: GBRect {
                 border.color: "#3f3f3f"
                 radius: 6
                 implicitWidth: 12
                 implicitHeight: 12
-                gradient: Gradient {
-                    GradientStop { position: 1.0; color: "#565656" }
-                    GradientStop { position: 0.0; color: "#5d5d5d" }
+                LinearGradient {
+                    cached: true
+                    source: parent
+                    anchors.left: parent.left
+                    anchors.leftMargin: 1
+                    anchors.right: parent.right
+                    anchors.rightMargin: 1
+                    anchors.top: parent.top
+                    anchors.topMargin: 0
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 0
+                    start: Qt.point(0, 0)
+                    end: Qt.point(12, 0)
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: "#565656" }
+                        GradientStop { position: 1.0; color: "#5d5d5d" }
+                    }
+                }
+                isHorizontal: true
+                borderGradient: Gradient {
+                    GradientStop { position: 0.0; color: "#444444" }
+                    GradientStop { position: 1.0; color: "#515151" }
                 }
             }
 
@@ -172,22 +193,34 @@ Rectangle {
                 implicitWidth: 12
                 implicitHeight: 12
                 GBRect {
-                    border.color: "#3f3f3f"
-                    gradient: Gradient {
-//                        GradientStop { position: 1.0; color: "#565656" }
-//                        GradientStop { position: 0.0; color: "#5d5d5d" }
-                        GradientStop { position: 1.0; color: "#979797" }
-                        GradientStop { position: 0.0; color: "#7b7b7b" }
-                    }
-                    borderGradient: Gradient {
-                        //                        GradientStop { position: 1.0; color: "#565656" }
-                        //                        GradientStop { position: 0.0; color: "#5d5d5d" }
-                        GradientStop { position: 1.0; color: "#444444" }
-                        GradientStop { position: 0.0; color: "#515151" }
-                    }
-
                     radius: 6
                     anchors.fill: parent
+                    border.color: "#3f3f3f"
+                    LinearGradient {
+                        cached: true
+                        source: parent
+                        anchors.left: parent.left
+                        anchors.leftMargin: 1
+                        anchors.right: parent.right
+                        anchors.rightMargin: 1
+                        anchors.top: parent.top
+                        anchors.topMargin: 0
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 0
+
+                        start: Qt.point(0, 0)
+                        end: Qt.point(12, 0)
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: "#979797" }
+                            GradientStop { position: 1.0; color: "#7b7b7b" }
+                        }
+                    }
+                    isHorizontal: true
+                    borderGradient: Gradient {
+                        GradientStop { position: 0.0; color: "#444444" }
+                        GradientStop { position: 1.0; color: "#515151" }
+                    }
+
                 }
             }
             incrementControl: Rectangle {
@@ -272,6 +305,7 @@ Rectangle {
         }
 
         itemDelegate: Item {
+            id: itemDelegateID
             property bool multiparent : false
             property bool isDisabled : false
             property bool isSelected: false
@@ -337,55 +371,115 @@ Rectangle {
                 text: name //+ "(" + model.row + "/"+ styleData.row + ")"
             }
 
-            SofaNodeMenu
-            {
-                id: nodeMenu
-                model: basemodel
-                currentModelIndex: sceneModel.mapToSource(styleData.index)
-            }
+//            MouseArea
+//            {
+//                id: mouseAreaItemID
+//                anchors.fill: parent
+//                acceptedButtons: Qt.LeftButton | Qt.RightButton
+//                onClicked:
+//                {
+//                    var srcIndex = sceneModel.mapToSource(styleData.index)
+//                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
 
-            SofaObjectMenu
-            {
-                id: objectMenu
-            }
-
-            MouseArea
-            {
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked:
-                {
-                    var srcIndex = sceneModel.mapToSource(styleData.index)
-                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
-
-                    if(mouse.button === Qt.LeftButton)
-                    {
-                        sofaScene.selectedComponent = theComponent
-                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
-                    } else if(mouse.button === Qt.RightButton) {
-                        if(isNode)
-                        {
-                            nodeMenu.sofaData = theComponent.getComponentData("activated");
-                            if(theComponent.hasLocations()===true)
-                            {
-                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
-                                nodeMenu.creationLocation = theComponent.getCreationLocation()
-                            }
-                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
-                            nodeMenu.popup();
-                        } else {
-                            objectMenu.popup();
-                        }
-                    }
-                }
-            }
+//                    if(mouse.button === Qt.LeftButton)
+//                    {
+//                        sofaScene.selectedComponent = theComponent
+//                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
+//                    } else if(mouse.button === Qt.RightButton) {
+//                        if(isNode)
+//                        {
+//                            nodeMenu.sofaData = theComponent.getComponentData("activated");
+//                            if(theComponent.hasLocations()===true)
+//                            {
+//                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
+//                                nodeMenu.creationLocation = theComponent.getCreationLocation()
+//                            }
+//                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
+//                            nodeMenu.popup();
+//                        } else {
+//                            objectMenu.popup();
+//                        }
+//                    }
+//                }
+//            }
         }
-
-        TableViewColumn {
+        QQC1.TableViewColumn {
             title: "Hierarchy"
             role: "name"
 
         }
+
+        SofaNodeMenu
+        {
+            id: nodeMenu
+            model: basemodel
+            currentModelIndex: undefined
+        }
+
+        SofaObjectMenu
+        {
+            id: objectMenu
+            model: basemodel
+            currentModelIndex: undefined
+        }
+
+        mouser.acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+        mouser.onClicked:
+        {
+            var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
+            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+            if(mouse.button === Qt.LeftButton)
+            {
+                sofaScene.selectedComponent = theComponent
+            } else if (mouse.button === Qt.RightButton) {
+                if(theComponent.isNode())
+                {
+                    nodeMenu.currentModelIndex = srcIndex
+                    nodeMenu.activated = theComponent.getComponentData("activated");
+                    if(theComponent.hasLocations()===true)
+                    {
+                        nodeMenu.sourceLocation = theComponent.getSourceLocation()
+                        nodeMenu.creationLocation = theComponent.getCreationLocation()
+                    }
+                    nodeMenu.nodeActivated = nodeMenu.activated.value();
+                    nodeMenu.popup();
+                } else {
+                    objectMenu.currentModelIndex = srcIndex
+                    objectMenu.name = theComponent.getComponentData("name");
+                    objectMenu.popup();
+                }
+            }
+        }
+
+//        mouser.onPressAndHold: {
+//            overlay.visible = true
+//            overlay.implicitHeight = treeView.indexAt(0, y).height
+//            overlay.implicitWidth = treeView.indexAt(0, y).width
+//            overlay.anchors.verticalCenter = treeView.indexAt(0, y).verticalCenter
+//            overlay.anchors.horizontalCenter = treeView.indexAt(0, y).horizontalCenter
+//            console.error(overlay.width + " " + overlay.height)
+//        }
+//        mouser.onReleased: {
+//            overlay.visible = false
+//            parent = overlay.Drag.target !== null ? overlay.Drag.target : mouser
+//        }
+//        mouser.drag.target: overlay
+//        Rectangle {
+//            id: overlay
+//            color: "#50FFF000"
+
+//            visible: false
+//            Drag.active: mouseAreaItemID.drag.active
+//            Drag.hotSpot.x: implicitWidth / 2
+//            Drag.hotSpot.y: implicitHeight / 2
+//            states: State {
+//                when: mouseAreaItemID.drag.active
+//                ParentChange { target: overlay; parent: treeView }
+//                AnchorChanges { target: overlay; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
+//            }
+//        }
+
     }
 
     Label {
