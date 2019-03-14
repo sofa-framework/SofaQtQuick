@@ -44,6 +44,7 @@
         <file>SofaBasics/Button.qml</file>
         <file>SofaBasics/GroupBox.qml</file>
         <file>SofaBasics/ComboBox.qml</file>
+        <file>SofaBasics/TreeView.qml</file>
         <file>SofaDataTypes/SofaDataType_notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
