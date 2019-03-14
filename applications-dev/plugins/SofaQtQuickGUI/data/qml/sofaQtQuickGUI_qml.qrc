@@ -11,6 +11,7 @@
         <file>SofaBasics/DefaultStatusBar.qml</file>
         <file>SofaBasics/DefaultToolBar.qml</file>
         <file>SofaBasics/DefaultMenuBar.qml</file>
+        <file>SofaBasics/DefaultQmlUICanvas.qml</file>
         <file>SofaBasics/SofaScene.qml</file>
         <file>SofaBasics/SofaSceneInterface.qml</file>
         <file>SofaBasics/SofaPythonInteractor.qml</file>
