@@ -47,6 +47,8 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Models/SofaSceneItemModel.cpp
     src/SofaQtQuickGUI/Models/SofaSceneItemProxy.cpp
     src/SofaQtQuickGUI/Models/SofaViewListModel.cpp
+    src/SofaQtQuickGUI/QMLUI/QMLUI.cpp
+    src/SofaQtQuickGUI/QMLUI/View.cpp
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
     src/SofaQtQuickGUI/LiveFileMonitor.cpp
@@ -93,6 +95,8 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Models/SofaSceneItemModel.h
     src/SofaQtQuickGUI/Models/SofaSceneItemProxy.h
     src/SofaQtQuickGUI/Models/SofaViewListModel.h
+    src/SofaQtQuickGUI/QMLUI/QMLUI.h
+    src/SofaQtQuickGUI/QMLUI/View.h
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
     src/SofaQtQuickGUI/Rendering/SceneRenderer.h
     src/SofaQtQuickGUI/Helper/QMathExtensions.h
@@ -123,6 +127,10 @@ set(CONFIG_FILES
     data/config/classic.ini
     data/config/fullview.ini
     data/config/quadview.ini
+)
+
+set(EXTRA_FILES
+    src/SofaQtQuickGUI/QMLUI/Readme.md
 )
 
 set(PYTHON_FILES
@@ -180,7 +188,7 @@ set(HEADER_FILES ${HEADER_FILES}
     src/SofaQtQuickGUI/SofaParticleInteractor.inl
 )
 
-add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES})
+add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES})
 target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")

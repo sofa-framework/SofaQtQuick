@@ -26,6 +26,7 @@ import SofaBasics 1.0
 import SofaApplication 1.0
 import CameraView 1.0
 import SofaScene 1.0
+import QMLUIArea 1.0
 
 CameraView {
     readonly property string docstring :
@@ -684,7 +685,6 @@ CameraView {
             }
         }
     }
-
 
     Image {
         id: toolPanelSwitch
