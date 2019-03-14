@@ -22,7 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 
 #include <SofaQtQuickGUI/Helper/QMathExtensions.h>
-using sofaqtquickgui::helper::QMath ;
+using sofaqtquick::helper::QMath ;
 
 #include <SofaQtQuickGUI/SofaScene.h>
 using sofa::qtquick::SofaScene;

@@ -157,41 +157,6 @@ QVector3D Manipulator::applyModelToVector(const QVector3D& vector) const
     return QMatrix4x4(myOrientation.toRotationMatrix()).mapVector(vector);
 }
 
-QQuaternion Manipulator::quaternionFromEulerAngles(const QVector3D& eulerAngles)
-{
-    return QQuaternion::fromEulerAngles(eulerAngles.x(), eulerAngles.y(), eulerAngles.z());
-}
-
-QVector3D Manipulator::quaternionToEulerAngles(const QQuaternion& quaternion)
-{
-    return quaternion.toEulerAngles();
-}
-
-QVariantList Manipulator::quaternionToAxisAngle(const QQuaternion& quaternion) // return [QVector3D axis, float angle];
-{
-    QVector3D axis;
-    float angle = 0.0f;
-
-    quaternion.getAxisAndAngle(&axis, &angle);
-
-    return QVariantList() << QVariant::fromValue(axis) << QVariant::fromValue(angle);
-}
-
-QQuaternion Manipulator::quaternionFromAxisAngle(const QVector3D& axis, float angle)
-{
-    return QQuaternion::fromAxisAndAngle(axis, angle);
-}
-
-QQuaternion Manipulator::quaternionDifference(const QQuaternion& q0, const QQuaternion& q1)
-{
-    return q1 * q0.inverted();
-}
-
-QQuaternion Manipulator::quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1)
-{
-    return q0 * q1;
-}
-
 void Manipulator::draw(const SofaViewer& /*viewer*/) const
 {
     // a base manipulator has no visual representation
