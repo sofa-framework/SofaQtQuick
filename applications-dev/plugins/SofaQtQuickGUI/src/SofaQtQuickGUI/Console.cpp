@@ -44,8 +44,6 @@ using sofa::qtquick::SofaComponent ;
 #include <SofaQtQuickGUI/SofaApplication.h>
 using sofa::qtquick::SofaApplication ;
 
-#include <QQmlEngine>
-
 namespace sofa
 {
 
