@@ -24,29 +24,9 @@ namespace sofa::helper::logging
 namespace sofaqtquick::qmlui
 {
 
-void QmlUIManager::loadCanvasFrom(const QUrl& filename)
-{
-    std::cout << "LOAD CANVAS " << filename.toLocalFile() << std::endl;
-    emit notifyLoadCanvasFrom(filename);
-}
-
-static QmlUIManager s_qmluimanager;
-void QmlUIManagerSingleton::LoadCanvasFrom(const QUrl& filename)
-{
-    s_qmluimanager.loadCanvasFrom(filename);
-}
-
-QmlUIManager* QmlUIManagerSingleton::GetInstance()
-{
-    return &s_qmluimanager;
-}
-
 QmlUILoader::QmlUILoader(QObject* parent)
 {
-    connect(QmlUIManagerSingleton::GetInstance(),
-            &QmlUIManager::notifyLoadCanvasFrom,
-            this, &QmlUILoader::load);
-    msg_error() << "Created." ;
+   msg_error() << "Created." ;
 }
 
 void QmlUILoader::resetAndLoadAll(const QUrlList& list)
@@ -88,10 +68,14 @@ void QmlUILoader::load(const QUrl& filename)
 
 QmlUILoader::~QmlUILoader()
 {
-    msg_error() << "Destroyed" ;
-    disconnect(QmlUIManagerSingleton::GetInstance(),
-               &QmlUIManager::notifyLoadCanvasFrom,
-               this, &QmlUILoader::load);
+    msg_error() << "Destroying ("<<m_loadedItems.size()<<")";
+
+    /// Remove the existing items.
+    for(auto& item : m_loadedItems)
+    {
+        item->setParent(nullptr);
+        item->setParentItem(nullptr);
+    }
 }
 
 
