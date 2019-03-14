@@ -120,15 +120,6 @@ public:
 
     Q_INVOKABLE QString toLocalFile(const QUrl& url);
 
-    Q_INVOKABLE QQuaternion quaternionFromEulerAngles(const QVector3D& eulerAngles) const;
-    Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion) const;
-    Q_INVOKABLE QVariantList quaternionToAxisAngle(const QQuaternion& quaternion) const; // return [QVector3D axis, float angle];
-    Q_INVOKABLE QQuaternion quaternionFromAxisAngle(const QVector3D& axis, float angle) const;
-    Q_INVOKABLE QQuaternion quaternionDifference(const QQuaternion& q0, const QQuaternion& q1) const;
-    Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1) const;
-    Q_INVOKABLE QQuaternion quaternionConjugate(const QQuaternion& q) const;
-    Q_INVOKABLE QVector3D quaternionRotate(const QQuaternion& q, const QVector3D& v) const;
-    Q_INVOKABLE QVariantList quaternionSwingTwistDecomposition(const QQuaternion& q, const QVector3D& direction);
 
 public:
     static void InitOpenGL();

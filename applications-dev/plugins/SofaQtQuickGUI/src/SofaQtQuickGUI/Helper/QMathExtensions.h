@@ -1,35 +1,35 @@
-/*
-Copyright 2018,
-Author: damien.marchal@univ-lille1.fr, Copyright 2016 CNRS.
+/*********************************************************************
+Copyright 2019, Inria, CNRS, University of Lille
 
-This file is part of Sofa
+This file is part of runSofa2
 
-Sofa is free software: you can redistribute it and/or modify
+runSofa2 is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-sofaqtquick is distributed in the hope that it will be useful,
+runSofa2 is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Sofa. If not, see <http://www.gnu.org/licenses/>.
-*/
-#ifndef SOFAQTQUICKGUI_HELPER_QMATHEXTENSION_H
-#define SOFAQTQUICKGUI_HELPER_QMATHEXTENSION_H
-
+along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************/
+/********************************************************************
+ Contributors:
+    - damien.marchal@univ-lille.fr
+********************************************************************/
+#pragma once
 #include <QMatrix4x4>
 
-namespace sofaqtquickgui
+namespace sofaqtquick::helper
 {
 
-namespace helper
+class QMath : public QObject
 {
+    Q_OBJECT
 
-class QMath
-{
 public:
     template<class M>
     static const M& Zero() { static M m;
@@ -40,19 +40,17 @@ public:
     static const M& Identity() { static M m;
                                  return m; }
 
-    static void setMatrixFrom( QMatrix4x4& dest, const double* dmat )
-    {
-        QMatrix4x4 tmp(dmat[0], dmat[1], dmat[2], dmat[3]
-                , dmat[4], dmat[5], dmat[6], dmat[7]
-                , dmat[8], dmat[9], dmat[10], dmat[11]
-                , dmat[12], dmat[13], dmat[14], dmat[15]);
+    static void setMatrixFrom( QMatrix4x4& dest, const double* dmat );
 
-        dest = tmp;
-    }
+    Q_INVOKABLE QQuaternion quaternionFromEulerAngles(const QVector3D& eulerAngles) const;
+    Q_INVOKABLE QVector3D quaternionToEulerAngles(const QQuaternion& quaternion) const;
+    Q_INVOKABLE QVariantList quaternionToAxisAngle(const QQuaternion& quaternion) const; // return [QVector3D axis, float angle];
+    Q_INVOKABLE QQuaternion quaternionFromAxisAngle(const QVector3D& axis, float angle) const;
+    Q_INVOKABLE QQuaternion quaternionDifference(const QQuaternion& q0, const QQuaternion& q1) const;
+    Q_INVOKABLE QQuaternion quaternionMultiply(const QQuaternion& q0, const QQuaternion& q1) const;
+    Q_INVOKABLE QQuaternion quaternionConjugate(const QQuaternion& q) const;
+    Q_INVOKABLE QVector3D quaternionRotate(const QQuaternion& q, const QVector3D& v) const;
+    Q_INVOKABLE QVariantList quaternionSwingTwistDecomposition(const QQuaternion& q, const QVector3D& direction);
 };
 
 }
-
-}
-
-#endif // SOFAQTQUICKGUI_HELPER_QMATHEXTENSION_H

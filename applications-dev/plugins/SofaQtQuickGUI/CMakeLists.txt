@@ -33,6 +33,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Bindings/SofaData.cpp
     src/SofaQtQuickGUI/Bindings/SofaLink.cpp
     src/SofaQtQuickGUI/Helper/QGTest.cpp
+    src/SofaQtQuickGUI/Helper/QMathExtensions.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.cpp
