@@ -606,6 +606,7 @@ void SofaViewer::drawEditorView(const QList<SofaComponent*>& roots,
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
     for(SofaComponent* sofaComponent : roots)
+    {
         if(sofaComponent)
         {
             sofa::core::objectmodel::Base* base = sofaComponent->base();
@@ -621,6 +622,7 @@ void SofaViewer::drawEditorView(const QList<SofaComponent*>& roots,
                 nodes.append(node);
             }
         }
+    }
 
     if(nodes.isEmpty() && roots.isEmpty())
         nodes.append(mySofaScene->mySofaRootNode.get());
@@ -690,25 +692,39 @@ void SofaViewer::drawSelectedComponents(sofa::core::visual::VisualParams* visual
     sofa::core::objectmodel::Base* selectedBase = mySofaScene->mySelectedComponent->base();
     if(selectedBase)
     {
-        glDepthFunc(GL_LEQUAL);
+        //glDepthFunc(GL_LEQUAL);
 
-        glEnable(GL_POLYGON_OFFSET_LINE);
-        glPolygonOffset(-0.2f, 0.0f);
+        //glEnable(GL_POLYGON_OFFSET_LINE);
+        //glPolygonOffset(-0.2f, 0.0f);
 
-        myHighlightShaderProgram->bind();
+        //myHighlightShaderProgram->bind();
+
+        //auto sh = visualParams->displayFlags().getShowAll();
+        //auto sw = visualParams->displayFlags().getShowWireFrame();
+
+        //visualParams->displayFlags().setShowAll(true);
+        //visualParams->displayFlags().setShowWireFrame(true);
 
         /// Draw the objects 'helpers' according to its type, the underlying idea is that we
         /// want to be able to draw information about the scene when we are editting but we don't
         /// want to hardcode this display into the components as this may depend on the application.
-        ObjectRenderer::drawBaseObject(selectedBase, visualParams, true);
+        ObjectRenderer::draw(selectedBase, visualParams, true);
 
-        myHighlightShaderProgram->release();
+        //visualParams->displayFlags().setShowAll(false);
+        //visualParams->displayFlags().setShowWireFrame(false);
 
-        glDisable(GL_POLYGON_OFFSET_LINE);
+        //myHighlightShaderProgram->release();
 
-        glDepthFunc(GL_LESS);
+        auto& bbox = selectedBase->f_bbox.getValue();
+        auto& minb = bbox.minBBox();
+        auto& maxb = bbox.maxBBox();
+        if(!bbox.isNegligeable())
+            visualParams->drawTool()->drawBoundingBox(minb, maxb);
+
+        //glDisable(GL_POLYGON_OFFSET_LINE);
+        //glDepthFunc(GL_LESS);
     }
-    glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
+    //glPolygonMode(GL_FRONT_AND_BACK ,GL_FILL);
 }
 
 static QVector4D packPickingIndex(int i)
@@ -1215,6 +1231,7 @@ void SofaViewer::internalRender(int width, int height) const
 
     if(mySofaScene && mySofaScene->isReady())
     {
+        myCamera->setPixelResolution(width, height);
         myCamera->setAspectRatio(width / (double) height);
 
         glMatrixMode(GL_PROJECTION);
@@ -1244,12 +1261,12 @@ void SofaViewer::internalRender(int width, int height) const
         m_visualParams->setModelViewMatrix(_mvmatrix);
     }
 
-    // draw the scene frame
+    /// draw the scene frame
     if(myDrawFrame)
         renderFrame();
 
     preDraw();
-    drawEditorView(roots(),false,false);
+    drawEditorView(roots(),true,true);
     postDraw();
 
 
@@ -1319,6 +1336,7 @@ void SofaViewer::SofaRenderer::render()
             return;
     }
 
+    myViewer->checkAndInit();
     myViewer->internalRender(myViewer->width(), myViewer->height());
 }
 

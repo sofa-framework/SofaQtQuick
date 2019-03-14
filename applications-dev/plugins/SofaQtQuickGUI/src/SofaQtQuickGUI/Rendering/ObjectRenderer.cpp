@@ -1,6 +1,15 @@
 #include <sofa/core/objectmodel/Base.h>
 using sofa::core::objectmodel::Base;
 
+#include <sofa/core/objectmodel/BaseNode.h>
+using sofa::core::objectmodel::BaseNode;
+
+#include <sofa/core/objectmodel/BaseObject.h>
+using sofa::core::objectmodel::BaseObject;
+
+#include <sofa/simulation/Node.h>
+using sofa::simulation::Node;
+
 #include <sofa/core/visual/VisualModel.h>
 using sofa::core::visual::VisualModel;
 
@@ -89,17 +98,46 @@ void drawCollisionModel(CollisionModel* object, VisualParams *visualParams, bool
         visualStyle->bwdDraw(visualParams);
 }
 
-void ObjectRenderer::drawBaseObject(Base* object, VisualParams* visualParams, bool isSelected)
+void drawBaseObject(BaseObject* object, VisualParams* visualParams, bool isSelected)
 {
+    if(object==nullptr)
+        return;
+
     VisualModel* visualModel = object->toVisualModel();
     if(visualModel)
         drawVisualModel(visualModel, visualParams, isSelected) ;
 
     CollisionModel* collisionModel = object->toCollisionModel() ;
     if(collisionModel)
-        drawCollisionModel(collisionModel, visualParams, isSelected) ;
+        drawCollisionModel(collisionModel, visualParams, isSelected) ;    
 }
 
+void drawBaseNode(BaseNode* node, VisualParams* visualParams, bool isSelected)
+{
+    /// Iterates over the childs.
+    for(auto& child : node->getChildren())
+        drawBaseNode(child, visualParams, isSelected);
+
+    Node* nnode = dynamic_cast<Node*>(node);
+    if(nnode)
+    {
+        /// Iterates over the components to render them.
+        for(auto& object : nnode->getNodeObjects())
+            drawBaseObject(object, visualParams, isSelected);
+    }
+}
+
+void ObjectRenderer::draw(Base* object, VisualParams* visualParams, bool isSelected)
+{
+    if(object==nullptr)
+        return;
+
+    if(object->toBaseNode())
+        return drawBaseNode(object->toBaseNode(), visualParams, isSelected);
+
+    if(object->toBaseObject())
+        return drawBaseObject(object->toBaseObject(), visualParams, isSelected);
+}
 
 } ///
 } /// qtquick
