@@ -37,6 +37,7 @@ MenuBar {
             onTriggered: openSofaSceneDialog.open();
         },
 
+
         Action {
             id: openRecentAction
             onTriggered: {
@@ -109,31 +110,40 @@ MenuBar {
             property var items: []
             visible: 0 !== items.length
             function update() {
-                recentMenu.items.clear();
+                recentMenu.items = []
                 var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
-                if(0 === sofaSceneRecentsList.length)
+                if ( 0 === sofaSceneRecentsList.length)
+                {
                     return;
+                }
 
                 for(var j = 0; j < sofaSceneRecentsList.length; ++j) {
                     var sofaSceneSource = sofaSceneRecentsList[j];
-                    if(0 === sofaSceneSource.length)
+                    if(0 === sofaSceneSource.length) {
                         continue;
+                    }
 
                     var sofaSceneName = sofaSceneSource.replace(/^.*[//\\]/m, "");
                     var title = j.toString() + " - " + sofaSceneName + " - \"" + sofaSceneSource + "\"";
+                    console.log(title)
 
-                    var openRecentItem = recentMenu.addItem(title);
-                    openRecentItem.action = openRecentAction;
+                    var menuEntry = menuItem.createObject(menuItem, { text: title, action: openRecentAction })
+                    var openRecentItem = recentMenu.addItem(menuEntry)
 
-                    if(50 === recentMenu.items.length)
+                    if (50 === recentMenu.items.length)
                         break;
                 }
                 if(0 === recentMenu.items.length)
                     return;
 
                 recentMenu.addSeparator();
-                var clearRecentItem = recentMenu.addItem("Clear Recent");
-                clearRecentItem.action = clearRecentAction;
+                var clearRecentItem = recentMenu.addItem(menuItem.createObject(menuItem, { text: "Clear Recent", action: clearRecentAction }))
+            }
+            Component {
+                id: menuItem
+                SofaMenuItem {
+
+                }
             }
             Component.onCompleted: recentMenu.update()
 
