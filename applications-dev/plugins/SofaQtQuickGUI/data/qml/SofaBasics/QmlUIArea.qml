@@ -20,35 +20,26 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  Contributors:
     - damien.marchal@univ-lille.fr
 ********************************************************************/
-#pragma once
-#include <QObject>
-#include <QQuickItem>
-#include <QQmlContext>
+import QtQuick 2.0
+import QtQuick.Controls 2.4
+import SofaRuntime.QmlUILoader 1.0
 
-namespace sofaqtquick::qmlui
+Item
 {
-    typedef QList<QUrl> QUrlList;
-    /// Load UI element interfaces into a QML view.
-    ///
-    /// The QmlUILoader should be associated to a QML widget
-    /// and will inject into the widget's tree a set of QML component
-    /// loaded from files.
-    ///
-    /// To work, the QmlUILoader need to be attached to valid
-    /// qml context.
-    class QmlUILoader : public QQuickItem
+    /// In iterable set of url pointing to the different canvas to Loader
+    /// interactively in the current widget
+    property var canvasSources
+
+    /// When the canvasSource change we need to reload all the canvas from
+    /// their source file.
+    onCanvasSourcesChanged:
     {
-        Q_OBJECT
+        loader.resetAndLoadAll(canvasSources);
+    }
 
-    public:
-        QmlUILoader(QObject* parent=nullptr);
-        ~QmlUILoader() override;
-
-    public slots:
-        void resetAndLoadAll(const QUrlList& list);
-        void load(const QUrl& filename);
-
-    private:
-        QList<QQuickItem*> m_loadedItems;
-    };
+    /// Load UI Canvas from files.
+    QmlUILoader
+    {
+        id: loader
+    }
 }

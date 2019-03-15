@@ -11,6 +11,7 @@
         <file>SofaBasics/DefaultStatusBar.qml</file>
         <file>SofaBasics/DefaultToolBar.qml</file>
         <file>SofaBasics/DefaultMenuBar.qml</file>
+        <file>SofaBasics/DefaultQmlUICanvas.qml</file>
         <file>SofaBasics/SofaScene.qml</file>
         <file>SofaBasics/SofaSceneInterface.qml</file>
         <file>SofaBasics/SofaPythonInteractor.qml</file>
@@ -30,10 +31,12 @@
         <file>SofaBasics/SofaDataItem.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
         <file>SofaBasics/ToolButton.qml</file>
+        <file>SofaBasics/TreeView.qml</file>
         <file>SofaBasics/BubbleToolTip.qml</file>
         <file>SofaBasics/MementoBar.qml</file>
         <file>SofaBasics/MementoManager.qml</file>
         <file>SofaBasics/MementoObject.qml</file>
+        <file>SofaBasics/QmlUIArea.qml</file>
         <file>SofaBasics/WindowResizer.qml</file>
         <file>SofaBasics/ClipPlane.qml</file>
         <file>SofaBasics/ColorChooser.qml</file>
@@ -43,8 +46,7 @@
         <file>SofaBasics/CheckBox.qml</file>
         <file>SofaBasics/Button.qml</file>
         <file>SofaBasics/GroupBox.qml</file>
-        <file>SofaBasics/ComboBox.qml</file>
-        <file>SofaBasics/TreeView.qml</file>
+        <file>SofaBasics/ComboBox.qml</file>        
         <file>SofaDataTypes/SofaDataType_notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>

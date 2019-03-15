@@ -60,6 +60,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QTimer>
 #include <QDirIterator>
 
+#include <SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.h>
+using sofaqtquick::SofaRuntimeModule;
+
 #include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
 using sofaqtquick::SofaQtQuickQmlModule;
 
@@ -941,6 +944,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 
     /// Register the Sofa Binding into the QML Types system.
     SofaQtQuickQmlModule::RegisterTypes();
+    SofaRuntimeModule::RegisterTypes();
 
     // compute command line arguments
     QCommandLineParser parser;

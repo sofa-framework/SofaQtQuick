@@ -21,34 +21,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 #pragma once
-#include <QObject>
-#include <QQuickItem>
-#include <QQmlContext>
 
-namespace sofaqtquick::qmlui
+#include <QString>
+#include <iostream>
+
+std::ostream& operator<<(std::ostream& dst, const QString& s)
 {
-    typedef QList<QUrl> QUrlList;
-    /// Load UI element interfaces into a QML view.
-    ///
-    /// The QmlUILoader should be associated to a QML widget
-    /// and will inject into the widget's tree a set of QML component
-    /// loaded from files.
-    ///
-    /// To work, the QmlUILoader need to be attached to valid
-    /// qml context.
-    class QmlUILoader : public QQuickItem
-    {
-        Q_OBJECT
-
-    public:
-        QmlUILoader(QObject* parent=nullptr);
-        ~QmlUILoader() override;
-
-    public slots:
-        void resetAndLoadAll(const QUrlList& list);
-        void load(const QUrl& filename);
-
-    private:
-        QList<QQuickItem*> m_loadedItems;
-    };
+    dst << s.toStdString();
+    return dst;
 }
+

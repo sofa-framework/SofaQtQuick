@@ -266,6 +266,7 @@ Item {
                 if(contentComponent.status === Component.Error)
                 {
                     ///TODO(dmarchal 28/01/2019) Fix loader.
+                    console.error("Error while loading: " + contentComponent.errorString());
                     loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation.contentItem);
                     return;
                 }
