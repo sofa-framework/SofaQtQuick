@@ -46,7 +46,7 @@
         <file>SofaBasics/CheckBox.qml</file>
         <file>SofaBasics/Button.qml</file>
         <file>SofaBasics/GroupBox.qml</file>
-        <file>SofaBasics/ComboBox.qml</file>        
+        <file>SofaBasics/ComboBox.qml</file>
         <file>SofaDataTypes/SofaDataType_notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
@@ -73,7 +73,7 @@
         <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
         <file>SofaBasics/Vector2DSpinBox.qml</file>
         <file>SofaBasics/Vector4DSpinBox.qml</file>
-	<file>SofaBasics/SidePanel.qml</file>
+        <file>SofaBasics/SidePanel.qml</file>
         <file>SofaViews/qmldir</file>
         <file>SofaViews/CameraView.qml</file>
         <file>SofaViews/EditView.qml</file>
@@ -102,5 +102,6 @@
         <file>SofaBasics/SofaMenuItem.qml</file>
         <file>QmlGTestCase/qmldir</file>
         <file>QmlGTestCase/QmlGTestCase.qml</file>
+        <file>SofaBasics/MenuSeparator.qml</file>
     </qresource>
 </RCC>

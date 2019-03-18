@@ -55,7 +55,6 @@ ToolBar {
         anchors.fill: parent
 
         Rectangle {
-//            Layout.fillHeight: true
             Layout.preferredWidth: fpsItem.implicitWidth + 10
             color: "transparent"
             border.width: 1

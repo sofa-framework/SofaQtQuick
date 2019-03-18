@@ -107,10 +107,11 @@ MenuBar {
         SofaMenu {
             id: recentMenu
             title: "Open recent"
-            property var items: []
-            visible: 0 !== items.length
+            visible: 0 !== recentMenu.count
+
             function update() {
-                recentMenu.items = []
+                while (recentMenu.count !== 0)
+                    recentMenu.removeItem(recentMenu.itemAt(0))
                 var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
                 if ( 0 === sofaSceneRecentsList.length)
                 {
@@ -130,13 +131,12 @@ MenuBar {
                     var menuEntry = menuItem.createObject(menuItem, { text: title, action: openRecentAction })
                     var openRecentItem = recentMenu.addItem(menuEntry)
 
-                    if (50 === recentMenu.items.length)
+                    if (50 === recentMenu.count)
                         break;
                 }
-                if(0 === recentMenu.items.length)
+                if(0 === recentMenu.count)
                     return;
-
-                recentMenu.addSeparator();
+                recentMenu.addItem(menuSeparator.createObject(menuSeparator, {}))
                 var clearRecentItem = recentMenu.addItem(menuItem.createObject(menuItem, { text: "Clear Recent", action: clearRecentAction }))
             }
             Component {
@@ -144,6 +144,10 @@ MenuBar {
                 SofaMenuItem {
 
                 }
+            }
+            Component {
+                id: menuSeparator
+                MenuSeparator {}
             }
             Component.onCompleted: recentMenu.update()
 
@@ -153,6 +157,7 @@ MenuBar {
             }
         }
 
+        MenuSeparator {}
         SofaMenuItem {
             action: reloadAction
             ToolTip {
