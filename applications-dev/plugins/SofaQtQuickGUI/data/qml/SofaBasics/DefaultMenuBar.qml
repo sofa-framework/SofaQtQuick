@@ -15,15 +15,11 @@ MenuBar {
     Item {
         id: internal_params
 
-        property string recentsString: sofaApplication.sceneSettings.sofaSceneRecents
-        onRecentsStringChanged: { recentScenesList = recentsString.split(';') }
-
         property string sceneUrl: openSofaSceneDialog.sofaSceneFileUrl
         onSceneUrlChanged: {
             if (sofaApplication.sofaScene)
                 sofaApplication.sofaScene.source = sceneUrl
         }
-        property var recentScenesList: []
     }
 
 
@@ -59,15 +55,16 @@ MenuBar {
             enabled: sofaApplication.sceneSettings.sofaSceneRecents !== ""
 
             implicitHeight: contentHeight
-            property var recentScenesModel: ListModel { id: scenesModel }
-            property var modelList: internal_params.recentScenesList
+            ListModel { id: scenesModel }
+            property var modelList: sofaApplication.sceneSettings.sofaSceneRecents
             onModelListChanged: {
                 scenesModel.clear()
-                for (var i = 0 ; i < modelList.length ; i++)
+                var mlist = modelList.split(";")
+                for (var i = 0 ; i < mlist.length ; i++)
                 {
-                    if (modelList[i] === "")
+                    if (mlist[i] === "")
                         continue;
-                    scenesModel.append({"index": i, "title": modelList[i].replace(/^.*[//\\]/m, ""), "fileUrl": modelList[i]})
+                    scenesModel.append({"index": i, "title": mlist[i].replace(/^.*[//\\]/m, ""), "fileUrl": mlist[i]})
                 }
             }
 
