@@ -381,14 +381,14 @@ void SofaSceneItemModel::onResetRequired()
 }
 
 
-void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child, unsigned idx)
+void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)
 {
 //    return;
     SOFA_UNUSED(child);
     QModelIndex parentIndex = index(target);
     int i = int(rrowCount(target));
     if (target != nullptr)
-        i = int(target->object.size() + idx);
+        i = int(target->object.size());
 
 //    msg_info("b") << "=========== Adding child node " << child->getName() << " to: " << ((target) ? target->getName() : "NULL") << " (" << parentIndex.row() << ")";
 //    msg_warning("       ") << target->getName() << " row is: " << parentIndex.row();
@@ -423,13 +423,12 @@ void SofaSceneItemModel::addNodeContent(Node* node)
     }
 }
 
-void SofaSceneItemModel::onAddChildEnd(Node* target, Node* child, unsigned index)
+void SofaSceneItemModel::onAddChildEnd(Node* target, Node* child)
 {
 //    m_needsRefresh = true;
 //    return;
     SOFA_UNUSED(target);
     SOFA_UNUSED(child);
-    SOFA_UNUSED(index);
 
     endInsertRows();
 

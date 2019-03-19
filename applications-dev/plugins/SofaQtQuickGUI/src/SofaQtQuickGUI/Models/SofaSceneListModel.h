@@ -79,7 +79,7 @@ signals:
 protected:
 
     /// The following function are inhereted from MutationLister
-    virtual void onAddChildBegin(sofa::simulation::Node* parent, sofa::simulation::Node* child, unsigned pos) override;
+    virtual void onAddChildBegin(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
     virtual void onRemoveChildEnd(sofa::simulation::Node* parent, sofa::simulation::Node* child) override;
     virtual void onAddObjectBegin(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object) override;
     virtual void onRemoveObjectEnd(sofa::simulation::Node* parent, sofa::core::objectmodel::BaseObject* object)override;

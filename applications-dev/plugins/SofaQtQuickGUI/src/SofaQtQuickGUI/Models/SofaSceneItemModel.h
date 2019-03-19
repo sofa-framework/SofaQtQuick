@@ -96,8 +96,8 @@ protected:
     /// charge of notifying the cbasehange using the QAbstractItemModel.
 //    bool frozen;
 
-    void onAddChildBegin(Node* parent, Node* child, unsigned index) override;
-    void onAddChildEnd(Node* parent, Node* child, unsigned index) override;
+    void onAddChildBegin(Node* parent, Node* child) override;
+    void onAddChildEnd(Node* parent, Node* child) override;
     void onRemoveChildBegin(Node* parent, Node* child) override;
     void onRemoveChildEnd(Node* parent, Node* child) override;
 

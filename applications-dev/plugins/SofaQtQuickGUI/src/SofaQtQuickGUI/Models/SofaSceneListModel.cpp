@@ -56,8 +56,8 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
     {
         if(mySofaScene->isReady())
         {
-            onAddChildBegin(nullptr, mySofaScene->sofaRootNode().get(), 0);
-            onAddChildEnd(nullptr, mySofaScene->sofaRootNode().get(), 0);
+            onAddChildBegin(nullptr, mySofaScene->sofaRootNode().get());
+            onAddChildEnd(nullptr, mySofaScene->sofaRootNode().get());
         }
 
         connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
@@ -65,8 +65,8 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
 
             if(SofaScene::Ready == mySofaScene->status())
             {
-                onAddChildBegin(nullptr, mySofaScene->sofaRootNode().get(), 0);
-                onAddChildEnd(nullptr, mySofaScene->sofaRootNode().get(), 0);
+                onAddChildBegin(nullptr, mySofaScene->sofaRootNode().get());
+                onAddChildEnd(nullptr, mySofaScene->sofaRootNode().get());
             }
         });
     }
@@ -339,9 +339,8 @@ unsigned int SofaSceneListModel::countChildrenOf(const SofaSceneListModel::Item&
     return count;
 }
 
-void SofaSceneListModel::onAddChildBegin(Node* parent, Node* child, unsigned pos)
+void SofaSceneListModel::onAddChildBegin(Node* parent, Node* child)
 {
-    SOFA_UNUSED(pos);
     if(!child)
         return;
 
