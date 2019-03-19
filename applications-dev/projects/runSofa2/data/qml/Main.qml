@@ -78,7 +78,7 @@ ApplicationWindow {
             DynamicContent {
                 defaultContentName: "SofaViewer"
                 sourceDir: "qrc:/SofaViews"
-                properties: {"sofaScene": root.sofaScene, "drawFrame": false}
+                properties: {"sofaScene": root.sofaScene, "drawFrame": false, "sofaApplication": SofaApplication}
             }
         }
     }

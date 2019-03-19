@@ -104,5 +104,6 @@
         <file>SofaColorScheme/GBRect.qml</file>
         <file>QmlGTestCase/qmldir</file>
         <file>QmlGTestCase/QmlGTestCase.qml</file>
+        <file>SofaViews/ProjectView.qml</file>
     </qresource>
 </RCC>

@@ -44,6 +44,21 @@ SofaApplicationSingleton //
         property string nodeState: ""
     }
 
+    property var projectSettings: Settings {
+        category: "projects"
+        property string recentProjects
+
+        function addRecent(path) {
+            recentProjects = path + ";" + recentProjects.replace(path + ";", "");
+        }
+        function currentProject() {
+            var recentsList = recentProjects.split(";")
+            if (recentsList === [])
+                return ""
+            return recentsList[0]
+        }
+    }
+
     property var sceneSettings: Settings {
         category: "scene"
 

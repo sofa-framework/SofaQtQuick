@@ -47,7 +47,8 @@ Item {
     /// Refreshing the view every time a file is modified
     property var files : LiveFileMonitorSingleton.files
     onFilesChanged: {
-        loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
+        if (checkBoxEditting.checked)
+            loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
     }
 
 

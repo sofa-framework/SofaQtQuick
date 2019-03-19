@@ -23,6 +23,33 @@ MenuBar {
     }
 
 
+    Menu {
+        id: projectMenuID
+        title: qsTr("&Project")
+        MenuItem {
+            id: openProject
+            text: qsTr("Open Project...")
+            FileDialog {
+                id: openProjectDialog
+                selectFolder: true
+                onAccepted: {
+                    sofaApplication.projectSettings.addRecent(fileUrl)
+                }
+            }
+
+            function openDialog() {
+                openProjectDialog.open()
+            }
+            Shortcut {
+                sequence: StandardKey.Open
+                context: Qt.ApplicationShortcut
+                onActivated: openProject.openDialog()
+            }
+            onTriggered: {
+                openProject.openDialog()
+            }
+        }
+    }
 
     Menu {
         id: fileMenuID
@@ -35,11 +62,11 @@ MenuBar {
                 openSofaSceneDialog.open()
             }
 
-            Shortcut {
-                sequence: StandardKey.Open
-                context: Qt.ApplicationShortcut
-                onActivated: openMenuItem.openDialog()
-            }
+//            Shortcut {
+//                sequence: StandardKey.Open
+//                context: Qt.ApplicationShortcut
+//                onActivated: openMenuItem.openDialog()
+//            }
             onTriggered: {
                 openMenuItem.openDialog()
             }
