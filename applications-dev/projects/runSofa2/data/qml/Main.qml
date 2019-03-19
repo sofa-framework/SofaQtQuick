@@ -60,17 +60,10 @@ ApplicationWindow {
         showNormal();
     }
 
-    // dialog
-    property FileDialog openSofaSceneDialog: openSofaSceneDialog
-    FileDialog {
-        id: openSofaSceneDialog
-        nameFilters: ["SofaScene files (*.xml *.scn *.pyscn *.py *.simu *)"]
-        onAccepted: sofaScene.source = fileUrl;
-    }
-
     menuBar: DefaultMenuBar {
         id: menuBar
         sofaScene: root.sofaScene
+        recentsString: SofaApplication.sceneSettings.sofaSceneRecents
     }
 
     header: DefaultToolBar {

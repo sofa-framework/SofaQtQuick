@@ -1,207 +1,238 @@
-/*
-Copyright 2015, Anatoscope
-
-This file is part of sofaqtquick.
-
-sofaqtquick is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-sofaqtquick is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
-*/
 
 import QtQuick 2.12
 import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
-import SofaApplication 1.0
+import QtQuick.Layouts 1.12
+import QtQuick.Window 2.12
 import SofaBasics 1.0
+import SofaApplication 1.0
+import SofaViewListModel 1.0
+
 
 MenuBar {
     id: menuBar
-
     property var sofaScene: null
+    property string recentsString: null
+    onRecentsStringChanged: { params.recentScenesList = recentsString.split(';') }
 
-    property list<QtObject> objects: [
-        Action {
-            id: openAction
+    Item {
+        id: params
+        property string sceneUrl: openSofaSceneDialog.sofaSceneFileUrl
+        onSceneUrlChanged: {
+            if (menuBar.sofaScene)
+                menuBar.sofaScene.source = sceneUrl
+        }
+        property var recentScenesList: []
+    }
+
+
+
+    Menu {
+        id: fileMenuID
+        title: qsTr("&File")
+        MenuItem {
+            id: openMenuItem
             text: "&Open..."
-            shortcut: "Ctrl+O"
-            onTriggered: openSofaSceneDialog.open();
-        },
 
+            function openDialog() {
+                openSofaSceneDialog.open()
+            }
 
-        Action {
-            id: openRecentAction
+            Shortcut {
+                sequence: StandardKey.Open
+                context: Qt.ApplicationShortcut
+                onActivated: openMenuItem.openDialog()
+            }
             onTriggered: {
-                var title = source.text.toString();
-                var sceneSource = title.replace(/^.*"(.*)"$/m, "$1");
-                sofaScene.source = "file:" + sceneSource;
+                openMenuItem.openDialog()
             }
-        },
 
-        Action {
-            id: clearRecentAction
-            text: "&Clear"
-            onTriggered: SofaApplication.sceneSettings.clearRecents();
-        },
+            SofaSceneFileDialog { id: openSofaSceneDialog }
 
-        Action {
-            id: reloadAction
+        }
+
+
+        Menu {
+            id: recentMenu
+            title: "Open recent"
+            enabled: SofaApplication.sceneSettings.sofaSceneRecents !== ""
+
+            implicitHeight: contentHeight
+            property var recentScenesModel: ListModel { id: scenesModel }
+            property var modelList: params.recentScenesList
+            onModelListChanged: {
+                scenesModel.clear()
+                for (var i = 0 ; i < modelList.length ; i++)
+                {
+                    if (modelList[i] === "")
+                        continue;
+                    scenesModel.append({"index": i, "title": modelList[i].replace(/^.*[//\\]/m, ""), "fileUrl": modelList[i]})
+                }
+            }
+
+            ColumnLayout {
+                Repeater {
+                    model: scenesModel
+                    MenuItem {
+                        text: model.index + " - " + model.title
+                        onTriggered: {
+                            params.sceneUrl = model.fileUrl
+                        }
+                    }
+                }
+                MenuSeparator { visible: SofaApplication.sceneSettings.sofaSceneRecents !== "" }
+                MenuItem {
+                    enabled: SofaApplication.sceneSettings.sofaSceneRecents !== ""
+                    text: "Clear Recents"
+                    onTriggered: {
+                        SofaApplication.sceneSettings.sofaSceneRecents = ""
+                    }
+                }
+            }
+        }
+        MenuItem {
+            id: reloadMenuItem
             text: "&Reload"
-            shortcut: "Ctrl+R"
-            onTriggered: sofaScene.reload();
-        },
-        Action
-        {
-            id: exitAction
-            text: "&Exit"
-            shortcut: "Ctrl+Q"
-            onTriggered: close()
-        },
-        Action {
-            id: simulateAction
-            text: "&Simulate"
-            shortcut: "Space"
-            checkable: true
-            checked: false
-            onTriggered: if(sofaScene) sofaScene.animate = checked
 
-            property var sofaSceneConnection: Connections {
-                target: sofaScene
-                onAnimateChanged: simulateAction.checked = sofaScene.animate
+            function reload() {
+                sofaScene.reload()
             }
-        },
+            Shortcut {
+                sequence: StandardKey.Refresh
+                context: Qt.ApplicationShortcut
+                onActivated: reloadMenuItem.reload()
+            }
+            onTriggered: {
+                reloadMenuItem.reload()
+            }
+        }
+        MenuItem { text: "Save (TODO)"; enabled: false }
+        MenuItem { text: "Save as...(TODO)"; enabled : false }
+        MenuItem { text: "Export as...(TODO)"; enabled : false }
+        MenuSeparator {}
 
+        MenuItem {
+            id: exitMenuItem
+            text: "&Exit"
+
+            function exit() {
+                close()
+            }
+            Shortcut {
+                sequence: StandardKey.Quit
+                context: Qt.ApplicationShortcut
+                onActivated: exitMenuItem.exit()
+            }
+            onTriggered: {
+                exitMenuItem.exit()
+            }
+        }
+    }
+
+
+    Menu {
+        title: "&Edit"
+        MenuItem { text: "Cut (TODO)"; enabled: false }
+        MenuItem { text : "Copy (TODO)"; enabled : false }
+        MenuItem { text : "Paste (TODO)"; enabled : false }
+    }
+
+    Menu {
+        title: "&Scene"
+        MenuItem { text: "Animate (TODO)"; enabled : false; checkable: true; checked: true
+            Shortcut {
+                sequence: "Ctrl+Space"
+                context: Qt.ApplicationShortcut
+                onActivated: {}
+            }
+            ToolTip {
+                text: qsTr("Play / Pause the simulation")
+            }
+
+        }
+        MenuSeparator {}
+        MenuItem { text: "Add node (TODO)"; enabled : false }
+        MenuItem { text: "Add object (TODO)"; enabled : false }
+    }
+
+
+
+    Menu {
+        title: "&Windows"
+
+        ColumnLayout {
+            MenuItem { text: "Plugins store (TODO)"; enabled: false
+                ToolTip {
+                    text: qsTr("Opens SOFA's plugin store")
+                    description: "The plugin store allows you to install additional plugins for your project"
+                }
+            }
+            MenuSeparator {}
+
+            Repeater {
+                model: SofaViewListModel
+                MenuItem {
+                    text: model.name
+                    onTriggered: {
+                        windowComponent.createObject(SofaApplication, {
+                                                         "source": "file:///"+model.filePath,
+                                                         "title" : model.name
+                                                     });
+                    }
+                    ToolTip {
+                        text: qsTr("Open " + model.name + " in a new Window")
+                    }
+
+                }
+            }
+            MenuSeparator {}
+            MenuItem { text: "Add QML Views (TODO)"; enabled: false
+                ToolTip {
+                    text: "Adds additional views"
+                    description: "Click here to select additional directories containing qml views"
+                }
+            }
+        }
+        Component {
+            id: windowComponent
+
+            Window {
+                property url source
+
+                id: window
+                width: 400
+                height: 600
+                modality: Qt.NonModal
+                flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                visible: true
+                color: SofaApplication.style.contentBackgroundColor
+
+                Loader {
+                    id: loader
+                    anchors.fill: parent
+                    source: window.source
+                }
+            }
+        }
+
+    }
+
+    Menu {
+        title: "&Help"
         MessageDialog {
             id: aboutDialog
             title: "About"
-            text: "Welcome in the " + Qt.application.name +" Application"
+            text: "Welcome in " + Qt.application.name +"!"
             onAccepted: visible = false
-        },
+            visible: false
+        }
 
-        Action
-        {
-            id: aboutAction
+        MenuItem { text: "Help (TODO)"; enabled : false }
+        MenuItem { text: "Tutorials (TODO)"; enabled : false }
+        MenuItem {
             text: "&About"
             onTriggered: aboutDialog.visible = true;
-        }
-    ]
 
-    SofaMenu {
-        title: "&File"
-        SofaMenuItem {
-            action: openAction
-            ToolTip {
-                text: "Open a Scene file"
-                description: "accepted formats: .scn | .pyscn | .py"
-            }
-        }
-        SofaMenu {
-            id: recentMenu
-            title: "Open recent"
-            visible: 0 !== recentMenu.count
-
-            function update() {
-                while (recentMenu.count !== 0)
-                    recentMenu.removeItem(recentMenu.itemAt(0))
-                var sofaSceneRecentsList = SofaApplication.sceneSettings.recentsList();
-                if ( 0 === sofaSceneRecentsList.length)
-                {
-                    return;
-                }
-
-                for(var j = 0; j < sofaSceneRecentsList.length; ++j) {
-                    var sofaSceneSource = sofaSceneRecentsList[j];
-                    if(0 === sofaSceneSource.length) {
-                        continue;
-                    }
-
-                    var sofaSceneName = sofaSceneSource.replace(/^.*[//\\]/m, "");
-                    var title = j.toString() + " - " + sofaSceneName + " - \"" + sofaSceneSource + "\"";
-                    console.log(title)
-
-                    var menuEntry = menuItem.createObject(menuItem, { text: title, action: openRecentAction })
-                    var openRecentItem = recentMenu.addItem(menuEntry)
-
-                    if (50 === recentMenu.count)
-                        break;
-                }
-                if(0 === recentMenu.count)
-                    return;
-                recentMenu.addItem(menuSeparator.createObject(menuSeparator, {}))
-                var clearRecentItem = recentMenu.addItem(menuItem.createObject(menuItem, { text: "Clear Recent", action: clearRecentAction }))
-            }
-            Component {
-                id: menuItem
-                SofaMenuItem {
-
-                }
-            }
-            Component {
-                id: menuSeparator
-                MenuSeparator {}
-            }
-            Component.onCompleted: recentMenu.update()
-
-            Connections {
-                target: SofaApplication.sceneSettings
-                onSofaSceneRecentsChanged: recentMenu.update()
-            }
-        }
-
-        MenuSeparator {}
-        SofaMenuItem {
-            action: reloadAction
-            ToolTip {
-                text: "Reload the Sofa Scene"
-            }
-        }
-        SofaMenuItem { enabled: false; text: "Save (TODO)" }
-        SofaMenuItem { text: "Save as...(TODO)"; enabled : false }
-        SofaMenuItem { text: "Export as...(TODO)"; enabled : false }
-        MenuSeparator {}
-        SofaMenuItem {action: exitAction}
-    }
-
-
-    SofaMenu {
-        title: "&Edit"
-        SofaMenuItem { text: "Cut (TODO)"; enabled: false }
-        SofaMenuItem { text : "Copy (TODO)"; enabled : false }
-        SofaMenuItem { text : "Paste (TODO)"; enabled : false }
-    }
-
-    SofaMenu {
-        title: "&Scene"
-        SofaMenuItem { text: "Reload (TODO)"; enabled : false}
-        MenuSeparator {}
-        SofaMenuItem { text: "Play (TODO)"; enabled : true; checkable: true; checked: true}
-        SofaMenuItem { text: "Pause (TODO)"; enabled : false; checkable: true; checked: false}
-        SofaMenuItem { text: "Stop (TODO)"; enabled : false }
-        MenuSeparator {}
-        SofaMenuItem { text: "Add node (TODO)"; enabled : false}
-        SofaMenuItem { text: "Add object (TODO)"; enabled : false}
-    }
-
-    SofaMenu {
-        title: "&Windows"
-        SofaMenuItem { text: "Plugins store (TODO)"; enabled : true}
-    }
-
-    SofaMenu {
-        title: "&Help"
-        SofaMenuItem { text: "Help (TODO)"; enabled : false }
-        SofaMenuItem { text: "Tutorials (TODO)"; enabled : false }
-        SofaMenuItem {
-            action: aboutAction
             ToolTip {
                 text: "About runSofa2"
             }

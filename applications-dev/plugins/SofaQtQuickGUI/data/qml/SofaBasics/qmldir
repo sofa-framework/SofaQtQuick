@@ -45,3 +45,6 @@ MenuBar 1.0 MenuBar.qml
 SidePanel 1.0 SidePanel.qml
 TreeView 1.0 TreeView.qml
 MenuSeparator 1.0 MenuSeparator.qml
+Menu 1.0 Menu.qml
+MenuItem 1.0 MenuItem.qml
+SofaSceneFileDialog 1.0 SofaSceneFileDialog.qml

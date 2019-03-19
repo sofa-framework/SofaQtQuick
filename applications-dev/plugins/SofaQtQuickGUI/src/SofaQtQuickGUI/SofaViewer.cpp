@@ -686,7 +686,7 @@ void SofaViewer::setupCamera(int width, int height, const SofaViewer& viewer) co
 
 void SofaViewer::drawSelectedComponents(sofa::core::visual::VisualParams* visualParams) const
 {
-    if( !visualParams )
+    if( !visualParams || !mySofaScene || !mySofaScene->mySelectedComponent)
         return ;
 
     sofa::core::objectmodel::Base* selectedBase = mySofaScene->mySelectedComponent->base();

@@ -1,23 +1,19 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.impl 2.12
-import QtQuick.Templates 2.12 as T
 
-T.MenuItem {
+MenuItem {
     id: control
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
-                            implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
-                             implicitContentHeight + topPadding + bottomPadding,
-                             implicitIndicatorHeight + topPadding + bottomPadding)
 
+    hoverEnabled: true
+    onHoveredChanged: highlighted = hovered
+    implicitWidth: parent.implicitWidth
     padding: 6
     spacing: 6
 
     icon.width: 20
     icon.height: 20
     icon.color: control.palette.windowText
-
     contentItem: IconLabel {
         readonly property real arrowPadding: control.subMenu && control.arrow ? control.arrow.width + control.spacing : 0
         readonly property real indicatorPadding: control.checkable && control.indicator ? control.indicator.width + control.spacing : 0
@@ -41,7 +37,6 @@ T.MenuItem {
 
         source: control.checkable ? (control.checked ? "qrc:/icon/menuCheckBox.png" : "qrc:/icon/menuCheckBoxChecked.png") : ""
     }
-
     arrow: Image {
         x: control.mirrored ? control.leftPadding : control.width - width - control.rightPadding
         y: control.topPadding + (control.availableHeight - height) / 2
@@ -61,12 +56,11 @@ T.MenuItem {
     }
 
     background: Rectangle {
-        implicitWidth: 200
-        implicitHeight: 20
+//        implicitHeight: 20
         x: 1
         y: 1
-        width: control.width - 2
-        height: control.height - 2
+//        width: control.width - 2
+//        height: control.height - 2
         gradient: control.highlighted ? highlight : none
     }
 }
