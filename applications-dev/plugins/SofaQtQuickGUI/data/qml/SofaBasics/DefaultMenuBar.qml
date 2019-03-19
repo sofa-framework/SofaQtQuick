@@ -5,22 +5,23 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
 import SofaBasics 1.0
-import SofaApplication 1.0
 import SofaViewListModel 1.0
 
 
 MenuBar {
     id: menuBar
-    property var sofaScene: null
-    property string recentsString: null
-    onRecentsStringChanged: { params.recentScenesList = recentsString.split(';') }
+    property var sofaApplication: null
 
     Item {
-        id: params
+        id: internal_params
+
+        property string recentsString: sofaApplication.sceneSettings.sofaSceneRecents
+        onRecentsStringChanged: { recentScenesList = recentsString.split(';') }
+
         property string sceneUrl: openSofaSceneDialog.sofaSceneFileUrl
         onSceneUrlChanged: {
-            if (menuBar.sofaScene)
-                menuBar.sofaScene.source = sceneUrl
+            if (sofaApplication.sofaScene)
+                sofaApplication.sofaScene.source = sceneUrl
         }
         property var recentScenesList: []
     }
@@ -55,11 +56,11 @@ MenuBar {
         Menu {
             id: recentMenu
             title: "Open recent"
-            enabled: SofaApplication.sceneSettings.sofaSceneRecents !== ""
+            enabled: sofaApplication.sceneSettings.sofaSceneRecents !== ""
 
             implicitHeight: contentHeight
             property var recentScenesModel: ListModel { id: scenesModel }
-            property var modelList: params.recentScenesList
+            property var modelList: internal_params.recentScenesList
             onModelListChanged: {
                 scenesModel.clear()
                 for (var i = 0 ; i < modelList.length ; i++)
@@ -76,16 +77,16 @@ MenuBar {
                     MenuItem {
                         text: model.index + " - " + model.title
                         onTriggered: {
-                            params.sceneUrl = model.fileUrl
+                            internal_params.sceneUrl = model.fileUrl
                         }
                     }
                 }
-                MenuSeparator { visible: SofaApplication.sceneSettings.sofaSceneRecents !== "" }
+                MenuSeparator { visible: sofaApplication.sceneSettings.sofaSceneRecents !== "" }
                 MenuItem {
-                    enabled: SofaApplication.sceneSettings.sofaSceneRecents !== ""
+                    enabled: sofaApplication.sceneSettings.sofaSceneRecents !== ""
                     text: "Clear Recents"
                     onTriggered: {
-                        SofaApplication.sceneSettings.sofaSceneRecents = ""
+                        sofaApplication.sceneSettings.sofaSceneRecents = ""
                     }
                 }
             }
@@ -95,7 +96,7 @@ MenuBar {
             text: "&Reload"
 
             function reload() {
-                sofaScene.reload()
+                sofaApplication.sofaScene.reload()
             }
             Shortcut {
                 sequence: StandardKey.Refresh
@@ -170,11 +171,11 @@ MenuBar {
             MenuSeparator {}
 
             Repeater {
-                model: SofaViewListModel
+                model: sofaApplication.sofaViewListModel
                 MenuItem {
                     text: model.name
                     onTriggered: {
-                        windowComponent.createObject(SofaApplication, {
+                        windowComponent.createObject(sofaApplication, {
                                                          "source": "file:///"+model.filePath,
                                                          "title" : model.name
                                                      });
@@ -205,7 +206,7 @@ MenuBar {
                 modality: Qt.NonModal
                 flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                 visible: true
-                color: SofaApplication.style.contentBackgroundColor
+                color: sofaApplication.style.contentBackgroundColor
 
                 Loader {
                     id: loader

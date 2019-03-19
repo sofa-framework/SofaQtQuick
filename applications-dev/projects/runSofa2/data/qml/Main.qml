@@ -62,8 +62,7 @@ ApplicationWindow {
 
     menuBar: DefaultMenuBar {
         id: menuBar
-        sofaScene: root.sofaScene
-        recentsString: SofaApplication.sceneSettings.sofaSceneRecents
+        sofaApplication: SofaApplication
     }
 
     header: DefaultToolBar {
