@@ -28,6 +28,7 @@ import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
+import SofaProject 1.0
 
 SofaApplicationSingleton //
 {
@@ -44,6 +45,8 @@ SofaApplicationSingleton //
         property string nodeState: ""
     }
 
+    ////////////////////////////////////////////////// PROJECTSETTINGS
+    property var currentProject : SofaProject
     property var projectSettings: Settings {
         category: "projects"
         property string recentProjects

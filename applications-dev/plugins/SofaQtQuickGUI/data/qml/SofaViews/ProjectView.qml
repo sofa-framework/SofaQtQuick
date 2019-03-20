@@ -12,6 +12,11 @@ Item {
 
     anchors.fill : parent
 
+    Item {
+        id: self
+        property var project: sofaApplication.currentProject
+    }
+
     Rectangle {
         id: background
         anchors.fill : parent
@@ -55,12 +60,29 @@ Item {
                     id: wrapper
                     width: root.width
                     height: 20
-                    color: ListView.isCurrentItem ? "#82878c" :  index % 2 ? sofaApplication.style.contentBackgroundColor : sofaApplication.style.alternateBackgroundColor
-                    Text {
-                        text: fileName
-                        color: "#efefef"
-                        anchors.verticalCenter: parent.verticalCenter
+                    color: index % 2 ? "#4c4c4c" : "#454545"
+                    property string highlightColor: ListView.isCurrentItem ? "#82878c" : "transparent"
+                    Rectangle {
+                        anchors.fill: parent
+                        color: wrapper.highlightColor
+                        radius: 4
+
+                        Image {
+                            x: 5
+                            id: iconId
+                            source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : "qrc:/icon/ICON_FILE_BLANK.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            leftPadding: 5
+                            text: fileName
+                            color: "#efefef"
+                            anchors.left: iconId.right
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
+
                     MouseArea {
                         id: mouseRegion
                         anchors.fill: parent
@@ -73,7 +95,6 @@ Item {
                         onClicked: {
                             if (folderModel.isFolder(index))
                             {
-                                console.log(index)
                                 folderModel.folder = folderModel.get(index, "fileURL")
                             }
                         }

@@ -50,5 +50,14 @@
         <file>icon/menuCheckBoxChecked.png</file>
         <file>icon/menuCheckBox.png</file>
         <file>icon/menuArrowDown.png</file>
+        <file>icon/blender_icons.svg</file>
+        <file>icon/ICON_CAMERA.png</file>
+        <file>icon/ICON_DISK_DRIVE.png</file>
+        <file>icon/ICON_FILE_BLANK.png</file>
+        <file>icon/ICON_FILE_FOLDER.png</file>
+        <file>icon/ICON_FILE_IMAGE.png</file>
+        <file>icon/ICON_FILE_MOVIE.png</file>
+        <file>icon/ICON_GEAR.png</file>
+        <file>icon/ICON_NEWFOLDER.png</file>
     </qresource>
 </RCC>

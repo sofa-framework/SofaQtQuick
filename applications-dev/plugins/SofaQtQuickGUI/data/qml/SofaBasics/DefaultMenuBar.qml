@@ -22,10 +22,45 @@ MenuBar {
         }
     }
 
-
     Menu {
-        id: projectMenuID
-        title: qsTr("&Project")
+        id: fileMenuID
+        title: qsTr("&File")
+
+        MenuItem {
+            id: newProject
+            text: qsTr("New Project")
+            MessageDialog {
+                id: newProjectErrorDialog
+                standardButtons: StandardButton.Ok
+                icon: StandardIcon.Critical
+                informativeText: qsTr("Error:")
+                detailedText: qsTr("New project folders must be empty")
+            }
+
+            FileDialog {
+                id: newProjectDialog
+                selectFolder: true
+                selectExisting: false
+                onAccepted: {
+                    if (Qt.resolvedUrl(fileUrl))
+                        sofaApplication.projectSettings.addRecent(fileUrl)
+                    else
+                        newProjectErrorDialog.open()
+                }
+            }
+
+            function openDialog() {
+                newProjectDialog.open()
+            }
+            Shortcut {
+                sequence: StandardKey.Open
+                context: Qt.ApplicationShortcut
+                onActivated: newProject.openDialog()
+            }
+            onTriggered: {
+                newProject.openDialog()
+            }
+        }
         MenuItem {
             id: openProject
             text: qsTr("Open Project...")
@@ -49,11 +84,9 @@ MenuBar {
                 openProject.openDialog()
             }
         }
-    }
 
-    Menu {
-        id: fileMenuID
-        title: qsTr("&File")
+        MenuSeparator {}
+
         MenuItem {
             id: openMenuItem
             text: "&Open..."

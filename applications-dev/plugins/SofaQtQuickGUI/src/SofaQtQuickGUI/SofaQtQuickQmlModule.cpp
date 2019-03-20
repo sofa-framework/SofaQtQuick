@@ -64,6 +64,9 @@ using namespace sofa::qtquick;
 #include <SofaQtQuickGUI/Console.h>
 using sofa::qtquick::console::Console ;
 
+#include <SofaQtQuickGUI/SofaProject.h>
+using sofa::qtquick::SofaProject;
+
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofa::qtquick::SofaFactory ;
 
@@ -160,6 +163,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");
     qmlRegisterType<EditView>                                       ("EditView"                             , versionMajor, versionMinor, "EditView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
+    qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
 
     qmlRegisterUncreatableType<SofaBase> ("Sofa.Core.Base",
                                           versionMajor, versionMinor,
