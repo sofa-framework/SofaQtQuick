@@ -96,15 +96,15 @@ protected:
     /// charge of notifying the cbasehange using the QAbstractItemModel.
 //    bool frozen;
 
-    void onAddChildBegin(Node* parent, Node* child) override;
-    void onAddChildEnd(Node* parent, Node* child) override;
-    void onRemoveChildBegin(Node* parent, Node* child) override;
-    void onRemoveChildEnd(Node* parent, Node* child) override;
+    void onBeginAddChild(Node* parent, Node* child) override;
+    void onEndAddChild(Node* parent, Node* child) override;
+    void onBeginRemoveChild(Node* parent, Node* child) override;
+    void onEndRemoveChild(Node* parent, Node* child) override;
 
-    void onAddObjectBegin(Node* parent, core::objectmodel::BaseObject* obj) override;
-    void onAddObjectEnd(Node* parent, core::objectmodel::BaseObject* obj) override;
-    void onRemoveObjectBegin(Node* parent, core::objectmodel::BaseObject* obj) override;
-    void onRemoveObjectEnd(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onBeginAddObject(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onBeginRemoveObject(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onEndRemoveObject(Node* parent, core::objectmodel::BaseObject* obj) override;
 
     /// Returns the ndex associated to the given node.
     /// If the node parameter is nullptr returns an invalid model index.

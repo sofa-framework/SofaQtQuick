@@ -56,8 +56,8 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
     {
         if(mySofaScene->isReady())
         {
-            onAddChildBegin(nullptr, mySofaScene->sofaRootNode().get());
-            onAddChildEnd(nullptr, mySofaScene->sofaRootNode().get());
+            onBeginAddChild(nullptr, mySofaScene->sofaRootNode().get());
+            onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());
         }
 
         connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
@@ -65,8 +65,8 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
 
             if(SofaScene::Ready == mySofaScene->status())
             {
-                onAddChildBegin(nullptr, mySofaScene->sofaRootNode().get());
-                onAddChildEnd(nullptr, mySofaScene->sofaRootNode().get());
+                onBeginAddChild(nullptr, mySofaScene->sofaRootNode().get());
+                onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());
             }
         });
     }
@@ -339,7 +339,7 @@ unsigned int SofaSceneListModel::countChildrenOf(const SofaSceneListModel::Item&
     return count;
 }
 
-void SofaSceneListModel::onAddChildBegin(Node* parent, Node* child)
+void SofaSceneListModel::onBeginAddChild(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -382,7 +382,7 @@ void SofaSceneListModel::onAddChildBegin(Node* parent, Node* child)
     endInsertRows();
 }
 
-void SofaSceneListModel::onRemoveChildEnd(Node* parent, Node* child)
+void SofaSceneListModel::onEndRemoveChild(Node* parent, Node* child)
 {
     if(!child)
         return;
@@ -416,7 +416,7 @@ void SofaSceneListModel::onRemoveChildEnd(Node* parent, Node* child)
     }
 }
 
-void SofaSceneListModel::onAddObjectBegin(Node* parent, BaseObject* object)
+void SofaSceneListModel::onBeginAddObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
@@ -455,7 +455,7 @@ void SofaSceneListModel::onAddObjectBegin(Node* parent, BaseObject* object)
     }
 }
 
-void SofaSceneListModel::onRemoveObjectEnd(Node* parent, BaseObject* object)
+void SofaSceneListModel::onEndRemoveObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;

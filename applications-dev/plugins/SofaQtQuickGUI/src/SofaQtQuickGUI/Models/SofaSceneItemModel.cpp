@@ -381,7 +381,7 @@ void SofaSceneItemModel::onResetRequired()
 }
 
 
-void SofaSceneItemModel::onAddChildBegin(Node* target, Node* child)
+void SofaSceneItemModel::onBeginAddChild(Node* target, Node* child)
 {
 //    return;
     SOFA_UNUSED(child);
@@ -423,7 +423,7 @@ void SofaSceneItemModel::addNodeContent(Node* node)
     }
 }
 
-void SofaSceneItemModel::onAddChildEnd(Node* target, Node* child)
+void SofaSceneItemModel::onEndAddChild(Node* target, Node* child)
 {
 //    m_needsRefresh = true;
 //    return;
@@ -458,7 +458,7 @@ void SofaSceneItemModel::removeNodeContent(Node* node)
 }
 
 
-void SofaSceneItemModel::onRemoveChildBegin(Node* parent, Node* child)
+void SofaSceneItemModel::onBeginRemoveChild(Node* parent, Node* child)
 {
 //    return;
 ////    msg_info("b") << "======== Removing child node " << child->getName() << " from: " << parent->getName();
@@ -475,7 +475,7 @@ void SofaSceneItemModel::onRemoveChildBegin(Node* parent, Node* child)
     beginRemoveRows(parentIndex, childIndex, childIndex /*+ int(rrowCount_recurse(child))*/);
 }
 
-void SofaSceneItemModel::onRemoveChildEnd(Node* parent, Node* child)
+void SofaSceneItemModel::onEndRemoveChild(Node* parent, Node* child)
 {
 //    m_needsRefresh = true;
 //    return;
@@ -487,7 +487,7 @@ void SofaSceneItemModel::onRemoveChildEnd(Node* parent, Node* child)
 
 
 
-void SofaSceneItemModel::onAddObjectBegin(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseObject* obj)
 {
 //    return;
     SOFA_UNUSED(obj);
@@ -501,7 +501,7 @@ void SofaSceneItemModel::onAddObjectBegin(Node* parent, core::objectmodel::BaseO
 
     beginInsertRows(parentIndex, objIndex, objIndex);
 }
-void SofaSceneItemModel::onAddObjectEnd(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj)
 {
 //    m_needsRefresh = true;
 //    return;
@@ -510,7 +510,7 @@ void SofaSceneItemModel::onAddObjectEnd(Node* parent, core::objectmodel::BaseObj
     endInsertRows();
 ////    msg_info("b") << "========== Adding object done: " << obj->getName();
 }
-void SofaSceneItemModel::onRemoveObjectBegin(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onBeginRemoveObject(Node* parent, core::objectmodel::BaseObject* obj)
 {
 //    return;
 //    msg_info("b") << "============= Removing object " << obj->getName() << " from: " << parent->getName();
@@ -522,7 +522,7 @@ void SofaSceneItemModel::onRemoveObjectBegin(Node* parent, core::objectmodel::Ba
 
     beginRemoveRows(parentIndex, objIndex, objIndex);
 }
-void SofaSceneItemModel::onRemoveObjectEnd(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onEndRemoveObject(Node* parent, core::objectmodel::BaseObject* obj)
 {
 //    m_needsRefresh = true;
 //    return;
