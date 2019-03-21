@@ -67,6 +67,9 @@ using sofa::qtquick::console::Console ;
 #include <SofaQtQuickGUI/SofaProject.h>
 using sofa::qtquick::SofaProject;
 
+#include <SofaQtQuickGUI/Assets/AssetLoaderFactory.h>
+using sofa::qtquick::AssetLoaderFactory;
+
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofa::qtquick::SofaFactory ;
 
@@ -164,6 +167,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<EditView>                                       ("EditView"                             , versionMajor, versionMinor, "EditView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
+    qmlRegisterType<AssetLoaderFactory>                             ("AssetLoaderFactory"                   , versionMajor, versionMinor, "AssetLoaderFactory");
 
     qmlRegisterUncreatableType<SofaBase> ("Sofa.Core.Base",
                                           versionMajor, versionMinor,

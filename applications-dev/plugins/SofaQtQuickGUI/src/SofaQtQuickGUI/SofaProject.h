@@ -1,5 +1,4 @@
-#ifndef SOFAPROJECT_H
-#define SOFAPROJECT_H
+#pragma once
 
 #include <SofaQtQuickGUI/config.h>
 #include <QObject>
@@ -34,4 +33,4 @@ private:
 }  // namespace qtquick
 }  // namespace sofa
 
-#endif // SOFAPROJECT_H
+

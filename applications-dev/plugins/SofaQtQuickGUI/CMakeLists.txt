@@ -53,6 +53,11 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
     src/SofaQtQuickGUI/LiveFileMonitor.cpp
+    src/SofaQtQuickGUI/SofaProject.cpp
+    src/SofaQtQuickGUI/Assets/AssetLoader.cpp
+    src/SofaQtQuickGUI/Assets/MeshLoader.cpp
+    src/SofaQtQuickGUI/Assets/TextureLoader.cpp
+    src/SofaQtQuickGUI/Assets/AssetLoaderFactory.cpp
 )
 
 set(HEADER_FILES
@@ -105,7 +110,12 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Helper/QGTest.h
     src/SofaQtQuickGUI/Helper/QtStl/QtStl.h
     src/SofaQtQuickGUI/LiveFileMonitor.h
-)
+    src/SofaQtQuickGUI/SofaProject.h
+    src/SofaQtQuickGUI/Assets/AssetLoader.h
+    src/SofaQtQuickGUI/Assets/MeshLoader.h
+    src/SofaQtQuickGUI/Assets/TextureLoader.h
+    src/SofaQtQuickGUI/Assets/AssetLoaderFactory.h
+ )
 
 
 

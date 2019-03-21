@@ -29,6 +29,7 @@ import SofaApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
 import SofaProject 1.0
+import AssetLoaderFactory 1.0
 
 SofaApplicationSingleton //
 {
@@ -44,6 +45,10 @@ SofaApplicationSingleton //
         category: "Hierarchy"
         property string nodeState: ""
     }
+
+    ////////////////////////////////////////////////// ASSSETS MANAGEMENT
+    property var assets: AssetLoaderFactory {}
+
 
     ////////////////////////////////////////////////// PROJECTSETTINGS
     property var currentProject : SofaProject
@@ -61,6 +66,7 @@ SofaApplicationSingleton //
             return recentsList[0]
         }
     }
+
 
     property var sceneSettings: Settings {
         category: "scene"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AssetLoader.h"
-#include <sofa/core/loader/MeshLoader.h>
 
 namespace sofa
 {
@@ -9,17 +8,17 @@ namespace qtquick
 {
 
 template<class T>
-struct MeshLoaderCreator : public TBaseSofaLoaderCreator<T>
+struct TextureLoaderCreator : public TBaseSofaLoaderCreator<T>
 {
     core::objectmodel::BaseObject::SPtr createInstance() {
         return core::objectmodel::New<T>();
     }
 };
 
-class MeshLoader : public AssetLoader
+class TextureLoader : public AssetLoader
 {
 public:
-    MeshLoader(std::string path, std::string extension);
+    TextureLoader(std::string path, std::string extension);
 
     static const QUrl iconPath;
 };

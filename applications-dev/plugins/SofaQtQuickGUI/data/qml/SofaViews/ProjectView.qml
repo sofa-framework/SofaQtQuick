@@ -70,7 +70,7 @@ Item {
                         Image {
                             x: 5
                             id: iconId
-                            source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : "qrc:/icon/ICON_FILE_BLANK.png"
+                            source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : sofaApplication.assets.getIcon(fileSuffix)
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
