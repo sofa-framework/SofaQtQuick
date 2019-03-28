@@ -10,8 +10,8 @@ namespace qtquick
 template<class T>
 struct TextureLoaderCreator : public TBaseSofaLoaderCreator<T>
 {
-    core::objectmodel::BaseObject::SPtr createInstance() {
-        return core::objectmodel::New<T>();
+    virtual SofaComponent* createInstance() {
+        return nullptr;
     }
 };
 
@@ -21,6 +21,7 @@ public:
     TextureLoader(std::string path, std::string extension);
 
     static const QUrl iconPath;
+    static const QString typeString;
 };
 
 } // namespace qtquick

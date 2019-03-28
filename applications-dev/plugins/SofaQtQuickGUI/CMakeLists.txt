@@ -58,7 +58,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Assets/MeshLoader.cpp
     src/SofaQtQuickGUI/Assets/TextureLoader.cpp
     src/SofaQtQuickGUI/Assets/AssetLoaderFactory.cpp
-)
+    )
 
 set(HEADER_FILES
     src/SofaQtQuickGUI/config.h
@@ -115,7 +115,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Assets/MeshLoader.h
     src/SofaQtQuickGUI/Assets/TextureLoader.h
     src/SofaQtQuickGUI/Assets/AssetLoaderFactory.h
- )
+    )
 
 
 

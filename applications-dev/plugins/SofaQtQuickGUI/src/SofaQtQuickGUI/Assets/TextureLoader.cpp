@@ -12,7 +12,8 @@ namespace sofa
 namespace qtquick
 {
 
-const QUrl TextureLoader::iconPath = QUrl("qrc:/icon/ICON_MESH.png");
+const QUrl TextureLoader::iconPath = QUrl("qrc:/icon/ICON_FILE_IMAGE.png");
+const QString TextureLoader::typeString = "Image file";
 
 TextureLoader::TextureLoader(std::string path, std::string extension)
     : AssetLoader(path, extension)

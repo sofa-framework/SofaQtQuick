@@ -20,6 +20,7 @@ public:
     virtual ~BaseAssetLoaderCreator();
     virtual std::shared_ptr<AssetLoader> createInstance(std::string path, std::string extension) = 0;
     virtual const QUrl& getIcon() = 0;
+    virtual const QString& getTypeString() = 0;
 };
 
 /**
@@ -35,6 +36,7 @@ public:
     virtual ~AssetLoaderCreator();
     virtual std::shared_ptr<AssetLoader> createInstance(std::string path, std::string extension);
     virtual const QUrl& getIcon();
+    virtual const QString& getTypeString();
 };
 
 /**
@@ -51,6 +53,7 @@ public:
     ~AssetLoaderFactory();
 
     Q_INVOKABLE QUrl getIcon(QString extension) const;
+    Q_INVOKABLE QString getTypeString(QString extension) const;
     std::shared_ptr<AssetLoader> createInstance(const QString& path, const QString& extension) const;
 private:
     std::map<std::string, BaseAssetLoaderCreator*> m_loaders;
@@ -77,6 +80,11 @@ const QUrl& AssetLoaderCreator<T>::getIcon()
     return T::iconPath;
 }
 
+template <class T>
+const QString& AssetLoaderCreator<T>::getTypeString()
+{
+    return T::typeString;
+}
 
 
 

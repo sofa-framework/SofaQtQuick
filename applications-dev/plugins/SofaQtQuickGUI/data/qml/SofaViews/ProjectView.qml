@@ -3,6 +3,8 @@ import QtQuick.Controls 2.12
 import SofaBasics 1.0
 import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
+import AssetLoaderFactory 1.0
+import SofaColorScheme 1.0
 
 Item {
 
@@ -22,32 +24,141 @@ Item {
         anchors.fill : parent
         color: sofaApplication.style.contentBackgroundColor
     }
+
+    Rectangle {
+        id: headerID
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+
+        implicitHeight: 25
+        color: sofaApplication.style.contentBackgroundColor
+        border.color: "#3c3c3c"
+
+        GBRect {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            implicitHeight: parent.implicitHeight - 1
+            implicitWidth: parent.implicitWidth + 2
+            borderWidth: 1
+            borderGradient: Gradient {
+                GradientStop { position: 9.0; color: "#5c5c5c" }
+                GradientStop { position: 1.0; color: "#7a7a7a" }
+            }
+            color: "transparent"
+
+            Label {
+                leftPadding: 10
+                text: folderModel.folder.toString().split("/")[folderModel.folder.toString().split("/").length -1]
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+    }
+
     ScrollView {
         id: scrollview
         clip: true
         height: parent.height - previewGroupID.height
         anchors.left: parent.left
-        anchors.top: parent.top
+        anchors.top: headerID.bottom
         anchors.right: parent.right
 
         ListView {
             id: folderView
             anchors.fill: parent
-            header: Label {
-                text: folderModel.folder
+            header: RowLayout{
+                implicitWidth: folderView.width
+
+                Rectangle {
+                    color: sofaApplication.style.contentBackgroundColor
+                    Layout.fillWidth: true
+                    implicitHeight: 20
+                    implicitWidth: folderView.width / 3
+                    Rectangle {
+                        id: separator1
+                        width: 2
+                        height: 20
+                        color: "#393939"
+                        Rectangle {
+                            x: 1
+                            width: 1
+                            height: 20
+                            color: "#959595"
+                        }
+                    }
+                    Label {
+                        anchors.left: separator1.right
+                        leftPadding: 5
+                        color: "black"
+                        text: "Name"
+                    }
+                }
+
+                Rectangle {
+                    color: sofaApplication.style.contentBackgroundColor
+                    Layout.fillWidth: true
+                    implicitHeight: 20
+                    implicitWidth: folderView.width / 3
+                    Rectangle {
+                        id: separator2
+                        width: 2
+                        height: 20
+                        color: "#393939"
+                        Rectangle {
+                            x: 1
+                            width: 1
+                            height: 20
+                            color: "#959595"
+                        }
+                    }
+                    Label {
+                        anchors.left: separator2.right
+                        leftPadding: 5
+                        color: "black"
+                        text: "Type"
+                    }
+                }
+
+                Rectangle {
+                    color: sofaApplication.style.contentBackgroundColor
+                    Layout.fillWidth: true
+                    implicitHeight: 20
+                    implicitWidth: folderView.width / 3
+                    Rectangle {
+                        id: separator3
+                        width: 2
+                        height: 20
+                        color: "#393939"
+                        Rectangle {
+                            x: 1
+                            width: 1
+                            height: 20
+                            color: "#959595"
+                        }
+                    }
+                    Label {
+                        anchors.left: separator3.right
+                        leftPadding: 5
+                        color: "black"
+                        text: "Size"
+                    }
+                }
             }
 
             FolderListModel {
                 id: folderModel
 
-                property var recentProjects: sofaApplication.projectSettings.recentProjects
-                onRecentProjectsChanged: {
-                    folderModel.folder = sofaApplication.projectSettings.currentProject()
-                    console.log(folderModel.count)
+                property var projectDir: sofaApplication.projectSettings.recentProjects.split(";")[0]
+                onProjectDirChanged: {
+                    self.project.rootDir = projectDir
+                    folderModel.rootFolder = self.project.rootDir
+                    folderModel.folder = self.project.rootDir
                 }
 
                 showDirs: true
                 showDotAndDotDot: true
+                showDirsFirst: true
                 showFiles: true
                 caseSensitive: true
                 folder: ""
@@ -66,25 +177,62 @@ Item {
                         anchors.fill: parent
                         color: wrapper.highlightColor
                         radius: 4
+                        RowLayout {
+                            anchors.fill: parent
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Image {
+                                    x: 5
+                                    id: iconId
+                                    source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : self.project.assetFactory.getIcon(fileSuffix)
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
 
-                        Image {
-                            x: 5
-                            id: iconId
-                            source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : sofaApplication.assets.getIcon(fileSuffix)
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            leftPadding: 5
-                            text: fileName
-                            color: "#efefef"
-                            anchors.left: iconId.right
-                            anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    width: parent.width
+                                    leftPadding: 5
+                                    text: fileName
+                                    clip: true
+                                    elide: Text.ElideRight
+                                    color: "#efefef"
+                                    anchors.left: iconId.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Text {
+                                    width: parent.width
+                                    leftPadding: 10
+                                    text: fileIsDir ? "Folder" : self.project.assetFactory.getTypeString(fileSuffix)
+                                    color: "#efefef"
+                                    clip: true
+                                    elide: Text.ElideRight
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Text {
+                                    width: parent.width
+                                    leftPadding: 15
+                                    text: fileIsDir ? self.project.getFileCount(fileURL) :
+                                                      (fileSize < 1e3) ? fileSize + " bytes" :
+                                                                         (fileSize < 1e6) ? (fileSize / 1e3).toFixed(1) + " MB" :
+                                                                                            (fileSize < 1e9) ? (fileSize / 1e6).toFixed(1) + " GB" :
+                                                                                                               "File too large"
+                                    color: "#efefef"
+                                    clip: true
+                                    elide: Text.ElideRight
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
                         }
                     }
 
-                    MouseArea {
+                    MouseArea {                        
                         id: mouseRegion
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                         anchors.fill: parent
                         hoverEnabled: true;
                         onHoveredChanged: {
@@ -93,9 +241,16 @@ Item {
                             }
                         }
                         onClicked: {
-                            if (folderModel.isFolder(index))
+                            if (Qt.LeftButton === mouse.button)
                             {
-                                folderModel.folder = folderModel.get(index, "fileURL")
+                                if (folderModel.isFolder(index))
+                                {
+                                    folderModel.folder = folderModel.get(index, "fileURL")
+                                }
+                            }
+                            else
+                            {
+
                             }
                         }
                     }

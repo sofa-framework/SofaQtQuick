@@ -4,6 +4,7 @@ namespace sofa {
 namespace qtquick {
 
 const QUrl AssetLoader::iconPath = QUrl("qrc:/icon/ICON_FILE_BLANK");
+const QString AssetLoader::typeString = "Unknown file format";
 
 BaseSofaLoaderCreator::~BaseSofaLoaderCreator() {}
 
@@ -18,7 +19,7 @@ AssetLoader::~AssetLoader()
 
 }
 
-BaseObject::SPtr AssetLoader::createSofaLoader()
+SofaComponent* AssetLoader::createSofaLoader()
 {
     const auto& loader = m_loaders.find(m_extension);
     if (loader == m_loaders.end())

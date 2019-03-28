@@ -19,6 +19,7 @@ AssetLoaderFactory::AssetLoaderFactory(QObject *parent)
     m_loaders["bmp"] = new AssetLoaderCreator<TextureLoader>();
     m_loaders["svg"] = new AssetLoaderCreator<TextureLoader>();
     m_loaders["tex"] = new AssetLoaderCreator<TextureLoader>();
+    m_loaders["ico"] = new AssetLoaderCreator<TextureLoader>();
 
 }
 
@@ -31,16 +32,21 @@ AssetLoaderFactory::~AssetLoaderFactory()
 
 QUrl AssetLoaderFactory::getIcon(QString extension) const
 {
-    std::cout << extension.toStdString() << std::endl;
     const auto& loader = m_loaders.find(extension.toStdString());
     if (loader == m_loaders.end())
         return AssetLoader::iconPath;
     return loader->second->getIcon();
 }
+QString AssetLoaderFactory::getTypeString(QString extension) const
+{
+    const auto& loader = m_loaders.find(extension.toStdString());
+    if (loader == m_loaders.end())
+        return AssetLoader::typeString;
+    return loader->second->getTypeString();
+}
 
 std::shared_ptr<AssetLoader> AssetLoaderFactory::createInstance(const QString& path, const QString& extension) const
 {
-    std::cout << extension.toStdString() << std::endl;
     const auto& loader = m_loaders.find(extension.toStdString());
     if (loader == m_loaders.end())
         return nullptr;

@@ -29,7 +29,6 @@ import SofaApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
 import SofaProject 1.0
-import AssetLoaderFactory 1.0
 
 SofaApplicationSingleton //
 {
@@ -46,13 +45,14 @@ SofaApplicationSingleton //
         property string nodeState: ""
     }
 
-    ////////////////////////////////////////////////// ASSSETS MANAGEMENT
-    property var assets: AssetLoaderFactory {}
-
 
     ////////////////////////////////////////////////// PROJECTSETTINGS
-    property var currentProject : SofaProject
+    property var currentProject : SofaProject {
+        rootDir: projectSettings.currentProject()
+    }
+
     property var projectSettings: Settings {
+        id: projectSettings
         category: "projects"
         property string recentProjects
 
