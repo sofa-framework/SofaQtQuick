@@ -146,6 +146,9 @@ Item {
             text: dataObject.name + " "
             font.italic: true
             color: "black"
+            width: parent.width
+            clip: true
+            elide: Text.ElideRight
 
             MouseArea {
                 id: dataLabelMouseArea
@@ -165,7 +168,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
-
+            Layout.minimumWidth: 100
             RowLayout {
                 Layout.fillWidth: true
                 visible: 0 !== dataObject.name.length && (linkButton.checked || (0 !== dataObject.link.length && !root.showLinkButton))
@@ -177,7 +180,8 @@ Item {
                     placeholderText: "Link: @./path/component." + dataObject.name
                     color: 0 === dataObject.link.length ? "black" : "green"
                     text: dataObject.link
-
+                    width: parent.width
+                    clip: true
                     onTextChanged: updateLink();
                 }
 
