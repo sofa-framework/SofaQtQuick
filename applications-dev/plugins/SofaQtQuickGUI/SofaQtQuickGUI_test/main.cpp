@@ -19,6 +19,11 @@ int main(int argc, char **argv)
 {
     QCoreApplication application(argc, argv);
 
+    /// application specific settings
+    application.setOrganizationName("Sofa Consortium");
+    application.setApplicationName("SofaQtQuickGUI_test");
+    application.setApplicationVersion("v1.0");
+
     testing::InitGoogleTest(&argc, argv);
 
     sofa::simulation::graph::init();

@@ -41,8 +41,8 @@ void QmlTestList::addGroupOfTests( const std::string& filename,
     /// Add an test with an empty method name so there is a at least one test...that consist
     /// in loading the qml file.
     list.push_back( QmlTestData( filepath(path,filename), testgroup, {""} ) );
-    std::cout << "PUSHING IN THE LIST " << std::endl ;
     SofaQtQuickQmlModule::RegisterTypes();
+    dmsg_info("QmlGTest") << "Registering '" << filename << "'";
 
     QQmlEngine* m_engine = new QQmlEngine();
     m_engine->addImportPath("qrc:/");
