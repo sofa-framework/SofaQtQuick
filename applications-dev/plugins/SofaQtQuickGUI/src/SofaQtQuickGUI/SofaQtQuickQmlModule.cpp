@@ -56,6 +56,7 @@ using sofaqtquick::bindings::SofaNode;
 #include <SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h>
 #include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/Windows/EditView.h>
+#include <SofaQtQuickGUI/Windows/AssetView.h>
 
 
 #include <SofaQtQuickGUI/PythonConsole.h>
@@ -67,8 +68,8 @@ using sofa::qtquick::console::Console ;
 #include <SofaQtQuickGUI/SofaProject.h>
 using sofa::qtquick::SofaProject;
 
-#include <SofaQtQuickGUI/Assets/AssetLoaderFactory.h>
-using sofa::qtquick::AssetLoaderFactory;
+#include <SofaQtQuickGUI/Assets/AssetFactory.h>
+using sofa::qtquick::AssetFactory;
 
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofa::qtquick::SofaFactory ;
@@ -134,7 +135,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<SofaScene::Status>("Status");
     qRegisterMetaType<size_t>("const size_t");
     qRegisterMetaType<SofaScene*>("const SofaScene*");
-    qRegisterMetaType<AssetLoaderFactory*>("AssetLoaderFactory*");
+    qRegisterMetaType<AssetFactory*>("AssetFactory*");
     qRegisterMetaType<QUrlList>("QUrlList");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplicationSingleton");
@@ -166,9 +167,10 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");
     qmlRegisterType<EditView>                                       ("EditView"                             , versionMajor, versionMinor, "EditView");
+    qmlRegisterType<AssetView>                                      ("AssetView"                            , versionMajor, versionMinor, "AssetView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
-    qmlRegisterType<AssetLoaderFactory>                             ("AssetLoaderFactory"                   , versionMajor, versionMinor, "AssetLoaderFactory");
+    qmlRegisterType<AssetFactory>                                   ("AssetFactory"                         , versionMajor, versionMinor, "AssetFactory");
 
     qmlRegisterUncreatableType<SofaBase> ("Sofa.Core.Base",
                                           versionMajor, versionMinor,

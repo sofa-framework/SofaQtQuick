@@ -1,4 +1,6 @@
 #include "SofaProject.h"
+#include "SofaApplication.h"
+#include <QWindow>
 
 namespace sofa {
 namespace qtquick {
@@ -18,14 +20,19 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     scanProject(root);
 }
 
-AssetLoaderFactory* SofaProject::getAssetFactory() { return &m_assetFactory; }
+AssetFactory* SofaProject::getAssetFactory() { return &m_assetFactory; }
 
 void SofaProject::scanProject(const QUrl& folder)
 {
-    scanProject(QDir(folder.path()));
+    _scanProject(QDir(folder.path()));
 }
 
 void SofaProject::scanProject(const QDir& folder)
+{
+    _scanProject(folder);
+}
+
+void SofaProject::_scanProject(const QDir& folder)
 {
     if (!folder.exists())
         return;
@@ -38,15 +45,17 @@ void SofaProject::scanProject(const QDir& folder)
         if (f.isDir())
         {
             if (f.fileName() == "." || f.fileName() == "..")
+            {
                 continue;
+            }
             scanProject(QDir(f.filePath()));
         }
         else
         {
             m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
+
         }
     }
-
 }
 
 const QString SofaProject::getFileCount(const QUrl& url)
@@ -57,6 +66,12 @@ const QString SofaProject::getFileCount(const QUrl& url)
     std::string str = std::to_string(dir.count());
     str += " items";
     return QString(str.c_str());
+}
+
+
+SofaComponent* SofaProject::get(const QUrl& url)
+{
+    return m_assets.find(url.toString())->second->getPreviewNode();
 }
 
 }  // namespace qtquick

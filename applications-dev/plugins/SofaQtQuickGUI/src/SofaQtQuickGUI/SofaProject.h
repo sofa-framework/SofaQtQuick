@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SofaQtQuickGUI/Assets/AssetLoaderFactory.h"
+#include "SofaQtQuickGUI/Assets/AssetFactory.h"
 #include "SofaQtQuickGUI/config.h"
 
 
@@ -30,21 +30,27 @@ public:
     void setRootDir(const QUrl& rootDir);
     Q_SIGNAL void rootDirChanged(QUrl& rootDir);
 
-    Q_PROPERTY(AssetLoaderFactory* assetFactory READ getAssetFactory WRITE setAssetFactory NOTIFY assetFactoryChanged)
-    AssetLoaderFactory* getAssetFactory();
-    void setAssetFactory(AssetLoaderFactory* ) {}
-    Q_SIGNAL void assetFactoryChanged(AssetLoaderFactory* );
+    Q_PROPERTY(AssetFactory* assetFactory READ getAssetFactory WRITE setAssetFactory NOTIFY assetFactoryChanged)
+    AssetFactory* getAssetFactory();
+    void setAssetFactory(AssetFactory* ) {}
+    Q_SIGNAL void assetFactoryChanged(AssetFactory* );
 
     Q_INVOKABLE void scanProject(const QDir& folder);
     Q_INVOKABLE void scanProject(const QUrl& url);
     Q_INVOKABLE const QString getFileCount(const QUrl& url);
 
+    Q_INVOKABLE SofaComponent* get(const QUrl& url);
+
+
 private:
     QUrl m_rootDir; // The Project's root fs directory
-    AssetLoaderFactory m_assetFactory; /// The factory to create SofaComponents & query meta data
+    AssetFactory m_assetFactory; /// The factory to create SofaComponents & query meta data
+//    QProgressDialog* m_progress;
 
-    using assetMapPair = std::pair<QString, std::shared_ptr<AssetLoader> >;
-    std::map<QString,std::shared_ptr<AssetLoader> > m_assets; /// project asset's URLs with their associated loaders
+    using assetMapPair = std::pair<QString, std::shared_ptr<Asset> >;
+    std::map<QString,std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
+
+    void _scanProject(const QDir& folder);
 };
 
 }  // namespace qtquick

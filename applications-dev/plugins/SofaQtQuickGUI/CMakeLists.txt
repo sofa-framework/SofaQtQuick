@@ -13,6 +13,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaViewer.cpp
     src/SofaQtQuickGUI/Windows/CameraView.cpp
     src/SofaQtQuickGUI/Windows/EditView.cpp
+    src/SofaQtQuickGUI/Windows/AssetView.cpp
     src/SofaQtQuickGUI/Camera.cpp
     src/SofaQtQuickGUI/SofaScene.cpp
     src/SofaQtQuickGUI/SofaComponentList.cpp
@@ -54,10 +55,10 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
     src/SofaQtQuickGUI/LiveFileMonitor.cpp
     src/SofaQtQuickGUI/SofaProject.cpp
-    src/SofaQtQuickGUI/Assets/AssetLoader.cpp
-    src/SofaQtQuickGUI/Assets/MeshLoader.cpp
-    src/SofaQtQuickGUI/Assets/TextureLoader.cpp
-    src/SofaQtQuickGUI/Assets/AssetLoaderFactory.cpp
+    src/SofaQtQuickGUI/Assets/Asset.cpp
+    src/SofaQtQuickGUI/Assets/MeshAsset.cpp
+    src/SofaQtQuickGUI/Assets/TextureAsset.cpp
+    src/SofaQtQuickGUI/Assets/AssetFactory.cpp
     )
 
 set(HEADER_FILES
@@ -69,6 +70,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaViewer.h
     src/SofaQtQuickGUI/Windows/CameraView.h
     src/SofaQtQuickGUI/Windows/EditView.h
+    src/SofaQtQuickGUI/Windows/AssetView.h
     src/SofaQtQuickGUI/Camera.h
     src/SofaQtQuickGUI/SofaScene.h
     src/SofaQtQuickGUI/SofaComponentList.h
@@ -111,10 +113,10 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Helper/QtStl/QtStl.h
     src/SofaQtQuickGUI/LiveFileMonitor.h
     src/SofaQtQuickGUI/SofaProject.h
-    src/SofaQtQuickGUI/Assets/AssetLoader.h
-    src/SofaQtQuickGUI/Assets/MeshLoader.h
-    src/SofaQtQuickGUI/Assets/TextureLoader.h
-    src/SofaQtQuickGUI/Assets/AssetLoaderFactory.h
+    src/SofaQtQuickGUI/Assets/Asset.h
+    src/SofaQtQuickGUI/Assets/MeshAsset.h
+    src/SofaQtQuickGUI/Assets/TextureAsset.h
+    src/SofaQtQuickGUI/Assets/AssetFactory.h
     )
 
 
@@ -185,6 +187,9 @@ add_definitions(${Qt5QuickControls2_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 
+find_package(ASSIMP REQUIRED)
+message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
+include_directories( ${ASSIMP_INCLUDE_DIR})
 
 if (WIN32)
     # Does not work with Visual Studio config generation
@@ -201,9 +206,11 @@ set(HEADER_FILES ${HEADER_FILES}
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES})
-target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine)
+target_link_libraries(${PROJECT_NAME} PUBLIC SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine)
+target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")
+target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${ASSIMP_INCLUDE_DIR}>")
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "-DSOFA_BUILD_SOFAQTQUICKGUI")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")
@@ -215,6 +222,10 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "-DSOFAQTQUICK_DIRECTORY_VIEW=
 if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
+if(WIN32)
+        sofa_copy_libraries(${ASSIMP_DLL})
+endif()
+sofa_install_libraries(${ASSIMP_DLL})
 
 ## Install rules for the library; CMake package configurations files
 sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_ROOT_DIR ${PROJECT_NAME})
