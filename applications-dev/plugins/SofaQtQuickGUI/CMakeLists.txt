@@ -187,9 +187,9 @@ add_definitions(${Qt5QuickControls2_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 
-find_package(ASSIMP REQUIRED)
-message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
-include_directories( ${ASSIMP_INCLUDE_DIR})
+#find_package(ASSIMP REQUIRED)
+#message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
+#include_directories( ${ASSIMP_INCLUDE_DIR})
 
 if (WIN32)
     # Does not work with Visual Studio config generation
@@ -207,7 +207,7 @@ set(HEADER_FILES ${HEADER_FILES}
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES})
 target_link_libraries(${PROJECT_NAME} PUBLIC SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine)
-target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
+#target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")
 target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${ASSIMP_INCLUDE_DIR}>")
@@ -222,10 +222,10 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "-DSOFAQTQUICK_DIRECTORY_VIEW=
 if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
-if(WIN32)
-        sofa_copy_libraries(${ASSIMP_DLL})
-endif()
-sofa_install_libraries(${ASSIMP_DLL})
+#if(WIN32)
+#        sofa_copy_libraries(${ASSIMP_DLL})
+#endif()
+#sofa_install_libraries(${ASSIMP_DLL})
 
 ## Install rules for the library; CMake package configurations files
 sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_ROOT_DIR ${PROJECT_NAME})
