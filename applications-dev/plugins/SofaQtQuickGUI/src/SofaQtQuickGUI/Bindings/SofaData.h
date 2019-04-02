@@ -40,8 +40,12 @@ namespace sofaqtquick::bindings
         public:
             SofaData(BaseData* self);
 
-            QVariant value() const;
-            bool setValue(const QVariant& value);
+            Q_INVOKABLE QVariant value() const;
+            Q_INVOKABLE bool setValue(const QVariant& value);
+
+            Q_INVOKABLE QVariantMap object();
+
+            BaseData* rawData() { return m_self; }
 
         signals:
             void valueChanged(const QVariant& newValue);

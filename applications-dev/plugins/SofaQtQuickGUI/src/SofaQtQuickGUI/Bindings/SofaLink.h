@@ -38,7 +38,32 @@ namespace sofa {
     }
 }
 
+/////////////////////////////////////// DECLARTAION /////////////////////////////////////////
+namespace sofaqtquick::bindings
+{
+    namespace _sofalink_
+    {
+        using sofa::core::objectmodel::BaseLink;
+
+        class SofaLink : public QObject
+        {
+            Q_OBJECT
+
+        public:
+            SofaLink(BaseLink* self);
+
+        private:
+            BaseLink* m_self {nullptr};
+        };
+    }
+
+    /// Import SofaData from its private namespace into the public one.
+    using _sofalink_::SofaLink;
+}
+
+
 ////////////////////////////////////// DECLARATION //////////////////////////////////////////
+//TODO(dmarchal:04/04/2019) The following is deprecated.
 namespace sofa
 {
 

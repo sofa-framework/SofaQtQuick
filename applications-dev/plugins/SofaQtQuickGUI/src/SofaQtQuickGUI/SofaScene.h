@@ -106,7 +106,7 @@ public:
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
-    Q_PROPERTY(sofa::qtquick::SofaComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
+    Q_PROPERTY(sofa::qtquick::SofaBase* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
 
@@ -165,8 +165,8 @@ public:
     bool pyQtSynchronous() const                                {return myPyQtForceSynchronous;}
     void setPyQtForceSynchronous(bool newPyQtSynchronous);
 
-    sofa::qtquick::SofaComponent* selectedComponent() const     {return mySelectedComponent;}
-    void setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedComponent);
+    sofa::qtquick::SofaBase* selectedComponent() const     {return mySelectedComponent;}
+    void setSelectedComponent(sofa::qtquick::SofaBase* newSelectedComponent);
 
     sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
     void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
@@ -190,7 +190,7 @@ signals:
     void defaultAnimateChanged(bool newDefaultAnimate);
     void asynchronousChanged(bool newAsynchronous);
     void pyQtForceSynchronousChanged(bool newPyQtSynchronous);
-    void selectedComponentChanged(sofa::qtquick::SofaComponent* newSelectedComponent);
+    void selectedComponentChanged(sofa::qtquick::SofaBase* newSelectedComponent);
     void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
 public:
@@ -226,6 +226,7 @@ public:
     static bool setDataValue(sofa::core::objectmodel::BaseData* data, const QVariant& value);
     static bool setDataLink(sofa::core::objectmodel::BaseData* data, const QString& link);
 
+    [[deprecated("Replaced by sofaqtuick::helper::getDataObjectProperties")]]
     QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data);
 
     QVariant dataValue(const QString& path) const;
@@ -314,7 +315,7 @@ private:
 
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
-    SofaComponent*                              mySelectedComponent;
+    SofaBase*                                   mySelectedComponent;
 
     QUrlList                                    m_canvas;
 };

@@ -46,6 +46,18 @@ bool SofaData::setValue(const QVariant& value)
     return false;
 }
 
+QVariantMap SofaData::object()
+{
+    const BaseData* data = rawData();
+    if(data)
+    {
+        QVariantMap map = sofaqtquick::helper::getSofaDataProperties(data);
+        map.insert("sofaData", QVariant::fromValue(this));
+        return map;
+    }
+
+    return QVariantMap();
+}
 
 }
 

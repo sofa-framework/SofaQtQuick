@@ -689,7 +689,7 @@ void SofaViewer::drawSelectedComponents(sofa::core::visual::VisualParams* visual
     if( !visualParams || !mySofaScene || !mySofaScene->mySelectedComponent)
         return ;
 
-    sofa::core::objectmodel::Base* selectedBase = mySofaScene->mySelectedComponent->base();
+    auto selectedBase = mySofaScene->selectedComponent()->rawBase();
     if(selectedBase)
     {
         //glDepthFunc(GL_LEQUAL);

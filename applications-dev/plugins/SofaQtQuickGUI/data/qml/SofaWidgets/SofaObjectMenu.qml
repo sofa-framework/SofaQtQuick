@@ -21,9 +21,9 @@ Menu {
             "Delete object"
         }
         onTriggered: {
-            var component = model.getComponentFromIndex(currentIndex)
+            var component = model.getDataFromIndex(currentIndex)
 //            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getComponentFromIndex(currentModelIndex));
+            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
 //            model.updateCurrentIndex(model.computeModelRow(currentRow));
         }
     }

@@ -30,6 +30,34 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/core/objectmodel/BaseLink.h>
 using sofa::core::objectmodel::BaseLink;
 
+#include "../DataHelper.h"
+
+namespace sofaqtquick::bindings::_sofalink_
+{
+
+SofaLink::SofaLink(BaseLink* self)
+{
+    m_self = self;
+}
+/*
+QVariant SofaLink::value() const
+{
+    return sofaqtquick::helper::createQVariantFromData(m_self);
+}
+
+bool SofaLink::setValue(const QVariant& value)
+{
+    if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
+    {
+        emit valueChanged(value);
+        return true;
+    }
+    return false;
+}*/
+
+}
+
+
 namespace sofa
 {
 

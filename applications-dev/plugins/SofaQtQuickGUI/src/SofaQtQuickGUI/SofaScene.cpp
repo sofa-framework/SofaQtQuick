@@ -525,7 +525,7 @@ void SofaScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
     pyQtForceSynchronousChanged(newPyQtForceSynchronous);
 }
 
-void SofaScene::setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedComponent)
+void SofaScene::setSelectedComponent(sofa::qtquick::SofaBase* newSelectedComponent)
 {
     if(newSelectedComponent == mySelectedComponent)
         return;
@@ -534,7 +534,7 @@ void SofaScene::setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedCo
     mySelectedComponent = nullptr;
 
     if(newSelectedComponent)
-        mySelectedComponent = new SofaComponent(*newSelectedComponent);
+        mySelectedComponent = new SofaBase(newSelectedComponent->base());
 
     selectedComponentChanged(mySelectedComponent);
 }
