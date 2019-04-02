@@ -31,9 +31,13 @@ void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, c
     if(context.file)
         file=context.file;
 
-    const char* function="runSofa";
+    const char* function="runSofa2";
     if(context.function)
         function=context.function;
+
+    /// Promote the message to error if they contains "error" in their text message.
+    if( localMsg.contains("Error") )
+        type = QtCriticalMsg;
 
     switch (type) {
     case QtDebugMsg:
