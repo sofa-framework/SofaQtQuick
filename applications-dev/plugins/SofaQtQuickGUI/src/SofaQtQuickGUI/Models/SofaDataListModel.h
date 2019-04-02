@@ -69,7 +69,7 @@ protected:
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     QHash<int,QByteArray> roleNames() const;
 
-    Q_INVOKABLE sofa::qtquick::SofaData* getDataById(int row) const;
+    Q_INVOKABLE sofaqtquick::bindings::SofaData* getDataById(int row) const;
 signals:
     void sofaComponentChanged(SofaComponent* newSofaComponent) const;
 

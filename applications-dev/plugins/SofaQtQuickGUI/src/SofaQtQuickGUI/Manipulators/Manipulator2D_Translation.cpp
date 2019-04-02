@@ -16,12 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
+#include <GL/glew.h>
 
 #include "Manipulator2D_Translation.h"
 #include <SofaQtQuickGUI/SofaViewer.h>
 
 #include <QApplication>
-#include <GL/glew.h>
 #include <QMatrix4x4>
 #include <QDebug>
 

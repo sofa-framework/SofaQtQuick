@@ -817,128 +817,7 @@ QVariant SofaScene::linkValue(const sofa::core::objectmodel::BaseLink* link)
 
 QVariantMap SofaScene::dataObject(const sofa::core::objectmodel::BaseData* data)
 {
-    QVariantMap object;
-
-    if(!data)
-    {
-        object.insert("sofaData", QVariant::fromValue((SofaData*) nullptr));
-        object.insert("name", "Invalid");
-        object.insert("description", "");
-        object.insert("type", "");
-        object.insert("group", "");
-        object.insert("properties", "");
-        object.insert("link", "");
-        object.insert("value", "");
-
-        return object;
-    }
-
-    // TODO:
-    QString type;
-    const AbstractTypeInfo* typeinfo = data->getValueTypeInfo();
-
-    QVariantMap properties;
-
-    if(typeinfo->Text())
-    {
-        type = "string";
-        properties.insert("autoUpdate", true);
-    }
-    else if(typeinfo->Scalar())
-    {
-        type = "number";
-        properties.insert("autoUpdate", true);
-        properties.insert("step", 0.1);
-        properties.insert("decimals", 14);
-    }
-    else if(typeinfo->Integer())
-    {
-        if(std::string::npos != typeinfo->name().find("bool"))
-        {
-            type = "boolean";
-            properties.insert("autoUpdate", true);
-        }
-        else
-        {
-            type = "number";
-            properties.insert("decimals", 0);
-            properties.insert("autoUpdate", true);
-            if(std::string::npos != typeinfo->name().find("unsigned"))
-                properties.insert("min", 0);
-        }
-    }
-    else
-    {
-        type = QString::fromStdString(data->getValueTypeString());
-    }
-
-    if(typeinfo->Container())
-    {
-        type = "array";
-        int nbCols = typeinfo->size();
-
-        properties.insert("cols", nbCols);
-        if(typeinfo->FixedSize())
-            properties.insert("static", true);
-
-        const AbstractTypeInfo* baseTypeinfo = typeinfo->BaseType();
-        if(baseTypeinfo->FixedSize())
-            properties.insert("innerStatic", true);
-    }
-
-    /// DataFilename are use to stores path to files.
-    const DataFileName* aDataFilename = dynamic_cast<const DataFileName*>(data) ;
-
-    /// OptionsGroup are used to encode a finite set of alternatives.
-    const Data<OptionsGroup>* anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
-
-    /// OptionsGroup are used to encode a finite set of alternatives.
-    const Data<RGBAColor>* aRGBAColor =  dynamic_cast<const Data<RGBAColor>*>(data) ;
-
-    if(aDataFilename)
-    {
-        type = "FileName" ;
-        properties.insert("url", QString::fromStdString(aDataFilename->getFullPath())) ;
-
-        const std::string& directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
-        properties.insert("folderurl",  QString::fromStdString(directory)) ;
-    }
-    else if(anOptionGroup)
-    {
-        type = "OptionsGroup";
-        QStringList choices;
-
-        const OptionsGroup& group = anOptionGroup->getValue();
-        for(unsigned int i=0;i<group.size();++i)
-        {
-            choices.append(QString::fromStdString(group[i]));
-        }
-        properties.insert("choices", choices);
-        properties.insert("autoUpdate", true);
-
-    }else if(aRGBAColor)
-    {
-        type = "RGBAColor";
-        properties.insert("autoUpdate", true);
-    }
-
-    QString widget(data->getWidget());
-    if(!widget.isEmpty())
-        type = widget;
-
-    properties.insert("readOnly", data->isReadOnly());
-
-    SofaData* sofaData = new SofaData(new SofaComponent(this, data->getOwner()), data);
-    object.insert("sofaData", QVariant::fromValue(sofaData));
-    object.insert("name", data->getName().c_str());
-    object.insert("description", data->getHelp());
-    object.insert("type", type);
-    object.insert("group", data->getGroup());
-    object.insert("properties", properties);
-    object.insert("link", QString::fromStdString(data->getLinkPath()));
-    object.insert("value", dataValue(data));
-
-    return object;
+    dmsg_deprecated("SofaScene::dataObject") << "is a deprecated method. Please use the one in helper";
 }
 
 QVariant SofaScene::dataValue(const BaseData* data)
@@ -1219,7 +1098,7 @@ bool SofaScene::setDataLink(BaseData* data, const QString& link)
         return false;
 
     if(link.isEmpty())
-        data->setParent(0);
+        data->setParent(nullptr);
     else
         data->setParent(link.toStdString());
 
@@ -1314,7 +1193,7 @@ SofaData* SofaScene::data(const QString& path)
     if(!base)
         return nullptr;
 
-    return new SofaData(this, base, data);
+    return new SofaData(data);
 }
 
 SofaComponent* SofaScene::node(const QString& path)

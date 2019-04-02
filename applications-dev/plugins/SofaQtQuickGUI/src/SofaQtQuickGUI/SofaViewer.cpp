@@ -37,6 +37,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QPainter>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
+#include <QSGSimpleTextureNode>
 #include <QSGTransformNode>
 #include <QSGSimpleTextureNode>
 #include <QVector>

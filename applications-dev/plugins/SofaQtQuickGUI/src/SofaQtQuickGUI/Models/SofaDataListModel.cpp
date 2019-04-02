@@ -278,7 +278,7 @@ SofaData* SofaDataListModel::getDataById(int row) const
 
     const QVariant& data = myItems.at(row).data;
     if(QVariant::String != data.type())
-        return new SofaData(mySofaComponent, (sofa::core::objectmodel::BaseData*) data.value<void*>());
+        return new SofaData(static_cast<sofa::core::objectmodel::BaseData*>(data.value<void*>()));
 
     return nullptr;
 }

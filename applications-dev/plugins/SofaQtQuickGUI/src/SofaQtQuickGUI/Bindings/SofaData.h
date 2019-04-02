@@ -23,6 +23,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <QObject>
+#include <QVariant>
+#include <QVariantMap>
+
 #include <SofaQtQuickGUI/config.h>
 #include <sofa/core/objectmodel/BaseData.h>
 
@@ -42,10 +45,12 @@ namespace sofaqtquick::bindings
 
             Q_INVOKABLE QVariant value() const;
             Q_INVOKABLE bool setValue(const QVariant& value);
+            Q_INVOKABLE bool setLink(const QString& path);
 
             Q_INVOKABLE QVariantMap object();
 
             BaseData* rawData() { return m_self; }
+            const BaseData* rawData() const { return m_self; }
 
         signals:
             void valueChanged(const QVariant& newValue);
@@ -59,11 +64,6 @@ namespace sofaqtquick::bindings
     using _sofadata_::SofaData;
 }
 
-#include <sofa/simulation/Simulation.h>
-#include <QVariantMap>
-
-class QTimer;
-class QOpenGLShaderProgram;
 
 namespace sofa
 {
@@ -71,35 +71,7 @@ namespace sofa
 namespace qtquick
 {
 
-class SofaScene;
-class SofaComponent;
-
-/// QtQuick wrapper for a sofa data (i.e baseData), allowing us to share a component data in a QML context
-class SOFA_SOFAQTQUICKGUI_API SofaData : public QObject
-{
-    Q_OBJECT
-
-public:
-    SofaData(const SofaComponent* sofaComponent, const sofa::core::objectmodel::BaseData* data);
-    SofaData(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data);
-    SofaData(const SofaData& sceneData);
-
-    Q_INVOKABLE sofa::qtquick::SofaComponent* sofaComponent() const;
-
-    Q_INVOKABLE QVariantMap object();
-
-    Q_INVOKABLE QVariant value() const;
-    Q_INVOKABLE bool setValue(const QVariant& value);
-    Q_INVOKABLE bool setLink(const QString& path);
-
-    sofa::core::objectmodel::BaseData* data();
-    const sofa::core::objectmodel::BaseData* data() const;
-
-private:
-    SofaComponent*                              mySofaComponent;
-    const sofa::core::objectmodel::BaseData*    myData;
-
-};
+using sofaqtquick::bindings::SofaData;
 
 }
 

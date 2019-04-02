@@ -158,6 +158,19 @@ QVariant createQVariantFromData(const BaseData* data)
     return value;
 }
 
+bool setDataLink(BaseData* data, const QString& link)
+{
+    if(!data)
+        return false;
+
+    if(link.isEmpty())
+        data->setParent(0);
+    else
+        data->setParent(link.toStdString());
+
+    return data->getParent();
+}
+
 bool setDataValueFromQVariant(BaseData* data, const QVariant& value)
 {
     if(!data)

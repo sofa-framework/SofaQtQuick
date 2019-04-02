@@ -25,6 +25,9 @@ using sofa::helper::logging::Message;
 
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
 
+#include <sofa/core/objectmodel/BaseNode.h>
+using sofa::core::objectmodel::BaseNode;
+
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 using sofaqtquick::bindings::SofaData;
 
@@ -155,7 +158,7 @@ void SofaBase::clearWarning() const
 
 bool SofaBase::isNode() const
 {
-    return dynamic_cast<const sofa::simulation::Node*>(rawBase());
+    return rawBase()->toBaseNode() != nullptr;
 }
 
 
