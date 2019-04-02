@@ -61,6 +61,12 @@ void QmlUILoader::load(const QUrl& filename)
     }
 
     QQuickItem *childItem = qobject_cast<QQuickItem*>(component.create());
+    if(!childItem)
+    {
+        msg_error() << "Unable to instanciate component from: " << filename.toString() ;
+        return;
+    }
+
     childItem->setParentItem(this);
     m_loadedItems.push_back(childItem);
 }
