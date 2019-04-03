@@ -37,6 +37,9 @@ AssetView {
         recreateCamera()
     }
 
+    sofaScene: SofaScene {
+    }
+
     clip: true
     mirroredHorizontally: false
     mirroredVertically: false

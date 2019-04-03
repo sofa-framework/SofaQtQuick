@@ -158,6 +158,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent),
     connect(this, &SofaScene::animateChanged, myStepTimer, [&](bool newAnimate) {newAnimate ? myStepTimer->start() : myStepTimer->stop();});
     connect(this, &SofaScene::statusChanged, this, &SofaScene::handleStatusChange);
     connect(myStepTimer, &QTimer::timeout, this, &SofaScene::step);
+    connect(this, &SofaScene::cppGraphChanged, this, &SofaScene::loadCppGraph);
 }
 
 SofaScene::~SofaScene()
@@ -247,6 +248,36 @@ private:
     bool&   myFinished;
 
 };
+
+void SofaScene::loadCppGraph()
+{
+    unloadAllCanvas();
+    setPathQML("");
+    setSourceQML(QUrl());
+
+    // return now if a scene is already loading
+    if(Status::Loading == myStatus)
+        return;
+
+    // reset properties
+    setAnimate(false);
+    setSelectedComponent(nullptr);
+    setSelectedManipulator(nullptr);
+    myManipulators.clear();
+
+    if(mySofaRootNode)
+    {
+        setStatus(Status::Unloading);
+        aboutToUnload();
+        mySofaSimulation->unload(mySofaRootNode);
+    }
+
+    Node* n = dynamic_cast<Node*>(myCppGraph->base());
+    if (n != nullptr)
+        mySofaRootNode = sofa::simulation::Node::SPtr(n);
+
+    emit rootNodeChanged();
+}
 
 void SofaScene::open()
 {
@@ -441,6 +472,15 @@ void SofaScene::setSource(const QUrl& newSource)
     mySource = newSource;
 
     sourceChanged(newSource);
+}
+
+void SofaScene::setCppSceneGraph(SofaComponent* newCppGraph)
+{
+    if (newCppGraph->base() == myCppGraph->base())
+        return;
+    myCppGraph = newCppGraph;
+
+    cppGraphChanged(newCppGraph);
 }
 
 void SofaScene::setSourceQML(const QUrl& newSourceQML)

@@ -141,6 +141,9 @@ public:
     void setSource(const QUrl& newSource);
     const QUrl& source() const                                  {return mySource;}
 
+    /// Sets the rootNode of the scene, constructed from C++
+    void setCppSceneGraph(SofaComponent* newSource);
+
     const QUrl& sourceQML() const                               {return mySourceQML;}
     void setSourceQML(const QUrl& newSourceQML);
 
@@ -182,6 +185,7 @@ signals:
     void rootNodeChanged();
     void headerChanged(const QString& newHeader);
     void sourceChanged(const QUrl& newSource);
+    void cppGraphChanged(SofaComponent* newCppGraph);
     void sourceQMLChanged(const QUrl& newSourceQML);
     void pathChanged(const QString& newPath);
     void pathQMLChanged(const QString& newPathQML);
@@ -275,6 +279,7 @@ signals:
 
 private slots:
     void open();
+    void loadCppGraph();
     void handleStatusChange(Status newStatus);
     void unloadAllCanvas();
 
@@ -315,6 +320,8 @@ private:
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
     SofaComponent*                              mySelectedComponent;
+
+    SofaComponent*                              myCppGraph;
 
     QUrlList                                    m_canvas;
 };
