@@ -110,7 +110,7 @@ void SofaDisplayFlagsTreeModel::download()
     myFlags |= displayFlagsAccessor->getShowBoundingCollisionModels() ? ShowBoundingCollisionsModels : 0;
     myFlags |= displayFlagsAccessor->getShowMappings() ? ShowMappings : 0;
     myFlags |= displayFlagsAccessor->getShowMechanicalMappings() ? ShowMechanicalMappings : 0;
-    myFlags |= displayFlagsAccessor->getShowAdvancedRendering() ? ShowAdvancedRendering : 0;
+    //myFlags |= displayFlagsAccessor->getShowAdvancedRendering() ? ShowAdvancedRendering : 0;
     myFlags |= displayFlagsAccessor->getShowWireFrame() ? ShowWireframe : 0;
     myFlags |= displayFlagsAccessor->getShowNormals() ? ShowNormals : 0;
 
@@ -140,7 +140,7 @@ void SofaDisplayFlagsTreeModel::upload()
     displayFlagsAccessor->setShowMappings(myFlags & ShowMappings);
     displayFlagsAccessor->setShowMechanicalMappings(myFlags & ShowMechanicalMappings);
 
-    displayFlagsAccessor->setShowAdvancedRendering(myFlags & ShowAdvancedRendering);
+    //displayFlagsAccessor->setShowAdvancedRendering(myFlags & ShowAdvancedRendering);
     displayFlagsAccessor->setShowWireFrame(myFlags & ShowWireframe);
     displayFlagsAccessor->setShowNormals(myFlags & ShowNormals);
 }

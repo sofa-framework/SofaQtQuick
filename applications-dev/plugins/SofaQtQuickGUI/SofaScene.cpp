@@ -75,6 +75,7 @@ using sofa::helper::system::FileSystem ;
 #include <QFile>
 #include <QTimer>
 #include <QString>
+#include <QStringList>
 #include <QUrl>
 #include <QThread>
 #include <QSequentialIterable>
@@ -119,6 +120,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent), MutationListener(),
     myVisualDirty(false),
     myDt(0.04),
     myAnimate(false),
+    myExtraParams(),
     myDefaultAnimate(false),
     myAsynchronous(true),
     myPyQtForceSynchronous(true),
@@ -284,7 +286,7 @@ bool LoaderProcess(SofaScene* sofaScene, QOffscreenSurface* offscreenSurface)
         visualParams->displayFlags().setShowVisualModels(true);
     }
 
-    sofaScene->sofaRootNode() = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData());
+    sofaScene->sofaRootNode() = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData(), &(sofaScene->extraParams()));
     if( sofaScene->sofaRootNode() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
@@ -607,6 +609,11 @@ void SofaScene::setPathQML(const QString& newPathQML)
     myPathQML = newPathQML;
 
     pathQMLChanged(newPathQML);
+}
+
+void SofaScene::setExtraParams(const std::vector<std::string> &newExtraParams)
+{
+    myExtraParams = newExtraParams;
 }
 
 void SofaScene::setDt(double newDt)
