@@ -12,7 +12,8 @@ const Asset::LoaderMap Asset::loaders = Asset::LoaderMap();
 BaseAssetLoader::~BaseAssetLoader() {}
 
 Asset::Asset(std::string path, std::string extension)
-    : m_path(path), m_extension(extension)
+    : DAGNode("NewAsset", nullptr),
+      m_path(path), m_extension(extension)
 {
 }
 Asset::~Asset() {}

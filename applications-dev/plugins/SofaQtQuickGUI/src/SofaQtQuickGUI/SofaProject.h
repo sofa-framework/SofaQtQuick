@@ -39,7 +39,7 @@ public:
     Q_INVOKABLE void scanProject(const QUrl& url);
     Q_INVOKABLE const QString getFileCount(const QUrl& url);
 
-    Q_INVOKABLE SofaComponent* get(const QUrl& url);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* get(const QUrl& url);
 
 
 private:
@@ -47,8 +47,9 @@ private:
     AssetFactory m_assetFactory; /// The factory to create SofaComponents & query meta data
 //    QProgressDialog* m_progress;
 
-    using assetMapPair = std::pair<QString, std::shared_ptr<Asset> >;
-    std::map<QString,std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
+    using assetMapPair = std::pair<QString, Asset::SPtr >;
+    using assetMapIterator = std::map<QString, Asset::SPtr >::iterator;
+    std::map<QString, Asset::SPtr > m_assets; /// project asset's URLs with their associated loaders
 
     void _scanProject(const QDir& folder);
 };

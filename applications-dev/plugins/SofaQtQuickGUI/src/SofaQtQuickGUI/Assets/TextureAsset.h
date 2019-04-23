@@ -10,7 +10,7 @@ namespace qtquick
 template <class T>
 struct TextureAssetLoader : public TBaseAssetLoader<T>
 {
-    BaseObject* New() override { return sofa::core::objectmodel::New<T>().get(); }
+    BaseObject::SPtr New() override { return BaseObject::SPtr(sofa::core::objectmodel::New<T>().get()); }
 };
 
 class TextureAsset : public Asset

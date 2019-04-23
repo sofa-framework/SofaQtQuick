@@ -17,7 +17,6 @@ namespace qtquick
 template <class T>
 struct MeshAssetLoader : public TBaseAssetLoader<T>
 {
-    BaseObject* New() override { return sofa::core::objectmodel::New<T>().get(); }
 };
 
 
@@ -36,8 +35,8 @@ class MeshAsset : public Asset
     static const QString typeString;
     static const LoaderMap loaders;
 
+    DAGNode::SPtr m_node;
     static LoaderMap createLoaders();
-
 };
 
 } // namespace qtquick

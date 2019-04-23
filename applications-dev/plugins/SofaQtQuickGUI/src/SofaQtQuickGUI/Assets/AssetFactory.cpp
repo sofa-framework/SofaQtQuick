@@ -45,7 +45,7 @@ QString AssetFactory::getTypeString(QString extension) const
     return loader->second->getTypeString();
 }
 
-std::shared_ptr<Asset>
+Asset::SPtr
 AssetFactory::createInstance(const QString& path,
                              const QString& extension) const
 {

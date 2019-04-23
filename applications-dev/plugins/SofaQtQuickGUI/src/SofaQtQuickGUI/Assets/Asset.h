@@ -26,10 +26,12 @@ class Asset : public sofa::simulation::graph::DAGNode
 //    Q_OBJECT
 
   public:
+    SOFA_CLASS(Asset, simulation::graph::DAGNode);
+
     typedef std::map<std::string, BaseAssetLoader *> LoaderMap;
 
     Asset(std::string path, std::string extension);
-    virtual ~Asset();
+    virtual ~Asset() override;
     virtual SofaComponent* getPreviewNode() = 0;
 
 //    Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
@@ -51,7 +53,7 @@ class Asset : public sofa::simulation::graph::DAGNode
 struct BaseAssetLoader
 {
     virtual ~BaseAssetLoader();
-    virtual BaseObject *New() = 0;
+    virtual BaseObject::SPtr New() = 0;
     virtual const std::string &getClassName() = 0;
 };
 
@@ -59,6 +61,7 @@ template <class T> struct TBaseAssetLoader : public BaseAssetLoader
 {
     virtual ~TBaseAssetLoader();
     virtual const std::string &getClassName() override;
+    virtual BaseObject::SPtr New() override;
 };
 
 template <class T> TBaseAssetLoader<T>::~TBaseAssetLoader() {}
@@ -66,6 +69,10 @@ template <class T> TBaseAssetLoader<T>::~TBaseAssetLoader() {}
 template <class T> const std::string &TBaseAssetLoader<T>::getClassName()
 {
     return T::GetClass()->className;
+}
+template <class T> BaseObject::SPtr TBaseAssetLoader<T>::New()
+{
+    return sofa::core::objectmodel::New<T>();
 }
 
 } // namespace qtquick

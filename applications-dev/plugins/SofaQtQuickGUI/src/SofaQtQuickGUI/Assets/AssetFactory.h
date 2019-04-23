@@ -19,7 +19,7 @@ class SOFA_SOFAQTQUICKGUI_API BaseAssetCreator
 {
   public:
     virtual ~BaseAssetCreator();
-    virtual std::shared_ptr<Asset> createInstance(std::string path,
+    virtual Asset::SPtr createInstance(std::string path,
                                                   std::string extension) = 0;
     virtual const QUrl& getIcon() = 0;
     virtual const QString& getTypeString() = 0;
@@ -36,7 +36,7 @@ class SOFA_SOFAQTQUICKGUI_API AssetCreator : public BaseAssetCreator
   public:
     AssetCreator();
     virtual ~AssetCreator();
-    virtual std::shared_ptr<Asset> createInstance(std::string path,
+    virtual Asset::SPtr createInstance(std::string path,
                                                   std::string extension);
     virtual const QUrl& getIcon();
     virtual const QString& getTypeString();
@@ -57,7 +57,7 @@ class SOFA_SOFAQTQUICKGUI_API AssetFactory : public QObject
 
     Q_INVOKABLE QUrl getIcon(QString extension) const;
     Q_INVOKABLE QString getTypeString(QString extension) const;
-    std::shared_ptr<Asset> createInstance(const QString& path,
+    Asset::SPtr createInstance(const QString& path,
                                           const QString& extension) const;
 
   private:
@@ -69,10 +69,10 @@ template <class T> AssetCreator<T>::AssetCreator() {}
 template <class T> AssetCreator<T>::~AssetCreator() {}
 
 template <class T>
-std::shared_ptr<Asset> AssetCreator<T>::createInstance(std::string path,
+Asset::SPtr AssetCreator<T>::createInstance(std::string path,
                                                        std::string extension)
 {
-    return std::shared_ptr<Asset>(new T(path, extension));
+    return sofa::core::objectmodel::New<T>(path, extension);
 }
 
 template <class T> const QUrl& AssetCreator<T>::getIcon()

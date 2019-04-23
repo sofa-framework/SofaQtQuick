@@ -69,9 +69,27 @@ const QString SofaProject::getFileCount(const QUrl& url)
 }
 
 
-SofaComponent* SofaProject::get(const QUrl& url)
+sofa::qtquick::SofaComponent* SofaProject::get(const QUrl& url)
 {
-    return m_assets.find(url.toString())->second->getPreviewNode();
+    assetMapIterator it = m_assets.find(url.toLocalFile());
+    if (it == m_assets.end())
+    {
+        std::cout << ("No such asset in project! rescan required") << std::endl;
+        return nullptr;
+    }
+    if (!it->second.get())
+    {
+        std::cout << ("Could not load that asset properly... sorry!") << std::endl;
+        return nullptr;
+    }
+    SofaComponent* component = it->second->getPreviewNode();
+    if (component == nullptr)
+    {
+        std::cout << ("Could not load that asset's preview... sorry!") << std::endl;
+        return nullptr;
+    }
+
+    return component;
 }
 
 }  // namespace qtquick
