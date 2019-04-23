@@ -25,12 +25,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofaqtquick::bindings::_sofaobject_
 {
 
-SofaBaseObject::SofaBaseObject(QObject *parent)
-{
-    SOFA_UNUSED(parent);
-    m_self = sofa::core::objectmodel::New<BaseObject>("unnamed");
-}
-
 SofaBaseObject::SofaBaseObject(BaseObject::SPtr self, QObject *parent)
 {
     SOFA_UNUSED(parent);

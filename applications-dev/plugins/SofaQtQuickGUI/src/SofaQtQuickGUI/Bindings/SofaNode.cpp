@@ -60,7 +60,7 @@ SofaNode::~SofaNode(){}
 
 SofaNode* SofaNode::createChild(QString name)
 {
-    return wrap(sofa::core::objectmodel::New<DAGNode*>(name, self()));
+    return wrap(sofa::core::objectmodel::New<DAGNode>(name.toStdString(), self()));
 }
 
 SofaNode* SofaNode::getChild(QString name)

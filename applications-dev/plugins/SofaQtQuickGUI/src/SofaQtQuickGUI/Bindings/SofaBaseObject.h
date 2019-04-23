@@ -13,7 +13,6 @@ using sofaqtquick::bindings::SofaBase;
 class SOFA_SOFAQTQUICKGUI_API SofaBaseObject: public SofaBase
 {
 public:
-    SofaBaseObject(QObject *parent = nullptr);
     SofaBaseObject(BaseObject::SPtr self, QObject *parent = nullptr);
     ~SofaBaseObject() override;
 
