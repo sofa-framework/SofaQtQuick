@@ -200,7 +200,6 @@ Item {
                             flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                             visible: true
                             color: "#787878"
-                            onClosing: destroy();
 
                             Loader {
                                 id: loader
@@ -281,7 +280,7 @@ Item {
                 ///TODO(dmarchal 28/01/2019) I don't understand what is this for.
                 var contentProperties = root.properties;
                 if(!contentProperties)
-                    contentProperties = {};
+                    contentProperties = "";
 
                 contentProperties["anchors.fill"] = loaderLocation;
                 var content = contentComponent.createObject(loaderLocation, contentProperties);

@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
 import AssetFactory 1.0
 import SofaColorScheme 1.0
-import AssetView 1.0
+//import AssetView 1.0
 
 Item {
 
@@ -242,17 +242,33 @@ Item {
                                     folderView.currentIndex = index;
                                 }
                             }
+                            onDoubleClicked: {
+                                if (folderModel.isFolder(index)) {
+                                    folderModel.folder = folderModel.get(index, "fileURL")
+                                } else {
+                                    var rootNode = sofaApplication.sofaScene.root()
+
+                                    console.error("Retrieved rootNode")
+                                    var component = self.project.get(folderModel.get(index, "fileURL"))
+                                    console.error("Retrieved Preview Node:" + component + " with name " + component.getName())
+
+                                    sofaApplication.sofaScene.addExistingNodeTo(rootNode, component)
+                                    console.error("Added to rootNode")
+                                }
+
+                            }
+
                             onClicked: {
-                                if (Qt.LeftButton === mouse.button)
-                                {
-                                    if (folderModel.isFolder(index))
-                                    {
-                                        folderModel.folder = folderModel.get(index, "fileURL")
-                                    }
-                                }
-                                else
-                                {
-                                }
+//                                if (Qt.LeftButton === mouse.button)
+//                                {
+//                                    if (folderModel.isFolder(index))
+//                                    {
+//                                        folderModel.folder = folderModel.get(index, "fileURL")
+//                                    }
+//                                }
+//                                else
+//                                {
+//                                }
                             }
                         }
                     }
@@ -266,21 +282,21 @@ Item {
         }
 
 
-        GroupBox {
-            id: previewGroupID
-            Layout.fillWidth: true
-            implicitHeight: contentHeight ? contentHeight : 200
-            height: implicitHeight
+//        GroupBox {
+//            id: previewGroupID
+//            Layout.fillWidth: true
+//            implicitHeight: contentHeight ? contentHeight : 200
+//            height: implicitHeight
 
-            title: "Preview"
+//            title: "Preview"
 
-            AssetView {
-                id: assetView
-                anchors.fill: parent
-                drawFrame: false
-            }
+//            AssetView {
+//                id: assetView
+//                anchors.fill: parent
+//                drawFrame: false
+//            }
 
-        }
+//        }
     }
 
 

@@ -105,6 +105,5 @@
         <file>QmlGTestCase/qmldir</file>
         <file>QmlGTestCase/QmlGTestCase.qml</file>
         <file>SofaViews/ProjectView.qml</file>
-        <file>SofaViews/AssetView.qml</file>
     </qresource>
 </RCC>
