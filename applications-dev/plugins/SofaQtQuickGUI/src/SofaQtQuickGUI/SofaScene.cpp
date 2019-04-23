@@ -62,6 +62,14 @@ using sofa::core::objectmodel::MouseEvent ;
 #include <sofa/simulation/MechanicalVisitor.h>
 #include <sofa/simulation/DeleteVisitor.h>
 
+#include <sofa/simulation/DefaultAnimationLoop.h>
+#include <sofa/simulation/DefaultVisualManagerLoop.h>
+#include <SofaBaseVisual/InteractiveCamera.h>
+using sofa::simulation::DefaultAnimationLoop;
+using sofa::simulation::DefaultVisualManagerLoop;
+using sofa::component::visualmodel::InteractiveCamera;
+using sofa::core::objectmodel::BaseObject;
+
 ////////////////// Include the checkers to validate the scene and warn users ///////////////////////
 #include <SofaGraphComponent/SceneCheckerVisitor.h>
 using sofa::simulation::scenechecking::SceneCheckerVisitor;
@@ -803,7 +811,21 @@ void SofaScene::addExistingNodeTo(SofaComponent* sofaComponent, SofaComponent* s
         }else{
             node->addChild(sofaNode->base()->toBaseNode());
         }
-        sofa::simulation::getSimulation()->init(node.get());
+        Node* newNode = static_cast<Node*>(sofaNode->base()->toBaseNode());
+
+        /// @bmarques TODO: move to a dedicated method
+        /// Removing prefab's components used for preview before adding it to the simulation
+        DefaultAnimationLoop* dal;
+        DefaultVisualManagerLoop* dvml;
+        InteractiveCamera* ic;
+        BaseObject::SPtr aloop(newNode->getObject(BaseObject::shortName(dal)));
+        BaseObject::SPtr vloop(newNode->getObject(BaseObject::shortName(dvml)));
+        BaseObject::SPtr icam(newNode->getObject(BaseObject::shortName(ic)));
+        newNode->removeObject(aloop);
+        newNode->removeObject(vloop);
+        newNode->removeObject(icam);
+
+        sofa::simulation::getSimulation()->init(static_cast<Node*>(node->getContext()->getRootContext()->toBaseNode()));
     }
 }
 

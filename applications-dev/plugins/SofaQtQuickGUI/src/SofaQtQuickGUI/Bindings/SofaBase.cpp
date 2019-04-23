@@ -63,6 +63,15 @@ QObject* SofaBase::getData(const QString& name) const
     return new SofaData(data);
 }
 
+QStringList SofaBase::getDataFields() const
+{
+    const sofa::helper::vector<BaseData*>& datafields = m_self->getDataFields();
+    QStringList list;
+    for (auto& field : datafields)
+        list.append(QString(field->getName().c_str()));
+    return list;
+}
+
 bool SofaBase::hasLocations() const
 {
     const Base* base = m_self.get();

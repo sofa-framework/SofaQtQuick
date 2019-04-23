@@ -27,6 +27,23 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofaqtquick::bindings::_sofanode_
 {
 
+SofaNode* wrap(DAGNode::SPtr n)
+{
+    return new SofaNode(n);
+}
+SofaNode* wrap(DAGNode* n)
+{
+    return wrap(DAGNode::SPtr(n));
+}
+SofaNode* wrap(sofa::simulation::Node* n)
+{
+    return wrap(dynamic_cast<DAGNode*>(n));
+}
+SofaNode* wrap(sofa::core::objectmodel::BaseNode* n)
+{
+    return wrap(static_cast<DAGNode*>(n));
+}
+
 SofaNode::SofaNode(QObject *parent)
 {
     SOFA_UNUSED(parent);
@@ -41,5 +58,34 @@ SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent)
 
 SofaNode::~SofaNode(){}
 
+SofaNode* SofaNode::createChild(QString name)
+{
+    return wrap(sofa::core::objectmodel::New<DAGNode*>(name, self()));
+}
+
+SofaNode* SofaNode::getChild(QString name)
+{
+    return wrap(self()->get<DAGNode>(name.toStdString()));
+}
+
+SofaNode* SofaNode::getNodeInGraph(QString name)
+{
+    return wrap(self()->getNodeInGraph(name.toStdString()));
+}
+
+SofaNode* SofaNode::getRoot()
+{
+    return wrap(self()->getRoot());
+}
+
+void SofaNode::addChild(SofaNode* child)
+{
+    self()->addChild(child->selfptr());
+}
+
+void SofaNode::addObject(SofaBaseObject* obj)
+{
+    self()->addObject(obj->selfptr());
+}
 
 }

@@ -4,6 +4,8 @@
 #include <SofaBaseVisual/InteractiveCamera.h>
 #include <sofa/helper/cast.h>
 #include <sofa/simulation/InitVisitor.h>
+#include <sofa/simulation/DefaultAnimationLoop.h>
+#include <sofa/simulation/DefaultVisualManagerLoop.h>
 
 using sofa::component::visualmodel::OglModel;
 using sofa::core::loader::MeshLoader;
@@ -46,33 +48,34 @@ SofaComponent* MeshAsset::getPreviewNode()
 
     m_node = sofa::core::objectmodel::New<DAGNode>("3DMesh");
     std::cout << m_node->getName() << std::endl;
+
+    sofa::simulation::DefaultAnimationLoop::SPtr aloop = sofa::core::objectmodel::New<sofa::simulation::DefaultAnimationLoop>(m_node.get());
+    aloop->setName(sofa::core::objectmodel::BaseObject::shortName(aloop.get()));
+    m_node->addObject(aloop);
+
+    sofa::simulation::DefaultVisualManagerLoop::SPtr vloop = sofa::core::objectmodel::New<sofa::simulation::DefaultVisualManagerLoop>(m_node.get());
+    vloop->setName(sofa::core::objectmodel::BaseObject::shortName(vloop.get()));
+    m_node->addObject(vloop);
+
+    InteractiveCamera::SPtr camera = sofa::core::objectmodel::New<InteractiveCamera>();
+    camera->setName(sofa::core::objectmodel::BaseObject::shortName(camera.get()));
+    m_node->addObject(camera);
+
     BaseObject::SPtr b = loaders.find(m_extension)->second->New();
     MeshLoader::SPtr loader(dynamic_cast<MeshLoader*>(b.get()));
     loader->setFilename(m_path);
     loader->setName("loader");
     loader->name.cleanDirty();
     std::cout << loader->getName() << std::endl;
+    m_node->addObject(loader);
 
     OglModel::SPtr vmodel = sofa::core::objectmodel::New<OglModel>();
     vmodel->setSrc("@loader", loader.get());
     vmodel->setName("vmodel");
     vmodel->name.cleanDirty();
     std::cout << vmodel->getName() << std::endl;
-
-
-//    InteractiveCamera::SPtr camera = sofa::core::objectmodel::New<InteractiveCamera>();
-//    camera->setName("camera");
-
-//    this->addObject(camera);
-    m_node->addObject(loader);
     m_node->addObject(vmodel);
 
-    loader->init();
-    loader->reinit();
-    loader->bwdInit();
-    vmodel->init();
-    vmodel->reinit();
-    vmodel->bwdInit();
     return new SofaComponent(nullptr, m_node.get());
 }
 

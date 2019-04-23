@@ -28,6 +28,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaSimulationGraph/DAGNode.h>
 #include "SofaBase.h"
+#include "SofaBaseObject.h"
 
 namespace sofaqtquick
 {
@@ -39,9 +40,10 @@ namespace _sofanode_
 {
 
 using sofaqtquick::bindings::SofaBase;
+using sofaqtquick::bindings::_sofaobject_::SofaBaseObject;
 using sofa::simulation::graph::DAGNode;
 
-/// QtQuick wrapper to sofa::Base
+/// QtQuick wrapper to sofa::Node
 class SOFA_SOFAQTQUICKGUI_API SofaNode : public SofaBase
 {
 public:
@@ -50,6 +52,17 @@ public:
     ~SofaNode() override;
 
     DAGNode* self(){ return dynamic_cast<DAGNode*>(m_self.get()); } ///< Hold are reference to the real sofa object.
+    DAGNode::SPtr selfptr(){ return DAGNode::SPtr(dynamic_cast<DAGNode*>(m_self.get())); } ///< Hold are reference to the real sofa object.
+
+    SofaNode* createChild(QString name);
+
+    SofaNode* getChild(QString name);
+    SofaNode* getNodeInGraph(QString name);
+    SofaNode* getRoot();
+
+
+    void addChild(SofaNode* child);
+    void addObject(SofaBaseObject* obj);
 };
 
 } /// namespace _sofanode_

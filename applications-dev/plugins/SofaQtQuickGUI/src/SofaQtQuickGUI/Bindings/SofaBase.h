@@ -53,6 +53,7 @@ public:
 
     /// get a data from its name
     Q_INVOKABLE QObject* getData(const QString& name) const;
+    Q_INVOKABLE QStringList getDataFields() const;
 
     /// The following three are used to get extra information about where
     /// the component is implemented (the source location)
