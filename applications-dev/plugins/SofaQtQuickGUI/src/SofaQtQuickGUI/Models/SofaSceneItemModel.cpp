@@ -386,22 +386,20 @@ void SofaSceneItemModel::onBeginAddChild(Node* target, Node* child)
     SOFA_UNUSED(child);
     QModelIndex parentIndex = index(target);
     int i = int(rrowCount(target));
-    if (target != nullptr)
-        i = int(target->object.size());
 
-    msg_info("b") << "=========== Adding child node " << child->getName() << " to: " << ((target) ? target->getName() : "NULL") << " (" << parentIndex.row() << ")";
-    msg_warning("       ") << target->getName() << " row is: " << parentIndex.row();
-    msg_warning("       ") << child->getName() <<  " location in parent is: " << i;
-    msg_warning("       ") << "nb of additional rows to add: " << int(rrowCount_recurse(child));
+//    msg_info("b") << "=========== Adding child node " << child->getName() << " to: " << ((target) ? target->getName() : "NULL") << " (" << parentIndex.row() << ")";
+//    msg_warning("       ") << target->getName() << " row is: " << parentIndex.row();
+//    msg_warning("       ") << child->getName() <<  " location in parent is: " << i;
+//    msg_warning("       ") << "nb of additional rows to add: " << int(rrowCount_recurse(child));
 
-    qDebug() << "parent index: " << parentIndex;
+//    qDebug() << "parent index: " << parentIndex;
 
-    if (child->child.size())
-    {
-        msg_info("Pointer Values: ") << "New node: " << child << " " << child->getName() << "\nParent: " << target << " " << target->getName()  << "\nRoot: " << m_root.get() << " " << m_root->getName() ;
-    }
+//    if (child->child.size())
+//    {
+//        msg_info("Pointer Values: ") << "New node: " << child << " " << child->getName() << "\nParent: " << target << " " << target->getName()  << "\nRoot: " << m_root.get() << " " << m_root->getName() ;
+//    }
     // only adding the node. subnodes & objects are added after (onAddChildEnd)
-    std::cout << "adding 1 row for " << child->getName() << " in " << target->getName() << std::endl;
+//    std::cout << "adding 1 row for " << child->getName() << " in " << target->getName() << std::endl;
     beginInsertRows(parentIndex, i, i);
 }
 
@@ -409,14 +407,14 @@ void SofaSceneItemModel::addNodeContent(Node* node)
 {
     QModelIndex idx = index(node);
     // adding as many rows as there are components in child
-    std::cout << "adding " << node->object.size() << "rows for objects in " << node->getName() << std::endl;
+//    std::cout << "adding " << node->object.size() << "rows for objects in " << node->getName() << std::endl;
     beginInsertRows(idx, 0, int(node->object.size()));
     endInsertRows();
 
     int i = int(node->object.size());
     for (Node::SPtr child : node->child)
     {
-        std::cout << "adding 1 row for " << child->getName() << " in " << node->getName() << std::endl;
+//        std::cout << "adding 1 row for " << child->getName() << " in " << node->getName() << std::endl;
         beginInsertRows(idx, i, i);
         endInsertRows();
         addNodeContent(child.get());
@@ -438,8 +436,8 @@ void SofaSceneItemModel::onEndAddChild(Node* target, Node* child)
     {
         addNodeContent(n.get());
     }
-    qDebug() << "child index: " << index(child);
-    msg_info("e") << "========== " << child->getName() << "added at row" << index(child).row() << " ==========";
+//    qDebug() << "child index: " << index(child);
+//    msg_info("e") << "========== " << child->getName() << "added at row" << index(child).row() << " ==========";
 }
 
 // because indexes to be removed must have their actual parent,
@@ -490,6 +488,7 @@ void SofaSceneItemModel::onEndRemoveChild(Node* parent, Node* child)
 
 void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseObject* obj)
 {
+    std::cout << "Adding object " << obj->getName() << " to parent node: " << parent->getName() << std::endl;
 //    return;
     SOFA_UNUSED(obj);
 //    msg_info("b") << "============= Adding object " << obj->getName() << " to: " << parent->getName();
@@ -501,15 +500,18 @@ void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseO
 //    qDebug() << "       child location is: " << objIndex;
 
     beginInsertRows(parentIndex, objIndex, objIndex);
+    std::cout << "Adding object " << obj->getName() << " to parent node: " << parent->getName() << std::endl;
 }
 void SofaSceneItemModel::onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj)
 {
+    std::cout << "Added object " << obj->getName() << " to parent node: " << parent->getName() << std::endl;
 //    m_needsRefresh = true;
 //    return;
     SOFA_UNUSED(obj);
     SOFA_UNUSED(parent);
     endInsertRows();
 ////    msg_info("b") << "========== Adding object done: " << obj->getName();
+    std::cout << "Added object " << obj->getName() << " to parent node: " << parent->getName() << std::endl;
 }
 void SofaSceneItemModel::onBeginRemoveObject(Node* parent, core::objectmodel::BaseObject* obj)
 {
