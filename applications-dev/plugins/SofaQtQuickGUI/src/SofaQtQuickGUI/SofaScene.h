@@ -214,6 +214,8 @@ public:
     Q_INVOKABLE bool removeComponent(SofaComponent* sofaComponent);
 
     Q_INVOKABLE sofa::qtquick::SofaComponent* addNodeTo(sofa::qtquick::SofaComponent* sofaComponent);
+    Q_INVOKABLE void addExistingNodeTo(sofa::qtquick::SofaComponent* sofaComponent, sofa::qtquick::SofaComponent* sofaNode);
+
     Q_INVOKABLE bool createAndAddComponentTo(SofaComponent* sofaComponent, QString name);
 
     Q_INVOKABLE bool areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);

@@ -74,6 +74,8 @@ using sofa::simulation::scenechecking::SceneCheckDuplicatedName;
 #include <SofaGraphComponent/SceneCheckUsingAlias.h>
 using sofa::simulation::scenechecking::SceneCheckUsingAlias;
 
+#include <SofaSimulationGraph/DAGNode.h>
+
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -739,7 +741,6 @@ bool SofaScene::removeComponent(SofaComponent* sofaComponent)
     return false;
 }
 
-
 SofaComponent* SofaScene::addNodeTo(SofaComponent* sofaComponent)
 {
     if(!sofaComponent)
@@ -771,6 +772,39 @@ SofaComponent* SofaScene::addNodeTo(SofaComponent* sofaComponent)
     }
 
     return nullptr;
+}
+
+void SofaScene::addExistingNodeTo(SofaComponent* sofaComponent, SofaComponent* sofaNode)
+{
+    if(!sofaComponent)
+        return;
+
+    // if component is an object
+    BaseObject* baseObject = sofaComponent->base()->toBaseObject();
+    if(baseObject)
+    {
+        dmsg_info("SofaScene") << "Can't add a node to a Graph Component! only to nodes" ;
+        return;
+    }
+
+    // if component is a node
+    BaseNode* baseNode = sofaComponent->base()->toBaseNode();
+    if(baseNode)
+    {
+        Node::SPtr node = static_cast<Node*>(baseNode);
+        std::cout << sofaNode->base() << std::endl;
+        std::string name = sofaNode->base()->getName();
+        if(node->getChild(name)){
+            int id=1;
+            while(node->getChild( name+std::to_string(id) )){id++;}
+            sofaNode->base()->setName(name + std::to_string(id));
+            sofaNode->base()->getName();
+            node->addChild(sofaNode->base()->toBaseNode());
+        }else{
+            node->addChild(sofaNode->base()->toBaseNode());
+        }
+        sofa::simulation::getSimulation()->init(node.get());
+    }
 }
 
 bool SofaScene::createAndAddComponentTo(SofaComponent* sofaComponent, QString name)
