@@ -811,20 +811,19 @@ void SofaScene::addExistingNodeTo(SofaComponent* sofaComponent, SofaComponent* s
         }else{
             node->addChild(sofaNode->base()->toBaseNode());
         }
-        Node* newNode = static_cast<Node*>(sofaNode->base()->toBaseNode());
-
-        /// @bmarques TODO: move to a dedicated method
-        /// Removing prefab's components used for preview before adding it to the simulation
-        DefaultAnimationLoop* dal;
-        DefaultVisualManagerLoop* dvml;
-        InteractiveCamera* ic;
-        BaseObject::SPtr aloop(newNode->getObject(BaseObject::shortName(dal)));
-        BaseObject::SPtr vloop(newNode->getObject(BaseObject::shortName(dvml)));
-        BaseObject::SPtr icam(newNode->getObject(BaseObject::shortName(ic)));
-        newNode->removeObject(aloop);
-        newNode->removeObject(vloop);
-        newNode->removeObject(icam);
-
+//        Node* newNode = static_cast<Node*>(sofaNode->base()->toBaseNode());
+//        /// @bmarques TODO: move to a dedicated method
+//        /// Removing prefab's components used for preview before adding it to the simulation
+//        DefaultAnimationLoop* dal;
+//        DefaultVisualManagerLoop* dvml;
+//        InteractiveCamera* ic;
+//        BaseObject::SPtr aloop(newNode->getObject(BaseObject::shortName(dal)));
+//        BaseObject::SPtr vloop(newNode->getObject(BaseObject::shortName(dvml)));
+//        BaseObject::SPtr icam(newNode->getObject(BaseObject::shortName(ic)));
+//        newNode->removeObject(aloop);
+//        newNode->removeObject(vloop);
+//        newNode->removeObject(icam);
+//
         sofa::simulation::getSimulation()->init(static_cast<Node*>(node->getContext()->getRootContext()->toBaseNode()));
     }
 }
