@@ -30,6 +30,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaBase.h"
 #include "SofaBaseObject.h"
 
+namespace sofa::qtquick
+{
+class SofaComponent;
+class SofaScene;
+}  // namespace sofa::qtquick
+
 namespace sofaqtquick
 {
 
@@ -54,15 +60,18 @@ public:
     DAGNode* self(){ return dynamic_cast<DAGNode*>(m_self.get()); } ///< Hold are reference to the real sofa object.
     DAGNode::SPtr selfptr(){ return DAGNode::SPtr(dynamic_cast<DAGNode*>(m_self.get())); } ///< Hold are reference to the real sofa object.
 
-    SofaNode* createChild(QString name);
+    sofa::qtquick::SofaComponent* toSofaComponent(sofa::qtquick::SofaScene* scene = nullptr); ///< legacy method to return a deprecated SofaComponent class
 
-    SofaNode* getChild(QString name);
-    SofaNode* getNodeInGraph(QString name);
-    SofaNode* getRoot();
+    Q_INVOKABLE SofaNode* createChild(QString name);
+
+    Q_INVOKABLE SofaNode* getFirstParent();
+    Q_INVOKABLE SofaNode* getChild(QString name);
+    Q_INVOKABLE SofaNode* getNodeInGraph(QString name);
+    Q_INVOKABLE SofaNode* getRoot();
 
 
-    void addChild(SofaNode* child);
-    void addObject(SofaBaseObject* obj);
+    Q_INVOKABLE void addChild(SofaNode* child);
+    Q_INVOKABLE void addObject(SofaBaseObject* obj);
 };
 
 } /// namespace _sofanode_

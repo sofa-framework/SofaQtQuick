@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 #include "SofaNode.h"
+#include "SofaComponent.h"
 
 #include <SofaSimulationGraph/SimpleApi.h>
 
@@ -58,9 +59,19 @@ SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent)
 
 SofaNode::~SofaNode(){}
 
+sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaScene* scene)
+{
+    return new sofa::qtquick::SofaComponent(scene, m_self.get());
+}
+
 SofaNode* SofaNode::createChild(QString name)
 {
     return wrap(sofa::core::objectmodel::New<DAGNode>(name.toStdString(), self()));
+}
+
+SofaNode* SofaNode::getFirstParent()
+{
+    return wrap(self()->getFirstParent());
 }
 
 SofaNode* SofaNode::getChild(QString name)
@@ -88,4 +99,4 @@ void SofaNode::addObject(SofaBaseObject* obj)
     self()->addObject(obj->selfptr());
 }
 
-}
+}  // namespace sofaqtquick::bindings::_sofanode_

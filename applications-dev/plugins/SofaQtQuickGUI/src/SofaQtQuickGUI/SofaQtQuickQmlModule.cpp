@@ -41,6 +41,9 @@ using sofaqtquick::bindings::SofaBase;
 #include <SofaQtQuickGUI/Bindings/SofaNode.h>
 using sofaqtquick::bindings::SofaNode;
 
+#include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
+using sofaqtquick::bindings::SofaBaseObject;
+
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/Selectable.h>
 #include <SofaQtQuickGUI/SelectableManipulator.h>
@@ -186,6 +189,9 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaNode> ("Sofa.Core.Node",
                                           versionMajor, versionMinor,
                                           "Node");
+    qmlRegisterType<SofaBaseObject> ("Sofa.Core.BaseObject",
+                                          versionMajor, versionMinor,
+                                          "BaseObject");
 
 
     /// registers the C++ type in the QML system with the name "Console",

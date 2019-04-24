@@ -33,5 +33,44 @@ SofaBaseObject::SofaBaseObject(BaseObject::SPtr self, QObject *parent)
 
 SofaBaseObject::~SofaBaseObject(){}
 
+
+/// Initialization method called at graph creation and modification, during top-down traversal.
+void SofaBaseObject::init()
+{
+    self()->init();
+}
+
+/// Initialization method called at graph creation and modification, during bottom-up traversal.
+void SofaBaseObject::bwdInit()
+{
+    self()->bwdInit();
+}
+
+/// Update method called when variables used in precomputation are modified.
+void SofaBaseObject::reinit()
+{
+    self()->reinit();
+}
+
+/// Save the initial state for later uses in reset()
+void SofaBaseObject::storeResetState()
+{
+    self()->storeResetState();
+}
+
+/// Reset to initial state
+void SofaBaseObject::reset()
+{
+    self()->reset();
+}
+
+/// Called just before deleting this object
+/// Any object in the tree bellow this object that are to be removed will be removed only after this call,
+/// so any references this object holds should still be valid.
+void SofaBaseObject::cleanup()
+{
+    self()->cleanup();
+}
+
 }  // namespace sofaqtquick::bindings::_sofaobject_
 

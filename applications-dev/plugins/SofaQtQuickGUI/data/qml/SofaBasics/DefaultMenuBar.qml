@@ -66,7 +66,10 @@ MenuBar {
             text: qsTr("Open Project...")
             FileDialog {
                 id: openProjectDialog
+                title: "Please choose a project directory"
+                folder: shortcuts.home
                 selectFolder: true
+                sidebarVisible: true
                 onAccepted: {
                     sofaApplication.projectSettings.addRecent(fileUrl)
                 }
