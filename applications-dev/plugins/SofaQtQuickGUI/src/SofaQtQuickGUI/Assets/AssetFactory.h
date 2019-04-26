@@ -1,7 +1,5 @@
 #pragma once
-
-#include "MeshAsset.h"
-#include "TextureAsset.h"
+#include "Asset.h"
 #include <QObject>
 #include <SofaQtQuickGUI/config.h>
 #include <iostream>

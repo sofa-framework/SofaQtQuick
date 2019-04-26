@@ -184,8 +184,11 @@ Item {
                                 Rectangle {
                                     Layout.fillWidth: true
                                     Image {
-                                        x: 5
                                         id: iconId
+                                        x: 5
+                                        width: 15
+                                        height: 15
+                                        fillMode: Image.PreserveAspectFit
                                         source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : self.project.assetFactory.getIcon(fileSuffix)
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -248,27 +251,22 @@ Item {
                                 } else {
                                     var rootNode = sofaApplication.sofaScene.root()
 
-                                    console.error("Retrieved rootNode")
-                                    var component = self.project.get(folderModel.get(index, "fileURL"))
-                                    console.error("Retrieved Preview Node:" + component + " with name " + component.getName())
+                                    var component = self.project.getAsset(folderModel.get(index, "fileURL"))
 
                                     sofaApplication.sofaScene.addExistingNodeTo(rootNode, component)
-                                    console.error("Added to rootNode")
                                 }
 
                             }
 
                             onClicked: {
-//                                if (Qt.LeftButton === mouse.button)
-//                                {
-//                                    if (folderModel.isFolder(index))
-//                                    {
-//                                        folderModel.folder = folderModel.get(index, "fileURL")
-//                                    }
-//                                }
-//                                else
-//                                {
-//                                }
+                                if (Qt.LeftButton === mouse.button)
+                                {
+                                    // Let's load detailed info if available
+                                    if (!folderModel.isFolder(index))
+                                    {
+                                        self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
+                                    }
+                                }
                             }
                         }
                     }

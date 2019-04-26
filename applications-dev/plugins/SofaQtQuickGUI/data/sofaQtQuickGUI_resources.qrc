@@ -59,5 +59,9 @@
         <file>icon/ICON_GEAR.png</file>
         <file>icon/ICON_NEWFOLDER.png</file>
         <file>icon/ICON_MESH.png</file>
+        <file>icon/ICON_PYController.png</file>
+        <file>icon/ICON_PYEngine.png</file>
+        <file>icon/ICON_PYSCN.png</file>
+        <file>icon/ICON_PYTHON.png</file>
     </qresource>
 </RCC>

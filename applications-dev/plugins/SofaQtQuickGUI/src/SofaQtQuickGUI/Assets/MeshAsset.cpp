@@ -14,9 +14,7 @@ using sofa::component::visualmodel::InteractiveCamera;
 
 #include <memory>
 
-namespace sofa
-{
-namespace qtquick
+namespace sofa::qtquick
 {
 
 const QUrl MeshAsset::iconPath = QUrl("qrc:/icon/ICON_MESH.png");
@@ -38,7 +36,7 @@ MeshAsset::MeshAsset(std::string path, std::string extension)
 {
 }
 
-SofaComponent* MeshAsset::getPreviewNode()
+SofaComponent* MeshAsset::getAsset()
 {
     if (loaders.find(m_extension) == loaders.end() ||
             loaders.find(m_extension)->second == nullptr)
@@ -64,5 +62,10 @@ SofaComponent* MeshAsset::getPreviewNode()
     return new SofaComponent(nullptr, root.get());
 }
 
-} // namespace qtquick
-} // namespace sofa
+void MeshAsset::getAssetMetaInfo()
+{
+
+}
+
+
+} // namespace sofa::qtquick

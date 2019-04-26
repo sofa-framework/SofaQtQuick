@@ -57,6 +57,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaProject.cpp
     src/SofaQtQuickGUI/Assets/Asset.cpp
     src/SofaQtQuickGUI/Assets/MeshAsset.cpp
+    src/SofaQtQuickGUI/Assets/PythonAsset.cpp
     src/SofaQtQuickGUI/Assets/TextureAsset.cpp
     src/SofaQtQuickGUI/Assets/AssetFactory.cpp
     )
@@ -115,12 +116,14 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaProject.h
     src/SofaQtQuickGUI/Assets/Asset.h
     src/SofaQtQuickGUI/Assets/MeshAsset.h
+    src/SofaQtQuickGUI/Assets/PythonAsset.h
     src/SofaQtQuickGUI/Assets/TextureAsset.h
     src/SofaQtQuickGUI/Assets/AssetFactory.h
     )
 
 set(ASSET_TEMPLATES
     data/config/templates/MeshAsset.py
+    data/config/templates/PythonAsset.py
     )
 
 
@@ -132,7 +135,7 @@ list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/GTest/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaBasics/")
-list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_D_FILES})IR}/data/qml/SofaColorScheme/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaColorScheme/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaInteractors/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
@@ -209,7 +212,7 @@ set(HEADER_FILES ${HEADER_FILES}
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
-target_link_libraries(${PROJECT_NAME} PUBLIC SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine)
+target_link_libraries(${PROJECT_NAME} PUBLIC SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine stdc++fs)
 #target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")

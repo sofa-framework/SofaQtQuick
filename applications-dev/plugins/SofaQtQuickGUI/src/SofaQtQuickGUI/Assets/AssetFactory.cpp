@@ -1,5 +1,9 @@
 #include "AssetFactory.h"
 
+#include "MeshAsset.h"
+#include "TextureAsset.h"
+#include "PythonAsset.h"
+
 namespace sofa
 {
 namespace qtquick
@@ -13,6 +17,9 @@ AssetFactory::AssetFactory(QObject* parent) : QObject(parent)
     m_loaders["obj"] = new AssetCreator<MeshAsset>();
     m_loaders["vtk"] = new AssetCreator<MeshAsset>();
     m_loaders["gmsh"] = new AssetCreator<MeshAsset>();
+
+    m_loaders["py"] = new AssetCreator<PythonAsset>();
+    m_loaders["pyscn"] = new AssetCreator<PythonAsset>();
 
     m_loaders["png"] = new AssetCreator<TextureAsset>();
     m_loaders["jpg"] = new AssetCreator<TextureAsset>();

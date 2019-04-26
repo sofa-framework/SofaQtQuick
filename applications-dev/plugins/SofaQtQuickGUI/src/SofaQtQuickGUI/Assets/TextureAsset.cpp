@@ -29,7 +29,7 @@ TextureAsset::TextureAsset(std::string path, std::string extension)
 {
 }
 
-SofaComponent* TextureAsset::getPreviewNode()
+SofaComponent* TextureAsset::getAsset()
 {
     if (loaders.find(m_extension) == loaders.end())
     {
@@ -46,6 +46,11 @@ SofaComponent* TextureAsset::getPreviewNode()
     this->addObject(vmodel);
     this->init(sofa::core::ExecParams::defaultInstance());
     return new SofaComponent(nullptr, this);
+}
+
+void TextureAsset::getAssetMetaInfo()
+{
+
 }
 
 } // namespace qtquick

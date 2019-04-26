@@ -39,7 +39,8 @@ public:
     Q_INVOKABLE void scanProject(const QUrl& url);
     Q_INVOKABLE const QString getFileCount(const QUrl& url);
 
-    Q_INVOKABLE sofa::qtquick::SofaComponent* get(const QUrl& url);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* getAsset(const QUrl& url);
+    Q_INVOKABLE void getAssetMetaInfo(const QUrl& url);
 
 
 private:

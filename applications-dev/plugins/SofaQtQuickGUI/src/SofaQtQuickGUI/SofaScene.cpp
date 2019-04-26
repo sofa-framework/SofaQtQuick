@@ -800,7 +800,6 @@ void SofaScene::addExistingNodeTo(SofaComponent* sofaComponent, SofaComponent* s
     if(baseNode)
     {
         Node::SPtr node = static_cast<Node*>(baseNode);
-        std::cout << sofaNode->base() << std::endl;
         std::string name = sofaNode->base()->getName();
         if(node->getChild(name)){
             int id=1;

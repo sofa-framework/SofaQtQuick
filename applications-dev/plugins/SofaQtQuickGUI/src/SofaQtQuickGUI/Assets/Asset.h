@@ -32,7 +32,8 @@ class Asset : public sofa::simulation::graph::DAGNode
 
     Asset(std::string path, std::string extension);
     virtual ~Asset() override;
-    virtual SofaComponent* getPreviewNode() = 0;
+    virtual SofaComponent* getAsset() = 0;
+    virtual void getAssetMetaInfo() = 0;
 
 //    Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
 //    Q_SIGNAL void fileNameChanged(QString fileName);

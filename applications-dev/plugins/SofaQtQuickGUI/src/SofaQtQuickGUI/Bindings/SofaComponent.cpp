@@ -251,8 +251,8 @@ Base* SofaComponent::base()
 
 const Base* SofaComponent::base() const
 {
-    if (!mySofaScene)
-        msg_warning("Component ") << myBase->getName() << " is detached from graph";
+//    if (!mySofaScene)
+//        msg_warning("Component ") << myBase->getName() << " is detached from graph";
     // check object existence
     if(myBase)
     {
