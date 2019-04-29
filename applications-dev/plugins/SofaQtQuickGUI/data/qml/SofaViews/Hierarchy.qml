@@ -39,7 +39,7 @@ import QtGraphicalEffects 1.12
 import QtQuick.Controls 1.4 as QQC1
 import QtQuick.Controls.Styles 1.4 as QQCS1
 import SofaComponent 1.0
-import SofaData 1.0
+import Sofa.Core.Data 1.0
 
 Rectangle {
     id: root
@@ -398,7 +398,7 @@ Rectangle {
 //                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
 //                                nodeMenu.creationLocation = theComponent.getCreationLocation()
 //                            }
-//                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
+//                            nodeMenu.nodeActivated = nodeMenu.sofaData.value;
 //                            nodeMenu.popup();
 //                        } else {
 //                            objectMenu.popup();
@@ -441,15 +441,19 @@ Rectangle {
                 {
                     nodeMenu.currentModelIndex = srcIndex
                     nodeMenu.activated = theComponent.getData("activated");
-                    console.log("COUCOUCOUC "+theComponent.hasLocations())
                     if(theComponent.hasLocations()===true)
                     {
                         nodeMenu.sourceLocation = theComponent.getSourceLocation()
                         nodeMenu.creationLocation = theComponent.getInstanciationLocation()
                     }
-                    nodeMenu.nodeActivated = nodeMenu.activated.value();
+                    nodeMenu.nodeActivated = nodeMenu.activated.value;
                     nodeMenu.popup();
                 } else {
+                    if(theComponent.hasLocations()===true)
+                    {
+                        objectMenu.sourceLocation = theComponent.getSourceLocation()
+                        objectMenu.creationLocation = theComponent.getInstanciationLocation()
+                    }
                     objectMenu.currentModelIndex = srcIndex
                     objectMenu.name = theComponent.getData("name");
                     objectMenu.popup();

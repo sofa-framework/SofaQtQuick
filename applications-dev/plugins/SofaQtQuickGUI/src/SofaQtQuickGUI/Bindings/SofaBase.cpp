@@ -79,12 +79,9 @@ QObject* SofaBase::getData(const QString& name) const
 
 bool SofaBase::hasLocations() const
 {
-    std::cout << "HAS LOC" << std::endl;
     const Base* base = m_self.get();
     if(base)
     {
-        std::cout << "VALUE IS" <<  base->getSourceFileName() << ", " <<
-                     base->getInstanciationFileName() << std::endl;
         return !base->getSourceFileName().empty()
             || !base->getInstanciationFileName().empty() ;
     }
@@ -94,25 +91,25 @@ bool SofaBase::hasLocations() const
 QString SofaBase::getSourceLocation() const
 {
     const Base* base = m_self.get();
-    if(base)
+    if(base && !(base->getSourceFileName().empty()))
     {
-        return QString("(%1,%2)")
+        return QString("('%1',%2)")
                 .arg(QString::fromStdString(base->getSourceFileName()))
                 .arg(base->getSourceFilePos());
     }
-    return "('',-1)";
+    return "";
 }
 
 QString SofaBase::getInstanciationLocation() const
 {
     const Base* base = m_self.get();
-    if(base)
+    if(base && !(base->getInstanciationFileName().empty()))
     {
-        return QString("(%1,%2)")
+        return QString("('%1',%2)")
                 .arg(QString::fromStdString(base->getInstanciationFileName()))
                 .arg(base->getInstanciationFilePos());
     }
-    return "('',-1)";
+    return "";
 }
 
 QString SofaBase::output() const

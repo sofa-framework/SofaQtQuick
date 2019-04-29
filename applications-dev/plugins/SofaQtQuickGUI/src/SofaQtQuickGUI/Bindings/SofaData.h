@@ -38,13 +38,13 @@ namespace sofaqtquick::bindings
         class SofaData : public QObject
         {
             Q_OBJECT
-            Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
+            Q_PROPERTY(QVariant value READ getValue WRITE setValue NOTIFY valueChanged)
 
         public:
             SofaData(BaseData* self);
 
-            Q_INVOKABLE QVariant value() const;
-            Q_INVOKABLE bool setValue(const QVariant& value);
+            Q_INVOKABLE QVariant getValue() const;
+            Q_INVOKABLE bool setValue(const QVariant& getValue);
             Q_INVOKABLE bool setLink(const QString& path);
 
             Q_INVOKABLE QVariantMap object();
