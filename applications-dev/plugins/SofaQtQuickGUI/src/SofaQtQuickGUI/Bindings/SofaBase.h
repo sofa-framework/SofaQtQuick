@@ -50,23 +50,30 @@ public:
     Q_INVOKABLE QString getName() const;
     Q_INVOKABLE QString getClassName() const;
     Q_INVOKABLE QString getTemplateName() const;
+    Q_INVOKABLE QString getPathName() const;
 
     /// get a data from its name
     Q_INVOKABLE QObject* getData(const QString& name) const;
     Q_INVOKABLE QStringList getDataFields() const;
+
+    /// Returns true of the underlying Base is a Node.
+    Q_INVOKABLE bool isNode() const;
 
     /// The following three are used to get extra information about where
     /// the component is implemented (the source location)
     /// and where it is instanciated (the scene file location)
     Q_INVOKABLE bool hasLocations() const ;
     Q_INVOKABLE QString getSourceLocation() const ;
-    Q_INVOKABLE QString getCreationLocation() const ;
+    Q_INVOKABLE QString getInstanciationLocation() const ;
 
     Q_INVOKABLE QString output() const;
     Q_INVOKABLE void clearOutput() const;
 
     Q_INVOKABLE QString warning() const;
     Q_INVOKABLE void clearWarning() const;
+
+    Base*      rawBase() const { return m_self.get(); }
+    Base::SPtr base(){ return m_self; }
 
 protected:
     SofaBase();

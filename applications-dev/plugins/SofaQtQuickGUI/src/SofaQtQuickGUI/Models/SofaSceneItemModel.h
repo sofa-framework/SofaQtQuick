@@ -52,8 +52,9 @@ public:
     Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
 
     ///@brief Returns the sofa component corresponding to the provided index.
-    Q_INVOKABLE sofa::qtquick::SofaComponent* getComponentFromIndex(const QModelIndex& index) const;
-    Q_INVOKABLE QModelIndex getIndexFromComponent(sofa::qtquick::SofaComponent* index) const;
+    Q_INVOKABLE sofa::qtquick::SofaBase* getBaseFromIndex(const QModelIndex& index) const;
+    Q_INVOKABLE QModelIndex getIndexFromBase(sofa::qtquick::SofaBase* index) const;
+
 
     SofaSceneItemModel(QObject* parent = nullptr);
     ~SofaSceneItemModel() override;

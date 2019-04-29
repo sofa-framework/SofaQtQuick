@@ -1,21 +1,25 @@
-/*
-Copyright 2018, CNRS
+/*********************************************************************
+Copyright 2019, Inria, CNRS, University of Lille
 
-This file is part of sofaqtquick.
+This file is part of runSofa2
 
-sofaqtquick is free software: you can redistribute it and/or modify
+runSofa2 is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-sofaqtquick is distributed in the hope that it will be useful,
+runSofa2 is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
-*/
+*********************************************************************/
+/********************************************************************
+ Contributors:
+    - damien.marchal@univ-lille.fr
+********************************************************************/
 
 import QtQml.Models 2.2
 import QtQuick 2.0
@@ -277,7 +281,7 @@ Rectangle {
                 if (nodeSettings.nodeState[key] === "1")
                 {
                     var idx = null
-                    idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
+                    idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
                     treeView.expand(idx)
                 }
             }
@@ -285,7 +289,7 @@ Rectangle {
 
         function storeExpandedState(index) {
             var srcIndex = sceneModel.mapToSource(index)
-            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+            var theComponent = basemodel.getBaseFromIndex(srcIndex)
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
             var i = 0;
             SofaApplication.nodeSettings.nodeState = ""
@@ -379,7 +383,7 @@ Rectangle {
 //                onClicked:
 //                {
 //                    var srcIndex = sceneModel.mapToSource(styleData.index)
-//                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
+//                    var theComponent = basemodel.getDataFromIndex(srcIndex)
 
 //                    if(mouse.button === Qt.LeftButton)
 //                    {
@@ -428,7 +432,7 @@ Rectangle {
         mouser.onClicked:
         {
             var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
-            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+            var theComponent = basemodel.getBaseFromIndex(srcIndex)
             if(mouse.button === Qt.LeftButton)
             {
                 sofaScene.selectedComponent = theComponent
@@ -436,17 +440,18 @@ Rectangle {
                 if(theComponent.isNode())
                 {
                     nodeMenu.currentModelIndex = srcIndex
-                    nodeMenu.activated = theComponent.getComponentData("activated");
+                    nodeMenu.activated = theComponent.getData("activated");
+                    console.log("COUCOUCOUC "+theComponent.hasLocations())
                     if(theComponent.hasLocations()===true)
                     {
                         nodeMenu.sourceLocation = theComponent.getSourceLocation()
-                        nodeMenu.creationLocation = theComponent.getCreationLocation()
+                        nodeMenu.creationLocation = theComponent.getInstanciationLocation()
                     }
                     nodeMenu.nodeActivated = nodeMenu.activated.value();
                     nodeMenu.popup();
                 } else {
                     objectMenu.currentModelIndex = srcIndex
-                    objectMenu.name = theComponent.getComponentData("name");
+                    objectMenu.name = theComponent.getData("name");
                     objectMenu.popup();
                 }
             }

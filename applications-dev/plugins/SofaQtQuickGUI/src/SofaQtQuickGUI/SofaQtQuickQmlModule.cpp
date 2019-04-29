@@ -140,6 +140,8 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<SofaScene*>("const SofaScene*");
     qRegisterMetaType<AssetFactory*>("AssetFactory*");
     qRegisterMetaType<QUrlList>("QUrlList");
+    qRegisterMetaType<SofaBase*>("sofa::qtquick::SofaBase*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaData*");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplicationSingleton");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");

@@ -20,7 +20,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 #include <SofaQtQuickGUI/SofaViewer.h>
 
-#include <GL/glew.h>
 #include <QMatrix4x4>
 #include <QDebug>
 

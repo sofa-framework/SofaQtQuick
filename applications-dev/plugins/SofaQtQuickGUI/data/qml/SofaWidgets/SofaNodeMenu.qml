@@ -40,7 +40,7 @@ Menu {
     MenuItem {
         text: "Add child"
         onTriggered: {
-            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentModelIndex))
+            var newnode = sofaScene.addNodeTo(model.getDataFromIndex(currentModelIndex))
             if(newnode){
                 SofaApplication.signalComponent(newnode.getPathName());
             }
@@ -50,7 +50,7 @@ Menu {
     MenuItem {
         text: "Add sibling"
         onTriggered: {
-            var newnode = sofaScene.addNodeTo(model.getComponentFromIndex(currentModelIndex).parent())
+            var newnode = sofaScene.addNodeTo(model.getDataFromIndex(currentModelIndex).parent())
             if(newnode){
                 SofaApplication.signalComponent(newnode.getPathName());
             }
@@ -62,7 +62,7 @@ Menu {
         text: "Add component (TODO)"
         onTriggered: {
             popupWindowCreateComponent.createObject(SofaApplication,
-                                                    {"sofaComponent": model.getComponentFromIndex(currentModelIndex)});
+                                                    {"sofaComponent": model.getDataFromIndex(currentModelIndex)});
         }
     }
 
@@ -72,7 +72,7 @@ Menu {
         onTriggered: {
             sofaDataListViewWindowComponent.createObject(SofaApplication,
                                                          {"sofaScene": root.sofaScene,
-                                                          "sofaComponent": model.getComponentFromIndex(currentModelIndex)});
+                                                          "sofaComponent": model.getDataFromIndex(currentModelIndex)});
         }
     }
 
@@ -81,7 +81,7 @@ Menu {
         onTriggered: {
             /// Creates and display an help window object
             windowMessage.createObject(SofaApplication,
-                                       {"sofaComponent": model.getComponentFromIndex(currentModelIndex)});
+                                       {"sofaComponent": model.getDataFromIndex(currentModelIndex)});
         }
     }
 
@@ -97,7 +97,7 @@ Menu {
     MenuSeparator {}
     MenuItem {
         enabled: creationLocation !== null && creationLocation.length !== 0
-        text: "Go to scene (TODO)"
+        text: "Go to instanciation..."
         onTriggered: {
             console.trace()
             var location = parsePython(creationLocation)
@@ -107,7 +107,7 @@ Menu {
 
     MenuItem {
         enabled: sourceLocation !== null && sourceLocation.length !== 0
-        text: "Go to implementation (TODO)"
+        text: "Go to implementation..."
         onTriggered: {
             var location = parsePython(sourceLocation)
             SofaApplication.openInEditor(location[0], location[1])
@@ -126,7 +126,7 @@ Menu {
         text: "Delete"
         onTriggered: {
 //            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getComponentFromIndex(currentModelIndex));
+            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
 //            model.updateCurrentIndex(model.computeModelRow(currentRow));
         }
     }

@@ -24,6 +24,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Camera.h>
 #include <SofaQtQuickGUI/SelectableSofaParticle.h>
 
+#include <GL/glew.h>
+#include <QOpenGLShaderProgram>
 #include <QtQuick/QQuickFramebufferObject>
 #include <QVector3D>
 #include <QVector4D>
@@ -32,7 +34,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QList>
 
 #include <sofa/helper/io/Image.h>
-
 namespace sofa
 {
 

@@ -25,6 +25,9 @@ using sofa::helper::logging::Message;
 
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
 
+#include <sofa/core/objectmodel/BaseNode.h>
+using sofa::core::objectmodel::BaseNode;
+
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 using sofaqtquick::bindings::SofaData;
 
@@ -43,6 +46,17 @@ SofaBase::SofaBase(Base::SPtr self)
 QString SofaBase::getName() const
 {
     return QString::fromStdString(m_self->getName());
+}
+
+QString SofaBase::getPathName() const
+{
+    if(m_self->toBaseNode())
+        return QString::fromStdString(m_self->toBaseNode()->getPathName());
+
+    if(m_self->toBaseObject())
+        return QString::fromStdString(m_self->toBaseObject()->getPathName());
+
+    return "/";
 }
 
 QString SofaBase::getClassName() const
@@ -74,10 +88,14 @@ QStringList SofaBase::getDataFields() const
 
 bool SofaBase::hasLocations() const
 {
+    std::cout << "HAS LOC" << std::endl;
     const Base* base = m_self.get();
     if(base)
     {
-        return base->findData("Defined in") != nullptr ;
+        std::cout << "VALUE IS" <<  base->getSourceFileName() << ", " <<
+                     base->getInstanciationFileName() << std::endl;
+        return !base->getSourceFileName().empty()
+            || !base->getInstanciationFileName().empty() ;
     }
     return false;
 }
@@ -87,23 +105,23 @@ QString SofaBase::getSourceLocation() const
     const Base* base = m_self.get();
     if(base)
     {
-        BaseData* data = base->findData("Defined in") ;
-        if(data)
-            return QString::fromStdString(data->getValueString());
+        return QString("(%1,%2)")
+                .arg(QString::fromStdString(base->getSourceFileName()))
+                .arg(base->getSourceFilePos());
     }
-    return "('',0)";
+    return "('',-1)";
 }
 
-QString SofaBase::getCreationLocation() const
+QString SofaBase::getInstanciationLocation() const
 {
     const Base* base = m_self.get();
     if(base)
     {
-        BaseData* data = base->findData("Instantiated in") ;
-        if(data)
-            return QString::fromStdString(data->getValueString());
+        return QString("(%1,%2)")
+                .arg(QString::fromStdString(base->getInstanciationFileName()))
+                .arg(base->getInstanciationFilePos());
     }
-    return "('',0)";
+    return "('',-1)";
 }
 
 QString SofaBase::output() const
@@ -125,7 +143,7 @@ QString SofaBase::warning() const
                                                                        Message::Fatal
                                                                       }));
 
-return QString();
+    return QString();
 }
 
 void SofaBase::clearOutput() const
@@ -145,5 +163,12 @@ void SofaBase::clearWarning() const
         base->clearWarnings();
     }
 }
+
+
+bool SofaBase::isNode() const
+{
+    return rawBase()->toBaseNode() != nullptr;
+}
+
 
 } /// sofaqtquick
