@@ -60,6 +60,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QTimer>
 #include <QDirIterator>
 
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+using sofaqtquick::bindings::SofaCoreBindingContext;
+
 #include <SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.h>
 using sofaqtquick::SofaRuntimeModule;
 
@@ -929,6 +932,12 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     // quit on Ctrl-C
     signal(SIGINT, [](int) {SofaApplication::Destruction();});
 #endif
+
+    /// Set the application engine to use for the SofaCore binding.
+    /// This is needed to generate JS exception from the c++ code.
+    /// If you found an alternative design to avoid the singleton it is
+    /// more than welcome.
+    SofaCoreBindingContext::setQQmlEngine(&applicationEngine);
 
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     app.addLibraryPath(QCoreApplication::applicationDirPath() + "/../lib/");

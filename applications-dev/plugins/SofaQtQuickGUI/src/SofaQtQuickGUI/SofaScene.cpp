@@ -1274,7 +1274,7 @@ SofaLink* SofaScene::link(const QString& fullpath)
 
     BaseLink* link = base->findLink(splittedpath[1].toStdString()) ;
 
-    return new SofaLink(this, base, link);
+    return new SofaLink(link);
 }
 
 sofaqtquick::bindings::SofaData* SofaScene::data(const QString& path)

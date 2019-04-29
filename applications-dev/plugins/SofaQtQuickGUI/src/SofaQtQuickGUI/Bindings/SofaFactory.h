@@ -49,7 +49,7 @@ public:
     Q_INVOKABLE QStringList getComponents() ;
     Q_INVOKABLE void setFilter(const QString& c) ;
 
-    Q_INVOKABLE QObject* createNode();
+    Q_INVOKABLE sofaqtquick::bindings::SofaNode* createNode();
 
 
 signals:

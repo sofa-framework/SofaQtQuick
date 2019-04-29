@@ -460,7 +460,7 @@ Item {
                     anchors.top : header1.top
                     anchors.left : header1.left
                     anchors.verticalCenter: header1.verticalCenter
-                    text : "Details " + ((topRect.sofaSelectedComponent===null)? "" : "("+ topRect.sofaSelectedComponent.className + ")")
+                    text : "Details " + ((topRect.sofaSelectedComponent===null)? "" : "("+ topRect.sofaSelectedComponent.getClassName() + ")")
                     //                    font.pixelSize: 14
                     //                    font.bold: true
                     color: "black"

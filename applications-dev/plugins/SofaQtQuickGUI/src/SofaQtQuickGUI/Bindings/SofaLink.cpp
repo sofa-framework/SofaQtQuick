@@ -31,7 +31,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 using sofa::core::objectmodel::BaseLink;
 
 #include "../DataHelper.h"
-
 namespace sofaqtquick::bindings::_sofalink_
 {
 
@@ -39,67 +38,16 @@ SofaLink::SofaLink(BaseLink* self)
 {
     m_self = self;
 }
-/*
-QVariant SofaLink::value() const
+
+bool SofaLink::setValueString(const QString &path)
 {
-    return sofaqtquick::helper::createQVariantFromData(m_self);
+    return m_self->read("@"+path.toStdString()) ;
 }
 
-bool SofaLink::setValue(const QVariant& value)
+QString SofaLink::getValueString()
 {
-    if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
-    {
-        emit valueChanged(value);
-        return true;
-    }
-    return false;
-}*/
-
+    return QString::fromStdString(m_self->getLinkedPath());
 }
 
 
-namespace sofa
-{
-
-namespace qtquick
-{
-
-namespace _sofalink_h_
-{
-
-using namespace sofa::core::objectmodel;
-
-SofaLink::SofaLink(const SofaComponent* sofaComponent, BaseLink* link) : QObject(),
-    m_component(new SofaComponent(*sofaComponent)),
-    m_link(link)
-{
-    m_component->setParent(this);
 }
-
-SofaLink::SofaLink(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, BaseLink* link) : QObject(),
-    m_component(new SofaComponent(sofaScene, base)),
-    m_link(link)
-{
-    m_component->setParent(this);
-}
-
-SofaLink::SofaLink(const SofaLink& SofaLink) : QObject(),
-    m_component(new SofaComponent(*SofaLink.m_component)),
-    m_link(SofaLink.m_link)
-{
-    m_component->setParent(this);
-}
-
-SofaComponent* SofaLink::sofaComponent() const
-{
-    return m_component;
-}
-
-bool SofaLink::setValue(const QString &path)
-{
-    return m_link->read("@"+path.toStdString()) ;
-}
-
-} /// _sofalink_h_
-} /// qtquick
-} /// sofa

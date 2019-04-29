@@ -50,6 +50,8 @@ using sofa::simulation::graph::DAGNode;
 class SOFA_SOFAQTQUICKGUI_API SofaNode : public SofaBase
 {
 public:
+     Q_OBJECT
+public:
     SofaNode(QObject *parent = nullptr);
     SofaNode(DAGNode::SPtr self, QObject *parent = nullptr);
     ~SofaNode() override;

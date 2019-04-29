@@ -26,7 +26,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <sofa/core/objectmodel/Base.h>
 #include <sofa/core/objectmodel/BaseData.h>
-
+#include <QJSValue>
 namespace sofaqtquick::bindings
 {
 
@@ -52,6 +52,9 @@ public:
     /// get a data from its name
     Q_INVOKABLE QObject* getData(const QString& name) const;
     Q_INVOKABLE QStringList getDataFields() const;
+
+    /// get a link from its name
+    Q_INVOKABLE QObject* getLink(const QString& name) const;
 
     /// Returns true of the underlying Base is a Node.
     Q_INVOKABLE bool isNode() const;

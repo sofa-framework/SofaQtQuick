@@ -23,13 +23,22 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/logging/Message.h>
 using sofa::helper::logging::Message;
 
-#include <SofaQtQuickGUI/Bindings/SofaBase.h>
-
 #include <sofa/core/objectmodel/BaseNode.h>
 using sofa::core::objectmodel::BaseNode;
 
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
+using sofaqtquick::bindings::SofaBase;
+
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 using sofaqtquick::bindings::SofaData;
+
+#include <SofaQtQuickGUI/Bindings/SofaLink.h>
+using sofaqtquick::bindings::SofaLink;
+
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+using sofaqtquick::bindings::SofaCoreBindingContext;
+
+#include <QQmlContext>
 
 namespace sofaqtquick::bindings::_sofabase_
 {
@@ -71,11 +80,20 @@ QString SofaBase::getTemplateName() const
 
 QObject* SofaBase::getData(const QString& name) const
 {
-    BaseData* data = m_self->findData(name.toStdString());
+    auto* data = m_self->findData(name.toStdString());
     if(!data)
-        return nullptr;
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no data with name '"+name+"'");
     return new SofaData(data);
 }
+
+QObject* SofaBase::getLink(const QString& name) const
+{
+    auto* link = m_self->findLink(name.toStdString());
+    if(!link)
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no link with name '"+name+"'");
+    return new SofaLink(link);
+}
+
 
 QStringList SofaBase::getDataFields() const
 {
