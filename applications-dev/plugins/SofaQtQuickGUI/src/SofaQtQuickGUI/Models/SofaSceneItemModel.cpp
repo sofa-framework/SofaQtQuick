@@ -248,7 +248,7 @@ int SofaSceneItemModel::columnCount(const QModelIndex &index) const
 }
 
 
-sofa::qtquick::SofaBase* SofaSceneItemModel::getBaseFromIndex(const QModelIndex& index) const
+sofaqtquick::bindings::SofaBase* SofaSceneItemModel::getBaseFromIndex(const QModelIndex& index) const
 {
     if (!index.isValid())
         return nullptr;
@@ -261,7 +261,7 @@ sofa::qtquick::SofaBase* SofaSceneItemModel::getBaseFromIndex(const QModelIndex&
     return new SofaBase(currentBase);
 }
 
-QModelIndex SofaSceneItemModel::getIndexFromBase(sofa::qtquick::SofaBase* component) const
+QModelIndex SofaSceneItemModel::getIndexFromBase(sofaqtquick::bindings::SofaBase* component) const
 {
     if (component)
     {

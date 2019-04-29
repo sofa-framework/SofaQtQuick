@@ -39,7 +39,7 @@ import QtGraphicalEffects 1.12
 import QtQuick.Controls 1.4 as QQC1
 import QtQuick.Controls.Styles 1.4 as QQCS1
 import SofaComponent 1.0
-import Sofa.Core.Data 1.0
+import Sofa.Core.SofaData 1.0
 
 Rectangle {
     id: root

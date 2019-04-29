@@ -140,8 +140,8 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<SofaScene*>("const SofaScene*");
     qRegisterMetaType<AssetFactory*>("AssetFactory*");
     qRegisterMetaType<QUrlList>("QUrlList");
-    qRegisterMetaType<SofaBase*>("sofa::qtquick::SofaBase*");
-    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaData*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("sofaqtquick::bindings::SofaBase*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaData*");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplicationSingleton");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
@@ -176,21 +176,21 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
     qmlRegisterType<AssetFactory>                                   ("AssetFactory"                         , versionMajor, versionMinor, "AssetFactory");
 
-    qmlRegisterUncreatableType<SofaBase> ("Sofa.Core.Base",
+    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaBase> ("Sofa.Core.SofaBase",
                                           versionMajor, versionMinor,
-                                          "Base",
-                                          QString("It is not possible to create a Sofa.Core.Base object"));
+                                          "SofaBase",
+                                          QString("It is not possible to create a Sofa.Core.SofaBase object"));
 
-    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaData> ("Sofa.Core.Data",
+    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaData> ("Sofa.Core.SofaData",
                                           versionMajor, versionMinor,
                                           "SofaData",
-                                          QString("It is not possible to create a Sofa.Core.BaseData object"));
+                                          QString("It is not possible to create a Sofa.Core.SofaBaseData object"));
 
 
     qmlRegisterType<SofaNode> ("Sofa.Core.Node",
                                           versionMajor, versionMinor,
                                           "Node");
-    qmlRegisterType<SofaBaseObject> ("Sofa.Core.BaseObject",
+    qmlRegisterType<SofaBaseObject> ("Sofa.Core.SofaBaseObject",
                                           versionMajor, versionMinor,
                                           "BaseObject");
 

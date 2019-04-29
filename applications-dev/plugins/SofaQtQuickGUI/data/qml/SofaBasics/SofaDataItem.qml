@@ -21,7 +21,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import SofaApplication 1.0
-import SofaData 1.0
+import Sofa.Core.SofaData 1.0 as SofaData
 import SofaBasics 1.0
 
 Item {

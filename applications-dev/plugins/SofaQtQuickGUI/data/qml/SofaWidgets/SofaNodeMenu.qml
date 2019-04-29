@@ -8,7 +8,7 @@ import SofaApplication 1.0
 import SofaSceneListModel 1.0
 import SofaComponent 1.0
 import SofaWidgets 1.0
-import Sofa.Core.Data 1.0
+import Sofa.Core.SofaData 1.0
 
 Menu {
     id: nodeMenu

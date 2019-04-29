@@ -74,7 +74,7 @@ protected:
     Q_INVOKABLE int getComponentId(sofa::qtquick::SofaComponent*) const;
 
     [[deprecated("This function is replaced with getDataByID")]]
-    Q_INVOKABLE sofa::qtquick::SofaBase* getBaseById(int row) const;
+    Q_INVOKABLE sofaqtquick::bindings::SofaBase* getBaseById(int row) const;
 
     Q_INVOKABLE QList<int> computeFilteredRows(const QString& filter) const;
 

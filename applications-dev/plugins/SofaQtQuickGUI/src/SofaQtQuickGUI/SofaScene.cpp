@@ -575,7 +575,7 @@ void SofaScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
     pyQtForceSynchronousChanged(newPyQtForceSynchronous);
 }
 
-void SofaScene::setSelectedComponent(sofa::qtquick::SofaBase* newSelectedComponent)
+void SofaScene::setSelectedComponent(sofaqtquick::bindings::SofaBase* newSelectedComponent)
 {
     if(newSelectedComponent == mySelectedComponent)
         return;
@@ -1254,7 +1254,7 @@ static BaseData* FindData_Helper(BaseNode* node, const QString& path)
 
 /// Returns a link object from its path. The path
 /// must be composed of a prefix.linkname
-QObject* SofaScene::link(const QString& fullpath)
+SofaLink* SofaScene::link(const QString& fullpath)
 {
     std::cout << "GET FROM PATH: " << fullpath.toStdString() << std::endl ;
 
@@ -1404,7 +1404,7 @@ sofa::qtquick::SofaComponentList* SofaScene::componentsByType(const QString& typ
     return sofaComponents;
 }
 
-SofaComponent* SofaScene::root()
+sofaqtquick::bindings::SofaBase* SofaScene::root()
 {
     if(!mySofaSimulation)
         return nullptr;
@@ -1413,7 +1413,7 @@ SofaComponent* SofaScene::root()
     if(!base)
         return nullptr;
 
-    return new SofaComponent(this, base);
+    return new sofaqtquick::bindings::SofaBase(base);
 }
 
 SofaComponent* SofaScene::visualStyleComponent()

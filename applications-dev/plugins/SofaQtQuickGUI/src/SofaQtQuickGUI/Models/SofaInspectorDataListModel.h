@@ -110,7 +110,7 @@ public:
     ~SofaInspectorDataListModel();
 
     Q_INVOKABLE void update();
-    Q_PROPERTY(sofa::qtquick::SofaBase* sofaSelectedComponent
+    Q_PROPERTY(sofaqtquick::bindings::SofaBase* sofaSelectedComponent
                READ sofaSelectedComponent
                WRITE setSofaSelectedComponent
                NOTIFY sofaSelectedComponentChanged)
@@ -154,7 +154,7 @@ protected:
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     QHash<int,QByteArray> roleNames() const;
 
-    Q_INVOKABLE SofaData* getDataById(int parent, int child) const;
+    Q_INVOKABLE sofaqtquick::bindings::SofaData* getDataById(int parent, int child) const;
     Q_INVOKABLE bool isGroupVisible(int id) const ;
     Q_INVOKABLE bool isItemVisible(int parent, int child) const ;
 
