@@ -4,6 +4,7 @@ import importlib
 import inspect
 
 def createScene(node):
+    print ("CREATING PREFAB")
     functions = {}
     pythonScripts = {}
     classes = {}
@@ -22,7 +23,7 @@ def createScene(node):
         print ("PythonAsset ERROR: could not import module " + sys.argv[2])
         print (e)
 
-    print ('Parsing module...')
+    # print ('Parsing module...')
     # module loaded, let's see what's inside:
     if "createScene" in dir(m):
         # print("We found a createScene entry point, let's load it")
@@ -48,36 +49,30 @@ def createScene(node):
 
     # No Prefab name passed as argument. Loading 1 prefab:
     if len(sys.argv) == 3:
-        print ('No prefab name provided. Loading by order of priority')
+        # print ('No prefab name provided. Loading by order of priority')
         # 1st, createScene if it exists:
         if 'createScene' in functions.keys():
-            print 'createScene'
             functions['createScene'](node)
             return node
         # 2nd, call the first prefab available:
         if len(prefabs) > 0:
-            print prefabs.items()[0][0]
             prefabs.items()[0][1](node)
             return node
         # 3rd, call the first PythonScript:
         if len(pythonScripts) > 0:
-            print pythonScripts.items()[0][0]
             pythonScripts.items()[0][1](node)
             return node
         # 4th, call the first class:
         if len(classes) > 0:
-            print classes.items()[0][0]
             classes.items()[0][1](node)
             return node
         # finally, try to call the first python function available:
         if len(functions) > 0:
-            print functions.items()[0][0]
             functions.items()[0][1](node)
             return
         print ("PythonAsset ERROR: No callable found in " + str(m))
     else:
-        pyName = sys.argv[4]
-        print ('Prefab name ' + pyName + ' provided. searching in module...')
+        pyName = sys.argv[3]
         if pyName == "createScene":
             print 'Loading ' + pyName
             functions["createScene"](node)

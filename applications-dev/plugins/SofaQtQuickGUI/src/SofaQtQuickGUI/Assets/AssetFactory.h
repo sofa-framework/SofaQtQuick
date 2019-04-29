@@ -70,7 +70,9 @@ template <class T>
 Asset::SPtr AssetCreator<T>::createInstance(std::string path,
                                                        std::string extension)
 {
-    return sofa::core::objectmodel::New<T>(path, extension);
+    Asset::SPtr t = sofa::core::objectmodel::New<T>(path, extension);
+    t->initAsset();
+    return t;
 }
 
 template <class T> const QUrl& AssetCreator<T>::getIcon()

@@ -39,14 +39,13 @@ public:
     Q_INVOKABLE void scanProject(const QUrl& url);
     Q_INVOKABLE const QString getFileCount(const QUrl& url);
 
-    Q_INVOKABLE sofa::qtquick::SofaComponent* getAsset(const QUrl& url);
-    Q_INVOKABLE void getAssetMetaInfo(const QUrl& url);
+    Q_INVOKABLE sofa::qtquick::SofaComponent* getAsset(const QUrl& url, const QString& assetName = "");
+    Q_INVOKABLE QList<QObject*> getAssetMetaInfo(const QUrl& url);
 
 
 private:
     QUrl m_rootDir; // The Project's root fs directory
     AssetFactory m_assetFactory; /// The factory to create SofaComponents & query meta data
-//    QProgressDialog* m_progress;
 
     using assetMapPair = std::pair<QString, Asset::SPtr >;
     using assetMapIterator = std::map<QString, Asset::SPtr >::iterator;

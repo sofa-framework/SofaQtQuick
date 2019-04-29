@@ -16,7 +16,17 @@ Asset::Asset(std::string path, std::string extension)
       m_path(path), m_extension(extension)
 {
 }
-Asset::~Asset() {}
+
+void Asset::initAsset()
+{
+    m_metaDataModel = getAssetMetaInfo();
+}
+
+Asset::~Asset()
+{
+    for (auto data : m_metaDataModel)
+        delete data;
+}
 
 } // namespace qtquick
 } // namespace sofa

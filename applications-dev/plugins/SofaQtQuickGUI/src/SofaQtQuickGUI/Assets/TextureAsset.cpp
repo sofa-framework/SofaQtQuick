@@ -29,8 +29,9 @@ TextureAsset::TextureAsset(std::string path, std::string extension)
 {
 }
 
-SofaComponent* TextureAsset::getAsset()
+SofaComponent* TextureAsset::getAsset(const std::string& assetName)
 {
+    SOFA_UNUSED(assetName);
     if (loaders.find(m_extension) == loaders.end())
     {
         msg_error("Unknown file format.");
@@ -48,9 +49,9 @@ SofaComponent* TextureAsset::getAsset()
     return new SofaComponent(nullptr, this);
 }
 
-void TextureAsset::getAssetMetaInfo()
+QList<QObject*> TextureAsset::getAssetMetaInfo()
 {
-
+    return QList<QObject*>();
 }
 
 } // namespace qtquick

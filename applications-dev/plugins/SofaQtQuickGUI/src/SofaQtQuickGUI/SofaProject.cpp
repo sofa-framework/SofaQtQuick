@@ -69,7 +69,7 @@ const QString SofaProject::getFileCount(const QUrl& url)
 }
 
 
-sofa::qtquick::SofaComponent* SofaProject::getAsset(const QUrl& url)
+sofa::qtquick::SofaComponent* SofaProject::getAsset(const QUrl& url, const QString& assetName)
 {
     assetMapIterator it = m_assets.find(url.toLocalFile());
     if (it == m_assets.end())
@@ -82,7 +82,7 @@ sofa::qtquick::SofaComponent* SofaProject::getAsset(const QUrl& url)
         std::cout << ("Could not load that asset properly... sorry!") << std::endl;
         return nullptr;
     }
-    SofaComponent* component = it->second->getAsset();
+    SofaComponent* component = it->second->getAsset(assetName.toStdString());
     if (component == nullptr)
     {
         std::cout << ("Could not load that asset's preview... sorry!") << std::endl;
@@ -92,20 +92,20 @@ sofa::qtquick::SofaComponent* SofaProject::getAsset(const QUrl& url)
     return component;
 }
 
-void SofaProject::getAssetMetaInfo(const QUrl& url)
+QList<QObject*> SofaProject::getAssetMetaInfo(const QUrl& url)
 {
     assetMapIterator it = m_assets.find(url.toLocalFile());
     if (it == m_assets.end())
     {
         std::cout << ("No such asset in project! rescan required") << std::endl;
-        return;
+        return QList<QObject*>();
     }
     if (!it->second.get())
     {
         std::cout << ("Could not load that asset properly... sorry!") << std::endl;
-        return;
+        return QList<QObject*>();
     }
-    it->second->getAssetMetaInfo();
+    return it->second->getAssetMetaInfo();
 }
 
 }  // namespace qtquick

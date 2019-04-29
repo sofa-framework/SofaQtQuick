@@ -23,32 +23,24 @@ struct BaseAssetLoader;
  */
 class Asset : public sofa::simulation::graph::DAGNode
 {
-//    Q_OBJECT
-
   public:
-    SOFA_CLASS(Asset, simulation::graph::DAGNode);
-
+    SOFA_ABSTRACT_CLASS(Asset, sofa::simulation::graph::DAGNode);
     typedef std::map<std::string, BaseAssetLoader *> LoaderMap;
 
     Asset(std::string path, std::string extension);
+    void initAsset();
     virtual ~Asset() override;
-    virtual SofaComponent* getAsset() = 0;
-    virtual void getAssetMetaInfo() = 0;
-
-//    Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
-//    Q_SIGNAL void fileNameChanged(QString fileName);
-//    QString fileName()
-//    {
-//        return QUrl(QString::fromStdString(m_path)).fileName();
-//    }
-
-    static const QUrl iconPath;
+    virtual sofa::qtquick::SofaComponent* getAsset(const std::string& assetName = "") = 0;
+    virtual QList<QObject*> getAssetMetaInfo() = 0;
     static const QString typeString;
+    static const QUrl iconPath;
+
     static const LoaderMap loaders;
 
   protected:
     const std::string m_path;
     const std::string m_extension;
+    QList<QObject*> m_metaDataModel;
 };
 
 struct BaseAssetLoader

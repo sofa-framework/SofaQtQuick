@@ -64,8 +64,8 @@ Item {
             item.load();
         }
 
-        for(var i = 0; i < root.children.length; ++i) {
-            var item = root.children[i];
+        for(i = 0; i < root.children.length; ++i) {
+            item = root.children[i];
             if(!item.isSplitter && !item.isView)
                 continue;
 
@@ -90,7 +90,7 @@ Item {
                 }
 
                 var splitterIdArray = uiSettings.splitterIds.split(';');
-                for(var i = 0; i < splitterIdArray.length; ++i) {
+                for(i = 0; i < splitterIdArray.length; ++i) {
                     if(0 === splitterIdArray[i].length)
                         continue;
 
@@ -213,7 +213,6 @@ Item {
         } else {
             splitter = createSplitter({"y": position.y, "topLeftEdge": view.leftEdge, "bottomRightEdge": view.rightEdge, "orientation": Qt.Horizontal});
 
-            var newView;
             if(position.y < view.y + view.height /2) {
                 newView = createView({"topEdge": view.topEdge, "bottomEdge": splitter, "leftEdge": view.leftEdge, "rightEdge": view.rightEdge});
                 view.topEdge = splitter;
@@ -307,7 +306,7 @@ Item {
         // merge vertically - top to bottom
         if(view.bottomEdge && view.bottomEdge === mergingView.topEdge && view.leftEdge === mergingView.leftEdge && view.rightEdge === mergingView.rightEdge) {
             // splitter is shared only by the two views
-            var splitter = view.bottomEdge;
+            splitter = view.bottomEdge;
             if(splitter.topLeftEdge === view.leftEdge && splitter.bottomRightEdge === view.rightEdge) {
                 splitter.destroyByUser();
                 view.bottomEdge = mergingView.bottomEdge;
@@ -323,8 +322,8 @@ Item {
                     mergingView.destroyByUser();
                 } else { // splitter is shared by two views and also by other views on the left and on the right
                     view.bottomEdge = mergingView.bottomEdge;
-                    var leftSplitter = createSplitter({"y": splitter.y, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.leftEdge, "orientation": splitter.orientation});
-                    var rightSplitter = createSplitter({"y": splitter.y, "topLeftEdge": view.rightEdge, "bottomRightEdge": splitter.bottomRightEdge, "orientation": splitter.orientation});
+                    leftSplitter = createSplitter({"y": splitter.y, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.leftEdge, "orientation": splitter.orientation});
+                    rightSplitter = createSplitter({"y": splitter.y, "topLeftEdge": view.rightEdge, "bottomRightEdge": splitter.bottomRightEdge, "orientation": splitter.orientation});
                     replaceWithSuitableSplitter(splitter, leftSplitter, rightSplitter);
                     mergingView.destroyByUser();
                     splitter.destroyByUser();
@@ -335,7 +334,7 @@ Item {
         // merge horizontally - right to left
         if(view.rightEdge && view.rightEdge === mergingView.leftEdge && view.bottomEdge === mergingView.bottomEdge && view.topEdge === mergingView.topEdge) {
             // splitter is shared only by the two views
-            var splitter = view.rightEdge;
+            splitter = view.rightEdge;
             if(splitter.bottomRightEdge === view.bottomEdge && splitter.topLeftEdge === view.topEdge) {
                 splitter.destroyByUser();
                 view.rightEdge = mergingView.rightEdge;
@@ -363,7 +362,7 @@ Item {
         // merge horizontally - left to right
         if(view.leftEdge && view.leftEdge === mergingView.rightEdge && view.bottomEdge === mergingView.bottomEdge && view.topEdge === mergingView.topEdge) {
             // splitter is shared only by the two views
-            var splitter = view.leftEdge;
+            splitter = view.leftEdge;
             if(splitter.bottomRightEdge === view.bottomEdge && splitter.topLeftEdge === view.topEdge) {
                 splitter.destroyByUser();
                 view.leftEdge = mergingView.leftEdge;
@@ -380,7 +379,7 @@ Item {
                 } else { // splitter is shared by two views and also by other views on the left and on the right
                     view.leftEdge = mergingView.leftEdge;
                     var bottomSplitter = createSplitter({"x": splitter.x, "topLeftEdge": view.bottomEdge, "bottomRightEdge": splitter.bottomRightEdge, "orientation": splitter.orientation});
-                    var topSplitter = createSplitter({"x": splitter.x, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.topEdge, "orientation": splitter.orientation});
+                    topSplitter = createSplitter({"x": splitter.x, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.topEdge, "orientation": splitter.orientation});
                     replaceWithSuitableSplitter(splitter, bottomSplitter, topSplitter);
                     mergingView.destroyByUser();
                     splitter.destroyByUser();
@@ -607,7 +606,7 @@ Item {
 
                         if(dragTarget) {
                             if(dragTarget.isSplitter) {
-                                var splitter = dragTarget;
+                                splitter = dragTarget;
                                 if(Qt.Vertical === splitter.orientation) {
                                     splitter.x = mapToItem(root, mouse.x, mouse.y).x;
                                     var dragBoundary = computeDragXBoundary(splitter);
@@ -616,7 +615,7 @@ Item {
                                     splitter.x = Math.max(dragMinimumX, Math.min(splitter.x, dragMaximumX));
                                 } else {
                                     splitter.y = mapToItem(root, mouse.x, mouse.y).y;
-                                    var dragBoundary = computeDragYBoundary(splitter);
+                                    dragBoundary = computeDragYBoundary(splitter);
                                     var dragMinimumY = dragBoundary.min;
                                     var dragMaximumY = dragBoundary.max;
                                     splitter.y = Math.max(dragMinimumY, Math.min(splitter.y, dragMaximumY));

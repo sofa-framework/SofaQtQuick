@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
 import AssetFactory 1.0
 import SofaColorScheme 1.0
+import SofaWidgets 1.0
 //import AssetView 1.0
 
 Item {
@@ -167,7 +168,7 @@ Item {
                     nameFilters: ["*"]
                 }
 
-                Component {
+                delegate: Component {
                     id: fileDelegate
                     Rectangle {
                         id: wrapper
@@ -234,12 +235,19 @@ Item {
                                 }
                             }
                         }
+                        SofaAssetMenu {
+                            id: assetMenu
+                            model: self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
+
+                            visible: false
+                        }
+
 
                         MouseArea {
                             id: mouseRegion
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
                             anchors.fill: parent
-                            hoverEnabled: true;
+                            hoverEnabled: true
                             onHoveredChanged: {
                                 if (containsMouse) {
                                     folderView.currentIndex = index;
@@ -251,21 +259,61 @@ Item {
                                 } else {
                                     var rootNode = sofaApplication.sofaScene.root()
 
-                                    var component = self.project.getAsset(folderModel.get(index, "fileURL"))
-
-                                    sofaApplication.sofaScene.addExistingNodeTo(rootNode, component)
+                                    insertAsset(index, rootNode)
                                 }
 
                             }
-
                             onClicked: {
-                                if (Qt.LeftButton === mouse.button)
+                                if (Qt.RightButton === mouse.button)
                                 {
                                     // Let's load detailed info if available
                                     if (!folderModel.isFolder(index))
                                     {
-                                        self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
+                                        assetMenu.visible = true
                                     }
+                                }
+                            }
+
+                            drag.target: draggedData
+
+
+
+                            drag.onActiveChanged: {
+                                if (drag.active) {
+                                    draggedData.ctxMenu = assetMenu
+                                } else {
+                                    console.error("Drag Finished")
+
+                                }
+
+                                //                                    if (parent.Drag.target !== null) {
+                                //                                        var target = parent.Drag.target.node
+                                //                                        if (target !== "invalid") {
+                                //                                            insertAsset(index, sofaApplication.sofaScene.node(target))
+                                //                                        }
+                                //                                    }
+                            }
+                            function insertAsset(index, rootNode) {
+                                var component = self.project.getAsset(folderModel.get(index, "fileURL"))
+                                console.error("Parent node for asset is " + rootNode)
+                                sofaApplication.sofaScene.addExistingNodeTo(rootNode, component)
+                            }
+
+                            Item {
+                                id: draggedData
+                                Drag.active: mouseRegion.drag.active
+                                Drag.dragType: Drag.Automatic
+                                Drag.supportedActions: Qt.CopyAction
+                                Drag.mimeData: {
+                                    "text/plain": "Copied text"
+                                }
+                                property bool accepted: false
+                                property point beginDrag
+                                property var node
+                                property var ctxMenu
+
+                                function getAsset(assetName) {
+                                    return self.project.getAsset(folderModel.get(index, "fileURL"), assetName)
                                 }
                             }
                         }
@@ -273,7 +321,6 @@ Item {
                 }
 
                 model: folderModel
-                delegate: fileDelegate
                 highlight: Rectangle { color: "#82878c"; radius: 5 }
                 focus: true
             }

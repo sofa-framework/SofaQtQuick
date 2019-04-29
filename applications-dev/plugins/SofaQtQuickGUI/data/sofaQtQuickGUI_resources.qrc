@@ -63,5 +63,6 @@
         <file>icon/ICON_PYEngine.png</file>
         <file>icon/ICON_PYSCN.png</file>
         <file>icon/ICON_PYTHON.png</file>
+        <file>icon/ICON_PREFAB.png</file>
     </qresource>
 </RCC>

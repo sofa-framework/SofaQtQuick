@@ -1,10 +1,11 @@
 #include "PythonAsset.h"
 
 #include <SofaPython/SceneLoaderPY.h>
+#include <SofaPython/PythonEnvironment.h>
 
 #include <memory>
 #include <experimental/filesystem>
-
+using sofa::simulation::PythonEnvironment;
 namespace fs = std::experimental::filesystem;
 
 namespace sofa::qtquick
@@ -30,7 +31,7 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 {
 }
 
-SofaComponent* PythonAsset::getAsset()
+sofa::qtquick::SofaComponent* PythonAsset::getAsset(const std::string& assetName)
 {
     if (loaders.find(m_extension) == loaders.end() ||
             loaders.find(m_extension)->second == nullptr)
@@ -49,6 +50,8 @@ SofaComponent* PythonAsset::getAsset()
     std::vector<std::string> args;
     args.push_back(path);
     args.push_back(stem);
+    if (!assetName.empty())
+        args.push_back(assetName);
     scnLoader.loadSceneWithArguments("config/templates/PythonAsset.py",
                                      args, &root);
 
@@ -58,9 +61,27 @@ SofaComponent* PythonAsset::getAsset()
     return new SofaComponent(nullptr, root.get());
 }
 
-void PythonAsset::getAssetMetaInfo()
-{
+PythonAssetModel::PythonAssetModel(std::string name, std::string type)
+    : m_name(name),
+      m_type(type)
+{}
+QString PythonAssetModel::name() const { return m_name.c_str(); }
+QString PythonAssetModel::type() const { return m_type.c_str(); }
 
+QList<QObject*> PythonAsset::getAssetMetaInfo()
+{
+    fs::path obj(m_path);
+
+    std::string stem = obj.stem();
+    std::string path = obj.parent_path().string();
+
+    std::map<std::string, std::string> map;
+    map = PythonEnvironment::getPythonModuleContent(path, stem);
+
+    QList<QObject*> list;
+    for (auto pair : map)
+        list.append(new PythonAssetModel(pair.first, pair.second));
+    return list;
 }
 
 

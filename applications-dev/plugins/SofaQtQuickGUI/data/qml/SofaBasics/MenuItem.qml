@@ -13,7 +13,7 @@ MenuItem {
 
     icon.width: 20
     icon.height: 20
-    icon.color: control.palette.windowText
+    icon.color: "transparent"
     contentItem: IconLabel {
         readonly property real arrowPadding: control.subMenu && control.arrow ? control.arrow.width + control.spacing : 0
         readonly property real indicatorPadding: control.checkable && control.indicator ? control.indicator.width + control.spacing : 0

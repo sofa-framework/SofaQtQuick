@@ -24,8 +24,8 @@ class MeshAsset : public Asset
 {
   public:
     MeshAsset(std::string path, std::string extension);
-    virtual SofaComponent* getAsset() override;
-    virtual void getAssetMetaInfo() override;
+    virtual SofaComponent* getAsset(const std::string& assetName = "") override;
+    virtual QList<QObject*> getAssetMetaInfo() override;
 
 //    Q_PROPERTY(QString bbox READ bbox NOTIFY bboxChanged)
 //    Q_SIGNAL void bboxChanged(QString bbox);

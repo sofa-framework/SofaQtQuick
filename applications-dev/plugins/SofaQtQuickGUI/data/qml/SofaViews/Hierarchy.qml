@@ -370,6 +370,24 @@ Rectangle {
                 elide: styleData.elideMode
                 text: name //+ "(" + model.row + "/"+ styleData.row + ")"
             }
+            DropArea {
+                id: dropArea
+                property string node: "invalid"
+                anchors.fill: parent
+                onEntered: {
+                    var srcIndex = sceneModel.mapToSource(styleData.index)
+                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
+                    if (isNode) node = theComponent.getPathName()
+                    console.error("Hovering on " + node)
+                }
+                onDropped: {
+                    drag.source.ctxMenu.parent = parent
+                    drag.source.ctxMenu.visible = true
+                    drag.source.ctxMenu.draggedData = drag.source
+                    drag.source.ctxMenu.parentNode = node
+                    drag.source.ctxMenu.sofaScene = SofaApplication.sofaScene
+                }
+            }
 
 //            MouseArea
 //            {

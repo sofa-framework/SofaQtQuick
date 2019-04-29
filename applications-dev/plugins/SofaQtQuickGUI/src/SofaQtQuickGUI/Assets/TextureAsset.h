@@ -17,8 +17,8 @@ class TextureAsset : public Asset
 {
   public:
     TextureAsset(std::string path, std::string extension);
-    virtual SofaComponent* getAsset() override;
-    virtual void getAssetMetaInfo() override;
+    virtual SofaComponent* getAsset(const std::string& assetName = "") override;
+    virtual QList<QObject*> getAssetMetaInfo() override;
 
     static const QUrl iconPath;
     static const QString typeString;

@@ -36,8 +36,9 @@ MeshAsset::MeshAsset(std::string path, std::string extension)
 {
 }
 
-SofaComponent* MeshAsset::getAsset()
+SofaComponent* MeshAsset::getAsset(const std::string& assetName)
 {
+    SOFA_UNUSED(assetName);
     if (loaders.find(m_extension) == loaders.end() ||
             loaders.find(m_extension)->second == nullptr)
     {
@@ -62,9 +63,9 @@ SofaComponent* MeshAsset::getAsset()
     return new SofaComponent(nullptr, root.get());
 }
 
-void MeshAsset::getAssetMetaInfo()
+QList<QObject*> MeshAsset::getAssetMetaInfo()
 {
-
+    return QList<QObject*>();
 }
 
 
