@@ -74,4 +74,20 @@ Item
             console.exception("FAILURE: expecting not 'undefined' but got "+a);
     }
 
+    function assert_throw(f)
+    {
+        var hasCatch=false;
+        try
+        {
+            f();
+        }catch(error)
+        {
+            hasCatch=true;
+        }
+
+        if(hasCatch!==true){
+            console.exception("FAILURE: expecting function to throw an exception. Got None.");
+        }
+    }
+
 }
