@@ -61,7 +61,7 @@ void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, c
 int main(int argc, char **argv)
 {
     /// Install the handler the Sofa message hook into the Qt messaging system.
-    qInstallMessageHandler(convertQMessagesToSofa);
+    //qInstallMessageHandler(convertQMessagesToSofa);
 
     /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofa::qtquick::SofaApplication::Initialization();

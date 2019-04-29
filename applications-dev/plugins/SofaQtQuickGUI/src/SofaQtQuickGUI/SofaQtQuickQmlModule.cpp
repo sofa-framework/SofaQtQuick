@@ -156,7 +156,6 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaScene>                                      ("SofaScene"                            , versionMajor, versionMinor, "SofaScene");
     qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
     qmlRegisterUncreatableType<SofaComponentList>                   ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
-    qmlRegisterUncreatableType<SofaData>                            ("SofaData"                             , versionMajor, versionMinor, "SofaData", "SofaData is not instantiable");
     qmlRegisterUncreatableType<sofa::qtquick::SofaLink>             ("SofaLink"                             , versionMajor, versionMinor, "SofaLink", "SofaLink is not instantiable");
     qmlRegisterUncreatableType<Selectable>                          ("Selectable"                           , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
     qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator"                , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
@@ -184,7 +183,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
 
     qmlRegisterUncreatableType<sofaqtquick::bindings::SofaData> ("Sofa.Core.Data",
                                           versionMajor, versionMinor,
-                                          "Data",
+                                          "SofaData",
                                           QString("It is not possible to create a Sofa.Core.BaseData object"));
 
 

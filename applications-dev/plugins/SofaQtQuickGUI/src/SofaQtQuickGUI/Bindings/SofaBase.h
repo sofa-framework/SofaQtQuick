@@ -62,6 +62,9 @@ public:
     /// The following three are used to get extra information about where
     /// the component is implemented (the source location)
     /// and where it is instanciated (the scene file location)
+    /// If the informations are available it returns
+    /// a string containing ["/path/to/file", 19]
+    /// In case there is no filename the method returns the empty string
     Q_INVOKABLE bool hasLocations() const ;
     Q_INVOKABLE QString getSourceLocation() const ;
     Q_INVOKABLE QString getInstanciationLocation() const ;

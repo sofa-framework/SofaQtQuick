@@ -139,7 +139,6 @@ void SofaApplication::openInEditor(const QString& fullpath, const int lineno) co
     std::stringstream s;
     QFileInfo f(fullpath);
     s << f.absoluteFilePath().toStdString() << ":" << lineno ;
-    std::cout << "OPEN" << s.str() << std::endl ;
     QProcess::execute("qtcreator", QStringList() << "-client" << QString::fromStdString(s.str()) );
 }
 

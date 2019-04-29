@@ -32,7 +32,7 @@ SofaData::SofaData(BaseData* self)
     m_self = self;
 }
 
-QVariant SofaData::value() const
+QVariant SofaData::getValue() const
 {
     return sofaqtquick::helper::createQVariantFromData(m_self);
 }
