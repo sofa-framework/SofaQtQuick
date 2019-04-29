@@ -36,10 +36,7 @@ class SofaComponent;
 class SofaScene;
 }  // namespace sofa::qtquick
 
-namespace sofaqtquick
-{
-
-namespace bindings
+namespace sofaqtquick::bindings
 {
 
 namespace _sofanode_
@@ -78,6 +75,4 @@ public:
 
 using _sofanode_::SofaNode;
 
-} /// namespace binding
-
-} /// namespace sofaqtquick
+} /// namespace sofaqtquick::bindings

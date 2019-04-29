@@ -27,10 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/core/objectmodel/Base.h>
 #include <sofa/core/objectmodel/BaseData.h>
 
-namespace sofaqtquick
-{
-
-namespace bindings
+namespace sofaqtquick::bindings
 {
 
 namespace _sofabase_
@@ -88,6 +85,4 @@ protected:
 
 using _sofabase_::SofaBase;
 
-} /// namespace binding
-
-} /// namespace sofaqtquick
+} /// namespace sofaqtquick::bindings

@@ -145,19 +145,19 @@ void SofaDisplayFlagsTreeModel::upload()
     displayFlagsAccessor->setShowNormals(myFlags & ShowNormals);
 }
 
-SofaData* SofaDisplayFlagsTreeModel::displayFlagsData() const
+sofaqtquick::bindings::SofaData* SofaDisplayFlagsTreeModel::displayFlagsData() const
 {
     return myDisplayFlagsData;
 }
 
-void SofaDisplayFlagsTreeModel::setDisplayFlagsData(SofaData* newDisplayFlagsData)
+void SofaDisplayFlagsTreeModel::setDisplayFlagsData(sofaqtquick::bindings::SofaData* newDisplayFlagsData)
 {
     if(newDisplayFlagsData == myDisplayFlagsData)
         return;
 
     myDisplayFlagsData = nullptr;
     if(newDisplayFlagsData)
-        myDisplayFlagsData = new SofaData(newDisplayFlagsData->rawData());
+        myDisplayFlagsData = new sofaqtquick::bindings::SofaData(newDisplayFlagsData->rawData());
 
     displayFlagsDataChanged(newDisplayFlagsData);
 }

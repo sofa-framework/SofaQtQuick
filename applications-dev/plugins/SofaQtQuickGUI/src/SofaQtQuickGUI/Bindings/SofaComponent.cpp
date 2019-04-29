@@ -172,7 +172,7 @@ bool SofaComponent::isSame(SofaComponent* sofaComponent) const
     return false;
 }
 
-SofaData* SofaComponent::getComponentData(const QString& name) const
+sofaqtquick::bindings::SofaData* SofaComponent::getComponentData(const QString& name) const
 {
     dmsg_deprecated("SofaComponent::getComponentData") << "Deprecated object..use SofaBase instead" ;
     return nullptr;

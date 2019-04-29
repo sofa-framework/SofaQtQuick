@@ -271,14 +271,14 @@ QHash<int,QByteArray> SofaDataListModel::roleNames() const
     return roles;
 }
 
-SofaData* SofaDataListModel::getDataById(int row) const
+sofaqtquick::bindings::SofaData* SofaDataListModel::getDataById(int row) const
 {
     if(row < 0 || row >= myItems.size())
         return 0;
 
     const QVariant& data = myItems.at(row).data;
     if(QVariant::String != data.type())
-        return new SofaData(static_cast<sofa::core::objectmodel::BaseData*>(data.value<void*>()));
+        return new sofaqtquick::bindings::SofaData(static_cast<sofa::core::objectmodel::BaseData*>(data.value<void*>()));
 
     return nullptr;
 }

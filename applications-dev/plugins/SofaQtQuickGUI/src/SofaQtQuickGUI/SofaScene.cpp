@@ -1277,7 +1277,7 @@ SofaLink* SofaScene::link(const QString& fullpath)
     return new SofaLink(this, base, link);
 }
 
-SofaData* SofaScene::data(const QString& path)
+sofaqtquick::bindings::SofaData* SofaScene::data(const QString& path)
 {
     BaseData* data = FindData_Helper(mySofaRootNode.get(), path);
     if(!data)
@@ -1287,7 +1287,7 @@ SofaData* SofaScene::data(const QString& path)
     if(!base)
         return nullptr;
 
-    return new SofaData(data);
+    return new sofaqtquick::bindings::SofaData(data);
 }
 
 SofaComponent* SofaScene::node(const QString& path)

@@ -44,7 +44,7 @@ class SofaDataListModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    SofaDataListModel(QObject* parent = 0);
+    SofaDataListModel(QObject* parent = nullptr);
     ~SofaDataListModel();
 
     Q_INVOKABLE void update();

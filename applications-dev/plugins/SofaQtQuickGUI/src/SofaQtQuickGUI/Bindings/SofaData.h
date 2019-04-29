@@ -64,16 +64,3 @@ namespace sofaqtquick::bindings
     using _sofadata_::SofaData;
 }
 
-
-namespace sofa
-{
-
-namespace qtquick
-{
-
-using sofaqtquick::bindings::SofaData;
-
-}
-
-}
-
