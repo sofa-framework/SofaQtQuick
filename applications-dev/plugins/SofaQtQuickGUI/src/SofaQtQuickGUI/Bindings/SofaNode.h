@@ -46,6 +46,9 @@ using sofaqtquick::bindings::SofaBase;
 using sofaqtquick::bindings::_sofaobject_::SofaBaseObject;
 using sofa::simulation::graph::DAGNode;
 
+class SofaNode;
+class SofaNodeList;
+
 /// QtQuick wrapper to sofa::Node
 class SOFA_SOFAQTQUICKGUI_API SofaNode : public SofaBase
 {
@@ -67,14 +70,28 @@ public:
     Q_INVOKABLE SofaNode* getChild(QString name);
     Q_INVOKABLE SofaNode* getNodeInGraph(QString name);
     Q_INVOKABLE SofaNode* getRoot();
-
+    Q_INVOKABLE SofaNodeList* getChildren();
 
     Q_INVOKABLE void addChild(SofaNode* child);
     Q_INVOKABLE void addObject(SofaBaseObject* obj);
 };
 
+class SofaNodeList : public QObject
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE unsigned int size();
+
+    void addSofaNode(sofa::core::objectmodel::BaseNode* node);
+
+private:
+    std::vector<SofaNode*> m_list;
+};
+
 } /// namespace _sofanode_
 
 using _sofanode_::SofaNode;
+using _sofanode_::SofaNodeList;
 
 } /// namespace sofaqtquick::bindings

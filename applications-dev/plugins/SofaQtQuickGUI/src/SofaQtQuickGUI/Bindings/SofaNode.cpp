@@ -94,6 +94,19 @@ SofaNode* SofaNode::getRoot()
     return wrap(self()->getRoot());
 }
 
+SofaNodeList* SofaNode::getChildren()
+{
+    SofaNodeList *list = new SofaNodeList();
+
+    for(auto& child : self()->getChildren())
+    {
+        list->addSofaNode(child);
+    }
+
+    return list;
+}
+
+
 void SofaNode::addChild(SofaNode* child)
 {
     if(child==nullptr)
@@ -108,6 +121,16 @@ void SofaNode::addObject(SofaBaseObject* obj)
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaBaseObject.");
 
     self()->addObject(obj->selfptr());
+}
+
+void SofaNodeList::addSofaNode(sofa::core::objectmodel::BaseNode* node)
+{
+    m_list.push_back(wrap(node));
+}
+
+unsigned int SofaNodeList::size()
+{
+    return m_list.size();
 }
 
 }  // namespace sofaqtquick::bindings::_sofanode_

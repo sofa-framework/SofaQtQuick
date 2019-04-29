@@ -27,4 +27,11 @@ QmlGTestCase
         assert_eq(c.getData("name").value, "Child")
     }
 
+    function tst_getChildren()
+    {
+        var n = SofaFactory.createNode()
+        var c1 = n.createChild("Child1")
+        var c2 = n.createChild("Child2")
+        assert_eq(n.getChildren().size(), 2)
+    }
 }
