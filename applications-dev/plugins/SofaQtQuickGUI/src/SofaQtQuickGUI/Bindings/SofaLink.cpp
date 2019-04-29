@@ -20,12 +20,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  Contributors:
     - damien.marchal@univ-lille.fr
 ********************************************************************/
+#include <QString>
 
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/SofaScene.h>
 
-#include <QString>
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+using sofaqtquick::bindings::SofaCoreBindingContext;
 
 #include <sofa/core/objectmodel/BaseLink.h>
 using sofa::core::objectmodel::BaseLink;
@@ -34,19 +36,51 @@ using sofa::core::objectmodel::BaseLink;
 namespace sofaqtquick::bindings::_sofalink_
 {
 
+
+template<class T, class IN>
+T* wrap(IN* ptr, QString msg)
+{
+    if(ptr==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, msg);
+    }
+    return new T(ptr);
+}
+
 SofaLink::SofaLink(BaseLink* self)
 {
     m_self = self;
 }
 
-bool SofaLink::setValueString(const QString &path)
+size_t SofaLink::getSize()
 {
-    return m_self->read("@"+path.toStdString()) ;
+    return m_self->getSize();
 }
 
-QString SofaLink::getValueString()
+SofaBase* SofaLink::getLinkedBase(size_t index)
 {
-    return QString::fromStdString(m_self->getLinkedPath());
+    if(index >= m_self->getSize())
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+
+    return wrap<SofaBase, sofa::core::objectmodel::Base>(m_self->getLinkedBase(index),
+                                                         "Unable to get SofaBase.");
+}
+
+SofaData* SofaLink::getLinkedData(size_t index)
+{
+    if(index >= m_self->getSize())
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+
+    return wrap<SofaData, sofa::core::objectmodel::BaseData>(m_self->getLinkedData(index),
+                                                         "Unable to get SofaData.");
+}
+
+QString SofaLink::getLinkedPath(size_t index)
+{
+    if(index >= m_self->getSize())
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+
+    QString::fromStdString(m_self->getLinkedPath(index));
 }
 
 

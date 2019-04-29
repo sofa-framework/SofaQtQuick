@@ -24,6 +24,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
 
 /////////////////////////////////////// DECLARTAION /////////////////////////////////////////
 namespace sofaqtquick::bindings
@@ -39,9 +41,11 @@ namespace sofaqtquick::bindings
         public:
             SofaLink(BaseLink* self);
 
-            /// connect the link to an object pointed by the path.
-            Q_INVOKABLE bool setValueString(const QString& path);
-            Q_INVOKABLE QString getValueString();
+            /// Returns the number of link in the SofaLink (in case of multilinks)
+            Q_INVOKABLE size_t getSize();
+            Q_INVOKABLE SofaBase* getLinkedBase(size_t index = 0);
+            Q_INVOKABLE SofaData* getLinkedData(size_t index = 0);
+            Q_INVOKABLE QString   getLinkedPath(size_t index = 0);
 
         private:
             BaseLink* m_self {nullptr};
