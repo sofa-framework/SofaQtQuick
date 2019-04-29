@@ -82,7 +82,10 @@ QObject* SofaBase::getData(const QString& name) const
 {
     auto* data = m_self->findData(name.toStdString());
     if(!data)
+    {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no data with name '"+name+"'");
+        nullptr;
+    }
     return new SofaData(data);
 }
 
@@ -90,7 +93,10 @@ QObject* SofaBase::getLink(const QString& name) const
 {
     auto* link = m_self->findLink(name.toStdString());
     if(!link)
+    {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no link with name '"+name+"'");
+        nullptr;
+    }
     return new SofaLink(link);
 }
 

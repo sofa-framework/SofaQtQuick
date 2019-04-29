@@ -33,8 +33,10 @@ namespace sofaqtquick::bindings::_sofanode_
 SofaNode* wrap(DAGNode::SPtr n)
 {
     if(n.get()==nullptr)
+    {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Unable to get node.");
-
+        return nullptr;
+    }
     return new SofaNode(n);
 }
 SofaNode* wrap(DAGNode* n)
@@ -110,16 +112,20 @@ SofaNodeList* SofaNode::getChildren()
 void SofaNode::addChild(SofaNode* child)
 {
     if(child==nullptr)
+    {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaNode");
-
+        return;
+    }
     self()->addChild(child->selfptr());
 }
 
 void SofaNode::addObject(SofaBaseObject* obj)
 {
     if(obj==nullptr)
+    {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaBaseObject.");
-
+        return;
+    }
     self()->addObject(obj->selfptr());
 }
 
