@@ -28,6 +28,7 @@ set(SOURCE_FILES
 
 set(QMLTEST_FILES
     data/qmltests/SofaBase_test.qml
+    data/qmltests/SofaLink_test.qml
     data/qmltests/SofaNode_test.qml
     data/qmltests/SofaData_test.qml
     )
