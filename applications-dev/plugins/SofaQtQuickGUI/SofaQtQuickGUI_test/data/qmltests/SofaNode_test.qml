@@ -35,6 +35,13 @@ QmlGTestCase
         assert_eq(n.getChildren().size(), 2)
     }
 
+    function tst_getObject()
+    {
+        var n = SofaFactory.createNode()
+        var o = n.createObject("MechanicalObject", {name:"test"})
+        assert_eq(n.getObject("test").getName(),"test")
+    }
+
     function tst_getInitReInit()
     {
         var n = SofaFactory.createNode()
