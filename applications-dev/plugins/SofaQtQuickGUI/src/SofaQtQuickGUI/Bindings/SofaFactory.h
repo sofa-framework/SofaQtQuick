@@ -1,37 +1,38 @@
-/*
-Copyright 2018,
-Author: damien.marchal@univ-lille1.fr, Copyright 2018 CNRS.
+/*********************************************************************
+Copyright 2019, Inria, CNRS, University of Lille
 
-This file is part of SofaQtQuick
+This file is part of runSofa2
 
-Sofa is free software: you can redistribute it and/or modify
+runSofa2 is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-sofaqtquick is distributed in the hope that it will be useful,
+runSofa2 is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Sofa. If not, see <http://www.gnu.org/licenses/>.
-*/
-#ifndef SOFAQTQUICKSOFA_SOFAFACTORY_H
-#define SOFAQTQUICKSOFA_SOFAFACTORY_H
+along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************/
+/********************************************************************
+ Contributors:
+    - damien.marchal@univ-lille.fr
+********************************************************************/
+#pragma once
 
 #include <SofaQtQuickGUI/config.h>
 #include <QAbstractListModel>
 #include <QStringList>
 #include "SofaNode.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick::bindings
 {
 namespace _sofafactory_
 {
 using sofaqtquick::bindings::SofaNode;
+using sofaqtquick::bindings::SofaBaseObject;
 
 /// The SofaFactory object is in charge of exposing to QML
 /// the functionallies of the ObjectFactory including the
@@ -41,16 +42,15 @@ class SOFA_SOFAQTQUICKGUI_API SofaFactory : public QObject
     Q_OBJECT
 
 public:
-    SofaFactory(QObject *parent = 0);
-    ~SofaFactory();
+    SofaFactory(QObject *parent = nullptr);
+    ~SofaFactory() override;
 
     Q_PROPERTY(QStringList components READ getComponents NOTIFY listChanged)
 
     Q_INVOKABLE QStringList getComponents() ;
     Q_INVOKABLE void setFilter(const QString& c) ;
 
-    Q_INVOKABLE sofaqtquick::bindings::SofaNode* createNode();
-
+    Q_INVOKABLE sofaqtquick::bindings::SofaNode* createNode() const;
 
 signals:
     void listChanged();
@@ -64,7 +64,4 @@ private:
 
 using _sofafactory_::SofaFactory ;
 
-} /// qtquick
-} /// sofa
-
-#endif /// SOFAQTQUICKSOFA_SOFAFACTORY_H
+} /// sofaqtquick::bindings

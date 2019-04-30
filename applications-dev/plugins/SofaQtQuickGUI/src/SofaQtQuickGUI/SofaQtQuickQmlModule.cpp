@@ -75,7 +75,7 @@ using sofa::qtquick::SofaProject;
 using sofa::qtquick::AssetFactory;
 
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
-using sofa::qtquick::SofaFactory ;
+using sofaqtquick::bindings::SofaFactory;
 
 #include <SofaQtQuickGUI/LiveFileMonitor.h>
 using sofa::qtquick::livefilemonitor::LiveFileMonitor;
@@ -213,7 +213,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                       createConsole );                    /// exported Name.
 
     /// registers the C++ type in the QML system with the name "SofaFactory",
-    qmlRegisterSingletonType<SofaFactory>("SofaFactory",                  /// char* uri
+    qmlRegisterSingletonType<SofaFactory>("Sofa.Core.SofaFactory",                  /// char* uri
                                           versionMajor, versionMinor,     /// int majorVersion
                                           "SofaFactory",
                                           createSofaFactory );            /// exported Name.
