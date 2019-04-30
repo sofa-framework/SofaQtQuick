@@ -43,6 +43,8 @@ namespace sofaqtquick::bindings
         public:
             SofaData(BaseData* self);
 
+            Q_INVOKABLE QString getName() const;
+            Q_INVOKABLE QString getPathName() const;
             Q_INVOKABLE QVariant getValue() const;
             Q_INVOKABLE bool setValue(const QVariant& getValue);
             Q_INVOKABLE bool setLink(const QString& path);

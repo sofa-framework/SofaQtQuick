@@ -21,6 +21,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 
+#include <sofa/core/objectmodel/Base.h>
+using sofa::core::objectmodel::Base;
+#include <sofa/core/objectmodel/BaseObject.h>
+using sofa::core::objectmodel::BaseObject;
+#include <sofa/core/objectmodel/BaseNode.h>
+using sofa::core::objectmodel::BaseNode;
+
 #include "SofaData.h"
 #include "../DataHelper.h"
 
@@ -58,6 +65,25 @@ QVariantMap SofaData::object()
     }
 
     return QVariantMap();
+}
+
+QString SofaData::getName() const
+{
+    return QString::fromStdString(rawData()->getName());
+}
+
+QString SofaData::getPathName() const
+{
+    const BaseData* data = rawData();
+    const Base* owner = data->getOwner();
+
+    QString prefix = "";
+    if(owner->toBaseNode())
+        prefix = QString::fromStdString(owner->toBaseNode()->getPathName());
+    else if(owner->toBaseObject())
+        prefix = QString::fromStdString(owner->toBaseObject()->getPathName());
+
+    return prefix + "." + QString::fromStdString(data->getName());
 }
 
 bool SofaData::setLink(const QString& path)
