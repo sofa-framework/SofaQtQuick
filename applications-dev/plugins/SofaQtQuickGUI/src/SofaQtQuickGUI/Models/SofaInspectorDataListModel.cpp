@@ -25,10 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/logging/Messaging.h>
 using sofa::helper::logging::Message ;
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::defaulttype;
@@ -76,7 +73,7 @@ void SofaInspectorDataListModel::update()
             delete group;
         m_groups.clear();
         m_nameindex.clear();
-        const Base* base = m_selectedsofacomponent->base();
+        const Base* base = m_selectedsofacomponent->rawBase();
         QStringList listinfos ;
         if(base)
         {
@@ -177,7 +174,7 @@ void SofaInspectorDataListModel::update()
     }
 }
 
-void SofaInspectorDataListModel::setSofaSelectedComponent(SofaComponent* newSofaComponent)
+void SofaInspectorDataListModel::setSofaSelectedComponent(SofaBase* newSofaComponent)
 {
     if(newSofaComponent == m_selectedsofacomponent)
         return;
@@ -352,12 +349,12 @@ QVariant SofaInspectorDataListModel::data(const QModelIndex& index, int role) co
             if(SofaDataType == item->m_type)
             {
                 BaseData* data = (BaseData*) item->m_data.value<void*>();
-                return QVariant::fromValue(SofaScene::dataValue(data));
+                return QVariant::fromValue(new SofaData(data)); //SofaScene::dataValue(data));
             }
             else if(SofaLinkType == item->m_type)
             {
                 BaseLink* link = (BaseLink*) item->m_data.value<void*>();
-                return QVariant::fromValue(SofaScene::linkValue(link));
+                return QVariant::fromValue(new SofaLink(link)); //SofaScene::linkValue(link));
             }
             else if(LogType == item->m_type)
             {
@@ -394,9 +391,9 @@ SofaData* SofaInspectorDataListModel::getDataById(int parent, int child) const
 
     Item* item=m_groups[parent]->m_children[child];
     const QVariant& data = item->m_data ;
-    if(item->m_type == SofaDataType){
-        return new SofaData(m_selectedsofacomponent,
-                            (BaseData*)data.value<void*>());
+    if(item->m_type == SofaDataType)
+    {
+        return new SofaData(static_cast<BaseData*>(data.value<void*>()));
     }
     return nullptr ;
 }
@@ -420,8 +417,6 @@ bool SofaInspectorDataListModel::isItemVisible(int parent, int child) const
 
     ItemBase* item=m_groups[parent]->m_children[child];
     return item->isVisible() ;
-}
-
 }
 
 }

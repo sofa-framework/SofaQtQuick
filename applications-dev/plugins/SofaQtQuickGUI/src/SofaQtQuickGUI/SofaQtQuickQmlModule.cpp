@@ -140,6 +140,15 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<SofaScene*>("const SofaScene*");
     qRegisterMetaType<AssetFactory*>("AssetFactory*");
     qRegisterMetaType<QUrlList>("QUrlList");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("sofaqtquick::bindings::SofaBase*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("SofaBase*");
+
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaData*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaData*");
+
+    qRegisterMetaType<sofaqtquick::bindings::SofaNode*>("sofaqtquick::bindings::SofaNode*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaNode*>("SofaNode*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaNodeList*>("SofaNodeList*");
 
     qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplicationSingleton");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
@@ -154,8 +163,6 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaScene>                                      ("SofaScene"                            , versionMajor, versionMinor, "SofaScene");
     qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
     qmlRegisterUncreatableType<SofaComponentList>                   ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
-    qmlRegisterUncreatableType<SofaData>                            ("SofaData"                             , versionMajor, versionMinor, "SofaData", "SofaData is not instantiable");
-    qmlRegisterUncreatableType<sofa::qtquick::SofaLink>             ("SofaLink"                             , versionMajor, versionMinor, "SofaLink", "SofaLink is not instantiable");
     qmlRegisterUncreatableType<Selectable>                          ("Selectable"                           , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
     qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator"                , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
     qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"              , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");
@@ -175,23 +182,28 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
     qmlRegisterType<AssetFactory>                                   ("AssetFactory"                         , versionMajor, versionMinor, "AssetFactory");
 
-    qmlRegisterUncreatableType<SofaBase> ("Sofa.Core.Base",
-                                          versionMajor, versionMinor,
-                                          "Base",
-                                          QString("It is not possible to create a Sofa.Core.Base object"));
+    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaLink> ("Sofa.Core.SofaLink",
+                                                                 versionMajor, versionMinor,
+                                                                 "SofaLink",
+                                                                 QString("It is not possible to create a Sofa.Core.SofaLink object"));
 
-    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaData> ("Sofa.Core.Data",
-                                          versionMajor, versionMinor,
-                                          "Data",
-                                          QString("It is not possible to create a Sofa.Core.BaseData object"));
+    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaBase> ("Sofa.Core.SofaBase",
+                                                                 versionMajor, versionMinor,
+                                                                 "SofaBase",
+                                                                 QString("It is not possible to create a Sofa.Core.SofaBase object"));
+
+    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaData> ("Sofa.Core.SofaData",
+                                                                 versionMajor, versionMinor,
+                                                                 "SofaData",
+                                                                 QString("It is not possible to create a Sofa.Core.SofaBaseData object"));
 
 
-    qmlRegisterType<SofaNode> ("Sofa.Core.Node",
-                                          versionMajor, versionMinor,
-                                          "Node");
-    qmlRegisterType<SofaBaseObject> ("Sofa.Core.BaseObject",
-                                          versionMajor, versionMinor,
-                                          "BaseObject");
+    qmlRegisterType<SofaNode> ("Sofa.Core.SofaNode",
+                               versionMajor, versionMinor,
+                               "SofaNode");
+    qmlRegisterType<SofaBaseObject> ("Sofa.Core.SofaBaseObject",
+                                     versionMajor, versionMinor,
+                                     "BaseObject");
 
 
     /// registers the C++ type in the QML system with the name "Console",

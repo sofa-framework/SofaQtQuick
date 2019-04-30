@@ -29,6 +29,7 @@ namespace sofa
 namespace qtquick
 {
 
+
 class SofaScene;
 
 /// QtQuick wrapper for a sofa component (i.e baseObject / baseNode), allowing us to share a component in a QML context
@@ -56,7 +57,7 @@ public:
     Q_INVOKABLE QObject* parent() ;
 
     Q_INVOKABLE bool isSame(SofaComponent* sofaComponent) const;
-    Q_INVOKABLE sofa::qtquick::SofaData* getComponentData(const QString& name) const;
+    Q_INVOKABLE sofaqtquick::bindings::SofaData* getComponentData(const QString& name) const;
 
     /// The following three are used to get extra information about where
     /// the component is implemented (the source location)

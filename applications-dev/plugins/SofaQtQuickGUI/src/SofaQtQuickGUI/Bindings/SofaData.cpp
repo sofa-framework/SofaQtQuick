@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  Contributors:
     - damien.marchal@univ-lille.fr
 ********************************************************************/
+
 #include "SofaData.h"
 #include "../DataHelper.h"
 
@@ -31,7 +32,7 @@ SofaData::SofaData(BaseData* self)
     m_self = self;
 }
 
-QVariant SofaData::value() const
+QVariant SofaData::getValue() const
 {
     return sofaqtquick::helper::createQVariantFromData(m_self);
 }
@@ -46,94 +47,29 @@ bool SofaData::setValue(const QVariant& value)
     return false;
 }
 
-
-}
-
-#include <GL/glew.h>
-#include <SofaQtQuickGUI/Bindings/SofaData.h>
-#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
-#include <SofaQtQuickGUI/SofaScene.h>
-
-#include <QString>
-
-namespace sofa
-{
-
-namespace qtquick
-{
-
-using namespace sofa::core::objectmodel;
-
-SofaData::SofaData(const SofaComponent* sofaComponent, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    mySofaComponent(new SofaComponent(*sofaComponent)),
-    myData(data)
-{
-    mySofaComponent->setParent(this);
-}
-
-SofaData::SofaData(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, const sofa::core::objectmodel::BaseData* data) : QObject(),
-    mySofaComponent(new SofaComponent(sofaScene, base)),
-    myData(data)
-{
-    mySofaComponent->setParent(this);
-}
-
-SofaData::SofaData(const SofaData& sofaData) : QObject(),
-    mySofaComponent(new SofaComponent(*sofaData.mySofaComponent)),
-    myData(sofaData.myData)
-{
-    mySofaComponent->setParent(this);
-}
-
-SofaComponent* SofaData::sofaComponent() const
-{
-    return mySofaComponent;
-}
-
 QVariantMap SofaData::object()
 {
-    if(mySofaComponent)
+    const BaseData* data = rawData();
+    if(data)
     {
-        SofaScene* sofaScene = mySofaComponent->sofaScene();
-        if(sofaScene)
-        {
-            const BaseData* data = SofaData::data();
-            if(data)
-                return sofaScene->dataObject(data);
-        }
+        QVariantMap map = sofaqtquick::helper::getSofaDataProperties(data);
+        map.insert("sofaData", QVariant::fromValue(this));
+        return map;
     }
 
     return QVariantMap();
 }
 
-QVariant SofaData::value() const
-{
-    const BaseData* data = SofaData::data();
-    if(data)
-        return SofaScene::dataValue(data);
-
-    return QVariant();
-}
-
-bool SofaData::setValue(const QVariant& value)
-{
-    BaseData* data = SofaData::data();
-    if(data)
-        return SofaScene::setDataValue(data, value);
-
-    return false;
-}
-
 bool SofaData::setLink(const QString& path)
 {
-    BaseData* data = SofaData::data();
+    BaseData* data = rawData();
     if(data)
     {
         std::streambuf* backup(std::cerr.rdbuf());
 
         std::ostringstream stream;
         std::cerr.rdbuf(stream.rdbuf());
-        bool status = SofaScene::setDataLink(data, path);
+        bool status = sofaqtquick::helper::setDataLink(data, path);
         std::cerr.rdbuf(backup);
 
         return status;
@@ -142,26 +78,4 @@ bool SofaData::setLink(const QString& path)
     return false;
 }
 
-BaseData* SofaData::data()
-{
-    return const_cast<BaseData*>(static_cast<const SofaData*>(this)->data());
-}
-
-const BaseData* SofaData::data() const
-{
-    const BaseData* data = nullptr;
-
-    // check if the base still exists hence if the data is still valid
-    if(mySofaComponent)
-    {
-        const Base* base = mySofaComponent->base();
-        if(base)
-            data = myData;
-    }
-
-    return data;
-}
-
-}
-
-}
+} /// namespace sofaqtquick::bindings

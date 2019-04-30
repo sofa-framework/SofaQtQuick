@@ -30,14 +30,17 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/SofaScene.h>
 #include "SofaSceneListModel.h"
 
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
+#include <SofaQtQuickGUI/Bindings/SofaLink.h>
+
 class QTimer;
 class QVector3D;
 
-namespace sofa
+namespace sofaqtquick
 {
-
-namespace qtquick
-{
+using sofaqtquick::bindings::SofaData;
+using sofaqtquick::bindings::SofaBase;
+using sofaqtquick::bindings::SofaLink;
 
 class ItemBase {
 public:
@@ -107,7 +110,7 @@ public:
     ~SofaInspectorDataListModel();
 
     Q_INVOKABLE void update();
-    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaSelectedComponent
+    Q_PROPERTY(sofaqtquick::bindings::SofaBase* sofaSelectedComponent
                READ sofaSelectedComponent
                WRITE setSofaSelectedComponent
                NOTIFY sofaSelectedComponentChanged)
@@ -133,14 +136,14 @@ public:
     };
     Q_ENUMS(Visibility)
 
-    SofaComponent* sofaSelectedComponent() const {return m_selectedsofacomponent;}
-    void setSofaSelectedComponent(SofaComponent* newSofaComponent);
+    SofaBase* sofaSelectedComponent() const {return m_selectedsofacomponent;}
+    void setSofaSelectedComponent(SofaBase* newSofaComponent);
 
 public slots:
     void handleDataHasChanged() ;
 
 signals:
-    void sofaSelectedComponentChanged(SofaComponent* newSofaComponent) const;
+    void sofaSelectedComponentChanged(SofaBase* newSofaComponent) const;
     void sofaDataHasChanged() ;
 
 protected:
@@ -151,7 +154,7 @@ protected:
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     QHash<int,QByteArray> roleNames() const;
 
-    Q_INVOKABLE sofa::qtquick::SofaData* getDataById(int parent, int child) const;
+    Q_INVOKABLE sofaqtquick::bindings::SofaData* getDataById(int parent, int child) const;
     Q_INVOKABLE bool isGroupVisible(int id) const ;
     Q_INVOKABLE bool isItemVisible(int parent, int child) const ;
 
@@ -173,10 +176,8 @@ private:
 
     QList<ItemGroup*>             m_groups;
     QMap<QString, int>            m_nameindex ;
-    SofaComponent*                m_selectedsofacomponent;
+    SofaBase*                     m_selectedsofacomponent;
 };
-
-}
 
 }
 

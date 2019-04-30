@@ -95,7 +95,7 @@ void SofaDisplayFlagsTreeModel::download()
     if(!myDisplayFlagsData)
         return;
 
-    const Data<DisplayFlags>* displayFlags = dynamic_cast<Data<DisplayFlags>*>(myDisplayFlagsData->data());
+    const Data<DisplayFlags>* displayFlags = dynamic_cast<Data<DisplayFlags>*>(myDisplayFlagsData->rawData());
     if(!displayFlags)
         return;
 
@@ -124,7 +124,7 @@ void SofaDisplayFlagsTreeModel::upload()
     if(!myDisplayFlagsData)
         return;
 
-    Data<DisplayFlags>* displayFlags = dynamic_cast<Data<DisplayFlags>*>(myDisplayFlagsData->data());
+    Data<DisplayFlags>* displayFlags = dynamic_cast<Data<DisplayFlags>*>(myDisplayFlagsData->rawData());
     if(!displayFlags)
         return;
 
@@ -145,19 +145,19 @@ void SofaDisplayFlagsTreeModel::upload()
     displayFlagsAccessor->setShowNormals(myFlags & ShowNormals);
 }
 
-SofaData* SofaDisplayFlagsTreeModel::displayFlagsData() const
+sofaqtquick::bindings::SofaData* SofaDisplayFlagsTreeModel::displayFlagsData() const
 {
     return myDisplayFlagsData;
 }
 
-void SofaDisplayFlagsTreeModel::setDisplayFlagsData(SofaData* newDisplayFlagsData)
+void SofaDisplayFlagsTreeModel::setDisplayFlagsData(sofaqtquick::bindings::SofaData* newDisplayFlagsData)
 {
     if(newDisplayFlagsData == myDisplayFlagsData)
         return;
 
     myDisplayFlagsData = nullptr;
     if(newDisplayFlagsData)
-        myDisplayFlagsData = new SofaData(*newDisplayFlagsData);
+        myDisplayFlagsData = new sofaqtquick::bindings::SofaData(newDisplayFlagsData->rawData());
 
     displayFlagsDataChanged(newDisplayFlagsData);
 }

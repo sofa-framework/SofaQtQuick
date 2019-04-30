@@ -24,6 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
 
 class QTimer;
 class QVector3D;
@@ -40,10 +41,13 @@ class SofaDisplayFlagsTreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    SofaDisplayFlagsTreeModel(QObject* parent = 0);
-    ~SofaDisplayFlagsTreeModel();
+    SofaDisplayFlagsTreeModel(QObject* parent = nullptr);
+    ~SofaDisplayFlagsTreeModel() override ;
 
-    Q_PROPERTY(sofa::qtquick::SofaData* displayFlagsData READ displayFlagsData WRITE setDisplayFlagsData NOTIFY displayFlagsDataChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaData* displayFlagsData
+               READ displayFlagsData
+               WRITE setDisplayFlagsData
+               NOTIFY displayFlagsDataChanged)
 
     Q_INVOKABLE int state(const QModelIndex &index);
     Q_INVOKABLE void setEnabled(const QModelIndex &index);
@@ -54,11 +58,11 @@ public slots:
     void upload();
 
 public:
-    SofaData* displayFlagsData() const;
-    void setDisplayFlagsData(SofaData* newDisplayFlagsData);
+    sofaqtquick::bindings::SofaData* displayFlagsData() const;
+    void setDisplayFlagsData(sofaqtquick::bindings::SofaData* newDisplayFlagsData);
 
 signals:
-    void displayFlagsDataChanged(SofaData*);
+    void displayFlagsDataChanged(sofaqtquick::bindings::SofaData*);
 
 protected:
     void setupTree();
@@ -313,7 +317,7 @@ private:
     };
 
 private:
-    SofaData*       myDisplayFlagsData;
+    sofaqtquick::bindings::SofaData*       myDisplayFlagsData;
     int             myFlags;
 
     TreeItem*       myRootItem;

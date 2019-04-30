@@ -37,6 +37,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QPainter>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
+#include <QSGSimpleTextureNode>
 #include <QSGTransformNode>
 #include <QSGSimpleTextureNode>
 #include <QVector>
@@ -689,7 +690,7 @@ void SofaViewer::drawSelectedComponents(sofa::core::visual::VisualParams* visual
     if( !visualParams || !mySofaScene || !mySofaScene->mySelectedComponent)
         return ;
 
-    sofa::core::objectmodel::Base* selectedBase = mySofaScene->mySelectedComponent->base();
+    auto selectedBase = mySofaScene->selectedComponent()->rawBase();
     if(selectedBase)
     {
         //glDepthFunc(GL_LEQUAL);

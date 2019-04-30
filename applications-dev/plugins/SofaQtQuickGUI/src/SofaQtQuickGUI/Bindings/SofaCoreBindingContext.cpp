@@ -20,47 +20,20 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  Contributors:
     - damien.marchal@univ-lille.fr
 ********************************************************************/
-#pragma once
-
-#include <QObject>
-#include <QVariant>
-#include <QVariantMap>
-
-#include <SofaQtQuickGUI/config.h>
-#include <sofa/core/objectmodel/BaseData.h>
-
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 namespace sofaqtquick::bindings
 {
-    namespace _sofadata_
-    {
-        using sofa::core::objectmodel::BaseData;
 
-        class SofaData : public QObject
-        {
-            Q_OBJECT
-            Q_PROPERTY(QVariant value READ getValue WRITE setValue NOTIFY valueChanged)
+static QQmlEngine* s_qmlengine {nullptr};
 
-        public:
-            SofaData(BaseData* self);
-
-            Q_INVOKABLE QVariant getValue() const;
-            Q_INVOKABLE bool setValue(const QVariant& getValue);
-            Q_INVOKABLE bool setLink(const QString& path);
-
-            Q_INVOKABLE QVariantMap object();
-
-            BaseData* rawData() { return m_self; }
-            const BaseData* rawData() const { return m_self; }
-
-        signals:
-            void valueChanged(const QVariant& newValue);
-
-        private:
-            BaseData* m_self {nullptr};
-        };
-    }
-
-    /// Import SofaData from its private namespace into the public one.
-    using _sofadata_::SofaData;
+void SofaCoreBindingContext::setQQmlEngine(QQmlEngine* engine)
+{
+    s_qmlengine = engine;
 }
 
+QQmlEngine* SofaCoreBindingContext::getQQmlEngine()
+{
+    return s_qmlengine;
+}
+
+} /// sofaqtquick::bindings

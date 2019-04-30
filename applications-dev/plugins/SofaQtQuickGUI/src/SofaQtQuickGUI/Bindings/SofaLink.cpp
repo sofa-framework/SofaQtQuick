@@ -20,58 +20,75 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  Contributors:
     - damien.marchal@univ-lille.fr
 ********************************************************************/
+#include <QString>
 
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/SofaScene.h>
 
-#include <QString>
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+using sofaqtquick::bindings::SofaCoreBindingContext;
 
 #include <sofa/core/objectmodel/BaseLink.h>
 using sofa::core::objectmodel::BaseLink;
 
-namespace sofa
+#include "../DataHelper.h"
+namespace sofaqtquick::bindings::_sofalink_
 {
 
-namespace qtquick
-{
 
-namespace _sofalink_h_
+template<class T, class IN>
+T* wrap(IN* ptr, QString msg)
 {
-
-using namespace sofa::core::objectmodel;
-
-SofaLink::SofaLink(const SofaComponent* sofaComponent, BaseLink* link) : QObject(),
-    m_component(new SofaComponent(*sofaComponent)),
-    m_link(link)
-{
-    m_component->setParent(this);
+    if(ptr==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, msg);
+        return nullptr;
+    }
+    return new T(ptr);
 }
 
-SofaLink::SofaLink(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base, BaseLink* link) : QObject(),
-    m_component(new SofaComponent(sofaScene, base)),
-    m_link(link)
+SofaLink::SofaLink(BaseLink* self)
 {
-    m_component->setParent(this);
+    m_self = self;
 }
 
-SofaLink::SofaLink(const SofaLink& SofaLink) : QObject(),
-    m_component(new SofaComponent(*SofaLink.m_component)),
-    m_link(SofaLink.m_link)
+size_t SofaLink::getSize()
 {
-    m_component->setParent(this);
+    return m_self->getSize();
 }
 
-SofaComponent* SofaLink::sofaComponent() const
+SofaBase* SofaLink::getLinkedBase(size_t index)
 {
-    return m_component;
+    if(index >= m_self->getSize())
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+        return nullptr;
+    }
+    return wrap<SofaBase, sofa::core::objectmodel::Base>(m_self->getLinkedBase(index),
+                                                         "Unable to get SofaBase.");
 }
 
-bool SofaLink::setValue(const QString &path)
+SofaData* SofaLink::getLinkedData(size_t index)
 {
-    return m_link->read("@"+path.toStdString()) ;
+    if(index >= m_self->getSize())
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+        return nullptr;
+    }
+    return wrap<SofaData, sofa::core::objectmodel::BaseData>(m_self->getLinkedData(index),
+                                                         "Unable to get SofaData.");
 }
 
-} /// _sofalink_h_
-} /// qtquick
-} /// sofa
+QString SofaLink::getLinkedPath(size_t index)
+{
+    if(index >= m_self->getSize())
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+        return nullptr;
+    }
+    QString::fromStdString(m_self->getLinkedPath(index));
+}
+
+
+}

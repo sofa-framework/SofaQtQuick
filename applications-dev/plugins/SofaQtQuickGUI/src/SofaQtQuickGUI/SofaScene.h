@@ -69,7 +69,6 @@ namespace qtquick
 class SofaScene;
 class SofaViewer;
 class PickUsingRasterizationWorker;
-
 using sofaqtquick::bindings::SofaBase;
 
 typedef QList<QUrl> QUrlList;
@@ -106,7 +105,7 @@ public:
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
-    Q_PROPERTY(sofa::qtquick::SofaComponent* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaBase* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
 
@@ -168,8 +167,8 @@ public:
     bool pyQtSynchronous() const                                {return myPyQtForceSynchronous;}
     void setPyQtForceSynchronous(bool newPyQtSynchronous);
 
-    sofa::qtquick::SofaComponent* selectedComponent() const     {return mySelectedComponent;}
-    void setSelectedComponent(sofa::qtquick::SofaComponent* newSelectedComponent);
+    sofaqtquick::bindings::SofaBase* selectedComponent() const     {return mySelectedComponent;}
+    void setSelectedComponent(sofaqtquick::bindings::SofaBase* newSelectedComponent);
 
     sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
     void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
@@ -194,7 +193,7 @@ signals:
     void defaultAnimateChanged(bool newDefaultAnimate);
     void asynchronousChanged(bool newAsynchronous);
     void pyQtForceSynchronousChanged(bool newPyQtSynchronous);
-    void selectedComponentChanged(sofa::qtquick::SofaComponent* newSelectedComponent);
+    void selectedComponentChanged(sofaqtquick::bindings::SofaBase* newSelectedComponent);
     void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
 public:
@@ -204,7 +203,7 @@ public:
     ///    get("/root")
     ///    get("/root/myObject")
     ///    get("/root/myObject.data")
-    Q_INVOKABLE SofaBase* get(const QString& path);
+    Q_INVOKABLE sofaqtquick::bindings::SofaBase* get(const QString& path);
 
     Q_INVOKABLE double radius() const;
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
@@ -232,6 +231,7 @@ public:
     static bool setDataValue(sofa::core::objectmodel::BaseData* data, const QVariant& value);
     static bool setDataLink(sofa::core::objectmodel::BaseData* data, const QString& link);
 
+    [[deprecated("Replaced by sofaqtuick::helper::getDataObjectProperties")]]
     QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data);
 
     QVariant dataValue(const QString& path) const;
@@ -240,13 +240,13 @@ public:
     void setDataValue(const QString& path, const QVariant& value);
     void setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value);
 
-    Q_INVOKABLE sofa::qtquick::SofaData* data(const QString& path);
-    Q_INVOKABLE QObject* link(const QString& path);
+    Q_INVOKABLE sofaqtquick::bindings::SofaData* data(const QString& path);
+    Q_INVOKABLE SofaLink* link(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* node(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* componentByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponentList* componentsByType(const QString& typeName);
-    Q_INVOKABLE sofa::qtquick::SofaComponent* root();
+    Q_INVOKABLE sofaqtquick::bindings::SofaBase* root();
 
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
@@ -321,7 +321,7 @@ private:
 
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
-    SofaComponent*                              mySelectedComponent;
+    SofaBase*                                   mySelectedComponent;
 
     SofaComponent*                              myCppGraph;
 

@@ -60,7 +60,7 @@ QStringList SofaFactory::getComponents()
     return m_filteredList ;
 }
 
-QObject* SofaFactory::createNode()
+SofaNode* SofaFactory::createNode()
 {
     return new SofaNode();
 }

@@ -23,10 +23,22 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/logging/Message.h>
 using sofa::helper::logging::Message;
 
+#include <sofa/core/objectmodel/BaseNode.h>
+using sofa::core::objectmodel::BaseNode;
+
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+using sofaqtquick::bindings::SofaBase;
 
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 using sofaqtquick::bindings::SofaData;
+
+#include <SofaQtQuickGUI/Bindings/SofaLink.h>
+using sofaqtquick::bindings::SofaLink;
+
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+using sofaqtquick::bindings::SofaCoreBindingContext;
+
+#include <QQmlContext>
 
 namespace sofaqtquick::bindings::_sofabase_
 {
@@ -45,6 +57,17 @@ QString SofaBase::getName() const
     return QString::fromStdString(m_self->getName());
 }
 
+QString SofaBase::getPathName() const
+{
+    if(m_self->toBaseNode())
+        return QString::fromStdString(m_self->toBaseNode()->getPathName());
+
+    if(m_self->toBaseObject())
+        return QString::fromStdString(m_self->toBaseObject()->getPathName());
+
+    return "/";
+}
+
 QString SofaBase::getClassName() const
 {
     return QString::fromStdString(m_self->getClassName());
@@ -57,11 +80,26 @@ QString SofaBase::getTemplateName() const
 
 QObject* SofaBase::getData(const QString& name) const
 {
-    BaseData* data = m_self->findData(name.toStdString());
+    auto* data = m_self->findData(name.toStdString());
     if(!data)
-        return nullptr;
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no data with name '"+name+"'");
+        nullptr;
+    }
     return new SofaData(data);
 }
+
+QObject* SofaBase::getLink(const QString& name) const
+{
+    auto* link = m_self->findLink(name.toStdString());
+    if(!link)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no link with name '"+name+"'");
+        nullptr;
+    }
+    return new SofaLink(link);
+}
+
 
 QStringList SofaBase::getDataFields() const
 {
@@ -77,7 +115,8 @@ bool SofaBase::hasLocations() const
     const Base* base = m_self.get();
     if(base)
     {
-        return base->findData("Defined in") != nullptr ;
+        return !base->getSourceFileName().empty()
+            || !base->getInstanciationFileName().empty() ;
     }
     return false;
 }
@@ -85,25 +124,25 @@ bool SofaBase::hasLocations() const
 QString SofaBase::getSourceLocation() const
 {
     const Base* base = m_self.get();
-    if(base)
+    if(base && !(base->getSourceFileName().empty()))
     {
-        BaseData* data = base->findData("Defined in") ;
-        if(data)
-            return QString::fromStdString(data->getValueString());
+        return QString("('%1',%2)")
+                .arg(QString::fromStdString(base->getSourceFileName()))
+                .arg(base->getSourceFilePos());
     }
-    return "('',0)";
+    return "";
 }
 
-QString SofaBase::getCreationLocation() const
+QString SofaBase::getInstanciationLocation() const
 {
     const Base* base = m_self.get();
-    if(base)
+    if(base && !(base->getInstanciationFileName().empty()))
     {
-        BaseData* data = base->findData("Instantiated in") ;
-        if(data)
-            return QString::fromStdString(data->getValueString());
+        return QString("('%1',%2)")
+                .arg(QString::fromStdString(base->getInstanciationFileName()))
+                .arg(base->getInstanciationFilePos());
     }
-    return "('',0)";
+    return "";
 }
 
 QString SofaBase::output() const
@@ -125,7 +164,7 @@ QString SofaBase::warning() const
                                                                        Message::Fatal
                                                                       }));
 
-return QString();
+    return QString();
 }
 
 void SofaBase::clearOutput() const
@@ -145,5 +184,12 @@ void SofaBase::clearWarning() const
         base->clearWarnings();
     }
 }
+
+
+bool SofaBase::isNode() const
+{
+    return rawBase()->toBaseNode() != nullptr;
+}
+
 
 } /// sofaqtquick
