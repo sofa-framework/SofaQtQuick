@@ -301,7 +301,7 @@ Item {
                                                 Layout.fillHeight: true
                                                 readOnly: true
 
-                                                text: value.toString().trim()
+                                                text: value.getLinkedPath().trim()
                                                 onTextChanged: cursorPosition = 0;
 
                                                 DropArea {
