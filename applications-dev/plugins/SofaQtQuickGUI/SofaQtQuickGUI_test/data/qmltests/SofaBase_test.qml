@@ -1,8 +1,15 @@
-import QtQuick 2.12
+import Sofa.Core.SofaFactory 1.0
+import Sofa.Core.SofaNode 1.0
+import QmlGTestCase 1.0
 
-import Sofa.Core.SofaBase 1.0
-
-Item
+QmlGTestCase
 {
-
+    function tst_createInit()
+    {
+        var n = SofaFactory.createNode();
+        assert_eq(n.getName(), "unnamed");
+        assert_eq(n.getClassName(), "DAGNode");
+        n.init();
+        n.reinit();
+    }
 }

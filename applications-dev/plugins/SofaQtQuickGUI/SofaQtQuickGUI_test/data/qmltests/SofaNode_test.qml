@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import SofaFactory 1.0
+import Sofa.Core.SofaFactory 1.0
 import Sofa.Core.SofaNode 1.0
 import QmlGTestCase 1.0
 
@@ -33,5 +33,12 @@ QmlGTestCase
         var c1 = n.createChild("Child1")
         var c2 = n.createChild("Child2")
         assert_eq(n.getChildren().size(), 2)
+    }
+
+    function tst_getInitReInit()
+    {
+        var n = SofaFactory.createNode()
+        n.init()
+        n.reinit()
     }
 }

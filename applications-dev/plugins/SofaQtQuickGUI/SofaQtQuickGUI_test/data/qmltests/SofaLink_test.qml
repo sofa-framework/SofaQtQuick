@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import SofaFactory 1.0
+import Sofa.Core.SofaFactory 1.0
 import Sofa.Core.SofaLink 1.0
 import QmlGTestCase 1.0
 
