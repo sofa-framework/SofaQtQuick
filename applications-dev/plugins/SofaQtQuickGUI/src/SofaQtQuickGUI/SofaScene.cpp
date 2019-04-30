@@ -84,6 +84,9 @@ using sofa::simulation::scenechecking::SceneCheckUsingAlias;
 
 #include <SofaSimulationGraph/DAGNode.h>
 
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
+using sofaqtquick::bindings::SofaCoreBindingFactory;
+
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -1325,7 +1328,7 @@ SofaBase* SofaScene::get(const QString& path)
     if(!base)
         return nullptr;
 
-    return new SofaBase(base);
+    return SofaCoreBindingFactory::wrap(base);
 }
 
 bool isInstanceOf(const core::objectmodel::BaseClass* obj, const std::string& c)

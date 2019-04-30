@@ -62,6 +62,8 @@ using sofaqtquick::bindings::SofaBaseObject;
 #include <SofaQtQuickGUI/Windows/EditView.h>
 #include <SofaQtQuickGUI/Windows/AssetView.h>
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
+using sofaqtquick::bindings::SofaCoreBindingFactory;
 
 #include <SofaQtQuickGUI/PythonConsole.h>
 using namespace sofa::qtquick;
@@ -239,8 +241,10 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                               createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
                                               );
 
-
-
+    SofaCoreBindingFactory::registerType("DAGNode", [](sofa::core::objectmodel::Base* obj)
+    {
+        return SofaNode::createFrom(obj);
+    });
 }
 
 void SofaQtQuickQmlModule::RegisterTypes(QQmlEngine* engine)

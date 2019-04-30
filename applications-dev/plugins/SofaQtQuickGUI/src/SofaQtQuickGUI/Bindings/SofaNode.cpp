@@ -71,6 +71,11 @@ SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent)
 
 SofaNode::~SofaNode(){}
 
+SofaNode* SofaNode::createFrom(sofa::core::objectmodel::Base* obj)
+{
+    return wrap(obj->toBaseNode());
+}
+
 void SofaNode::init() const
 {
     self()->init(ExecParams::defaultInstance());
@@ -197,6 +202,17 @@ SofaNode* SofaNodeFactory::createInstance(SofaBase* b)
     return wrap(b->base()->toBaseNode());
 }
 
+QString SofaNode::getNextName(const QString& name)
+{
+    int i = 1;
+    QString newname = name;
+    while(self()->getChild(newname.toStdString())!=nullptr)
+    {
+        newname = name + QString::number(i);
+        i++;
+    }
+    return newname;
+}
 
 
 

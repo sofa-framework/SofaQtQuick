@@ -34,6 +34,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Bindings/SofaData.cpp
     src/SofaQtQuickGUI/Bindings/SofaLink.cpp
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.cpp
+    src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.cpp
     src/SofaQtQuickGUI/Helper/QGTest.cpp
     src/SofaQtQuickGUI/Helper/QMathExtensions.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
@@ -93,6 +94,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Bindings/SofaData.h
     src/SofaQtQuickGUI/Bindings/SofaLink.h
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h
+    src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h
     src/SofaQtQuickGUI/Manipulators/Manipulator.h
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h
     src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h

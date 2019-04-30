@@ -81,6 +81,10 @@ public:
 
     Q_INVOKABLE void init() const;
     Q_INVOKABLE void reinit() const;
+
+    Q_INVOKABLE QString getNextName(const QString& name);
+
+    static SofaNode* createFrom(sofa::core::objectmodel::Base* obj);
 };
 
 class SofaNodeList : public QObject

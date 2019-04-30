@@ -30,6 +30,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/simulation/Visitor.h>
 #include "SofaSceneItemModel.h"
 #include "SofaSimulationGraph/DAGNode.h"
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
+using sofaqtquick::bindings::SofaCoreBindingFactory;
 
 namespace sofa
 {
@@ -258,7 +260,7 @@ sofaqtquick::bindings::SofaBase* SofaSceneItemModel::getBaseFromIndex(const QMod
     if(!currentBase)
         return nullptr;
 
-    return new SofaBase(currentBase);
+    return SofaCoreBindingFactory::wrap(currentBase);
 }
 
 QModelIndex SofaSceneItemModel::getIndexFromBase(sofaqtquick::bindings::SofaBase* component) const
