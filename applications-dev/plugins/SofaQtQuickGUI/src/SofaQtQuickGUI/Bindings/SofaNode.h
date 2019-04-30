@@ -55,7 +55,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaNode : public SofaBase
 public:
      Q_OBJECT
 public:
-    SofaNode(QObject *parent = nullptr);
+    SofaNode(const QString name="unamed", QObject *parent = nullptr);
     SofaNode(DAGNode::SPtr self, QObject *parent = nullptr);
     SofaNode(SofaBase* self);
     ~SofaNode() override;
@@ -80,7 +80,7 @@ public:
     Q_INVOKABLE SofaBaseObject* createObject(const QString& type,
                                              const QVariantMap& arguments) const;
     Q_INVOKABLE SofaBaseObject* getObject(const QString& name) const;
-    Q_INVOKABLE SofaBase* get(const QString& path) const;
+    Q_INVOKABLE QObject* get(const QString& path) const;
 
     Q_INVOKABLE void init() const;
     Q_INVOKABLE void reinit() const;

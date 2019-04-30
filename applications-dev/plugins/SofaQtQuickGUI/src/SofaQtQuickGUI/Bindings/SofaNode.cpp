@@ -61,10 +61,10 @@ SofaNode* wrap(sofa::core::objectmodel::BaseNode* n)
     return wrap(static_cast<DAGNode*>(n));
 }
 
-SofaNode::SofaNode(QObject *parent)
+SofaNode::SofaNode(const QString name, QObject *parent)
 {
     SOFA_UNUSED(parent);
-    m_self = sofa::core::objectmodel::New<DAGNode>("unnamed");
+    m_self = sofa::core::objectmodel::New<DAGNode>(name.toStdString());
 }
 
 SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent)
@@ -228,11 +228,22 @@ QString SofaNode::getNextName(const QString& name)
     return newname;
 }
 
-SofaBase* SofaNode::get(const QString& path) const
+QObject* SofaNode::get(const QString& path) const
 {
-    /// search for the "name" data of the component (this data is always present if the component exist)
-    sofa::core::objectmodel::BaseData* data = sofaqtquick::helper::findData(self(), path + ".name");
+    /// Searching for a data if there is a "." separator.
+    if(path.contains("."))
+    {
+        /// search for the "name" data of the component (this data is always present if the component exist)
+        sofa::core::objectmodel::BaseData* data = sofaqtquick::helper::findData(self(), "@" + path);
 
+        if(!data)
+            return nullptr;
+
+        return new SofaData(data);
+    }
+
+    /// If this is not a data. We are searching for the data with .name. To retrive the owner.
+    sofa::core::objectmodel::BaseData* data = sofaqtquick::helper::findData(self(), "@" + path + ".name");
     if(!data)
         return nullptr;
 
