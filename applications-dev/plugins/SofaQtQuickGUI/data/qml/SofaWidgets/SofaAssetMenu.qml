@@ -10,6 +10,7 @@ Menu {
     id: assetMenu
 
     property var model: null
+    property string assetName: ""
     property var draggedData: null
     property var parentNode: null
     property var sofaScene: null
@@ -25,10 +26,18 @@ Menu {
                          (modelData.type === "PythonScriptController" ? "qrc:/icon/ICON_PYController.png" :
                          (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
             onTriggered: {
-                console.error("Parent node for asset is " + parentNode)
-                var asset = draggedData.getAsset(modelData.name)
-                sofaScene.addExistingNodeTo(parentNode === "" ? sofaScene.node("/") : sofaScene.node(parentNode), asset)
+                assetName = modelData.name
+                createAsset()
+            }
+            Component.onCompleted: {
+                assetName = modelData.name
             }
         }
+    }
+    function createAsset()
+    {
+        console.error("Parent node for asset is " + parentNode)
+        var asset = draggedData.getAsset(assetName)
+        sofaScene.addExistingNodeTo(parentNode === "" ? sofaScene.node("/") : sofaScene.node(parentNode), asset)
     }
 }

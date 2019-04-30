@@ -382,10 +382,16 @@ Rectangle {
                 }
                 onDropped: {
                     drag.source.ctxMenu.parent = parent
-                    drag.source.ctxMenu.visible = true
                     drag.source.ctxMenu.draggedData = drag.source
                     drag.source.ctxMenu.parentNode = node
                     drag.source.ctxMenu.sofaScene = SofaApplication.sofaScene
+                    console.error(drag.source.ctxMenu.model.length)
+                    if (drag.source.ctxMenu.model.length > 1) {
+                        drag.source.ctxMenu.visible = true
+                    }
+                    else {
+                        drag.source.ctxMenu.createAsset()
+                    }
                 }
             }
 
