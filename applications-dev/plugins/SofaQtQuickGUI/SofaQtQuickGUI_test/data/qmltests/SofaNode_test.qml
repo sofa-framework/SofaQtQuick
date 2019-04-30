@@ -41,4 +41,10 @@ QmlGTestCase
         n.init()
         n.reinit()
     }
+
+    function tst_downCast()
+    {
+        var nn = SofaFactory.createNode()
+        var n =  as_SofaNode(nn)
+    }
 }
