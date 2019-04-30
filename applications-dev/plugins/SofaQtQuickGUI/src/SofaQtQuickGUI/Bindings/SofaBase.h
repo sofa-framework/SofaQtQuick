@@ -56,7 +56,7 @@ public:
     /// get a link from its name
     Q_INVOKABLE QObject* getLink(const QString& name) const;
 
-    /// Returns true of the underlying Base is a Node.
+    /// Returns true if the underlying Base is a Node.
     Q_INVOKABLE bool isNode() const;
 
     /// The following three are used to get extra information about where
