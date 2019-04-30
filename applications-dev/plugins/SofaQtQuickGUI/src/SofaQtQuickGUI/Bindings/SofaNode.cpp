@@ -101,7 +101,7 @@ void SofaNode::reinit() const
 
 sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaScene* scene)
 {
-    msg_warning("SofaNode::toSofaComponent") << "DEPRECATED Method DO NOT USE unless communicating with legacy code";
+    msg_deprecated("SofaNode") << "DO NOT USE unless communicating with legacy code";
     return new sofa::qtquick::SofaComponent(scene, m_self.get());
 }
 
