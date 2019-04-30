@@ -29,24 +29,25 @@ TextureAsset::TextureAsset(std::string path, std::string extension)
 {
 }
 
-SofaComponent* TextureAsset::getAsset(const std::string& assetName)
+sofaqtquick::bindings::SofaNode* TextureAsset::getAsset(const std::string& assetName)
 {
     SOFA_UNUSED(assetName);
     if (loaders.find(m_extension) == loaders.end())
     {
         msg_error("Unknown file format.");
-        return new SofaComponent(nullptr, this);
+        return new sofaqtquick::bindings::SofaNode(this);
     }
-
-    this->setName("root");
+    Node::SPtr root;
+    root->setName("root");
     OglModel::SPtr vmodel = sofa::core::objectmodel::New<OglModel>();
     vmodel->setFilename("mesh/cube.obj");
     vmodel->setName("vmodel");
     vmodel->texturename.setValue(m_path);
 
-    this->addObject(vmodel);
-    this->init(sofa::core::ExecParams::defaultInstance());
-    return new SofaComponent(nullptr, this);
+    root->addObject(vmodel);
+    root->init(sofa::core::ExecParams::defaultInstance());
+    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
 QList<QObject*> TextureAsset::getAssetMetaInfo()

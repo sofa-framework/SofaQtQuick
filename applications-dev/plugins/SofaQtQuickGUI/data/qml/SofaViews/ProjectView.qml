@@ -6,6 +6,7 @@ import Qt.labs.folderlistmodel 2.12
 import AssetFactory 1.0
 import SofaColorScheme 1.0
 import SofaWidgets 1.0
+import QtQml 2.12
 //import AssetView 1.0
 
 Item {
@@ -242,6 +243,49 @@ Item {
                             visible: false
                         }
 
+                        Menu {
+                            id: projectMenu
+                            visible: false
+
+                            MenuItem {
+                                text: "Show Containing Folder"
+                                onTriggered: {
+                                    console.error(folderModel.get(index, "filePath"))
+                                    sofaApplication.openInExplorer(folderModel.get(index, "filePath"))
+                                }
+                            }
+                            MenuItem {
+                                id: openTerminal
+                                text: "Open Terminal Here"
+                                onTriggered: {
+                                    sofaApplication.openInTerminal(folderModel.get(index, "filePath"))
+                                }
+                            }
+                            Component {
+                                id: openInEditor
+                                MenuItem {
+                                    id: openTerminal
+                                    text: "Open In Editor"
+                                    onTriggered: {
+                                        sofaApplication.openInEditor(folderModel.get(index, "filePath"))
+                                        projectMenu.visible = false
+                                    }
+                                }
+                            }
+                            Component {
+                                id: doNothing
+                                Item {
+                                    Component.onCompleted: {
+                                        projectMenu.visible = false
+                                    }
+                                }
+                            }
+
+                            Loader {
+                                sourceComponent: folderModel.isFolder(index) ? doNothing : openInEditor
+                            }
+
+                        }
 
                         MouseArea {
                             id: mouseRegion
@@ -266,11 +310,12 @@ Item {
                             onClicked: {
                                 if (Qt.RightButton === mouse.button)
                                 {
-                                    // Let's load detailed info if available
-                                    if (!folderModel.isFolder(index))
-                                    {
-                                        assetMenu.visible = true
-                                    }
+                                    projectMenu.visible = true
+//                                    // Let's load detailed info if available
+//                                    if (!folderModel.isFolder(index))
+//                                    {
+//                                        assetMenu.visible = true
+//                                    }
                                 }
                             }
 

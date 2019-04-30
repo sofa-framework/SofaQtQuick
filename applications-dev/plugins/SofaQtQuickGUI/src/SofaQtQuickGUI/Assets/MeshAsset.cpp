@@ -36,14 +36,14 @@ MeshAsset::MeshAsset(std::string path, std::string extension)
 {
 }
 
-SofaComponent* MeshAsset::getAsset(const std::string& assetName)
+sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetName)
 {
     SOFA_UNUSED(assetName);
     if (loaders.find(m_extension) == loaders.end() ||
             loaders.find(m_extension)->second == nullptr)
     {
         std::cout << "Unknown file format." << std::endl;
-        return new SofaComponent(nullptr, this);
+        return new sofaqtquick::bindings::SofaNode(this);
     }
 
     sofa::simulation::SceneLoaderPY scnLoader;
@@ -58,9 +58,8 @@ SofaComponent* MeshAsset::getAsset(const std::string& assetName)
                                      args, &root);
 
     root->setName("NEWNODE");
-    // We gotta store it somewhere...
-    m_node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
-    return new SofaComponent(nullptr, root.get());
+    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
 QList<QObject*> MeshAsset::getAssetMetaInfo()

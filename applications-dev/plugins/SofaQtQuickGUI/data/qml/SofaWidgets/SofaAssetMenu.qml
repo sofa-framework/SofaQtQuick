@@ -5,6 +5,7 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaWidgets 1.0
+import Sofa.Core.SofaNode 1.0
 
 Menu {
     id: assetMenu
@@ -13,7 +14,9 @@ Menu {
     property string assetName: ""
     property var draggedData: null
     property var parentNode: null
+
     property var sofaScene: null
+
     title: "Asset Content"
     visible: true
     Repeater {
@@ -38,6 +41,8 @@ Menu {
     {
         console.error("Parent node for asset is " + parentNode)
         var asset = draggedData.getAsset(assetName)
-        sofaScene.addExistingNodeTo(parentNode === "" ? sofaScene.node("/") : sofaScene.node(parentNode), asset)
+//        var node = new SofaNode(parentNode)
+//        node.addChild(asset)
+        sofaScene.addExistingNodeTo(parentNode === "" ? sofaScene.node("/") : sofaScene.node(parentNode), asset.toSofaComponent())
     }
 }

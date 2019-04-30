@@ -35,14 +35,13 @@ class PythonAsset : public Asset
 {
   public:
     PythonAsset(std::string path, std::string extension);
-    virtual sofa::qtquick::SofaComponent* getAsset(const std::string& assetName = "") override;
+    virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") override;
     virtual QList<QObject*> getAssetMetaInfo() override;
 
     static const QUrl iconPath;
     static const QString typeString;
     static const LoaderMap loaders;
 
-    DAGNode::SPtr m_node;
     static LoaderMap createLoaders();
 };
 

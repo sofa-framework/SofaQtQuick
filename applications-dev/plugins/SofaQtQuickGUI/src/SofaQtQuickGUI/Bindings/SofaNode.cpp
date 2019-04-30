@@ -64,10 +64,20 @@ SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent)
     m_self = self;
 }
 
+SofaNode::SofaNode(SofaBase* self)
+{
+    if (self->isNode())
+        m_self = self->base();
+    else {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "This SofaBase is not a node. Cannot Downcast");
+    }
+}
+
 SofaNode::~SofaNode(){}
 
 sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaScene* scene)
 {
+    msg_warning("SofaNode::toSofaComponent") << "DEPRECATED Method DO NOT USE unless communicating with legacy code";
     return new sofa::qtquick::SofaComponent(scene, m_self.get());
 }
 

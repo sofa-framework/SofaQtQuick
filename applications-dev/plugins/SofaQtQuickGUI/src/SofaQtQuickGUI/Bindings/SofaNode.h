@@ -57,12 +57,14 @@ public:
 public:
     SofaNode(QObject *parent = nullptr);
     SofaNode(DAGNode::SPtr self, QObject *parent = nullptr);
+    SofaNode(SofaBase* self);
     ~SofaNode() override;
 
     DAGNode* self(){ return dynamic_cast<DAGNode*>(m_self.get()); } ///< Hold are reference to the real sofa object.
     DAGNode::SPtr selfptr(){ return DAGNode::SPtr(dynamic_cast<DAGNode*>(m_self.get())); } ///< Hold are reference to the real sofa object.
 
-    sofa::qtquick::SofaComponent* toSofaComponent(sofa::qtquick::SofaScene* scene = nullptr); ///< legacy method to return a deprecated SofaComponent class
+    Q_INVOKABLE sofa::qtquick::SofaComponent* toSofaComponent(sofa::qtquick::SofaScene* scene = nullptr); ///< legacy method to return a deprecated SofaComponent class
+
 
     Q_INVOKABLE SofaNode* createChild(QString name);
 

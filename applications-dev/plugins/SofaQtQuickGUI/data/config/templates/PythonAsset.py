@@ -4,7 +4,6 @@ import importlib
 import inspect
 
 def createScene(node):
-    print ("CREATING PREFAB")
     functions = {}
     pythonScripts = {}
     classes = {}
@@ -23,7 +22,6 @@ def createScene(node):
         print ("PythonAsset ERROR: could not import module " + sys.argv[2])
         print (e)
 
-    # print ('Parsing module...')
     # module loaded, let's see what's inside:
     if "createScene" in dir(m):
         # print("We found a createScene entry point, let's load it")

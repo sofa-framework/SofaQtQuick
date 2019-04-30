@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SofaQtQuickGUI/Bindings/SofaComponent.h"
+#include "SofaQtQuickGUI/Bindings/SofaNode.h"
 #include <SofaSimulationGraph/DAGNode.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 
@@ -30,7 +30,7 @@ class Asset : public sofa::simulation::graph::DAGNode
     Asset(std::string path, std::string extension);
     void initAsset();
     virtual ~Asset() override;
-    virtual sofa::qtquick::SofaComponent* getAsset(const std::string& assetName = "") = 0;
+    virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") = 0;
     virtual QList<QObject*> getAssetMetaInfo() = 0;
     static const QString typeString;
     static const QUrl iconPath;

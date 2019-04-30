@@ -34,4 +34,9 @@ QmlGTestCase
         var c2 = n.createChild("Child2")
         assert_eq(n.getChildren().size(), 2)
     }
+
+    function tst_createNodeFromBase()
+    {
+        // Test call to SofaNode with a node, and with a non-node Base object
+    }
 }

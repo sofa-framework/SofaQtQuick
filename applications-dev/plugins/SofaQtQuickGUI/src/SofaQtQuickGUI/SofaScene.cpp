@@ -801,28 +801,15 @@ void SofaScene::addExistingNodeTo(SofaComponent* sofaComponent, SofaComponent* s
     {
         Node::SPtr node = static_cast<Node*>(baseNode);
         std::string name = sofaNode->base()->getName();
-        if(node->getChild(name)){
+        if(node->getChild(name)) {
             int id=1;
             while(node->getChild( name+std::to_string(id) )){id++;}
             sofaNode->base()->setName(name + std::to_string(id));
             sofaNode->base()->getName();
             node->addChild(sofaNode->base()->toBaseNode());
-        }else{
-            node->addChild(sofaNode->base()->toBaseNode());
         }
-//        Node* newNode = static_cast<Node*>(sofaNode->base()->toBaseNode());
-//        /// @bmarques TODO: move to a dedicated method
-//        /// Removing prefab's components used for preview before adding it to the simulation
-//        DefaultAnimationLoop* dal;
-//        DefaultVisualManagerLoop* dvml;
-//        InteractiveCamera* ic;
-//        BaseObject::SPtr aloop(newNode->getObject(BaseObject::shortName(dal)));
-//        BaseObject::SPtr vloop(newNode->getObject(BaseObject::shortName(dvml)));
-//        BaseObject::SPtr icam(newNode->getObject(BaseObject::shortName(ic)));
-//        newNode->removeObject(aloop);
-//        newNode->removeObject(vloop);
-//        newNode->removeObject(icam);
-//
+        else
+            node->addChild(sofaNode->base()->toBaseNode());
         sofa::simulation::getSimulation()->init(static_cast<Node*>(node->getContext()->getRootContext()->toBaseNode()));
     }
 }

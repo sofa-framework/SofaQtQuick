@@ -40,6 +40,8 @@ import QtQuick.Controls 1.4 as QQC1
 import QtQuick.Controls.Styles 1.4 as QQCS1
 import SofaComponent 1.0
 import Sofa.Core.SofaData 1.0
+import Sofa.Core.SofaNode 1.0
+import Sofa.Core.SofaBase 1.0
 
 Rectangle {
     id: root
@@ -376,20 +378,18 @@ Rectangle {
             }
             DropArea {
                 id: dropArea
-                property string node: "invalid"
+                property SofaBase node: null
                 anchors.fill: parent
                 onEntered: {
                     var srcIndex = sceneModel.mapToSource(styleData.index)
-                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
-                    if (isNode) node = theComponent.getPathName()
-                    console.error("Hovering on " + node)
+                    var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                    if (isNode) node = theComponent
                 }
                 onDropped: {
                     drag.source.ctxMenu.parent = parent
                     drag.source.ctxMenu.draggedData = drag.source
-                    drag.source.ctxMenu.parentNode = node
-                    drag.source.ctxMenu.sofaScene = SofaApplication.sofaScene
-                    console.error(drag.source.ctxMenu.model.length)
+                    drag.source.ctxMenu.parentNode = node.getPathName()
+                    drag.source.ctxMenu.sofaScene = sofaScene
                     if (drag.source.ctxMenu.model.length > 1) {
                         drag.source.ctxMenu.visible = true
                     }

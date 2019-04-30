@@ -134,15 +134,59 @@ void SofaApplication::copyToClipboard(const QString& text)
 
 void SofaApplication::openInExplorer(const QString& folder) const
 {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(folder));
+    if (QFileInfo(folder).isFile())
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(folder).path()));
+    else
+        QDesktopServices::openUrl(QUrl::fromLocalFile(folder));
 }
 
+void SofaApplication::openInTerminal(const QString& folder) const
+{
+    QSettings settings;
+    if(!settings.contains("TerminalEmulator"))
+        settings.setValue("TerminalEmulator", "gnome-terminal");
+    if(!settings.contains("TerminalEmulatorParams"))
+        settings.setValue("TerminalEmulatorParams", "--working-directory");
+
+    QString program = settings.value("TerminalEmulator").toString();
+    QString dir;
+    if (QFileInfo(folder).isFile())
+        dir = QFileInfo(folder).path();
+    else
+        dir = folder;
+    QProcess::execute(program, QStringList() << settings.value("TerminalEmulatorParams").toString() << dir);
+}
+
+///
+/// \brief SofaApplication::openInEditor
+/// Opens in the editor specified in 'DefaultEditor'
+///
+/// \param fullpath substituted by ${path} in the DefaultEditorParams
+/// \param lineno substituted by ${lineno} in the DefaultEditorParams
+///
 void SofaApplication::openInEditor(const QString& fullpath, const int lineno) const
 {
-    std::stringstream s;
-    QFileInfo f(fullpath);
-    s << f.absoluteFilePath().toStdString() << ":" << lineno ;
-    QProcess::execute("qtcreator", QStringList() << "-client" << QString::fromStdString(s.str()) );
+    QSettings settings;
+    if(!settings.contains("DefaultEditor"))
+    {
+        QProcessEnvironment env;
+        settings.setValue("DefaultEditor", "qtcreator"); // can set qtcreator for instead for instance
+    }
+    if(!settings.contains("DefaultEditorParams"))
+        settings.setValue("DefaultEditorParams", "-client ${path}:${lineno}"); // ex. for qtcreator: "-client ${path}:${lineno}"
+
+
+    QString path = QFileInfo(fullpath).absoluteFilePath();
+    QString line = std::to_string(lineno).c_str();
+
+    QString editor = settings.value("DefaultEditor").toString();
+    QStringList args = settings.value("DefaultEditorParams").toString().replace("${path}", path).replace("${lineno}", line).split(" ");
+    int ret = QProcess::execute(editor, args);
+    if (ret < 0)
+    {
+        msg_warning("OpenInEditor") << "Failed to launch chosen editor. Check runSofa2.ini";
+        QDesktopServices::openUrl(QUrl::fromLocalFile(fullpath));
+    }
 }
 
 bool SofaApplication::createFolder(const QString& destination)

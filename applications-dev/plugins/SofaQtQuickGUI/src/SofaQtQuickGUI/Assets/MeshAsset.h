@@ -24,7 +24,7 @@ class MeshAsset : public Asset
 {
   public:
     MeshAsset(std::string path, std::string extension);
-    virtual SofaComponent* getAsset(const std::string& assetName = "") override;
+    virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") override;
     virtual QList<QObject*> getAssetMetaInfo() override;
 
 //    Q_PROPERTY(QString bbox READ bbox NOTIFY bboxChanged)
@@ -36,7 +36,6 @@ class MeshAsset : public Asset
     static const QString typeString;
     static const LoaderMap loaders;
 
-    DAGNode::SPtr m_node;
     static LoaderMap createLoaders();
 };
 

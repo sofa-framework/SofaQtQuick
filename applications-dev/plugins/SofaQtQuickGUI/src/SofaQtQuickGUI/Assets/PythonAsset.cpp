@@ -31,13 +31,13 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 {
 }
 
-sofa::qtquick::SofaComponent* PythonAsset::getAsset(const std::string& assetName)
+sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetName)
 {
     if (loaders.find(m_extension) == loaders.end() ||
             loaders.find(m_extension)->second == nullptr)
     {
         std::cout << "Unknown file format." << std::endl;
-        return new SofaComponent(nullptr, this);
+        return new sofaqtquick::bindings::SofaNode(this);
     }
 
     fs::path obj(m_path);
@@ -55,10 +55,8 @@ sofa::qtquick::SofaComponent* PythonAsset::getAsset(const std::string& assetName
     scnLoader.loadSceneWithArguments("config/templates/PythonAsset.py",
                                      args, &root);
 
-    root->setName("NEWNODE");
-    // We gotta store it somewhere...
-    m_node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
-    return new SofaComponent(nullptr, root.get());
+    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
 PythonAssetModel::PythonAssetModel(std::string name, std::string type)
