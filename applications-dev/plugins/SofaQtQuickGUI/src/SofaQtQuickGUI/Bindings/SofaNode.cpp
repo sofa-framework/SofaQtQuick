@@ -24,12 +24,19 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaComponent.h"
 
 #include <SofaSimulationGraph/SimpleApi.h>
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+using sofaqtquick::bindings::SofaCoreBindingContext;
 
 namespace sofaqtquick::bindings::_sofanode_
 {
 
 SofaNode* wrap(DAGNode::SPtr n)
 {
+    if(n.get()==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Unable to get node.");
+        return nullptr;
+    }
     return new SofaNode(n);
 }
 SofaNode* wrap(DAGNode* n)
@@ -76,7 +83,7 @@ SofaNode* SofaNode::getFirstParent()
 
 SofaNode* SofaNode::getChild(QString name)
 {
-    return wrap(self()->get<DAGNode>(name.toStdString()));
+    return wrap(self()->getChild(name.toStdString()));
 }
 
 SofaNode* SofaNode::getNodeInGraph(QString name)
@@ -89,14 +96,47 @@ SofaNode* SofaNode::getRoot()
     return wrap(self()->getRoot());
 }
 
+SofaNodeList* SofaNode::getChildren()
+{
+    SofaNodeList *list = new SofaNodeList();
+
+    for(auto& child : self()->getChildren())
+    {
+        list->addSofaNode(child);
+    }
+
+    return list;
+}
+
+
 void SofaNode::addChild(SofaNode* child)
 {
+    if(child==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaNode");
+        return;
+    }
     self()->addChild(child->selfptr());
 }
 
 void SofaNode::addObject(SofaBaseObject* obj)
 {
+    if(obj==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaBaseObject.");
+        return;
+    }
     self()->addObject(obj->selfptr());
+}
+
+void SofaNodeList::addSofaNode(sofa::core::objectmodel::BaseNode* node)
+{
+    m_list.push_back(wrap(node));
+}
+
+unsigned int SofaNodeList::size()
+{
+    return m_list.size();
 }
 
 }  // namespace sofaqtquick::bindings::_sofanode_

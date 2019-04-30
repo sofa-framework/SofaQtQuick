@@ -148,11 +148,13 @@ public:
     /// To be called in the main function.
     static bool DefaultMain(QApplication& app, QQmlApplicationEngine& applicationEngine , const QString &mainScript);
 
+
 private:
     static SofaApplication* OurInstance;
 
 	QString					myPythonDirectory;
     QString                 myDataDirectory;
+
 
 };
 

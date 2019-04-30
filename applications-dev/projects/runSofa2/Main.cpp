@@ -39,6 +39,9 @@ void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, c
     if( localMsg.contains("Error") )
         type = QtCriticalMsg;
 
+    if( localMsg.contains("qml:") && !strcmp(function, "runSofa2"))
+        function = "qml";
+
     switch (type) {
     case QtDebugMsg:
         dmsg_info_withfile(function, file, context.line) << localMsg.constData();

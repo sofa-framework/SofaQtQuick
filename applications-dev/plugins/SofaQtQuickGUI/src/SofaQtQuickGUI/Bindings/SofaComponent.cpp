@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 #include <qqml.h>
 
-#include <GL/glew.h>
+//#include <GL/glew.h>
 
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/SofaScene.h>
@@ -172,13 +172,10 @@ bool SofaComponent::isSame(SofaComponent* sofaComponent) const
     return false;
 }
 
-SofaData* SofaComponent::getComponentData(const QString& name) const
+sofaqtquick::bindings::SofaData* SofaComponent::getComponentData(const QString& name) const
 {
-    sofa::core::objectmodel::BaseData* data = myBase->findData(name.toStdString());
-    if(!data)
-        return 0;
-
-    return new SofaData(this, data);
+    dmsg_deprecated("SofaComponent::getComponentData") << "Deprecated object..use SofaBase instead" ;
+    return nullptr;
 }
 
 QString SofaComponent::output() const

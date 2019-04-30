@@ -29,49 +29,65 @@ Item
     function assert_true(a)
     {
         if(!a)
-            console.exception("FAILURE: expecting 'true' got '"+a+"'");
+            console.exception("FAILURE: expecting 'true' got '"+a+"("+typeof(a)+")'");
     }
 
     function assert_false(a)
     {
         if(a)
-            console.exception("FAILURE: expecting 'false' got "+a+"'");
+            console.exception("FAILURE: expecting 'false' got "+a+"("+typeof(a)+")'");
     }
 
     function assert_eq(a,b)
     {
         if(a!==b)
-            console.exception("FAILURE: expecting "+a+" got "+b);
+            console.exception("FAILURE: expecting '"+a+"("+typeof(a)+")'"+" got "+b+"("+typeof(b)+")'");
     }
 
     function assert_neq(a,b)
     {
         if(a===b)
-            console.exception("FAILURE: expecting '"+b+"' not '"+a+"'");
+            console.exception("FAILURE: expecting '"+b+"("+typeof(b)+")' not '"+a+"("+typeof(a)+")'");
     }
 
     function assert_isNull(a)
     {
         if(a===null)
-            console.exception("FAILURE: expecting 'null' got "+a);
+            console.exception("FAILURE: expecting 'null' got "+a+"("+typeof(a)+")'");
     }
 
     function assert_isNotNull(a)
     {
         if(a!==null)
-            console.exception("FAILURE: expecting not 'null' but got "+a);
+            console.exception("FAILURE: expecting not 'null' but got "+a+"("+typeof(a)+")'");
     }
 
     function assert_isUndefined(a)
     {
         if(a===undefined)
-            console.exception("FAILURE: expecting 'undefined' got "+a);
+            console.exception("FAILURE: expecting 'undefined' got "+a+"("+typeof(a)+")'");
     }
 
     function assert_isDefined(a)
     {
         if(a!==undefined)
-            console.exception("FAILURE: expecting not 'undefined' but got "+a);
+            console.exception("FAILURE: expecting not 'undefined' but got "+a+"("+typeof(a)+")'");
+    }
+
+    function assert_throw(f)
+    {
+        var hasCatch=false;
+        try
+        {
+            f();
+        }catch(error)
+        {
+            hasCatch=true;
+        }
+
+        if(hasCatch!==true){
+            console.exception("FAILURE: expecting function to throw an exception. Got None.");
+        }
     }
 
 }

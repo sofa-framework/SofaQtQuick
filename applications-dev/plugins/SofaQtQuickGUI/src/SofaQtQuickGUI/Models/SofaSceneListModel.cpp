@@ -270,6 +270,19 @@ QVariant SofaSceneListModel::get(int row) const
     return object;
 }
 
+SofaBase* SofaSceneListModel::getBaseById(int modelRow) const
+{
+    int itemRow = computeItemRow(modelRow);
+    if(-1 == itemRow)
+    {
+        msg_error("SofaQtQuickGUI") << "Invalid index " << itemRow;
+        return nullptr;
+    }
+
+    return new SofaBase(myItems.at(itemRow).base);
+}
+
+
 SofaComponent* SofaSceneListModel::getComponentById(int modelRow) const
 {
     int itemRow = computeItemRow(modelRow);

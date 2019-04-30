@@ -1,21 +1,25 @@
-/*
-Copyright 2018, CNRS
+/*********************************************************************
+Copyright 2019, Inria, CNRS, University of Lille
 
-This file is part of sofaqtquick.
+This file is part of runSofa2
 
-sofaqtquick is free software: you can redistribute it and/or modify
+runSofa2 is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-sofaqtquick is distributed in the hope that it will be useful,
+runSofa2 is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
-*/
+*********************************************************************/
+/********************************************************************
+ Contributors:
+    - damien.marchal@univ-lille.fr
+********************************************************************/
 
 import QtQml.Models 2.2
 import QtQuick 2.0
@@ -35,7 +39,7 @@ import QtGraphicalEffects 1.12
 import QtQuick.Controls 1.4 as QQC1
 import QtQuick.Controls.Styles 1.4 as QQCS1
 import SofaComponent 1.0
-import SofaData 1.0
+import Sofa.Core.SofaData 1.0
 
 Rectangle {
     id: root
@@ -277,7 +281,7 @@ Rectangle {
                 if (nodeSettings.nodeState[key] === "1")
                 {
                     var idx = null
-                    idx = sceneModel.mapFromSource(basemodel.getIndexFromComponent(sofaScene.node(key)))
+                    idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
                     treeView.expand(idx)
                 }
             }
@@ -285,7 +289,7 @@ Rectangle {
 
         function storeExpandedState(index) {
             var srcIndex = sceneModel.mapToSource(index)
-            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+            var theComponent = basemodel.getBaseFromIndex(srcIndex)
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
             var i = 0;
             SofaApplication.nodeSettings.nodeState = ""
@@ -397,7 +401,7 @@ Rectangle {
 //                onClicked:
 //                {
 //                    var srcIndex = sceneModel.mapToSource(styleData.index)
-//                    var theComponent = basemodel.getComponentFromIndex(srcIndex)
+//                    var theComponent = basemodel.getDataFromIndex(srcIndex)
 
 //                    if(mouse.button === Qt.LeftButton)
 //                    {
@@ -412,7 +416,7 @@ Rectangle {
 //                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
 //                                nodeMenu.creationLocation = theComponent.getCreationLocation()
 //                            }
-//                            nodeMenu.nodeActivated = nodeMenu.sofaData.value();
+//                            nodeMenu.nodeActivated = nodeMenu.sofaData.value;
 //                            nodeMenu.popup();
 //                        } else {
 //                            objectMenu.popup();
@@ -446,7 +450,7 @@ Rectangle {
         mouser.onClicked:
         {
             var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
-            var theComponent = basemodel.getComponentFromIndex(srcIndex)
+            var theComponent = basemodel.getBaseFromIndex(srcIndex)
             if(mouse.button === Qt.LeftButton)
             {
                 sofaScene.selectedComponent = theComponent
@@ -454,17 +458,22 @@ Rectangle {
                 if(theComponent.isNode())
                 {
                     nodeMenu.currentModelIndex = srcIndex
-                    nodeMenu.activated = theComponent.getComponentData("activated");
+                    nodeMenu.activated = theComponent.getData("activated");
                     if(theComponent.hasLocations()===true)
                     {
                         nodeMenu.sourceLocation = theComponent.getSourceLocation()
-                        nodeMenu.creationLocation = theComponent.getCreationLocation()
+                        nodeMenu.creationLocation = theComponent.getInstanciationLocation()
                     }
-                    nodeMenu.nodeActivated = nodeMenu.activated.value();
+                    nodeMenu.nodeActivated = nodeMenu.activated.value;
                     nodeMenu.popup();
                 } else {
+                    if(theComponent.hasLocations()===true)
+                    {
+                        objectMenu.sourceLocation = theComponent.getSourceLocation()
+                        objectMenu.creationLocation = theComponent.getInstanciationLocation()
+                    }
                     objectMenu.currentModelIndex = srcIndex
-                    objectMenu.name = theComponent.getComponentData("name");
+                    objectMenu.name = theComponent.getData("name");
                     objectMenu.popup();
                 }
             }

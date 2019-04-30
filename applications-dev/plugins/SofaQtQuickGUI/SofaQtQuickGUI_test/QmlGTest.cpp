@@ -1,5 +1,7 @@
 #include <QCoreApplication>
 
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
+using sofaqtquick::bindings::SofaCoreBindingContext;
 
 #include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
 using sofaqtquick::SofaQtQuickQmlModule;
@@ -49,9 +51,11 @@ void QmlTestList::addGroupOfTests( const std::string& filename,
     m_engine->addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
     QQmlContext* m_objectContext = new QQmlContext(m_engine->rootContext());
 
+
     QQmlComponent component(m_engine,
                             QUrl(QString::fromStdString("file://"+path+filename)),
                             QQmlComponent::CompilationMode::PreferSynchronous);
+
 
     if(!component.isReady())
     {
@@ -135,6 +139,8 @@ void QmlGTest::run( const QmlTestData& data )
     m_engine->addImportPath("qrc:/");
     m_engine->addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
     QQmlContext* m_objectContext = new QQmlContext(m_engine->rootContext());
+
+    SofaCoreBindingContext::setQQmlEngine(m_engine);
 
     QQmlComponent component(m_engine,
                             QUrl(QString::fromStdString("file://"+data.filepath)),
