@@ -267,17 +267,14 @@ Item {
                                     id: openTerminal
                                     text: "Open In Editor"
                                     onTriggered: {
-                                        sofaApplication.openInEditor(folderModel.get(index, "filePath"))
                                         projectMenu.visible = false
+                                        sofaApplication.openInEditor(folderModel.get(index, "filePath"))
                                     }
                                 }
                             }
                             Component {
                                 id: doNothing
                                 Item {
-                                    Component.onCompleted: {
-                                        projectMenu.visible = false
-                                    }
                                 }
                             }
 

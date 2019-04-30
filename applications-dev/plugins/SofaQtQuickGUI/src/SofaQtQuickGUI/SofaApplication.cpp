@@ -175,13 +175,13 @@ void SofaApplication::openInEditor(const QString& fullpath, const int lineno) co
     if(!settings.contains("DefaultEditorParams"))
         settings.setValue("DefaultEditorParams", "-client ${path}:${lineno}"); // ex. for qtcreator: "-client ${path}:${lineno}"
 
-
     QString path = QFileInfo(fullpath).absoluteFilePath();
     QString line = std::to_string(lineno).c_str();
 
     QString editor = settings.value("DefaultEditor").toString();
     QStringList args = settings.value("DefaultEditorParams").toString().replace("${path}", path).replace("${lineno}", line).split(" ");
-    int ret = QProcess::execute(editor, args);
+    QProcess process;
+    int ret = process.startDetached(editor, args);
     if (ret < 0)
     {
         msg_warning("OpenInEditor") << "Failed to launch chosen editor. Check runSofa2.ini";
