@@ -38,6 +38,9 @@ using sofaqtquick::bindings::SofaLink;
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 using sofaqtquick::bindings::SofaCoreBindingContext;
 
+#include <sofa/simulation/Node.h>
+#include <SofaSimulationGraph/SimpleApi.h>
+
 #include <QQmlContext>
 
 namespace sofaqtquick::bindings::_sofabase_
@@ -191,5 +194,13 @@ bool SofaBase::isNode() const
     return rawBase()->toBaseNode() != nullptr;
 }
 
+void SofaBase::dump() const
+{
+    if(isNode())
+    {
+        Base* base = m_self.get();
+        sofa::simpleapi::dumpScene(dynamic_cast<sofa::simulation::Node*>(base->toBaseNode()));
+    }
+}
 
 } /// sofaqtquick

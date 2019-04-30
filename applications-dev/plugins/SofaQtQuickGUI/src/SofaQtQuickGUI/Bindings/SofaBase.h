@@ -75,6 +75,8 @@ public:
     Q_INVOKABLE QString warning() const;
     Q_INVOKABLE void clearWarning() const;
 
+    Q_INVOKABLE void dump() const;
+
     Base*      rawBase() const { return m_self.get(); }
     Base::SPtr base(){ return m_self; }
 
