@@ -77,6 +77,7 @@ public:
 
     Q_INVOKABLE SofaBaseObject* createObject(const QString& type,
                                              const QVariantMap& arguments) const;
+    Q_INVOKABLE SofaBaseObject* getObject(const QString& name) const;
 
     Q_INVOKABLE void init() const;
     Q_INVOKABLE void reinit() const;

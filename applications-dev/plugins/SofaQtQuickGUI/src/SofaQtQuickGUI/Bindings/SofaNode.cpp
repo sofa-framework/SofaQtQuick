@@ -124,6 +124,16 @@ SofaBaseObject* SofaNode::createObject(const QString& type, const QVariantMap& a
     return new SofaBaseObject(o);
 }
 
+
+SofaBaseObject* SofaNode::getObject(const QString& path) const
+{
+    BaseObject::SPtr sptr;
+    self()->get<BaseObject>(sptr, path.toStdString());
+    if (!sptr)
+        return nullptr;
+    return new SofaBaseObject(sptr.get());
+}
+
 SofaNodeList* SofaNode::getChildren()
 {
     SofaNodeList *list = new SofaNodeList();
