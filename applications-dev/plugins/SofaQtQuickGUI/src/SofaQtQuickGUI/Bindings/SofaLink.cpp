@@ -53,7 +53,7 @@ SofaLink::SofaLink(BaseLink* self)
     m_self = self;
 }
 
-size_t SofaLink::getSize()
+unsigned int SofaLink::getSize()
 {
     return m_self->getSize();
 }
@@ -87,7 +87,7 @@ QString SofaLink::getLinkedPath(size_t index)
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
         return nullptr;
     }
-    QString::fromStdString(m_self->getLinkedPath(index));
+    return QString::fromStdString(m_self->getLinkedPath(index));
 }
 
 
