@@ -30,6 +30,9 @@ ColumnLayout {
     property var dataObject: null
 
     property var values: undefined !== dataObject.value ? dataObject.value.split(' ') : []
+    onValuesChanged: {
+        console.error("BoundingBox Value Changed: "+values)
+    }
 
     RowLayout {
         Layout.fillWidth: true
@@ -48,9 +51,8 @@ ColumnLayout {
 
             Layout.fillWidth: true;
 
-            //validator: DoubleValidator {decimals: 3}
             readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+//            enabled: !dataObject.readOnly
 
             onTextChanged: {
                 if(!dataObject.readOnly) {
@@ -63,7 +65,7 @@ ColumnLayout {
                 target: textField0
                 property: "text"
                 value: root.values[textField0.index]
-                when: !dataObject.readOnly
+//                when: !dataObject.readOnly
             }
 
             position: cornerPositions["TopLeft"]
@@ -75,9 +77,8 @@ ColumnLayout {
 
             Layout.fillWidth: true;
 
-            //validator: DoubleValidator {decimals: 3}
             readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+            // enabled: !dataObject.readOnly
 
             onTextChanged: {
                 if(!dataObject.readOnly) {
@@ -90,7 +91,7 @@ ColumnLayout {
                 target: textField1
                 property: "text"
                 value: root.values[textField1.index]
-                when: !dataObject.readOnly
+                //when: !dataObject.readOnly
             }
             position: cornerPositions["Middle"]
         }
@@ -101,9 +102,8 @@ ColumnLayout {
 
             Layout.fillWidth: true;
 
-            //validator: DoubleValidator {decimals: 3}
             readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+            //enabled: !dataObject.readOnly
 
             onTextChanged: {
                 if(!dataObject.readOnly) {
@@ -116,7 +116,7 @@ ColumnLayout {
                 target: textField2
                 property: "text"
                 value: root.values[textField2.index]
-                when: !dataObject.readOnly
+                // when: !dataObject.readOnly
             }
             position: cornerPositions["TopRight"]
         }
@@ -138,9 +138,8 @@ ColumnLayout {
 
             Layout.fillWidth: true;
 
-            //validator: DoubleValidator {decimals: 3}
             readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+            // enabled: !dataObject.readOnly
 
             onTextChanged: {
                 if(!dataObject.readOnly) {
@@ -153,7 +152,7 @@ ColumnLayout {
                 target: textField3
                 property: "text"
                 value: root.values[textField3.index]
-                when: !dataObject.readOnly
+                //when: !dataObject.readOnly
             }
             position: cornerPositions["BottomLeft"]
 
@@ -165,9 +164,8 @@ ColumnLayout {
 
             Layout.fillWidth: true;
 
-            //validator: DoubleValidator {decimals: 3}
             readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+            //enabled: !dataObject.readOnly
 
             onTextChanged: {
                 if(!dataObject.readOnly) {
@@ -180,7 +178,7 @@ ColumnLayout {
                 target: textField4
                 property: "text"
                 value: root.values[textField4.index]
-                when: !dataObject.readOnly
+                //when: !dataObject.readOnly
             }
             position: cornerPositions["Middle"]
         }
@@ -191,9 +189,8 @@ ColumnLayout {
 
             Layout.fillWidth: true;
 
-            //validator: DoubleValidator {decimals: 3}
             readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+            //enabled: !dataObject.readOnly
 
             onTextChanged: {
                 if(!dataObject.readOnly) {
@@ -206,7 +203,7 @@ ColumnLayout {
                 target: textField5
                 property: "text"
                 value: root.values[textField5.index]
-                when: !dataObject.readOnly
+                //when: !dataObject.readOnly
             }
             position: cornerPositions["BottomRight"]
         }

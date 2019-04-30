@@ -238,7 +238,7 @@ ColumnLayout {
                         position: cornerPositions['Middle']
 
                         property int index
-                        onTextChanged: {
+                        onEditingFinished: {
                             if(rowLayout.innerArray)
                                 root.dataObject.value[0][index] = text;
                             else

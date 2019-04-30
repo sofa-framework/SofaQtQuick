@@ -143,7 +143,7 @@ Item {
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
             visible: root.showName
-            text: dataObject.name + " "
+            text: dataObject.name
             font.italic: true
             color: "black"
             width: parent.width

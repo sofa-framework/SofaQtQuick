@@ -30,8 +30,11 @@ TextField {
     property int decimals: dataObject.properties["decimals"]
 
     Component.onCompleted: download();
-    onTextChanged: upload();
-    onAccepted: dataObject.upload();
+    //onTextChanged: upload();
+    onEditingFinished: {
+        upload()
+        dataObject.upload()
+    }
 
     property var intValidator: IntValidator {
         Component.onCompleted: {
