@@ -1,4 +1,4 @@
-import SofaFactory 1.0
+import Sofa.Core.SofaFactory 1.0
 import QmlGTestCase 1.0
 
 QmlGTestCase
