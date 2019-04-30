@@ -54,4 +54,12 @@ QmlGTestCase
         var nn = SofaFactory.createNode()
         var n =  as_SofaNode(nn)
     }
+
+    function tst_get()
+    {
+        var node = SofaFactory.createNode("root")
+        var o = node.createObject("MechanicalObject", {name:"dofs"})
+        var data =  node.get("@/root.dofs.name")
+        console.log(data.getName())
+    }
 }

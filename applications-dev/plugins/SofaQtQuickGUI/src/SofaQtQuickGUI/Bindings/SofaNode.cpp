@@ -28,9 +28,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 using sofaqtquick::bindings::SofaCoreBindingContext;
 
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
+using sofaqtquick::bindings::SofaCoreBindingFactory;
+
 #include <sofa/core/ExecParams.h>
 using sofa::core::ExecParams;
 
+#include <SofaQtQuickGUI/DataHelper.h>
 
 namespace sofaqtquick::bindings::_sofanode_
 {
@@ -224,6 +228,19 @@ QString SofaNode::getNextName(const QString& name)
     return newname;
 }
 
+SofaBase* SofaNode::get(const QString& path) const
+{
+    /// search for the "name" data of the component (this data is always present if the component exist)
+    sofa::core::objectmodel::BaseData* data = sofaqtquick::helper::findData(self(), path + ".name");
 
+    if(!data)
+        return nullptr;
+
+    sofa::core::objectmodel::Base* base = data->getOwner();
+    if(!base)
+        return nullptr;
+
+    return SofaCoreBindingFactory::wrap(base);
+}
 
 }  // namespace sofaqtquick::bindings::_sofanode_
