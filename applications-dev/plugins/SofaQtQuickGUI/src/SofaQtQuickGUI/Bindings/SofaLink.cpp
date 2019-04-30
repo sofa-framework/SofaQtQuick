@@ -62,7 +62,8 @@ SofaBase* SofaLink::getLinkedBase(size_t index)
 {
     if(index >= m_self->getSize())
     {
-        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+        if(index > 0)
+            SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
         return nullptr;
     }
     return wrap<SofaBase, sofa::core::objectmodel::Base>(m_self->getLinkedBase(index),
@@ -73,7 +74,8 @@ SofaData* SofaLink::getLinkedData(size_t index)
 {
     if(index >= m_self->getSize())
     {
-        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+        if(index > 0)
+            SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
         return nullptr;
     }
     return wrap<SofaData, sofa::core::objectmodel::BaseData>(m_self->getLinkedData(index),
@@ -84,7 +86,8 @@ QString SofaLink::getLinkedPath(size_t index)
 {
     if(index >= m_self->getSize())
     {
-        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
+        if(index > 0)
+            SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::RangeError, "Invalid index.");
         return nullptr;
     }
     return QString::fromStdString(m_self->getLinkedPath(index));
