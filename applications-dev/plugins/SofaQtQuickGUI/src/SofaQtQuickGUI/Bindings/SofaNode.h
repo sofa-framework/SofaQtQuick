@@ -60,8 +60,8 @@ public:
     SofaNode(SofaBase* self);
     ~SofaNode() override;
 
-    DAGNode* self(){ return dynamic_cast<DAGNode*>(m_self.get()); } ///< Hold are reference to the real sofa object.
-    DAGNode::SPtr selfptr(){ return DAGNode::SPtr(dynamic_cast<DAGNode*>(m_self.get())); } ///< Hold are reference to the real sofa object.
+    DAGNode* self() const { return dynamic_cast<DAGNode*>(m_self.get()); } ///< Hold are reference to the real sofa object.
+    DAGNode::SPtr selfptr()const { return DAGNode::SPtr(dynamic_cast<DAGNode*>(m_self.get())); } ///< Hold are reference to the real sofa object.
 
     Q_INVOKABLE sofa::qtquick::SofaComponent* toSofaComponent(sofa::qtquick::SofaScene* scene = nullptr); ///< legacy method to return a deprecated SofaComponent class
 
@@ -76,6 +76,17 @@ public:
 
     Q_INVOKABLE void addChild(SofaNode* child);
     Q_INVOKABLE void addObject(SofaBaseObject* obj);
+
+    Q_INVOKABLE SofaBaseObject* createObject(const QString& type,
+                                             const QVariantMap& arguments) const;
+    Q_INVOKABLE SofaBaseObject* getObject(const QString& name) const;
+
+    Q_INVOKABLE void init() const;
+    Q_INVOKABLE void reinit() const;
+
+    Q_INVOKABLE QString getNextName(const QString& name);
+
+    static SofaNode* createFrom(sofa::core::objectmodel::Base* obj);
 };
 
 class SofaNodeList : public QObject
@@ -91,9 +102,19 @@ private:
     std::vector<SofaNode*> m_list;
 };
 
+
+class SofaNodeFactory : public QObject
+{
+    Q_OBJECT
+public:
+  SofaNodeFactory();
+  Q_INVOKABLE SofaNode* createInstance(SofaBase* t);
+};
+
 } /// namespace _sofanode_
 
 using _sofanode_::SofaNode;
 using _sofanode_::SofaNodeList;
+using _sofanode_::SofaNodeFactory;
 
 } /// namespace sofaqtquick::bindings

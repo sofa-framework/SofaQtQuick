@@ -22,11 +22,13 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 using sofa::core::ObjectFactory ;
 
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
+#include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
 
-namespace sofa
+#include <SofaSimulationGraph/SimpleApi.h>
+
+namespace sofaqtquick::bindings
 {
-namespace qtquick
-{
+
 namespace _sofafactory_
 {
 
@@ -60,13 +62,12 @@ QStringList SofaFactory::getComponents()
     return m_filteredList ;
 }
 
-SofaNode* SofaFactory::createNode()
+SofaNode* SofaFactory::createNode() const
 {
     return new SofaNode();
 }
 
 
 } /// _sofafactory_
-} /// qtquick
-} /// sofa
+} /// sofaqtquick::bindings
 

@@ -10,12 +10,15 @@ using sofaqtquick::SofaQtQuickQmlModule;
 #include <sofa/helper/testing/BaseTest.h>
 #include "SofaScene_test.h"
 
+#include <QQmlEngine>
+
 #include <chrono>
 #include <thread>
 
 SofaScene_qtTests::SofaScene_qtTests()
 {
-    SofaQtQuickQmlModule::RegisterTypes();
+    QQmlEngine engine;
+    SofaQtQuickQmlModule::RegisterTypes(&engine);
 }
 
 void SofaScene_qtTests::loadAScene()

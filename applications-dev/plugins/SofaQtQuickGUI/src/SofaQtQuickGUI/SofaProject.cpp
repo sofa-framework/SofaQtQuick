@@ -13,10 +13,14 @@ const QUrl& SofaProject::getRootDir() { return m_rootDir;  }
 void SofaProject::setRootDir(const QUrl& rootDir)
 {
     m_rootDir = rootDir;
-    msg_info("SofaProject") << "Setting root directory to : " << rootDir.toString().toStdString();
+    if(rootDir.isEmpty())
+    {
+        msg_warning("SofaProject") << "Empty project directory...skipping." ;
+        return;
+    }
 
+    msg_info("SofaProject") << "Setting root directory to '" << rootDir.toString().toStdString()<<"'";
     QDir root = QDir(m_rootDir.path());
-    msg_info("SofaProject") << "scanning project directory...";
     scanProject(root);
 }
 

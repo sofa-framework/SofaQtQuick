@@ -43,14 +43,14 @@ void QmlTestList::addGroupOfTests( const std::string& filename,
     /// Add an test with an empty method name so there is a at least one test...that consist
     /// in loading the qml file.
     list.push_back( QmlTestData( filepath(path,filename), testgroup, {""} ) );
-    SofaQtQuickQmlModule::RegisterTypes();
-    dmsg_info("QmlGTest") << "Registering '" << filename << "'";
 
     QQmlEngine* m_engine = new QQmlEngine();
     m_engine->addImportPath("qrc:/");
     m_engine->addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
     QQmlContext* m_objectContext = new QQmlContext(m_engine->rootContext());
 
+    SofaQtQuickQmlModule::RegisterTypes(m_engine);
+    dmsg_info("QmlGTest") << "Registering '" << filename << "'";
 
     QQmlComponent component(m_engine,
                             QUrl(QString::fromStdString("file://"+path+filename)),
@@ -140,8 +140,7 @@ void QmlGTest::run( const QmlTestData& data )
     m_engine->addImportPath(QCoreApplication::applicationDirPath() + "/../lib/qml/");
     QQmlContext* m_objectContext = new QQmlContext(m_engine->rootContext());
 
-    SofaCoreBindingContext::setQQmlEngine(m_engine);
-
+    SofaQtQuickQmlModule::RegisterTypes(m_engine);
     QQmlComponent component(m_engine,
                             QUrl(QString::fromStdString("file://"+data.filepath)),
                             QQmlComponent::CompilationMode::PreferSynchronous);

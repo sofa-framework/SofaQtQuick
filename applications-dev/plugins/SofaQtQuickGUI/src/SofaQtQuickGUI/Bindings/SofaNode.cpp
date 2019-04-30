@@ -23,9 +23,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaNode.h"
 #include "SofaComponent.h"
 
-#include <SofaSimulationGraph/SimpleApi.h>
+#include <SofaSimulationGraph/SimpleApi.h> ///< To create object in a slow but easy way.
+
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 using sofaqtquick::bindings::SofaCoreBindingContext;
+
+#include <sofa/core/ExecParams.h>
+using sofa::core::ExecParams;
+
 
 namespace sofaqtquick::bindings::_sofanode_
 {
@@ -75,6 +80,21 @@ SofaNode::SofaNode(SofaBase* self)
 
 SofaNode::~SofaNode(){}
 
+SofaNode* SofaNode::createFrom(sofa::core::objectmodel::Base* obj)
+{
+    return wrap(obj->toBaseNode());
+}
+
+void SofaNode::init() const
+{
+    self()->init(ExecParams::defaultInstance());
+}
+
+void SofaNode::reinit() const
+{
+    self()->reinit(ExecParams::defaultInstance());
+}
+
 sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaScene* scene)
 {
     msg_warning("SofaNode::toSofaComponent") << "DEPRECATED Method DO NOT USE unless communicating with legacy code";
@@ -104,6 +124,29 @@ SofaNode* SofaNode::getNodeInGraph(QString name)
 SofaNode* SofaNode::getRoot()
 {
     return wrap(self()->getRoot());
+}
+
+SofaBaseObject* SofaNode::createObject(const QString& type, const QVariantMap& arguments) const
+{
+    /// Super slow but easy to write object constructor.
+    std::map<std::string, std::string> args;
+    for(auto& key : arguments.keys())
+    {
+        args[key.toStdString()] = arguments[key].toString().toStdString();
+    }
+
+    auto o = sofa::simpleapi::createObject(selfptr(), type.toStdString(), args);
+    return new SofaBaseObject(o);
+}
+
+
+SofaBaseObject* SofaNode::getObject(const QString& path) const
+{
+    BaseObject::SPtr sptr;
+    self()->get<BaseObject>(sptr, path.toStdString());
+    if (!sptr)
+        return nullptr;
+    return new SofaBaseObject(sptr.get());
 }
 
 SofaNodeList* SofaNode::getChildren()
@@ -148,5 +191,39 @@ unsigned int SofaNodeList::size()
 {
     return m_list.size();
 }
+
+SofaNodeFactory::SofaNodeFactory(){}
+SofaNode* SofaNodeFactory::createInstance(SofaBase* b)
+{
+    if(b==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError,
+                                                            "Cannot get a SofaNode from a nullptr.");
+        return nullptr;
+    }
+
+    if(!b->isNode())
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError,
+                                                            "Argument type is not compatible with SofaNode.");
+        return nullptr;
+    }
+
+    return wrap(b->base()->toBaseNode());
+}
+
+QString SofaNode::getNextName(const QString& name)
+{
+    int i = 1;
+    QString newname = name;
+    while(self()->getChild(newname.toStdString())!=nullptr)
+    {
+        newname = name + QString::number(i);
+        i++;
+    }
+    return newname;
+}
+
+
 
 }  // namespace sofaqtquick::bindings::_sofanode_

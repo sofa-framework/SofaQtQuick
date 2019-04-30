@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import SofaFactory 1.0
+import Sofa.Core.SofaFactory 1.0
 import Sofa.Core.SofaNode 1.0
 import QmlGTestCase 1.0
 
@@ -35,8 +35,23 @@ QmlGTestCase
         assert_eq(n.getChildren().size(), 2)
     }
 
-    function tst_createNodeFromBase()
+    function tst_getObject()
     {
-        // Test call to SofaNode with a node, and with a non-node Base object
+        var n = SofaFactory.createNode()
+        var o = n.createObject("MechanicalObject", {name:"test"})
+        assert_eq(n.getObject("test").getName(),"test")
+    }
+
+    function tst_getInitReInit()
+    {
+        var n = SofaFactory.createNode()
+        n.init()
+        n.reinit()
+    }
+
+    function tst_downCast()
+    {
+        var nn = SofaFactory.createNode()
+        var n =  as_SofaNode(nn)
     }
 }

@@ -20,29 +20,37 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  Contributors:
     - damien.marchal@univ-lille.fr
 ********************************************************************/
-
-#ifndef SOFAQTQUICKSOFA_SofaQtQuickQmlModule_H
-#define SOFAQTQUICKSOFA_SofaQtQuickQmlModule_H
-
-#include <QQmlExtensionPlugin>
+#pragma once
 
 #include <SofaQtQuickGUI/config.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <map>
+#include <functional>
 
-namespace sofaqtquick
+namespace sofaqtquick::bindings
 {
 
-/// \class Initialize the Qml Module containing the complete SofaQtQuick binding.
-/// This is working as long as dynamically loading plugin is not needed.
-/// If this is the case you should read:
-/// More info: http://doc.qt.io/qt-5/qqmlextensionplugin.html
-class SOFA_SOFAQTQUICKGUI_API SofaQtQuickQmlModule
+class SofaCoreBindingFactory
 {
 public:
-    /// Register the types without the need of creating an instance of the SofaQtQuickQmlModule.
-    static void RegisterTypes(QQmlEngine* engine);
+    typedef std::function<SofaBase*(sofa::core::objectmodel::Base*)> downcastFct;
+    static void registerType(const std::string& className, downcastFct f)
+    {
+        m_downcasts[className] = f;
+    }
 
+    static SofaBase* wrap(sofa::core::objectmodel::Base* obj)
+    {
+        auto f = m_downcasts.find(obj->getClassName());
+        if( f != m_downcasts.end() )
+        {
+            return f->second(obj);
+        }
+        return new SofaBase(obj);
+    }
+
+private:
+    static std::map<std::string, downcastFct> m_downcasts;
 };
+} /// sofaqtquick::bindings
 
-}
-
-#endif /// SOFAQTQUICKSOFA_QMLBINDINGSOFATYPES_H

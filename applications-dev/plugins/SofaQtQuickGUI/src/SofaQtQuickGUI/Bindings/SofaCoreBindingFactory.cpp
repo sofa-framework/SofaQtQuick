@@ -20,29 +20,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
  Contributors:
     - damien.marchal@univ-lille.fr
 ********************************************************************/
-
-#ifndef SOFAQTQUICKSOFA_SofaQtQuickQmlModule_H
-#define SOFAQTQUICKSOFA_SofaQtQuickQmlModule_H
-
-#include <QQmlExtensionPlugin>
-
-#include <SofaQtQuickGUI/config.h>
-
-namespace sofaqtquick
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
+namespace sofaqtquick::bindings
 {
 
-/// \class Initialize the Qml Module containing the complete SofaQtQuick binding.
-/// This is working as long as dynamically loading plugin is not needed.
-/// If this is the case you should read:
-/// More info: http://doc.qt.io/qt-5/qqmlextensionplugin.html
-class SOFA_SOFAQTQUICKGUI_API SofaQtQuickQmlModule
-{
-public:
-    /// Register the types without the need of creating an instance of the SofaQtQuickQmlModule.
-    static void RegisterTypes(QQmlEngine* engine);
+std::map<std::string, SofaCoreBindingFactory::downcastFct>
+SofaCoreBindingFactory::m_downcasts;
 
-};
-
-}
-
-#endif /// SOFAQTQUICKSOFA_QMLBINDINGSOFATYPES_H
+} /// sofaqtquick::bindings

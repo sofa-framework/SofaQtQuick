@@ -1,38 +1,59 @@
 import QtQuick 2.12
-import SofaFactory 1.0
+import Sofa.Core.SofaFactory 1.0
 import Sofa.Core.SofaLink 1.0
 import QmlGTestCase 1.0
 
 QmlGTestCase
 {
-    property var node : SofaFactory.createNode()
-    property var node2 : node.createChild("Child")
+    property var rootNode :
+    {
+        var node = SofaFactory.createNode()
 
+        var parent = node.createChild("Parent")
+        var dofs = parent.createObject("MechanicalObject",
+                                     { name : "dofs" ,
+                                       template : "Rigid3d"
+                                     })
+        var child = parent.createChild("Visual")
+        var slavedofs = child.createObject("MechanicalObject",
+                                          {name : "slavedofs",
+                                              template : "Rigid3d"
+                                          })
+        var mapping = child.createObject("RigidRigidMapping",
+                                        {name : "mapping",
+                                         template : "Rigid3d,Rigid3d",
+                                         input : "@../dofs",
+                                         output : "@./slavedofs"
+                                        })
+        node.init()
+        return node
+    }
 
     function tst_getInvalidLink()
     {
-        assert_throw(function (){console.log(node.getLink("thisLinkDoesNotExists"))});
+        assert_throw(function (){console.log(rootNode.getLink("thisLinkDoesNotExists"))});
     }
 
     function tst_getSize()
     {
-        node.createChild("Child2");
-        console.log(node.getLink("object").getSize())
+        rootNode.createChild("Child2");
+        assert_eq(rootNode.getChildren().size(),2)
     }
 
     function tst_getLinkedData()
     {
-        console.log(node.getLink("object").getLinkedBase())
     }
 
     function tst_getLinkedBase()
     {
-        console.log(node.getLink("object").getLinkedData())
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("input").getLinkedBase().getPathName(), "/Parent/dofs")
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("output").getLinkedBase().getPathName(), "/Parent/Visual/slavedofs")
     }
 
     function tst_getLinkedPath()
     {
-        console.log(node.getLink("object").getLinkedPath())
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("input").getLinkedPath(), "@../dofs")
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("output").getLinkedPath(), "@./slavedofs")
     }
 
 

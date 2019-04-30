@@ -31,6 +31,7 @@ set(QMLTEST_FILES
     data/qmltests/SofaLink_test.qml
     data/qmltests/SofaNode_test.qml
     data/qmltests/SofaData_test.qml
+    data/qmltests/SofaFactory_test.qml
     )
 
 add_definitions("-DSOFAQTQUICK_TEST_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/data\"")
