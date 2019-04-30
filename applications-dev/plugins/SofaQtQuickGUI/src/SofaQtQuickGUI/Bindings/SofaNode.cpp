@@ -23,9 +23,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaNode.h"
 #include "SofaComponent.h"
 
-#include <SofaSimulationGraph/SimpleApi.h>
+#include <SofaSimulationGraph/SimpleApi.h> ///< To create object in a slow but easy way.
+
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 using sofaqtquick::bindings::SofaCoreBindingContext;
+
+#include <sofa/core/ExecParams.h>
+using sofa::core::ExecParams;
+
 
 namespace sofaqtquick::bindings::_sofanode_
 {
@@ -66,6 +71,16 @@ SofaNode::SofaNode(DAGNode::SPtr self, QObject *parent)
 
 SofaNode::~SofaNode(){}
 
+void SofaNode::init() const
+{
+    self()->init(ExecParams::defaultInstance());
+}
+
+void SofaNode::reinit() const
+{
+    self()->reinit(ExecParams::defaultInstance());
+}
+
 sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaScene* scene)
 {
     return new sofa::qtquick::SofaComponent(scene, m_self.get());
@@ -94,6 +109,19 @@ SofaNode* SofaNode::getNodeInGraph(QString name)
 SofaNode* SofaNode::getRoot()
 {
     return wrap(self()->getRoot());
+}
+
+SofaBaseObject* SofaNode::createObject(const QString& type, const QVariantMap& arguments) const
+{
+    /// Super slow but easy to write object constructor.
+    std::map<std::string, std::string> args;
+    for(auto& key : arguments.keys())
+    {
+        args[key.toStdString()] = arguments[key].toString().toStdString();
+    }
+
+    auto o = sofa::simpleapi::createObject(selfptr(), type.toStdString(), args);
+    return new SofaBaseObject(o);
 }
 
 SofaNodeList* SofaNode::getChildren()
@@ -138,5 +166,7 @@ unsigned int SofaNodeList::size()
 {
     return m_list.size();
 }
+
+
 
 }  // namespace sofaqtquick::bindings::_sofanode_
