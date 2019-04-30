@@ -167,6 +167,27 @@ unsigned int SofaNodeList::size()
     return m_list.size();
 }
 
+SofaNodeFactory::SofaNodeFactory(){}
+SofaNode* SofaNodeFactory::createInstance(SofaBase* b)
+{
+    if(b==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError,
+                                                            "Cannot get a SofaNode from a nullptr.");
+        return nullptr;
+    }
+
+    if(!b->isNode())
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError,
+                                                            "Argument type is not compatible with SofaNode.");
+        return nullptr;
+    }
+
+    return wrap(b->base()->toBaseNode());
+}
+
+
 
 
 }  // namespace sofaqtquick::bindings::_sofanode_

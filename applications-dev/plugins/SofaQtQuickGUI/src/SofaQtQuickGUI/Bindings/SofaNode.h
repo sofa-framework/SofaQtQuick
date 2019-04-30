@@ -80,7 +80,6 @@ public:
 
     Q_INVOKABLE void init() const;
     Q_INVOKABLE void reinit() const;
-
 };
 
 class SofaNodeList : public QObject
@@ -96,9 +95,19 @@ private:
     std::vector<SofaNode*> m_list;
 };
 
+
+class SofaNodeFactory : public QObject
+{
+    Q_OBJECT
+public:
+  SofaNodeFactory();
+  Q_INVOKABLE SofaNode* createInstance(SofaBase* t);
+};
+
 } /// namespace _sofanode_
 
 using _sofanode_::SofaNode;
 using _sofanode_::SofaNodeList;
+using _sofanode_::SofaNodeFactory;
 
 } /// namespace sofaqtquick::bindings

@@ -39,7 +39,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaQtQuickQmlModule
 {
 public:
     /// Register the types without the need of creating an instance of the SofaQtQuickQmlModule.
-    static void RegisterTypes();
+    static void RegisterTypes(QQmlEngine* engine);
 
 };
 

@@ -40,6 +40,7 @@ using sofaqtquick::bindings::SofaBase;
 
 #include <SofaQtQuickGUI/Bindings/SofaNode.h>
 using sofaqtquick::bindings::SofaNode;
+using sofaqtquick::bindings::SofaNodeFactory;
 
 #include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
 using sofaqtquick::bindings::SofaBaseObject;
@@ -60,7 +61,7 @@ using sofaqtquick::bindings::SofaBaseObject;
 #include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/Windows/EditView.h>
 #include <SofaQtQuickGUI/Windows/AssetView.h>
-
+#include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 
 #include <SofaQtQuickGUI/PythonConsole.h>
 using namespace sofa::qtquick;
@@ -82,6 +83,8 @@ using sofa::qtquick::livefilemonitor::LiveFileMonitor;
 
 #include <sofa/helper/system/PluginManager.h>
 
+#include <QQmlPropertyMap>
+#include <QQmlContext>
 
 void initRessources()
 {
@@ -132,6 +135,8 @@ static QObject* createSofaViewListModel(QQmlEngine *engine,
     Q_UNUSED(scriptEngine)
     return new SofaViewListModel() ;
 }
+
+
 
 void registerSofaTypesToQml(const char* /*uri*/)
 {
@@ -204,6 +209,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaNode> ("Sofa.Core.SofaNode",
                                versionMajor, versionMinor,
                                "SofaNode");
+
     qmlRegisterType<SofaBaseObject> ("Sofa.Core.SofaBaseObject",
                                      versionMajor, versionMinor,
                                      "BaseObject");
@@ -233,9 +239,11 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                               createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
                                               );
 
+
+
 }
 
-void SofaQtQuickQmlModule::RegisterTypes()
+void SofaQtQuickQmlModule::RegisterTypes(QQmlEngine* engine)
 {
     static bool inited=false;
     if(!inited){
@@ -243,6 +251,16 @@ void SofaQtQuickQmlModule::RegisterTypes()
         registerSofaTypesToQml("SofaQtQuickGUI");
         sofa::helper::system::PluginManager::s_gui_postfix = "qtquickgui";
         inited=true;
+    }
+    if(engine != sofaqtquick::bindings::SofaCoreBindingContext::getQQmlEngine())
+    {
+        sofaqtquick::bindings::SofaCoreBindingContext::setQQmlEngine(engine);
+        QJSValue factoryObj = engine->newQObject(new SofaNodeFactory());
+        engine->globalObject().setProperty("_SofaNodeFactory", factoryObj);
+        auto a= engine->evaluate(
+            "function as_SofaNode(o) {"
+            "    return _SofaNodeFactory.createInstance(o)"
+            "}");
     }
 }
 

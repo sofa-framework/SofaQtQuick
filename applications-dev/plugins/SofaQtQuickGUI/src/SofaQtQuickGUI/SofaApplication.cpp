@@ -951,7 +951,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     sofa::helper::system::DataRepository.addFirstPath((QCoreApplication::applicationDirPath() + "/../" + app.applicationName() + "Data").toStdString());
 
     /// Register the Sofa Binding into the QML Types system.
-    SofaQtQuickQmlModule::RegisterTypes();
+    SofaQtQuickQmlModule::RegisterTypes(&applicationEngine);
     SofaRuntimeModule::RegisterTypes();
 
     // compute command line arguments
