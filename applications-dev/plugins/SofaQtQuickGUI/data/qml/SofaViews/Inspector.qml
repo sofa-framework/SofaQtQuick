@@ -267,7 +267,6 @@ Item {
                                             id: sofaDataItem
                                             implicitWidth : theItem.width
 
-                                            sofaScene: root.sofaScene
                                             sofaData: {
                                                 return sofaInspectorDataListModel.getDataById(childModel.parentIndex, index)
                                             }

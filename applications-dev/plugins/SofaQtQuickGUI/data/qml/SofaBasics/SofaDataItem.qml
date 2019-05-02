@@ -32,7 +32,6 @@ Item {
 
     signal doubleClickedOnLabel;
 
-    property var sofaScene: SofaApplication.sofaScene
     property QtObject sofaData: null
     onSofaDataChanged: {
         updateObject();
@@ -225,9 +224,9 @@ Item {
                             else
                                 console.warn("WARNING: Type unknown for data: " + root.name);
                         } else {
-                            loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
+                            loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaData": root.sofaData});
                             if(Loader.Ready !== loader.status)
-                                loader.setSource("qrc:/SofaDataTypes/SofaDataType_notimplementedyet.qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
+                                loader.setSource("qrc:/SofaDataTypes/SofaDataType_notimplementedyet.qml", {"dataObject": dataObject, "sofaData": root.sofaData});
                         }
                     } else {
                         loader.setSource("");
