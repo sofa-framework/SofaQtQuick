@@ -88,6 +88,36 @@ MenuBar {
             }
         }
 
+        MenuItem {
+            id: importProject
+            text: qsTr("Import Project...")
+            FileDialog {
+                id: importProjectDialog
+                title: "Please choose a project directory"
+                folder: shortcuts.home
+                selectFolder: false
+                sidebarVisible: true
+                nameFilters: ["Archives (*.zip)", "All files (*)"]
+                onAccepted: {
+                    var extractedFolder = sofaApplication.currentProject.importProject(fileUrl);
+                    console.error(extractedFolder)
+                    sofaApplication.projectSettings.addRecent("file://" + extractedFolder)
+                }
+            }
+
+            onTriggered: {
+                importProjectDialog.open()
+            }
+        }
+
+        MenuItem {
+            id: exportProject
+            text: qsTr("Export Current Project")
+            onTriggered: {
+                sofaApplication.currentProject.exportProject(sofaApplication.projectSettings.currentProject())
+            }
+        }
+
         MenuSeparator {}
 
         MenuItem {

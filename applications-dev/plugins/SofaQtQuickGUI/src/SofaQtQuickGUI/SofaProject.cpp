@@ -1,6 +1,7 @@
 #include "SofaProject.h"
 #include "SofaApplication.h"
 #include <QWindow>
+#include <QFileDialog>
 
 namespace sofa {
 namespace qtquick {
@@ -29,6 +30,64 @@ AssetFactory* SofaProject::getAssetFactory() { return &m_assetFactory; }
 void SofaProject::scanProject(const QUrl& folder)
 {
     _scanProject(QDir(folder.path()));
+}
+
+QString SofaProject::importProject(const QUrl& srcUrl)
+{
+    QString src = srcUrl.path();
+    QFileInfo finfo(src);
+    if (finfo.exists() && finfo.suffix() == "zip")
+    {
+        QFileDialog dialog(nullptr, tr("Choose Project Destination"), "~/Documents", tr("All folders (*)"));
+        dialog.setFileMode(QFileDialog::Directory);
+        dialog.setOption(QFileDialog::ShowDirsOnly);
+        if (dialog.exec())
+        {
+            QList<QUrl> folders = dialog.selectedUrls();
+            if (folders.empty())
+                return "Error: no destination picked";
+            QString dest = folders.first().path();
+            QProcess process;
+            process.start("/usr/bin/unzip", QStringList() << src << "-d" << dest);
+            std::cout << "/usr/bin/unzip " << src.toStdString() << " -d " << dest.toStdString() << std::endl;
+            process.waitForFinished(-1);
+            return dest + "/" + finfo.baseName();
+        }
+        return "Error: could not open Dialog";
+    }
+    return "Error: does not exist or isn't zip file";
+}
+
+bool SofaProject::exportProject(const QUrl& srcUrl)
+{
+    QString src = srcUrl.toLocalFile();
+    QFileDialog dialog(nullptr, tr("Choose Project Destination"), "~/Documents");
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOption(QFileDialog::ShowDirsOnly);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    if (dialog.exec())
+    {
+        QList<QUrl> folders = dialog.selectedUrls();
+        if (folders.empty())
+            return false;
+        QString dest = folders.first().path();
+        QProcess process;
+
+        QString filePath = QFileInfo(src).filePath();
+        QString baseName = QFileInfo(src).baseName();
+        QString fileName = QFileInfo(src).fileName();
+        process.start("/bin/ln", QStringList() << "-s" << filePath << fileName);
+        process.waitForFinished(-1);
+        std::cout << "/bin/ln" << " -s " << filePath.toStdString() << " " << fileName.toStdString() << std::endl;
+        process.start("/usr/bin/zip", QStringList() << "-r" << QString(dest + "/" + baseName + ".zip") << fileName);
+        process.waitForFinished(-1);
+        std::cout << "/usr/bin/zip -r " << QString(dest + "/" + baseName + ".zip").toStdString() << " " << fileName.toStdString() << std::endl;
+        process.start("/bin/rm", QStringList() << fileName);
+        process.waitForFinished(-1);
+        std::cout << "/bin/rm " << fileName.toStdString() << std::endl;
+        return true;
+    }
+    return false;
 }
 
 void SofaProject::scanProject(const QDir& folder)

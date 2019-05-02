@@ -35,6 +35,8 @@ public:
     void setAssetFactory(AssetFactory* ) {}
     Q_SIGNAL void assetFactoryChanged(AssetFactory* );
 
+    Q_INVOKABLE QString importProject(const QUrl& archive);
+    Q_INVOKABLE bool exportProject(const QUrl& projectName);
     Q_INVOKABLE void scanProject(const QDir& folder);
     Q_INVOKABLE void scanProject(const QUrl& url);
     Q_INVOKABLE const QString getFileCount(const QUrl& url);
