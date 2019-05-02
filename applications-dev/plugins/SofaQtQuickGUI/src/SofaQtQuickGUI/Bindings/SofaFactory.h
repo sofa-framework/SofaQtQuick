@@ -50,7 +50,7 @@ public:
     Q_INVOKABLE QStringList getComponents() ;
     Q_INVOKABLE void setFilter(const QString& c) ;
 
-    Q_INVOKABLE sofaqtquick::bindings::SofaNode* createNode() const;
+    Q_INVOKABLE sofaqtquick::bindings::SofaNode* createNode(const QString name="unnamed") const;
 
 signals:
     void listChanged();

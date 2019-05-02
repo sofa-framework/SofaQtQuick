@@ -28,16 +28,21 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofa::core::objectmodel
 {
 class BaseData;
+class BaseNode;
 }
 
 /// Declaration
 namespace sofaqtquick::helper
 {
     using sofa::core::objectmodel::BaseData;
+    using sofa::core::objectmodel::BaseNode;
+
     QVariant createQVariantFromData(const BaseData*);
     QVariantMap getSofaDataProperties(const BaseData* data);
 
     // TODO: WARNING : do not use data->read anymore but directly the correct set*Type*Value(...)
     bool setDataValueFromQVariant(BaseData* data, const QVariant& value);
     bool setDataLink(BaseData* data, const QString& link);
+
+    BaseData* findData(BaseNode* node, const QString& path);
 }

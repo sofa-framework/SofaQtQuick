@@ -62,9 +62,9 @@ QStringList SofaFactory::getComponents()
     return m_filteredList ;
 }
 
-SofaNode* SofaFactory::createNode() const
+SofaNode* SofaFactory::createNode(const QString name) const
 {
-    return new SofaNode();
+    return new SofaNode(name);
 }
 
 

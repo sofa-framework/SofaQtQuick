@@ -54,7 +54,7 @@ Rectangle {
 
     readonly property var searchBar: searchBar
 
-    /*    //    Item {
+    Item {
     //        property bool isActive: false
     //        property int  index: 0
     //        id: componentSignaler
@@ -94,16 +94,21 @@ Rectangle {
 
     //    /// Connect the scenegraph view so that it can be notified when the SofaApplication
     //    /// is trying to notify that the user is interested to get visual feedback on where componets are.
-    //    Connections {
-    //        target: SofaApplication
-    //        onSignalComponent: {
-    //            var c = sofaScene.component("@"+path)
-    //            if(c){
-    //                var i = listModel.getComponentId(c)
-    //                componentSignaler.start(i, c)
-    //            }
-    //        }
-    //    } */
+    Connections {
+            target: SofaApplication
+            onSignalComponent: {
+                var c = sofaScene.get(path)
+                if(c){
+                    var i = listModel.getComponentId(c)
+                    console.log("SIgNAL AT"+ i)
+                    componentSignaler.start(i, c)
+                }
+                else{
+                    console.log("Nothing at" + path)
+                }
+            }
+        }
+    }
 
     // search bar
     SofaSearchBar {

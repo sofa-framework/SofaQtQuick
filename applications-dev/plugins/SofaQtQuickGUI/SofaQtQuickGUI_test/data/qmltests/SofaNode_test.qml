@@ -54,4 +54,20 @@ QmlGTestCase
         var nn = SofaFactory.createNode()
         var n =  as_SofaNode(nn)
     }
+
+    function tst_get()
+    {
+        var node = SofaFactory.createNode("root")
+        var node2 = node.createChild("child")
+        var o = node2.createObject("MechanicalObject", {name:"dofs"})
+        var data =  node2.get("/child/dofs.name")
+        assert_eq(data.getName(),"name")
+        assert_eq(data.getValue(),"dofs")
+        var obj =  node2.get("/child/dofs")
+        assert_eq(obj.getName(),"dofs")
+        assert_eq(obj.getClassName(),"MechanicalObject")
+        var n =  node.get("/child")
+        assert_eq(n.getName(),"child")
+        assert_eq(n.getClassName(),"DAGNode")
+    }
 }

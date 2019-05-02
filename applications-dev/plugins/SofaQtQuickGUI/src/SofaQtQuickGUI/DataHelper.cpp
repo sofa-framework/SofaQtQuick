@@ -23,6 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QJSValue>
 
 #include <sofa/core/objectmodel/BaseData.h>
+#include <sofa/core/objectmodel/BaseNode.h>
 
 #include <sofa/defaulttype/DataTypeInfo.h>
 using sofa::defaulttype::AbstractTypeInfo;
@@ -454,6 +455,23 @@ QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
     object.insert("value", createQVariantFromData(data));
 
     return object;
+}
+
+BaseData* findData(BaseNode* node, const QString& path)
+{
+    BaseData* data = 0;
+
+    if(node)
+    {
+        std::streambuf* backup(std::cerr.rdbuf());
+
+        std::ostringstream stream;
+        std::cerr.rdbuf(stream.rdbuf());
+        node->findDataLinkDest(data, path.toStdString(), 0);
+        std::cerr.rdbuf(backup);
+    }
+
+    return data;
 }
 
 

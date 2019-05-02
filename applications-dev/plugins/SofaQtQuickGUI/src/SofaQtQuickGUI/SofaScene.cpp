@@ -84,6 +84,8 @@ using sofa::simulation::scenechecking::SceneCheckUsingAlias;
 
 #include <SofaSimulationGraph/DAGNode.h>
 
+#include <SofaQtQuickGUI/DataHelper.h>
+
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
 using sofaqtquick::bindings::SofaCoreBindingFactory;
 
@@ -1225,23 +1227,6 @@ void SofaScene::setDataValue(SofaComponent* sofaComponent, const QString& name, 
     setDataValue(data, value);
 }
 
-static BaseData* FindData_Helper(BaseNode* node, const QString& path)
-{
-    BaseData* data = 0;
-
-    if(node)
-    {
-        std::streambuf* backup(std::cerr.rdbuf());
-
-        std::ostringstream stream;
-        std::cerr.rdbuf(stream.rdbuf());
-        node->findDataLinkDest(data, path.toStdString(), 0);
-        std::cerr.rdbuf(backup);
-    }
-
-    return data;
-}
-
 /// Returns a link object from its path. The path
 /// must be composed of a prefix.linkname
 SofaLink* SofaScene::link(const QString& fullpath)
@@ -1254,7 +1239,7 @@ SofaLink* SofaScene::link(const QString& fullpath)
     if(splittedpath.size() != 2)
         return nullptr ;
 
-    BaseData* data = FindData_Helper(mySofaRootNode.get(), splittedpath[0] + ".name");
+    BaseData* data = sofaqtquick::helper::findData(mySofaRootNode.get(), splittedpath[0] + ".name");
     if(!data)
         return nullptr;
 
@@ -1269,7 +1254,7 @@ SofaLink* SofaScene::link(const QString& fullpath)
 
 sofaqtquick::bindings::SofaData* SofaScene::data(const QString& path)
 {
-    BaseData* data = FindData_Helper(mySofaRootNode.get(), path);
+    BaseData* data = sofaqtquick::helper::findData(mySofaRootNode.get(), path);
     if(!data)
         return nullptr;
 
@@ -1306,7 +1291,7 @@ SofaComponent* SofaScene::component(const QString& path)
 SofaBase* SofaScene::get(const QString& path)
 {
     /// search for the "name" data of the component (this data is always present if the component exist)
-    BaseData* data = FindData_Helper(mySofaRootNode.get(), path + ".name");
+    BaseData* data = sofaqtquick::helper::findData(mySofaRootNode.get(), path + ".name");
 
     if(!data)
         return nullptr;
@@ -1459,7 +1444,7 @@ SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context,
 
 QVariant SofaScene::onDataValueByPath(const QString& path) const
 {
-    BaseData* data = FindData_Helper(mySofaRootNode.get(), path);
+    BaseData* data = sofaqtquick::helper::findData(mySofaRootNode.get(), path);
 
     if(!data)
     {
@@ -1494,7 +1479,7 @@ static QVariant UnpackParameters_Helper(const QVariant& value)
 
 void SofaScene::onSetDataValueByPath(const QString& path, const QVariant& value)
 {
-    BaseData* data = FindData_Helper(mySofaRootNode.get(), path);
+    BaseData* data = sofaqtquick::helper::findData(mySofaRootNode.get(), path);
 
     if(!data)
     {
