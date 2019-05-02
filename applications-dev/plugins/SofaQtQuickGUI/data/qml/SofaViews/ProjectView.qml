@@ -262,10 +262,20 @@ Item {
                                     sofaApplication.openInTerminal(folderModel.get(index, "filePath"))
                                 }
                             }
+
+                            MenuItem {
+                                id: newFolder
+                                text: "New Folder"
+
+                                onTriggered: {
+                                    sofaApplication.createFolderIn(folderModel.get(index, "filePath"))
+                                }
+                            }
+
                             Component {
-                                id: openInEditor
+                                id: fileSpecificEntries
                                 MenuItem {
-                                    id: _openInEditor
+                                    id: openInEditor
                                     text: "Open In Editor"
                                     onTriggered: {
                                         projectMenu.visible = false
@@ -274,9 +284,9 @@ Item {
                                 }
                             }
                             Component {
-                                id: openAsProject
+                                id: folderSpecificEntries
                                 MenuItem {
-                                    id: _openAsProject
+                                    id: openAsProject
                                     text: "Open Folder As Project"
 
                                     onTriggered: {
@@ -286,7 +296,7 @@ Item {
                             }
 
                             Loader {
-                                sourceComponent: folderModel.isFolder(index) ? openAsProject : openInEditor
+                                sourceComponent: folderModel.isFolder(index) ? folderSpecificEntries: fileSpecificEntries
                             }
 
                         }

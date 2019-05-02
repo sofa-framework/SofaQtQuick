@@ -34,6 +34,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaPython/PythonEnvironment.h>
 
 #include <QQuickStyle>
+#include <QInputDialog>
+#include <QLineEdit>
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQmlContext>
@@ -144,9 +146,11 @@ void SofaApplication::openInTerminal(const QString& folder) const
 {
     QSettings settings;
     if(!settings.contains("TerminalEmulator"))
-        settings.setValue("TerminalEmulator", "gnome-terminal");
+    {
+        settings.setValue("TerminalEmulator", "gnome-terminal"); // can set gnome-terminal for instance
+    }
     if(!settings.contains("TerminalEmulatorParams"))
-        settings.setValue("TerminalEmulatorParams", "--working-directory");
+        settings.setValue("TerminalEmulatorParams", "--working-directory=${path}");
 
     QString program = settings.value("TerminalEmulator").toString();
     QString dir;
@@ -154,7 +158,7 @@ void SofaApplication::openInTerminal(const QString& folder) const
         dir = QFileInfo(folder).path();
     else
         dir = folder;
-    QProcess::execute(program, QStringList() << settings.value("TerminalEmulatorParams").toString() << dir);
+    QProcess::execute(program, QStringList() << settings.value("TerminalEmulatorParams").toString().replace("${path}", dir));
 }
 
 ///
@@ -170,7 +174,7 @@ void SofaApplication::openInEditor(const QString& fullpath, const int lineno) co
     if(!settings.contains("DefaultEditor"))
     {
         QProcessEnvironment env;
-        settings.setValue("DefaultEditor", "qtcreator"); // can set qtcreator for instead for instance
+        settings.setValue("DefaultEditor", "qtcreator"); // can set emacs instead in runSofa2.ini for instance
     }
     if(!settings.contains("DefaultEditorParams"))
         settings.setValue("DefaultEditorParams", "-client ${path}:${lineno}"); // ex. for qtcreator: "-client ${path}:${lineno}"
@@ -187,6 +191,26 @@ void SofaApplication::openInEditor(const QString& fullpath, const int lineno) co
         msg_warning("OpenInEditor") << "Failed to launch chosen editor. Check runSofa2.ini";
         QDesktopServices::openUrl(QUrl::fromLocalFile(fullpath));
     }
+}
+
+QString SofaApplication::createFolderIn(const QString& parent)
+{
+    QString path = parent;
+    QFileInfo finfo(parent);
+
+    if (!finfo.isDir())
+        path = finfo.path();
+    bool ok;
+    const QString dirName = QInputDialog::getText(nullptr,
+                                                  tr("Type in the new folder's name:"),
+                                                  tr("Folder Name: "),
+                                                  QLineEdit::Normal,
+                                                  "New Folder", &ok);
+
+    QDir dir(path+ "/" + dirName);
+    if (createFolder(dir.path()))
+        return "";
+    return dir.path();
 }
 
 bool SofaApplication::createFolder(const QString& destination)
