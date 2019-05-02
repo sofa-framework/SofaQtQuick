@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
 import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
@@ -264,7 +265,7 @@ Item {
                             Component {
                                 id: openInEditor
                                 MenuItem {
-                                    id: openTerminal
+                                    id: _openInEditor
                                     text: "Open In Editor"
                                     onTriggered: {
                                         projectMenu.visible = false
@@ -273,13 +274,19 @@ Item {
                                 }
                             }
                             Component {
-                                id: doNothing
-                                Item {
+                                id: openAsProject
+                                MenuItem {
+                                    id: _openAsProject
+                                    text: "Open Folder As Project"
+
+                                    onTriggered: {
+                                        sofaApplication.projectSettings.addRecent(folderModel.get(index, "filePath"))
+                                    }
                                 }
                             }
 
                             Loader {
-                                sourceComponent: folderModel.isFolder(index) ? doNothing : openInEditor
+                                sourceComponent: folderModel.isFolder(index) ? openAsProject : openInEditor
                             }
 
                         }
