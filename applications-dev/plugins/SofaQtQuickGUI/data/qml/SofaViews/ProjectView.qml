@@ -251,6 +251,7 @@ Item {
                             MenuItem {
                                 text: "Show Containing Folder"
                                 onTriggered: {
+                                    projectMenu.visible = false
                                     console.error(folderModel.get(index, "filePath"))
                                     sofaApplication.openInExplorer(folderModel.get(index, "filePath"))
                                 }
@@ -259,6 +260,7 @@ Item {
                                 id: openTerminal
                                 text: "Open Terminal Here"
                                 onTriggered: {
+                                    projectMenu.visible = false
                                     sofaApplication.openInTerminal(folderModel.get(index, "filePath"))
                                 }
                             }
@@ -268,6 +270,7 @@ Item {
                                 text: "New Folder"
 
                                 onTriggered: {
+                                    projectMenu.visible = false
                                     sofaApplication.createFolderIn(folderModel.get(index, "filePath"))
                                 }
                             }
@@ -290,7 +293,20 @@ Item {
                                     text: "Open Folder As Project"
 
                                     onTriggered: {
+                                        projectMenu.visible = false
                                         sofaApplication.projectSettings.addRecent(folderModel.get(index, "filePath"))
+                                    }
+                                }
+                            }
+
+                            Component {
+                                id: sceneSpecificEntries
+                                MenuItem {
+                                    id: projectFromScene
+                                    text: "New Project From Scene"
+                                    onTriggered: {
+                                        projectMenu.visible = false
+                                        sofaApplication.currentProject.createProjectFromScene(folderModel.get(index, "filePath"))
                                     }
                                 }
                             }
@@ -299,6 +315,16 @@ Item {
                                 sourceComponent: folderModel.isFolder(index) ? folderSpecificEntries: fileSpecificEntries
                             }
 
+                            Loader {
+                                sourceComponent: {
+                                    for (var m in assetMenu.model) {
+                                        console.error(assetMenu.model[m].name)
+                                        if (assetMenu.model[m].name === "createScene")
+                                            return sceneSpecificEntries
+                                    }
+                                    return null
+                                }
+                            }
                         }
 
                         MouseArea {

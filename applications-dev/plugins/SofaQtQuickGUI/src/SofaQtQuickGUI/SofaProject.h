@@ -35,6 +35,8 @@ public:
     void setAssetFactory(AssetFactory* ) {}
     Q_SIGNAL void assetFactoryChanged(AssetFactory* );
 
+    Q_INVOKABLE QString createProject(const QUrl& dir);
+    Q_INVOKABLE bool createProjectTree(const QUrl& dir);
     Q_INVOKABLE QString importProject(const QUrl& archive);
     Q_INVOKABLE bool exportProject(const QUrl& projectName);
     Q_INVOKABLE void scanProject(const QDir& folder);

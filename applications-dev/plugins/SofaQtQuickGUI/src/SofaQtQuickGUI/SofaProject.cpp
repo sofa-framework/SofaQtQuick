@@ -32,6 +32,38 @@ void SofaProject::scanProject(const QUrl& folder)
     _scanProject(QDir(folder.path()));
 }
 
+QString SofaProject::createProject(const QUrl& dir)
+{
+    msg_error_when(createProjectTree(dir), "SofaProject::createProject()")
+            << "Could not create directory tree for the new project";
+
+    QString fileName = dir.path() + "/scenes/" + QFileInfo(dir.path()).baseName() + ".pyscn";
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QTextStream stream(&file);
+        stream << "def createScene(root):" << endl
+               << "    return root" << endl;
+
+        file.close();
+    }
+    return fileName;
+}
+
+bool SofaProject::createProjectTree(const QUrl& dir)
+{
+    QDir d(dir.path());
+    if (!d.exists())
+        d.mkpath(".");
+
+    bool ret = d.mkdir("assets");
+    ret = ret & d.mkdir("assets");
+    ret = ret & d.mkdir("scenes");
+    ret = ret & d.mkdir("assets/resources");
+    ret = ret & d.mkdir("assets/scripts");
+    return ret;
+}
+
 QString SofaProject::importProject(const QUrl& srcUrl)
 {
     QString src = srcUrl.path();
@@ -46,12 +78,16 @@ QString SofaProject::importProject(const QUrl& srcUrl)
             QList<QUrl> folders = dialog.selectedUrls();
             if (folders.empty())
                 return "Error: no destination picked";
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+            QApplication::processEvents();
             QString dest = folders.first().path();
             QProcess process;
             process.start("/usr/bin/unzip", QStringList() << src << "-d" << dest);
             std::cout << "/usr/bin/unzip " << src.toStdString() << " -d " << dest.toStdString() << std::endl;
             process.waitForFinished(-1);
-            return dest + "/" + finfo.baseName();
+            QApplication::restoreOverrideCursor();
+
+            return dest + "/" + finfo.baseName();            
         }
         return "Error: could not open Dialog";
     }
@@ -73,6 +109,8 @@ bool SofaProject::exportProject(const QUrl& srcUrl)
         QString dest = folders.first().path();
         QProcess process;
 
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        QApplication::processEvents();
         QString filePath = QFileInfo(src).filePath();
         QString baseName = QFileInfo(src).baseName();
         QString fileName = QFileInfo(src).fileName();
@@ -85,6 +123,7 @@ bool SofaProject::exportProject(const QUrl& srcUrl)
         process.start("/bin/rm", QStringList() << fileName);
         process.waitForFinished(-1);
         std::cout << "/bin/rm " << fileName.toStdString() << std::endl;
+        QApplication::restoreOverrideCursor();
         return true;
     }
     return false;
@@ -100,6 +139,8 @@ void SofaProject::_scanProject(const QDir& folder)
     if (!folder.exists())
         return;
 
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    QApplication::processEvents();
     QStringList content = folder.entryList();
     QFileInfoList contentInfo = folder.entryInfoList();
     for (int idx = 0 ; idx < content.size() ; ++idx)
@@ -119,6 +160,8 @@ void SofaProject::_scanProject(const QDir& folder)
 
         }
     }
+    QApplication::restoreOverrideCursor();
+
 }
 
 const QString SofaProject::getFileCount(const QUrl& url)

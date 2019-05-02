@@ -28,7 +28,7 @@ MenuItem {
         icon: control.icon
         text: control.text
         font: control.font
-        color: control.enabled ? "white" : "grey"
+        color: control.enabled ? control.hovered || control.highlighted ? "black" : "white" : "grey"
     }
 
     indicator: ColorImage {

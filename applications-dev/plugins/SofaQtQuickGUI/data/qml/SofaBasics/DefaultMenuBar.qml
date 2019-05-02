@@ -42,8 +42,11 @@ MenuBar {
                 selectFolder: true
                 selectExisting: false
                 onAccepted: {
-                    if (Qt.resolvedUrl(fileUrl))
+                    if (Qt.resolvedUrl(fileUrl)) {
+                        var scene = sofaApplication.currentProject.createProject(fileUrl)
                         sofaApplication.projectSettings.addRecent(fileUrl)
+                        sofaApplication.sofaScene.source = scene
+                    }
                     else
                         newProjectErrorDialog.open()
                 }
@@ -96,6 +99,7 @@ MenuBar {
                 title: "Please choose a project directory"
                 folder: shortcuts.home
                 selectFolder: false
+                selectExisting: false
                 sidebarVisible: true
                 nameFilters: ["Archives (*.zip)", "All files (*)"]
                 onAccepted: {
@@ -115,6 +119,14 @@ MenuBar {
             text: qsTr("Export Current Project")
             onTriggered: {
                 sofaApplication.currentProject.exportProject(sofaApplication.projectSettings.currentProject())
+            }
+        }
+
+        MenuItem {
+            id: saveAsNewProject
+            text: "&Save Scene as New Project..."
+            enabled: false
+            onTriggered: {
             }
         }
 

@@ -51,7 +51,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
     Q_OBJECT
 
 protected:
-    SofaApplication(QObject* parent = 0);
+    SofaApplication(QObject* parent = nullptr);
 
 public:
     ~SofaApplication();
@@ -116,7 +116,7 @@ public:
     Q_INVOKABLE QPointF mapItemToScene(QQuickItem* item, const QPointF& point) const;
     Q_INVOKABLE bool isAncestorItem(QQuickItem* item, QQuickItem* ancestorItem) const;
     Q_INVOKABLE QQuickWindow* itemWindow(QQuickItem* item) const;
-    Q_INVOKABLE void trimComponentCache(QObject* object = 0);
+    Q_INVOKABLE void trimComponentCache(QObject* object = nullptr);
     Q_INVOKABLE void clearSettingGroup(const QString& group);
     Q_INVOKABLE int objectDepthFromRoot(QObject* object);
 
