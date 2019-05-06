@@ -98,9 +98,12 @@ void drawCollisionModel(CollisionModel* object, VisualParams *visualParams, bool
         visualStyle->bwdDraw(visualParams);
 }
 
-void drawBaseObject(BaseObject* object, VisualParams* visualParams, bool isSelected)
+void drawBaseObject(BaseObject* object, Base* selected, VisualParams* visualParams, bool isSelected)
 {
     if(object==nullptr)
+        return;
+
+    if(selected != object)
         return;
 
     VisualModel* visualModel = object->toVisualModel();
@@ -110,33 +113,42 @@ void drawBaseObject(BaseObject* object, VisualParams* visualParams, bool isSelec
     CollisionModel* collisionModel = object->toCollisionModel() ;
     if(collisionModel)
         drawCollisionModel(collisionModel, visualParams, isSelected) ;    
+
+    auto oldState = visualParams->displayFlags().getShowAll();
+    visualParams->displayFlags().setShowAll(true);
+
+    object->draw(visualParams);
+
+    visualParams->displayFlags().setShowAll(oldState);
 }
 
-void drawBaseNode(BaseNode* node, VisualParams* visualParams, bool isSelected)
+void drawBaseNode(BaseNode* node, Base* selected, VisualParams* visualParams, bool isSelected)
 {
     /// Iterates over the childs.
     for(auto& child : node->getChildren())
-        drawBaseNode(child, visualParams, isSelected);
+        drawBaseNode(child, selected, visualParams, isSelected);
 
     Node* nnode = dynamic_cast<Node*>(node);
     if(nnode)
     {
         /// Iterates over the components to render them.
         for(auto& object : nnode->getNodeObjects())
-            drawBaseObject(object, visualParams, isSelected);
+            drawBaseObject(object, selected, visualParams, isSelected);
     }
 }
 
-void ObjectRenderer::draw(Base* object, VisualParams* visualParams, bool isSelected)
+void ObjectRenderer::draw(Base* object, Base* selected, VisualParams* visualParams, bool isSelected)
 {
     if(object==nullptr)
         return;
 
+
     if(object->toBaseNode())
-        return drawBaseNode(object->toBaseNode(), visualParams, isSelected);
+        return drawBaseNode(object->toBaseNode(), object, visualParams, isSelected);
 
     if(object->toBaseObject())
-        return drawBaseObject(object->toBaseObject(), visualParams, isSelected);
+        return drawBaseObject(object->toBaseObject(), object, visualParams, isSelected);
+
 }
 
 } ///

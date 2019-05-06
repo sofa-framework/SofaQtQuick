@@ -709,7 +709,7 @@ void SofaViewer::drawSelectedComponents(sofa::core::visual::VisualParams* visual
         /// Draw the objects 'helpers' according to its type, the underlying idea is that we
         /// want to be able to draw information about the scene when we are editting but we don't
         /// want to hardcode this display into the components as this may depend on the application.
-        ObjectRenderer::draw(selectedBase, visualParams, true);
+        ObjectRenderer::draw(selectedBase, selectedBase, visualParams, true);
 
         //visualParams->displayFlags().setShowAll(false);
         //visualParams->displayFlags().setShowWireFrame(false);
