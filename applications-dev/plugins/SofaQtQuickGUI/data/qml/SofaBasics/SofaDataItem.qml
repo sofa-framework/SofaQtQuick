@@ -66,14 +66,14 @@ Item {
         property bool modified: false
         property bool readOnly: initing || root.readOnly || properties.readOnly || trackButton.checked || linkButton.checked
 
-        //signal updated;
+        signal updated;
 
         //onValueChanged: modified = true;
         //onModifiedChanged: if(modified && properties.autoUpdate) upload();
 
-        //function upload() {
-        //    root.updateData();
-        //}
+        function upload() {
+            root.updateData();
+        }
     }
 
     function updateObject()
@@ -95,7 +95,7 @@ Item {
 
         dataObject.initing      = false;
         dataObject.modified     = false;
-        //dataObject.updated();
+        dataObject.updated();
     }
 
     function updateData()
@@ -222,7 +222,7 @@ Item {
             onClicked: root.updateObject();
 
             ToolTip {
-                text: "Track the data value during simulation."
+                text: "Update the visualization of the data during simulation."
             }
 
             Timer {
@@ -235,27 +235,27 @@ Item {
             }
         }
 
-        Button {
-            visible: dataObject.modified
-            text: "Undo"
-            onClicked: root.updateObject();
+//        Button {
+//            visible: dataObject.modified
+//            text: "Undo"
+//            onClicked: root.updateObject();
 
-            ToolTip {
-                description: "Undo changes in the data value"
-            }
-        }
+//            ToolTip {
+//                description: "Undo changes in the data value"
+//            }
+//        }
 
-        Button {
-            Layout.columnSpan: 3
-            Layout.fillWidth: true
-            visible: dataObject.modified
-            text: "Update"
-            onClicked: root.updateData();
+//        Button {
+//            Layout.columnSpan: 3
+//            Layout.fillWidth: true
+//            visible: dataObject.modified
+//            text: "Update"
+//            onClicked: root.updateData();
 
-            ToolTip {
-                description: "Update the data value"
-            }
-        }
+//            ToolTip {
+//                description: "Update the data value"
+//            }
+//        }
     }
 
     onSofaDataChanged:

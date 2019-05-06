@@ -29,11 +29,25 @@ TextField {
     enabled: !dataObject.readOnly
     property int decimals: dataObject.properties["decimals"]
 
+    selectByMouse: true
+
     Component.onCompleted: download();
-    //onTextChanged: upload();
-    onEditingFinished: {
-        upload()
-        dataObject.upload()
+    onAccepted:
+    {
+        focus = false
+    }
+
+    onActiveFocusChanged:
+    {
+        if(!activeFocus)
+        {
+            upload()
+        }
+    }
+
+    onPressAndHold:
+    {
+        console.log("HELLO WORLD...")
     }
 
     property var intValidator: IntValidator {
@@ -50,21 +64,18 @@ TextField {
 
     validator: decimals > 0 ? doubleValidator : intValidator
 
-    //Connections {
-    //    target: dataObject
-    //    onUpdated: root.download();
-    //}
-
     function download() {
         root.text = Number(Number(dataObject.value).toFixed(decimals)).toString();
         cursorPosition = 0;
+        console.log("DOWNLOADING DATA FROM: "+dataObject.name)
+
     }
 
     function upload() {
-        var oldValue = Number(Number(dataObject.value).toFixed(decimals));
+        //var oldValue = Number(Number(dataObject.value).toFixed(decimals));
+        //if(oldValue !== newValue)
+        console.log("UPLOADING DATA TO: "+dataObject.name)
         var newValue = Number(Number(root.text).toFixed(decimals));
-
-        if(oldValue !== newValue)
-            dataObject.value = newValue;
+        dataObject.value = newValue;
     }
 }
