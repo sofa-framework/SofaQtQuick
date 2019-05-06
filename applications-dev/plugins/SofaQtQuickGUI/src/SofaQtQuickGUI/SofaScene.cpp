@@ -55,6 +55,8 @@ using sofa::core::objectmodel::MouseEvent ;
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 #include <SofaPython/SceneLoaderPY.h>
+#include <SofaPython/PythonEnvironment.h>
+#include <SofaPython/PythonFactory.h>
 //#include <SofaPython/PythonScriptController.h>
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
@@ -95,6 +97,7 @@ using sofaqtquick::bindings::SofaCoreBindingFactory;
 #include <QVector3D>
 #include <QStack>
 #include <QFile>
+#include <QFileDialog>
 #include <QTimer>
 #include <QString>
 #include <QUrl>
@@ -481,8 +484,9 @@ void SofaScene::setHeader(const QString& newHeader)
 
 void SofaScene::setSource(const QUrl& newSource)
 {
-    if(newSource == mySource || Status::Loading == myStatus)
-        return;
+    // Checking if the source is different than the one currently loaded prevents refreshing the current scene
+//    if(newSource == mySource || Status::Loading == myStatus)
+//        return;
 
     mySource = newSource;
 
@@ -1404,6 +1408,29 @@ SofaComponent* SofaScene::visualStyleComponent()
 
     return nullptr;
 }
+
+
+bool SofaScene::save(const QString& projectRootDir)
+{
+    QFileDialog dialog(nullptr, tr("Save Scene File"), projectRootDir, tr("All files (*)"));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    if (dialog.exec())
+    {
+        std::string fileName = dialog.selectedFiles().first().toStdString();
+        {
+            PythonEnvironment::gil lock(__func__);
+            PyObject* file = PyString_FromString(fileName.c_str());
+            PyObject* rootNode = sofa::PythonFactory::toPython(mySofaRootNode->toBaseNode());
+            PyObject* args = PyTuple_Pack(2, file, rootNode);
+            PyObject* ret = PythonEnvironment::callObject("saveAsPythonScene", "SofaPython", args);
+            std::cout << "Processing output" << std::endl;
+            return PyObject_IsTrue(ret);
+        }
+    }
+    return false;
+}
+
 
 /*
 SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module)

@@ -209,8 +209,26 @@ MenuBar {
                 reloadMenuItem.reload()
             }
         }
-        MenuItem { text: "Save (TODO)"; enabled: false }
-        MenuItem { text: "Save as...(TODO)"; enabled : false }
+        MenuItem { text: "Save (TODO)"; enabled: false}
+        MenuItem {
+            id: saveSceneAsMenuItem
+            text: "Save as..."
+
+            function save() {
+                var str = sofaApplication.currentProject.rootDir.toString()
+                sofaApplication.sofaScene.save(str.replace('file://', ''))
+            }
+
+            Shortcut {
+                sequence: StandardKey.SaveAs
+                context: Qt.ApplicationShortcut
+                onActivated: saveSceneAsMenuItem.save()
+            }
+            onTriggered:  {
+                saveSceneAsMenuItem.save();
+            }
+
+        }
         MenuItem { text: "Export as...(TODO)"; enabled : false }
         MenuSeparator {}
 

@@ -303,10 +303,10 @@ Item {
                                 id: sceneSpecificEntries
                                 MenuItem {
                                     id: projectFromScene
-                                    text: "New Project From Scene"
+                                    text: "Load Scene"
                                     onTriggered: {
                                         projectMenu.visible = false
-                                        sofaApplication.currentProject.createProjectFromScene(folderModel.get(index, "filePath"))
+                                        sofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                 }
                             }

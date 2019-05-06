@@ -160,7 +160,9 @@ set(EXTRA_FILES
 set(PYTHON_FILES
     data/python/BaseHeader.py
     data/python/PythonConsole.py
+    data/python/SofaQtQuick.py
 )
+sofa_set_python_directory(${PROJECT_NAME} "data/python")
 
 set(QRC_FILES
     data/sofaQtQuickGUI_resources.qrc
