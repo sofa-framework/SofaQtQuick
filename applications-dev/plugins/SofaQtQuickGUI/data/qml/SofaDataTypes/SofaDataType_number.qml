@@ -50,10 +50,10 @@ TextField {
 
     validator: decimals > 0 ? doubleValidator : intValidator
 
-    Connections {
-        target: dataObject
-        onUpdated: root.download();
-    }
+    //Connections {
+    //    target: dataObject
+    //    onUpdated: root.download();
+    //}
 
     function download() {
         root.text = Number(Number(dataObject.value).toFixed(decimals)).toString();

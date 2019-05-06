@@ -35,8 +35,8 @@ TextField {
     enabled: !dataObject.readOnly
     text: undefined !== dataObject.value ? dataObject.value.toString() : ""
 
+    implicitWidth: parent.width
     onAccepted: dataObject.upload();
-
     Binding {
         target: dataObject
         property: "value"

@@ -67,6 +67,11 @@ QVariantMap SofaData::object()
     return QVariantMap();
 }
 
+QString SofaData::getValueType() const
+{
+    return QString::fromStdString(rawData()->getValueTypeString());
+}
+
 QString SofaData::getName() const
 {
     return QString::fromStdString(rawData()->getName());
@@ -102,6 +107,23 @@ bool SofaData::setLink(const QString& path)
     }
 
     return false;
+}
+
+
+QString SofaData::getHelp() const
+{
+    return rawData()->getHelp();
+
+}
+
+bool SofaData::isSet() const
+{
+    return rawData()->isSet();
+}
+
+QString SofaData::getGroup() const
+{
+    return rawData()->getGroup();
 }
 
 } /// namespace sofaqtquick::bindings

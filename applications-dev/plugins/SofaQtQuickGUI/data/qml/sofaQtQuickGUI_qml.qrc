@@ -56,7 +56,7 @@
         <file>SofaBasics/SofaSceneFileDialog.qml</file>
         <file>SofaBasics/MenuItem.qml</file>
         <file>SofaBasics/Menu.qml</file>
-        <file>SofaDataTypes/SofaDataType_notimplementedyet.qml</file>
+        <file>SofaDataTypes/SofaDataType_undefined.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
         <file>SofaDataTypes/SofaDataType_boolean.qml</file>
@@ -106,5 +106,6 @@
         <file>QmlGTestCase/QmlGTestCase.qml</file>
         <file>SofaViews/ProjectView.qml</file>
         <file>SofaWidgets/SofaAssetMenu.qml</file>
+        <file>SofaBasics/SofaDataWidgetFactory.qml</file>
     </qresource>
 </RCC>
