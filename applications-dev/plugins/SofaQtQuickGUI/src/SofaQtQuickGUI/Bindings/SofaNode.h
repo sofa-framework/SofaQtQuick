@@ -74,11 +74,15 @@ public:
     Q_INVOKABLE SofaNode* getRoot();
     Q_INVOKABLE SofaNodeList* getChildren();
 
+    /// Returns true if the underlying Base
+    /// or any of its ancestors is a SofaPrefab.
+    Q_INVOKABLE bool isPrefab();
+
     Q_INVOKABLE void addChild(SofaNode* child);
     Q_INVOKABLE void addObject(SofaBaseObject* obj);
 
     Q_INVOKABLE SofaBaseObject* createObject(const QString& type,
-                                             const QVariantMap& arguments) const;
+                                             const QVariantMap& arguments);
     Q_INVOKABLE SofaBaseObject* getObject(const QString& name) const;
     Q_INVOKABLE QObject* get(const QString& path) const;
 
@@ -88,6 +92,11 @@ public:
     Q_INVOKABLE QString getNextName(const QString& name);
 
     static SofaNode* createFrom(sofa::core::objectmodel::Base* obj);
+
+private:
+    bool attemptToBreakPrefab();
+    sofa::core::objectmodel::BaseNode *_getPrefabAncestor(sofa::core::objectmodel::BaseNode* n);
+
 };
 
 class SofaNodeList : public QObject

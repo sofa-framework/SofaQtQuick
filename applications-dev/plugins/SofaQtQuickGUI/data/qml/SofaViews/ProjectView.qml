@@ -381,7 +381,7 @@ Item {
                             function insertAsset(index, rootNode) {
                                 var component = self.project.getAsset(folderModel.get(index, "fileURL"))
                                 console.error("Parent node for asset is " + rootNode)
-                                sofaApplication.sofaScene.addExistingNodeTo(rootNode, component)
+                                rootNode.addChild(component)
                             }
 
                             Item {

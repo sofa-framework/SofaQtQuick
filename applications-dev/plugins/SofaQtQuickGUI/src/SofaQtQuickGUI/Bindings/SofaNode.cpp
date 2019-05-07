@@ -35,6 +35,7 @@ using sofaqtquick::bindings::SofaCoreBindingFactory;
 using sofa::core::ExecParams;
 
 #include <SofaQtQuickGUI/DataHelper.h>
+#include <QMessageBox>
 
 namespace sofaqtquick::bindings::_sofanode_
 {
@@ -107,6 +108,9 @@ sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaScene
 
 SofaNode* SofaNode::createChild(QString name)
 {
+    if (isPrefab() && !attemptToBreakPrefab())
+        return nullptr;
+
     return wrap(sofa::core::objectmodel::New<DAGNode>(name.toStdString(), self()));
 }
 
@@ -130,8 +134,11 @@ SofaNode* SofaNode::getRoot()
     return wrap(self()->getRoot());
 }
 
-SofaBaseObject* SofaNode::createObject(const QString& type, const QVariantMap& arguments) const
+SofaBaseObject* SofaNode::createObject(const QString& type, const QVariantMap& arguments)
 {
+    if (isPrefab() && !attemptToBreakPrefab())
+        return nullptr;
+
     /// Super slow but easy to write object constructor.
     std::map<std::string, std::string> args;
     for(auto& key : arguments.keys())
@@ -166,8 +173,46 @@ SofaNodeList* SofaNode::getChildren()
 }
 
 
+sofa::core::objectmodel::BaseNode* SofaNode::_getPrefabAncestor(sofa::core::objectmodel::BaseNode* n)
+{
+    if (n)
+    {
+        if (n->findData("Prefab type")) return n;
+        for (const auto& p : n->getParents())
+            if (_getPrefabAncestor(p))
+                return p;
+    }
+    return nullptr;
+}
+
+
+bool SofaNode::isPrefab()
+{
+    sofa::core::objectmodel::BaseNode* n = rawBase()->toBaseNode();
+    return _getPrefabAncestor(n);
+}
+
+bool SofaNode::attemptToBreakPrefab()
+{
+    sofa::core::objectmodel::BaseNode* prefab = _getPrefabAncestor(rawBase()->toBaseNode());
+    QString title("Warning: This action will break the prefab ");
+    title += prefab->getName().c_str();
+    if (QMessageBox::question(nullptr, title, tr("Are your sure that you want to proceed?")) == QMessageBox::StandardButton::Yes)
+    {
+        prefab->removeData(prefab->findData("Prefab type"));
+        prefab->removeData(prefab->findData("Defined in"));
+        prefab->removeData(prefab->findData("Instantiated in"));
+        prefab->removeData(prefab->findData("modulepath"));
+        return true;
+    }
+    return false;
+}
+
+
 void SofaNode::addChild(SofaNode* child)
 {
+    if (isPrefab() && !attemptToBreakPrefab())
+        return;
     if(child==nullptr)
     {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaNode");
@@ -178,6 +223,8 @@ void SofaNode::addChild(SofaNode* child)
 
 void SofaNode::addObject(SofaBaseObject* obj)
 {
+    if (isPrefab() && !attemptToBreakPrefab())
+        return;
     if(obj==nullptr)
     {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaBaseObject.");

@@ -43,6 +43,10 @@ Menu {
         var asset = draggedData.getAsset(assetName)
 //        var node = new SofaNode(parentNode)
 //        node.addChild(asset)
-        sofaScene.addExistingNodeTo(parentNode === "" ? sofaScene.node("/") : sofaScene.node(parentNode), asset.toSofaComponent())
+        var parent = sofaScene.root()
+        if (parentNode !== "")
+            parent = parent.getNodeInGraph(parentNode)
+        parent.addChild(asset)
+//        sofaScene.addExistingNodeTo(parentNode === "" ? sofaScene.node("/") : sofaScene.node(parentNode), asset.toSofaComponent())
     }
 }

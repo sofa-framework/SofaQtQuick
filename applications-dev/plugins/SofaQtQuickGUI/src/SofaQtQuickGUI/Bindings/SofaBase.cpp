@@ -194,6 +194,7 @@ bool SofaBase::isNode() const
     return rawBase()->toBaseNode() != nullptr;
 }
 
+
 void SofaBase::dump() const
 {
     if(isNode())

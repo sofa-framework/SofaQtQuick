@@ -60,6 +60,14 @@ Menu {
     }
 
     MenuItem {
+        text: "Save as Prefab"
+        onTriggered: {
+            var n = model.getBaseFromIndex(currentModelIndex)
+            SofaApplication.currentProject.createPrefab(n);
+        }
+    }
+
+    MenuItem {
         /// todo(dmarchal 2018-15-06) : Add a component from the factory.
         text: "Add component (TODO)"
         onTriggered: {

@@ -2,6 +2,8 @@
 
 #include "SofaQtQuickGUI/Assets/AssetFactory.h"
 #include "SofaQtQuickGUI/config.h"
+#include "SofaQtQuickGUI/Bindings/SofaBase.h"
+using sofaqtquick::bindings::SofaBase;
 
 
 #include <QObject>
@@ -46,6 +48,7 @@ public:
     Q_INVOKABLE sofaqtquick::bindings::SofaNode* getAsset(const QUrl& url, const QString& assetName = "");
     Q_INVOKABLE QList<QObject*> getAssetMetaInfo(const QUrl& url);
 
+    Q_INVOKABLE bool createPrefab(SofaBase* node);
 
 private:
     QUrl m_rootDir; // The Project's root fs directory

@@ -1,7 +1,13 @@
 #include "SofaProject.h"
 #include "SofaApplication.h"
+#include <SofaPython/PythonEnvironment.h>
+#include <SofaPython/PythonFactory.h>
+using sofa::simulation::PythonEnvironment;
 #include <QWindow>
+#include <QInputDialog>
 #include <QFileDialog>
+
+#include <fstream>
 
 namespace sofa {
 namespace qtquick {
@@ -186,13 +192,13 @@ sofaqtquick::bindings::SofaNode* SofaProject::getAsset(const QUrl& url, const QS
     {
         return nullptr;
     }
-    sofaqtquick::bindings::SofaNode* component = it->second->getAsset(assetName.toStdString());
-    if (component == nullptr)
+    sofaqtquick::bindings::SofaNode* node = it->second->getAsset(assetName.toStdString());
+    if (node == nullptr)
     {
         return nullptr;
     }
 
-    return component;
+    return node;
 }
 
 QList<QObject*> SofaProject::getAssetMetaInfo(const QUrl& url)
@@ -208,6 +214,31 @@ QList<QObject*> SofaProject::getAssetMetaInfo(const QUrl& url)
     }
     return it->second->getAssetMetaInfo();
 }
+
+
+bool SofaProject::createPrefab(SofaBase* node)
+{
+    QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toString(), tr("All files (*)"));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    QString name = QInputDialog::getText(nullptr, "Prefab Name:", "Name: ", QLineEdit::Normal, node->getName());
+    QString help = QInputDialog::getText(nullptr, "Prefab Description:", "Description: ");
+    if (dialog.exec())
+    {
+        std::string fileName = dialog.selectedFiles().first().toStdString();
+        {
+            PythonEnvironment::gil lock(__func__);
+            PyObject* file = PyString_FromString(fileName.c_str());
+            PyObject* rootNode = sofa::PythonFactory::toPython(node->base()->toBaseNode());
+            PyObject* n = PyString_FromString(name.toStdString().c_str());
+            PyObject* h = PyString_FromString(help.toStdString().c_str());
+            PyObject* args = PyTuple_Pack(4, file, rootNode, n, h);
+            PyObject* ret = PythonEnvironment::callObject("createPrefabFromNode", "SofaPython", args);
+            return PyObject_IsTrue(ret);
+        }
+    }
+}
+
 
 }  // namespace qtquick
 }  // namespace sofa

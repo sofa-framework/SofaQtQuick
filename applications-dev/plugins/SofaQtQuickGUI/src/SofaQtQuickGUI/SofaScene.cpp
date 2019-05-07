@@ -85,6 +85,7 @@ using sofa::simulation::scenechecking::SceneCheckDuplicatedName;
 using sofa::simulation::scenechecking::SceneCheckUsingAlias;
 
 #include <SofaSimulationGraph/DAGNode.h>
+using sofa::simulation::graph::DAGNode;
 
 #include <SofaQtQuickGUI/DataHelper.h>
 
@@ -1383,7 +1384,7 @@ sofa::qtquick::SofaComponentList* SofaScene::componentsByType(const QString& typ
     return sofaComponents;
 }
 
-sofaqtquick::bindings::SofaBase* SofaScene::root()
+sofaqtquick::bindings::SofaNode* SofaScene::root()
 {
     if(!mySofaSimulation)
         return nullptr;
@@ -1392,7 +1393,7 @@ sofaqtquick::bindings::SofaBase* SofaScene::root()
     if(!base)
         return nullptr;
 
-    return new sofaqtquick::bindings::SofaBase(base);
+    return new sofaqtquick::bindings::SofaNode(DAGNode::SPtr(dynamic_cast<DAGNode*>(base->toBaseNode())));
 }
 
 SofaComponent* SofaScene::visualStyleComponent()

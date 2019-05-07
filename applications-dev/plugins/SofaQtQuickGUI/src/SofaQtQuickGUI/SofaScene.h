@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Bindings/SofaNode.h>
 
 #include <SofaQtQuickGUI/SofaComponentList.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
@@ -70,6 +71,7 @@ class SofaScene;
 class SofaViewer;
 class PickUsingRasterizationWorker;
 using sofaqtquick::bindings::SofaBase;
+using sofaqtquick::bindings::SofaNode;
 
 typedef QList<QUrl> QUrlList;
 
@@ -246,7 +248,7 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
     Q_INVOKABLE sofa::qtquick::SofaComponent* componentByType(const QString& typeName);
     Q_INVOKABLE sofa::qtquick::SofaComponentList* componentsByType(const QString& typeName);
-    Q_INVOKABLE sofaqtquick::bindings::SofaBase* root();
+    Q_INVOKABLE sofaqtquick::bindings::SofaNode* root();
 
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
