@@ -221,8 +221,13 @@ bool SofaProject::createPrefab(SofaBase* node)
     QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toString(), tr("All files (*)"));
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
-    QString name = QInputDialog::getText(nullptr, "Prefab Name:", "Name: ", QLineEdit::Normal, node->getName());
-    QString help = QInputDialog::getText(nullptr, "Prefab Description:", "Description: ");
+    bool ret;
+    QString name = QInputDialog::getText(nullptr, "Prefab Name:", "Name: ", QLineEdit::Normal, node->getName(), &ret);
+    if (!ret)
+        return false;
+    QString help = QInputDialog::getText(nullptr, "Prefab Description:", "Description: ", QLineEdit::Normal, "", &ret);
+    if (!ret)
+        return false;
     if (dialog.exec())
     {
         std::string fileName = dialog.selectedFiles().first().toStdString();
