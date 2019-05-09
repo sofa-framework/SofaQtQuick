@@ -21,23 +21,18 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import SofaApplication 1.0
-import Sofa.Core.SofaData 1.0 as SofaData
+import Sofa.Core.SofaData 1.0
 import SofaBasics 1.0
 
 Item {
     id: root
 
-    implicitWidth: layout.implicitWidth
-    implicitHeight: layout.implicitHeight
+    implicitWidth: gridlayout.implicitWidth
+    implicitHeight: gridlayout.implicitHeight
 
     signal doubleClickedOnLabel;
 
-    property var sofaScene: SofaApplication.sofaScene
     property QtObject sofaData: null
-    onSofaDataChanged: {
-        updateObject();
-        loader.updateItem();
-    }
 
     property int nameLabelWidth: -1
     readonly property int nameLabelImplicitWidth: nameLabel.implicitWidth
@@ -69,25 +64,20 @@ Item {
         property string link
         property var value
         property bool modified: false
-
         property bool readOnly: initing || root.readOnly || properties.readOnly || trackButton.checked || linkButton.checked
 
         signal updated;
 
-        onValueChanged: modified = true;
-        onModifiedChanged: if(modified && properties.autoUpdate) upload();
-
-        function upload() {
+        onValueChanged:
             root.updateData();
-        }
     }
 
-    function updateObject() {
+    function updateObject()
+    {
         if(!sofaData)
             return;
 
         var object              = sofaData.object();
-
         dataObject.initing      = true;
 
         dataObject.sofaData     = object.sofaData;
@@ -101,16 +91,14 @@ Item {
 
         dataObject.initing      = false;
         dataObject.modified     = false;
-
-        dataObject.updated();
     }
 
-    function updateData() {
+    function updateData()
+    {
         if(!sofaData)
             return;
-
+        console.log("UPDATE DATA for "+sofaData.getName())
         sofaData.setValue(dataObject.value);
-        updateObject();
     }
 
     function updateLink() {
@@ -124,13 +112,12 @@ Item {
     Rectangle {
         anchors.fill: parent
         visible: root.modified
-
         color: "lightsteelblue"
         radius: 5
     }
 
     GridLayout {
-        id: layout
+        id: gridlayout
         anchors.fill: parent
         columns: 4
 
@@ -164,7 +151,9 @@ Item {
 
         }
 
-        ColumnLayout {
+        ColumnLayout
+        {
+            id: datawidget
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
@@ -191,51 +180,6 @@ Item {
                     source: 0 === dataObject.link.length ? "qrc:/icon/invalid.png" : "qrc:/icon/correct.png"
                 }
             }
-
-            Loader {
-                id: loader
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                asynchronous: false
-                active: false
-
-                Component.onCompleted: active = true;
-                onActiveChanged: updateItem();
-
-                function updateItem() {
-                    if(!active)
-                        return;
-
-                    if(root.sofaData) {
-                        var type = root.type;
-                        var properties = root.properties;
-
-                        if(0 === type.length) {
-                            type = typeof(root.value);
-
-                            if("object" === type)
-                                if(Array.isArray(value))
-                                    type = "array";
-                        }
-
-                        if("undefined" === type) {
-                            loader.source = "";
-                            if(0 === root.name.length)
-                                console.warn("WARNING: Trying to display a null data");
-                            else
-                                console.warn("WARNING: Type unknown for data: " + root.name);
-                        } else {
-                            loader.setSource("qrc:/SofaDataTypes/SofaDataType_" + type + ".qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
-                            if(Loader.Ready !== loader.status)
-                                loader.setSource("qrc:/SofaDataTypes/SofaDataType_notimplementedyet.qml", {"dataObject": dataObject, "sofaScene": root.sofaScene, "sofaData": root.sofaData});
-                        }
-                    } else {
-                        loader.setSource("");
-                    }
-
-                    dataObject.modified = false;
-                }
-            }
         }
 
         Item {
@@ -252,7 +196,7 @@ Item {
                 checked: 0 !== dataObject.link.length
 
                 ToolTip {
-                    text: "Link the data to another"
+                    text: "Link the data to another one."
                 }
 
                 onClicked: updateLink()
@@ -272,7 +216,7 @@ Item {
             onClicked: root.updateObject();
 
             ToolTip {
-                text: "Track the data value during simulation"
+                text: "Update the visualization of the data during simulation."
             }
 
             Timer {
@@ -285,26 +229,35 @@ Item {
             }
         }
 
-        Button {
-            visible: dataObject.modified
-            text: "Undo"
-            onClicked: root.updateObject();
+//        Button {
+//            visible: dataObject.modified
+//            text: "Undo"
+//            onClicked: root.updateObject();
 
-            ToolTip {
-                description: "Undo changes in the data value"
-            }
-        }
+//            ToolTip {
+//                description: "Undo changes in the data value"
+//            }
+//        }
 
-        Button {
-            Layout.columnSpan: 3
-            Layout.fillWidth: true
-            visible: dataObject.modified
-            text: "Update"
-            onClicked: root.updateData();
+//        Button {
+//            Layout.columnSpan: 3
+//            Layout.fillWidth: true
+//            visible: dataObject.modified
+//            text: "Update"
+//            onClicked: root.updateData();
 
-            ToolTip {
-                description: "Update the data value"
-            }
-        }
+//            ToolTip {
+//                description: "Update the data value"
+//            }
+//        }
+    }
+
+    onSofaDataChanged:
+    {
+        updateObject();
+
+        /// Returns the widget's properties associated with this SofaData
+        var component = SofaDataWidgetFactory.getWidgetForData(dataObject)
+        component.createObject(datawidget, {"dataObject": dataObject, "Layout.fillWidth":true})
     }
 }

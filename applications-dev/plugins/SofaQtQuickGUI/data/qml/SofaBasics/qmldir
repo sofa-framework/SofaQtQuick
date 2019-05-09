@@ -1,3 +1,5 @@
+module SofaBasics
+SuggestionBox 1.0 SuggestionBox.qml
 Fit 1.0 Fit.qml
 IconButton 1.0 IconButton.qml
 UserInteractor 1.0 UserInteractor.qml
@@ -48,3 +50,5 @@ MenuSeparator 1.0 MenuSeparator.qml
 Menu 1.0 Menu.qml
 MenuItem 1.0 MenuItem.qml
 SofaSceneFileDialog 1.0 SofaSceneFileDialog.qml
+
+singleton SofaDataWidgetFactory 1.0 SofaDataWidgetFactory.qml

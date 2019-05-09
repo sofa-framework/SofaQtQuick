@@ -23,8 +23,18 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <runSofa2/runSofa2.h>
 #include <QQuickStyle>
 
+#include <thread>         // std::thread
+#include <mutex>          // std::mutex, std::unique_lock, std::defer_lock
+
+std::mutex mtx;           // mutex for critical section
+
+
 void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
+     // critical section (exclusive access to std::cout signaled by locking lck):
+     lck.lock();
+
     QByteArray localMsg = msg.toLocal8Bit();
 
     const char* file="undefined";
@@ -57,14 +67,15 @@ void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, c
         break;
     case QtFatalMsg:
         msg_error_withfile(function, file, context.line) << localMsg.constData();
-        abort();
+        //abort();
     }
+    lck.unlock();
 }
 
 int main(int argc, char **argv)
 {
     /// Install the handler the Sofa message hook into the Qt messaging system.
-    qInstallMessageHandler(convertQMessagesToSofa);
+    //qInstallMessageHandler(convertQMessagesToSofa);
 
     /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofa::qtquick::SofaApplication::Initialization();

@@ -49,14 +49,16 @@
         <file>SofaBasics/ComboBox.qml</file>
         <file>SofaBasics/Vector2DSpinBox.qml</file>
         <file>SofaBasics/Vector4DSpinBox.qml</file>
-        <file>SofaBasics/SidePanel.qml</file>
         <file>SofaBasics/DoubleSpinBox.qml</file>
         <file>SofaBasics/MenuBar.qml</file>
         <file>SofaBasics/MenuSeparator.qml</file>
         <file>SofaBasics/SofaSceneFileDialog.qml</file>
         <file>SofaBasics/MenuItem.qml</file>
-        <file>SofaBasics/Menu.qml</file>
-        <file>SofaDataTypes/SofaDataType_notimplementedyet.qml</file>
+        <file>SofaBasics/Menu.qml</file>        
+        <file>SofaBasics/SofaDataWidgetFactory.qml</file>
+        <file>SofaBasics/SuggestionBox.qml</file>
+        <file>SofaBasics/SidePanel.qml</file>
+        <file>SofaDataTypes/SofaDataType_undefined.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
         <file>SofaDataTypes/SofaDataType_boolean.qml</file>

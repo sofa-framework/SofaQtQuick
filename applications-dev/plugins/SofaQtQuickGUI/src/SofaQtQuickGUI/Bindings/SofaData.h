@@ -46,6 +46,12 @@ namespace sofaqtquick::bindings
             Q_INVOKABLE QString getName() const;
             Q_INVOKABLE QString getPathName() const;
             Q_INVOKABLE QVariant getValue() const;
+            Q_INVOKABLE QString getValueType() const;
+
+            Q_INVOKABLE QString getHelp() const;
+            Q_INVOKABLE bool isSet() const;
+            Q_INVOKABLE QString getGroup() const;
+
             Q_INVOKABLE bool setValue(const QVariant& getValue);
             Q_INVOKABLE bool setLink(const QString& path);
 

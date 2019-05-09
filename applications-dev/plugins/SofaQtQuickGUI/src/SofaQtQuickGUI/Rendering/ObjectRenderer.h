@@ -38,7 +38,7 @@ using sofa::core::visual::VisualParams ;
 class ObjectRenderer
 {
 public:
-    static void draw(Base*, VisualParams* params, bool isSelected);
+    static void draw(Base* object, Base* selected, VisualParams* params, bool isSelected);
 };
 
 } /// objectrenderer_h

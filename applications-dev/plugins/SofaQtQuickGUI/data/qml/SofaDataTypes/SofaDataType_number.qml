@@ -23,17 +23,76 @@ import SofaBasics 1.0
 
 TextField {
     id: root
+    enabled: !dataObject.readOnly
+    selectByMouse: true
 
     property var dataObject: null
-
-    enabled: !dataObject.readOnly
     property int decimals: dataObject.properties["decimals"]
 
     Component.onCompleted: download();
-    //onTextChanged: upload();
-    onEditingFinished: {
+    onAccepted:
+    {
+        focus = false
+    }
+
+    onActiveFocusChanged:
+    {
+        if(!activeFocus)
+        {
+            upload()
+        }
+    }
+
+    function getValue()
+    {
+        return Number(Number(root.text).toFixed(decimals))
+    }
+
+    function incrementValue(initialValue, incrVal)
+    {
+        var step = dataObject.properties["step"]
+        var newValue = initialValue + incrVal*step*0.1
+        root.text = Number(Number(newValue).toFixed(3)).toString()
         upload()
-        dataObject.upload()
+    }
+
+    MouseArea
+    {
+        anchors.fill: root
+        preventStealing: true
+        property bool isDragging: false
+        property var initialPosition : Qt.vector2d(0,0)
+        property var initialValue: 0.0
+
+        onPressed:
+        {
+            isDragging = false
+            initialValue = root.getValue()
+            initialPosition = Qt.vector2d(mouseX, mouseY)
+        }
+
+        onPositionChanged:
+        {
+            var currentPosition = Qt.vector2d(mouseX, mouseY)
+            if( Math.abs(currentPosition.x - initialPosition.x) > 10 )
+            {
+                isDragging = true
+                root.incrementValue(initialValue, currentPosition.x - initialPosition.x)
+            }
+        }
+
+        onReleased:
+        {
+            if(isDragging)
+            {
+                isDragging = false
+            }
+            else
+            {
+                root.forceActiveFocus(Qt.MouseFocusReason)
+                root.cursorPosition = root.positionAt(mouseX, mouseY)
+            }
+        }
     }
 
     property var intValidator: IntValidator {
@@ -50,21 +109,15 @@ TextField {
 
     validator: decimals > 0 ? doubleValidator : intValidator
 
-    Connections {
-        target: dataObject
-        onUpdated: root.download();
-    }
-
     function download() {
         root.text = Number(Number(dataObject.value).toFixed(decimals)).toString();
         cursorPosition = 0;
+        console.log("DOWNLOADING DATA FROM: "+dataObject.name)
     }
 
     function upload() {
-        var oldValue = Number(Number(dataObject.value).toFixed(decimals));
+        console.log("XUPLOADING DATA TO: "+dataObject.name)
         var newValue = Number(Number(root.text).toFixed(decimals));
-
-        if(oldValue !== newValue)
-            dataObject.value = newValue;
+        dataObject.value = newValue;
     }
 }

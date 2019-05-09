@@ -267,12 +267,11 @@ Item {
                                             id: sofaDataItem
                                             implicitWidth : theItem.width
 
-                                            sofaScene: root.sofaScene
                                             sofaData: {
                                                 return sofaInspectorDataListModel.getDataById(childModel.parentIndex, index)
                                             }
 
-                                            nameLabelWidth:100
+                                            nameLabelWidth:200
 
                                             Component.onCompleted: updateNameLabelWidth();
                                             onNameLabelImplicitWidthChanged: updateNameLabelWidth();
