@@ -39,6 +39,21 @@ SofaFactory::SofaFactory(QObject *parent) : QObject(parent)
 
 SofaFactory::~SofaFactory(){}
 
+bool SofaFactory::contains(const QString& name)
+{
+    /// Recompute the filtered list.
+    std::vector<ObjectFactory::ClassEntry::SPtr> entries ;
+    ObjectFactory::getInstance()->getAllEntries(entries) ;
+
+    for (size_t i=0; i<entries.size(); i++)
+    {
+        QString cname = QString::fromStdString(entries[i]->className) ;
+        if( cname == m_filter )
+            return true;
+    }
+    return false;
+}
+
 void SofaFactory::setFilter(const QString& s)
 {
     m_filter = s ;

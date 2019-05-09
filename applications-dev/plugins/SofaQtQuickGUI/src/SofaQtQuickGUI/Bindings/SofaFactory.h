@@ -47,6 +47,7 @@ public:
 
     Q_PROPERTY(QStringList components READ getComponents NOTIFY listChanged)
 
+    Q_INVOKABLE bool contains(const QString& name) ;
     Q_INVOKABLE QStringList getComponents() ;
     Q_INVOKABLE void setFilter(const QString& c) ;
 
