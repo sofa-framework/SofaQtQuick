@@ -23,13 +23,11 @@ import SofaBasics 1.0
 
 TextField {
     id: root
+    enabled: !dataObject.readOnly
+    selectByMouse: true
 
     property var dataObject: null
-
-    enabled: !dataObject.readOnly
     property int decimals: dataObject.properties["decimals"]
-
-    selectByMouse: true
 
     Component.onCompleted: download();
     onAccepted:
@@ -45,9 +43,56 @@ TextField {
         }
     }
 
-    onPressAndHold:
+    function getValue()
     {
-        console.log("HELLO WORLD...")
+        return Number(Number(root.text).toFixed(decimals))
+    }
+
+    function incrementValue(initialValue, incrVal)
+    {
+        var step = dataObject.properties["step"]
+        var newValue = initialValue + incrVal*step*0.1
+        root.text = Number(Number(newValue).toFixed(3)).toString()
+        upload()
+    }
+
+    MouseArea
+    {
+        anchors.fill: root
+        preventStealing: true
+        property bool isDragging: false
+        property var initialPosition : Qt.vector2d(0,0)
+        property var initialValue: 0.0
+
+        onPressed:
+        {
+            isDragging = false
+            initialValue = root.getValue()
+            initialPosition = Qt.vector2d(mouseX, mouseY)
+        }
+
+        onPositionChanged:
+        {
+            var currentPosition = Qt.vector2d(mouseX, mouseY)
+            if( Math.abs(currentPosition.x - initialPosition.x) > 10 )
+            {
+                isDragging = true
+                root.incrementValue(initialValue, currentPosition.x - initialPosition.x)
+            }
+        }
+
+        onReleased:
+        {
+            if(isDragging)
+            {
+                isDragging = false
+            }
+            else
+            {
+                root.forceActiveFocus(Qt.MouseFocusReason)
+                root.cursorPosition = root.positionAt(mouseX, mouseY)
+            }
+        }
     }
 
     property var intValidator: IntValidator {
@@ -68,13 +113,10 @@ TextField {
         root.text = Number(Number(dataObject.value).toFixed(decimals)).toString();
         cursorPosition = 0;
         console.log("DOWNLOADING DATA FROM: "+dataObject.name)
-
     }
 
     function upload() {
-        //var oldValue = Number(Number(dataObject.value).toFixed(decimals));
-        //if(oldValue !== newValue)
-        console.log("UPLOADING DATA TO: "+dataObject.name)
+        console.log("XUPLOADING DATA TO: "+dataObject.name)
         var newValue = Number(Number(root.text).toFixed(decimals));
         dataObject.value = newValue;
     }

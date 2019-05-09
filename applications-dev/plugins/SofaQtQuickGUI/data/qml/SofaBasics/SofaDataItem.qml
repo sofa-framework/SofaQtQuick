@@ -68,12 +68,8 @@ Item {
 
         signal updated;
 
-        //onValueChanged: modified = true;
-        //onModifiedChanged: if(modified && properties.autoUpdate) upload();
-
-        function upload() {
+        onValueChanged:
             root.updateData();
-        }
     }
 
     function updateObject()
@@ -95,7 +91,6 @@ Item {
 
         dataObject.initing      = false;
         dataObject.modified     = false;
-        dataObject.updated();
     }
 
     function updateData()
@@ -103,7 +98,6 @@ Item {
         if(!sofaData)
             return;
         console.log("UPDATE DATA for "+sofaData.getName())
-
         sofaData.setValue(dataObject.value);
     }
 
