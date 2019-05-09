@@ -225,10 +225,10 @@ Item {
                                         width: parent.width
                                         leftPadding: 10
                                         text: fileIsDir ? self.project.getFileCount(fileURL) :
-                                                          (fileSize < 1e3) ? fileSize + " bytes" :
-                                                                             (fileSize < 1e6) ? (fileSize / 1e3).toFixed(1) + " MB" :
-                                                                                                (fileSize < 1e9) ? (fileSize / 1e6).toFixed(1) + " GB" :
-                                                                                                                   "File too large"
+                                                          (fileSize > 1e9) ? (fileSize / 1e9).toFixed(1) + " G" :
+                                                          (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
+                                                          (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
+                                                           fileSize + " bytes"
                                         color: "#efefef"
                                         clip: true
                                         elide: Text.ElideRight
