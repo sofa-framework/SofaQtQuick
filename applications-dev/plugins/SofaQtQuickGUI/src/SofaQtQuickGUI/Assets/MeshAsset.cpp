@@ -59,6 +59,7 @@ sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetNam
 
     root->setName("NEWNODE");
     DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    node->init(sofa::core::ExecParams::defaultInstance());
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 

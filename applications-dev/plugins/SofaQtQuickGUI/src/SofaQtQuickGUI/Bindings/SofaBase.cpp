@@ -87,7 +87,7 @@ QObject* SofaBase::getData(const QString& name) const
     if(!data)
     {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no data with name '"+name+"'");
-        nullptr;
+        return nullptr;
     }
     return new SofaData(data);
 }
@@ -98,7 +98,7 @@ QObject* SofaBase::getLink(const QString& name) const
     if(!link)
     {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no link with name '"+name+"'");
-        nullptr;
+        return nullptr;
     }
     return new SofaLink(link);
 }
@@ -118,8 +118,8 @@ bool SofaBase::hasLocations() const
     const Base* base = m_self.get();
     if(base)
     {
-        return !base->getSourceFileName().empty()
-            || !base->getInstanciationFileName().empty() ;
+        return !base->getDefinitionSourceFileName().empty()
+            || !base->getInstanciationSourceFileName().empty() ;
     }
     return false;
 }
@@ -127,11 +127,11 @@ bool SofaBase::hasLocations() const
 QString SofaBase::getSourceLocation() const
 {
     const Base* base = m_self.get();
-    if(base && !(base->getSourceFileName().empty()))
+    if(base && !(base->getDefinitionSourceFileName().empty()))
     {
         return QString("('%1',%2)")
-                .arg(QString::fromStdString(base->getSourceFileName()))
-                .arg(base->getSourceFilePos());
+                .arg(QString::fromStdString(base->getDefinitionSourceFileName()))
+                .arg(base->getDefinitionSourceFilePos());
     }
     return "";
 }
@@ -139,11 +139,11 @@ QString SofaBase::getSourceLocation() const
 QString SofaBase::getInstanciationLocation() const
 {
     const Base* base = m_self.get();
-    if(base && !(base->getInstanciationFileName().empty()))
+    if(base && !(base->getInstanciationSourceFileName().empty()))
     {
         return QString("('%1',%2)")
-                .arg(QString::fromStdString(base->getInstanciationFileName()))
-                .arg(base->getInstanciationFilePos());
+                .arg(QString::fromStdString(base->getInstanciationSourceFileName()))
+                .arg(base->getInstanciationSourceFilePos());
     }
     return "";
 }

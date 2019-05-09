@@ -56,6 +56,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetN
                                      args, &root);
 
     DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    node->init(sofa::core::ExecParams::defaultInstance());
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
