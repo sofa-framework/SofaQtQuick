@@ -77,6 +77,28 @@ QStringList SofaFactory::getComponents()
     return m_filteredList ;
 }
 
+QString SofaFactory::getComponentHelp(const QString& name)
+{
+    /// Recompute the filtered list.
+    std::vector<ObjectFactory::ClassEntry::SPtr> entries ;
+    ObjectFactory::getInstance()->getAllEntries(entries) ;
+
+    QString s;
+    std::cout << "SEARCHING FOR " << name.toStdString() << std::endl ;
+    for (size_t i=0; i<entries.size(); i++)
+    {
+        QString cname = QString::fromStdString(entries[i]->className) ;
+        if( cname == name )
+        {
+            s = QString::fromStdString(entries[i]->description);
+            s += "Default template: " + QString::fromStdString(entries[i]->defaultTemplate);
+            break;
+        }
+    }
+    return s;
+}
+
+
 SofaNode* SofaFactory::createNode(const QString name) const
 {
     return new SofaNode(name);
