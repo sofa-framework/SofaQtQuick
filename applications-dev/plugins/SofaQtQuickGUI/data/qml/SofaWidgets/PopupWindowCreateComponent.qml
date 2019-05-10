@@ -36,7 +36,7 @@ Popup {
             if( SofaFactory.contains(text) )
             {
                 console.log("createObject... "+text)
-                var p=sofaNode.createObject(text, {})
+                var p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text) })
                 searchBar.close()
                 SofaApplication.signalComponent(p.getPathName());
             }
@@ -64,7 +64,16 @@ Popup {
                 }
                 Text {
                     text: modelData
+                    ToolTip {
+
+                    }
                 }
+                ToolTip {
+                    text: modelData
+                    description:  SofaFactory.getComponentHelp(modelData)
+                    visible: itemMouseArea.containsMouse
+                }
+
                 MouseArea {
                     id: itemMouseArea
                     anchors.fill: parent
