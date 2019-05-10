@@ -35,6 +35,7 @@ Popup {
         {
             if( SofaFactory.contains(text) )
             {
+                sofaNode.clearWarning()
                 var p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text) })
                 searchBar.close()
                 if(p!==null)
@@ -42,8 +43,9 @@ Popup {
                     SofaApplication.signalComponent(p.getPathName());
                 }else
                 {
-                    messageDialog.title = "Fail to add a '"+text+"' to node "+sofaNode.getName()
-                    messageDialog.text = sofaNode.warning()+ " " + sofaNode.output()
+                     messageDialog.text =
+                             "Unable to create an object of type '"+text+"' in node "+sofaNode.getName() + "\n"
+                            +"Reason: " + sofaNode.warning() + " " + sofaNode.output()
                     messageDialog.visible = true
                 }
             }
@@ -54,10 +56,10 @@ Popup {
     {
         visible: false
         id: messageDialog
-        title: "Create Object"
-        text: "It's so cool that you are using Qt Quick."
+        title: "Error"
+        text: "Unable to create an object."
         onAccepted: {
-            console.log("And of course you could only agree.")
+            console.log("Of course you could only agree.")
             visible=false
         }
     }
