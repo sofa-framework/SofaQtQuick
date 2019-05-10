@@ -48,7 +48,7 @@ bool SofaFactory::contains(const QString& name)
     for (size_t i=0; i<entries.size(); i++)
     {
         QString cname = QString::fromStdString(entries[i]->className) ;
-        if( cname == m_filter )
+        if( cname == name )
             return true;
     }
     return false;
@@ -84,7 +84,6 @@ QString SofaFactory::getComponentHelp(const QString& name)
     ObjectFactory::getInstance()->getAllEntries(entries) ;
 
     QString s;
-    std::cout << "SEARCHING FOR " << name.toStdString() << std::endl ;
     for (size_t i=0; i<entries.size(); i++)
     {
         QString cname = QString::fromStdString(entries[i]->className) ;
