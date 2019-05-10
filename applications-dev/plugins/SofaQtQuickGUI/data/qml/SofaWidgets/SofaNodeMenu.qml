@@ -60,14 +60,6 @@ Menu {
     }
 
     MenuItem {
-        text: "Save as Prefab..."
-        onTriggered: {
-            var n = model.getBaseFromIndex(currentModelIndex)
-            SofaApplication.currentProject.createPrefab(n);
-        }
-    }
-
-    MenuItem {
         id: addObjectEntry
         text: "Add object..."
         onTriggered: {
@@ -91,7 +83,6 @@ Menu {
             z: 0
         }
     }
-
 
     /// Shows a popup with the Data list view.
     MenuItem {
@@ -137,6 +128,14 @@ Menu {
         onTriggered: {
             var location = parsePython(sourceLocation)
             SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+    MenuItem {
+        text: "Save as Prefab..."
+        onTriggered: {
+            var n = model.getBaseFromIndex(currentModelIndex)
+            SofaApplication.currentProject.createPrefab(n);
         }
     }
 

@@ -29,6 +29,43 @@ Menu {
     property string creationLocation : null
 
     MenuItem {
+        text: "Add node (sibling)"
+        onTriggered: {
+            var p = model.getBaseFromIndex(currentModelIndex).getFirstParent()
+            p = p.createChild(p.getNextName("NEWNODE"))
+            if(p){
+                SofaApplication.signalComponent(p.getPathName());
+            }
+        }
+    }
+
+    MenuItem {
+        id: addObjectEntry
+        text: "Add object (sibling)"
+        onTriggered: {
+            var popupComponent = Qt.createComponent("qrc:/SofaWidgets/PopupWindowCreateComponent.qml")
+            var popup2 = popupComponent.createObject(nodeMenu.parent,
+                                                     {"sofaNode": model.getBaseFromIndex(currentModelIndex).getFirstParent(),
+                                                      "x" : mouseLoc.mouseX,
+                                                      "y" : mouseLoc.mouseY
+                                                     }
+
+                                                     );
+            popup2.open()
+        }
+        MouseArea
+        {
+            id: mouseLoc
+            hoverEnabled: true                //< handle mouse hovering.
+            anchors.fill : parent
+            acceptedButtons: Qt.NoButton      //< forward mouse click.
+            propagateComposedEvents: true     //< forward other event.
+            z: 0
+        }
+    }
+
+
+    MenuItem {
         text: {
             "Delete object"
         }
