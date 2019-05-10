@@ -485,12 +485,7 @@ void SofaScene::setHeader(const QString& newHeader)
 
 void SofaScene::setSource(const QUrl& newSource)
 {
-    // Checking if the source is different than the one currently loaded prevents refreshing the current scene
-//    if(newSource == mySource || Status::Loading == myStatus)
-//        return;
-
     mySource = newSource;
-
     sourceChanged(newSource);
 }
 
@@ -1410,6 +1405,17 @@ SofaComponent* SofaScene::visualStyleComponent()
     return nullptr;
 }
 
+bool SofaScene::save2()
+{
+    PythonEnvironment::gil lock(__func__);
+    PyObject* file = PyString_FromString(path().toStdString().c_str());
+    PyObject* rootNode = sofa::PythonFactory::toPython(mySofaRootNode->toBaseNode());
+    PyObject* args = PyTuple_Pack(2, file, rootNode);
+    PyObject* ret = PythonEnvironment::callObject("saveAsPythonScene", "SofaPython", args);
+    msg_info("runSofa2") << "File saved to "  << path().toStdString();
+    return PyObject_IsTrue(ret);
+}
+
 
 bool SofaScene::save(const QString& projectRootDir)
 {
@@ -1672,18 +1678,18 @@ void SofaScene::onMousePressed(int button, double x, double y)
     MouseEvent::State s;
     switch(button)
     {
-        case 1:
-            s = MouseEvent::LeftPressed ;
-            break;
-        case 2:
-            s = MouseEvent::RightPressed ;
-            break;
-        case 4:
-            s = MouseEvent::MiddlePressed ;
-            break;
-        default:
-            s = MouseEvent::AnyExtraButtonPressed ;
-            break;
+    case 1:
+        s = MouseEvent::LeftPressed ;
+        break;
+    case 2:
+        s = MouseEvent::RightPressed ;
+        break;
+    case 4:
+        s = MouseEvent::MiddlePressed ;
+        break;
+    default:
+        s = MouseEvent::AnyExtraButtonPressed ;
+        break;
     }
     MouseEvent event(s, x, y);
     sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
@@ -1695,18 +1701,18 @@ void SofaScene::onMouseReleased(int button, double x, double y)
     MouseEvent::State s;
     switch(button)
     {
-        case 1:
-            s = MouseEvent::LeftReleased ;
-            break;
-        case 2:
-            s = MouseEvent::RightReleased ;
-            break;
-        case 4:
-            s = MouseEvent::MiddleReleased ;
-            break;
-        default:
-            s = MouseEvent::AnyExtraButtonReleased ;
-            break;
+    case 1:
+        s = MouseEvent::LeftReleased ;
+        break;
+    case 2:
+        s = MouseEvent::RightReleased ;
+        break;
+    case 4:
+        s = MouseEvent::MiddleReleased ;
+        break;
+    default:
+        s = MouseEvent::AnyExtraButtonReleased ;
+        break;
     }
     MouseEvent event(s, x, y);
     sofaRootNode()->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);

@@ -254,6 +254,7 @@ public:
     Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
 
     Q_INVOKABLE bool save(const QString& projectRootDir);
+    Q_INVOKABLE bool save2();
 
     ///Q_INVOKABLE sofa::qtquick::SofaComponent* retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module = "");
 
