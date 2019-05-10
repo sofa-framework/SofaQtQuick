@@ -333,8 +333,8 @@ MenuBar {
                 property url source
 
                 id: window
-                width: 400
-                height: 600
+                width: 600
+                height: 400
                 modality: Qt.NonModal
                 flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                 visible: true

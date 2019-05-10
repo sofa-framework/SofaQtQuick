@@ -8,6 +8,7 @@ import AssetFactory 1.0
 import SofaColorScheme 1.0
 import SofaWidgets 1.0
 import QtQml 2.12
+import QtQuick.Window 2.12
 //import AssetView 1.0
 
 Item {
@@ -226,9 +227,9 @@ Item {
                                         leftPadding: 10
                                         text: fileIsDir ? self.project.getFileCount(fileURL) :
                                                           (fileSize > 1e9) ? (fileSize / 1e9).toFixed(1) + " G" :
-                                                          (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
-                                                          (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
-                                                           fileSize + " bytes"
+                                                                             (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
+                                                                                                (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
+                                                                                                                   fileSize + " bytes"
                                         color: "#efefef"
                                         clip: true
                                         elide: Text.ElideRight
@@ -240,10 +241,8 @@ Item {
                         SofaAssetMenu {
                             id: assetMenu
                             model: self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
-
                             visible: false
                         }
-
                         Menu {
                             id: projectMenu
                             visible: false
@@ -272,6 +271,41 @@ Item {
                                 onTriggered: {
                                     projectMenu.visible = false
                                     sofaApplication.createFolderIn(folderModel.get(index, "filePath"))
+                                }
+                            }
+
+                            MenuItem {
+                                id: importAsset
+                                text: "Import asset..."
+
+                                onTriggered: {
+                                    var o = windowComponent.createObject(sofaApplication, {
+                                                                     "source": "qrc:///SofaViews/WebBrowserView.qml",
+                                                                     "title" : "Sofa Asset Repository"
+                                                                 });
+                                    o.scroll.webview.source = "http://www.google.fr"
+                                }
+
+                                Component {
+                                    id: windowComponent
+
+                                    Window {
+                                        property url source
+
+                                        id: window
+                                        width: 600
+                                        height: 400
+                                        modality: Qt.NonModal
+                                        flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                                        visible: true
+                                        color: sofaApplication.style.contentBackgroundColor
+
+                                        Loader {
+                                            id: loader
+                                            anchors.fill: parent
+                                            source: window.source
+                                        }
+                                    }
                                 }
                             }
 
@@ -351,11 +385,11 @@ Item {
                                 if (Qt.RightButton === mouse.button)
                                 {
                                     projectMenu.visible = true
-//                                    // Let's load detailed info if available
-//                                    if (!folderModel.isFolder(index))
-//                                    {
-//                                        assetMenu.visible = true
-//                                    }
+                                    //                                    // Let's load detailed info if available
+                                    //                                    if (!folderModel.isFolder(index))
+                                    //                                    {
+                                    //                                        assetMenu.visible = true
+                                    //                                    }
                                 }
                             }
 
@@ -416,21 +450,21 @@ Item {
         }
 
 
-//        GroupBox {
-//            id: previewGroupID
-//            Layout.fillWidth: true
-//            implicitHeight: contentHeight ? contentHeight : 200
-//            height: implicitHeight
+        //        GroupBox {
+        //            id: previewGroupID
+        //            Layout.fillWidth: true
+        //            implicitHeight: contentHeight ? contentHeight : 200
+        //            height: implicitHeight
 
-//            title: "Preview"
+        //            title: "Preview"
 
-//            AssetView {
-//                id: assetView
-//                anchors.fill: parent
-//                drawFrame: false
-//            }
+        //            AssetView {
+        //                id: assetView
+        //                anchors.fill: parent
+        //                drawFrame: false
+        //            }
 
-//        }
+        //        }
     }
 
 

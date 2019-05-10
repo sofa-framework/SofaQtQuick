@@ -34,6 +34,9 @@ import EditView 1.0
 import SofaScene 1.0
 
 Item{
+    id: root
+    property url url : "http://www.google.fr"
+
     ScrollView {
         id: scroll
         implicitWidth : parent.width
@@ -45,7 +48,7 @@ Item{
         WebEngineView {
             z: -1
             id: webview
-            url: "file:///home/dmarchal/projects/DEFROST/prez/GTAS2018/slides.html"
+            url: root.url
 
             width: scroll.implicitWidth
             height: scroll.implicitHeight
