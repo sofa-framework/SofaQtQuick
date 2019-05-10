@@ -1,4 +1,4 @@
-import QtQuick 2.7
+import QtQuick 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.3
@@ -18,6 +18,18 @@ Popup {
     contentWidth: 400
     contentHeight: 300
     padding: 10
+
+    MessageDialog
+    {
+        visible: false
+        id: messageDialog
+        title: "Error"
+        text: "Unable to create an object."
+        onAccepted: {
+            console.log("Of course you could only agree.")
+            visible=false
+        }
+    }
 
     TextField {
         id: inputField
@@ -49,18 +61,7 @@ Popup {
                     messageDialog.visible = true
                 }
             }
-        }
-    }
-
-    MessageDialog
-    {
-        visible: false
-        id: messageDialog
-        title: "Error"
-        text: "Unable to create an object."
-        onAccepted: {
-            console.log("Of course you could only agree.")
-            visible=false
+            SofaFactory.setFilter("")
         }
     }
 
@@ -85,14 +86,12 @@ Popup {
                 }
                 Text {
                     text: modelData
-                    ToolTip {
-
-                    }
                 }
                 ToolTip {
                     text: modelData
                     description:  SofaFactory.getComponentHelp(modelData)
                     visible: itemMouseArea.containsMouse
+                    timeout: 2000
                 }
 
                 MouseArea {
@@ -101,8 +100,8 @@ Popup {
                     hoverEnabled: true
                     onClicked: {
                         container.currentIndex = index
-                        inputField.text = modelData
                         inputField.forceActiveFocus()
+                        inputField.text = modelData
                     }
                 }
             }
