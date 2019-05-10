@@ -35,7 +35,7 @@ import SofaScene 1.0
 
 Item{
     id: root
-    property url url : "http://www.google.fr"
+    property url url : "file:///home/dmarchal/projects/DEFROST/dev/spm/spm-recipes/plugins.html"
 
     ScrollView {
         id: scroll
@@ -53,7 +53,10 @@ Item{
             width: scroll.implicitWidth
             height: scroll.implicitHeight
 
-            onLoadingChanged: {
+            onLoadingChanged:
+            {
+                console.log("LOADING CHANGED TO " + loadRequest.url)
+                SofaApplication.runPythonScript("print('COUCOU')\nimport subprocess\nsubprocess.Popen('sofa-spm.py','install','SoftRobots')")
                 if (loadRequest.errorString)
                     console.error(loadRequest.errorString);
             }
