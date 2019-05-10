@@ -127,7 +127,7 @@ QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &pa
 
 QModelIndex SofaSceneItemModel::index(Node* node) const
 {
-    //        qDebug() << "index query for node " << QString::fromStdString(node->getName());
+    qDebug() << "index query for node " << QString::fromStdString(node->getName());
     if(node==nullptr)
     {
         return QModelIndex();
@@ -147,10 +147,13 @@ QModelIndex SofaSceneItemModel::index(Node* node) const
 
 QModelIndex SofaSceneItemModel::index(Node* parent, BaseObject* obj) const
 {
-    //        qDebug() << "Object index query (" << QString::fromStdString(parent->getName()) << ", " << QString::fromStdString(obj->getName()) <<  ")";
 
-    if(obj == nullptr || parent == nullptr)
+    if(obj == nullptr || parent == nullptr){
+        qDebug() << "Object index query parent/obj (" << (long)parent << ", " << (long)obj <<  ")";
+
         return QModelIndex();
+    }
+    qDebug() << "Object index query parent/obj (" << QString::fromStdString(parent->getName()) << ", " << QString::fromStdString(obj->getName()) <<  ")";
 
     size_t d = size_t(std::distance(parent->object.begin(),
                                     std::find(parent->object.begin(), parent->object.end(), obj))) ;
@@ -265,6 +268,7 @@ sofaqtquick::bindings::SofaBase* SofaSceneItemModel::getBaseFromIndex(const QMod
 
 QModelIndex SofaSceneItemModel::getIndexFromBase(sofaqtquick::bindings::SofaBase* component) const
 {
+    std::cout << "GET INDEX FROM BASE" << std::endl;
     if (component)
     {
         Node* node=dynamic_cast<Node*>(component->rawBase());
@@ -377,7 +381,7 @@ void SofaSceneItemModel::modelRefreshThread()
 
 void SofaSceneItemModel::onResetRequired()
 {
-    //    std::cout << "reset required" << std::endl;
+    std::cout << "reset required" << std::endl;
     beginResetModel();
     endResetModel();
     emit modelHasReset();
@@ -494,7 +498,7 @@ void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseO
 {
     //    return;
     SOFA_UNUSED(obj);
-    //    msg_info("b") << "============= Adding object " << obj->getName() << " to: " << parent->getName();
+    msg_info("b") << "============= Adding object " << obj->getName() << " to: " << parent->getName();
     QModelIndex parentIndex = index(parent);
     int objIndex = int(parent->object.size());
 
@@ -511,7 +515,7 @@ void SofaSceneItemModel::onEndAddObject(Node* parent, core::objectmodel::BaseObj
     SOFA_UNUSED(obj);
     SOFA_UNUSED(parent);
     endInsertRows();
-    ////    msg_info("b") << "========== Adding object done: " << obj->getName();
+    msg_info("b") << "========== Adding object done: " << obj->getName();
 }
 void SofaSceneItemModel::onBeginRemoveObject(Node* parent, core::objectmodel::BaseObject* obj)
 {

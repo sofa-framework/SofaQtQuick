@@ -48,8 +48,8 @@ public:
         QSortFilterProxyModel::setSourceModel(model);
     }
 
-    SofaSceneItemProxy(QObject* parent = 0);
-    virtual ~SofaSceneItemProxy();
+    SofaSceneItemProxy(QObject* parent = nullptr);
+    virtual ~SofaSceneItemProxy()override ;
 
     /// Inherited from QSortFilterProxyModel by overriding it we can implement
     /// custom filtering rules.
