@@ -90,6 +90,7 @@ public:
     Q_INVOKABLE void reinit() const;
 
     Q_INVOKABLE QString getNextName(const QString& name);
+    Q_INVOKABLE QString getNextObjectName(const QString& name);
 
     static SofaNode* createFrom(sofa::core::objectmodel::Base* obj);
 

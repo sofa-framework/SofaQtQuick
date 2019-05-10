@@ -21,6 +21,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 #include "SofaNode.h"
+using sofa::core::objectmodel::BaseObject;
+
 #include "SofaComponent.h"
 
 #include <SofaSimulationGraph/SimpleApi.h> ///< To create object in a slow but easy way.
@@ -36,6 +38,7 @@ using sofa::core::ExecParams;
 
 #include <SofaQtQuickGUI/DataHelper.h>
 #include <QMessageBox>
+
 
 namespace sofaqtquick::bindings::_sofanode_
 {
@@ -274,6 +277,20 @@ QString SofaNode::getNextName(const QString& name)
     }
     return newname;
 }
+
+QString SofaNode::getNextObjectName(const QString& name)
+{
+    int i = 1;
+    QString newname = name;
+
+    while(dynamic_cast<sofa::simulation::Node*>(self())->getObject(newname.toStdString())!=nullptr)
+    {
+        newname = name + QString::number(i);
+        i++;
+    }
+    return newname;
+}
+
 
 QObject* SofaNode::get(const QString& path) const
 {
