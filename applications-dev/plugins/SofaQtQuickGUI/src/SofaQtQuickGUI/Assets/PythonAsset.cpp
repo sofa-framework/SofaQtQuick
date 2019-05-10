@@ -49,7 +49,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetN
     std::string path = obj.parent_path().string();
 
     Node::SPtr root = sofa::core::objectmodel::New<DAGNode>();
-
+    root->setName("NEWNAME");
 
     PythonEnvironment::gil lock(__func__);
     PyObject* mpath = PyString_FromString(path.c_str());
@@ -58,15 +58,10 @@ sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetN
     PyObject* assetnode = sofa::PythonFactory::toPython(root.get());
 
     PyObject* args = PyTuple_Pack(4, mpath, mname, pname, assetnode);
-    PyObject* ret = PythonEnvironment::callObject("loadPythonAsset", "SofaPython", args);
-    if (PyObject_IsTrue(ret))
-    {
-        DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
-        node->init(sofa::core::ExecParams::defaultInstance());
-
-        return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
-    }
-    return nullptr;
+    PythonEnvironment::callObject("loadPythonAsset", "SofaPython", args);
+    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    node->init(sofa::core::ExecParams::defaultInstance());
+    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
 PythonAssetModel::PythonAssetModel(std::string name, std::string type)
