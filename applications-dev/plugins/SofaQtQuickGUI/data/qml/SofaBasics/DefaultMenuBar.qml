@@ -209,7 +209,19 @@ MenuBar {
                 reloadMenuItem.reload()
             }
         }
-        MenuItem { text: "Save (TODO)"; enabled: false}
+        MenuItem {
+            text: "Save";
+            function save() {
+                sofaApplication.sofaScene.save2()
+            }
+
+            Shortcut {
+                sequence: StandardKey.Save
+                context: Qt.ApplicationShortcut
+                onActivated: { sofaApplication.sofaScene.save2() }
+            }
+            onTriggered:  { sofaApplication.sofaScene.save2() }
+        }
         MenuItem {
             id: saveSceneAsMenuItem
             text: "Save as..."
