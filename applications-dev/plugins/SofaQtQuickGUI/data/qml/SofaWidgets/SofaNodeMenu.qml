@@ -60,7 +60,7 @@ Menu {
     }
 
     MenuItem {
-        text: "Save as Prefab"
+        text: "Save as Prefab..."
         onTriggered: {
             var n = model.getBaseFromIndex(currentModelIndex)
             SofaApplication.currentProject.createPrefab(n);
