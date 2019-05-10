@@ -97,20 +97,13 @@ Rectangle {
         Connections {
             target: SofaApplication
             onSignalComponent: {
-                console.log("SIGNAL RECEIVED... " + path)
                 var c = sofaScene.get(path)
                 if(c)
                 {
                     var baseIndex = basemodel.getIndexFromBase(c)
                     var sceneIndex = sceneModel.mapFromSource(baseIndex)
-                    console.log("SIGNAL MODEL ... " + path +  "  " + sceneIndex +  + "base index " + baseIndex)
-                    var p= null
-                    //do{
-                    p = sceneIndex.parent
-                    treeView.expand(p)
-                    //} while( p.isValid() )
+                    treeView.expand(sceneIndex.parent)
                     treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
-                    console.log("SIGNAL RECEIVED CHANGING SELECTION...")
                 }
             }
         }
@@ -462,35 +455,6 @@ Rectangle {
                 }
             }
         }
-
-        //        mouser.onPressAndHold: {
-        //            overlay.visible = true
-        //            overlay.implicitHeight = treeView.indexAt(0, y).height
-        //            overlay.implicitWidth = treeView.indexAt(0, y).width
-        //            overlay.anchors.verticalCenter = treeView.indexAt(0, y).verticalCenter
-        //            overlay.anchors.horizontalCenter = treeView.indexAt(0, y).horizontalCenter
-        //            console.error(overlay.width + " " + overlay.height)
-        //        }
-        //        mouser.onReleased: {
-        //            overlay.visible = false
-        //            parent = overlay.Drag.target !== null ? overlay.Drag.target : mouser
-        //        }
-        //        mouser.drag.target: overlay
-        //        Rectangle {
-        //            id: overlay
-        //            color: "#50FFF000"
-
-        //            visible: false
-        //            Drag.active: mouseAreaItemID.drag.active
-        //            Drag.hotSpot.x: implicitWidth / 2
-        //            Drag.hotSpot.y: implicitHeight / 2
-        //            states: State {
-        //                when: mouseAreaItemID.drag.active
-        //                ParentChange { target: overlay; parent: treeView }
-        //                AnchorChanges { target: overlay; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
-        //            }
-        //        }
-
     }
 
     Label {

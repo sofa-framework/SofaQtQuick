@@ -95,8 +95,6 @@ protected:
     /// The following function are inhereted from MutationLister, they are called when there is
     /// change in the scene this model is exposing. When called this function is function is in
     /// charge of notifying the cbasehange using the QAbstractItemModel.
-//    bool frozen;
-
     void onBeginAddChild(Node* parent, Node* child) override;
     void onEndAddChild(Node* parent, Node* child) override;
     void onBeginRemoveChild(Node* parent, Node* child) override;
@@ -111,7 +109,6 @@ protected:
     /// If the node parameter is nullptr returns an invalid model index.
     QModelIndex index(simulation::Node *node) const ;
     QModelIndex index(simulation::Node *node, sofa::core::objectmodel::BaseObject* obj) const ;
-
 
     SofaScene*                      m_scene {nullptr};
     sofa::simulation::Node::SPtr    m_root  {nullptr};
@@ -133,4 +130,4 @@ private:
 
 } /// namespace sofa
 
-#endif // SOFAQTQUICK_MODELS_SOFASCENEITEMMODEL_H
+#endif /// SOFAQTQUICK_MODELS_SOFASCENEITEMMODEL_H
