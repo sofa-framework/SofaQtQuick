@@ -348,6 +348,21 @@ Rectangle {
                             sceneModel.flipComponentVisibility(styleData.index)
                         }
                     }
+
+                    Image {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: 12
+                        width: 12
+                        visible:
+                        {
+                            var srcIndex = sceneModel.mapToSource(styleData.index)
+                            var c = basemodel.getBaseFromIndex(srcIndex)
+                            isNode && c.isPrefab()
+                        }
+                        source: "qrc:/icon/ICON_PREFAB.png"
+                        opacity: 1.0
+                    }
                 }
                 Rectangle {
                     anchors.left: colorIcon.left
