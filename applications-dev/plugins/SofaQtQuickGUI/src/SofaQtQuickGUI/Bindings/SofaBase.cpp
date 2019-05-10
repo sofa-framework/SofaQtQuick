@@ -175,7 +175,7 @@ void SofaBase::clearOutput() const
     Base* base = m_self.get();
     if(base)
     {
-        base->clearOutputs();
+        base->clearLoggedMessages();
     }
 }
 
@@ -184,7 +184,7 @@ void SofaBase::clearWarning() const
     Base* base = m_self.get();
     if(base)
     {
-        base->clearWarnings();
+        base->clearLoggedMessages();
     }
 }
 

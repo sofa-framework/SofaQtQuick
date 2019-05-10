@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.2
+import QtQuick.Dialogs 1.3
 import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
@@ -35,11 +35,30 @@ Popup {
         {
             if( SofaFactory.contains(text) )
             {
-                console.log("createObject... "+text)
                 var p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text) })
                 searchBar.close()
-                SofaApplication.signalComponent(p.getPathName());
+                if(p!==null)
+                {
+                    SofaApplication.signalComponent(p.getPathName());
+                }else
+                {
+                    messageDialog.title = "Fail to add a '"+text+"' to node "+sofaNode.getName()
+                    messageDialog.text = sofaNode.warning()+ " " + sofaNode.output()
+                    messageDialog.visible = true
+                }
             }
+        }
+    }
+
+    MessageDialog
+    {
+        visible: false
+        id: messageDialog
+        title: "Create Object"
+        text: "It's so cool that you are using Qt Quick."
+        onAccepted: {
+            console.log("And of course you could only agree.")
+            visible=false
         }
     }
 

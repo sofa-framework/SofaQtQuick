@@ -18,6 +18,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <sofa/helper/logging/Messaging.h>
+#include <sofa/helper/logging/MessageDispatcher.h>
+using  sofa::helper::logging::MessageDispatcher;
+
+#include <sofa/core/logging/PerComponentLoggingMessageHandler.h>
+using  sofa::helper::logging::MainPerComponentLoggingMessageHandler;
+
 #include <SofaQtQuickGUI/SofaApplication.h>
 #include <QtWebView/QtWebView>
 #include <runSofa2/runSofa2.h>
@@ -75,7 +81,8 @@ void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, c
 int main(int argc, char **argv)
 {
     /// Install the handler the Sofa message hook into the Qt messaging system.
-    //qInstallMessageHandler(convertQMessagesToSofa);
+    MessageDispatcher::addHandler(&MainPerComponentLoggingMessageHandler::getInstance()) ;
+
 
     /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofa::qtquick::SofaApplication::Initialization();
