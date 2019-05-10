@@ -35,7 +35,7 @@ Menu {
 
     /// Windows which contains the component creator helper widget with auto-search in
     /// the factory and other database.
-    PopupWindowCreateComponent { id: popupWindowCreateComponent }
+    // PopupWindowCreateComponent { id: popupWindowCreateComponent }
 
     MenuItem {
         text: "Add child"
@@ -68,13 +68,30 @@ Menu {
     }
 
     MenuItem {
-        /// todo(dmarchal 2018-15-06) : Add a component from the factory.
-        text: "Add component (TODO)"
+        id: addObjectEntry
+        text: "Add object..."
         onTriggered: {
-            popupWindowCreateComponent.createObject(SofaApplication,
-                                                    {"sofaComponent": model.getBaseFromIndex(currentModelIndex)});
+            var popupComponent = Qt.createComponent("qrc:/SofaWidgets/PopupWindowCreateComponent.qml")
+            var popup2 = popupComponent.createObject(nodeMenu.parent,
+                                                     {"sofaNode": model.getBaseFromIndex(currentModelIndex),
+                                                      "x" : mouseLoc.mouseX,
+                                                      "y" : mouseLoc.mouseY
+                                                     }
+
+                                                     );
+            popup2.open()
+        }
+        MouseArea
+        {
+            id: mouseLoc
+            hoverEnabled: true                //< handle mouse hovering.
+            anchors.fill : parent
+            acceptedButtons: Qt.NoButton      //< forward mouse click.
+            propagateComposedEvents: true     //< forward other event.
+            z: 0
         }
     }
+
 
     /// Shows a popup with the Data list view.
     MenuItem {

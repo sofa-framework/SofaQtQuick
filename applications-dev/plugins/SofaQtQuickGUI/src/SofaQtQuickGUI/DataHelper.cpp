@@ -459,16 +459,11 @@ QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
 
 BaseData* findData(BaseNode* node, const QString& path)
 {
-    BaseData* data = 0;
+    BaseData* data = nullptr;
 
     if(node)
     {
-        std::streambuf* backup(std::cerr.rdbuf());
-
-        std::ostringstream stream;
-        std::cerr.rdbuf(stream.rdbuf());
-        node->findDataLinkDest(data, path.toStdString(), 0);
-        std::cerr.rdbuf(backup);
+        node->findDataLinkDest(data, path.toStdString(), nullptr);
     }
 
     return data;

@@ -55,56 +55,62 @@ Rectangle {
     readonly property var searchBar: searchBar
 
     Item {
-    //        property bool isActive: false
-    //        property int  index: 0
-    //        id: componentSignaler
-    //        property color color: "blue"
-    //        property QtObject component: null
+        //        property bool isActive: false
+        //        property int  index: 0
+        //        id: componentSignaler
+        //        property color color: "blue"
+        //        property QtObject component: null
 
-    //        Timer {
-    //            id : timer
-    //            interval : 300
-    //            triggeredOnStart : true
-    //            onTriggered: {
-    //                componentSignaler.isActive = running
-    //                if(!running){
-    //                    signallingAnimation.stop()
-    //                    if(componentSignaler.component)
-    //                        sofaScene.selectedComponent = componentSignaler.component
-    //                }
-    //            }
-    //        }
+        //        Timer {
+        //            id : timer
+        //            interval : 300
+        //            triggeredOnStart : true
+        //            onTriggered: {
+        //                componentSignaler.isActive = running
+        //                if(!running){
+        //                    signallingAnimation.stop()
+        //                    if(componentSignaler.component)
+        //                        sofaScene.selectedComponent = componentSignaler.component
+        //                }
+        //            }
+        //        }
 
-    //        function start(i,c){
-    //            componentSignaler.component = c
-    //            componentSignaler.index = i
-    //            timer.start()
-    //            signallingAnimation.start()
-    //        }
+        //        function start(i,c){
+        //            componentSignaler.component = c
+        //            componentSignaler.index = i
+        //            timer.start()
+        //            signallingAnimation.start()
+        //        }
 
-    //        ColorAnimation on color {
-    //            id: signallingAnimation
-    //            from: "white"
-    //            to: "lightsteelblue"
-    //            duration: 150
-    //            alwaysRunToEnd: true
-    //            loops: Animation.Infinite
-    //        }
-    //    }
+        //        ColorAnimation on color {
+        //            id: signallingAnimation
+        //            from: "white"
+        //            to: "lightsteelblue"
+        //            duration: 150
+        //            alwaysRunToEnd: true
+        //            loops: Animation.Infinite
+        //        }
+        //    }
 
-    //    /// Connect the scenegraph view so that it can be notified when the SofaApplication
-    //    /// is trying to notify that the user is interested to get visual feedback on where componets are.
-    Connections {
+        //    /// Connect the scenegraph view so that it can be notified when the SofaApplication
+        //    /// is trying to notify that the user is interested to get visual feedback on where componets are.
+        Connections {
             target: SofaApplication
             onSignalComponent: {
+                console.log("SIGNAL RECEIVED... " + path)
                 var c = sofaScene.get(path)
-                if(c){
-                    var i = listModel.getComponentId(c)
-                    console.log("SIgNAL AT"+ i)
-                    componentSignaler.start(i, c)
-                }
-                else{
-                    console.log("Nothing at" + path)
+                if(c)
+                {
+                    var baseIndex = basemodel.getIndexFromBase(c)
+                    var sceneIndex = sceneModel.mapFromSource(baseIndex)
+                    console.log("SIGNAL MODEL ... " + path +  "  " + sceneIndex +  + "base index " + baseIndex)
+                    var p= null
+                    //do{
+                    p = sceneIndex.parent
+                    treeView.expand(p)
+                    //} while( p.isValid() )
+                    treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
+                    console.log("SIGNAL RECEIVED CHANGING SELECTION...")
                 }
             }
         }
@@ -404,37 +410,37 @@ Rectangle {
                 }
             }
 
-//            MouseArea
-//            {
-//                id: mouseAreaItemID
-//                anchors.fill: parent
-//                acceptedButtons: Qt.LeftButton | Qt.RightButton
-//                onClicked:
-//                {
-//                    var srcIndex = sceneModel.mapToSource(styleData.index)
-//                    var theComponent = basemodel.getDataFromIndex(srcIndex)
+            //            MouseArea
+            //            {
+            //                id: mouseAreaItemID
+            //                anchors.fill: parent
+            //                acceptedButtons: Qt.LeftButton | Qt.RightButton
+            //                onClicked:
+            //                {
+            //                    var srcIndex = sceneModel.mapToSource(styleData.index)
+            //                    var theComponent = basemodel.getDataFromIndex(srcIndex)
 
-//                    if(mouse.button === Qt.LeftButton)
-//                    {
-//                        sofaScene.selectedComponent = theComponent
-//                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
-//                    } else if(mouse.button === Qt.RightButton) {
-//                        if(isNode)
-//                        {
-//                            nodeMenu.sofaData = theComponent.getComponentData("activated");
-//                            if(theComponent.hasLocations()===true)
-//                            {
-//                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
-//                                nodeMenu.creationLocation = theComponent.getCreationLocation()
-//                            }
-//                            nodeMenu.nodeActivated = nodeMenu.sofaData.value;
-//                            nodeMenu.popup();
-//                        } else {
-//                            objectMenu.popup();
-//                        }
-//                    }
-//                }
-//            }
+            //                    if(mouse.button === Qt.LeftButton)
+            //                    {
+            //                        sofaScene.selectedComponent = theComponent
+            //                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
+            //                    } else if(mouse.button === Qt.RightButton) {
+            //                        if(isNode)
+            //                        {
+            //                            nodeMenu.sofaData = theComponent.getComponentData("activated");
+            //                            if(theComponent.hasLocations()===true)
+            //                            {
+            //                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
+            //                                nodeMenu.creationLocation = theComponent.getCreationLocation()
+            //                            }
+            //                            nodeMenu.nodeActivated = nodeMenu.sofaData.value;
+            //                            nodeMenu.popup();
+            //                        } else {
+            //                            objectMenu.popup();
+            //                        }
+            //                    }
+            //                }
+            //            }
         }
         QQC1.TableViewColumn {
             title: "Hierarchy"
@@ -490,33 +496,33 @@ Rectangle {
             }
         }
 
-//        mouser.onPressAndHold: {
-//            overlay.visible = true
-//            overlay.implicitHeight = treeView.indexAt(0, y).height
-//            overlay.implicitWidth = treeView.indexAt(0, y).width
-//            overlay.anchors.verticalCenter = treeView.indexAt(0, y).verticalCenter
-//            overlay.anchors.horizontalCenter = treeView.indexAt(0, y).horizontalCenter
-//            console.error(overlay.width + " " + overlay.height)
-//        }
-//        mouser.onReleased: {
-//            overlay.visible = false
-//            parent = overlay.Drag.target !== null ? overlay.Drag.target : mouser
-//        }
-//        mouser.drag.target: overlay
-//        Rectangle {
-//            id: overlay
-//            color: "#50FFF000"
+        //        mouser.onPressAndHold: {
+        //            overlay.visible = true
+        //            overlay.implicitHeight = treeView.indexAt(0, y).height
+        //            overlay.implicitWidth = treeView.indexAt(0, y).width
+        //            overlay.anchors.verticalCenter = treeView.indexAt(0, y).verticalCenter
+        //            overlay.anchors.horizontalCenter = treeView.indexAt(0, y).horizontalCenter
+        //            console.error(overlay.width + " " + overlay.height)
+        //        }
+        //        mouser.onReleased: {
+        //            overlay.visible = false
+        //            parent = overlay.Drag.target !== null ? overlay.Drag.target : mouser
+        //        }
+        //        mouser.drag.target: overlay
+        //        Rectangle {
+        //            id: overlay
+        //            color: "#50FFF000"
 
-//            visible: false
-//            Drag.active: mouseAreaItemID.drag.active
-//            Drag.hotSpot.x: implicitWidth / 2
-//            Drag.hotSpot.y: implicitHeight / 2
-//            states: State {
-//                when: mouseAreaItemID.drag.active
-//                ParentChange { target: overlay; parent: treeView }
-//                AnchorChanges { target: overlay; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
-//            }
-//        }
+        //            visible: false
+        //            Drag.active: mouseAreaItemID.drag.active
+        //            Drag.hotSpot.x: implicitWidth / 2
+        //            Drag.hotSpot.y: implicitHeight / 2
+        //            states: State {
+        //                when: mouseAreaItemID.drag.active
+        //                ParentChange { target: overlay; parent: treeView }
+        //                AnchorChanges { target: overlay; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
+        //            }
+        //        }
 
     }
 

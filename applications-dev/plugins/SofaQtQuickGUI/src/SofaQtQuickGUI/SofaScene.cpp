@@ -1296,7 +1296,7 @@ SofaComponent* SofaScene::component(const QString& path)
 SofaBase* SofaScene::get(const QString& path)
 {
     /// search for the "name" data of the component (this data is always present if the component exist)
-    BaseData* data = sofaqtquick::helper::findData(mySofaRootNode.get(), path + ".name");
+    BaseData* data = sofaqtquick::helper::findData(mySofaRootNode.get(), "@" + path + ".name");
 
     if(!data)
         return nullptr;
