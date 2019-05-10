@@ -52,6 +52,7 @@ namespace livefilemonitor
 
 void LiveFileMonitor::addPathToMonitor(const std::string& path)
 {
+    std::cout << "REGISTER LIVE PATH" << path << std::endl ;
     std::string p = path;
     if (p.back() == '/')
         p.pop_back();
