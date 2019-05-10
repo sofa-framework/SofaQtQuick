@@ -194,6 +194,16 @@ sofa::core::objectmodel::BaseNode* SofaNode::_getPrefabAncestor(sofa::core::obje
 bool SofaNode::isPrefab()
 {
     sofa::core::objectmodel::BaseNode* n = rawBase()->toBaseNode();
+    if (n)
+    {
+        return (n->findData("Prefab type"))?true:false;
+    }
+    return false;
+}
+
+bool SofaNode::isInAPrefab()
+{
+    sofa::core::objectmodel::BaseNode* n = rawBase()->toBaseNode();
     return _getPrefabAncestor(n);
 }
 

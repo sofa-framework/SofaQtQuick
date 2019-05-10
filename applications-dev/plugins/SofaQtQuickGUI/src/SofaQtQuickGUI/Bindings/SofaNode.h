@@ -77,6 +77,7 @@ public:
     /// Returns true if the underlying Base
     /// or any of its ancestors is a SofaPrefab.
     Q_INVOKABLE bool isPrefab();
+    Q_INVOKABLE bool isInAPrefab();
 
     Q_INVOKABLE void addChild(SofaNode* child);
     Q_INVOKABLE void addObject(SofaBaseObject* obj);
