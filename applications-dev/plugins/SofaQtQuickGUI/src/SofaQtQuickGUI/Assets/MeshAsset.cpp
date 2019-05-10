@@ -6,7 +6,11 @@
 #include <sofa/simulation/InitVisitor.h>
 #include <sofa/simulation/DefaultAnimationLoop.h>
 #include <sofa/simulation/DefaultVisualManagerLoop.h>
-#include <SofaPython/SceneLoaderPY.h>
+//#include <SofaPython/SceneLoaderPY.h>
+
+#include <SofaPython/PythonEnvironment.h>
+#include <SofaPython/PythonFactory.h>
+using sofa::simulation::PythonEnvironment;
 
 using sofa::component::visualmodel::OglModel;
 using sofa::core::loader::MeshLoader;
@@ -46,21 +50,27 @@ sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetNam
         return new sofaqtquick::bindings::SofaNode(this);
     }
 
-    sofa::simulation::SceneLoaderPY scnLoader;
-
     BaseObject::SPtr b = loaders.find(m_extension)->second->New();
 
-    Node::SPtr root;
-    std::vector<std::string> args;
-    args.push_back(b->getClassName());
-    args.push_back(m_path);
-    scnLoader.loadSceneWithArguments("config/templates/MeshAsset.py",
-                                     args, &root);
+    Node::SPtr root = sofa::core::objectmodel::New<DAGNode>();
 
-    root->setName("NEWNODE");
-    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
-    node->init(sofa::core::ExecParams::defaultInstance());
-    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
+    PythonEnvironment::gil lock(__func__);
+    PyObject* loaderType = PyString_FromString(b->getClassName().c_str());
+    PyObject* meshPath = PyString_FromString(m_path.c_str());
+    PyObject* rootNode = sofa::PythonFactory::toPython(root.get()->toBaseNode());
+
+    PyObject* args = PyTuple_Pack(3, loaderType, meshPath, rootNode);
+    PyObject* ret = PythonEnvironment::callObject("loadMeshAsset", "SofaPython", args);
+    if (PyObject_IsTrue(ret))
+    {
+        root->setName("NEWNODE");
+        DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+        node->init(sofa::core::ExecParams::defaultInstance());
+
+        return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
+    }
+    std::cout << "Something went wrong..." << std::endl;
+    return nullptr;
 }
 
 QList<QObject*> MeshAsset::getAssetMetaInfo()

@@ -5,7 +5,10 @@
 
 #include <memory>
 #include <experimental/filesystem>
+#include <SofaPython/PythonEnvironment.h>
+#include <SofaPython/PythonFactory.h>
 using sofa::simulation::PythonEnvironment;
+
 namespace fs = std::experimental::filesystem;
 
 namespace sofa::qtquick
@@ -45,25 +48,32 @@ sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetN
     std::string stem = obj.stem();
     std::string path = obj.parent_path().string();
 
-    sofa::simulation::SceneLoaderPY scnLoader;
-    Node::SPtr root;
-    std::vector<std::string> args;
-    args.push_back(path);
-    args.push_back(stem);
-    if (!assetName.empty())
-        args.push_back(assetName);
-    scnLoader.loadSceneWithArguments("config/templates/PythonAsset.py",
-                                     args, &root);
+    Node::SPtr root = sofa::core::objectmodel::New<DAGNode>();
 
-    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
-    node->init(sofa::core::ExecParams::defaultInstance());
-    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
+
+    PythonEnvironment::gil lock(__func__);
+    PyObject* mpath = PyString_FromString(path.c_str());
+    PyObject* mname = PyString_FromString(stem.c_str());
+    PyObject* pname = PyString_FromString(assetName.c_str());
+    PyObject* assetnode = sofa::PythonFactory::toPython(root.get());
+
+    PyObject* args = PyTuple_Pack(4, mpath, mname, pname, assetnode);
+    PyObject* ret = PythonEnvironment::callObject("loadPythonAsset", "SofaPython", args);
+    if (PyObject_IsTrue(ret))
+    {
+        DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+        node->init(sofa::core::ExecParams::defaultInstance());
+
+        return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
+    }
+    return nullptr;
 }
 
 PythonAssetModel::PythonAssetModel(std::string name, std::string type)
     : m_name(name),
       m_type(type)
 {}
+
 QString PythonAssetModel::name() const { return m_name.c_str(); }
 QString PythonAssetModel::type() const { return m_type.c_str(); }
 
