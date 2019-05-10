@@ -1,17 +1,25 @@
 #pragma once
 
 #include <SofaQtQuickGUI/config.h>
-#include "SofaBase.h"
 
 #include <sofa/core/objectmodel/BaseObject.h>
-using sofa::core::objectmodel::BaseObject;
+
+#include "SofaBase.h"
 
 namespace sofaqtquick::bindings
 {
+
+namespace _sofanode_
+{
+    class SofaNode;
+}
+using _sofanode_::SofaNode;
+
 namespace _sofaobject_
 {
-
+using sofa::core::objectmodel::BaseObject;
 using sofaqtquick::bindings::SofaBase;
+using sofaqtquick::bindings::SofaNode;
 
 /// QtQuick wrapper to sofa::Node
 class SOFA_SOFAQTQUICKGUI_API SofaBaseObject: public SofaBase
@@ -47,6 +55,7 @@ public:
     /// so any references this object holds should still be valid.
     Q_INVOKABLE void cleanup();
 
+    Q_INVOKABLE SofaNode* getFirstParent();
 };
 
 }  // namespace _sofaobject_

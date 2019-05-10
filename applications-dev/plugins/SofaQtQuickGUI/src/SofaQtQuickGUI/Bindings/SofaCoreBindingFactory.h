@@ -24,11 +24,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
 #include <map>
 #include <functional>
 
 namespace sofaqtquick::bindings
 {
+using sofaqtquick::bindings::SofaBaseObject;
 
 class SofaCoreBindingFactory
 {
@@ -46,6 +48,9 @@ public:
         {
             return f->second(obj);
         }
+        if(obj->toBaseObject())
+            return new SofaBaseObject(obj->toBaseObject());
+
         return new SofaBase(obj);
     }
 

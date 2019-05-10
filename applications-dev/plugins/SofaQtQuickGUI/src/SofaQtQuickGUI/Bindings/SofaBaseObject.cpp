@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 #include "SofaBaseObject.h"
+#include "SofaNode.h"
 
 namespace sofaqtquick::bindings::_sofaobject_
 {
@@ -72,5 +73,10 @@ void SofaBaseObject::cleanup()
     self()->cleanup();
 }
 
-}  // namespace sofaqtquick::bindings::_sofaobject_
+SofaNode* SofaBaseObject::getFirstParent()
+{
+    return SofaNode::createFrom(self()->getContext());
+}
+
+}  /// namespace sofaqtquick::bindings::_sofaobject_
 
