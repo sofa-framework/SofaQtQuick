@@ -150,7 +150,9 @@ SofaBaseObject* SofaNode::createObject(const QString& type, const QVariantMap& a
     }
 
     auto o = sofa::simpleapi::createObject(selfptr(), type.toStdString(), args);
-    return new SofaBaseObject(o);
+    if(o!=nullptr)
+        return new SofaBaseObject(o);
+    return nullptr;
 }
 
 
