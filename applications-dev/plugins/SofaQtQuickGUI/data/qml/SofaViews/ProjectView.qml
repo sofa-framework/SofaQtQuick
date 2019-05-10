@@ -366,6 +366,9 @@ Item {
                             drag.onActiveChanged: {
                                 if (drag.active) {
                                     draggedData.ctxMenu = assetMenu
+                                    draggedData.url = folderModel.get(index, "fileURL")
+                                    console.log("SETTING THE DATA URL TO: " + draggedData.url)
+
                                 } else {
                                     console.error("Drag Finished")
 
@@ -396,6 +399,7 @@ Item {
                                 property point beginDrag
                                 property var node
                                 property var ctxMenu
+                                property var url
 
                                 function getAsset(assetName) {
                                     return self.project.getAsset(folderModel.get(index, "fileURL"), assetName)

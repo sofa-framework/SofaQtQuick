@@ -51,6 +51,21 @@ Row {
             dataObject.upload();
         }
         position: cornerPositions["Left"]
+
+        DropArea {
+            id: dropArea
+            anchors.fill: parent
+            onEntered: {
+                if(  drag.source.url )
+                    drag.accept(false)
+            }
+            onDropped: {
+                if(drag.source.url)
+                {
+                    textField.text = drag.source.url
+                }
+            }
+        }
     }
 
     Button {

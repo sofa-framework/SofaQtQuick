@@ -34,44 +34,6 @@ import EditView 1.0
 import SofaScene 1.0
 
 Item{
-
-//    EditView {
-//        id: editView
-//        width: 300
-//        height: 300
-//        z: 2
-//        clip: true
-//        backgroundColor: "#FF404040"
-//        mirroredHorizontally: false
-//        mirroredVertically: false
-//        antialiasingSamples: 2
-//        sofaScene: SofaApplication.sofaScene
-
-//        property bool configurable: true
-//        property bool transparentBackground: false
-//        property int uiId: 0
-//        property int previousUiId: uiId
-//        onUiIdChanged: {
-//            SofaApplication.uiSettings.replace(previousUiId, uiId);
-//        }
-
-//        Component.onCompleted: {
-//            SofaApplication.addSofaViewer(root);
-
-//            if(!SofaApplication.focusedSofaView)
-//                forceActiveFocus();
-
-//            if(root.sofaScene && root.sofaScene.ready)
-//                recreateCamera();
-
-//            loadCameraFromFile((Number(uiId)));
-//        }
-
-//        Component.onDestruction: {
-//            SofaApplication.removeSofaViewer(root);
-//        }
-//    }
-
     ScrollView {
         id: scroll
         implicitWidth : parent.width

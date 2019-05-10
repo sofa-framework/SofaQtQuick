@@ -409,43 +409,10 @@ Rectangle {
                     }
                 }
             }
-
-            //            MouseArea
-            //            {
-            //                id: mouseAreaItemID
-            //                anchors.fill: parent
-            //                acceptedButtons: Qt.LeftButton | Qt.RightButton
-            //                onClicked:
-            //                {
-            //                    var srcIndex = sceneModel.mapToSource(styleData.index)
-            //                    var theComponent = basemodel.getDataFromIndex(srcIndex)
-
-            //                    if(mouse.button === Qt.LeftButton)
-            //                    {
-            //                        sofaScene.selectedComponent = theComponent
-            //                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
-            //                    } else if(mouse.button === Qt.RightButton) {
-            //                        if(isNode)
-            //                        {
-            //                            nodeMenu.sofaData = theComponent.getComponentData("activated");
-            //                            if(theComponent.hasLocations()===true)
-            //                            {
-            //                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
-            //                                nodeMenu.creationLocation = theComponent.getCreationLocation()
-            //                            }
-            //                            nodeMenu.nodeActivated = nodeMenu.sofaData.value;
-            //                            nodeMenu.popup();
-            //                        } else {
-            //                            objectMenu.popup();
-            //                        }
-            //                    }
-            //                }
-            //            }
         }
         QQC1.TableViewColumn {
             title: "Hierarchy"
             role: "name"
-
         }
 
         SofaNodeMenu
