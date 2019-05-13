@@ -53,10 +53,17 @@ Item{
             width: scroll.implicitWidth
             height: scroll.implicitHeight
 
+            onUrlChanged:
+            {
+                console.log("LOADING CHANGED TO " + url)
+                if(url.match("?installPlugin="))
+                {
+                    SofaApplication.runPythonScript("import subprocess\nsubprocess.Popen(['sofa-spm.py','install','SoftRobots'])")
+                }
+            }
+
             onLoadingChanged:
             {
-                console.log("LOADING CHANGED TO " + loadRequest.url)
-                SofaApplication.runPythonScript("print('COUCOU')\nimport subprocess\nsubprocess.Popen('sofa-spm.py','install','SoftRobots')")
                 if (loadRequest.errorString)
                     console.error(loadRequest.errorString);
             }
