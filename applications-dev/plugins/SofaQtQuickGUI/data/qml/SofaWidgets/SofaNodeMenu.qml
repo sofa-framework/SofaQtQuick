@@ -63,7 +63,7 @@ Menu {
         id: addObjectEntry
         text: "Add object..."
         onTriggered: {
-            var popupComponent = Qt.createComponent("qrc:/SofaWidgets/PopupWindowCreateComponent.qml")
+            var popupComponent = SofaDataWidgetFactory.getWidget("qrc:/SofaWidgets/PopupWindowCreateComponent.qml")
             var popup2 = popupComponent.createObject(nodeMenu.parent,
                                                      {"sofaNode": model.getBaseFromIndex(currentModelIndex),
                                                       "x" : mouseLoc.mouseX,
