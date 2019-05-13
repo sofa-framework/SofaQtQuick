@@ -67,5 +67,6 @@
         <file>icon/iconerror.xpm</file>
         <file>icon/iconinfo.xpm</file>
         <file>icon/iconwarning.xpm</file>
+        <file>icon/iconmessage_base.png</file>
     </qresource>
 </RCC>
