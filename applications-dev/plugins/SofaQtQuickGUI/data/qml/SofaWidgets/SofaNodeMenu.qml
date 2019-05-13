@@ -37,6 +37,104 @@ Menu {
     /// the factory and other database.
     // PopupWindowCreateComponent { id: popupWindowCreateComponent }
 
+    /// Shows a popup with the Data list view.
+    MenuItem {
+        text: "Show data..."
+        onTriggered: {
+            sofaDataListViewWindowComponent.createObject(nodeMenu.parent,
+                                                         {"sofaScene": root.sofaScene,
+                                                          "sofaComponent": model.getBaseFromIndex(currentModelIndex)});
+        }
+    }
+
+    MenuItem {
+        enabled: model.getBaseFromIndex(currentModelIndex).hasMessage()
+        text: "Show messages..."
+        onTriggered: {
+            /// Creates and display an help window object
+            windowMessage.createObject(nodeMenu.parent,
+                                       {"sofaComponent": model.getBaseFromIndex(currentModelIndex)});
+        }
+    }
+
+    MenuItem {
+        /// todo(dmarchal 2018-15-06) : This should display the content of the description string
+        /// provided by Sofa, classname, definition location, declaration location.
+        text: "Infos (TODO)"
+        onTriggered: {
+            console.log("TODO")
+        }
+    }
+
+    MenuSeparator {}
+    MenuItem {
+        enabled: creationLocation !== null && creationLocation.length !== 0
+        text: "Go to instanciation..."
+        onTriggered: {
+            var location = parsePython(creationLocation)
+            SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+    MenuItem {
+        enabled: sourceLocation !== null && sourceLocation.length !== 0
+        text: "Go to implementation..."
+        onTriggered: {
+            var location = parsePython(sourceLocation)
+            SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+
+    MenuSeparator {}
+    MenuItem {
+        enabled: true //(multiparent)?irstparent : true
+        text: nodeMenu.nodeActivated ? "Deactivate" : "Activate"
+        onTriggered: parent.activated.setValue(nodeMenu.nodeActivated);
+    }
+
+    MenuSeparator {}
+    MenuItem {
+        text: "Delete"
+        onTriggered: {
+//            var currentRow = model.computeItemRow(currentModelIndex);
+            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
+//            model.updateCurrentIndex(model.computeModelRow(currentRow));
+        }
+    }
+
+  MenuItem {
+        id: renameMenu
+        text: "Rename.."
+
+        Component {
+            id: renameDialog
+            Dialog {
+                id: dlg
+                property var sofaBase
+
+                title: "Rename '" + sofaBase.getName() + "'"
+                contentItem: TextField {
+                    implicitWidth: 200
+                    id: txtField
+                    text: sofaBase ? sofaBase.getName() : ""
+                }
+                onAccepted: {
+                    sofaBase.setName(txtField.text)
+                }
+                standardButtons: StandardButton.Save | StandardButton.Cancel
+            }
+        }
+
+
+        onTriggered: {
+            var p = model.getBaseFromIndex(currentModelIndex)
+            var d = renameDialog.createObject(renameMenu, {"sofaBase": p})
+            d.open()
+        }
+    }
+
+
     MenuItem {
         text: "Add child"
         onTriggered: {
@@ -83,86 +181,8 @@ Menu {
         }
     }
 
-    MenuItem {
-        id: renameMenu
-        text: "Rename.."
-
-        Component {
-            id: renameDialog
-            Dialog {
-                id: dlg
-                property var sofaBase
-
-                title: "Rename '" + sofaBase.getName() + "'"
-                contentItem: TextField {
-                    implicitWidth: 200
-                    id: txtField
-                    text: sofaBase ? sofaBase.getName() : ""
-                }
-                onAccepted: {
-                    sofaBase.setName(txtField.text)
-                }
-                standardButtons: StandardButton.Save | StandardButton.Cancel
-            }
-        }
-
-
-        onTriggered: {
-            var p = model.getBaseFromIndex(currentModelIndex)
-            var d = renameDialog.createObject(renameMenu, {"sofaBase": p})
-            d.open()
-        }
-    }
-
-
-    /// Shows a popup with the Data list view.
-    MenuItem {
-        text: "Data"
-        onTriggered: {
-            sofaDataListViewWindowComponent.createObject(nodeMenu.parent,
-                                                         {"sofaScene": root.sofaScene,
-                                                          "sofaComponent": model.getBaseFromIndex(currentModelIndex)});
-        }
-    }
-
-    MenuItem {
-        enabled: model.getBaseFromIndex(currentModelIndex).hasMessage()
-        text: "Messages..."
-        onTriggered: {
-            /// Creates and display an help window object
-            windowMessage.createObject(nodeMenu.parent,
-                                       {"sofaComponent": model.getBaseFromIndex(currentModelIndex)});
-        }
-    }
-
-    MenuItem {
-        /// todo(dmarchal 2018-15-06) : This should display the content of the description string
-        /// provided by Sofa, classname, definition location, declaration location.
-        text: "Infos (TODO)"
-        onTriggered: {
-            console.log("TODO")
-        }
-    }
 
     MenuSeparator {}
-    MenuItem {
-        enabled: creationLocation !== null && creationLocation.length !== 0
-        text: "Go to instanciation..."
-        onTriggered: {
-            var location = parsePython(creationLocation)
-            SofaApplication.openInEditor(location[0], location[1])
-        }
-    }
-
-    MenuItem {
-        enabled: sourceLocation !== null && sourceLocation.length !== 0
-        text: "Go to implementation..." + sourceLocation.length
-        onTriggered: {
-            var location = parsePython(sourceLocation)
-            SofaApplication.openInEditor(location[0], location[1])
-        }
-    }
-
     MenuItem {
         text: "Save as Prefab..."
         onTriggered: {
@@ -170,24 +190,5 @@ Menu {
             SofaApplication.currentProject.createPrefab(n);
         }
     }
-
-    MenuSeparator {}
-    MenuItem {
-        enabled: true //(multiparent)?irstparent : true
-        text: nodeMenu.nodeActivated ? "Deactivate" : "Activate"
-        onTriggered: parent.activated.setValue(nodeMenu.nodeActivated);
-    }
-
-    MenuSeparator {}
-    MenuItem {
-        text: "Delete"
-        onTriggered: {
-//            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
-//            model.updateCurrentIndex(model.computeModelRow(currentRow));
-        }
-    }
-
-
 
 }

@@ -29,7 +29,7 @@ Menu {
     property string creationLocation : null
 
     MenuItem {
-        text: "Add node (sibling)"
+        text: "Add node..."
         onTriggered: {
             var p = model.getBaseFromIndex(currentModelIndex).getFirstParent()
             p = p.createChild(p.getNextName("NEWNODE"))
@@ -41,7 +41,7 @@ Menu {
 
     MenuItem {
         id: addObjectEntry
-        text: "Add object (sibling)"
+        text: "Add object..."
         onTriggered: {
             var popupComponent = Qt.createComponent("qrc:/SofaWidgets/PopupWindowCreateComponent.qml")
             var popup2 = popupComponent.createObject(nodeMenu.parent,
@@ -52,6 +52,7 @@ Menu {
 
                                                      );
             popup2.open()
+            popup2.forceActiveFocus()
         }
         MouseArea
         {
@@ -61,19 +62,6 @@ Menu {
             acceptedButtons: Qt.NoButton      //< forward mouse click.
             propagateComposedEvents: true     //< forward other event.
             z: 0
-        }
-    }
-
-
-    MenuItem {
-        text: {
-            "Delete object"
-        }
-        onTriggered: {
-            var component = model.getDataFromIndex(currentIndex)
-//            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
-//            model.updateCurrentIndex(model.computeModelRow(currentRow));
         }
     }
 
@@ -89,11 +77,23 @@ Menu {
 
     MenuItem {
         enabled: sourceLocation !== null && sourceLocation.length !== 0
-        text: "Go to implementation..." + sourceLocation.length
+        text: "Go to implementation..."
         onTriggered: {
             var location = parsePython(sourceLocation)
             SofaApplication.openInEditor(location[0], location[1])
         }
     }
 
+    MenuSeparator {}
+    MenuItem {
+        text: {
+            "Delete object"
+        }
+        onTriggered: {
+            var component = model.getDataFromIndex(currentIndex)
+//            var currentRow = model.computeItemRow(currentModelIndex);
+            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
+//            model.updateCurrentIndex(model.computeModelRow(currentRow));
+        }
+    }
 }
