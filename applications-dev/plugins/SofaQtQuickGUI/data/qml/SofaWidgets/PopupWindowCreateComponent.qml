@@ -24,6 +24,7 @@ Popup {
         color: "transparent"
     }
 
+
     MessageDialog
     {
         visible: false
@@ -43,10 +44,30 @@ Popup {
         width: searchBar.contentWidth
         height: 20
         font.italic: !SofaFactory.contains(text)
+        focus: true
+
+        Keys.onPressed:
+        {
+            if(event.key === Qt.Key_Return)
+            {
+                inputField.text = SofaFactory.components[container.currentIndex]
+            }
+            if(Qt.Key_Down === event.key)
+            {
+                container.incrementCurrentIndex()
+                text = null
+            }
+            if(Qt.Key_Up === event.key)
+            {
+                container.decrementCurrentIndex()
+                text = null
+            }
+        }
 
         onTextEdited:
         {
             SofaFactory.setFilter(text)
+            container.currentIndex=-1
         }
         onAccepted:
         {
@@ -79,6 +100,7 @@ Popup {
         anchors.right: inputField.right
         height: searchBar.contentHeight-inputField.height-(2*searchBar.padding)
         model: SofaFactory.components
+
 
         delegate: Component {
             Item{

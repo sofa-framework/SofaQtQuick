@@ -41,16 +41,21 @@ Item
         }
         var filename = "qrc:/SofaDataTypes/SofaDataType_" + type + ".qml"
 
-        if(!(type in components))
+        getWidget(filename)
+    }
+
+    function getWidget(filename)
+    {
+        if(!(filename in components))
         {
             var component = Qt.createComponent(filename)
             if(component.status === Component.Ready){
-                components[type] = component
-                console.log("Loading data widget from file "+filename+" suceeded")
+                components[filename] = component
+                console.log("Loading widget from file "+filename+" suceeded")
             }else{
                 console.error("Error loading data component:", component.errorString());
             }
         }
-        return components[type]
+        return components[filename]
     }
 }
