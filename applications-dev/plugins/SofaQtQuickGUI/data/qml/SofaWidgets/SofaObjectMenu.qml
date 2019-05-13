@@ -20,6 +20,10 @@ Menu {
         return JSON.parse(c)
     }
 
+    /// Window that contains the object message. The windows is only created when the menu item
+    /// is clicked
+    SofaWindowComponentMessages { id: windowMessage }
+
     id: objectMenu
 
     property var model: null;     ///< The model from which we can get the objects.
@@ -43,6 +47,17 @@ Menu {
         onTriggered: {
             var location = parsePython(sourceLocation)
             SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+
+    MenuItem {
+        enabled: model.getBaseFromIndex(currentModelIndex).hasMessage()
+        text: "Show messages..."
+        onTriggered: {
+            /// Creates and display an help window object
+            windowMessage.createObject(nodeMenu.parent,
+                                       {"sofaComponent": model.getBaseFromIndex(currentModelIndex)});
         }
     }
 
