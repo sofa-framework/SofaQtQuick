@@ -67,10 +67,7 @@ Menu {
             "Delete object"
         }
         onTriggered: {
-            var component = model.getDataFromIndex(currentIndex)
-//            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
-//            model.updateCurrentIndex(model.computeModelRow(currentRow));
+            sofaScene.removeComponent(model.getBaseFromIndex(currentModelIndex));
         }
     }
 
