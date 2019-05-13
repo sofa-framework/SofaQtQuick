@@ -384,15 +384,22 @@ Rectangle {
                     border.width: 1
                     border.color: "black"
                 }
-                //                //                    Image {
-                //                //                        anchors.horizontalCenter: parent.horizontalCenter
-                //                //                        anchors.verticalCenter: colorIcon.verticalCenter
-                //                //                        height: 16
-                //                //                        width: 16
-                //                //                        visible: (undefined !== isNode ? isNode : false) && (SofaSceneListModel.Disabled & (undefined !== visibility ? visibility : false))
-                //                //                        source: "qrc:/icon/disabled.png"
-                //                //                        opacity: 1.0
-                //                //                    }
+                Image {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: colorIcon.verticalCenter
+                    height: 16
+                    width: 16
+                    visible:
+                    {
+                        var srcIndex = sceneModel.mapToSource(styleData.index)
+                        var c = basemodel.getBaseFromIndex(srcIndex)
+                        if(c!==null)
+                            return c.hasMessage()
+                        return false
+                    }
+                    source: "qrc:/icon/iconerror.xpm"
+                    opacity: 0.5
+                }
             }
 
             Text {
