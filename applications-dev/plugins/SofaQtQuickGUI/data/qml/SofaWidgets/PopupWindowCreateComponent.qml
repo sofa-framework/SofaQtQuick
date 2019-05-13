@@ -81,8 +81,9 @@ Popup {
                     SofaApplication.signalComponent(p.getPathName());
                 }else
                 {
-                    messageDialog.text =
-                            "Unable to create an object of type '"+text+"' in node "+sofaNode.getName() + "\n"
+                     messageDialog.icon = StandardIcon.Critical
+                     messageDialog.text =
+                             "Unable to create an object of type '"+text+"' in node "+sofaNode.getName() + "\n"
                             +"Reason: " + sofaNode.warning() + " " + sofaNode.output()
                     messageDialog.visible = true
                 }

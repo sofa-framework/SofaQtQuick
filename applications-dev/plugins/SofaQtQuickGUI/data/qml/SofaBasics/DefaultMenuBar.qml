@@ -307,7 +307,8 @@ MenuBar {
                 MenuItem {
                     text: model.name
                     onTriggered: {
-                        windowComponent.createObject(sofaApplication, {
+                        windowComponent.createObject(menuBar,
+                                                     {
                                                          "source": "file:///"+model.filePath,
                                                          "title" : model.name
                                                      });

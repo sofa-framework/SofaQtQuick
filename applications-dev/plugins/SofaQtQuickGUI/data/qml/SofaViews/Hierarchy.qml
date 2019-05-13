@@ -366,7 +366,7 @@ Rectangle {
                         {
                             var srcIndex = sceneModel.mapToSource(styleData.index)
                             var c = basemodel.getBaseFromIndex(srcIndex)
-                            isNode && c.isPrefab()
+                            c!==null && isNode && c.isPrefab()
                         }
                         source: "qrc:/icon/ICON_PREFAB.png"
                         opacity: 1.0

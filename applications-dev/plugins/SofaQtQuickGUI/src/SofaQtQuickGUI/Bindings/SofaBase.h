@@ -69,6 +69,8 @@ public:
     Q_INVOKABLE QString getSourceLocation() const ;
     Q_INVOKABLE QString getInstanciationLocation() const ;
 
+    Q_INVOKABLE bool hasMessage() const;
+
     Q_INVOKABLE QString output() const;
     Q_INVOKABLE void clearOutput() const;
 

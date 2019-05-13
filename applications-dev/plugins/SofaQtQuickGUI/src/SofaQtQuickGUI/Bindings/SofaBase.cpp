@@ -119,7 +119,7 @@ bool SofaBase::hasLocations() const
     if(base)
     {
         return !base->getDefinitionSourceFileName().empty()
-            || !base->getInstanciationSourceFileName().empty() ;
+                || !base->getInstanciationSourceFileName().empty() ;
     }
     return false;
 }
@@ -155,6 +155,20 @@ QString SofaBase::output() const
         return QString::fromStdString(base->getLoggedMessagesAsString({Message::Info, Message::Advice}));
 
     return QString();
+}
+
+bool SofaBase::hasMessage() const
+{
+    const Base* base = m_self.get();
+    if(!base)
+        return false;
+
+    return base->countLoggedMessages({Message::Info,
+                                     Message::Deprecated,
+                                     Message::Warning,
+                                     Message::Error,
+                                     Message::Fatal
+                                    }) != 0;
 }
 
 QString SofaBase::warning() const

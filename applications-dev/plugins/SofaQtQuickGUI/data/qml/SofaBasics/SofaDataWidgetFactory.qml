@@ -41,7 +41,7 @@ Item
         }
         var filename = "qrc:/SofaDataTypes/SofaDataType_" + type + ".qml"
 
-        getWidget(filename)
+        return getWidget(filename)
     }
 
     function getWidget(filename)
