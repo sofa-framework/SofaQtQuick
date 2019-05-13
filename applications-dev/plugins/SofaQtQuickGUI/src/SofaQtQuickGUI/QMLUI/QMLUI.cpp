@@ -26,7 +26,6 @@ namespace sofaqtquick::qmlui
 
 QmlUILoader::QmlUILoader(QObject* parent)
 {
-   msg_error() << "Created." ;
 }
 
 void QmlUILoader::resetAndLoadAll(const QUrlList& list)
@@ -39,7 +38,6 @@ void QmlUILoader::resetAndLoadAll(const QUrlList& list)
     }
 
     /// Re-add all of them.
-    msg_error() << "Reload everything..." << list.size();
     for(auto& url : list)
         load(url);
 }
@@ -74,8 +72,6 @@ void QmlUILoader::load(const QUrl& filename)
 
 QmlUILoader::~QmlUILoader()
 {
-    msg_error() << "Destroying ("<<m_loadedItems.size()<<")";
-
     /// Remove the existing items.
     for(auto& item : m_loadedItems)
     {
