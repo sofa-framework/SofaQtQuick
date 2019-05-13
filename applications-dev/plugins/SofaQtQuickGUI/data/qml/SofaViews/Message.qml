@@ -48,7 +48,7 @@ Column {
         id: header
         width: parent.width
         height: 20
-        color: SofaApplication.style.headerBackgroundColor
+        color: SofaApplication.style.contentBackgroundColor
 
         Text{
             id: hname
@@ -57,7 +57,7 @@ Column {
             anchors.bottom: header.bottom
             font.pixelSize: 12
             font.bold: true
-            text : "Messages (" + SofaApplication.sofaMessageList.messageCount + ")"
+            text : "Messages (" + SofaApplication.sofaMessageList.messageCount + ") "
         }
         IconButton {
             id: buttonClearHistory
@@ -92,7 +92,6 @@ Column {
             id: buttonShowEmittingLocation
             anchors.right: header.right
             anchors.top: header.top
-            anchors.bottom: header.bottom
             anchors.leftMargin: 6
             anchors.rightMargin: 6
             checked: true
@@ -103,7 +102,7 @@ Column {
         id: messagearea
         implicitWidth:  parent.width
         implicitHeight: parent.height
-        color : "lightgrey"
+        color : SofaApplication.style.editviewBackgroundColor
 
 
         ScrollView {
@@ -182,30 +181,32 @@ Column {
                                     text: {
                                         // Info=0, Advice, Deprecated, Warning, Error, Fatal,
                                         if(type == 0)
-                                            return "[<font color='#00ff00'>INFO</font>]: <font color='#998800'><u>"+emitter+"</font>"
+                                            return "[<font color='#00ff00'><b>INFO</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
                                         if(type == 1)
-                                            return "[<font color='#00ff00'>ADVICE</font>]: <font color='#998800'><u>"+emitter+"</font>"
+                                            return "[<font color='#00ff00'><b>ADVICE</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
                                         if(type == 2)
-                                            return "[<font color='#ff0000'>DEPRECATED</font>]: <font color='#998800'><u>"+emitter+"</font>"
+                                            return "[<font color='#ff0000'><b>DEPRECATED</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
                                         if(type == 3)
-                                            return "[<font color='#998800'>WARNING</font>]: <font color='#998800'><u>"+emitter+"</font>"
+                                            return "[<font color='#998800'><b>WARNING</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
                                         if(type == 4)
-                                            return "[<font color='#ff0000'>ERROR</font>]: <font color='#998800'><u>"+emitter+"</font>"
+                                            return "[<font color='#ff0000'><b>ERROR</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
                                         if(type == 5)
-                                            return "[<font color='#ff0000'>FATAL</font>]: <font color='#998800'><u>"+emitter+"</font>"
+                                            return "[<font color='#ff0000'><b>FATAL</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
                                     }
+                                    wrapMode: Text.Wrap
 
                                     /// When we click on the emitter a visual signal is emitted
                                     /// to indicate where is that the "source" of the message
                                     MouseArea {
-                                        height : messagetype.height
-                                        width : messagetype.width
+                                        anchors.fill: parent
                                         enabled: emitterpath != null
                                         /// Change the cursor shape to apointing hand
                                         cursorShape: Qt.PointingHandCursor
                                         hoverEnabled: true
 
-                                        onEntered: { sofaScene.statusMessage = "Left-click to select ["+emitterpath+"]" }
+                                        onEntered: {
+                                            sofaScene.statusMessage = "Left-click to select ["+emitterpath+"]"
+                                        }
                                         onExited: { sofaScene.statusMessage = "" }
 
                                         /// When the emitter is clicked, it signals that the
@@ -221,14 +222,19 @@ Column {
                                     textFormat: Text.RichText
                                     wrapMode: Text.Wrap
                                     text: message
+                                    color: "black"
                                 }
                             }
-                            Text{
+                            Text {
                                 id : extrainfo
                                 width: messagearea.width
                                 wrapMode: Text.WrapAnywhere
                                 textFormat: Text.RichText
-                                text: "Emitted from: <font color='#998800'>"+link+":"+line+"</font>"
+                                text: "Emitted from: <font color='#aeaeae'>"+link+":"+line+"</font>"
+                                color: "black"
+
+
+
 
                                 /// When we click on the emitter a visual signal is emitted
                                 /// to indicate where is that the "source" of the message
@@ -251,16 +257,16 @@ Column {
                                 }
                             }
                             Rectangle{
-                                id: endline
+                                id: spacerline1
                                 width: p1scores.width
-                                height: 1
-                                color: "gray"
+                                height:1
+                                color: "#393939"
                             }
                             Rectangle{
-                                id: spacerline
+                                id: spacerline2
                                 width: p1scores.width
-                                height:3
-                                color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
+                                height:1
+                                color: "#959595"
                             }
                         }
 
@@ -271,7 +277,7 @@ Column {
                                     target: viewitem
                                     extrainfo.visible: true
                                     height: childrenRect.height
-                                    color: "lightsteelblue"
+                                    color: SofaApplication.style.contentBackgroundColor
                                 }
                             },
                             State {
@@ -280,7 +286,7 @@ Column {
                                     target: viewitem
                                     extrainfo.visible: false
                                     height: childrenRect.height
-                                    color: Qt.rgba(0.85, 0.85, 0.85, 1.0)
+                                    color: SofaApplication.style.contentBackgroundColor
                                 }
                             }
                         ]
