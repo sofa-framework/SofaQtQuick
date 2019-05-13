@@ -22,6 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 #include "SofaNode.h"
 using sofa::core::objectmodel::BaseObject;
+using sofa::core::objectmodel::BaseNode;
 
 #include "SofaComponent.h"
 
@@ -60,7 +61,7 @@ SofaNode* wrap(sofa::simulation::Node* n)
 {
     return wrap(dynamic_cast<DAGNode*>(n));
 }
-SofaNode* wrap(sofa::core::objectmodel::BaseNode* n)
+SofaNode* wrap(BaseNode* n)
 {
     return wrap(static_cast<DAGNode*>(n));
 }
@@ -178,22 +179,22 @@ SofaNodeList* SofaNode::getChildren()
 }
 
 
-sofa::core::objectmodel::BaseNode* SofaNode::_getPrefabAncestor(sofa::core::objectmodel::BaseNode* n)
+BaseNode* SofaNode::getPrefabAncestor(BaseNode* n) const
 {
     if (n)
     {
         if (n->findData("Prefab type")) return n;
         for (const auto& p : n->getParents())
-            if (_getPrefabAncestor(p))
+            if (getPrefabAncestor(p))
                 return p;
     }
     return nullptr;
 }
 
 
-bool SofaNode::isPrefab()
+bool SofaNode::isPrefab() const
 {
-    sofa::core::objectmodel::BaseNode* n = rawBase()->toBaseNode();
+    BaseNode* n = rawBase()->toBaseNode();
     if (n)
     {
         return (n->findData("Prefab type"))?true:false;
@@ -201,15 +202,40 @@ bool SofaNode::isPrefab()
     return false;
 }
 
-bool SofaNode::isInAPrefab()
+bool SofaNode::isInAPrefab() const
 {
-    sofa::core::objectmodel::BaseNode* n = rawBase()->toBaseNode();
-    return _getPrefabAncestor(n);
+    BaseNode* n = rawBase()->toBaseNode();
+    return getPrefabAncestor(n);
+}
+
+bool _hasMessageInChild(BaseNode* node)
+{
+    for(auto& child : node->getChildren())
+    {
+        if(_hasMessageInChild(child))
+            return true;
+    }
+
+    DAGNode* nnode = dynamic_cast<DAGNode*>(node);
+    assert(nnode && "Invalid code...only dagnode are allowed");
+
+    for(auto& object : nnode->getNodeObjects())
+    {
+        if(object->countLoggedMessages() != 0)
+            return true;
+    }
+
+    return false;
+}
+
+bool SofaNode::hasMessageInChild() const
+{
+    return _hasMessageInChild(rawBase()->toBaseNode());
 }
 
 bool SofaNode::attemptToBreakPrefab()
 {
-    sofa::core::objectmodel::BaseNode* prefab = _getPrefabAncestor(rawBase()->toBaseNode());
+    BaseNode* prefab = getPrefabAncestor(rawBase()->toBaseNode());
     QString title("Warning: This action will break the prefab ");
     title += prefab->getName().c_str();
     if (QMessageBox::question(nullptr, title, tr("Are your sure that you want to proceed?")) == QMessageBox::StandardButton::Yes)
@@ -248,7 +274,7 @@ void SofaNode::addObject(SofaBaseObject* obj)
     self()->addObject(obj->selfptr());
 }
 
-void SofaNodeList::addSofaNode(sofa::core::objectmodel::BaseNode* node)
+void SofaNodeList::addSofaNode(BaseNode* node)
 {
     m_list.push_back(wrap(node));
 }
@@ -302,7 +328,6 @@ QString SofaNode::getNextObjectName(const QString& name)
     }
     return newname;
 }
-
 
 QObject* SofaNode::get(const QString& path) const
 {
