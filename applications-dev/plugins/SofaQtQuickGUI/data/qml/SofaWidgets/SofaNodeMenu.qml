@@ -68,10 +68,9 @@ Menu {
                                                      {"sofaNode": model.getBaseFromIndex(currentModelIndex),
                                                       "x" : mouseLoc.mouseX,
                                                       "y" : mouseLoc.mouseY
-                                                     }
-
-                                                     );
+                                                     });
             popup2.open()
+            popup2.forceActiveFocus()
         }
         MouseArea
         {
