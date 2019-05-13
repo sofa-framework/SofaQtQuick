@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.2
+import QtQuick.Dialogs 1.3
 import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaApplication 1.0
@@ -82,6 +82,38 @@ Menu {
             z: 0
         }
     }
+
+    MenuItem {
+        id: renameMenu
+        text: "Rename.."
+
+        Component {
+            id: renameDialog
+            Dialog {
+                id: dlg
+                property var sofaBase
+
+                title: "Rename '" + sofaBase.getName() + "'"
+                contentItem: TextField {
+                    implicitWidth: 200
+                    id: txtField
+                    text: sofaBase ? sofaBase.getName() : ""
+                }
+                onAccepted: {
+                    sofaBase.setName(txtField.text)
+                }
+                standardButtons: StandardButton.Save | StandardButton.Cancel
+            }
+        }
+
+
+        onTriggered: {
+            var p = model.getBaseFromIndex(currentModelIndex)
+            var d = renameDialog.createObject(renameMenu, {"sofaBase": p})
+            d.open()
+        }
+    }
+
 
     /// Shows a popup with the Data list view.
     MenuItem {
