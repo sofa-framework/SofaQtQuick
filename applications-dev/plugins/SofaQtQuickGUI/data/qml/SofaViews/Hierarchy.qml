@@ -396,6 +396,7 @@ Rectangle {
             }
 
             Text {
+                id: rowText
                 anchors.left: icon.right
                 anchors.right: parent.right
                 color: styleData.textColor
