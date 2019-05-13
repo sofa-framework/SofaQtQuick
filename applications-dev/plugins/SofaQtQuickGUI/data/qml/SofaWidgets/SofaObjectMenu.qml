@@ -29,6 +29,37 @@ Menu {
     property string creationLocation : null
 
     MenuItem {
+        enabled: creationLocation !== null && creationLocation.length !== 0
+        text: "Go to instanciation..."
+        onTriggered: {
+            var location = parsePython(creationLocation)
+            SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+    MenuItem {
+        enabled: sourceLocation !== null && sourceLocation.length !== 0
+        text: "Go to implementation..."
+        onTriggered: {
+            var location = parsePython(sourceLocation)
+            SofaApplication.openInEditor(location[0], location[1])
+        }
+    }
+
+    MenuSeparator {}
+    MenuItem {
+        text: {
+            "Delete object"
+        }
+        onTriggered: {
+            var component = model.getDataFromIndex(currentIndex)
+//            var currentRow = model.computeItemRow(currentModelIndex);
+            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
+//            model.updateCurrentIndex(model.computeModelRow(currentRow));
+        }
+    }
+
+    MenuItem {
         text: "Add node..."
         onTriggered: {
             var p = model.getBaseFromIndex(currentModelIndex).getFirstParent()
@@ -62,38 +93,6 @@ Menu {
             acceptedButtons: Qt.NoButton      //< forward mouse click.
             propagateComposedEvents: true     //< forward other event.
             z: 0
-        }
-    }
-
-    MenuSeparator {}
-    MenuItem {
-        enabled: creationLocation !== null && creationLocation.length !== 0
-        text: "Go to instanciation..."
-        onTriggered: {
-            var location = parsePython(creationLocation)
-            SofaApplication.openInEditor(location[0], location[1])
-        }
-    }
-
-    MenuItem {
-        enabled: sourceLocation !== null && sourceLocation.length !== 0
-        text: "Go to implementation..."
-        onTriggered: {
-            var location = parsePython(sourceLocation)
-            SofaApplication.openInEditor(location[0], location[1])
-        }
-    }
-
-    MenuSeparator {}
-    MenuItem {
-        text: {
-            "Delete object"
-        }
-        onTriggered: {
-            var component = model.getDataFromIndex(currentIndex)
-//            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
-//            model.updateCurrentIndex(model.computeModelRow(currentRow));
         }
     }
 }
