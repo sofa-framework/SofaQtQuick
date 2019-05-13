@@ -168,12 +168,7 @@ bool SofaBase::hasMessage() const
     if(!base)
         return false;
 
-    return base->countLoggedMessages({Message::Info,
-                                     Message::Deprecated,
-                                     Message::Warning,
-                                     Message::Error,
-                                     Message::Fatal
-                                    }) != 0;
+    return base->countLoggedMessages() != 0;
 }
 
 QString SofaBase::warning() const

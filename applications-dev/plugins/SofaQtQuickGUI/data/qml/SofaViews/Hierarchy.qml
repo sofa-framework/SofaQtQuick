@@ -55,43 +55,6 @@ Rectangle {
     readonly property var searchBar: searchBar
 
     Item {
-        //        property bool isActive: false
-        //        property int  index: 0
-        //        id: componentSignaler
-        //        property color color: "blue"
-        //        property QtObject component: null
-
-        //        Timer {
-        //            id : timer
-        //            interval : 300
-        //            triggeredOnStart : true
-        //            onTriggered: {
-        //                componentSignaler.isActive = running
-        //                if(!running){
-        //                    signallingAnimation.stop()
-        //                    if(componentSignaler.component)
-        //                        sofaScene.selectedComponent = componentSignaler.component
-        //                }
-        //            }
-        //        }
-
-        //        function start(i,c){
-        //            componentSignaler.component = c
-        //            componentSignaler.index = i
-        //            timer.start()
-        //            signallingAnimation.start()
-        //        }
-
-        //        ColorAnimation on color {
-        //            id: signallingAnimation
-        //            from: "white"
-        //            to: "lightsteelblue"
-        //            duration: 150
-        //            alwaysRunToEnd: true
-        //            loops: Animation.Infinite
-        //        }
-        //    }
-
         //    /// Connect the scenegraph view so that it can be notified when the SofaApplication
         //    /// is trying to notify that the user is interested to get visual feedback on where componets are.
         Connections {
@@ -332,13 +295,38 @@ Rectangle {
             property bool isNode: model && model.isNode ? model.isNode : false
             property bool hasMultiParent : model && model.hasMultiParent ? model.hasMultiParent : false
             property bool isMultiParent : model && model.isMultiParent ? model.isMultiParent : false
+            property bool hasMessage : model && testForMessage(styleData.index, styleData.isExpanded)
+            property bool hasChildMessage : model && testForChildMessage(styleData.index, styleData.isExpanded)
+
+            function testForChildMessage(index, isExpanded)
+            {
+                var srcIndex = sceneModel.mapToSource(index)
+                var c = basemodel.getBaseFromIndex(srcIndex)
+
+                if ( c===null )
+                    return false
+
+                if( !model.isNode )
+                    return false
+
+                return c.hasMessageInChild(c)
+            }
+
+            function testForMessage(index, isExpanded)
+            {
+                var srcIndex = sceneModel.mapToSource(index)
+                var c = basemodel.getBaseFromIndex(srcIndex)
+
+                if ( c===null )
+                    return false
+                return c.hasMessage();
+            }
 
             Item {
                 id: icon
                 anchors.verticalCenter: parent.verticalCenter
                 implicitHeight: 8
                 implicitWidth: 12
-
 
                 Rectangle {
                     id: colorIcon
@@ -384,22 +372,6 @@ Rectangle {
                     border.width: 1
                     border.color: "black"
                 }
-                Image {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: colorIcon.verticalCenter
-                    height: 16
-                    width: 16
-                    visible:
-                    {
-                        var srcIndex = sceneModel.mapToSource(styleData.index)
-                        var c = basemodel.getBaseFromIndex(srcIndex)
-                        if(c!==null)
-                            return c.hasMessage()
-                        return false
-                    }
-                    source: "qrc:/icon/iconerror.xpm"
-                    opacity: 0.5
-                }
             }
 
             Text {
@@ -411,6 +383,33 @@ Rectangle {
                 elide: styleData.elideMode
                 text: name //+ "(" + model.row + "/"+ styleData.row + ")"
             }
+
+            Image {
+                id:childError
+                anchors.verticalCenter: rowText.verticalCenter
+                anchors.right: parent.right
+                height: 16
+                width: 16
+                visible: hasMessage || (hasChildMessage &&  !styleData.isExpanded)
+                source:
+                {
+                    if(isNode)
+                        return !hasChildMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
+                    return hasMessage ? "qrc:/icon/iconerror.xpm" : "qrc:/icon/iconmessage_base.png"
+                }
+                opacity: 0.75
+            }
+            Image {
+                id: localError
+                anchors.verticalCenter: rowText.verticalCenter
+                anchors.right: childError.left
+                height: 16
+                width: 16
+                visible: (hasMessage || hasChildMessage) && isNode
+                source: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
+                opacity: 0.75
+            }
+
             DropArea {
                 id: dropArea
                 property SofaBase node: null
@@ -505,38 +504,38 @@ Rectangle {
             sceneModel.showOnlyNodes(checked)
         }
     }
-//    Rectangle {
-//        width: 320
-//        height: 480
-//        color: "black"
-//        AssetView {
-//            id: assetView
-//            anchors.fill: parent
-//            SequentialAnimation on t {
-//                NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
-//                NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
-//                loops: Animation.Infinite
-//                running: true
-//            }
-//        }
-//        Rectangle {
-//            color: Qt.rgba(1, 1, 1, 0.7)
-//            radius: 10
-//            border.width: 1
-//            border.color: "white"
-//            anchors.fill: label
-//            anchors.margins: -10
-//        }
+    //    Rectangle {
+    //        width: 320
+    //        height: 480
+    //        color: "black"
+    //        AssetView {
+    //            id: assetView
+    //            anchors.fill: parent
+    //            SequentialAnimation on t {
+    //                NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
+    //                NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
+    //                loops: Animation.Infinite
+    //                running: true
+    //            }
+    //        }
+    //        Rectangle {
+    //            color: Qt.rgba(1, 1, 1, 0.7)
+    //            radius: 10
+    //            border.width: 1
+    //            border.color: "white"
+    //            anchors.fill: label
+    //            anchors.margins: -10
+    //        }
 
-//        Text {
-//            id: label
-//            color: "black"
-//            wrapMode: Text.WordWrap
-//            text: "The background here is a squircle rendered with raw OpenGL using the 'beforeRender()' signal in QQuickWindow. This text label and its border is rendered using QML"
-//            anchors.right: parent.right
-//            anchors.left: parent.left
-//            anchors.bottom: parent.bottom
-//            anchors.margins: 20
-//        }
-//    }
+    //        Text {
+    //            id: label
+    //            color: "black"
+    //            wrapMode: Text.WordWrap
+    //            text: "The background here is a squircle rendered with raw OpenGL using the 'beforeRender()' signal in QQuickWindow. This text label and its border is rendered using QML"
+    //            anchors.right: parent.right
+    //            anchors.left: parent.left
+    //            anchors.bottom: parent.bottom
+    //            anchors.margins: 20
+    //        }
+    //    }
 }
