@@ -18,6 +18,11 @@ Popup {
     contentWidth: 400
     contentHeight: 300
     padding: 10
+    margins: 0
+
+    background: Rectangle {
+        color: "transparent"
+    }
 
     MessageDialog
     {
@@ -55,8 +60,8 @@ Popup {
                     SofaApplication.signalComponent(p.getPathName());
                 }else
                 {
-                     messageDialog.text =
-                             "Unable to create an object of type '"+text+"' in node "+sofaNode.getName() + "\n"
+                    messageDialog.text =
+                            "Unable to create an object of type '"+text+"' in node "+sofaNode.getName() + "\n"
                             +"Reason: " + sofaNode.warning() + " " + sofaNode.output()
                     messageDialog.visible = true
                 }
