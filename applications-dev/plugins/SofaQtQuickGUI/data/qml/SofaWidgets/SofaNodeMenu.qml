@@ -87,17 +87,18 @@ Menu {
     MenuItem {
         text: "Data"
         onTriggered: {
-            sofaDataListViewWindowComponent.createObject(SofaApplication,
+            sofaDataListViewWindowComponent.createObject(nodeMenu.parent,
                                                          {"sofaScene": root.sofaScene,
                                                           "sofaComponent": model.getBaseFromIndex(currentModelIndex)});
         }
     }
 
     MenuItem {
-        text: "Messages"
+        enabled: model.getBaseFromIndex(currentModelIndex).hasMessage()
+        text: "Messages..."
         onTriggered: {
             /// Creates and display an help window object
-            windowMessage.createObject(SofaApplication,
+            windowMessage.createObject(nodeMenu.parent,
                                        {"sofaComponent": model.getBaseFromIndex(currentModelIndex)});
         }
     }
