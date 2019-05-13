@@ -481,8 +481,13 @@ void SofaSceneItemModel::handleRootNodeChange()
         m_root->removeListener(this);
     }
 
+    if(m_scene==nullptr)
+        return ;
     /// Flip the old pointer.
     m_root = m_scene->sofaRootNode();
+
+    if(m_root==nullptr)
+        return ;
 
     /// Register now the listener to the new scene graph.
     m_root->addListener(this);
