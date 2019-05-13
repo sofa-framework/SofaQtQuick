@@ -212,7 +212,7 @@ public:
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max, const QList<SofaComponent*>& roots) const;
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE bool reinitComponent(const QString& path);
-    Q_INVOKABLE bool removeComponent(SofaComponent* sofaComponent);
+    Q_INVOKABLE bool removeComponent(SofaBase* sofaComponent);
 
     Q_INVOKABLE sofa::qtquick::SofaComponent* addNodeTo(sofa::qtquick::SofaComponent* sofaComponent);
     Q_INVOKABLE void addExistingNodeTo(sofa::qtquick::SofaComponent* sofaComponent, sofa::qtquick::SofaComponent* sofaNode);
