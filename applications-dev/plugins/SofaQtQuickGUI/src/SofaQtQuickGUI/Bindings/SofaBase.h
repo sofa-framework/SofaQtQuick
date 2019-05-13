@@ -45,6 +45,7 @@ public:
     ~SofaBase() {}
 
     Q_INVOKABLE QString getName() const;
+    Q_INVOKABLE void setName(const QString& name);
     Q_INVOKABLE QString getClassName() const;
     Q_INVOKABLE QString getTemplateName() const;
     Q_INVOKABLE QString getPathName() const;

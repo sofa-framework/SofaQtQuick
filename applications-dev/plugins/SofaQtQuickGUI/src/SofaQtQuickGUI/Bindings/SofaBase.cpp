@@ -60,6 +60,11 @@ QString SofaBase::getName() const
     return QString::fromStdString(m_self->getName());
 }
 
+void SofaBase::setName(const QString& name)
+{
+    m_self->setName(name.toStdString());
+}
+
 QString SofaBase::getPathName() const
 {
     if(m_self->toBaseNode())
