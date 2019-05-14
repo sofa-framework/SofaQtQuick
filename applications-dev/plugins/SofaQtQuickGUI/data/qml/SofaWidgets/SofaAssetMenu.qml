@@ -14,8 +14,11 @@ Menu {
     property string assetName: ""
     property var draggedData: null
     property var parentNode: null
-
+    property var basemodel: null
+    property var sceneModel: null
     property var sofaScene: null
+    property var treeView: null
+    property var selection: null
 
     title: "Asset Content"
     visible: true
@@ -30,7 +33,12 @@ Menu {
                          (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
             onTriggered: {
                 assetName = modelData.name
-                createAsset()
+                var parentNode = createAsset()
+                var srcIndex = basemodel.getIndexFromBase(parentNode)
+                var index = sceneModel.mapFromSource(srcIndex);
+                treeView.expand(index.parent)
+                treeView.expand(index)
+                treeView.selection.setCurrentIndex(index, selection)
             }
             Component.onCompleted: {
                 assetName = modelData.name
@@ -39,14 +47,11 @@ Menu {
     }
     function createAsset()
     {
-        console.error("Parent node for asset is " + parentNode)
         var asset = draggedData.getAsset(assetName)
-//        var node = new SofaNode(parentNode)
-//        node.addChild(asset)
         var parent = sofaScene.root()
         if (parentNode !== "")
             parent = parent.getNodeInGraph(parentNode)
-        parent.addChild(asset)
-//        sofaScene.addExistingNodeTo(parentNode === "" ? sofaScene.node("/") : sofaScene.node(parentNode), asset.toSofaComponent())
+        asset.copyTo(parent)
+        return parent.getChildren().last()
     }
 }

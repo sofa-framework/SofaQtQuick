@@ -346,6 +346,7 @@ Rectangle {
                     }
 
                     Image {
+                        id: prefabIcon
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
                         height: 12
@@ -424,12 +425,20 @@ Rectangle {
                     drag.source.ctxMenu.draggedData = drag.source
                     drag.source.ctxMenu.parentNode = node.getPathName()
                     drag.source.ctxMenu.sofaScene = sofaScene
-                    if (drag.source.ctxMenu.model.length > 1) {
+                    drag.source.ctxMenu.basemodel = basemodel
+                    drag.source.ctxMenu.sceneModel = sceneModel
+                    drag.source.ctxMenu.treeView = treeView
+                    drag.source.ctxMenu.selection = ItemSelectionModel.ClearAndSelect
+//                    if (drag.source.ctxMenu.model.length > 1) {
                         drag.source.ctxMenu.visible = true
-                    }
-                    else {
-                        drag.source.ctxMenu.createAsset()
-                    }
+//                    }
+//                    else {
+//                        var parentNode = drag.source.ctxMenu.createAsset()
+//                        var srcIndex = basemodel.getIndexFromBase(parentNode)
+//                        var index = sceneModel.mapFromSource(srcIndex);
+//                        treeView.selection.setCurrentIndex(index, ItemSelectionModel.ClearAndSelect)
+//                        treeView.expand(index)
+//                    }
                 }
             }
         }

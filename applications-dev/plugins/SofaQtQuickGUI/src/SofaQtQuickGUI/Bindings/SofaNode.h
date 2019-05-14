@@ -109,6 +109,9 @@ class SofaNodeList : public QObject
 
 public:
     Q_INVOKABLE unsigned int size();
+    Q_INVOKABLE SofaNode* at(unsigned int);
+    Q_INVOKABLE SofaNode* first();
+    Q_INVOKABLE SofaNode* last();
 
     void addSofaNode(sofa::core::objectmodel::BaseNode* node);
 

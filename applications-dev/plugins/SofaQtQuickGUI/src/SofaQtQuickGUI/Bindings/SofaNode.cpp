@@ -311,7 +311,22 @@ void SofaNodeList::addSofaNode(BaseNode* node)
 
 unsigned int SofaNodeList::size()
 {
-    return m_list.size();
+    return unsigned(m_list.size());
+}
+
+SofaNode* SofaNodeList::at(unsigned int n)
+{
+    return m_list.at(n);
+}
+
+SofaNode* SofaNodeList::first()
+{
+    return m_list.front();
+}
+
+SofaNode* SofaNodeList::last()
+{
+    return m_list.back();
 }
 
 SofaNodeFactory::SofaNodeFactory(){}
