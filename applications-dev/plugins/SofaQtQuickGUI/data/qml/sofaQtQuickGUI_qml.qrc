@@ -54,7 +54,7 @@
         <file>SofaBasics/MenuSeparator.qml</file>
         <file>SofaBasics/SofaSceneFileDialog.qml</file>
         <file>SofaBasics/MenuItem.qml</file>
-        <file>SofaBasics/Menu.qml</file>        
+        <file>SofaBasics/Menu.qml</file>
         <file>SofaBasics/SofaDataWidgetFactory.qml</file>
         <file>SofaBasics/SuggestionBox.qml</file>
         <file>SofaBasics/SidePanel.qml</file>
@@ -108,5 +108,6 @@
         <file>QmlGTestCase/QmlGTestCase.qml</file>
         <file>SofaViews/ProjectView.qml</file>
         <file>SofaWidgets/SofaAssetMenu.qml</file>
+        <file>SofaWidgets/RenameMenu.qml</file>
     </qresource>
 </RCC>
