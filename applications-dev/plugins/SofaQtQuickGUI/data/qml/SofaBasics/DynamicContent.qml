@@ -45,11 +45,11 @@ import LiveFileMonitorSingleton 1.0
 Item {
 
     /// Refreshing the view every time a file is modified
-    property var files : LiveFileMonitorSingleton.files
-    onFilesChanged: {
-        //if (checkBoxEditting.checked)
-        //    loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
-    }
+    //property var files : LiveFileMonitorSingleton.files
+    //onFilesChanged: {
+    //if (checkBoxEditting.checked)
+    //    loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
+    //}
 
 
     //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
@@ -151,10 +151,10 @@ Item {
                         root.currentContentName = currentContentName;
                     }
 
-                    property var files : LiveFileMonitorSingleton.files
-                    onFilesChanged: {
-                        loaderLocation.refresh(listModel.get(currentIndex))
-                    }
+                    //property var files : LiveFileMonitorSingleton.files
+                    //onFilesChanged: {
+                    //    loaderLocation.refresh(listModel.get(currentIndex))
+                    //}
 
                     function findIndexFor(name)
                     {

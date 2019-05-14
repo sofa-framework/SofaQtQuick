@@ -76,8 +76,6 @@ Item {
     }
 
     Component.onCompleted: {
-        console.log("DynamicSplitView::onCompleted..." + root.uiId + " " + root.previousUiId)
-
         if (root.reloadSavedViews) {
             if(0 === uiId) {
                 uiId = SofaApplication.uiSettings.generate();
