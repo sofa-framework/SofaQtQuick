@@ -36,7 +36,7 @@ Item
         var type = properties.type
         if(0 === type.length)
         {
-            console.error("Empty widget type. Replacing it with an undefined one. ")
+            console.error("Loading widget for data failed. Replacing it with an undefined one. ")
             type = "undefined"
         }
         var filename = "qrc:/SofaDataTypes/SofaDataType_" + type + ".qml"
@@ -51,7 +51,6 @@ Item
             var component = Qt.createComponent(filename)
             if(component.status === Component.Ready){
                 components[filename] = component
-                console.log("Loading widget from file "+filename+" suceeded")
             }else{
                 console.error("Error loading data component:", component.errorString());
             }
