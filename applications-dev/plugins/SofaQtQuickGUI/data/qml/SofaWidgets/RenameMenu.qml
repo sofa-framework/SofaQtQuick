@@ -34,7 +34,9 @@ MenuItem {
             }
             onAccepted: {
                 sofaBase.setName(txtField.text)
-                treeView.update()
+                // collapse / expand the parent node remaps data to the treeView
+                treeView.collapse(sceneModel.mapFromSource(currentModelIndex.parent))
+                treeView.expand(sceneModel.mapFromSource(currentModelIndex.parent))
             }
             standardButtons: StandardButton.Save | StandardButton.Cancel
         }
