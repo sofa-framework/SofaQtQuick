@@ -66,7 +66,7 @@ Rectangle {
                     var baseIndex = basemodel.getIndexFromBase(c)
                     var sceneIndex = sceneModel.mapFromSource(baseIndex)
                     treeView.expandAncestors(sceneIndex)
-                    treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
+                    treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);                    
                 }
             }
         }
@@ -205,6 +205,12 @@ Rectangle {
         }
         selection: ItemSelectionModel {
             model: treeView.model
+            onSelectionChanged:
+            {
+                var srcIndex = sceneModel.mapToSource(currentIndex)
+                var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                sofaScene.selectedComponent = theComponent
+            }
         }
 
         // Expands all ancestors of index
@@ -314,6 +320,7 @@ Rectangle {
             property bool isMultiParent : model && model.isMultiParent ? model.isMultiParent : false
             property bool hasMessage : model && testForMessage(styleData.index, styleData.isExpanded)
             property bool hasChildMessage : model && testForChildMessage(styleData.index, styleData.isExpanded)
+            property string componentState: "valid"
 
             function testForChildMessage(index, isExpanded)
             {
@@ -346,6 +353,7 @@ Rectangle {
                 implicitWidth: 12
 
                 Rectangle {
+
                     id: colorIcon
                     implicitHeight: 8
                     implicitWidth: 8
@@ -403,9 +411,19 @@ Rectangle {
             }
 
             Image {
-                id:childError
+                id: componentState
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: parent.right
+                height: 12
+                width: 12
+                visible: true
+                source: "qrc:/icon/state_bubble_4.png"
+                opacity: 0.75
+            }
+            Image {
+                id:childError
+                anchors.verticalCenter: rowText.verticalCenter
+                anchors.right: componentState.left
                 height: 16
                 width: 16
                 visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
@@ -523,38 +541,4 @@ Rectangle {
             sceneModel.showOnlyNodes(checked)
         }
     }
-    //    Rectangle {
-    //        width: 320
-    //        height: 480
-    //        color: "black"
-    //        AssetView {
-    //            id: assetView
-    //            anchors.fill: parent
-    //            SequentialAnimation on t {
-    //                NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
-    //                NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
-    //                loops: Animation.Infinite
-    //                running: true
-    //            }
-    //        }
-    //        Rectangle {
-    //            color: Qt.rgba(1, 1, 1, 0.7)
-    //            radius: 10
-    //            border.width: 1
-    //            border.color: "white"
-    //            anchors.fill: label
-    //            anchors.margins: -10
-    //        }
-
-    //        Text {
-    //            id: label
-    //            color: "black"
-    //            wrapMode: Text.WordWrap
-    //            text: "The background here is a squircle rendered with raw OpenGL using the 'beforeRender()' signal in QQuickWindow. This text label and its border is rendered using QML"
-    //            anchors.right: parent.right
-    //            anchors.left: parent.left
-    //            anchors.bottom: parent.bottom
-    //            anchors.margins: 20
-    //        }
-    //    }
 }
