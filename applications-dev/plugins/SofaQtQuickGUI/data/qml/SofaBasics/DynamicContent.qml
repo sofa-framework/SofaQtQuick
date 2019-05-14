@@ -47,8 +47,8 @@ Item {
     /// Refreshing the view every time a file is modified
     property var files : LiveFileMonitorSingleton.files
     onFilesChanged: {
-        if (checkBoxEditting.checked)
-            loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
+        //if (checkBoxEditting.checked)
+        //    loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
     }
 
 
@@ -104,12 +104,11 @@ Item {
         if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId)
         {
             root.uiId = parent.contentUiId;
+            return;
         }
-        else
-        {
-            /// Otherwise we create a new view ID.
-            root.uiId = SofaApplication.uiSettings.generate();
-        }
+
+        /// Otherwise we create a new view ID.
+        root.uiId = SofaApplication.uiSettings.generate();
     }
 
     Item {
