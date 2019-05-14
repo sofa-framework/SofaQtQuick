@@ -31,11 +31,27 @@ Popup {
         id: messageDialog
         title: "Error"
         text: "Unable to create an object."
+        icon: StandardIcon.Critical
         onAccepted: {
-            console.log("Of course you could only agree.")
             visible=false
         }
     }
+
+    MessageDialog
+    {
+        visible: false
+        id: messageCreateWidget
+        title: "Warning"
+        icon: StandardIcon.Critical
+        text: "There is no component with such name. Do you want to create a new PythonController ?"
+
+        onAccepted: {
+            visible=false
+            SofaApplication.currentProject.createPythonPrefab()
+            searchBar.close()
+        }
+    }
+
 
     TextField {
         id: inputField
@@ -79,14 +95,16 @@ Popup {
                 if(p!==null)
                 {
                     SofaApplication.signalComponent(p.getPathName());
-                }else
-                {
-                     messageDialog.icon = StandardIcon.Critical
-                     messageDialog.text =
-                             "Unable to create an object of type '"+text+"' in node "+sofaNode.getName() + "\n"
-                            +"Reason: " + sofaNode.warning() + " " + sofaNode.output()
+                }else{
+                    messageDialog.text =
+                            "Unable to create an object of type '"+text+"' in node "+sofaNode.getName() + "\n"
+                           +"Reason: " + sofaNode.warning() + " " + sofaNode.output()
+
                     messageDialog.visible = true
                 }
+            }
+            else{
+                messageCreateWidget.visible = true
             }
             SofaFactory.setFilter("")
         }
