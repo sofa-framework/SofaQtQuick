@@ -56,9 +56,14 @@ Item{
             onUrlChanged:
             {
                 console.log("LOADING CHANGED TO " + url)
-                if(url.match("?installPlugin="))
+                if(url.toString().includes("?installSofaPlugin="))
                 {
-                    SofaApplication.runPythonScript("import subprocess\nsubprocess.Popen(['sofa-spm.py','install','SoftRobots'])")
+                    var pluginname = url.toString().substring(url.toString().indexOf("?installSofaPlugin=")+19)
+                    var a = SofaApplication.executeProcessAsync("sofa-spm.py", ["upgrade"],
+                                                        SofaApplication.currentProject.rootDir)
+
+                    a = SofaApplication.executeProcessAsync("sofa-spm.py", ["install", pluginname],
+                                                        SofaApplication.currentProject.rootDir)
                 }
             }
 
