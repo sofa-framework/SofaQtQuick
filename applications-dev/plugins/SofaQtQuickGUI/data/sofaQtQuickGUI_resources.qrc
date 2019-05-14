@@ -68,5 +68,9 @@
         <file>icon/iconinfo.xpm</file>
         <file>icon/iconwarning.xpm</file>
         <file>icon/iconmessage_base.png</file>
+        <file>icon/state_bubble_1.png</file>
+        <file>icon/state_bubble_2.png</file>
+        <file>icon/state_bubble_3.png</file>
+        <file>icon/state_bubble_4.png</file>
     </qresource>
 </RCC>
