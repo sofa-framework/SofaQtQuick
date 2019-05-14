@@ -274,6 +274,36 @@ void SofaNode::addObject(SofaBaseObject* obj)
     self()->addObject(obj->selfptr());
 }
 
+void SofaNode::copyTo(SofaNode* node)
+{
+    std::cout << "###################### SOFANODE::COPYTO #####################" << std::endl;
+
+    if (isPrefab() && !attemptToBreakPrefab())
+        return;
+    if(node==nullptr)
+    {
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot copy node's content to a null SofaNode.");
+        return;
+    }
+    DAGNode* n = self();
+    std::cout << "###################### POUETPOUETPOUET #####################" << std::endl;
+    for (auto& child : n->getChildren())
+    {
+        child->setName(node->getNextName(QString(child->getName().c_str())).toStdString());
+        std::cout << child->getName() << std::endl;
+        node->addChild(new SofaNode(DAGNode::SPtr(dynamic_cast<DAGNode*>(child))));
+        n->removeChild(child);
+    }
+    for (auto& object : n->object)
+    {
+        object->setName(node->getNextObjectName(QString(object->getName().c_str())).toStdString());
+        std::cout << object->getName() << std::endl;
+        node->addObject(new SofaBaseObject(BaseObject::SPtr(object)));
+        n->removeObject(object);
+    }
+}
+
+
 void SofaNodeList::addSofaNode(BaseNode* node)
 {
     m_list.push_back(wrap(node));

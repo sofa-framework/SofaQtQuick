@@ -81,6 +81,7 @@ public:
     Q_INVOKABLE bool hasMessageInChild() const;
 
     Q_INVOKABLE void addChild(SofaNode* child);
+    Q_INVOKABLE void copyTo(SofaNode* child);
     Q_INVOKABLE void addObject(SofaBaseObject* obj);
 
     Q_INVOKABLE SofaBaseObject* createObject(const QString& type,
