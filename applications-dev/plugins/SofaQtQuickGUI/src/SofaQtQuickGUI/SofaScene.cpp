@@ -725,13 +725,13 @@ bool SofaScene::reinitComponent(const QString& path)
     return true;
 }
 
-bool SofaScene::removeComponent(SofaComponent* sofaComponent)
+bool SofaScene::removeComponent(SofaBase* base)
 {
-    if(!sofaComponent)
+    if(!base)
         return false;
 
     // if component is an object
-    BaseObject* baseObject = sofaComponent->base()->toBaseObject();
+    BaseObject* baseObject = base->rawBase()->toBaseObject();
     if(baseObject)
     {
         BaseContext* baseContext = baseObject->getContext();
@@ -741,7 +741,7 @@ bool SofaScene::removeComponent(SofaComponent* sofaComponent)
     }
 
     // if component is a node
-    BaseNode* baseNode = sofaComponent->base()->toBaseNode();
+    BaseNode* baseNode = base->base()->toBaseNode();
     if(baseNode)
     {
         Node::SPtr node = static_cast<Node*>(baseNode);

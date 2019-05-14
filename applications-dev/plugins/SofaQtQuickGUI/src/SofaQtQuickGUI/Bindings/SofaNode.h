@@ -76,8 +76,9 @@ public:
 
     /// Returns true if the underlying Base
     /// or any of its ancestors is a SofaPrefab.
-    Q_INVOKABLE bool isPrefab();
-    Q_INVOKABLE bool isInAPrefab();
+    Q_INVOKABLE bool isPrefab() const;
+    Q_INVOKABLE bool isInAPrefab() const;
+    Q_INVOKABLE bool hasMessageInChild() const;
 
     Q_INVOKABLE void addChild(SofaNode* child);
     Q_INVOKABLE void addObject(SofaBaseObject* obj);
@@ -97,7 +98,7 @@ public:
 
 private:
     bool attemptToBreakPrefab();
-    sofa::core::objectmodel::BaseNode *_getPrefabAncestor(sofa::core::objectmodel::BaseNode* n);
+    sofa::core::objectmodel::BaseNode *getPrefabAncestor(sofa::core::objectmodel::BaseNode* n) const;
 
 };
 

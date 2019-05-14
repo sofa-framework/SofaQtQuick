@@ -21,6 +21,10 @@ Menu {
         return JSON.parse(c)
     }
 
+    /// Window that contains the object message. The windows is only created when the menu item
+    /// is clicked
+    SofaWindowComponentMessages { id: windowMessage }
+
     id: objectMenu
 
     property var model: null;     ///< The model from which we can get the objects.
@@ -47,16 +51,24 @@ Menu {
         }
     }
 
+
+    MenuItem {
+        enabled: model.getBaseFromIndex(currentModelIndex).hasMessage()
+        text: "Show messages..."
+        onTriggered: {
+            /// Creates and display an help window object
+            windowMessage.createObject(nodeMenu.parent,
+                                       {"sofaComponent": model.getBaseFromIndex(currentModelIndex)});
+        }
+    }
+
     MenuSeparator {}
     MenuItem {
         text: {
             "Delete object"
         }
         onTriggered: {
-            var component = model.getDataFromIndex(currentIndex)
-//            var currentRow = model.computeItemRow(currentModelIndex);
-            sofaScene.removeComponent(model.getDataFromIndex(currentModelIndex));
-//            model.updateCurrentIndex(model.computeModelRow(currentRow));
+            sofaScene.removeComponent(model.getBaseFromIndex(currentModelIndex));
         }
     }
 
