@@ -52,6 +52,18 @@ QString AssetFactory::getTypeString(QString extension) const
     return loader->second->getTypeString();
 }
 
+QStringList AssetFactory::getSupportedTypes() const
+{
+    QStringList keys;
+    for (const auto& [k, v] : m_loaders)
+    {
+        SOFA_UNUSED(v);
+        keys.push_back(QString("*.") + k.c_str());
+        std::cout << k << std::endl;
+    }
+    return keys;
+}
+
 Asset::SPtr
 AssetFactory::createInstance(const QString& path,
                              const QString& extension) const

@@ -55,8 +55,10 @@ class SOFA_SOFAQTQUICKGUI_API AssetFactory : public QObject
 
     Q_INVOKABLE QUrl getIcon(QString extension) const;
     Q_INVOKABLE QString getTypeString(QString extension) const;
+    Q_INVOKABLE QStringList getSupportedTypes() const;
     Asset::SPtr createInstance(const QString& path,
                                           const QString& extension) const;
+
 
   private:
     std::map<std::string, BaseAssetCreator*> m_loaders;

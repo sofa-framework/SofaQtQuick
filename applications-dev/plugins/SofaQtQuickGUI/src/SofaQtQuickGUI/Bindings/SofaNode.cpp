@@ -252,7 +252,7 @@ bool SofaNode::attemptToBreakPrefab()
 
 void SofaNode::addChild(SofaNode* child)
 {
-    if (isPrefab() && !attemptToBreakPrefab())
+    if (isInAPrefab() && !attemptToBreakPrefab())
         return;
     if(child==nullptr)
     {
@@ -264,7 +264,7 @@ void SofaNode::addChild(SofaNode* child)
 
 void SofaNode::addObject(SofaBaseObject* obj)
 {
-    if (isPrefab() && !attemptToBreakPrefab())
+    if (isInAPrefab() && !attemptToBreakPrefab())
         return;
     if(obj==nullptr)
     {
@@ -276,9 +276,7 @@ void SofaNode::addObject(SofaBaseObject* obj)
 
 void SofaNode::copyTo(SofaNode* node)
 {
-    std::cout << "###################### SOFANODE::COPYTO #####################" << std::endl;
-
-    if (isPrefab() && !attemptToBreakPrefab())
+    if (isInAPrefab() && !attemptToBreakPrefab())
         return;
     if(node==nullptr)
     {
@@ -286,7 +284,6 @@ void SofaNode::copyTo(SofaNode* node)
         return;
     }
     DAGNode* n = self();
-    std::cout << "###################### POUETPOUETPOUET #####################" << std::endl;
     for (auto& child : n->getChildren())
     {
         child->setName(node->getNextName(QString(child->getName().c_str())).toStdString());

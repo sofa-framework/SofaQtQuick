@@ -168,7 +168,7 @@ Item {
                     showFiles: true
                     caseSensitive: true
                     folder: ""
-                    nameFilters: ["*"]
+                    nameFilters: self.project.assetFactory.getSupportedTypes()
                 }
 
                 delegate: Component {
