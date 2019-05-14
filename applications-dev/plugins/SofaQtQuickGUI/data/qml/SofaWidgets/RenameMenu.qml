@@ -39,6 +39,9 @@ MenuItem {
                 treeView.expand(sceneModel.mapFromSource(currentModelIndex.parent))
             }
             standardButtons: StandardButton.Save | StandardButton.Cancel
+            onVisibleChanged: {
+                txtField.focus = true
+            }
         }
     }
     

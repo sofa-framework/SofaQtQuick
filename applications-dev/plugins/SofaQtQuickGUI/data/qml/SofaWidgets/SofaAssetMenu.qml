@@ -36,7 +36,8 @@ Menu {
                 var parentNode = createAsset()
                 var srcIndex = basemodel.getIndexFromBase(parentNode)
                 var index = sceneModel.mapFromSource(srcIndex);
-                treeView.expand(index.parent)
+                treeView.collapseAncestors(index)
+                treeView.expandAncestors(index)
                 treeView.expand(index)
                 treeView.selection.setCurrentIndex(index, selection)
             }

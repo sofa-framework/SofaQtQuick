@@ -65,15 +65,7 @@ Rectangle {
                 {
                     var baseIndex = basemodel.getIndexFromBase(c)
                     var sceneIndex = sceneModel.mapFromSource(baseIndex)
-                    var idx = sceneIndex.parent
-                    var old_idx = null
-                    while(idx && old_idx !== idx)
-                    {
-                        // On dépile récursivement les parents jusqu'à root
-                        treeView.expand(idx)
-                        old_idx = idx
-                        idx = idx.parent
-                    }
+                    treeView.expandAncestors(sceneIndex)
                     treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
                 }
             }
@@ -213,6 +205,31 @@ Rectangle {
         }
         selection: ItemSelectionModel {
             model: treeView.model
+        }
+
+        // Expands all ancestors of index
+        function expandAncestors(index) {
+            var idx = index.parent
+            var old_idx = index
+            while(idx && old_idx !== idx)
+            {
+                // On dépile récursivement les parents jusqu'à root
+                treeView.expand(idx)
+                old_idx = idx
+                idx = idx.parent
+            }
+        }
+        // Collapses all ancestors of index
+        function collapseAncestors(index) {
+            var idx = index.parent
+            var old_idx = index
+            while(idx && old_idx !== idx)
+            {
+                // On dépile récursivement les parents jusqu'à root
+                treeView.collapse(idx)
+                old_idx = idx
+                idx = idx.parent
+            }
         }
 
         SofaSceneItemModel
@@ -429,16 +446,9 @@ Rectangle {
                     drag.source.ctxMenu.sceneModel = sceneModel
                     drag.source.ctxMenu.treeView = treeView
                     drag.source.ctxMenu.selection = ItemSelectionModel.ClearAndSelect
-//                    if (drag.source.ctxMenu.model.length > 1) {
+                    if (drag.source.ctxMenu.model.length > 0) {
                         drag.source.ctxMenu.visible = true
-//                    }
-//                    else {
-//                        var parentNode = drag.source.ctxMenu.createAsset()
-//                        var srcIndex = basemodel.getIndexFromBase(parentNode)
-//                        var index = sceneModel.mapFromSource(srcIndex);
-//                        treeView.selection.setCurrentIndex(index, ItemSelectionModel.ClearAndSelect)
-//                        treeView.expand(index)
-//                    }
+                    }
                 }
             }
         }
