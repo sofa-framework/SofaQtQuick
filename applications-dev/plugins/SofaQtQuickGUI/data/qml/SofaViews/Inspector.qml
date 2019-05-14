@@ -100,15 +100,6 @@ Item {
                         state =  sofaInspectorDataListModel.isGroupVisible(index) ? "expanded" : "collapsed"
                     }
 
-                    /*
-                Behavior on implicitHeight {
-                    NumberAnimation {
-                        easing.type: Easing.InOutCubic
-                        easing.amplitude: 1.0;
-                        easing.period: 1.5
-                    }
-                }*/
-
                     states: [
                         State {
                             name: "expanded"

@@ -23,7 +23,7 @@ Menu {
     }
 
     property var model: null;     ///< The model from which we can get the objects.
-    property var currentModelIndex;    ///< The index in the model.
+    property var currentModelIndex: null;    ///< The index in the model.
     property bool nodeActivated: true
     property SofaData activated: null
     property string sourceLocation : null
