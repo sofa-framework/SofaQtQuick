@@ -162,6 +162,17 @@ Item {
                         folderModel.folder = self.project.rootDir
                     }
 
+                    onFolderChanged: {
+                        self.project.scanProject(folderModel.folder)
+                    }
+
+                    onDataChanged: {
+                        // forces a rescan & refresh of the listview model
+                        var tmp = folderModel.folder
+                        folderModel.folder = folderModel.folder + "/.."
+                        folderModel.folder = tmp
+                    }
+
                     showDirs: true
                     showDotAndDotDot: true
                     showDirsFirst: true
@@ -240,9 +251,11 @@ Item {
                         }
                         SofaAssetMenu {
                             id: assetMenu
+
                             model: self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
                             visible: false
                         }
+
                         Menu {
                             id: projectMenu
                             visible: false
@@ -350,6 +363,8 @@ Item {
                             }
 
                             Loader {
+                                id: sceneEntriesLoader
+
                                 sourceComponent: {
                                     for (var m in assetMenu.model) {
                                         console.error(assetMenu.model[m].name)
@@ -358,6 +373,7 @@ Item {
                                     }
                                     return null
                                 }
+
                             }
                         }
 
