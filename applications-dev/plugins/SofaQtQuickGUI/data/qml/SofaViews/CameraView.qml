@@ -57,6 +57,28 @@ CameraView {
     implicitWidth: 800
     implicitHeight: 600
 
+    Timer
+    {
+        id: rescanForCameraTimer
+        interval: 1000
+        repeat: true
+        onTriggered: {
+            var cameraList = sofaScene.componentsByType("BaseCamera")
+            console.log("SEARCHING FOR CAMERA " +cameraList.size())
+
+            if(cameraList.size()!==0)
+            {
+                idComboList.clear()
+                for (var i = 0; i < cameraList.size(); ++i)
+                {
+                    idComboList.append({text: cameraList.at(i).getName()})
+                }
+                recreateCamera()
+                stop()
+            }
+        }
+    }
+
     Component.onCompleted: {
         SofaApplication.addSofaViewer(root);
 
@@ -66,13 +88,7 @@ CameraView {
         if(root.sofaScene && root.sofaScene.ready)
             recreateCamera();
 
-        //fill combobox
-        var cameraList = sofaScene.componentsByType("BaseCamera")
-        idComboList.clear()
-        for (var i = 0; i < cameraList.size(); ++i)
-        {
-            idComboList.append({text: cameraList.at(i).getName()})
-        }
+        rescanForCameraTimer.start()
     }
 
     Component.onDestruction: {
