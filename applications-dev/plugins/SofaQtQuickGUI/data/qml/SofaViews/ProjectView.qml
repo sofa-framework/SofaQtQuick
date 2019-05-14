@@ -293,9 +293,9 @@ Item {
 
                                 onTriggered: {
                                     var o = windowComponent.createObject(sofaApplication, {
-                                                                     "source": "qrc:///SofaViews/WebBrowserView.qml",
-                                                                     "title" : "Sofa Asset Repository"
-                                                                 });
+                                                                             "source": "qrc:///SofaViews/WebBrowserView.qml",
+                                                                             "title" : "Sofa Asset Repository"
+                                                                         });
                                     o.scroll.webview.source = "http://www.google.fr"
                                 }
 
@@ -411,25 +411,18 @@ Item {
 
                             drag.target: draggedData
 
-
-
                             drag.onActiveChanged: {
                                 if (drag.active) {
                                     draggedData.ctxMenu = assetMenu
-                                    draggedData.url = folderModel.get(index, "fileURL")
-                                    console.log("SETTING THE DATA URL TO: " + draggedData.url)
 
+                                    draggedData.url = folderModel.get(index, "fileURL")
+                                    var s = draggedData.url.toString()
+                                    var newString = s.replace(self.project.rootDir, "");
+                                    draggedData.localPath = newString
                                 } else {
                                     console.error("Drag Finished")
 
                                 }
-
-                                //                                    if (parent.Drag.target !== null) {
-                                //                                        var target = parent.Drag.target.node
-                                //                                        if (target !== "invalid") {
-                                //                                            insertAsset(index, sofaApplication.sofaScene.node(target))
-                                //                                        }
-                                //                                    }
                             }
                             function insertAsset(index, rootNode) {
                                 var component = self.project.getAsset(folderModel.get(index, "fileURL"))
@@ -449,7 +442,8 @@ Item {
                                 property point beginDrag
                                 property var node
                                 property var ctxMenu
-                                property var url
+                                property url url
+                                property string localPath
 
                                 function getAsset(assetName) {
                                     return self.project.getAsset(folderModel.get(index, "fileURL"), assetName)
@@ -464,23 +458,6 @@ Item {
                 focus: true
             }
         }
-
-
-        //        GroupBox {
-        //            id: previewGroupID
-        //            Layout.fillWidth: true
-        //            implicitHeight: contentHeight ? contentHeight : 200
-        //            height: implicitHeight
-
-        //            title: "Preview"
-
-        //            AssetView {
-        //                id: assetView
-        //                anchors.fill: parent
-        //                drawFrame: false
-        //            }
-
-        //        }
     }
 
 

@@ -62,7 +62,7 @@ Row {
             onDropped: {
                 if(drag.source.url)
                 {
-                    textField.text = drag.source.url
+                    textField.text = drag.source.localPath
                 }
             }
         }
