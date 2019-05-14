@@ -390,7 +390,7 @@ Rectangle {
                 anchors.right: parent.right
                 height: 16
                 width: 16
-                visible: hasMessage || (hasChildMessage &&  !styleData.isExpanded)
+                visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
                 source:
                 {
                     if(isNode)
@@ -405,7 +405,7 @@ Rectangle {
                 anchors.right: childError.left
                 height: 16
                 width: 16
-                visible: (hasMessage || hasChildMessage) && isNode
+                visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
                 source: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
                 opacity: 0.75
             }
