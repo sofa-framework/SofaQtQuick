@@ -76,6 +76,8 @@ Item {
     }
 
     Component.onCompleted: {
+        console.log("DynamicSplitView::onCompleted..." + root.uiId + " " + root.previousUiId)
+
         if (root.reloadSavedViews) {
             if(0 === uiId) {
                 uiId = SofaApplication.uiSettings.generate();
@@ -85,7 +87,6 @@ Item {
                 for(var i = 0; i < viewIdArray.length; ++i) {
                     if(0 === viewIdArray[i].length)
                         continue;
-
                     createView({"uiId": viewIdArray[i]});
                 }
 
@@ -93,17 +94,16 @@ Item {
                 for(i = 0; i < splitterIdArray.length; ++i) {
                     if(0 === splitterIdArray[i].length)
                         continue;
-
                     createSplitter({"uiId": splitterIdArray[i]});
                 }
-
                 load();
             }
         }
 
         // use the default settings if there is no saved one
-        if(0 === children.length)
+        if(0 === children.length){
             var view = createView();
+        }
     }
 
     onChildrenChanged: {
@@ -173,6 +173,7 @@ Item {
             return null;
 
         for(var i = 0; i < children.length; ++i) {
+
             var item = children[i];
             if(!item.isView)
                 continue;
@@ -196,7 +197,8 @@ Item {
         return view;
     }
 
-    function splitView(view, orientation, position) {
+    function splitView(view, orientation, position)
+    {
         var splitter = null;
 
         if(Qt.Horizontal === orientation) {
@@ -204,10 +206,12 @@ Item {
 
             var newView;
             if(position.x > view.x + view.width /2) {
-                newView = createView({"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": splitter, "rightEdge": view.rightEdge});
+                newView = createView(
+                            {"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": splitter, "rightEdge": view.rightEdge});
                 view.rightEdge = splitter;
             } else {
-                newView = createView({"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": view.leftEdge, "rightEdge": splitter});
+                newView = createView(
+                            {"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": view.leftEdge, "rightEdge": splitter});
                 view.leftEdge = splitter;
             }
         } else {
@@ -455,15 +459,15 @@ Item {
 
             z: 0
             readonly property bool isView: true
-
             property int uiId: 0
             property int previousUiId: uiId
+            property int contentUiId: 0
+
             onUiIdChanged: {
                 SofaApplication.uiSettings.replace(previousUiId, uiId);
                 init();
             }
 
-            property int contentUiId: 0
 
             Settings {
                 id: uiSettings
@@ -475,11 +479,10 @@ Item {
                 property int leftEdgeUiId   : 0
                 property int rightEdgeUiId  : 0
 
-                Component.onCompleted: {
+                Component.onCompleted:
+                {
                     view.contentUiId = uiSettings.contentUiId;
-
                     view.active = true;
-
                     uiSettings.contentUiId = Qt.binding(function() {return null !== view.item && undefined !== view.item.uiId ? view.item.uiId : 0;});
                 }
             }
@@ -524,11 +527,8 @@ Item {
             property bool isUserDestroyed: false
             function destroyByUser() {
                 isUserDestroyed = true;
-
-                if(item && undefined !== item.setNoSettings)
-                    item.setNoSettings();
-
                 destroy();
+                SofaApplication.uiSettings.remove(contentUiId);
             }
 
             property Item corner
@@ -850,7 +850,7 @@ Item {
 
     function shareEdge(splitter, otherSplitter) {
         if((null !== splitter.bottomRightEdge && splitter.bottomRightEdge === otherSplitter.topLeftEdge) ||
-           (null !== splitter.topLeftEdge && splitter.topLeftEdge === otherSplitter.bottomRightEdge)) {
+                (null !== splitter.topLeftEdge && splitter.topLeftEdge === otherSplitter.bottomRightEdge)) {
             return true;
         }
 
@@ -1017,6 +1017,9 @@ Item {
                 splitter.relativeX          = uiSettings.relativeX;
                 splitter.relativeY          = uiSettings.relativeY;
                 splitter.orientation        = uiSettings.orientation;
+
+                splitter.x = splitter.relativeX * root.width
+                splitter.y = splitter.relativeY * root.height
             }
 
             Component.onCompleted: {

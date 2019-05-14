@@ -76,7 +76,7 @@ ApplicationWindow {
         uiId: 1
         sourceComponent: Component {
             DynamicContent {
-                defaultContentName: "SofaViewer"
+                defaultContentName: "Hierarchy"
                 sourceDir: "qrc:/SofaViews"
                 properties: {"sofaScene": root.sofaScene, "drawFrame": false, "sofaApplication": SofaApplication}
             }

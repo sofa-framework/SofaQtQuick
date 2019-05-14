@@ -47,8 +47,8 @@ Item {
     /// Refreshing the view every time a file is modified
     property var files : LiveFileMonitorSingleton.files
     onFilesChanged: {
-        if (checkBoxEditting.checked)
-            loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
+        //if (checkBoxEditting.checked)
+        //    loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
     }
 
 
@@ -99,17 +99,19 @@ Item {
     /// Initialize the view.
     function bootstrap()
     {
+        console.log("DUPLICATE CONTENT...WHEN MOVING...BOOTSTRAP " + parent +" " + parent.contentUiId)
         // If the view is created from one that already has a parent set we duplicate
         /// it.
         if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId)
         {
             root.uiId = parent.contentUiId;
+            console.log("DUPLICATE CONTENT...WHEN MOVING...BOOTSTRAP FROM EXISTING CONTENT")
+            return;
         }
-        else
-        {
-            /// Otherwise we create a new view ID.
-            root.uiId = SofaApplication.uiSettings.generate();
-        }
+
+        /// Otherwise we create a new view ID.
+        root.uiId = SofaApplication.uiSettings.generate();
+        console.log("DUPLICATE CONTENT...WHEN MOVING...BOOTSTRAP FROM NEW ENTRY")
     }
 
     Item {
