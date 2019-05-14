@@ -484,15 +484,33 @@ QVariantList SofaApplication::executeProcess(const QString& command, int timeOut
     return QVariantList() << QVariant::fromValue((int) process.exitStatus()) << QVariant::fromValue(process.exitCode()) << QVariant::fromValue(process.readAllStandardOutput()) << QVariant::fromValue(process.readAllStandardError());
 }
 
-ProcessState* SofaApplication::executeProcessAsync(const QString& command)
+
+ProcessState* SofaApplication::executeProcessAsync(const QString& command, const QStringList& arguments, const QString& workingDirectory)
 {
     QProcess* process = new QProcess();
+
+    QUrl url = QUrl::fromUserInput(workingDirectory);
+    if(workingDirectory.size()!=0)
+    {
+        process->setWorkingDirectory(url.toLocalFile());
+        std::cout << "SET WORKING DIRECTORY: "  << url.toLocalFile().toStdString() << std::endl;
+    }
+
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    process->setProcessChannelMode(QProcess::ForwardedChannels); // to display stdout/sterr (QProcess::MergedChannels for stdout only)
+    process->setProcessChannelMode(QProcess::MergedChannels); // to display stdout/sterr (QProcess::MergedChannels for stdout only)
 
     ProcessState* processState = new ProcessState(process);
+    std::cout << "DUMP :! " << process->workingDirectory().toStdString() << std::endl;
 
-    process->start(command);
+    process->startDetached(command, arguments, url.toLocalFile());
+
+    std::cout << "DUMP :! " << std::endl;
+    process->waitForFinished();
+
+    QByteArray result = process->readAll();
+
+    std::cout << "DUMP :! " << processState->exitCode()  << std::endl;
+    std::cout << "DUMP :! " << result.toStdString() << std::endl ;
 
     return processState;
 
