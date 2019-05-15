@@ -70,8 +70,8 @@ class SOFA_SOFAQTQUICKGUI_API Console : public QAbstractListModel,
     }ConsoleRoles;
 
 public:
-    Console(QObject *parent = 0);
-    ~Console();
+    Console(QObject *parent = nullptr);
+    ~Console() override;
 
     Q_PROPERTY(int messageCount READ getMessageCount NOTIFY messageCountChanged)
     Q_PROPERTY(SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
@@ -89,12 +89,12 @@ public:
 
 
     /// inherited from QAbstractListModel
-    int rowCount(const QModelIndex& parent) const ;
-    QVariant data(const QModelIndex& index, int role) const ;
-    QHash<int, QByteArray> roleNames() const;
+    int rowCount(const QModelIndex& parent) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
 
     /// inherited from MessageHandler
-    virtual void process(Message &m) ;
+    void process(Message &m) override;
 
     int getMessageCount() const ;
 
