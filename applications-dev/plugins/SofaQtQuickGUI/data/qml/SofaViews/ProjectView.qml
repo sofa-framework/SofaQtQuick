@@ -293,12 +293,15 @@ Item {
 
                             MenuItem {
                                 id: importAsset
-                                text: "Open plugin store..."
+                                text: "Open ressource store..."
 
                                 onTriggered: {
                                     var o = windowComponent.createObject(root, {
                                                                              "source": "qrc:///SofaViews/WebBrowserView.qml",
-                                                                             "title" : "Sofa Asset Repository"
+                                                                             "title" : "Sofa Ressources Repository",
+                                                                             "width" : 800,
+                                                                             "height": 600,
+                                                                             "screen" : root.screen
                                                                          });
                                     o.scroll.webview.source = "http://www.google.fr"
                                 }
