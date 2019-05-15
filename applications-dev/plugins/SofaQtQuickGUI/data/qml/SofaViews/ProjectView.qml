@@ -295,7 +295,7 @@ Item {
                                 text: "Open plugin store..."
 
                                 onTriggered: {
-                                    var o = windowComponent.createObject(sofaApplication, {
+                                    var o = windowComponent.createObject(root, {
                                                                              "source": "qrc:///SofaViews/WebBrowserView.qml",
                                                                              "title" : "Sofa Asset Repository"
                                                                          });
