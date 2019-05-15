@@ -292,7 +292,7 @@ Item {
 
                             MenuItem {
                                 id: importAsset
-                                text: "Import asset..."
+                                text: "Open plugin store..."
 
                                 onTriggered: {
                                     var o = windowComponent.createObject(sofaApplication, {
