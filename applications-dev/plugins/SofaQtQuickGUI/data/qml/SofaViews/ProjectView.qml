@@ -301,9 +301,8 @@ Item {
                                                                              "title" : "Sofa Ressources Repository",
                                                                              "width" : 800,
                                                                              "height": 600,
-                                                                             "screen" : root.screen
                                                                          });
-                                    o.scroll.webview.source = "http://www.google.fr"
+
                                 }
 
                                 Component {
