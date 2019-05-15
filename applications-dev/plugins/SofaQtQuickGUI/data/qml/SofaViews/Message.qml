@@ -226,15 +226,14 @@ Column {
                                 }
                             }
                             Text {
+                                property string filename: link
+                                property string dline: line
                                 id : extrainfo
                                 width: messagearea.width
                                 wrapMode: Text.WrapAnywhere
                                 textFormat: Text.RichText
                                 text: "Emitted from: <font color='#aeaeae'>"+link+":"+line+"</font>"
                                 color: "black"
-
-
-
 
                                 /// When we click on the emitter a visual signal is emitted
                                 /// to indicate where is that the "source" of the message
@@ -246,13 +245,13 @@ Column {
                                     cursorShape: Qt.PointingHandCursor
                                     hoverEnabled: true
 
-                                    onEntered: { sofaScene.statusMessage = "Left-click to open this file in an external text editor." }
+                                    onEntered: { sofaScene.statusMessage = "Left-click to open this file in an external text editor. "}
                                     onExited: { sofaScene.statusMessage = "" }
 
                                     /// When the emitter is clicked, it signals that the
                                     /// user is interested to locate the 'target' componen.
                                     onClicked: {
-                                        SofaApplication.openInEditor(link, line)
+                                        SofaApplication.openInEditor(extrainfo.filename, extrainfo.dline)
                                     }
                                 }
                             }

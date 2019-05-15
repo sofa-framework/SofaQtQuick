@@ -293,10 +293,10 @@ Item {
 
                             MenuItem {
                                 id: importAsset
-                                text: "Import asset..."
+                                text: "Open plugin store..."
 
                                 onTriggered: {
-                                    var o = windowComponent.createObject(sofaApplication, {
+                                    var o = windowComponent.createObject(root, {
                                                                              "source": "qrc:///SofaViews/WebBrowserView.qml",
                                                                              "title" : "Sofa Asset Repository"
                                                                          });

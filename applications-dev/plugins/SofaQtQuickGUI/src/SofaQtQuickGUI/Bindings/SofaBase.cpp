@@ -218,4 +218,12 @@ void SofaBase::dump() const
     }
 }
 
+QString SofaBase::statusAsString() const
+{
+    std::stringstream s;
+    s << rawBase()->d_status.getValue();
+    return QString::fromStdString(s.str());
+}
+
+
 } /// sofaqtquick

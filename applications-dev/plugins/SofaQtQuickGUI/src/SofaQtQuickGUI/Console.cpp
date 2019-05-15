@@ -56,49 +56,43 @@ namespace console
 Console::Console(QObject *parent) : QAbstractListModel(parent)
 {
     MessageDispatcher::addHandler(this);
-    connect(this, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
-            this, SIGNAL(messageCountChanged())) ;
-    connect(this, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
-            this, SIGNAL(messageCountChanged())) ;
 }
 
 Console::~Console()
 {
-   MessageDispatcher::rmHandler(this) ;
+    MessageDispatcher::rmHandler(this) ;
 }
 
 void Console::process(Message &m)
 {
-    if(m_messages.size() > 100){
-        beginRemoveRows(QModelIndex(), 0, 0);
+    m_messages.push_back(m) ;
+
+    if(m_messages.size() > 50){
         m_messages.erase(m_messages.begin(),m_messages.begin()+1);
-        endRemoveRows();
     }
 
-    beginInsertRows(QModelIndex(), m_messages.size(), m_messages.size());
-    m_messages.push_back(m) ;
-    endInsertRows();
+    emit messageCountChanged();
 }
 
 void Console::clear()
 {
-    beginRemoveRows(QModelIndex(), 0, rowCount(QModelIndex()));
     m_messages.clear() ;
-    endRemoveRows();
+    emit messageCountChanged();
 }
 
 int Console::rowCount(const QModelIndex & /*parent*/) const
 {
-    return m_messages.size() ;
+    return m_messages.size();
 }
 
 int Console::getMessageCount() const
 {
-    return m_messages.size() ;
+    return m_messages.size();
 }
 
 QVariant Console::data(const QModelIndex& index, int role) const
 {
+
     if(!index.isValid())
     {
         msg_error("SofaQtQuickGUI") << "Invalid index";
@@ -150,7 +144,7 @@ QVariant Console::data(const QModelIndex& index, int role) const
     }
     default:
         msg_error("SofaQtQuickGUI") << "Role unknown (this shouldn't happen in an official release and "
-                                        "must be fixed by careful code-path analysis and test " ;
+                                       "must be fixed by careful code-path analysis and test " ;
     }
 
     return QVariant("");

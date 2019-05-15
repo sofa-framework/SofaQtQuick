@@ -72,8 +72,5 @@
         <file>icon/state_bubble_2.png</file>
         <file>icon/state_bubble_3.png</file>
         <file>icon/state_bubble_4.png</file>
-        <file>icon/iconwarning.png</file>
-        <file>icon/iconinfo.png</file>
-        <file>icon/iconerror.png</file>
     </qresource>
 </RCC>
