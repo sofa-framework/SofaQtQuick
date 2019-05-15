@@ -35,14 +35,18 @@ import SofaScene 1.0
 
 Item{
     id: root
-    property url url : "file:///home/dmarchal/projects/DEFROST/dev/spm/spm-recipes/plugins.html"
+    property url url : "https://github.com/SofaDefrost/SPM/wiki/List-of-existing-plugins..."
 
     ScrollView {
         id: scroll
         implicitWidth : parent.width
         implicitHeight : parent.height
         anchors.top : parent.top
+        anchors.fill:  parent
         anchors.topMargin: 0
+        width : 800
+        height : 600
+
         z:0
 
         WebEngineView {
