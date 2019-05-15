@@ -68,10 +68,29 @@ Item {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Rectangle {
+                anchors.fill: parent
+                color: "#70FF0000"
+                ProjectViewMenu {
+                    id: generalProjectMenu
+                    filePath: folderModel.folder
+                    visible: false
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        if (mouse.button === Qt.RightButton) {
+                            console.log("POUET")
+                            generalProjectMenu.visible = !generalProjectMenu.visible
+                        }
+                    }
+                }
+            }
 
             ListView {
                 id: folderView
-                anchors.fill: parent
+                height: contentHeight
+                width: parent.width
                 header: RowLayout{
                     implicitWidth: folderView.width
 
@@ -256,128 +275,21 @@ Item {
                             id: assetMenu
 
                             model: self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
-                            enabled: model !== [] ? true : false
                             visible: false
                         }
 
-                        Menu {
+                        ProjectViewMenu {
                             id: projectMenu
-                            visible: false
-
-                            MenuItem {
-                                text: "Show Containing Folder"
-                                onTriggered: {
-                                    projectMenu.visible = false
-                                    console.error(folderModel.get(index, "filePath"))
-                                    sofaApplication.openInExplorer(folderModel.get(index, "filePath"))
+                            filePath: folderModel.get(index, "fileURL")
+                            fileIsDir: folderModel.get(index, "fileIsDir")
+                            fileIsScene: {
+                                var metadata = self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
+                                for (var m in metadata) {
+                                    console.error(metadata[m].name)
+                                    if (metadata[m].name === "createScene")
+                                        return true
                                 }
-                            }
-                            MenuItem {
-                                id: openTerminal
-                                text: "Open Terminal Here"
-                                onTriggered: {
-                                    projectMenu.visible = false
-                                    sofaApplication.openInTerminal(folderModel.get(index, "filePath"))
-                                }
-                            }
-
-                            MenuItem {
-                                id: newFolder
-                                text: "New Folder"
-
-                                onTriggered: {
-                                    projectMenu.visible = false
-                                    sofaApplication.createFolderIn(folderModel.get(index, "filePath"))
-                                }
-                            }
-
-                            MenuItem {
-                                id: importAsset
-                                text: "Open plugin store..."
-
-                                onTriggered: {
-                                    var o = windowComponent.createObject(root, {
-                                                                             "source": "qrc:///SofaViews/WebBrowserView.qml",
-                                                                             "title" : "Sofa Asset Repository"
-                                                                         });
-                                    o.scroll.webview.source = "http://www.google.fr"
-                                }
-
-                                Component {
-                                    id: windowComponent
-
-                                    Window {
-                                        property url source
-
-                                        id: window
-                                        width: 600
-                                        height: 400
-                                        modality: Qt.NonModal
-                                        flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
-                                        visible: true
-                                        color: sofaApplication.style.contentBackgroundColor
-
-                                        Loader {
-                                            id: loader
-                                            anchors.fill: parent
-                                            source: window.source
-                                        }
-                                    }
-                                }
-                            }
-
-                            Component {
-                                id: fileSpecificEntries
-                                MenuItem {
-                                    id: openInEditor
-                                    text: "Open In Editor"
-                                    onTriggered: {
-                                        projectMenu.visible = false
-                                        sofaApplication.openInEditor(folderModel.get(index, "filePath"))
-                                    }
-                                }
-                            }
-                            Component {
-                                id: folderSpecificEntries
-                                MenuItem {
-                                    id: openAsProject
-                                    text: "Open Folder As Project"
-
-                                    onTriggered: {
-                                        projectMenu.visible = false
-                                        sofaApplication.projectSettings.addRecent(folderModel.get(index, "filePath"))
-                                    }
-                                }
-                            }
-
-                            Component {
-                                id: sceneSpecificEntries
-                                MenuItem {
-                                    id: projectFromScene
-                                    text: "Load Scene"
-                                    onTriggered: {
-                                        projectMenu.visible = false
-                                        sofaApplication.sofaScene.source = folderModel.get(index, "filePath")
-                                    }
-                                }
-                            }
-
-                            Loader {
-                                sourceComponent: folderModel.isFolder(index) ? folderSpecificEntries: fileSpecificEntries
-                            }
-
-                            Loader {
-                                id: sceneEntriesLoader
-
-                                sourceComponent: {
-                                    for (var m in assetMenu.model) {
-                                        console.error(assetMenu.model[m].name)
-                                        if (assetMenu.model[m].name === "createScene")
-                                            return sceneSpecificEntries
-                                    }
-                                    return null
-                                }
-
+                                return false
                             }
                         }
 
@@ -442,7 +354,7 @@ Item {
 
                             Item {
                                 id: draggedData
-                                Drag.active: mouseRegion.drag.active
+                                Drag.active: self.project.getAssetMetaInfo(fileURL).toString() !== "" || fileIsDir ? mouseRegion.drag.active : false
                                 Drag.dragType: Drag.Automatic
                                 Drag.supportedActions: Qt.CopyAction
                                 Drag.mimeData: {

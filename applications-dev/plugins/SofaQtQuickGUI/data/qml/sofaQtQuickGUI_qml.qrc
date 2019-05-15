@@ -112,5 +112,6 @@
         <file>SofaWidgets/RenameMenu.qml</file>
         <file>SofaBasics/Popup.qml</file>
         <file>SofaBasics/ListViewDelegate.qml</file>
+        <file>SofaWidgets/ProjectViewMenu.qml</file>
     </qresource>
 </RCC>
