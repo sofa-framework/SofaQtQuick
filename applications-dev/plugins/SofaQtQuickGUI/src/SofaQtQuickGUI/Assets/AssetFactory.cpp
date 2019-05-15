@@ -59,7 +59,6 @@ QStringList AssetFactory::getSupportedTypes() const
     {
         SOFA_UNUSED(v);
         keys.push_back(QString("*.") + k.c_str());
-        std::cout << k << std::endl;
     }
     return keys;
 }
