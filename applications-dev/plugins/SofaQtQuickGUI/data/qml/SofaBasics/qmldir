@@ -50,5 +50,6 @@ MenuSeparator 1.0 MenuSeparator.qml
 Menu 1.0 Menu.qml
 MenuItem 1.0 MenuItem.qml
 SofaSceneFileDialog 1.0 SofaSceneFileDialog.qml
-
+Popup 1.0 Popup.qml
 singleton SofaDataWidgetFactory 1.0 SofaDataWidgetFactory.qml
+ListViewDelegate 1.0 ListViewDelegate.qml

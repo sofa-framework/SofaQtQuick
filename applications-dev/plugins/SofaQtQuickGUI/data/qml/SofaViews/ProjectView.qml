@@ -249,6 +249,9 @@ Item {
                                 }
                             }
                         }
+
+                        property bool isSceneFile: false
+
                         SofaAssetMenu {
                             id: assetMenu
 
@@ -391,9 +394,15 @@ Item {
                                 if (folderModel.isFolder(index)) {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
-                                    var rootNode = sofaApplication.sofaScene.root()
 
-                                    insertAsset(index, rootNode)
+                                    if (wrapper.isSceneFile) {
+                                        sofaApplication.sofaScene.source = folderModel.get(index, "filePath")
+                                    }
+                                    else {
+                                        var rootNode = sofaApplication.sofaScene.root()
+                                        insertAsset(index, rootNode)
+                                    }
+
                                 }
 
                             }
@@ -427,7 +436,7 @@ Item {
                             function insertAsset(index, rootNode) {
                                 var component = self.project.getAsset(folderModel.get(index, "fileURL"))
                                 console.error("Parent node for asset is " + rootNode)
-                                rootNode.addChild(component)
+                                component.copyTo(rootNode)
                             }
 
                             Item {

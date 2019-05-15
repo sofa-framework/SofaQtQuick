@@ -20,9 +20,9 @@ Popup {
     padding: 10
     margins: 0
 
-    background: Rectangle {
-        color: "transparent"
-    }
+//    background: Rectangle {
+//        color: "transparent"
+//    }
 
 
     MessageDialog
@@ -120,38 +120,28 @@ Popup {
         height: searchBar.contentHeight-inputField.height-(2*searchBar.padding)
         model: SofaFactory.components
 
+        delegate: ListViewDelegate {
+            listView: container
+            ToolTip {
+                text: modelData
+                description:  SofaFactory.getComponentHelp(modelData)
+                visible: itemMouseArea.containsMouse
+                timeout: 2000
+            }
 
-        delegate: Component {
-            Item{
-                width: parent.width
-                height: 20
-                Rectangle {
-                    id: area
-                    anchors.fill: parent
-                    color: container.currentIndex == index ? "lightsteelblue" : "gray"
-                }
-                Text {
-                    text: modelData
-                }
-                ToolTip {
-                    text: modelData
-                    description:  SofaFactory.getComponentHelp(modelData)
-                    visible: itemMouseArea.containsMouse
-                    timeout: 2000
-                }
-
-                MouseArea {
-                    id: itemMouseArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        container.currentIndex = index
-                        inputField.forceActiveFocus()
-                        inputField.text = modelData
-                    }
+            MouseArea {
+                id: itemMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: {
+                    container.currentIndex = index
+                    inputField.forceActiveFocus()
+                    inputField.text = modelData
                 }
             }
+
         }
+
     }
 
     function updateFilter(s)

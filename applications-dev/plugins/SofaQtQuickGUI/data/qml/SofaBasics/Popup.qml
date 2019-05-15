@@ -1,16 +1,16 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.5
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtGraphicalEffects 1.0
-import SofaBasics 1.0 as SB
+import SofaColorScheme 1.0
 import SofaApplication 1.0
 
-Menu {
+Popup {
+    id: popup
 
-    delegate: SB.MenuItem {}
     background: Rectangle {
-        id: backgroundID
+        id: background
         implicitWidth: 200
-        implicitHeight: 20
+        implicitHeight: 200
         color: "transparent"
         Rectangle {
             id: topRect
@@ -30,13 +30,12 @@ Menu {
         DropShadow {
             z: -1
             anchors.fill: bottomRect
-            horizontalOffset: 3
-            verticalOffset: 3
-            radius: 8.0
+            horizontalOffset: 0
+            verticalOffset: -1
+            radius: 4.0
             samples: 17
             color: "#FF000000"
             source: bottomRect
         }
     }
-
 }

@@ -1,6 +1,9 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.4
+import QtGraphicalEffects 1.0
 import SofaColorScheme 1.0
+import SofaBasics 1.0 as SB
+import SofaApplication 1.0
 
 ComboBox {
     property alias cornerPositions: backgroundID.cornerPositions
@@ -25,14 +28,36 @@ ComboBox {
         backgroundID.setControlState(enabled, hovered, down)
     }
 
+
     delegate: ItemDelegate {
+        id: itemDelegate
         width: control.width
         text: control.textRole ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole]) : modelData
-        font.weight: control.currentIndex === index ? Font.DemiBold : Font.Normal
-        font.family: control.font.family
-        font.pointSize: control.font.pointSize
+        contentItem: Text {
+            leftPadding: 5
+            text: itemDelegate.text
+            font: control.font
+            color: itemDelegate.highlighted ? "black" : itemDelegate.hovered ? "lightgrey" : "white"
+            elide: Text.ElideRight
+            verticalAlignment: Text.AlignVCenter
+        }
         highlighted: control.highlightedIndex === index
         hoverEnabled: control.hoverEnabled
+        background: Rectangle {
+
+            property Gradient highlightcolor: Gradient {
+                GradientStop { position: 0.0; color: "#7aa3e5" }
+                GradientStop { position: 1.0; color: "#5680c1" }
+            }
+            property Gradient nocolor: Gradient {
+                GradientStop { position: 0.0; color: SofaApplication.style.transparentBackgroundColor }
+                GradientStop { position: 1.0; color: SofaApplication.style.transparentBackgroundColor }
+            }
+
+            anchors.fill: parent
+            implicitHeight: 20
+            gradient: itemDelegate.highlighted ? highlightcolor : nocolor
+        }
     }
 
     indicator: Canvas {
@@ -59,7 +84,7 @@ ComboBox {
         }
     }
 
-    contentItem: Text {
+    contentItem: Text { // The text in the top part of the combobox
         leftPadding: 7
         rightPadding: control.indicator.width + control.spacing
 
@@ -70,7 +95,7 @@ ComboBox {
         elide: Text.ElideRight
     }
 
-    background: ControlsBackground {
+    background: ControlsBackground { // The background of the top part of the combobox
         id: backgroundID
         height: 20
         borderColor: control.enabled ? "#393939" : "#808080";
@@ -79,9 +104,9 @@ ComboBox {
 
     popup: Popup {
         y: control.height - 1
-        implicitWidth: control.width
+        width: control.width
         implicitHeight: contentItem.implicitHeight
-        padding: 0
+        padding: 1
 
         contentItem: ListView {
             clip: true
@@ -93,10 +118,33 @@ ComboBox {
         }
 
         background: Rectangle {
-            id : popupRect
-            border.color: control.enabled ? "#393939" : "#808080";
-            radius: 4
+            border.color: "transparent"
             color: "transparent"
+            Rectangle {
+                id: topRect
+                anchors.top: parent.top
+                implicitWidth: parent.implicitWidth
+                implicitHeight: 5
+                color: "#70393939"
+            }
+            Rectangle {
+                id: bottomRect
+                anchors.fill: parent
+                color: SofaApplication.style.transparentBackgroundColor
+                radius: 5
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -5
+            }
+            DropShadow {
+                z: -1
+                anchors.fill: bottomRect
+                horizontalOffset: 0
+                verticalOffset: -1
+                radius: 4.0
+                samples: 17
+                color: SofaApplication.style.transparentBackgroundColor
+                source: bottomRect
+            }
         }
     }
 

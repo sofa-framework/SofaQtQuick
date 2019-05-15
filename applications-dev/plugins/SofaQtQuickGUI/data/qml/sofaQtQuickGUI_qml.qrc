@@ -108,6 +108,9 @@
         <file>QmlGTestCase/QmlGTestCase.qml</file>
         <file>SofaViews/ProjectView.qml</file>
         <file>SofaWidgets/SofaAssetMenu.qml</file>
+        <file>SofaWidgets/AssetPreview.qml</file>
         <file>SofaWidgets/RenameMenu.qml</file>
+        <file>SofaBasics/Popup.qml</file>
+        <file>SofaBasics/ListViewDelegate.qml</file>
     </qresource>
 </RCC>

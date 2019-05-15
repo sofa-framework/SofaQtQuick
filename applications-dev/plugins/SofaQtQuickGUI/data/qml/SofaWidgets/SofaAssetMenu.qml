@@ -26,6 +26,12 @@ Menu {
         model: assetMenu.model
         MenuItem {
             text: modelData.name
+            onTextChanged: {
+                if (text === "createScene")
+                    wrapper.isSceneFile = true
+                else wrapper.isSceneFile = false
+            }
+
             icon.source: (modelData.type  === "function" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
                          (modelData.type === "class" ? "qrc:/icon/ICON_PYTHON.png" :
                          (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
