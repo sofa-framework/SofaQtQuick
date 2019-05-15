@@ -290,9 +290,11 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
         return QVariant(true);
     case Roles::Row:
         return QVariant(index.row());
+    case Roles::Status:
+        return QVariant(QString::fromStdString(currentBase->d_status.getValueString()));
     }
 
-    return QVariant(QString("damien"));
+    return QVariant(QString("INVALID ROLE"));
 }
 
 QHash<int, QByteArray> SofaSceneItemModel::roleNames() const
@@ -307,8 +309,8 @@ QHash<int, QByteArray> SofaSceneItemModel::roleNames() const
             { int(Roles::IsMultiParent), "isMultiParent" },
             { int(Roles::HasMultiParent), "hasMultiParent" },
             { int(Roles::IsEnabled), "isEnabled" },
-            { int(Roles::Row), "row" }
-                                           }};
+            { int(Roles::Row), "row" },
+            { int(Roles::Status), "status" }}};
     return mapping;
 }
 

@@ -79,6 +79,7 @@ public:
         IsMultiParent,
         HasMultiParent,
         IsEnabled,
+        Status,
         Row
     };
 
