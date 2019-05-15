@@ -162,8 +162,15 @@ void SofaProject::_scanProject(const QDir& folder)
         }
         else
         {
-            m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
-
+            if (f.suffix() == "py")
+            {
+                QString docstring(PythonEnvironment::getPythonModuleDocstring(f.filePath().toStdString()).c_str());
+                std::cout << f.fileName().toStdString() << ": " << docstring.toStdString() << std::endl;
+                if (docstring.contains("Type: SofaContent"))
+                    m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
+            } else {
+                m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
+            }
         }
     }
     QApplication::restoreOverrideCursor();

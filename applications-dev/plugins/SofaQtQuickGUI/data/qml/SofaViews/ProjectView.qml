@@ -214,7 +214,7 @@ Item {
                                         text: fileName
                                         clip: true
                                         elide: Text.ElideRight
-                                        color: "#efefef"
+                                        color: (self.project.getAssetMetaInfo(fileURL)).toString() !== "" || fileIsDir ? "#efefef" : "darkgrey"
                                         anchors.left: iconId.right
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -225,7 +225,7 @@ Item {
                                         width: parent.width
                                         leftPadding: 10
                                         text: fileIsDir ? "Folder" : self.project.assetFactory.getTypeString(fileSuffix)
-                                        color: "#efefef"
+                                        color: (self.project.getAssetMetaInfo(fileURL)).toString() !== "" || fileIsDir ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -241,7 +241,7 @@ Item {
                                                                              (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
                                                                                                 (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
                                                                                                                    fileSize + " bytes"
-                                        color: "#efefef"
+                                        color: (self.project.getAssetMetaInfo(fileURL)).toString() !== "" || fileIsDir ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -256,6 +256,7 @@ Item {
                             id: assetMenu
 
                             model: self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
+                            enabled: model !== [] ? true : false
                             visible: false
                         }
 
