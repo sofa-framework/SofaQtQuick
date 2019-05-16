@@ -71,19 +71,18 @@ Item {
             Rectangle {
                 id: emptyArea
                 anchors.fill: parent
-                color: "#70FF0000"
                 ProjectViewMenu {
                     id: generalProjectMenu
-                    filePath: folderModel.folder
+                    filePath: folderModel.folder.toString().replace("file://", "")
                     visible: false
                 }
                 MouseArea {
                     anchors.fill: emptyArea
+                    acceptedButtons: Qt.RightButton
                     onClicked: {
-                        if (mouse.button === Qt.RightButton) {
-                            console.log("POUET")
-                            generalProjectMenu.visible = !generalProjectMenu.visible
-                        }
+                        generalProjectMenu.visible = !generalProjectMenu.visible
+                        generalProjectMenu.x = mouse.x
+                        generalProjectMenu.y = mouse.y
                     }
                 }
             }
@@ -282,7 +281,7 @@ Item {
                         ProjectViewMenu {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
-                            fileIsDir: folderModel.get(index, "fileIsDir")
+                            fileIsDir: fileIsDir
                             fileIsScene: {
                                 var metadata = self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
                                 for (var m in metadata) {
@@ -361,6 +360,7 @@ Item {
                                 Drag.mimeData: {
                                     "text/plain": "Copied text"
                                 }
+                                property string origin: "ProjectView"
                                 property bool accepted: false
                                 property point beginDrag
                                 property var node

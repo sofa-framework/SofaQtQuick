@@ -309,6 +309,7 @@ Rectangle {
 
         itemDelegate: Item {
             id: itemDelegateID
+            property string origin: "Hierarchy"
             property bool multiparent : false
             property bool isDisabled : false
             property bool isSelected: false
@@ -320,6 +321,7 @@ Rectangle {
             property bool hasMessage : model && testForMessage(styleData.index, styleData.isExpanded)
             property bool hasChildMessage : model && testForChildMessage(styleData.index, styleData.isExpanded)
             property string componentState:   model && model.statusString
+            property var index: styleData.index
 
             function getIconFromStatus(s)
             {
@@ -462,26 +464,113 @@ Rectangle {
                 opacity: 0.75
             }
 
-            DropArea {
-                id: dropFromProjectView
-                property SofaBase node: null
+            Drag.active: mouseArea.drag.active
+            Drag.dragType: Drag.Automatic
+
+            MouseArea {
+                id: mouseArea
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
                 anchors.fill: parent
-                onEntered: {
+
+                property var tmpParent
+                drag.target: parent
+                drag.onActiveChanged: {
+                    if (drag.active)
+                        tmpParent = parent.parent
+                    else
+                        parent.parent = tmpParent
+                }
+
+                onClicked:
+                {
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
-                    if (isNode) node = theComponent
+                    if(mouse.button === Qt.LeftButton)
+                    {
+                        sofaScene.selectedComponent = theComponent
+                    } else if (mouse.button === Qt.RightButton) {
+                        if(theComponent.isNode())
+                        {
+                            nodeMenu.currentModelIndex = srcIndex
+                            nodeMenu.activated = theComponent.getData("activated");
+                            if(theComponent.hasLocations()===true)
+                            {
+                                nodeMenu.sourceLocation = theComponent.getSourceLocation()
+                                nodeMenu.creationLocation = theComponent.getInstanciationLocation()
+                            }
+                            nodeMenu.nodeActivated = nodeMenu.activated.value;
+                            nodeMenu.popup();
+                        } else {
+                            if(theComponent.hasLocations()===true)
+                            {
+                                objectMenu.sourceLocation = theComponent.getSourceLocation()
+                                objectMenu.creationLocation = theComponent.getInstanciationLocation()
+                            }
+                            objectMenu.currentModelIndex = srcIndex
+                            objectMenu.name = theComponent.getData("name");
+                            objectMenu.popup();
+                        }
+                    }
                 }
-                onDropped: {
-                    drag.source.ctxMenu.parent = parent
-                    drag.source.ctxMenu.draggedData = drag.source
-                    drag.source.ctxMenu.parentNode = node.getPathName()
-                    drag.source.ctxMenu.sofaScene = sofaScene
-                    drag.source.ctxMenu.basemodel = basemodel
-                    drag.source.ctxMenu.sceneModel = sceneModel
-                    drag.source.ctxMenu.treeView = treeView
-                    drag.source.ctxMenu.selection = ItemSelectionModel.ClearAndSelect
-                    if (drag.source.ctxMenu.model.length > 0) {
-                        drag.source.ctxMenu.visible = true
+
+
+                DropArea {
+                    id: dropArea
+                    property SofaBase node: null
+                    anchors.fill: parent
+                    onEntered: {
+                        var srcIndex = sceneModel.mapToSource(styleData.index)
+                        var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                        if (isNode) node = theComponent
+                    }
+
+                    function dropFromHierarchy(src) {
+                        var oldIndex = src.index
+                        oldIndex = sceneModel.mapToSource(oldIndex)
+                        var theComponent = basemodel.getBaseFromIndex(oldIndex)
+
+                        var newIndex = styleData.index
+                        newIndex = sceneModel.mapToSource(newIndex)
+                        var parentNode = basemodel.getBaseFromIndex(newIndex)
+
+                        if (!parentNode.isNode()) {
+                            parentNode = parentNode.getFirstParent()
+                        }
+
+                        var oldParent = theComponent.getFirstParent()
+
+                        if (oldParent.getPathName() !== parentNode.getPathName() &&
+                                parentNode.getPathName() !== theComponent.getPathName()) {
+                            if (theComponent.isNode()) {
+                                parentNode.moveChild(theComponent, oldParent)
+                            }
+                            else {
+                                parentNode.moveObject(theComponent)
+                            }
+                        }
+                    }
+
+                    function dropFromProjectView(src) {
+                        src.ctxMenu.parent = parent
+                        src.ctxMenu.draggedData = src
+                        src.ctxMenu.parentNode = node.getPathName()
+                        src.ctxMenu.sofaScene = sofaScene
+                        src.ctxMenu.basemodel = basemodel
+                        src.ctxMenu.sceneModel = sceneModel
+                        src.ctxMenu.treeView = treeView
+                        src.ctxMenu.selection = ItemSelectionModel.ClearAndSelect
+                        if (src.ctxMenu.model.length > 0) {
+                            src.ctxMenu.visible = true
+                        }
+                    }
+
+                    onDropped: {
+                        if (drag.source.origin === "Hierarchy") {
+                            dropFromHierarchy(drag.source)
+                        }
+                        else if (drag.source.origin === "ProjectView") {
+                            dropFromProjectView(drag.source)
+                        }
                     }
                 }
             }
@@ -505,102 +594,7 @@ Rectangle {
             currentModelIndex: undefined
         }
 
-        mouser.acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        Item {
-            id: draggedIndex
-            Drag.active: treeView.mouser.drag.active
-            Drag.dragType: Drag.Automatic
-            property var idx
-        }
-
-        mouser.drag.target: draggedIndex
-        mouser.drag.onActiveChanged: {
-            console.error("Position on dragged: " + mouse.y)
-            draggedIndex.idx = treeView.indexAt(mouse.x, mouse.y)
-        }
-
-        mouser.onClicked:
-        {
-            var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
-            var theComponent = basemodel.getBaseFromIndex(srcIndex)
-            if(mouse.button === Qt.LeftButton)
-            {
-                sofaScene.selectedComponent = theComponent
-            } else if (mouse.button === Qt.RightButton) {
-                if(theComponent.isNode())
-                {
-                    nodeMenu.currentModelIndex = srcIndex
-                    nodeMenu.activated = theComponent.getData("activated");
-                    if(theComponent.hasLocations()===true)
-                    {
-                        nodeMenu.sourceLocation = theComponent.getSourceLocation()
-                        nodeMenu.creationLocation = theComponent.getInstanciationLocation()
-                    }
-                    nodeMenu.nodeActivated = nodeMenu.activated.value;
-                    nodeMenu.popup();
-                } else {
-                    if(theComponent.hasLocations()===true)
-                    {
-                        objectMenu.sourceLocation = theComponent.getSourceLocation()
-                        objectMenu.creationLocation = theComponent.getInstanciationLocation()
-                    }
-                    objectMenu.currentModelIndex = srcIndex
-                    objectMenu.name = theComponent.getData("name");
-                    objectMenu.popup();
-                }
-            }
-        }
-        mouser.hoverEnabled: true
-        mouser.onPositionChanged: {
-            console.error(treeView.mouser.mouseY)
-        }
-
-        DropArea {
-            id: dropFromHierarchy
-            anchors {
-                fill: parent
-            }
-
-            onDropped: {
-                console.error("Dropped list item")
-                var oldIndex = drag.source.idx
-                oldIndex = sceneModel.mapToSource(oldIndex)
-                var theComponent = basemodel.getBaseFromIndex(oldIndex)
-                console.error("                                     child component is " + theComponent.getName())
-
-                console.error("Position on dropped: " + treeView.mouser.mouseY)
-
-                var newIndex = treeView.indexAt(treeView.mouser.mouseX, treeView.mouser.mouseY)
-                newIndex = sceneModel.mapToSource(newIndex)
-                var parentNode = basemodel.getBaseFromIndex(newIndex)
-                console.error("                                     dnd component dropped in " + parentNode.getName())
-
-                if (!parentNode.isNode()) {
-                    parentNode = parentNode.getFirstParent()
-                    console.error("                                     new parent will be " + parentNode.getName())
-                }
-
-                var oldParent = theComponent.getFirstParent()
-                console.error("                                     old parent was " + parentNode.getName())
-
-                if (oldParent.getPathName() !== parentNode.getPathName() &&
-                        parentNode.getPathName() !== theComponent.getPathName()) {
-                    if (theComponent.isNode()) {
-                        console.error("component is a node")
-                        parentNode.moveChild(theComponent, oldParent)
-                    }
-                    else {
-                        console.error("component is an object")
-                        parentNode.moveObject(theComponent)
-                    }
-                }
-                else {
-                    console.error("old & new parent are same, ignoring dnd")
-                }
-                console.error("~~~~~~~~~~~~~~~~~~~~~~~~~ WE'RE DONE HERE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            }
-        }
     } // TreeView
 
     Label {

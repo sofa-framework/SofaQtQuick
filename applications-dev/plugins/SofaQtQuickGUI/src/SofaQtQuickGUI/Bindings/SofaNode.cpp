@@ -307,18 +307,13 @@ void SofaNode::copyTo(SofaNode* node)
 void SofaNode::moveChild(SofaNode* node, SofaNode* prev_parent)
 {
     DAGNode* _this = self();
-    msg_error(self()) << _this->getName() << ".moveChild( " << node->selfptr()->getName() << ", " << prev_parent->selfptr()->getName() << ");";
     dynamic_cast<sofa::simulation::Node*>(_this)->moveChild(node->selfptr(), prev_parent->selfptr());
-    msg_error(self()) << "MoveChild";
 }
 
 void SofaNode::moveObject(SofaBaseObject* obj)
 {
-    msg_error(self()) << "MoveObject";
     DAGNode* _this = self();
-    msg_error(self()) << "MoveObject";
     _this->moveObject(obj->selfptr());
-    msg_error(self()) << "MoveObject";
 }
 
 
