@@ -89,7 +89,6 @@ QString SofaProject::importProject(const QUrl& srcUrl)
             QString dest = folders.first().path();
             QProcess process;
             process.start("/usr/bin/unzip", QStringList() << src << "-d" << dest);
-            std::cout << "/usr/bin/unzip " << src.toStdString() << " -d " << dest.toStdString() << std::endl;
             process.waitForFinished(-1);
             QApplication::restoreOverrideCursor();
 
@@ -122,13 +121,10 @@ bool SofaProject::exportProject(const QUrl& srcUrl)
         QString fileName = QFileInfo(src).fileName();
         process.start("/bin/ln", QStringList() << "-s" << filePath << fileName);
         process.waitForFinished(-1);
-        std::cout << "/bin/ln" << " -s " << filePath.toStdString() << " " << fileName.toStdString() << std::endl;
         process.start("/usr/bin/zip", QStringList() << "-r" << QString(dest + "/" + baseName + ".zip") << fileName);
         process.waitForFinished(-1);
-        std::cout << "/usr/bin/zip -r " << QString(dest + "/" + baseName + ".zip").toStdString() << " " << fileName.toStdString() << std::endl;
         process.start("/bin/rm", QStringList() << fileName);
         process.waitForFinished(-1);
-        std::cout << "/bin/rm " << fileName.toStdString() << std::endl;
         QApplication::restoreOverrideCursor();
         return true;
     }
@@ -165,8 +161,7 @@ void SofaProject::_scanProject(const QDir& folder)
             if (f.suffix() == "py")
             {
                 QString docstring(PythonEnvironment::getPythonModuleDocstring(f.filePath().toStdString()).c_str());
-                std::cout << f.fileName().toStdString() << ": " << docstring.toStdString() << std::endl;
-                if (docstring.contains("Type: SofaContent"))
+                if (docstring.contains("type: SofaContent"))
                     m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
             } else {
                 m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));

@@ -35,7 +35,7 @@ import SofaScene 1.0
 
 Item{
     id: root
-    property url url : "https://github.com/SofaDefrost/SPM/wiki/List-of-existing-plugins..."
+    property url url : "https://github.com/SofaDefrost/SPM/wiki/Sofa-Ressources"
 
     ScrollView {
         id: scroll
@@ -59,7 +59,6 @@ Item{
 
             onUrlChanged:
             {
-                console.log("LOADING CHANGED TO " + url)
                 if(url.toString().includes("?installSofaPlugin="))
                 {
                     var pluginname = url.toString().substring(url.toString().indexOf("?installSofaPlugin=")+19)
@@ -68,6 +67,7 @@ Item{
 
                     a = SofaApplication.executeProcessAsync("sofa-spm.py", ["install", pluginname],
                                                         SofaApplication.currentProject.rootDir)
+
                 }
             }
 

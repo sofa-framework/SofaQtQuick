@@ -310,7 +310,7 @@ QHash<int, QByteArray> SofaSceneItemModel::roleNames() const
             { int(Roles::HasMultiParent), "hasMultiParent" },
             { int(Roles::IsEnabled), "isEnabled" },
             { int(Roles::Row), "row" },
-            { int(Roles::Status), "status" }}};
+            { int(Roles::Status), "statusString" }}};
     return mapping;
 }
 

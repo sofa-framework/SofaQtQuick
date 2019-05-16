@@ -493,24 +493,17 @@ ProcessState* SofaApplication::executeProcessAsync(const QString& command, const
     if(workingDirectory.size()!=0)
     {
         process->setWorkingDirectory(url.toLocalFile());
-        std::cout << "SET WORKING DIRECTORY: "  << url.toLocalFile().toStdString() << std::endl;
     }
 
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     process->setProcessChannelMode(QProcess::MergedChannels); // to display stdout/sterr (QProcess::MergedChannels for stdout only)
 
     ProcessState* processState = new ProcessState(process);
-    std::cout << "DUMP :! " << process->workingDirectory().toStdString() << std::endl;
 
     process->startDetached(command, arguments, url.toLocalFile());
-
-    std::cout << "DUMP :! " << std::endl;
     process->waitForFinished();
 
     QByteArray result = process->readAll();
-
-    std::cout << "DUMP :! " << processState->exitCode()  << std::endl;
-    std::cout << "DUMP :! " << result.toStdString() << std::endl ;
 
     return processState;
 
