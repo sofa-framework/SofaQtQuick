@@ -97,7 +97,9 @@ Menu {
     MenuItem {
         text: "Delete"
         onTriggered: {
-            sofaScene.removeComponent(model.getBaseFromIndex(currentModelIndex));
+            var parent = model.getBaseFromIndex(currentModelIndex.parent);
+            var item = model.getBaseFromIndex(currentModelIndex);
+            parent.removeChild(item);
         }
     }
 

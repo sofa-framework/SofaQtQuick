@@ -276,7 +276,8 @@ void SofaNode::addObject(SofaBaseObject* obj)
 
 void SofaNode::copyTo(SofaNode* node)
 {
-    if (isInAPrefab() && !attemptToBreakPrefab())
+    if ((isInAPrefab() && !attemptToBreakPrefab()) ||
+            (node->isInAPrefab() && !node->attemptToBreakPrefab()))
         return;
     if(node==nullptr)
     {
@@ -306,12 +307,21 @@ void SofaNode::copyTo(SofaNode* node)
 
 void SofaNode::moveChild(SofaNode* node, SofaNode* prev_parent)
 {
+    if ((isInAPrefab() && !attemptToBreakPrefab())
+            || (prev_parent->isInAPrefab() && !prev_parent->attemptToBreakPrefab()))
+        return;
+
     DAGNode* _this = self();
     dynamic_cast<sofa::simulation::Node*>(_this)->moveChild(node->selfptr(), prev_parent->selfptr());
 }
 
 void SofaNode::moveObject(SofaBaseObject* obj)
 {
+    BaseNode* p = obj->selfptr()->getContext()->toBaseNode()->getFirstParent();
+    SofaNode prev_parent(DAGNode::SPtr(dynamic_cast<DAGNode*>(p)));
+    if ((isInAPrefab() && !attemptToBreakPrefab())
+            || (prev_parent.isInAPrefab() && !prev_parent.attemptToBreakPrefab()))
+        return;
     DAGNode* _this = self();
     _this->moveObject(obj->selfptr());
 }
@@ -320,6 +330,21 @@ void SofaNode::moveObject(SofaBaseObject* obj)
 
 
 
+void SofaNode::removeChild(SofaNode* node)
+{
+    if (isInAPrefab() && !attemptToBreakPrefab())
+        return;
+
+    self()->removeChild(node->self());
+}
+
+void SofaNode::removeObject(SofaBaseObject* obj)
+{
+    if (isInAPrefab() && !attemptToBreakPrefab())
+        return;
+
+    self()->removeObject(obj->self());
+}
 
 
 

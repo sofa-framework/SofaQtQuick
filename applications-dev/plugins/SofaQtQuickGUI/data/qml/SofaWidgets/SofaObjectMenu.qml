@@ -68,7 +68,9 @@ Menu {
             "Delete object"
         }
         onTriggered: {
-            sofaScene.removeComponent(model.getBaseFromIndex(currentModelIndex));
+            var parent = model.getBaseFromIndex(currentModelIndex.parent);
+            var item = model.getBaseFromIndex(currentModelIndex);
+            parent.removeObject(item);
         }
     }
 

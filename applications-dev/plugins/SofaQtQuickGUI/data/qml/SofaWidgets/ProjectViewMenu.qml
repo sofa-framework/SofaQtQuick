@@ -24,6 +24,7 @@ Menu {
         onTriggered: {
             projectMenu.visible = false
             console.error(filePath)
+            console.error("fileIsDir: " + fileIsDir)
             sofaApplication.openInExplorer(filePath)
         }
     }
