@@ -69,6 +69,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Rectangle {
+                id: emptyArea
                 anchors.fill: parent
                 color: "#70FF0000"
                 ProjectViewMenu {
@@ -77,7 +78,7 @@ Item {
                     visible: false
                 }
                 MouseArea {
-                    anchors.fill: parent
+                    anchors.fill: emptyArea
                     onClicked: {
                         if (mouse.button === Qt.RightButton) {
                             console.log("POUET")
@@ -280,7 +281,7 @@ Item {
 
                         ProjectViewMenu {
                             id: projectMenu
-                            filePath: folderModel.get(index, "fileURL")
+                            filePath: folderModel.get(index, "filePath")
                             fileIsDir: folderModel.get(index, "fileIsDir")
                             fileIsScene: {
                                 var metadata = self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
