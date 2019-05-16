@@ -68,22 +68,18 @@ Item {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Rectangle {
-                id: emptyArea
+            ProjectViewMenu {
+                id: generalProjectMenu
+                filePath: folderModel.folder.toString().replace("file://", "")
+                visible: false
+            }
+            MouseArea {
                 anchors.fill: parent
-                ProjectViewMenu {
-                    id: generalProjectMenu
-                    filePath: folderModel.folder.toString().replace("file://", "")
-                    visible: false
-                }
-                MouseArea {
-                    anchors.fill: emptyArea
-                    acceptedButtons: Qt.RightButton
-                    onClicked: {
-                        generalProjectMenu.visible = !generalProjectMenu.visible
-                        generalProjectMenu.x = mouse.x
-                        generalProjectMenu.y = mouse.y
-                    }
+                acceptedButtons: Qt.RightButton
+                onClicked: {
+                    generalProjectMenu.visible = !generalProjectMenu.visible
+                    generalProjectMenu.x = mouse.x
+                    generalProjectMenu.y = mouse.y
                 }
             }
 

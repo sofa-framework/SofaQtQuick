@@ -322,6 +322,7 @@ Rectangle {
             property bool hasChildMessage : model && testForChildMessage(styleData.index, styleData.isExpanded)
             property string componentState:   model && model.statusString
             property var index: styleData.index
+            property var tmpParent
 
             function getIconFromStatus(s)
             {
@@ -472,13 +473,14 @@ Rectangle {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 anchors.fill: parent
 
-                property var tmpParent
                 drag.target: parent
                 drag.onActiveChanged: {
                     if (drag.active)
-                        tmpParent = parent.parent
-                    else
-                        parent.parent = tmpParent
+                        itemDelegateID.tmpParent = itemDelegateID.parent
+                    else {
+                        itemDelegateID.parent = itemDelegateID.tmpParent
+                        itemDelegateID.anchors.verticalCenter = itemDelegateID.parent.verticalCenter
+                    }
                 }
 
                 onClicked:
