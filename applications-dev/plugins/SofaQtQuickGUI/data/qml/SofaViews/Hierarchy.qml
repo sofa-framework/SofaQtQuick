@@ -42,7 +42,6 @@ import SofaComponent 1.0
 import Sofa.Core.SofaData 1.0
 import Sofa.Core.SofaNode 1.0
 import Sofa.Core.SofaBase 1.0
-import AssetView 1.0
 
 Rectangle {
     id: root
@@ -66,7 +65,7 @@ Rectangle {
                     var baseIndex = basemodel.getIndexFromBase(c)
                     var sceneIndex = sceneModel.mapFromSource(baseIndex)
                     treeView.expandAncestors(sceneIndex)
-                    treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);                    
+                    treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
                 }
             }
         }
@@ -464,7 +463,7 @@ Rectangle {
             }
 
             DropArea {
-                id: dropArea
+                id: dropFromProjectView
                 property SofaBase node: null
                 anchors.fill: parent
                 onEntered: {
@@ -508,6 +507,19 @@ Rectangle {
 
         mouser.acceptedButtons: Qt.LeftButton | Qt.RightButton
 
+        Item {
+            id: draggedIndex
+            Drag.active: treeView.mouser.drag.active
+            Drag.dragType: Drag.Automatic
+            property var idx
+        }
+
+        mouser.drag.target: draggedIndex
+        mouser.drag.onActiveChanged: {
+            console.error("Position on dragged: " + mouse.y)
+            draggedIndex.idx = treeView.indexAt(mouse.x, mouse.y)
+        }
+
         mouser.onClicked:
         {
             var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
@@ -539,7 +551,57 @@ Rectangle {
                 }
             }
         }
-    }
+        mouser.hoverEnabled: true
+        mouser.onPositionChanged: {
+            console.error(treeView.mouser.mouseY)
+        }
+
+        DropArea {
+            id: dropFromHierarchy
+            anchors {
+                fill: parent
+            }
+
+            onDropped: {
+                console.error("Dropped list item")
+                var oldIndex = drag.source.idx
+                oldIndex = sceneModel.mapToSource(oldIndex)
+                var theComponent = basemodel.getBaseFromIndex(oldIndex)
+                console.error("                                     child component is " + theComponent.getName())
+
+                console.error("Position on dropped: " + treeView.mouser.mouseY)
+
+                var newIndex = treeView.indexAt(treeView.mouser.mouseX, treeView.mouser.mouseY)
+                newIndex = sceneModel.mapToSource(newIndex)
+                var parentNode = basemodel.getBaseFromIndex(newIndex)
+                console.error("                                     dnd component dropped in " + parentNode.getName())
+
+                if (!parentNode.isNode()) {
+                    parentNode = parentNode.getFirstParent()
+                    console.error("                                     new parent will be " + parentNode.getName())
+                }
+
+                var oldParent = theComponent.getFirstParent()
+                console.error("                                     old parent was " + parentNode.getName())
+
+                if (oldParent.getPathName() !== parentNode.getPathName() &&
+                        parentNode.getPathName() !== theComponent.getPathName()) {
+                    if (theComponent.isNode()) {
+                        console.error("component is a node")
+                        parentNode.moveChild(theComponent, oldParent)
+                    }
+                    else {
+                        console.error("component is an object")
+                        parentNode.moveObject(theComponent)
+                    }
+                }
+                else {
+                    console.error("old & new parent are same, ignoring dnd")
+                }
+                console.error("~~~~~~~~~~~~~~~~~~~~~~~~~ WE'RE DONE HERE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            }
+        }
+    } // TreeView
 
     Label {
         anchors.right: nodesCheckBox.left
