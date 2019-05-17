@@ -213,7 +213,6 @@ bool LoaderProcess(SofaScene* sofaScene)
 
         if(!sofaScene->pathQML().isEmpty())
         {
-            std::cout << "VALUE... " << sofaScene->pathQML().toStdString() << std::endl << std::endl;
             sofaScene->setSourceQML(QUrl::fromLocalFile(sofaScene->pathQML()));
             sofaScene->addCanvas(QUrl::fromLocalFile(sofaScene->pathQML()));
         }
@@ -583,15 +582,15 @@ void SofaScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
 void SofaScene::setSelectedComponent(sofaqtquick::bindings::SofaBase* newSelectedComponent)
 {
     if(newSelectedComponent == mySelectedComponent)
+    {
         return;
+    }  
 
-    delete mySelectedComponent;
     mySelectedComponent = nullptr;
-
     if(newSelectedComponent)
         mySelectedComponent = new SofaBase(newSelectedComponent->base());
 
-    selectedComponentChanged(mySelectedComponent);
+    emit selectedComponentChanged(mySelectedComponent);
 }
 
 void SofaScene::setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator)
@@ -1231,8 +1230,6 @@ void SofaScene::setDataValue(SofaComponent* sofaComponent, const QString& name, 
 /// must be composed of a prefix.linkname
 SofaLink* SofaScene::link(const QString& fullpath)
 {
-    std::cout << "GET FROM PATH: " << fullpath.toStdString() << std::endl ;
-
     // search for the "name" data of the component (this data is always present if the component exist)
     QStringList splittedpath = fullpath.split('.') ;
 
@@ -1437,44 +1434,6 @@ bool SofaScene::save(const QString& projectRootDir)
     }
     return false;
 }
-
-
-/*
-SofaComponent* SofaScene::retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module)
-{
-    Base* base = context->base();
-    if(!base)
-        return nullptr;
-
-    BaseContext* baseContext = dynamic_cast<BaseContext*>(base);
-    if(!baseContext)
-    {
-        BaseObject* baseObject = dynamic_cast<BaseObject*>(base);
-        baseContext = baseObject->getContext();
-
-        if(!baseContext)
-            return nullptr;
-    }
-
-    QList<PythonScriptController*> pythonScriptControllers;
-    baseContext->get<PythonScriptController>(&pythonScriptControllers, BaseContext::Local);
-
-    if(module.isEmpty())
-    {
-        for(PythonScriptController* pythonScriptController : pythonScriptControllers)
-            if(derivedFrom.isEmpty() || pythonScriptController->isDerivedFrom(derivedFrom.toStdString()))
-                return new SofaComponent(this, pythonScriptController);
-    }
-    else
-    {
-        for(PythonScriptController* pythonScriptController : pythonScriptControllers)
-            if(derivedFrom.isEmpty() || pythonScriptController->isDerivedFrom(derivedFrom.toStdString(), module.toStdString()))
-                return new SofaComponent(this, pythonScriptController);
-    }
-
-
-    return nullptr;
-}*/
 
 QVariant SofaScene::onDataValueByPath(const QString& path) const
 {

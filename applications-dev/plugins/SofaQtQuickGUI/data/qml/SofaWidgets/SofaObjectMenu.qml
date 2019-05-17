@@ -29,6 +29,7 @@ Menu {
 
     property var model: null;     ///< The model from which we can get the objects.
     property var currentModelIndex;    ///< The index in the model.
+    property var currentObject: model.getBaseFromIndex(currentModelIndex) ;
     property SofaData name: null
     property string sourceLocation : null
     property string creationLocation : null
@@ -53,7 +54,7 @@ Menu {
 
 
     MenuItem {
-        enabled: model.getBaseFromIndex(currentModelIndex).hasMessage()
+        enabled: currentObject && currentObject.hasMessage()
         text: "Show messages..."
         onTriggered: {
             /// Creates and display an help window object

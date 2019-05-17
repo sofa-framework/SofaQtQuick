@@ -43,6 +43,7 @@ namespace sofaqtquick::helper
     // TODO: WARNING : do not use data->read anymore but directly the correct set*Type*Value(...)
     bool setDataValueFromQVariant(BaseData* data, const QVariant& value);
     bool setDataLink(BaseData* data, const QString& link);
+    QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& properties);
 
     BaseData* findData(BaseNode* node, const QString& path);
 }

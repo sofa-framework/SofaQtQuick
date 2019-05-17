@@ -28,19 +28,23 @@ Item
     property var components : ({})
     Component.onCompleted:
     {
-        getWidgetForData({"type":"undefined"})
+        getWidgetForData()
     }
 
-    function getWidgetForData(properties)
+    function getWidgetForData(data)
     {
+        if(!data)
+            return getWidget("qrc:/SofaDataTypes/SofaDataType_undefined.qml")
+
+        var properties = data.properties
         var type = properties.type
         if(0 === type.length)
         {
             console.error("Loading widget for data failed. Replacing it with an undefined one. ")
             type = "undefined"
         }
-        var filename = "qrc:/SofaDataTypes/SofaDataType_" + type + ".qml"
 
+        var filename = "qrc:/SofaDataTypes/SofaDataType_" + type + ".qml"
         return getWidget(filename)
     }
 

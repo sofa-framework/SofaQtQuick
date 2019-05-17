@@ -63,7 +63,25 @@ Item {
         anchors.rightMargin: 10
         property var sofaScene: SofaApplication.sofaScene
         property var sofaSelectedComponent: sofaScene ? sofaScene.selectedComponent : null
+
         property bool showDebug : isDebug.checked
+        property int refreshCounter : 0
+
+        Connections {
+            target: sofaScene
+            onStepEnd: topRect.refreshCounter = topRect.refreshCounter + 1;
+        }
+
+        Timer
+        {
+            id:updateTimer
+            interval: 100
+            repeat: true
+            onTriggered:
+            {
+                topRect.refreshCounter = topRect.refreshCounter + 1
+            }
+        }
 
         Component.onCompleted:
         {
@@ -78,12 +96,11 @@ Item {
         */
         VisualDataModel {
             id: visualModel
-            model: theModel
-
+            model : theModel
             property var currentChild
             property var theModel : SofaInspectorDataListModel {
                 id : sofaInspectorDataListModel
-                sofaSelectedComponent: theView.sofaSelectedComponent
+                currentSofaComponent: theView.sofaSelectedComponent
             }
 
             delegate: Component {
@@ -167,7 +184,7 @@ Item {
                                             else
                                                 theItem.state = "expanded"
 
-                                            visualModel.theModel.setVisibility(index, !(theItem.state==="collapsed"))
+                                            visualModel.model.setVisibility(index, !(theItem.state==="collapsed"))
                                         }
                                     }
                                 }
@@ -191,7 +208,7 @@ Item {
                                             else
                                                 theItem.state = "expanded"
 
-                                            visualModel.theModel.setVisibility(index, !(theItem.state==="collapsed"))
+                                            visualModel.model.setVisibility(index, !(theItem.state==="collapsed"))
                                         }
                                     }
                                 }
@@ -216,7 +233,11 @@ Item {
                             }
 
                             model : VisualDataModel {
-                                property int parentIndex: theItem.groupIndex
+                                property int parentIndex:
+                                {
+                                    console.log("setting parentIndex/grroupIndex....."+theItem.groupIndex )
+                                    theItem.groupIndex
+                                }
 
                                 id : childModel
                                 model : visualModel.theModel
@@ -231,6 +252,7 @@ Item {
                                         width: theItem.width
 
                                         sourceComponent: {
+
                                             if(isReadOnly && !topRect.showDebug)
                                                 return hiddenItem;
                                             switch(type){
@@ -255,12 +277,15 @@ Item {
 
                                         property Component dataItem : SofaDataItem
                                         {
+
                                             id: sofaDataItem
                                             implicitWidth : theItem.width
-
+                                            implicitHeight: 20
                                             sofaData: {
                                                 return sofaInspectorDataListModel.getDataById(childModel.parentIndex, index)
                                             }
+
+                                            refreshCounter: topRect.refreshCounter
 
                                             nameLabelWidth:200
 
@@ -430,6 +455,7 @@ Item {
             }
         }
 
+
         Rectangle
         {
             id: header
@@ -482,8 +508,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
-                property var sofaScene: SofaApplication.sofaScene
-                property var sofaSelectedComponent: sofaScene ? sofaScene.selectedComponent : null
+                property var sofaSelectedComponent: sofaScene.selectedComponent
 
                 model : visualModel
             }

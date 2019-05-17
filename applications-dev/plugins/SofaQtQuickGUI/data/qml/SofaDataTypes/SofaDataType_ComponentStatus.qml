@@ -23,23 +23,12 @@ import SofaBasics 1.0
 
 /***************************************************************************************************
   *
-  * A widget dedicated to edit Data<string> object.
+  * A widget dedicated to visualize ComponentState
   *
   *************************************************************************************************/
-TextField {
+Text {
     id: root
-
-    property var sofaData: null
-    property int refreshCounter: 0
-    readOnly: sofaData & sofaData.readOnly
-    enabled: !sofaData.readOnly
-    text: sofaData.value.toString()
-    implicitWidth: parent.width
-
-    onRefreshCounterChanged:  text = sofaData.value.toString()
-
-    onAccepted:
-    {
-        sofaData.value = text
-    }
+    property var dataObject: null
+    enabled:true
+    text: dataObject===nullptr? "Undefined" :  dataObject.value
 }

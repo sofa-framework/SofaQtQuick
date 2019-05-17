@@ -110,10 +110,10 @@ public:
     ~SofaInspectorDataListModel();
 
     Q_INVOKABLE void update();
-    Q_PROPERTY(sofaqtquick::bindings::SofaBase* sofaSelectedComponent
-               READ sofaSelectedComponent
-               WRITE setSofaSelectedComponent
-               NOTIFY sofaSelectedComponentChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaBase* currentSofaComponent
+               READ currentSofaComponent
+               WRITE setCurrentSofaComponent
+               NOTIFY currentSofaComponentChanged)
 
      Q_INVOKABLE QModelIndex index(int row, int col,
                                    const QModelIndex& parent) const ;
@@ -136,14 +136,14 @@ public:
     };
     Q_ENUMS(Visibility)
 
-    SofaBase* sofaSelectedComponent() const {return m_selectedsofacomponent;}
-    void setSofaSelectedComponent(SofaBase* newSofaComponent);
+    SofaBase* currentSofaComponent() const {return m_currentSofaComponent;}
+    void setCurrentSofaComponent(SofaBase* newSofaComponent);
 
 public slots:
     void handleDataHasChanged() ;
 
 signals:
-    void sofaSelectedComponentChanged(SofaBase* newSofaComponent) const;
+    void currentSofaComponentChanged(SofaBase* newSofaComponent) const;
     void sofaDataHasChanged() ;
 
 protected:
@@ -176,7 +176,7 @@ private:
 
     QList<ItemGroup*>             m_groups;
     QMap<QString, int>            m_nameindex ;
-    SofaBase*                     m_selectedsofacomponent;
+    SofaBase*                     m_currentSofaComponent;
 };
 
 }

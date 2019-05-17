@@ -208,6 +208,7 @@ Rectangle {
             {
                 var srcIndex = sceneModel.mapToSource(currentIndex)
                 var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                console.log("===== item selection model set component"+theComponent)
                 sofaScene.selectedComponent = theComponent
             }
         }
@@ -596,7 +597,39 @@ Rectangle {
         }
 
 
-    } // TreeView
+        mouser.onClicked:
+        {
+            var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
+            var theComponent = basemodel.getBaseFromIndex(srcIndex)
+            if(mouse.button === Qt.LeftButton)
+            {
+                console.log("===== item selection model set component level 2"+theComponent)
+                sofaScene.selectedComponent = theComponent
+            } else if (mouse.button === Qt.RightButton) {
+                if(theComponent.isNode())
+                {
+                    nodeMenu.currentModelIndex = srcIndex
+                    nodeMenu.activated = theComponent.getData("activated");
+                    if(theComponent.hasLocations()===true)
+                    {
+                        nodeMenu.sourceLocation = theComponent.getSourceLocation()
+                        nodeMenu.creationLocation = theComponent.getInstanciationLocation()
+                    }
+                    nodeMenu.nodeActivated = nodeMenu.activated.value;
+                    nodeMenu.popup();
+                } else {
+                    if(theComponent.hasLocations()===true)
+                    {
+                        objectMenu.sourceLocation = theComponent.getSourceLocation()
+                        objectMenu.creationLocation = theComponent.getInstanciationLocation()
+                    }
+                    objectMenu.currentModelIndex = srcIndex
+                    objectMenu.name = theComponent.getData("name");
+                    objectMenu.popup();
+                }
+            }
+        }
+    }
 
     Label {
         anchors.right: nodesCheckBox.left

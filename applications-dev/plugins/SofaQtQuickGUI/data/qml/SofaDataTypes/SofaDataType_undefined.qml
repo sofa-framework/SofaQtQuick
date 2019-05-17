@@ -27,12 +27,12 @@ import SofaBasics 1.0
 ColumnLayout {
     id: root
 
-    property var dataObject: null
+    property SofaData sofaData: null
+    property int refreshCounter: 0
 
     Label {
         Layout.fillWidth: true
-
-        text: "Data widget not implemented yet: " + (0 != root.dataObject.type.length ? root.dataObject.type : "Unknown") + " - using text edit"
+        text: "Data widget not implemented yet: " + sofaData.properties.type + " - using text edit"
         wrapMode: Text.Wrap
     }
 
@@ -41,16 +41,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        readOnly: root.dataObject.readOnly
-        enabled: !root.dataObject.readOnly
-        text: undefined !== root.dataObject.value ? root.dataObject.value.toString() : ""
-
-        Binding {
-            target: root.dataObject
-            property: "value"
-            value: textField.text
-            when: !root.dataObject.readOnly
-        }
+        readOnly: sofaData.isReadOnly
+        enabled: !sofaData.isReadOnly
+        text: sofaData.value.toString()
     }
 }
 

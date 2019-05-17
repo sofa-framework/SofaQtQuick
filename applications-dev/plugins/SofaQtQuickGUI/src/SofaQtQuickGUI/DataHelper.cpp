@@ -332,6 +332,108 @@ bool setDataValueFromQVariant(BaseData* data, const QVariant& value)
     return true;
 }
 
+QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& properties)
+{
+    properties.insert("readOnly", data->isReadOnly());
+    const AbstractTypeInfo* typeinfo = data->getValueTypeInfo();
+
+    if(!typeinfo->Container()){
+        if(typeinfo->Integer())
+        {
+            if(std::string::npos != typeinfo->name().find("bool"))
+            {
+                properties.insert("type", "boolean");
+                return properties;
+            }
+
+            properties.insert("type", "number");
+            properties.insert("decimals", 0);
+            if(std::string::npos != typeinfo->name().find("unsigned"))
+                properties.insert("min", 0);
+            return properties;
+        }
+        if(typeinfo->Scalar())
+        {
+            properties.insert("type", "number");
+            properties.insert("step", 0.1);
+            properties.insert("decimals", 14);
+            return properties;
+        }
+
+        if(typeinfo->Text())
+        {
+            properties.insert("type", "string");
+            return properties;
+        }
+
+        /// Default type...
+        properties.insert("type","undefined");
+        return properties;
+    }
+
+    int nbCols = typeinfo->size();
+
+    properties.insert("cols", nbCols);
+    if(typeinfo->FixedSize())
+        properties.insert("static", true);
+
+    const AbstractTypeInfo* baseTypeinfo = typeinfo->BaseType();
+    if(baseTypeinfo->FixedSize())
+        properties.insert("innerStatic", true);
+
+    /// DataFilename are use to sœœtores path to files.
+    auto aDataFilename = dynamic_cast<const DataFileName*>(data) ;
+
+    /// OptionsGroup are used to encode a finite set of alternatives.
+    auto anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
+
+    /// OptionsGroup are used to encode a finite set of alternatives.
+    auto aRGBAColor =  dynamic_cast<const Data<RGBAColor>*>(data) ;
+
+    if(aDataFilename)
+    {
+        properties.insert("type", "FileName");
+        properties.insert("url", QString::fromStdString(aDataFilename->getFullPath())) ;
+
+        const std::string& directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
+        properties.insert("folderurl",  QString::fromStdString(directory)) ;
+        return properties;
+    }
+
+    if(anOptionGroup)
+    {
+        QStringList choices;
+
+        const OptionsGroup& group = anOptionGroup->getValue();
+        for(unsigned int i=0;i<group.size();++i)
+        {
+            choices.append(QString::fromStdString(group[i]));
+        }
+        properties.insert("type", "OptionsGroup");
+        properties.insert("choices", choices);
+        properties.insert("autoUpdate", true);
+        return properties;
+    }
+
+    if(aRGBAColor)
+    {
+        properties.insert("type", "RGBAColor");
+        properties.insert("autoUpdate", true);
+        return properties;
+    }
+
+    QString widget(data->getWidget());
+    if(!widget.isEmpty())
+    {
+        properties.insert("type",widget);
+        return properties;
+    }
+
+    /// Default type...
+    properties.insert("type","array");
+    return properties;
+}
+
 
 QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
 {
@@ -402,7 +504,7 @@ QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
             properties.insert("innerStatic", true);
     }
 
-    /// DataFilename are use to stores path to files.
+    /// DataFilename are use to sœœtores path to files.
     const DataFileName* aDataFilename = dynamic_cast<const DataFileName*>(data) ;
 
     /// OptionsGroup are used to encode a finite set of alternatives.
@@ -444,7 +546,6 @@ QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
 
     properties.insert("readOnly", data->isReadOnly());
 
-    //SofaData* sofaData = new SofaData(new SofaComponent(this, data->getOwner()), data);
     //object.insert("sofaData", QVariant::fromValue(sofaData));
     object.insert("name", data->getName().c_str());
     object.insert("description", data->getHelp());

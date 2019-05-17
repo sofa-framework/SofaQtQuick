@@ -34,7 +34,7 @@ using namespace sofa::simulation;
 
 SofaInspectorDataListModel::SofaInspectorDataListModel(QObject* parent) : QAbstractItemModel(parent),
     m_groups(),
-    m_selectedsofacomponent(0)
+    m_currentSofaComponent(0)
 {
 }
 
@@ -66,17 +66,19 @@ const QString& getGroupName(const QString& a, const QString& b)
 void SofaInspectorDataListModel::update()
 {
     QSettings settings;
-    if(m_selectedsofacomponent)
+
+    // TODO(dmarchal): delete memory !
+    for(auto& group : m_groups)
+        delete group;
+    m_groups.clear();
+    m_nameindex.clear();
+
+    if(m_currentSofaComponent && m_currentSofaComponent->rawBase())
     {
-        // TODO(dmarchal): delete memory !
-        for(auto& group : m_groups)
-            delete group;
-        m_groups.clear();
-        m_nameindex.clear();
-        const Base* base = m_selectedsofacomponent->rawBase();
-        QStringList listinfos ;
+        const Base* base = m_currentSofaComponent->rawBase();
         if(base)
         {
+            QStringList listinfos ;
             // SofaData
             QString baseString("Base");
             for(BaseData* data : base->getDataFields())
@@ -95,16 +97,15 @@ void SofaInspectorDataListModel::update()
                     gname="Base";
                 }
 
-
                 if( QString("Infos") != QString(gname) )
                 {
                     ItemGroup* ig = findOrCreateGroup(getGroupName(QString(gname),
                                                                    baseString)) ;
                     ig->m_children.append(new Item(QString::fromStdString(data->getName()),
-                                               QVariant::fromValue((void*)data),
-                                               SofaDataType,
-                                               settings.value("inspector/"+ig->m_name+"/"+QString::fromStdString(data->getName()), true).toBool()
-                                               ));
+                                                   QVariant::fromValue((void*)data),
+                                                   SofaDataType,
+                                                   settings.value("inspector/"+ig->m_name+"/"+QString::fromStdString(data->getName()), true).toBool()
+                                                   ));
                 }else
                 {
                     listinfos.append(QString::fromStdString(data->getName()));
@@ -167,26 +168,35 @@ void SofaInspectorDataListModel::update()
             for(auto& group : m_groups){
                 auto& items = group->m_children;
                 qStableSort(items.begin(), items.end(),
-                        [](const Item* a, const Item* b) {return a->m_name<b->m_name;});
+                            [](const Item* a, const Item* b) {return a->m_name<b->m_name;});
             }
 
         }
     }
 }
 
-void SofaInspectorDataListModel::setSofaSelectedComponent(SofaBase* newSofaComponent)
+void SofaInspectorDataListModel::setCurrentSofaComponent(SofaBase* newSofaComponent)
 {
-    if(newSofaComponent == m_selectedsofacomponent)
+    if(newSofaComponent == m_currentSofaComponent)
         return;
 
-    m_selectedsofacomponent = newSofaComponent;
+    if(newSofaComponent && m_currentSofaComponent && newSofaComponent->rawBase() == m_currentSofaComponent->rawBase())
+        return;
 
-    if(newSofaComponent == nullptr)
-        return ;
-
+    //    std::cout << "SofaInspectorDataListMModel::setCurrentSofaComponent begin sofabase: "<< newSofaComponent;
+    //    if(newSofaComponent){
+    //        std::cout << "component: " << newSofaComponent;
+    //        if(newSofaComponent->base())
+    //            std::cout << " base: " << newSofaComponent->base()->getName();
+    //    }
+    std::cout << std::endl;
     beginResetModel();
+    m_currentSofaComponent = newSofaComponent;
+
     update();
     endResetModel();
+    //    std::cout << "SofaInspectorDataListMModel::setCurrentSofaComponent end " << std::endl;
+
 }
 
 void SofaInspectorDataListModel::handleDataHasChanged()
@@ -199,12 +209,16 @@ void SofaInspectorDataListModel::handleDataHasChanged()
 
 QModelIndex SofaInspectorDataListModel::parent ( const QModelIndex & index ) const
 {
+    std::cout << "parent" << std::endl;
+
     return index.parent() ;
 }
 
 QModelIndex SofaInspectorDataListModel::index (int row, int column,
                                                const QModelIndex& parent) const
 {
+    //std::cout << "index" << row << ", " << column << std::endl;
+
     if (!parent.isValid() ){
         if(row < 0 || row>=m_groups.size())
             return QModelIndex() ;
@@ -229,6 +243,7 @@ int	SofaInspectorDataListModel::columnCount(const QModelIndex & parent) const
 
 int	SofaInspectorDataListModel::rowCount(int index)
 {
+    // std::cout << "rowCount(index): " << index << std::endl;
     if(index < 0)
         return m_groups.size();
     return m_groups[index]->m_children.size() ;
@@ -267,12 +282,15 @@ void SofaInspectorDataListModel::setOrdering(int groupid, int idx)
 
 int	SofaInspectorDataListModel::rowCount(const QModelIndex& index) const
 {
-    if(!index.isValid()){
+    //std::cout << "rowCount(modelindex): " << index.row() << " -> " << index.isValid()<< " size: " << m_groups.size() << std::endl;
+    if(!index.isValid())
+    {
         return m_groups.size() ;
     }
 
     ItemGroup* ig=dynamic_cast<ItemGroup*>(static_cast<ItemBase*>(index.internalPointer()));
     if(ig){
+        //std::cout << "internal pointer" << std::endl;
         return ig->m_children.size();
     }
     return 0;
@@ -280,6 +298,8 @@ int	SofaInspectorDataListModel::rowCount(const QModelIndex& index) const
 
 QVariant SofaInspectorDataListModel::data(const QModelIndex& index, int role) const
 {
+    //std::cout << "data... " << std::endl;
+
     // Returns the root of the hierarchy
     if(!index.isValid()){
         return QVariant("");
@@ -388,6 +408,13 @@ SofaData* SofaInspectorDataListModel::getDataById(int parent, int child) const
 {
     if(parent < 0 || child < 0)
         return nullptr ;
+
+    if( parent >= m_groups.size() )
+        return nullptr;
+
+    if( child >= m_groups[parent]->m_children.size() )
+        return nullptr;
+
 
     Item* item=m_groups[parent]->m_children[child];
     const QVariant& data = item->m_data ;

@@ -38,6 +38,15 @@ namespace sofaqtquick::bindings
         class SofaData : public QObject
         {
             Q_OBJECT
+
+            Q_PROPERTY(QString name READ getName NOTIFY nameChanged)
+            Q_PROPERTY(QString help READ getHelp NOTIFY helpChanged)
+            Q_PROPERTY(QString valueType READ getValueType NOTIFY valueTypeChanged)
+            Q_PROPERTY(QString group READ getGroup)
+            Q_PROPERTY(QVariantMap properties READ getProperties NOTIFY propertiesChanged)
+            Q_PROPERTY(bool isReadOnly READ isReadOnly NOTIFY readOnlyChanged)
+
+            Q_PROPERTY(QString linkPath READ getLinkPath NOTIFY linkPathChanged)
             Q_PROPERTY(QVariant value READ getValue WRITE setValue NOTIFY valueChanged)
 
         public:
@@ -50,19 +59,29 @@ namespace sofaqtquick::bindings
 
             Q_INVOKABLE QString getHelp() const;
             Q_INVOKABLE bool isSet() const;
+            Q_INVOKABLE bool isReadOnly() const;
             Q_INVOKABLE QString getGroup() const;
 
             Q_INVOKABLE bool setValue(const QVariant& getValue);
             Q_INVOKABLE bool setLink(const QString& path);
+            Q_INVOKABLE QString getLinkPath()const;
 
+            [[deprecated("Remove, use directly the object")]]
             Q_INVOKABLE QVariantMap object();
+
+            Q_INVOKABLE QVariantMap getProperties() const;
 
             BaseData* rawData() { return m_self; }
             const BaseData* rawData() const { return m_self; }
 
         signals:
             void valueChanged(const QVariant& newValue);
-
+            void readOnlyChanged(const bool);
+            void valueTypeChanged(const QString newValue);
+            void helpChanged(const QString newValue);
+            void nameChanged(const QString newValue);
+            void linkPathChanged(const QString newValue);
+            void propertiesChanged(const QVariantList newValues);
         private:
             BaseData* m_self {nullptr};
         };

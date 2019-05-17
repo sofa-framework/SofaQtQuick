@@ -26,7 +26,9 @@ ColumnLayout {
     id: root
     spacing: 0
 
-    property var dataObject: null
+    property var sofaData: null
+    property var properties: sofaData.properties
+    property int refreshCounter: 0
 
     Loader {
         id: loader
@@ -34,18 +36,18 @@ ColumnLayout {
         Layout.fillHeight: true
 
         sourceComponent: {
-            if(root.dataObject.properties.static) {
-                if((!root.dataObject.properties.innerStatic && root.dataObject.value.length <= 7) ||
-                   (root.dataObject.properties.innerStatic && 1 === root.dataObject.value.length && root.dataObject.properties.cols <= 7))
+            if(properties.static) {
+                if((!properties.innerStatic && sofaData.value.length <= 7) ||
+                   (properties.innerStatic && 1 === sofaData.value.length && properties.cols <= 7))
                     return staticSmallArrayView;
-                else if(root.dataObject.properties.innerStatic && root.dataObject.properties.cols <= 7)
+                else if(properties.innerStatic && properties.cols <= 7)
                     return staticInStaticTableView;
                 else
                     return staticArrayView;
             }
             else {
-                if(root.dataObject.properties.innerStatic) {
-                    if(root.dataObject.properties.cols <= 7 || root.dataObject.properties.cols === 12) // Case of Affine type
+                if(properties.innerStatic) {
+                    if(properties.cols <= 7 || properties.cols === 12) // Case of Affine type
                         return staticInDynamicTableView;
                     else
                         return dynamicArrayView;
@@ -82,16 +84,16 @@ ColumnLayout {
 
                 Component.onCompleted: {
                     addColumn(columnLines.createObject(tableView, {"title": "", "role": "printLinesNumber"}));
-                    for(var i = 0; i < root.dataObject.properties.cols; ++i)
+                    for(var i = 0; i < properties.cols; ++i)
                         addColumn(columnComponent.createObject(tableView, {"title": i.toString(), "role": "c" + i.toString()}));
                 }
 
                 Connections {
-                    target: root.dataObject
+                    target: root.sofaData
                     onValueChanged: {
                         listModel.update();
 
-                        root.dataObject.modified = false;
+                        sofaData.modified = false;
                     }
                 }
 
@@ -103,12 +105,12 @@ ColumnLayout {
                     property int previousCount: 0
 
                     function populate() {
-                        var newCount = root.dataObject.value.length;
+                        var newCount = sofaData.value.length;
                         if(previousCount < newCount)
                             for(var j = previousCount; j < newCount; ++j) {
                                 var values = {};
-                                for(var i = previousCount; i < root.dataObject.properties.cols; ++i)
-                                    values["c" + i.toString()] = root.dataObject.value[j][i];
+                                for(var i = previousCount; i < properties.cols; ++i)
+                                    values["c" + i.toString()] = sofaData.value[j][i];
 
                                 append(values);
                             }
@@ -119,13 +121,13 @@ ColumnLayout {
                     }
 
                     function update() {
-                        if(count !== root.dataObject.value.length)
+                        if(count !== sofaData.value.length)
                             populate();
 
                         for(var j = 0; j < count; ++j) {
                             var values = {};
-                            for(var i = previousCount; i < root.dataObject.properties.cols; ++i)
-                                values["c" + i.toString()] = root.dataObject.value[j][i];
+                            for(var i = previousCount; i < properties.cols; ++i)
+                                values["c" + i.toString()] = sofaData.value[j][i];
 
                             set(j, values);
                         }
@@ -145,21 +147,21 @@ ColumnLayout {
                     anchors.leftMargin: 6
                     anchors.rightMargin: 6
                     clip: true
-                    readOnly: -1 === styleData.row || root.dataObject.readOnly || 0 === styleData.column
+                    readOnly: -1 === styleData.row || sofaData.readOnly || 0 === styleData.column
                     color: styleData.textColor
                     horizontalAlignment: TextEdit.AlignHCenter
                     text: {
                         if (styleData.column === 0)
                             return styleData.row;
                         else if(-1 !== styleData.row && styleData.column !== 0) {
-                            return root.dataObject.value[styleData.row][styleData.column - 1];
+                            return sofaData.value[styleData.row][styleData.column - 1];
                         }
 
                         return "";
                     }
                     property int previousRow: -1
                     onTextChanged: {
-                        if(-1 === styleData.row || root.dataObject.readOnly || 0 === styleData.column)
+                        if(-1 === styleData.row || sofaData.readOnly || 0 === styleData.column)
                             return;
 
                         if(previousRow !== styleData.row) {
@@ -168,12 +170,12 @@ ColumnLayout {
                         }
 
                         if(styleData.column !== 0) {
-                            var oldValue = root.dataObject.value[styleData.row][styleData.column - 1];
+                            var oldValue = sofaData.value[styleData.row][styleData.column - 1];
 
                             var value = text;
                             if(value !== oldValue) {
-                                root.dataObject.value[styleData.row][styleData.column - 1] = value;
-                                root.dataObject.modified = true;
+                                sofaData.value[styleData.row][styleData.column - 1] = value;
+                                sofaData.modified = true;
                             }
                         }
                     }
@@ -187,7 +189,7 @@ ColumnLayout {
                 id: rowLayout
                 //width: parent.width
                 spacing: -1
-                enabled: !root.dataObject.readOnly
+                enabled: !sofaData.readOnly
 
                 property var fields: []
                 property bool innerArray: false
@@ -195,10 +197,10 @@ ColumnLayout {
                 Component.onCompleted: populate();
 
                 function populate() {
-                    var values = root.dataObject.value;
+                    var values = sofaData.value;
                     if(1 === values.length && Array.isArray(values[0]))
                     {
-                        values = root.dataObject.value[0];
+                        values = sofaData.value[0];
                         innerArray = true;
                     }
 
@@ -217,9 +219,9 @@ ColumnLayout {
                 }
 
                 function update() {
-                    var values = root.dataObject.value;
+                    var values = sofaData.value;
                     if(innerArray)
-                        values = root.dataObject.value[0];
+                        values = sofaData.value[0];
 
                     for(var i = 0; i < values.length; ++i) {
                         fields[i].text = values[i].toString();
@@ -233,24 +235,24 @@ ColumnLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.alignment: Qt.AlignTop
-                        readOnly: root.dataObject.readOnly
-                        enabled: !root.dataObject.readOnlyTableViewColumn
+                        readOnly: sofaData & sofaData.readOnly
+                        enabled: !sofaData.readOnlyTableViewColumn
                         position: cornerPositions['Middle']
 
                         property int index
                         onEditingFinished: {
                             if(rowLayout.innerArray)
-                                root.dataObject.value[0][index] = text;
+                                sofaData.value[0][index] = text;
                             else
-                                root.dataObject.value[index] = text;
+                                sofaData.value[index] = text;
 
-                            root.dataObject.modified = true;
+                            sofaData.modified = true;
                         }
                     }
                 }
 
                 Connections {
-                    target: root.dataObject
+                    target: root.sofaData
                     onValueChanged: rowLayout.update();
                 }
             }
@@ -260,11 +262,11 @@ ColumnLayout {
             id: staticArrayView
             TextField {
                 id: textField
-                readOnly: root.dataObject.readOnly
-                enabled: !root.dataObject.readOnly
-                text: undefined !== root.dataObject.value ? root.dataObject.value.toString() : ""
+                readOnly: sofaData.readOnly
+                enabled: !sofaData.readOnly
+                text: undefined !== sofaData.value ? sofaData.value.toString() : ""
                 Binding {
-                    target: root.dataObject
+                    target: root.sofaData
                     property: "value"
                     value: textField.text
                 }
@@ -286,22 +288,22 @@ ColumnLayout {
                     }
                     SpinBox {
                         id: rowNumber
-                        editable: !root.dataObject.readOnly && showEditButton.checked
+                        editable: !sofaData.readOnly && showEditButton.checked
                         Layout.fillWidth: true
-                        value: root.dataObject.value.length
+                        value: sofaData.value.length
                         onValueChanged : {
-                            if(value === root.dataObject.value.length)
+                            if(value === sofaData.value.length)
                                 return;
 
-                            var oldLength = root.dataObject.value.length;
-                            root.dataObject.value.length = value;
-                            for(var j = oldLength; j < root.dataObject.value.length; ++j) {
-                                root.dataObject.value[j] = [];
-                                for(var i = 0; i < root.dataObject.properties.cols; ++i)
-                                    root.dataObject.value[j][i] = 0;
+                            var oldLength = sofaData.value.length;
+                            sofaData.value.length = value;
+                            for(var j = oldLength; j < sofaData.value.length; ++j) {
+                                sofaData.value[j] = [];
+                                for(var i = 0; i < properties.cols; ++i)
+                                    sofaData.value[j][i] = 0;
                             }
 
-                            root.dataObject.modified = true;
+                            sofaData.modified = true;
 
                             if(loader.item)
                                 loader.item.populate();
@@ -335,21 +337,21 @@ ColumnLayout {
 
             TextField {
                 id: textField
-                readOnly: root.dataObject.readOnly
-                enabled: !root.dataObject.readOnly
+                readOnly: sofaData & sofaData.readOnly
+                enabled: !sofaData.readOnly
 
                 onTextChanged: {
-                    if(!root.dataObject.readOnly)
-                        if(Array.isArray(root.dataObject.value))
-                            root.dataObject.value = text.split(' ')
+                    if(!sofaData.readOnly)
+                        if(Array.isArray(sofaData.value))
+                            sofaData.value = text.split(' ')
                         else
-                            root.dataObject.value = text
+                            sofaData.value = text
                 }
 
                 Binding {
                     target: textField
                     property: "text"
-                    value: Array.isArray(root.dataObject.value) ? root.dataObject.value.join(' ') : root.dataObject.value
+                    value: Array.isArray(sofaData.value) ? sofaData.value.join(' ') : sofaData.value
                 }
             }
         }

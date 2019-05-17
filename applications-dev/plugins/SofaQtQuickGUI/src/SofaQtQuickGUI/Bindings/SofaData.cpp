@@ -28,8 +28,12 @@ using sofa::core::objectmodel::BaseObject;
 #include <sofa/core/objectmodel/BaseNode.h>
 using sofa::core::objectmodel::BaseNode;
 
+#include <sofa/defaulttype/DataTypeInfo.h>
+using sofa::defaulttype::AbstractTypeInfo;
+
 #include "SofaData.h"
 #include "../DataHelper.h"
+using sofaqtquick::helper::convertDataInfoToProperties;
 
 namespace sofaqtquick::bindings::_sofadata_
 {
@@ -47,10 +51,7 @@ QVariant SofaData::getValue() const
 bool SofaData::setValue(const QVariant& value)
 {
     if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
-    {
-        emit valueChanged(value);
         return true;
-    }
     return false;
 }
 
@@ -91,6 +92,19 @@ QString SofaData::getPathName() const
     return prefix + "." + QString::fromStdString(data->getName());
 }
 
+QVariantMap SofaData::getProperties()const
+{
+    QVariantMap properties;
+    convertDataInfoToProperties(rawData(), properties);
+    return properties;
+}
+
+QString SofaData::getLinkPath() const
+{
+    return QString::fromStdString(rawData()->getLinkPath());
+}
+
+
 bool SofaData::setLink(const QString& path)
 {
     BaseData* data = rawData();
@@ -119,6 +133,11 @@ QString SofaData::getHelp() const
 bool SofaData::isSet() const
 {
     return rawData()->isSet();
+}
+
+bool SofaData::isReadOnly() const
+{
+    return rawData()->isReadOnly();
 }
 
 QString SofaData::getGroup() const
