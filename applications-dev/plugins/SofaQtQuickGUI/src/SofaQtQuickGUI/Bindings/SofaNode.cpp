@@ -287,17 +287,34 @@ void SofaNode::copyTo(SofaNode* node)
     DAGNode* n = self();
     for (auto& child : n->getChildren())
     {
+        if (!child || child->getName().empty())
+            continue;
+        std::cout << child->getName() << std::endl;
         child->setName(node->getNextName(QString(child->getName().c_str())).toStdString());
         std::cout << child->getName() << std::endl;
         node->addChild(new SofaNode(DAGNode::SPtr(dynamic_cast<DAGNode*>(child))));
         n->removeChild(child);
     }
-    for (auto& object : n->object)
+    std::cout << "n " << n << std::endl;
+    std::cout << "n->getName()  " << n->getName() << std::endl;
+    std::cout << "n->object.size() " << n->object.size() << std::endl;
+
+    for (unsigned i = 0 ; i < n->object.size() ; ++i)
     {
+        BaseObject::SPtr object = n->object[i];
+        std::cout << "COOL"  << std::endl;
+        std::cout << "n " << n << std::endl;
+        std::cout << "n->getName()  " << n->getName() << std::endl;
+        std::cout << "n->object.size() " << n->object.size() << std::endl;
+        if (!object || object->getName().empty())
+            continue;
+        std::cout << object->getName() << std::endl;
         object->setName(node->getNextObjectName(QString(object->getName().c_str())).toStdString());
         std::cout << object->getName() << std::endl;
         node->addObject(new SofaBaseObject(BaseObject::SPtr(object)));
+        std::cout << "added" << std::endl;
         n->removeObject(object);
+        std::cout << "removed" << std::endl;
     }
 }
 
