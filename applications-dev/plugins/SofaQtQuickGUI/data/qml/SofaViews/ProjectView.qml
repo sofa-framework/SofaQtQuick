@@ -229,7 +229,7 @@ Item {
                                         text: fileName
                                         clip: true
                                         elide: Text.ElideRight
-                                        color: (self.project.getAssetMetaInfo(fileURL)).toString() !== "" || fileIsDir ? "#efefef" : "darkgrey"
+                                        color: (self.project.getAssetMetaInfo(fileURL)) || fileIsDir ? "#efefef" : "darkgrey"
                                         anchors.left: iconId.right
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -240,7 +240,7 @@ Item {
                                         width: parent.width
                                         leftPadding: 10
                                         text: fileIsDir ? "Folder" : self.project.assetFactory.getTypeString(fileSuffix)
-                                        color: (self.project.getAssetMetaInfo(fileURL)).toString() !== "" || fileIsDir ? "#efefef" : "darkgrey"
+                                        color: (self.project.getAssetMetaInfo(fileURL)) || fileIsDir ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -365,6 +365,7 @@ Item {
                                 property string localPath
 
                                 function getAsset(assetName) {
+                                    console.error("function getAsset()")
                                     return self.project.getAsset(folderModel.get(index, "fileURL"), assetName)
                                 }
                             }
