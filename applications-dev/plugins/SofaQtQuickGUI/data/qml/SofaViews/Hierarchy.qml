@@ -489,7 +489,6 @@ Rectangle {
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {
-                        treeView.selection.currentIndex = styleData.index
                         sofaScene.selectedComponent = theComponent
                     } else if (mouse.button === Qt.RightButton) {
                         if(theComponent.isNode()) {
