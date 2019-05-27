@@ -58,8 +58,25 @@ public:
     Q_INVOKABLE SofaNode* getFirstParent();
 };
 
+class SofaBaseObjectList : public QObject
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE unsigned int size();
+    Q_INVOKABLE SofaBaseObject* at(unsigned int);
+    Q_INVOKABLE SofaBaseObject* first();
+    Q_INVOKABLE SofaBaseObject* last();
+
+    void addSofaBaseObject(sofa::core::objectmodel::BaseObject* obj);
+
+private:
+    std::vector<SofaBaseObject*> m_list;
+};
+
+
 }  // namespace _sofaobject_
 
 using _sofaobject_::SofaBaseObject;
-
+using _sofaobject_::SofaBaseObjectList;
 }  // namespace sofaqtquick::bindings

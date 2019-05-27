@@ -18,6 +18,8 @@ using sofa::component::visualmodel::InteractiveCamera;
 
 #include <memory>
 
+#include "PythonAsset.h"
+
 namespace sofa::qtquick
 {
 
@@ -46,7 +48,7 @@ sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetNam
     if (loaders.find(m_extension) == loaders.end() ||
             loaders.find(m_extension)->second == nullptr)
     {
-        std::cout << "Unknown file format." << std::endl;
+        msg_error("Unknown file format.");
         return new sofaqtquick::bindings::SofaNode(this);
     }
 
@@ -69,13 +71,15 @@ sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetNam
 
         return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
     }
-    std::cout << "Something went wrong..." << std::endl;
+    msg_error("Something went wrong...");
     return nullptr;
 }
 
 QList<QObject*> MeshAsset::getAssetMetaInfo()
 {
-    return QList<QObject*>();
+    QList<QObject*> list;
+    list.append(new PythonAssetModel("Create Loader", "SofaPrefab"));
+    return list;
 }
 
 

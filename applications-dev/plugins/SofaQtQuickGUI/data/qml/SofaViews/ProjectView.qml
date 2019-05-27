@@ -77,9 +77,11 @@ Item {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
-                    generalProjectMenu.visible = !generalProjectMenu.visible
-                    generalProjectMenu.x = mouse.x
-                    generalProjectMenu.y = mouse.y
+                    var pos = sofaApplication.getIdealPopupPos(generalProjectMenu)
+                    generalProjectMenu.popup(mouseX, mouseY)
+                    generalProjectMenu.x += pos[0]
+                    generalProjectMenu.y += pos[1]
+                    console.error("offset: " + pos)
                 }
             }
 
@@ -318,7 +320,11 @@ Item {
                             onClicked: {
                                 if (Qt.RightButton === mouse.button)
                                 {
-                                    projectMenu.visible = true
+                                    var pos = sofaApplication.getIdealPopupPos(projectMenu)
+                                    projectMenu.popup(mouseX, mouseY)
+                                    console.error(pos)
+                                    projectMenu.x += pos[0]
+                                    projectMenu.y += pos[1]
                                     //                                    // Let's load detailed info if available
                                     //                                    if (!folderModel.isFolder(index))
                                     //                                    {

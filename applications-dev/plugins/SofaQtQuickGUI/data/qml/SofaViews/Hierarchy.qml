@@ -90,6 +90,7 @@ Rectangle {
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
         }
+
         style: QQCS1.TreeViewStyle {
             headerDelegate: GBRect {
                 color: "#757575"
@@ -219,6 +220,10 @@ Rectangle {
             var old_idx = index
             while(idx && old_idx !== idx)
             {
+                var srcIndex = sceneModel.mapToSource(idx)
+                var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                if (theComponent === null) break;
+                console.error("Just expanded: " + theComponent.getPathName())
                 // On dépile récursivement les parents jusqu'à root
                 treeView.expand(idx)
                 old_idx = idx
@@ -231,6 +236,10 @@ Rectangle {
             var old_idx = index
             while(idx && old_idx !== idx)
             {
+                var srcIndex = sceneModel.mapToSource(idx)
+                var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                if (theComponent === null) break;
+                console.error("Just collapsed: " + theComponent.getPathName())
                 // On dépile récursivement les parents jusqu'à root
                 treeView.collapse(idx)
                 old_idx = idx
@@ -250,8 +259,15 @@ Rectangle {
             model : basemodel
 
             onModelHasReset: {
+                console.error("Model reset")
                 treeView.restoreNodeState()
             }
+
+        }
+
+        onModelChanged:  {
+            console.error("Model Changed")
+            treeView.restoreNodeState()
         }
 
         Settings {
@@ -283,6 +299,7 @@ Rectangle {
                     var idx = null
                     idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
                     treeView.expand(idx)
+                    console.error("expanded " + key)
                 }
             }
         }
@@ -305,6 +322,9 @@ Rectangle {
             storeExpandedState(index)
         }
         onCollapsed: {
+            var srcIndex = sceneModel.mapToSource(index)
+            var theComponent = basemodel.getBaseFromIndex(srcIndex)
+            console.error("Just collapsed: " + theComponent.getName())
             storeExpandedState(index)
         }
 
@@ -321,7 +341,7 @@ Rectangle {
             property bool isMultiParent : model && model.isMultiParent ? model.isMultiParent : false
             property bool hasMessage : model && testForMessage(styleData.index, styleData.isExpanded)
             property bool hasChildMessage : model && testForChildMessage(styleData.index, styleData.isExpanded)
-            property string componentState:   model && model.statusString
+            property string componentState: model && model.statusString
             property var index: styleData.index
             property var tmpParent
 
@@ -490,6 +510,7 @@ Rectangle {
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {
                         sofaScene.selectedComponent = theComponent
+                        treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
                     } else if (mouse.button === Qt.RightButton) {
                         if(theComponent.isNode()) {
                             nodeMenu.currentModelIndex = srcIndex
@@ -500,7 +521,10 @@ Rectangle {
                                 nodeMenu.creationLocation = theComponent.getInstanciationLocation()
                             }
                             nodeMenu.nodeActivated = nodeMenu.activated.value;
+                            var pos = SofaApplication.getIdealPopupPos(nodeMenu)
                             nodeMenu.popup();
+                            nodeMenu.x += pos[0]
+                            nodeMenu.y += pos[1]
                         } else {
                             if(theComponent.hasLocations()===true)
                             {
@@ -509,7 +533,10 @@ Rectangle {
                             }
                             objectMenu.currentModelIndex = srcIndex
                             objectMenu.name = theComponent.getData("name");
-                            objectMenu.popup();
+                            pos = SofaApplication.getIdealPopupPos(objectMenu)
+                            objectMenu.popup()
+                            objectMenu.x += pos[0]
+                            objectMenu.y += pos[1]
                         }
                     }
                 }
@@ -576,6 +603,7 @@ Rectangle {
                 }
             }
         }
+
         QQC1.TableViewColumn {
             title: "Hierarchy"
             role: "name"
@@ -593,40 +621,6 @@ Rectangle {
             id: objectMenu
             model: basemodel
             currentModelIndex: undefined
-        }
-
-
-        mouser.onClicked:
-        {
-            var srcIndex = sceneModel.mapToSource(treeView.selection.currentIndex)
-            var theComponent = basemodel.getBaseFromIndex(srcIndex)
-            if(mouse.button === Qt.LeftButton)
-            {
-                console.log("===== item selection model set component level 2"+theComponent)
-                sofaScene.selectedComponent = theComponent
-            } else if (mouse.button === Qt.RightButton) {
-                if(theComponent.isNode())
-                {
-                    nodeMenu.currentModelIndex = srcIndex
-                    nodeMenu.activated = theComponent.getData("activated");
-                    if(theComponent.hasLocations()===true)
-                    {
-                        nodeMenu.sourceLocation = theComponent.getSourceLocation()
-                        nodeMenu.creationLocation = theComponent.getInstanciationLocation()
-                    }
-                    nodeMenu.nodeActivated = nodeMenu.activated.value;
-                    nodeMenu.popup();
-                } else {
-                    if(theComponent.hasLocations()===true)
-                    {
-                        objectMenu.sourceLocation = theComponent.getSourceLocation()
-                        objectMenu.creationLocation = theComponent.getInstanciationLocation()
-                    }
-                    objectMenu.currentModelIndex = srcIndex
-                    objectMenu.name = theComponent.getData("name");
-                    objectMenu.popup();
-                }
-            }
         }
     }
 

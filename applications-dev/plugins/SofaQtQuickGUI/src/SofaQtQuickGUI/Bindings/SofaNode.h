@@ -72,6 +72,7 @@ public:
     Q_INVOKABLE SofaNode* getChild(QString name);
     Q_INVOKABLE SofaNode* getNodeInGraph(QString name);
     Q_INVOKABLE SofaNode* getRoot();
+    Q_INVOKABLE SofaBaseObjectList* getBaseObjects();
     Q_INVOKABLE SofaNodeList* getChildren();
 
     /// Returns true if the underlying Base

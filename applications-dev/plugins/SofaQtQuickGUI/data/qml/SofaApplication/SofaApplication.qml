@@ -35,6 +35,26 @@ SofaApplicationSingleton //
     id: root
 
     property var style : MainStyle
+    property ApplicationWindow mainWindow
+
+    function getIdealPopupPos(popup) {
+        console.error("abs mouse pos: " + mainWindow.mouseX + " " + mainWindow.mouseY)
+        console.error("win size: " + mainWindow.width + " " + mainWindow.height)
+        console.error("popup size: " + popup.width + " " + popup.height)
+        if (mainWindow.mouseX + popup.width < mainWindow.width) {
+            if (mainWindow.mouseY + popup.height < mainWindow.height) {
+                return [0, 0]
+            } else {
+                return [0, -popup.height]
+            }
+        } else {
+            if (mainWindow.mouseY + popup.height < mainWindow.height) {
+                return [-popup.width, 0]
+            } else {
+                return [-popup.width, -popup.height]
+            }
+        }
+    }
 
     ////////////////////////////////////////////////// SOFASCENE
     property var sofaScene: null

@@ -150,6 +150,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<QUrlList>("QUrlList");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("sofaqtquick::bindings::SofaBaseObject*");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("SofaBaseObject*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObjectList*>("SofaBaseObjectList*");
 
     qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("sofaqtquick::bindings::SofaBase*");
     qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("SofaBase*");

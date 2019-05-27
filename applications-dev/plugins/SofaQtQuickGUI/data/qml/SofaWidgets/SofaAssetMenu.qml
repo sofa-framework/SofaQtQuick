@@ -40,6 +40,8 @@ Menu {
             onTriggered: {
                 assetName = modelData.name
                 var parentNode = createAsset()
+                if (!parentNode)
+                    return
                 var srcIndex = basemodel.getIndexFromBase(parentNode)
                 var index = sceneModel.mapFromSource(srcIndex);
                 treeView.collapseAncestors(index)
@@ -52,13 +54,20 @@ Menu {
             }
         }
     }
-    function createAsset()
-    {
+
+    function createAsset() {
         var asset = draggedData.getAsset(assetName)
         var parent = sofaScene.root()
         if (parentNode !== "")
             parent = parent.getNodeInGraph(parentNode)
+        var hasNodes = asset.getChildren().size()
         asset.copyTo(parent)
-        return parent.getChildren().last()
+        if (hasNodes) {
+            var childsList = parent.getChildren()
+            if (childsList.size() !== 0) {
+                return childsList.last()
+            }
+        }
+        return parent
     }
 }

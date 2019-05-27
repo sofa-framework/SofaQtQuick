@@ -34,7 +34,7 @@ import SofaViewListModel 1.0
 import SofaBasics 1.0
 import SofaColorScheme 1.0
 
-import LiveFileMonitorSingleton 1.0
+//import LiveFileMonitorSingleton 1.0
 
 
 //TODO(dmarchal 10/01/2019): move the file model into a separated file

@@ -178,6 +178,17 @@ SofaNodeList* SofaNode::getChildren()
     return list;
 }
 
+SofaBaseObjectList* SofaNode::getBaseObjects()
+{
+    SofaBaseObjectList *list = new SofaBaseObjectList();
+
+    for(auto& obj : self()->object)
+    {
+        list->addSofaBaseObject(obj.get());
+    }
+
+    return list;
+}
 
 BaseNode* SofaNode::getPrefabAncestor(BaseNode* n) const
 {
@@ -185,8 +196,11 @@ BaseNode* SofaNode::getPrefabAncestor(BaseNode* n) const
     {
         if (n->findData("Prefab type")) return n;
         for (const auto& p : n->getParents())
-            if (getPrefabAncestor(p))
-                return p;
+        {
+            BaseNode* prefab = getPrefabAncestor(p);
+            if (prefab)
+                return prefab;
+        }
     }
     return nullptr;
 }
@@ -289,32 +303,18 @@ void SofaNode::copyTo(SofaNode* node)
     {
         if (!child || child->getName().empty())
             continue;
-        std::cout << child->getName() << std::endl;
         child->setName(node->getNextName(QString(child->getName().c_str())).toStdString());
-        std::cout << child->getName() << std::endl;
         node->addChild(new SofaNode(DAGNode::SPtr(dynamic_cast<DAGNode*>(child))));
         n->removeChild(child);
     }
-    std::cout << "n " << n << std::endl;
-    std::cout << "n->getName()  " << n->getName() << std::endl;
-    std::cout << "n->object.size() " << n->object.size() << std::endl;
-
     for (unsigned i = 0 ; i < n->object.size() ; ++i)
     {
         BaseObject::SPtr object = n->object[i];
-        std::cout << "COOL"  << std::endl;
-        std::cout << "n " << n << std::endl;
-        std::cout << "n->getName()  " << n->getName() << std::endl;
-        std::cout << "n->object.size() " << n->object.size() << std::endl;
         if (!object || object->getName().empty())
             continue;
-        std::cout << object->getName() << std::endl;
         object->setName(node->getNextObjectName(QString(object->getName().c_str())).toStdString());
-        std::cout << object->getName() << std::endl;
         node->addObject(new SofaBaseObject(BaseObject::SPtr(object)));
-        std::cout << "added" << std::endl;
         n->removeObject(object);
-        std::cout << "removed" << std::endl;
     }
 }
 

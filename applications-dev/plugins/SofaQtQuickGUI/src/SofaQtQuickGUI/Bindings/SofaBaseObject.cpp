@@ -78,5 +78,32 @@ SofaNode* SofaBaseObject::getFirstParent()
     return SofaNode::createFrom(self()->getContext());
 }
 
+
+
+unsigned int SofaBaseObjectList::size()
+{
+    return unsigned(m_list.size());
+}
+
+SofaBaseObject* SofaBaseObjectList::at(unsigned int n)
+{
+    return m_list.at(n);
+}
+
+SofaBaseObject* SofaBaseObjectList::first()
+{
+    return m_list.front();
+}
+
+SofaBaseObject* SofaBaseObjectList::last()
+{
+    return m_list.back();
+}
+
+void SofaBaseObjectList::addSofaBaseObject(BaseObject* obj)
+{
+    m_list.push_back(new SofaBaseObject(BaseObject::SPtr(obj)));
+}
+
 }  /// namespace sofaqtquick::bindings::_sofaobject_
 
