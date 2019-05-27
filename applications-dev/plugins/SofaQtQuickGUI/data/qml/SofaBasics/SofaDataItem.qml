@@ -72,7 +72,7 @@ Item {
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
             visible: self.showName
-            text: sofaData.name
+            text: sofaData? sofaData.name : ""
             font.italic: true
             color: "black"
             width: parent.width
@@ -86,8 +86,8 @@ Item {
                 onDoubleClicked: self.doubleClickedOnLabel();
             }
             ToolTip {
-                text: sofaData.name
-                description: sofaData.help
+                text: sofaData? sofaData.name : ""
+                description: sofaData? sofaData.help : ""
                 visible: dataLabelMouseArea.containsMouse
             }
 
@@ -102,15 +102,15 @@ Item {
             Layout.minimumWidth: 100
             RowLayout {
                 Layout.fillWidth: true
-                visible: 0 !== sofaData.name.length && (linkButton.checked || (0 !== sofaData.linkPath.length && !self.showLinkButton))
+                visible: sofaData && 0 !== sofaData.name.length && (linkButton.checked || (0 !== sofaData.linkPath.length && !self.showLinkButton))
                 spacing: 0
 
                 TextField {
                     id: linkTextField
                     Layout.fillWidth: true
-                    placeholderText: "Link: @./path/component." + sofaData.name
+                    placeholderText: sofaData ? "Link: @./path/component." + sofaData.name : ""
                     color: 0 === sofaData.linkpathlength ? "black" : "green"
-                    text: sofaData.linkPath
+                    text: sofaData? sofaData.linkPath : ""
                     width: parent.width
                     clip: true
                     onTextChanged: updateLink();
@@ -135,7 +135,7 @@ Item {
                 anchors.fill: parent
                 anchors.margins: 3
                 checkable: true
-                checked: 0 !== sofaData.linkPath.length
+                checked: sofaData ? 0 !== sofaData.linkPath.length : false
 
                 ToolTip {
                     text: "Link the data to another one."
@@ -174,9 +174,9 @@ Item {
 
     onSofaDataChanged:
     {
-        console.log("creating widget for data field: " + self.sofaData.name)
         if(sofaData)
         {
+            console.log("creating widget for data field: " + sofaData.name)
             /// Returns the widget's properties associated with this SofaData
             var component = SofaDataWidgetFactory.getWidgetForData(sofaData)
             var o = component.createObject(datawidget,

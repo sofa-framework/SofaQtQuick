@@ -326,25 +326,17 @@ Item {
                                                     {
                                                         if (!isReadOnly && drag.source && drag.source.sofacomponent)
                                                         {
-                                                            console.log("Im' "+path)
-                                                            console.log("EVT: " + drag)
-                                                            console.log("EVT: " + drag.source)
-                                                            console.log("EVT: " + drag.source.sofacomponent.getPathName())
-
                                                             var sofalink = SofaApplication.sofaScene.link(path)
                                                             sofalink.setValue(drag.source.sofacomponent.getPathName())
 
                                                             parent.background.border.color = "red";
                                                             drag.accept (Qt.CopyAction);
-                                                            console.log("onEntered");
                                                         }
                                                     }
                                                     onDropped: {
-                                                        console.log ("onDropped");
                                                     }
                                                     onExited: {
                                                         parent.background.border.color = "back";
-                                                        console.log ("onExited");
                                                     }
                                                 }
 
@@ -380,6 +372,8 @@ Item {
 
                                                 text: value.toString().trim()
                                                 wrapMode: Text.WordWrap
+                                                onTextChanged: {
+                                                }
                                             }
 
                                             property int nameLabelWidth: childView.nameLabelImplicitWidth

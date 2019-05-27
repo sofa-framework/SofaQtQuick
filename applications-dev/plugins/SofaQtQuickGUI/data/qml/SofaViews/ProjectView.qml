@@ -84,11 +84,11 @@ Item {
                     console.error("offset: " + pos)
                 }
             }
-
             ListView {
                 id: folderView
                 height: contentHeight
                 width: parent.width
+
                 header: RowLayout{
                     implicitWidth: folderView.width
 
@@ -283,7 +283,6 @@ Item {
                             fileIsScene: {
                                 var metadata = self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
                                 for (var m in metadata) {
-                                    console.error(metadata[m].name)
                                     if (metadata[m].name === "createScene")
                                         return true
                                 }
@@ -322,7 +321,6 @@ Item {
                                 {
                                     var pos = sofaApplication.getIdealPopupPos(projectMenu)
                                     projectMenu.popup(mouseX, mouseY)
-                                    console.error(pos)
                                     projectMenu.x += pos[0]
                                     projectMenu.y += pos[1]
                                     //                                    // Let's load detailed info if available
@@ -350,7 +348,6 @@ Item {
                             }
                             function insertAsset(index, rootNode) {
                                 var component = self.project.getAsset(folderModel.get(index, "fileURL"))
-                                console.error("Parent node for asset is " + rootNode)
                                 component.copyTo(rootNode)
                             }
 
@@ -371,7 +368,6 @@ Item {
                                 property string localPath
 
                                 function getAsset(assetName) {
-                                    console.error("function getAsset()")
                                     return self.project.getAsset(folderModel.get(index, "fileURL"), assetName)
                                 }
                             }

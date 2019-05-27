@@ -163,14 +163,12 @@ void SofaProject::_scanProject(const QDir& folder)
                 QString docstring(PythonEnvironment::getPythonModuleDocstring(f.filePath().toStdString()).c_str());
                 if (docstring.contains("type: SofaContent"))
                 {
-                    std::cout << "Python Asset Loaded: " << f.fileName().toStdString() << std::endl;
                     m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
                 }
             }
             else
             {
                 m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
-                std::cout << "Asset Loaded: " << f.filePath().toStdString() << std::endl;
             }
         }
     }
@@ -214,12 +212,10 @@ QList<QObject*> SofaProject::getAssetMetaInfo(const QUrl& url)
     assetMapIterator it = m_assets.find(url.toLocalFile());
     if (it == m_assets.end())
     {
-        std::cout << "Asset not loaded: \n" << url.toLocalFile().toStdString() << std::endl;
         return QList<QObject*>();
     }
     if (!it->second.get())
     {
-        std::cout << "Asset loaded but null" << std::endl;
         return QList<QObject*>();
     }
     return it->second->getAssetMetaInfo();

@@ -68,6 +68,7 @@ SofaApplicationSingleton //
 
     ////////////////////////////////////////////////// PROJECTSETTINGS
     property var currentProject : SofaProject {
+        property var selectedAsset
         rootDir: projectSettings.currentProject()
     }
 

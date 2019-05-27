@@ -209,7 +209,6 @@ Rectangle {
             {
                 var srcIndex = sceneModel.mapToSource(currentIndex)
                 var theComponent = basemodel.getBaseFromIndex(srcIndex)
-                console.log("===== item selection model set component"+theComponent)
                 sofaScene.selectedComponent = theComponent
             }
         }
