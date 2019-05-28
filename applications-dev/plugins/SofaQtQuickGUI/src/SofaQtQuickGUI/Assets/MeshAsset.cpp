@@ -19,13 +19,21 @@ using sofa::component::visualmodel::InteractiveCamera;
 #include <memory>
 
 #include "PythonAsset.h"
+#include <QProcess>
+
+#include "AssetFactory.h"
+#include "AssetFactory.inl"
 
 namespace sofa::qtquick
 {
 
-const QUrl MeshAsset::iconPath = QUrl("qrc:/icon/ICON_MESH.png");
-const QString MeshAsset::typeString = "3D mesh file";
-const MeshAsset::LoaderMap MeshAsset::loaders = MeshAsset::createLoaders();
+/// Register all mesh assets extensions to the factory
+bool __stl = AssetFactory::registerAsset("stl", new AssetCreator<MeshAsset>());
+bool __obj = AssetFactory::registerAsset("obj", new AssetCreator<MeshAsset>());
+bool __vtk = AssetFactory::registerAsset("vtk", new AssetCreator<MeshAsset>());
+bool __gmsh = AssetFactory::registerAsset("gmsh", new AssetCreator<MeshAsset>());
+
+const MeshAsset::LoaderMap MeshAsset::_loaders = MeshAsset::createLoaders();
 
 std::map<std::string, BaseAssetLoader*> MeshAsset::createLoaders()
 {
@@ -45,16 +53,16 @@ MeshAsset::MeshAsset(std::string path, std::string extension)
 sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetName)
 {
     SOFA_UNUSED(assetName);
-    if (loaders.find(m_extension) == loaders.end() ||
-            loaders.find(m_extension)->second == nullptr)
+    if (_loaders.find(m_extension) == _loaders.end() ||
+            _loaders.find(m_extension)->second == nullptr)
     {
         msg_error("Unknown file format.");
-        return new sofaqtquick::bindings::SofaNode(this);
+        return new sofaqtquick::bindings::SofaNode(nullptr);
     }
 
-    BaseObject::SPtr b = loaders.find(m_extension)->second->New();
+    BaseObject::SPtr b = _loaders.find(m_extension)->second->New();
 
-    Node::SPtr root = sofa::core::objectmodel::New<DAGNode>();
+    sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
 
     PythonEnvironment::gil lock(__func__);
     PyObject* loaderType = PyString_FromString(b->getClassName().c_str());
@@ -66,7 +74,8 @@ sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetNam
     if (PyObject_IsTrue(ret))
     {
         root->setName("NEWNODE");
-        DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+        sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
+                    dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
         node->init(sofa::core::ExecParams::defaultInstance());
 
         return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
@@ -75,11 +84,21 @@ sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetNam
     return nullptr;
 }
 
-QList<QObject*> MeshAsset::getAssetMetaInfo()
+void MeshAsset::getDetails()
 {
-    QList<QObject*> list;
-    list.append(new PythonAssetModel("Create Loader", "SofaPrefab"));
-    return list;
+//    QProcess process;
+//    process.start("/usr/bin/assimp", QStringList() << QString(m_path.c_str()));
+//    process.waitForFinished(-1);
+    m_vertices = 42;
+    m_faces = 42;
+    m_materials = 1;
+    m_meshes = 1;
+    m_primitiveType = "Triangles";
+    m_minPoint = QList<double>() << -1.0 << -1.0 << -1.0;
+    m_maxPoint = QList<double>() << 1.0 << 1.0 << 1.0;
+    m_centerPoint = QList<double>() << 0.0 << 0.0 << 0.0;
+
+    m_isLoaded = true;
 }
 
 

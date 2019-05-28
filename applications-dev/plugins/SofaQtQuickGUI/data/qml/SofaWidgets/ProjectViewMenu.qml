@@ -4,7 +4,7 @@ import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
 import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
-import AssetFactory 1.0
+import Asset 1.0
 import SofaColorScheme 1.0
 import SofaWidgets 1.0
 import QtQml 2.12

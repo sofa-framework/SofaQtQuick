@@ -123,6 +123,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Assets/PythonAsset.h
     src/SofaQtQuickGUI/Assets/TextureAsset.h
     src/SofaQtQuickGUI/Assets/AssetFactory.h
+    src/SofaQtQuickGUI/Assets/AssetFactory.inl
     )
 
 set(ASSET_TEMPLATES

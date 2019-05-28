@@ -7,6 +7,11 @@
 #include <experimental/filesystem>
 #include <SofaPython/PythonEnvironment.h>
 #include <SofaPython/PythonFactory.h>
+#include <QMessageBox>
+
+#include "AssetFactory.h"
+#include "AssetFactory.inl"
+
 using sofa::simulation::PythonEnvironment;
 
 namespace fs = std::experimental::filesystem;
@@ -14,9 +19,14 @@ namespace fs = std::experimental::filesystem;
 namespace sofa::qtquick
 {
 
-const QUrl PythonAsset::iconPath = QUrl("qrc:/icon/ICON_PYTHON.png");
-const QString PythonAsset::typeString = "Python prefab";
-const PythonAsset::LoaderMap PythonAsset::loaders = PythonAsset::createLoaders();
+/// Register all python assets extensions to the factory
+bool __pyscn = AssetFactory::registerAsset("pyscn", new AssetCreator<PythonAsset>());
+bool __py = AssetFactory::registerAsset("py", new AssetCreator<PythonAsset>());
+bool __prefab = AssetFactory::registerAsset("prefab", new AssetCreator<PythonAsset>());
+bool __pyctl = AssetFactory::registerAsset("pyctl", new AssetCreator<PythonAsset>());
+bool __pyeng = AssetFactory::registerAsset("pyeng", new AssetCreator<PythonAsset>());
+
+const PythonAsset::LoaderMap PythonAsset::_loaders = PythonAsset::createLoaders();
 
 std::map<std::string, BaseAssetLoader*> PythonAsset::createLoaders()
 {
@@ -36,11 +46,11 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 
 sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetName)
 {
-    if (loaders.find(m_extension) == loaders.end() ||
-            loaders.find(m_extension)->second == nullptr)
+    if (_loaders.find(m_extension) == _loaders.end() ||
+            _loaders.find(m_extension)->second == nullptr)
     {
         std::cout << "Unknown file format." << std::endl;
-        return new sofaqtquick::bindings::SofaNode(this);
+        return new sofaqtquick::bindings::SofaNode(nullptr);
     }
 
     fs::path obj(m_path);
@@ -48,7 +58,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetN
     std::string stem = obj.stem();
     std::string path = obj.parent_path().string();
 
-    Node::SPtr root = sofa::core::objectmodel::New<DAGNode>();
+    sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
     root->setName("NEWNAME");
 
     PythonEnvironment::gil lock(__func__);
@@ -59,21 +69,39 @@ sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetN
 
     PyObject* args = PyTuple_Pack(4, mpath, mname, pname, assetnode);
     PythonEnvironment::callObject("loadPythonAsset", "SofaPython", args);
-    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
+                dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
     node->init(sofa::core::ExecParams::defaultInstance());
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
-PythonAssetModel::PythonAssetModel(std::string name, std::string type)
+PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring)
     : m_name(name),
-      m_type(type)
+      m_type(type),
+      m_docstring(docstring)
 {}
 
 QString PythonAssetModel::name() const { return m_name.c_str(); }
 QString PythonAssetModel::type() const { return m_type.c_str(); }
+QString PythonAssetModel::docstring() const { return m_docstring.c_str(); }
 
-QList<QObject*> PythonAsset::getAssetMetaInfo()
+void PythonAsset::getDetails()
 {
+    QString docstring(PythonEnvironment::getPythonModuleDocstring(m_path).c_str());
+    if (!docstring.contains("type: SofaContent"))
+    {
+        QMessageBox mbox;
+        mbox.setText("This python module does not contain the safe-guard "
+                     "module docstring");
+        mbox.setInformativeText("To be able to load this asset in runSofa2, "
+                                "append these lines at the top of the python "
+                                "script:\n \"\"\"type: SofaContent\"\"\"");
+        mbox.setIcon(QMessageBox::Critical);
+        mbox.setDefaultButton(QMessageBox::Ok);
+        mbox.exec();
+        return;
+    }
+
     fs::path obj(m_path);
 
     std::string stem = obj.stem();
@@ -82,10 +110,11 @@ QList<QObject*> PythonAsset::getAssetMetaInfo()
     std::map<std::string, std::string> map;
     map = PythonEnvironment::getPythonModuleContent(path, stem);
 
-    QList<QObject*> list;
+    for (auto item : m_scriptContent)
+        delete item;
+    m_scriptContent.clear();
     for (auto pair : map)
-        list.append(new PythonAssetModel(pair.first, pair.second));
-    return list;
+        m_scriptContent.append(new PythonAssetModel(pair.first, pair.second));
 }
 
 

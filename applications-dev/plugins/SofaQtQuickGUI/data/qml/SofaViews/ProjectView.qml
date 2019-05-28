@@ -4,12 +4,14 @@ import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
 import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
-import AssetFactory 1.0
 import SofaColorScheme 1.0
 import SofaWidgets 1.0
 import QtQml 2.12
 import QtQuick.Window 2.12
-//import AssetView 1.0
+import Asset 1.0
+import PythonAsset 1.0
+import TextureAsset 1.0
+import MeshAsset 1.0
 
 Item {
 
@@ -196,13 +198,16 @@ Item {
                     showFiles: true
                     caseSensitive: true
                     folder: ""
-                    nameFilters: self.project.assetFactory.getSupportedTypes()
+                    nameFilters: self.project.getSupportedTypes()
                 }
 
                 delegate: Component {
                     id: fileDelegate
+
                     Rectangle {
                         id: wrapper
+                        property var asset: self.project.getAsset(filePath)
+
                         width: root.width
                         height: 20
                         color: index % 2 ? "#4c4c4c" : "#454545"
@@ -221,7 +226,7 @@ Item {
                                         width: 15
                                         height: 15
                                         fillMode: Image.PreserveAspectFit
-                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : self.project.assetFactory.getIcon(fileSuffix)
+                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : wrapper.asset.iconPath
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
@@ -231,7 +236,7 @@ Item {
                                         text: fileName
                                         clip: true
                                         elide: Text.ElideRight
-                                        color: (self.project.getAssetMetaInfo(fileURL)) || fileIsDir ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || wrapper.asset.isSofaContent ? "#efefef" : "darkgrey"
                                         anchors.left: iconId.right
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -241,8 +246,8 @@ Item {
                                     Text {
                                         width: parent.width
                                         leftPadding: 10
-                                        text: fileIsDir ? "Folder" : self.project.assetFactory.getTypeString(fileSuffix)
-                                        color: (self.project.getAssetMetaInfo(fileURL)) || fileIsDir ? "#efefef" : "darkgrey"
+                                        text: fileIsDir ? "Folder" : asset.typeString
+                                        color: fileIsDir || wrapper.asset.isSofaContent ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -258,7 +263,7 @@ Item {
                                                                              (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
                                                                                                 (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
                                                                                                                    fileSize + " bytes"
-                                        color: (self.project.getAssetMetaInfo(fileURL)).toString() !== "" || fileIsDir ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || wrapper.asset.isSofaContent ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -272,7 +277,8 @@ Item {
                         SofaAssetMenu {
                             id: assetMenu
 
-                            model: self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
+                            model: self.project.getAsset(filePath) ?
+                                       self.project.getAsset(filePath).scriptContent : null
                             visible: false
                         }
 
@@ -281,9 +287,11 @@ Item {
                             filePath: folderModel.get(index, "filePath")
                             fileIsDir: index !== -1 ? folderModel.get(index, "fileIsDir") : ""
                             fileIsScene: {
-                                var metadata = self.project.getAssetMetaInfo(folderModel.get(index, "fileURL"))
-                                for (var m in metadata) {
-                                    if (metadata[m].name === "createScene")
+                                var asset = self.project.getAsset(filePath)
+                                if (!asset)
+                                    return false
+                                for (var m in asset.scriptContent) {
+                                    if (m.name === "createScene")
                                         return true
                                 }
                                 return false
@@ -347,13 +355,13 @@ Item {
                                 }
                             }
                             function insertAsset(index, rootNode) {
-                                var component = self.project.getAsset(folderModel.get(index, "fileURL"))
+                                var component = wrapper.asset.getAsset(folderModel.get(index, "fileURL"))
                                 component.copyTo(rootNode)
                             }
 
                             Item {
                                 id: draggedData
-                                Drag.active: self.project.getAssetMetaInfo(fileURL).toString() !== "" || fileIsDir ? mouseRegion.drag.active : false
+                                Drag.active: fileIsDir ? mouseRegion.drag.active : false
                                 Drag.dragType: Drag.Automatic
                                 Drag.supportedActions: Qt.CopyAction
                                 Drag.mimeData: {

@@ -21,48 +21,58 @@ struct BaseAssetLoader;
  *  - Can query meta data on its templated type
  *  - Instantiates a SofaScene template given a asset file
  */
-class Asset : public sofa::simulation::graph::DAGNode
+class Asset : public QObject
 {
+    Q_OBJECT
   public:
-    SOFA_ABSTRACT_CLASS(Asset, sofa::simulation::graph::DAGNode);
-    typedef std::map<std::string, BaseAssetLoader *> LoaderMap;
 
     Asset(std::string path, std::string extension);
-    void initAsset();
-    virtual ~Asset() override;
-    virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") = 0;
-    virtual QList<QObject*> getAssetMetaInfo() = 0;
-    static const QString typeString;
-    static const QUrl iconPath;
+    virtual ~Asset();
 
-    static const LoaderMap loaders;
+
+    Q_INVOKABLE virtual void getDetails() = 0; // Loads the asset
+    Q_INVOKABLE virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") = 0; // instantiates the asset
+
+    Q_PROPERTY(QString typeString READ getTypeString NOTIFY typeStringChanged)
+    Q_PROPERTY(QUrl iconPath READ getIconPath NOTIFY iconPathChanged)
+    Q_PROPERTY(bool isSofaContent READ getIsSofaContent NOTIFY isSofaContentChanged)
+    Q_PROPERTY(QString path READ path NOTIFY pathChanged)
 
   protected:
+    Q_INVOKABLE virtual QString getTypeString() { return "Unknown file format"; }
+    Q_INVOKABLE virtual QUrl getIconPath() { return QUrl("qrc:/icon/ICON_FILE_BLANK"); }
+    Q_INVOKABLE virtual bool getIsSofaContent() { return false; }
+
+    Q_INVOKABLE QString path() { return QString(m_path.c_str()); }
+
+    Q_SIGNAL void typeStringChanged(const QUrl& type);
+    Q_SIGNAL void iconPathChanged(const QUrl& path);
+    Q_SIGNAL void pathChanged(const QString& type);
+    Q_SIGNAL void isSofaContentChanged(bool val);
+
+
+    typedef std::map<std::string, BaseAssetLoader *> LoaderMap;
+    static const LoaderMap _loaders;
+
     const std::string m_path;
     const std::string m_extension;
-    QList<QObject*> m_metaDataModel;
 };
 
 struct BaseAssetLoader
 {
     virtual ~BaseAssetLoader();
     virtual BaseObject::SPtr New() = 0;
-    virtual const std::string &getClassName() = 0;
 };
 
 template <class T> struct TBaseAssetLoader : public BaseAssetLoader
 {
     virtual ~TBaseAssetLoader();
-    virtual const std::string &getClassName() override;
     virtual BaseObject::SPtr New() override;
 };
 
 template <class T> TBaseAssetLoader<T>::~TBaseAssetLoader() {}
 
-template <class T> const std::string &TBaseAssetLoader<T>::getClassName()
-{
-    return T::GetClass()->className;
-}
+
 template <class T> BaseObject::SPtr TBaseAssetLoader<T>::New()
 {
     return sofa::core::objectmodel::New<T>();

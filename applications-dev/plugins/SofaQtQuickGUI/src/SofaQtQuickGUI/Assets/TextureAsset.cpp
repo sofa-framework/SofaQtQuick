@@ -3,14 +3,24 @@
 
 #include <SofaOpenglVisual/OglModel.h>
 using sofa::component::visualmodel::OglModel;
+
+#include "AssetFactory.h"
+#include "AssetFactory.inl"
+
 namespace sofa
 {
 namespace qtquick
 {
 
-const QUrl TextureAsset::iconPath = QUrl("qrc:/icon/ICON_FILE_IMAGE.png");
-const QString TextureAsset::typeString = "Image file";
-const TextureAsset::LoaderMap TextureAsset::loaders = TextureAsset::createLoaders();
+/// Register all python assets extensions to the factory
+bool __tex = AssetFactory::registerAsset("tex", new AssetCreator<TextureAsset>());
+bool __svg = AssetFactory::registerAsset("svg", new AssetCreator<TextureAsset>());
+bool __bmp = AssetFactory::registerAsset("bmp", new AssetCreator<TextureAsset>());
+bool __tif = AssetFactory::registerAsset("tif", new AssetCreator<TextureAsset>());
+bool __png = AssetFactory::registerAsset("png", new AssetCreator<TextureAsset>());
+bool __jpg = AssetFactory::registerAsset("jpg", new AssetCreator<TextureAsset>());
+
+const TextureAsset::LoaderMap TextureAsset::_loaders = TextureAsset::createLoaders();
 
 std::map<std::string, BaseAssetLoader*> TextureAsset::createLoaders()
 {
@@ -32,12 +42,12 @@ TextureAsset::TextureAsset(std::string path, std::string extension)
 sofaqtquick::bindings::SofaNode* TextureAsset::getAsset(const std::string& assetName)
 {
     SOFA_UNUSED(assetName);
-    if (loaders.find(m_extension) == loaders.end())
+    if (_loaders.find(m_extension) == _loaders.end())
     {
         msg_error("Unknown file format.");
-        return new sofaqtquick::bindings::SofaNode(this);
+        return new sofaqtquick::bindings::SofaNode(nullptr);
     }
-    Node::SPtr root;
+    sofa::simulation::Node::SPtr root;
     root->setName("root");
     OglModel::SPtr vmodel = sofa::core::objectmodel::New<OglModel>();
     vmodel->setFilename("mesh/cube.obj");
@@ -46,13 +56,13 @@ sofaqtquick::bindings::SofaNode* TextureAsset::getAsset(const std::string& asset
 
     root->addObject(vmodel);
     root->init(sofa::core::ExecParams::defaultInstance());
-    DAGNode::SPtr node = DAGNode::SPtr(dynamic_cast<DAGNode*>(root.get()));
+    sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
+                dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
-QList<QObject*> TextureAsset::getAssetMetaInfo()
+void TextureAsset::getDetails()
 {
-    return QList<QObject*>();
 }
 
 } // namespace qtquick

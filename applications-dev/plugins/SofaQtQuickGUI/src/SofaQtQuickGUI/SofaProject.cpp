@@ -31,8 +31,6 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     scanProject(root);
 }
 
-AssetFactory* SofaProject::getAssetFactory() { return &m_assetFactory; }
-
 void SofaProject::scanProject(const QUrl& folder)
 {
     _scanProject(QDir(folder.path()));
@@ -151,29 +149,16 @@ void SofaProject::_scanProject(const QDir& folder)
         if (f.isDir())
         {
             if (f.fileName() == "." || f.fileName() == "..")
-            {
                 continue;
-            }
-            scanProject(QDir(f.filePath()));
+            _scanProject(QDir(f.filePath()));
         }
         else
         {
-            if (f.suffix() == "py")
-            {
-                QString docstring(PythonEnvironment::getPythonModuleDocstring(f.filePath().toStdString()).c_str());
-                if (docstring.contains("type: SofaContent"))
-                {
-                    m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
-                }
-            }
-            else
-            {
-                m_assets.insert(assetMapPair(f.filePath(), m_assetFactory.createInstance(f.filePath(), f.suffix())));
-            }
+            m_assets.insert(assetMapPair(f.filePath(), AssetFactory::createInstance(
+                                             f.filePath(), f.suffix())));
         }
     }
     QApplication::restoreOverrideCursor();
-
 }
 
 const QString SofaProject::getFileCount(const QUrl& url)
@@ -186,41 +171,21 @@ const QString SofaProject::getFileCount(const QUrl& url)
     return QString(str.c_str());
 }
 
-
-sofaqtquick::bindings::SofaNode* SofaProject::getAsset(const QUrl& url, const QString& assetName)
+Asset* SofaProject::getAsset(const QString& filePath)
 {
-    assetMapIterator it = m_assets.find(url.toLocalFile());
-    if (it == m_assets.end())
+    const auto& it = m_assets.find(filePath);
+    if (it != m_assets.end() && it->second != nullptr)
     {
-        return nullptr;
+        msg_info(filePath.toStdString())  << " found";
+        return it->second.get();
     }
-    if (!it->second.get())
-    {
-        return nullptr;
-    }
-    sofaqtquick::bindings::SofaNode* node = it->second->getAsset(assetName.toStdString());
-    if (node == nullptr)
-    {
-        return nullptr;
-    }
-
-    return node;
+    return nullptr;
 }
 
-QList<QObject*> SofaProject::getAssetMetaInfo(const QUrl& url)
+QStringList SofaProject::getSupportedTypes() const
 {
-    assetMapIterator it = m_assets.find(url.toLocalFile());
-    if (it == m_assets.end())
-    {
-        return QList<QObject*>();
-    }
-    if (!it->second.get())
-    {
-        return QList<QObject*>();
-    }
-    return it->second->getAssetMetaInfo();
+    return AssetFactory::getSupportedTypes();
 }
-
 
 bool SofaProject::createPrefab(SofaBase* node)
 {
@@ -248,6 +213,7 @@ bool SofaProject::createPrefab(SofaBase* node)
             return PyObject_IsTrue(ret);
         }
     }
+    return false;
 }
 
 

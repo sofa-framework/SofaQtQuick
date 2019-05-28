@@ -17,10 +17,8 @@ class SOFA_SOFAQTQUICKGUI_API BaseAssetCreator
 {
   public:
     virtual ~BaseAssetCreator();
-    virtual Asset::SPtr createInstance(std::string path,
+    virtual std::shared_ptr<Asset> createInstance(std::string path,
                                                   std::string extension) = 0;
-    virtual const QUrl& getIcon() = 0;
-    virtual const QString& getTypeString() = 0;
 };
 
 /**
@@ -34,10 +32,8 @@ class SOFA_SOFAQTQUICKGUI_API AssetCreator : public BaseAssetCreator
   public:
     AssetCreator();
     virtual ~AssetCreator();
-    virtual Asset::SPtr createInstance(std::string path,
+    virtual std::shared_ptr<Asset> createInstance(std::string path,
                                                   std::string extension);
-    virtual const QUrl& getIcon();
-    virtual const QString& getTypeString();
 };
 
 /**
@@ -46,46 +42,24 @@ class SOFA_SOFAQTQUICKGUI_API AssetCreator : public BaseAssetCreator
  *   - Can instantiate an Asset according to a file's extension & path
  *   - Can query an asset's Icon from its extension
  */
-class SOFA_SOFAQTQUICKGUI_API AssetFactory : public QObject
+class SOFA_SOFAQTQUICKGUI_API AssetFactory
 {
-    Q_OBJECT
   public:
-    explicit AssetFactory(QObject* parent = nullptr);
-    ~AssetFactory();
-
-    Q_INVOKABLE QUrl getIcon(QString extension) const;
-    Q_INVOKABLE QString getTypeString(QString extension) const;
-    Q_INVOKABLE QStringList getSupportedTypes() const;
-    Asset::SPtr createInstance(const QString& path,
-                                          const QString& extension) const;
-
+    static QStringList getSupportedTypes();
+    static std::shared_ptr<Asset> createInstance(const QString& path,
+                                                 const QString& extension);
+    static bool registerAsset(const std::string& extension,
+                              BaseAssetCreator* creator);
+    static void clearLoaders();
 
   private:
-    std::map<std::string, BaseAssetCreator*> m_loaders;
+    // A local static map (inside a static method) guarantees the order of
+    // creation of those static objects in the different translation units
+    inline static std::map<std::string, BaseAssetCreator*>& getFactoryCreators() {
+        static std::map<std::string, BaseAssetCreator*> _creators;
+        return _creators;
+    }
 };
-
-template <class T> AssetCreator<T>::AssetCreator() {}
-
-template <class T> AssetCreator<T>::~AssetCreator() {}
-
-template <class T>
-Asset::SPtr AssetCreator<T>::createInstance(std::string path,
-                                                       std::string extension)
-{
-    Asset::SPtr t = sofa::core::objectmodel::New<T>(path, extension);
-    t->initAsset();
-    return t;
-}
-
-template <class T> const QUrl& AssetCreator<T>::getIcon()
-{
-    return T::iconPath;
-}
-
-template <class T> const QString& AssetCreator<T>::getTypeString()
-{
-    return T::typeString;
-}
 
 } // namespace qtquick
 } // namespace sofa

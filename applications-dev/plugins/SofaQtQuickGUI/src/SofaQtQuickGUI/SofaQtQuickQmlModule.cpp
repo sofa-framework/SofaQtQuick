@@ -74,8 +74,14 @@ using sofa::qtquick::console::Console ;
 #include <SofaQtQuickGUI/SofaProject.h>
 using sofa::qtquick::SofaProject;
 
-#include <SofaQtQuickGUI/Assets/AssetFactory.h>
-using sofa::qtquick::AssetFactory;
+#include <SofaQtQuickGUI/Assets/Asset.h>
+using sofa::qtquick::Asset;
+#include <SofaQtQuickGUI/Assets/PythonAsset.h>
+using sofa::qtquick::PythonAsset;
+#include <SofaQtQuickGUI/Assets/MeshAsset.h>
+using sofa::qtquick::MeshAsset;
+#include <SofaQtQuickGUI/Assets/TextureAsset.h>
+using sofa::qtquick::TextureAsset;
 
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofaqtquick::bindings::SofaFactory;
@@ -146,7 +152,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<size_t>("const size_t");
     qRegisterMetaType<QVariantMap*>("QVariantMap*");
     qRegisterMetaType<SofaScene*>("const SofaScene*");
-    qRegisterMetaType<AssetFactory*>("AssetFactory*");
+    qRegisterMetaType<Asset*>("Asset*");
     qRegisterMetaType<QUrlList>("QUrlList");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("sofaqtquick::bindings::SofaBaseObject*");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("SofaBaseObject*");
@@ -192,7 +198,10 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<AssetView>                                      ("AssetView"                            , versionMajor, versionMinor, "AssetView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
-    qmlRegisterType<AssetFactory>                                   ("AssetFactory"                         , versionMajor, versionMinor, "AssetFactory");
+    qmlRegisterUncreatableType<Asset>                               ("Asset"                                , versionMajor, versionMinor, "Asset", QString("It is not possible to create an Asset"));
+    qmlRegisterUncreatableType<PythonAsset>                         ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset", QString("It is not possible to create a PythonAsset"));
+    qmlRegisterUncreatableType<MeshAsset>                           ("MeshAsset"                            , versionMajor, versionMinor, "MeshAsset", QString("It is not possible to create a MeshAsset"));
+    qmlRegisterUncreatableType<TextureAsset>                        ("TextureAsset"                         , versionMajor, versionMinor, "TextureAsset", QString("It is not possible to create a TextureAsset"));
 
     qmlRegisterUncreatableType<sofaqtquick::bindings::SofaLink> ("Sofa.Core.SofaLink",
                                                                  versionMajor, versionMinor,

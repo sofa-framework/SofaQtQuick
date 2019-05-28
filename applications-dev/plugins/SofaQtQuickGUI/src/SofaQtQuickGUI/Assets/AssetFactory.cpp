@@ -11,51 +11,17 @@ namespace qtquick
 
 BaseAssetCreator::~BaseAssetCreator() {}
 
-AssetFactory::AssetFactory(QObject* parent) : QObject(parent)
+void AssetFactory::clearLoaders()
 {
-    m_loaders["stl"] = new AssetCreator<MeshAsset>();
-    m_loaders["obj"] = new AssetCreator<MeshAsset>();
-    m_loaders["vtk"] = new AssetCreator<MeshAsset>();
-    m_loaders["gmsh"] = new AssetCreator<MeshAsset>();
-
-    m_loaders["py"] = new AssetCreator<PythonAsset>();
-    m_loaders["pyscn"] = new AssetCreator<PythonAsset>();
-
-    m_loaders["png"] = new AssetCreator<TextureAsset>();
-    m_loaders["jpg"] = new AssetCreator<TextureAsset>();
-    m_loaders["tif"] = new AssetCreator<TextureAsset>();
-    m_loaders["bmp"] = new AssetCreator<TextureAsset>();
-    m_loaders["svg"] = new AssetCreator<TextureAsset>();
-    m_loaders["tex"] = new AssetCreator<TextureAsset>();
-    m_loaders["ico"] = new AssetCreator<TextureAsset>();
+    for (const auto& creator : getFactoryCreators())
+        delete creator.second;
+    getFactoryCreators().clear();
 }
 
-AssetFactory::~AssetFactory()
-{
-    for (auto loader : m_loaders)
-        delete (loader.second);
-    m_loaders.clear();
-}
-
-QUrl AssetFactory::getIcon(QString extension) const
-{
-    const auto& loader = m_loaders.find(extension.toStdString());
-    if (loader == m_loaders.end())
-        return Asset::iconPath;
-    return loader->second->getIcon();
-}
-QString AssetFactory::getTypeString(QString extension) const
-{
-    const auto& loader = m_loaders.find(extension.toStdString());
-    if (loader == m_loaders.end())
-        return Asset::typeString;
-    return loader->second->getTypeString();
-}
-
-QStringList AssetFactory::getSupportedTypes() const
+QStringList AssetFactory::getSupportedTypes()
 {
     QStringList keys;
-    for (const auto& [k, v] : m_loaders)
+    for (const auto& [k, v] : getFactoryCreators())
     {
         SOFA_UNUSED(v);
         keys.push_back(QString("*.") + k.c_str());
@@ -63,15 +29,24 @@ QStringList AssetFactory::getSupportedTypes() const
     return keys;
 }
 
-Asset::SPtr
+std::shared_ptr<Asset>
 AssetFactory::createInstance(const QString& path,
-                             const QString& extension) const
+                             const QString& extension)
 {
-    const auto& loader = m_loaders.find(extension.toStdString());
-    if (loader == m_loaders.end())
-        return nullptr;
-    return loader->second->createInstance(path.toStdString(),
+    const auto& creator = getFactoryCreators().find(extension.toStdString());
+    if (creator == getFactoryCreators().end())
+        return nullptr; // TODO:@marques-bruno Instead of discarding unknown extensions, load custom templates from a user defined python templates dir
+    return creator->second->createInstance(path.toStdString(),
                                           extension.toStdString());
+}
+
+bool AssetFactory::registerAsset(const std::string& extension,
+                                 BaseAssetCreator* creator)
+{
+    if (getFactoryCreators().find(extension) == getFactoryCreators().end())
+        delete getFactoryCreators()[extension];
+    getFactoryCreators()[extension] = creator;
+    return true;
 }
 
 } // namespace qtquick
