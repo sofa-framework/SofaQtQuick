@@ -22,8 +22,12 @@ Menu {
 
     title: "Asset Content"
     visible: true
+    onOpened: {
+        menuRepeater.model = assetMenu.model.scriptContent
+    }
+
     Repeater {
-        model: assetMenu.model
+        id: menuRepeater
         MenuItem {
             text: modelData.name
             onTextChanged: {

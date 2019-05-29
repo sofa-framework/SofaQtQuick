@@ -12,13 +12,29 @@ import QtQuick.Window 2.12
 //import AssetView 1.0
 
 Menu {
+    id: projectMenu
+
+    property Asset model
+
     property var filePath
     property bool fileIsDir: true
     property bool fileIsScene: false
 
-    id: projectMenu
+    function isScene(asset) {
+        if (!asset)
+            return false
+        for (var m in asset.scriptContent) {
+            if (m.name === "createScene")
+                return true
+        }
+        return false
+    }
+    onOpened: {
+        fileIsScene = isScene(model)
+    }
+
     visible: false
-    
+
     MenuItem {
         text: "Show Containing Folder"
         onTriggered: {

@@ -277,8 +277,7 @@ Item {
                         SofaAssetMenu {
                             id: assetMenu
 
-                            model: self.project.getAsset(filePath) ?
-                                       self.project.getAsset(filePath).scriptContent : null
+                            model: self.project.getAsset(filePath)
                             visible: false
                         }
 
@@ -286,16 +285,7 @@ Item {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
                             fileIsDir: index !== -1 ? folderModel.get(index, "fileIsDir") : ""
-                            fileIsScene: {
-                                var asset = self.project.getAsset(filePath)
-                                if (!asset)
-                                    return false
-                                for (var m in asset.scriptContent) {
-                                    if (m.name === "createScene")
-                                        return true
-                                }
-                                return false
-                            }
+                            model: self.project.getAsset(filePath)
                         }
 
                         MouseArea {

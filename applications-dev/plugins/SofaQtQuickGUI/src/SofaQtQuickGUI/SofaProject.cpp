@@ -175,10 +175,7 @@ Asset* SofaProject::getAsset(const QString& filePath)
 {
     const auto& it = m_assets.find(filePath);
     if (it != m_assets.end() && it->second != nullptr)
-    {
-        msg_info(filePath.toStdString())  << " found";
         return it->second.get();
-    }
     return nullptr;
 }
 
