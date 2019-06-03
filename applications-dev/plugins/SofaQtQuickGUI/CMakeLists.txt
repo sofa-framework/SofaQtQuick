@@ -160,9 +160,8 @@ set(EXTRA_FILES
 set(PYTHON_FILES
     data/python/BaseHeader.py
     data/python/PythonConsole.py
-    data/python/SofaQtQuick.py
 )
-sofa_set_python_directory(${PROJECT_NAME} "data/python")
+sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "data/python")
 
 set(QRC_FILES
     data/sofaQtQuickGUI_resources.qrc
@@ -242,8 +241,9 @@ endif()
 #endif()
 #sofa_install_libraries(${ASSIMP_DLL})
 
+set(SOFAQTQUICKGUI_VERSION 1.0)
 ## Install rules for the library; CMake package configurations files
-sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_ROOT_DIR ${PROJECT_NAME})
+sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_INSTALL_DIR ${PROJECT_NAME})
 
 if(SOFA_BUILD_TESTS)
     find_package(SofaTest QUIET)
