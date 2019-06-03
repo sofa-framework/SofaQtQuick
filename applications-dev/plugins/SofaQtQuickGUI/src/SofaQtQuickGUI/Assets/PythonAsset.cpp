@@ -20,11 +20,11 @@ namespace sofa::qtquick
 {
 
 /// Register all python assets extensions to the factory
-bool __pyscn = AssetFactory::registerAsset("pyscn", new AssetCreator<PythonAsset>());
-bool __py = AssetFactory::registerAsset("py", new AssetCreator<PythonAsset>());
-bool __prefab = AssetFactory::registerAsset("prefab", new AssetCreator<PythonAsset>());
-bool __pyctl = AssetFactory::registerAsset("pyctl", new AssetCreator<PythonAsset>());
-bool __pyeng = AssetFactory::registerAsset("pyeng", new AssetCreator<PythonAsset>());
+static bool __pyscn = AssetFactory::registerAsset("pyscn", new AssetCreator<PythonAsset>());
+static bool __py = AssetFactory::registerAsset("py", new AssetCreator<PythonAsset>());
+static bool __prefab = AssetFactory::registerAsset("prefab", new AssetCreator<PythonAsset>());
+static bool __pyctl = AssetFactory::registerAsset("pyctl", new AssetCreator<PythonAsset>());
+static bool __pyeng = AssetFactory::registerAsset("pyeng", new AssetCreator<PythonAsset>());
 
 const PythonAsset::LoaderMap PythonAsset::_loaders = PythonAsset::createLoaders();
 
@@ -81,9 +81,9 @@ PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::stri
       m_docstring(docstring)
 {}
 
-QString PythonAssetModel::name() const { return m_name.c_str(); }
-QString PythonAssetModel::type() const { return m_type.c_str(); }
-QString PythonAssetModel::docstring() const { return m_docstring.c_str(); }
+QString PythonAssetModel::getName() const { return QString(m_name.c_str()); }
+QString PythonAssetModel::getType() const { return QString(m_type.c_str()); }
+QString PythonAssetModel::getDocstring() const { return QString(m_docstring.c_str()); }
 
 void PythonAsset::getDetails()
 {
@@ -117,5 +117,39 @@ void PythonAsset::getDetails()
         m_scriptContent.append(new PythonAssetModel(pair.first, pair.second));
 }
 
+QQmlListProperty<sofa::qtquick::PythonAssetModel> PythonAsset::getScriptContent()
+{
+    getDetails();
+
+    return QQmlListProperty<sofa::qtquick::PythonAssetModel>(this, this, &PythonAsset::content_count, &PythonAsset::get_content);
+}
+
+int PythonAsset::content_count()
+{
+    return m_scriptContent.count();
+}
+
+sofa::qtquick::PythonAssetModel* PythonAsset::get_content(int idx)
+{
+    return m_scriptContent.at(idx);
+}
+
+void PythonAsset::clear_content()
+{
+    m_scriptContent.clear();
+}
+
+
+void PythonAsset::clear_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>* list) {
+    reinterpret_cast< PythonAsset* >(list->data)->clear_content();
+}
+
+sofa::qtquick::PythonAssetModel* PythonAsset::get_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>* list, int i) {
+    return reinterpret_cast< PythonAsset* >(list->data)->get_content(i);
+}
+
+int PythonAsset::content_count(QQmlListProperty<sofa::qtquick::PythonAssetModel>* list) {
+    return reinterpret_cast< PythonAsset* >(list->data)->content_count();
+}
 
 } // namespace sofa::qtquick

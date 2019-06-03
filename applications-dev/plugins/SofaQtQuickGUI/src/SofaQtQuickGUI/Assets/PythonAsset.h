@@ -7,6 +7,9 @@
 #include <SofaPython/PythonFactory.h>
 using sofa::simulation::PythonEnvironment;
 
+
+#include <QQmlListProperty>
+
 namespace sofa::qtquick
 {
 
@@ -18,23 +21,22 @@ class PythonAssetModel : public QObject
     Q_OBJECT
 
 public:
+    PythonAssetModel() {}
     PythonAssetModel(std::string name, std::string type, std::string docstring = "");
 
-    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
-    Q_PROPERTY(QString type READ type NOTIFY typeChanged)
-    Q_PROPERTY(QString docstring READ docstring NOTIFY docstringChanged)
+    Q_PROPERTY(QString name READ getName NOTIFY nameChanged)
+    Q_PROPERTY(QString type READ getType NOTIFY typeChanged)
+    Q_PROPERTY(QString docstring READ getDocstring NOTIFY docstringChanged)
 
+    Q_INVOKABLE QString getName() const;
+    Q_INVOKABLE QString getType() const;
+    Q_INVOKABLE QString getDocstring() const;
 private:
     Q_SIGNAL void nameChanged(QString);
-    QString name() const;
-    const std::string m_name;
-
     Q_SIGNAL void typeChanged(QString);
-    QString type() const;
-    const std::string m_type;
-
     Q_SIGNAL void docstringChanged(QString);
-    QString docstring() const;
+    const std::string m_name;
+    const std::string m_type;
     const std::string m_docstring;
 };
 
@@ -46,8 +48,9 @@ public:
     virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") override;
     virtual void getDetails() override;
 
-    Q_PROPERTY(QList<QObject*> scriptContent READ scriptContent NOTIFY scriptContentChanged)
+    Q_PROPERTY(QQmlListProperty<sofa::qtquick::PythonAssetModel> scriptContent READ getScriptContent)
 
+    QQmlListProperty<sofa::qtquick::PythonAssetModel> getScriptContent();
 protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
     Q_INVOKABLE virtual QUrl getIconPath() override { return QUrl("qrc:/icon/ICON_PYTHON.png"); }
@@ -62,15 +65,21 @@ protected:
         return false;
     }
 
-    Q_INVOKABLE QList<QObject*> scriptContent() { getDetails(); return m_scriptContent; }
-    Q_SIGNAL void scriptContentChanged(const QList<QObject*>& content);
-
     static const LoaderMap _loaders;
 
-    QList<QObject*> m_scriptContent;
+    QList<sofa::qtquick::PythonAssetModel*> m_scriptContent;
 
 public:
     static LoaderMap createLoaders();
+
+private:
+    static int content_count(QQmlListProperty<sofa::qtquick::PythonAssetModel>*);
+    static sofa::qtquick::PythonAssetModel* get_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>*, int);
+    static void clear_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>*);
+
+    int content_count();
+    sofa::qtquick::PythonAssetModel* get_content(int);
+    void clear_content();
 };
 
 } // namespace sofa::qtquick

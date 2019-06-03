@@ -24,6 +24,9 @@ Menu {
         if (!asset)
             return false
         for (var m in asset.scriptContent) {
+            console.error(m)
+            console.error(m.getName())
+            console.error(m.name())
             if (m.name === "createScene")
                 return true
         }
