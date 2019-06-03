@@ -468,6 +468,8 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
     if(!child)
         return;
 
+    this->onBeginAddChild(parent, child);
+
     //std::cerr << "++" << child->getName().c_str() << "(" << child << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
 
     if(!parent)
@@ -527,7 +529,13 @@ void SofaSceneListModel::addChild(Node* parent, Node* child)
         }
     }
 
-    MutationListener::addChild(parent, child);
+    this->onEndAddChild(parent, child);
+
+    // recursive behavior
+    for(Node::ObjectIterator it = child->object.begin(); it != child->object.end(); ++it)
+        addObject(child, it->get());
+    for(Node::ChildIterator it = child->child.begin(); it != child->child.end(); ++it)
+        addChild(child, it->get());
 }
 
 void SofaSceneListModel::removeChild(Node* parent, Node* child)
@@ -535,9 +543,15 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
     if(!child)
         return;
 
-    MutationListener::removeChild(parent, child);
+    // recursive behavior
+    for(Node::ObjectIterator it = child->object.begin(); it != child->object.end(); ++it)
+        removeObject(child, it->get());
+    for(Node::ChildIterator it = child->child.begin(); it != child->child.end(); ++it)
+        removeChild(child, it->get());
 
     //std::cerr << "--" << child->getName().c_str() << "(" << child << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
+
+    this->onBeginRemoveChild(parent, child);
 
     QList<Item>::iterator itemIt = myItems.begin();
     while(itemIt != myItems.end())
@@ -577,6 +591,8 @@ void SofaSceneListModel::removeChild(Node* parent, Node* child)
             ++itemIt;
         }
     }
+
+    this->onEndRemoveChild(parent, child);
 }
 
 //void SceneListModel::moveChild(Node* previous, Node* parent, Node* child)
@@ -590,6 +606,8 @@ void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
         return;
 
     //std::cerr << "+" << object->getName().c_str() << "(" << object << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
+
+    this->onBeginAddObject(parent, object);
 
     bool alreadyAdded = false;
     for(auto it = myItems.begin(); it != myItems.end(); ++it)
@@ -633,7 +651,7 @@ void SofaSceneListModel::addObject(Node* parent, BaseObject* object)
         }
     }
 
-    MutationListener::addObject(parent, object);
+    this->onEndAddObject(parent, object);
 }
 
 void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
@@ -641,7 +659,7 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
     if(!object || !parent)
         return;
 
-    MutationListener::removeObject(parent, object);
+    this->onBeginRemoveObject(parent, object);
 
     //std::cerr << "-" << object->getName().c_str() << "(" << object << ")" << " ; " << (parent ? parent->getName().c_str() : "") << "(" << parent << ")" << " > " << std::flush;
 
@@ -683,6 +701,8 @@ void SofaSceneListModel::removeObject(Node* parent, BaseObject* object)
             ++itemIt;
         }
     }
+
+    this->onEndRemoveObject(parent, object);
 }
 
 }

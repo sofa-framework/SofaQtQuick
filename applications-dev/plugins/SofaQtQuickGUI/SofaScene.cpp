@@ -2058,9 +2058,16 @@ void SofaScene::addChild(Node* parent, Node* child)
     if(!child)
         return;
 
+    onBeginAddChild(parent, child);
+
     myBases.insert(child);
 
-    MutationListener::addChild(parent, child);
+    onEndAddChild(parent, child);
+
+    for(Node::ObjectIterator it = child->object.begin(); it != child->object.end(); ++it)
+        addObject(child, it->get());
+    for(Node::ChildIterator it = child->child.begin(); it != child->child.end(); ++it)
+        addChild(child, it->get());
 }
 
 void SofaScene::removeChild(Node* parent, Node* child)
@@ -2068,7 +2075,10 @@ void SofaScene::removeChild(Node* parent, Node* child)
     if(!child)
         return;
 
-    MutationListener::removeChild(parent, child);
+    for(Node::ObjectIterator it = child->object.begin(); it != child->object.end(); ++it)
+        removeObject(child, it->get());
+    for(Node::ChildIterator it = child->child.begin(); it != child->child.end(); ++it)
+        removeChild(child, it->get());
 
     myBases.remove(child);
 }
@@ -2079,16 +2089,12 @@ void SofaScene::addObject(Node* parent, BaseObject* object)
         return;
 
     myBases.insert(object);
-
-    MutationListener::addObject(parent, object);
 }
 
 void SofaScene::removeObject(Node* parent, BaseObject* object)
 {
     if(!object || !parent)
         return;
-
-    MutationListener::removeObject(parent, object);
 
     myBases.remove(object);
 }
