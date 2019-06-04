@@ -23,7 +23,7 @@ class MeshAsset : public Asset
     Q_OBJECT
   public:
     MeshAsset(std::string path, std::string extension);
-    virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") override;
+    virtual sofaqtquick::bindings::SofaNode* create(const QString& assetName = "") override;
     virtual void getDetails() override;
 
     Q_PROPERTY(int vertices READ vertices NOTIFY verticesChanged)

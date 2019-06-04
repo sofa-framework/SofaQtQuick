@@ -5,11 +5,12 @@ import SofaBasics 1.0
 import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
 import Asset 1.0
+import PythonAsset 1.0
+import PythonAssetModel 1.0
 import SofaColorScheme 1.0
 import SofaWidgets 1.0
 import QtQml 2.12
 import QtQuick.Window 2.12
-//import AssetView 1.0
 
 Menu {
     id: projectMenu
@@ -18,23 +19,6 @@ Menu {
 
     property var filePath
     property bool fileIsDir: true
-    property bool fileIsScene: false
-
-    function isScene(asset) {
-        if (!asset)
-            return false
-        for (var m in asset.scriptContent) {
-            console.error(m)
-            console.error(m.getName())
-            console.error(m.name())
-            if (m.name === "createScene")
-                return true
-        }
-        return false
-    }
-    onOpened: {
-        fileIsScene = isScene(model)
-    }
 
     visible: false
 
@@ -42,8 +26,6 @@ Menu {
         text: "Show Containing Folder"
         onTriggered: {
             projectMenu.visible = false
-            console.error(filePath)
-            console.error("fileIsDir: " + fileIsDir)
             sofaApplication.openInExplorer(filePath)
         }
     }
@@ -135,6 +117,9 @@ Menu {
                 projectMenu.visible = false
                 sofaApplication.sofaScene.source = filePath
             }
+            Component.onCompleted: {
+                console.error("sceneSpecificEntries created")
+            }
         }
     }
     
@@ -144,6 +129,6 @@ Menu {
     
     Loader {
         id: sceneEntriesLoader
-        sourceComponent: fileIsScene ? sceneSpecificEntries : null
+        sourceComponent: (model && model.isScene) ? sceneSpecificEntries : null
     }
 }

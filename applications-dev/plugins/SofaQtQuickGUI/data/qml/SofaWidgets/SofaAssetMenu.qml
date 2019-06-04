@@ -10,20 +10,19 @@ import Sofa.Core.SofaNode 1.0
 Menu {
     id: assetMenu
 
-    property var model: null
+    property var asset
     property string assetName: ""
-    property var draggedData: null
-    property var parentNode: null
-    property var basemodel: null
-    property var sceneModel: null
-    property var sofaScene: null
-    property var treeView: null
-    property var selection: null
+    property var parentNode
+    property var basemodel
+    property var sceneModel
+    property var sofaScene
+    property var treeView
+    property var selection
 
     title: "Asset Content"
     visible: true
     onOpened: {
-        menuRepeater.model = assetMenu.model.scriptContent
+        menuRepeater.model = assetMenu.asset.scriptContent
     }
 
     Repeater {
@@ -32,8 +31,8 @@ Menu {
             text: modelData.name
             onTextChanged: {
                 if (text === "createScene")
-                    wrapper.isSceneFile = true
-                else wrapper.isSceneFile = false
+                    asset.isSceneFile = true
+                else asset.isSceneFile = false
             }
 
             icon.source: (modelData.type  === "function" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
@@ -43,35 +42,36 @@ Menu {
                          (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
             onTriggered: {
                 assetName = modelData.name
-                var parentNode = createAsset()
-                if (!parentNode)
+                console.error("calling method " + assetName + " from script " + asset.path)
+                var p = createAsset()
+                if (!p)
                     return
-                var srcIndex = basemodel.getIndexFromBase(parentNode)
+                var srcIndex = basemodel.getIndexFromBase(p)
                 var index = sceneModel.mapFromSource(srcIndex);
                 treeView.collapseAncestors(index)
                 treeView.expandAncestors(index)
                 treeView.expand(index)
                 treeView.selection.setCurrentIndex(index, selection)
             }
+
+            function createAsset() {
+                var newNode = asset.create(assetName)
+                var hasNodes = newNode.getChildren().size()
+                newNode.copyTo(parentNode)
+                if (hasNodes) {
+                    var childsList = parentNode.getChildren()
+                    if (childsList.size() !== 0) {
+                        return childsList.last()
+                    }
+                }
+                return parentNode
+            }
+
             Component.onCompleted: {
                 assetName = modelData.name
             }
         }
     }
 
-    function createAsset() {
-        var asset = draggedData.getAsset(assetName)
-        var parent = sofaScene.root()
-        if (parentNode !== "")
-            parent = parent.getNodeInGraph(parentNode)
-        var hasNodes = asset.getChildren().size()
-        asset.copyTo(parent)
-        if (hasNodes) {
-            var childsList = parent.getChildren()
-            if (childsList.size() !== 0) {
-                return childsList.last()
-            }
-        }
-        return parent
-    }
+
 }

@@ -274,13 +274,6 @@ Item {
 
                         property bool isSceneFile: false
 
-                        SofaAssetMenu {
-                            id: assetMenu
-
-                            model: self.project.getAsset(filePath)
-                            visible: false
-                        }
-
                         ProjectViewMenu {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
@@ -333,41 +326,24 @@ Item {
 
                             drag.onActiveChanged: {
                                 if (drag.active) {
-                                    draggedData.ctxMenu = assetMenu
-
-                                    draggedData.url = folderModel.get(index, "fileURL")
-                                    var s = draggedData.url.toString()
-                                    var newString = s.replace(self.project.rootDir, "");
-                                    draggedData.localPath = newString
+                                    console.error("Drag Started")
+                                    draggedData.asset = wrapper.asset
                                 } else {
                                     console.error("Drag Finished")
 
                                 }
                             }
-                            function insertAsset(index, rootNode) {
-                                var component = wrapper.asset.getAsset(folderModel.get(index, "fileURL"))
-                                component.copyTo(rootNode)
-                            }
 
                             Item {
                                 id: draggedData
-                                Drag.active: fileIsDir ? mouseRegion.drag.active : false
+                                Drag.active: !fileIsDir ? mouseRegion.drag.active : false
                                 Drag.dragType: Drag.Automatic
                                 Drag.supportedActions: Qt.CopyAction
                                 Drag.mimeData: {
                                     "text/plain": "Copied text"
                                 }
                                 property string origin: "ProjectView"
-                                property bool accepted: false
-                                property point beginDrag
-                                property var node
-                                property var ctxMenu
-                                property url url
-                                property string localPath
-
-                                function getAsset(assetName) {
-                                    return self.project.getAsset(folderModel.get(index, "fileURL"), assetName)
-                                }
+                                property Asset asset
                             }
                         }
                     }

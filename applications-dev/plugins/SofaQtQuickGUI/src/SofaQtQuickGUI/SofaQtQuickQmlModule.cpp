@@ -200,7 +200,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
     qmlRegisterUncreatableType<Asset>                               ("Asset"                                , versionMajor, versionMinor, "Asset", QString("It is not possible to create an Asset"));
-    qmlRegisterUncreatableType<PythonAsset>                         ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset", QString("It is not possible to create a PythonAsset"));
+    qmlRegisterType<PythonAsset>                                    ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset");
     qmlRegisterType<PythonAssetModel>                               ("PythonAssetModel"                     , versionMajor, versionMinor, "PythonAssetModel");
     qmlRegisterUncreatableType<MeshAsset>                           ("MeshAsset"                            , versionMajor, versionMinor, "MeshAsset", QString("It is not possible to create a MeshAsset"));
     qmlRegisterUncreatableType<TextureAsset>                        ("TextureAsset"                         , versionMajor, versionMinor, "TextureAsset", QString("It is not possible to create a TextureAsset"));

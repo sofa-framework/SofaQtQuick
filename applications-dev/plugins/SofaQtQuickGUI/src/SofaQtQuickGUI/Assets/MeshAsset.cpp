@@ -50,7 +50,7 @@ MeshAsset::MeshAsset(std::string path, std::string extension)
 {
 }
 
-sofaqtquick::bindings::SofaNode* MeshAsset::getAsset(const std::string& assetName)
+sofaqtquick::bindings::SofaNode* MeshAsset::create(const QString& assetName)
 {
     SOFA_UNUSED(assetName);
     if (_loaders.find(m_extension) == _loaders.end() ||

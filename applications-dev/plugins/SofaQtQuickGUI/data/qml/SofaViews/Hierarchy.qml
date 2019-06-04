@@ -546,6 +546,8 @@ Rectangle {
                     property SofaBase node: null
                     anchors.fill: parent
                     onEntered: {
+                        console.error("Entered DropArea")
+
                         var srcIndex = sceneModel.mapToSource(styleData.index)
                         var theComponent = basemodel.getBaseFromIndex(srcIndex)
                         if (isNode) node = theComponent
@@ -578,25 +580,29 @@ Rectangle {
                     }
 
                     function dropFromProjectView(src) {
-                        src.ctxMenu.parent = parent
-                        src.ctxMenu.draggedData = src
-                        src.ctxMenu.parentNode = node.getPathName()
-                        src.ctxMenu.sofaScene = sofaScene
-                        src.ctxMenu.basemodel = basemodel
-                        src.ctxMenu.sceneModel = sceneModel
-                        src.ctxMenu.treeView = treeView
-                        src.ctxMenu.selection = ItemSelectionModel.ClearAndSelect
-                        if (src.ctxMenu.model.length > 0) {
-                            src.ctxMenu.visible = true
-                        }
+                        var menuComponent = Qt.createComponent("qrc:/SofaWidgets/SofaAssetMenu.qml")
+                        var assetMenu = menuComponent.createObject(dropArea, {
+                                                                   "asset": src.asset,
+                                                                   "parentNode": node,
+                                                                   "basemodel": basemodel,
+                                                                   "sceneModel": sceneModel,
+                                                                   "treeView": treeView,
+                                                                   "selection": ItemSelectionModel.ClearAndSelect
+                                                               });
+                        assetMenu.open()
                     }
 
                     onDropped: {
                         if (drag.source.origin === "Hierarchy") {
+                            console.error("Origin: Hierarchy")
                             dropFromHierarchy(drag.source)
                         }
                         else if (drag.source.origin === "ProjectView") {
+                            console.error("Origin: ProjectView")
                             dropFromProjectView(drag.source)
+                        }
+                        else {
+                            console.error("Origin: Duh..?")
                         }
                     }
                 }

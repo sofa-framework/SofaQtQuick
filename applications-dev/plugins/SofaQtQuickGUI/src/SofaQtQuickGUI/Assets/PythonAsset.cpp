@@ -44,7 +44,7 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 {
 }
 
-sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetName)
+sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
 {
     if (_loaders.find(m_extension) == _loaders.end() ||
             _loaders.find(m_extension)->second == nullptr)
@@ -64,7 +64,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::getAsset(const std::string& assetN
     PythonEnvironment::gil lock(__func__);
     PyObject* mpath = PyString_FromString(path.c_str());
     PyObject* mname = PyString_FromString(stem.c_str());
-    PyObject* pname = PyString_FromString(assetName.c_str());
+    PyObject* pname = PyString_FromString(assetName.toStdString().c_str());
     PyObject* assetnode = sofa::PythonFactory::toPython(root.get());
 
     PyObject* args = PyTuple_Pack(4, mpath, mname, pname, assetnode);
@@ -87,6 +87,7 @@ QString PythonAssetModel::getDocstring() const { return QString(m_docstring.c_st
 
 void PythonAsset::getDetails()
 {
+    if (m_detailsLoaded) return;
     QString docstring(PythonEnvironment::getPythonModuleDocstring(m_path).c_str());
     if (!docstring.contains("type: SofaContent"))
     {
@@ -117,39 +118,25 @@ void PythonAsset::getDetails()
         m_scriptContent.append(new PythonAssetModel(pair.first, pair.second));
 }
 
-QQmlListProperty<sofa::qtquick::PythonAssetModel> PythonAsset::getScriptContent()
+QVariantList PythonAsset::scriptContent()
 {
     getDetails();
-
-    return QQmlListProperty<sofa::qtquick::PythonAssetModel>(this, this, &PythonAsset::content_count, &PythonAsset::get_content);
+    QVariantList list;
+    for (const auto& item : m_scriptContent)
+    {
+        list.append(QVariant::fromValue(item));
+    }
+    return list;
 }
 
-int PythonAsset::content_count()
+bool PythonAsset::isScene()
 {
-    return m_scriptContent.count();
-}
-
-sofa::qtquick::PythonAssetModel* PythonAsset::get_content(int idx)
-{
-    return m_scriptContent.at(idx);
-}
-
-void PythonAsset::clear_content()
-{
-    m_scriptContent.clear();
-}
-
-
-void PythonAsset::clear_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>* list) {
-    reinterpret_cast< PythonAsset* >(list->data)->clear_content();
-}
-
-sofa::qtquick::PythonAssetModel* PythonAsset::get_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>* list, int i) {
-    return reinterpret_cast< PythonAsset* >(list->data)->get_content(i);
-}
-
-int PythonAsset::content_count(QQmlListProperty<sofa::qtquick::PythonAssetModel>* list) {
-    return reinterpret_cast< PythonAsset* >(list->data)->content_count();
+    getDetails();
+    for (const auto& item : m_scriptContent){
+        if (item->getName() == "createScene")
+            return true;
+    }
+    return false;
 }
 
 } // namespace sofa::qtquick

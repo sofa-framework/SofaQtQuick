@@ -44,13 +44,14 @@ class PythonAsset : public Asset
 {
     Q_OBJECT
 public:
+    PythonAsset() : Asset("", "") {}
     PythonAsset(std::string path, std::string extension);
-    virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") override;
+    virtual sofaqtquick::bindings::SofaNode* create(const QString& assetName = "") override;
     virtual void getDetails() override;
 
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::PythonAssetModel> scriptContent READ getScriptContent)
+    Q_PROPERTY(QVariantList scriptContent READ scriptContent)
+    Q_PROPERTY(bool isScene READ isScene)
 
-    QQmlListProperty<sofa::qtquick::PythonAssetModel> getScriptContent();
 protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
     Q_INVOKABLE virtual QUrl getIconPath() override { return QUrl("qrc:/icon/ICON_PYTHON.png"); }
@@ -67,19 +68,14 @@ protected:
 
     static const LoaderMap _loaders;
 
-    QList<sofa::qtquick::PythonAssetModel*> m_scriptContent;
 
 public:
     static LoaderMap createLoaders();
 
 private:
-    static int content_count(QQmlListProperty<sofa::qtquick::PythonAssetModel>*);
-    static sofa::qtquick::PythonAssetModel* get_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>*, int);
-    static void clear_content(QQmlListProperty<sofa::qtquick::PythonAssetModel>*);
-
-    int content_count();
-    sofa::qtquick::PythonAssetModel* get_content(int);
-    void clear_content();
+    bool isScene();
+    QVariantList scriptContent();
+    QList<sofa::qtquick::PythonAssetModel*> m_scriptContent;
 };
 
 } // namespace sofa::qtquick

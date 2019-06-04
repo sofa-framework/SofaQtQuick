@@ -31,7 +31,7 @@ class Asset : public QObject
 
 
     Q_INVOKABLE virtual void getDetails() = 0; // Loads the asset
-    Q_INVOKABLE virtual sofaqtquick::bindings::SofaNode* getAsset(const std::string& assetName = "") = 0; // instantiates the asset
+    Q_INVOKABLE virtual sofaqtquick::bindings::SofaNode* create(const QString& assetName = "") = 0; // instantiates the asset
 
     Q_PROPERTY(QString typeString READ getTypeString NOTIFY typeStringChanged)
     Q_PROPERTY(QUrl iconPath READ getIconPath NOTIFY iconPathChanged)
@@ -56,6 +56,7 @@ class Asset : public QObject
 
     const std::string m_path;
     const std::string m_extension;
+    bool m_detailsLoaded;
 };
 
 struct BaseAssetLoader
