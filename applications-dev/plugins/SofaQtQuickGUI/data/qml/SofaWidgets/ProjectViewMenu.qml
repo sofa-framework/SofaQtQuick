@@ -117,9 +117,6 @@ Menu {
                 projectMenu.visible = false
                 sofaApplication.sofaScene.source = filePath
             }
-            Component.onCompleted: {
-                console.error("sceneSpecificEntries created")
-            }
         }
     }
     

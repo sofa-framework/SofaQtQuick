@@ -210,6 +210,7 @@ Rectangle {
                 var srcIndex = sceneModel.mapToSource(currentIndex)
                 var theComponent = basemodel.getBaseFromIndex(srcIndex)
                 sofaScene.selectedComponent = theComponent
+                SofaApplication.currentProject.selectedAsset = null
             }
         }
 
@@ -509,6 +510,8 @@ Rectangle {
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {
                         sofaScene.selectedComponent = theComponent
+                        SofaApplication.currentProject.selectedAsset = null
+
                         treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
                     } else if (mouse.button === Qt.RightButton) {
                         if(theComponent.isNode()) {

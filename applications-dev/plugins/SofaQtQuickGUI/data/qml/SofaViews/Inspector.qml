@@ -54,6 +54,7 @@ import SofaInspectorDataListModel 1.0
 */
 Item {
 
+    property var selectedAsset: SofaApplication.currentProject.selectedAsset
     Rectangle {
         id: topRect
         color: SofaApplication.style.contentBackgroundColor
@@ -67,6 +68,7 @@ Item {
         property bool showDebug : isDebug.checked
         property int refreshCounter : 0
 
+        visible: selectedAsset === null
         Connections {
             target: sofaScene
             onStepEnd: topRect.refreshCounter = topRect.refreshCounter + 1;
@@ -505,6 +507,37 @@ Item {
                 property var sofaSelectedComponent: sofaScene.selectedComponent
 
                 model : visualModel
+            }
+        }
+    }
+    Rectangle {
+        id: assetArea
+        anchors.top: header.bottom
+        width: parent.width
+        height: parent.height - 42
+        color: "transparent"
+        visible: selectedAsset !== null
+
+        Column {
+            spacing: 10
+            Repeater {
+                model: selectedAsset.scriptContent
+                GroupBox {
+                    width: assetArea.width
+                    title: modelData.name
+                    Rectangle {
+                        color: 'transparent'
+                        width: assetArea.width / 4 * 3
+                        implicitHeight: docstringLbl.implicitHeight
+                        Label {
+                            color: "#eeeeec"
+                            id: docstringLbl
+                            anchors.fill: parent
+                            text: modelData.docstring
+                            wrapMode: Text.Wrap
+                        }
+                    }
+                }
             }
         }
     }

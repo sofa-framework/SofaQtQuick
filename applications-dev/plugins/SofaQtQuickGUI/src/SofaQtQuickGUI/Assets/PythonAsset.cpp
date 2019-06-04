@@ -108,14 +108,17 @@ void PythonAsset::getDetails()
     std::string stem = obj.stem();
     std::string path = obj.parent_path().string();
 
-    std::map<std::string, std::string> map;
+    std::map<std::string, std::map<std::string, std::string>> map;
     map = PythonEnvironment::getPythonModuleContent(path, stem);
 
     for (auto item : m_scriptContent)
         delete item;
     m_scriptContent.clear();
     for (auto pair : map)
-        m_scriptContent.append(new PythonAssetModel(pair.first, pair.second));
+        m_scriptContent.append(new PythonAssetModel(
+                                   pair.first,
+                                   pair.second["type"],
+                               pair.second["docstring"]));
 }
 
 QVariantList PythonAsset::scriptContent()

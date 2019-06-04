@@ -201,6 +201,7 @@ Item {
                     nameFilters: self.project.getSupportedTypes()
                 }
 
+                property var selectedItem: null
                 delegate: Component {
                     id: fileDelegate
 
@@ -211,7 +212,7 @@ Item {
                         width: root.width
                         height: 20
                         color: index % 2 ? "#4c4c4c" : "#454545"
-                        property string highlightColor: ListView.isCurrentItem ? "#82878c" : "transparent"
+                        property string highlightColor: ListView.isCurrentItem || folderView.selectedItem === wrapper ? "#82878c" : "transparent"
                         Rectangle {
                             anchors.fill: parent
                             color: wrapper.highlightColor
@@ -314,6 +315,16 @@ Item {
                                     projectMenu.popup(mouseX, mouseY)
                                     projectMenu.x += pos[0]
                                     projectMenu.y += pos[1]
+                                }
+                                else if (Qt.LeftButton === mouse.button)
+                                {
+                                    folderView.selectedItem = wrapper
+                                    sofaApplication.currentProject.selectedAsset = wrapper.asset;
+                                    for (var i in wrapper.asset.scriptContent) {
+                                        console.log(wrapper.asset.scriptContent[i].name + " " +
+                                                    wrapper.asset.scriptContent[i].type + " " +
+                                                    wrapper.asset.scriptContent[i].docstring)
+                                    }
                                 }
                             }
 

@@ -42,7 +42,6 @@ Menu {
                          (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
             onTriggered: {
                 assetName = modelData.name
-                console.error("calling method " + assetName + " from script " + asset.path)
                 var p = createAsset()
                 if (!p)
                     return
@@ -67,6 +66,9 @@ Menu {
                 return parentNode
             }
 
+            ToolTip {
+                text: modelData.docstring
+            }
             Component.onCompleted: {
                 assetName = modelData.name
             }
