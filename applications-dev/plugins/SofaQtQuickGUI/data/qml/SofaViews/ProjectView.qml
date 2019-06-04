@@ -314,24 +314,14 @@ Item {
                                     projectMenu.popup(mouseX, mouseY)
                                     projectMenu.x += pos[0]
                                     projectMenu.y += pos[1]
-                                    //                                    // Let's load detailed info if available
-                                    //                                    if (!folderModel.isFolder(index))
-                                    //                                    {
-                                    //                                        assetMenu.visible = true
-                                    //                                    }
                                 }
                             }
 
                             drag.target: draggedData
 
                             drag.onActiveChanged: {
-                                if (drag.active) {
-                                    console.error("Drag Started")
+                                if (drag.active)
                                     draggedData.asset = wrapper.asset
-                                } else {
-                                    console.error("Drag Finished")
-
-                                }
                             }
 
                             Item {

@@ -546,11 +546,10 @@ Rectangle {
                     property SofaBase node: null
                     anchors.fill: parent
                     onEntered: {
-                        console.error("Entered DropArea")
-
                         var srcIndex = sceneModel.mapToSource(styleData.index)
                         var theComponent = basemodel.getBaseFromIndex(srcIndex)
                         if (isNode) node = theComponent
+                        else node = theComponent.getFirstParent()
                     }
 
                     function dropFromHierarchy(src) {
@@ -594,15 +593,10 @@ Rectangle {
 
                     onDropped: {
                         if (drag.source.origin === "Hierarchy") {
-                            console.error("Origin: Hierarchy")
                             dropFromHierarchy(drag.source)
                         }
                         else if (drag.source.origin === "ProjectView") {
-                            console.error("Origin: ProjectView")
                             dropFromProjectView(drag.source)
-                        }
-                        else {
-                            console.error("Origin: Duh..?")
                         }
                     }
                 }
