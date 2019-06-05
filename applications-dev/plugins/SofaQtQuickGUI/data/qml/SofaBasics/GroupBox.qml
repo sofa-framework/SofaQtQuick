@@ -10,6 +10,7 @@ GroupBox {
     id: control
     title: qsTr("GroupBox")
     implicitWidth: parent.width
+    property bool expandable: true
     property bool expanded: true
     property int expandedHeight: 0
     onExpandedChanged: {
@@ -52,6 +53,7 @@ GroupBox {
         }
         ColorImage {
             id: groupBoxArrow
+            visible: expandable
             y: 4
             source: control.expanded ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
             width: 14
