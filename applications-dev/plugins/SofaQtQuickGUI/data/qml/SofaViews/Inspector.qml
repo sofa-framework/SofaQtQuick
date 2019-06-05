@@ -512,33 +512,146 @@ Item {
     }
     Rectangle {
         id: assetArea
-        anchors.top: header.bottom
         width: parent.width
         height: parent.height - 42
         color: "transparent"
         visible: selectedAsset !== null
 
-        Column {
-            spacing: 10
-            Repeater {
-                model: selectedAsset.scriptContent
-                GroupBox {
-                    width: assetArea.width
-                    title: modelData.name
-                    Rectangle {
-                        color: 'transparent'
-                        width: assetArea.width / 4 * 3
-                        implicitHeight: docstringLbl.implicitHeight
+
+        Component {
+            id: pythonAssetInspector
+            Column {
+                spacing: 10
+                Repeater {
+                    model: selectedAsset.scriptContent
+                    GroupBox {
+                        width: assetArea.width
+                        title: modelData.name
+                        Rectangle {
+                            color: 'transparent'
+                            width: assetArea.width / 4 * 3
+                            implicitHeight: docstringLbl.implicitHeight
+                            Label {
+                                color: "#eeeeec"
+                                id: docstringLbl
+                                anchors.fill: parent
+                                text: modelData.docstring
+                                wrapMode: Text.Wrap
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Loader {
+            sourceComponent: selectedAsset && selectedAsset.typeString === "Python prefab" ? pythonAssetInspector : null
+        }
+        Component {
+            id: meshAssetInspector
+            GroupBox {
+                width: assetArea.width
+                title: "Mesh properties"
+                Column {
+                    spacing: 2
+                    Row {
+                        spacing: 10
+                        width: assetArea.width
+                        Label {
+                            color: "black"
+                            id: verticesLbl
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Vertices: "
+                            wrapMode: Text.Wrap
+                            width: primitiveTypeLbl.contentWidth
+                        }
                         Label {
                             color: "#eeeeec"
-                            id: docstringLbl
-                            anchors.fill: parent
-                            text: modelData.docstring
+                            id: vertices
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: selectedAsset.vertices.toString()
+                            wrapMode: Text.Wrap
+                        }
+                    }
+                    Row {
+                        spacing: 10
+                        width: assetArea.width
+                        Label {
+                            id: facesLbl
+                            color: "black"
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Faces: "
+                            wrapMode: Text.Wrap
+                            width: primitiveTypeLbl.contentWidth
+                        }
+                        Label {
+                            color: "#eeeeec"
+                            id: faces
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: selectedAsset.faces.toString()
+                            wrapMode: Text.Wrap
+                        }
+                    }
+                    Row {
+                        spacing: 10
+                        width: assetArea.width
+                        Label {
+                            color: "black"
+                            id: materialsLbl
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Materials: "
+                            wrapMode: Text.Wrap
+                            width: primitiveTypeLbl.contentWidth
+                        }
+                        Label {
+                            color: "#eeeeec"
+                            id: materials
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: selectedAsset.materials.toString()
+                            wrapMode: Text.Wrap
+                        }
+                    }
+                    Row {
+                        spacing: 10
+                        width: assetArea.width
+                        Label {
+                            color: "black"
+                            id: meshLbl
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Meshes: "
+                            wrapMode: Text.Wrap
+                            width: primitiveTypeLbl.contentWidth
+                        }
+                        Label {
+                            color: "#eeeeec"
+                            id: mesh
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: selectedAsset.meshes.toString()
+                            wrapMode: Text.Wrap
+                        }
+                    }
+                    Row {
+                        spacing: 10
+                        width: assetArea.width
+                        Label {
+                            color: "black"
+                            id: primitiveTypeLbl
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Primitive type: "
+                            wrapMode: Text.Wrap
+                        }
+                        Label {
+                            color: "#eeeeec"
+                            id: primitiveType
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: selectedAsset.primitiveType.toString()
                             wrapMode: Text.Wrap
                         }
                     }
                 }
             }
+        }
+        Loader {
+            sourceComponent: selectedAsset.typeString === "3D mesh file" ? meshAssetInspector : null
         }
     }
 }

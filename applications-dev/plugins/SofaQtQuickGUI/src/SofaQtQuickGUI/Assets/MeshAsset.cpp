@@ -86,19 +86,33 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(const QString& assetName)
 
 void MeshAsset::getDetails()
 {
-//    QProcess process;
-//    process.start("/usr/bin/assimp", QStringList() << QString(m_path.c_str()));
-//    process.waitForFinished(-1);
-    m_vertices = 42;
-    m_faces = 42;
-    m_materials = 1;
-    m_meshes = 1;
-    m_primitiveType = "Triangles";
+    if (m_detailsLoaded) return;
+    QProcess process;
+    process.start("/usr/bin/assimp", QStringList() << "info" << QString(m_path.c_str()));
+    process.waitForFinished(-1);
+    QString output = process.readAllStandardOutput();
+    QStringList parameterList = output.split("\n");
+
+    for (QString& line : parameterList)
+    {
+        if (line.contains("Meshes:")) {
+            m_meshes = line.split("Meshes:")[1].toInt();
+        } else if (line.contains("Faces:")) {
+            m_faces= line.split("Faces:")[1].toInt();
+        } else if (line.contains("Vertices:")) {
+            m_vertices = line.split("Vertices:")[1].toInt();
+        } else if (line.contains("Materials:")) {
+            m_materials = line.split("Materials:")[1].toInt();
+        } else if (line.contains("Primitive Types:")) {
+            m_primitiveType = line.split("Primitive Types:")[1].trimmed();
+        }
+    }
+
     m_minPoint = QList<double>() << -1.0 << -1.0 << -1.0;
     m_maxPoint = QList<double>() << 1.0 << 1.0 << 1.0;
     m_centerPoint = QList<double>() << 0.0 << 0.0 << 0.0;
 
-    m_isLoaded = true;
+    m_detailsLoaded = true;
 }
 
 

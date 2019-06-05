@@ -320,11 +320,6 @@ Item {
                                 {
                                     folderView.selectedItem = wrapper
                                     sofaApplication.currentProject.selectedAsset = wrapper.asset;
-                                    for (var i in wrapper.asset.scriptContent) {
-                                        console.log(wrapper.asset.scriptContent[i].name + " " +
-                                                    wrapper.asset.scriptContent[i].type + " " +
-                                                    wrapper.asset.scriptContent[i].docstring)
-                                    }
                                 }
                             }
 

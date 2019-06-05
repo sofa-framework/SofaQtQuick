@@ -119,6 +119,7 @@ void PythonAsset::getDetails()
                                    pair.first,
                                    pair.second["type"],
                                pair.second["docstring"]));
+    m_detailsLoaded = true;
 }
 
 QVariantList PythonAsset::scriptContent()
