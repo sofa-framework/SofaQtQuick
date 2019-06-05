@@ -114,5 +114,7 @@
         <file>SofaBasics/ListViewDelegate.qml</file>
         <file>SofaDataTypes/SofaDataType_ComponentStatus.qml</file>
         <file>SofaWidgets/ProjectViewMenu.qml</file>
+        <file>SofaWidgets/MeshAssetInspector.qml</file>
+        <file>SofaWidgets/PythonAssetInspector.qml</file>
     </qresource>
 </RCC>

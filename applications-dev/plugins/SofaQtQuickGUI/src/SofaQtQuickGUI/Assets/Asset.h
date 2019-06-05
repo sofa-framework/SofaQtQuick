@@ -32,6 +32,7 @@ class Asset : public QObject
 
     Q_INVOKABLE virtual void getDetails() = 0; // Loads the asset
     Q_INVOKABLE virtual sofaqtquick::bindings::SofaNode* create(const QString& assetName = "") = 0; // instantiates the asset
+    Q_INVOKABLE virtual QUrl getAssetInspectorWidget();
 
     Q_PROPERTY(QString typeString READ getTypeString NOTIFY typeStringChanged)
     Q_PROPERTY(QUrl iconPath READ getIconPath NOTIFY iconPathChanged)

@@ -182,7 +182,7 @@ Item {
                     }
 
                     onFolderChanged: {
-                        self.project.scanProject(folderModel.folder)
+//                        self.project.scanProject(folderModel.folder)
                     }
 
                     onDataChanged: {
@@ -279,7 +279,7 @@ Item {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
                             fileIsDir: index !== -1 ? folderModel.get(index, "fileIsDir") : ""
-                            model: self.project.getAsset(filePath)
+                            model: folderModel.get(index, "fileIsDir") ? null : self.project.getAsset(filePath)
                         }
 
                         MouseArea {
@@ -319,6 +319,7 @@ Item {
                                 else if (Qt.LeftButton === mouse.button)
                                 {
                                     folderView.selectedItem = wrapper
+                                    wrapper.asset = self.project.getAsset(folderModel.get(index, "filePath"))
                                     sofaApplication.currentProject.selectedAsset = wrapper.asset;
                                 }
                             }

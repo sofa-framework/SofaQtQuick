@@ -25,6 +25,7 @@ class MeshAsset : public Asset
     MeshAsset(std::string path, std::string extension);
     virtual sofaqtquick::bindings::SofaNode* create(const QString& assetName = "") override;
     virtual void getDetails() override;
+    virtual QUrl getAssetInspectorWidget() override;
 
     Q_PROPERTY(int vertices READ vertices NOTIFY verticesChanged)
     Q_PROPERTY(int faces READ faces NOTIFY facesChanged)
@@ -55,19 +56,19 @@ protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "3D mesh file"; }
     Q_INVOKABLE virtual bool getIsSofaContent() override { return true; }
 
-    Q_INVOKABLE int vertices() { std::cout << "vertices..." << std::endl; getDetails(); return m_vertices; }
+    Q_INVOKABLE int vertices() { getDetails(); return m_vertices; }
     Q_SIGNAL void verticesChanged();
 
-    Q_INVOKABLE int faces() { std::cout << "faces..." << std::endl; getDetails(); return m_faces; }
+    Q_INVOKABLE int faces() { getDetails(); return m_faces; }
     Q_SIGNAL void facesChanged();
 
-    Q_INVOKABLE int materials() { std::cout << "materials..." << std::endl; getDetails(); return m_materials; }
+    Q_INVOKABLE int materials() { getDetails(); return m_materials; }
     Q_SIGNAL void materialsChanged();
 
-    Q_INVOKABLE int meshes() { std::cout << "meshes..." << std::endl; getDetails(); return m_meshes; }
+    Q_INVOKABLE int meshes() { getDetails(); return m_meshes; }
     Q_SIGNAL void meshesChanged();
 
-    Q_INVOKABLE QString primitiveType() { std::cout << "primitives..." << std::endl; getDetails(); return m_primitiveType; }
+    Q_INVOKABLE QString primitiveType() { getDetails(); return m_primitiveType; }
     Q_SIGNAL void primitiveTypeChanged();
 };
 

@@ -115,5 +115,9 @@ void MeshAsset::getDetails()
     m_detailsLoaded = true;
 }
 
+QUrl MeshAsset::getAssetInspectorWidget() {
+    return QUrl("qrc:/SofaWidgets/MeshAssetInspector.qml");
+}
+
 
 } // namespace sofa::qtquick

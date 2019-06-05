@@ -19,5 +19,9 @@ Asset::~Asset()
 {
 }
 
+QUrl Asset::getAssetInspectorWidget() {
+    return QUrl("qrc:/SofaBasics/DynamicContent_Error.qml");
+}
+
 } // namespace qtquick
 } // namespace sofa

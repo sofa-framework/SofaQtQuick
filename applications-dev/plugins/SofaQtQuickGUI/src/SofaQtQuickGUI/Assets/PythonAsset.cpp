@@ -122,6 +122,11 @@ void PythonAsset::getDetails()
     m_detailsLoaded = true;
 }
 
+QUrl PythonAsset::getAssetInspectorWidget() {
+    return QUrl("qrc:/SofaWidgets/PythonAssetInspector.qml");
+}
+
+
 QVariantList PythonAsset::scriptContent()
 {
     getDetails();

@@ -10,3 +10,5 @@ PopupWindowCreateComponent 1.0 PopupWindowCreateComponent.qml
 AssetPreview 1.0 AssetPreview.qml
 RenameMenu 1.0 RenameMenu.qml
 ProjectViewMenu 1.0 ProjectViewMenu.qml
+MeshAssetInspector 1.0 MeshAssetInspector.qml
+PythonAssetInspector 1.0 PythonAssetInspector.qml

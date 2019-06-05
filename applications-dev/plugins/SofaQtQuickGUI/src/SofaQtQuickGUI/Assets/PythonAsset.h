@@ -48,9 +48,10 @@ public:
     PythonAsset(std::string path, std::string extension);
     virtual sofaqtquick::bindings::SofaNode* create(const QString& assetName = "") override;
     virtual void getDetails() override;
+    virtual QUrl getAssetInspectorWidget() override;
 
-    Q_PROPERTY(QVariantList scriptContent READ scriptContent)
-    Q_PROPERTY(bool isScene READ isScene)
+    Q_PROPERTY(QVariantList scriptContent READ scriptContent NOTIFY scriptContentChanged)
+    Q_PROPERTY(bool isScene READ isScene NOTIFY isSceneChanged)
 
 protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
@@ -74,7 +75,9 @@ public:
 
 private:
     bool isScene();
+    Q_SIGNAL void isSceneChanged(bool);
     QVariantList scriptContent();
+    Q_SIGNAL void scriptContentChanged(QVariantList);
     QList<sofa::qtquick::PythonAssetModel*> m_scriptContent;
 };
 
