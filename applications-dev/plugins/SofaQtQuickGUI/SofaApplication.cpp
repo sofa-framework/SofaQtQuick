@@ -940,7 +940,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     QQuickStyle::setStyle("Material");
 
     // color console
-    sofa::helper::console::setStatus(sofa::helper::console::Status::On);
+    //sofa::helper::console::setStatus(sofa::helper::console::Status::On);
 
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
     qputenv("QSG_RENDER_LOOP", "basic");
@@ -988,6 +988,7 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     QCommandLineOption widthOption(QStringList() << "width", "Window width", "pixels");
     QCommandLineOption heightOption(QStringList() << "height", "Window height", "pixels");
     QCommandLineOption logTimeOption(QStringList() << "log", "Log time during simulation");
+    QCommandLineOption extraParamsOption(QStringList() << "pyargs", "Forward extra parameters for Python interpreter", "args...");
     
     parser.addOption(sceneOption);
     parser.addOption(guiConfigOption);
@@ -996,10 +997,12 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     parser.addOption(widthOption);
     parser.addOption(heightOption);
     parser.addOption(logTimeOption);
+    parser.addOption(extraParamsOption);
     
     parser.addVersionOption();
     parser.addHelpOption();
 
+    QStringList args = app.arguments();
     parser.parse(app.arguments());
 
     if(parser.isSet("version"))
@@ -1089,6 +1092,20 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
 		if(parser.isSet(animateOption) || parser.isSet(sceneOption))
         {
             SofaScene* sofaScene = object->findChild<SofaScene*>();
+            if(parser.isSet(extraParamsOption))
+            {
+                std::vector<std::string> extraArgs;
+                auto it = args.begin();
+                while (*it != "--pyargs") ++it;
+                ++it;
+                while (it != args.end()) {
+                    std::string arg = (*it).toStdString();
+                    extraArgs.push_back(arg);
+                    ++it;
+                }
+
+                sofaScene->setExtraParams(extraArgs);
+            }
             if(parser.isSet(sceneOption))
             {
                 sofaScene->setSource(parser.value(sceneOption));

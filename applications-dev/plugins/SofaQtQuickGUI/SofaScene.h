@@ -117,6 +117,9 @@ public:
     const QString& pathQML() const                              {return myPathQML;}
     void setPathQML(const QString& newPathQML);
 
+    const std::vector<std::string>& extraParams() const         {return myExtraParams;}
+    void setExtraParams(const std::vector<std::string>& newExtraParams);
+
     double dt() const                                           {return myDt;}
     void setDt(double newDt);
 
@@ -257,6 +260,7 @@ private:
     QUrl                                        mySourceQML;
     QString                                     myPath;
     QString                                     myPathQML;
+    std::vector<std::string>					myExtraParams;
     mutable bool                                myVisualDirty;
     double                                      myDt;
     bool                                        myAnimate;
