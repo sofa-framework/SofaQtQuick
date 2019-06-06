@@ -181,17 +181,6 @@ Item {
                         folderModel.folder = self.project.rootDir
                     }
 
-                    onFolderChanged: {
-//                        self.project.scanProject(folderModel.folder)
-                    }
-
-                    onDataChanged: {
-                        // forces a rescan & refresh of the listview model
-                        var tmp = folderModel.folder
-                        folderModel.folder = folderModel.folder + "/.."
-                        folderModel.folder = tmp
-                    }
-
                     showDirs: true
                     showDotAndDotDot: true
                     showDirsFirst: true
@@ -292,21 +281,41 @@ Item {
                                     folderView.currentIndex = index;
                                 }
                             }
+
+                            function insertAsset(index, rootNode)
+                            {                                    
+                                var newNode = self.project.getAsset(folderModel.get(index, "filePath")).create()
+                                var _parent = sofaScene.selectedComponent
+                                if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
+                                if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
+
+                                var hasNodes = newNode.getChildren().size()
+                                console.error("ParentNode type: " + _parent)
+                                console.error("newNode type: " + newNode)
+                                _parent.dump()
+                                newNode.copyTo(_parent)
+                                console.error("bah shit")
+                                if (hasNodes) {
+                                    var childsList = _parent.getChildren()
+                                    if (childsList.size() !== 0) {
+                                        return childsList.last()
+                                    }
+                                }
+                                return parent
+                            }
+
                             onDoubleClicked: {
                                 if (folderModel.isFolder(index)) {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
-
-                                    if (wrapper.isSceneFile) {
+                                    if (self.project.getAsset(folderModel.get(index, "filePath")).isScene) {
                                         sofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                     else {
                                         var rootNode = sofaApplication.sofaScene.root()
-                                        insertAsset(index, rootNode)
+                                        sofaScene.selectedComponent = insertAsset(index, rootNode)
                                     }
-
                                 }
-
                             }
                             onClicked: {
                                 if (Qt.RightButton === mouse.button)

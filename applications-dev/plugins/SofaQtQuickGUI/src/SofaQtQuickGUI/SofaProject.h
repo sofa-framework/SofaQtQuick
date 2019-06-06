@@ -1,15 +1,15 @@
 #pragma once
 
+#include <QObject>
+#include <QDir>
+#include <QUrl>
+
 #include "SofaQtQuickGUI/Assets/AssetFactory.h"
 #include "SofaQtQuickGUI/config.h"
 #include "SofaQtQuickGUI/Bindings/SofaBase.h"
 using sofaqtquick::bindings::SofaBase;
 
-
-#include <QObject>
-#include <QDir>
-#include <QUrl>
-
+#include "LiveFileMonitor.h"
 
 namespace sofa {
 namespace qtquick {
@@ -46,6 +46,11 @@ public:
 
     Q_INVOKABLE bool createPrefab(SofaBase* node);
 
+private slots:
+    void onFilesChanged();
+signals:
+    void filesChanged();
+
 private:
     QUrl m_rootDir; // The Project's root fs directory
 
@@ -54,6 +59,8 @@ private:
     std::map<QString, std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
 
     void _scanProject(const QDir& folder);
+
+    LiveFileMonitor* m_fileMonitor {nullptr};
 };
 
 }  // namespace qtquick

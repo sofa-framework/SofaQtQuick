@@ -13,6 +13,7 @@ GroupBox {
     property bool expandable: true
     property bool expanded: true
     property int expandedHeight: 0
+    property url titleIcon: ""
     onExpandedChanged: {
         contentItem.visible = expanded
         if (!expanded)
@@ -42,15 +43,6 @@ GroupBox {
             height: 1
             color: "#959595"
         }
-        Label {
-            id: label
-            y: 8
-            x: control.leftPadding
-            width: control.availableWidth
-            text: control.title
-            color: "black"
-            elide: Text.ElideRight
-        }
         ColorImage {
             id: groupBoxArrow
             visible: expandable
@@ -65,8 +57,26 @@ GroupBox {
                     control.expanded = !control.expanded
                 }
             }
-            anchors.right: label.left
             anchors.verticalCenter: label.verticalCenter
+        }
+        ColorImage {
+            id: titleIconId
+            visible: control.titleIcon !== ""
+            anchors.verticalCenter: label.verticalCenter
+            width: 20
+            height: 20
+            source: titleIcon
+            anchors.left: groupBoxArrow.right
+        }
+        Label {
+            id: label
+            y: 8
+            x: control.leftPadding
+            text: control.title
+            color: "black"
+            elide: Text.ElideRight
+            anchors.left: titleIconId.right
+            anchors.leftMargin: 5
         }
     }
     background: Rectangle {

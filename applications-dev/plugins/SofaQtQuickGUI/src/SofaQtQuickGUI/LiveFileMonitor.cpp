@@ -41,18 +41,11 @@ using sofa::helper::system::FileMonitor;
 
 #include "LiveFileMonitor.h"
 
-namespace sofa
-{
-
-namespace qtquick
-{
-
-namespace livefilemonitor
+namespace sofa::qtquick::_livefilemonitor
 {
 
 void LiveFileMonitor::addPathToMonitor(const std::string& path)
 {
-    std::cout << "REGISTER LIVE PATH" << path << std::endl ;
     std::string p = path;
     if (p.back() == '/')
         p.pop_back();
@@ -66,7 +59,7 @@ void LiveFileMonitor::addPathToMonitor(const std::string& path)
         }
         else
         {
-            if (FileSystem::isFile(p + "/" + filename) && FileSystem::getExtension(filename) == "qml")
+            if (FileSystem::isFile(p + "/" + filename))
             {
                 sofa::helper::system::FileMonitor::addFile(p + "/" + filename, this);
             }
@@ -74,26 +67,23 @@ void LiveFileMonitor::addPathToMonitor(const std::string& path)
     }
 }
 
-LiveFileMonitor::LiveFileMonitor(QQmlEngine *engine, QObject *parent)
+LiveFileMonitor::LiveFileMonitor(const QString& root, int msec, QObject *parent)
 {
     Q_UNUSED(parent);
 
-    msg_info("LiveFileMonitor") << "Creating a LiveFileMonitor singleton with data directory '"
-                                << SOFAQTQUICKGUI_QML_DIR << "'" ;
     m_files = QStringList() ;
 
-    std::string path(SOFAQTQUICKGUI_QML_DIR);
+    std::string path(root.toStdString());
     addPathToMonitor(path);
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer->start(200);
-
-    m_engine = engine ;
+    timer->start(msec);
 }
 
 LiveFileMonitor::~LiveFileMonitor()
 {
+    sofa::helper::system::FileMonitor::removeListener(this);
 }
 
 void LiveFileMonitor::update()
@@ -103,26 +93,26 @@ void LiveFileMonitor::update()
 
 void LiveFileMonitor::fileHasChanged(const std::string& filename)
 {
-    m_engine->clearComponentCache();
     m_files.clear();
     m_files.push_back(QString::fromStdString(filename));
     emit filesChanged();
 }
-
-/*
-bool LiveFileMonitor::addFile(const QUrl &filename)
-{
-    return FileMonitor::addFile(filename.toLocalFile(), m_filelistener) >= 0;
-}*/
 
 QStringList LiveFileMonitor::files() const
 {
     return m_files ;
 }
 
-
+QString LiveFileMonitor::root() const
+{
+    return m_root;
 }
 
+void LiveFileMonitor::setRoot(const QString& root)
+{
+    m_root = root;
+    sofa::helper::system::FileMonitor::removeListener(this);
+    addPathToMonitor(m_root.toStdString());
 }
 
-}
+}  // namespace sofa::qtquick::_livefilemonitor

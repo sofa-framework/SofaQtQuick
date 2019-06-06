@@ -588,7 +588,7 @@ void SofaScene::setSelectedComponent(sofaqtquick::bindings::SofaBase* newSelecte
 
     mySelectedComponent = nullptr;
     if(newSelectedComponent)
-        mySelectedComponent = new SofaBase(newSelectedComponent->base());
+        mySelectedComponent = newSelectedComponent;
 
     emit selectedComponentChanged(mySelectedComponent);
 }

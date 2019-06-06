@@ -21,6 +21,12 @@ Item {
             GroupBox {
                 width: root.parent.width
                 title: modelData.name
+                titleIcon: (modelData.type  === "function" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
+                                                                                                 (modelData.type === "class" ? "qrc:/icon/ICON_PYTHON.png" :
+                                                                                                 (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
+                                                                                                 (modelData.type === "PythonScriptController" ? "qrc:/icon/ICON_PYController.png" :
+                                                                                                 (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
+
                 Rectangle {
                     color: 'transparent'
                     width: root.parent.width / 4 * 3

@@ -17,8 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef LIVEINTERFACEEDITOR_H
-#define LIVEINTERFACEEDITOR_H
+#ifndef LIVEFILEMONITOR_H
+#define LIVEFILEMONITOR_H
 
 #include <QStringList>
 #include <QObject>
@@ -31,19 +31,14 @@ using sofa::helper::system::FileEventListener;
 
 class QQmlEngine;
 
-namespace sofa
+namespace sofa::qtquick
 {
-
-namespace qtquick
+namespace _livefilemonitor
 {
-
-namespace livefilemonitor
-{
-
 
 /*******************************************************************************
  *  \class live file monitor.
- *  It monitor files at regular intervals and updates QML preview of them.
+ *  It monitor files at regular intervals and sends the list of changed files through a signal.
  ******************************************************************************/
 class SOFA_SOFAQTQUICKGUI_API LiveFileMonitor : public QObject, public FileEventListener
 {
@@ -51,33 +46,34 @@ public:
     Q_OBJECT
 
     Q_PROPERTY(QStringList files READ files NOTIFY filesChanged)
-    //Q_INVOKABLE bool addFile(const QUrl&);
+    Q_PROPERTY(QString root READ root WRITE setRoot NOTIFY rootChanged)
 
 public:
-    explicit LiveFileMonitor(QQmlEngine* q, QObject *parent = nullptr) ;
-    virtual ~LiveFileMonitor() ;
+    explicit LiveFileMonitor(const QString& root, int msec = 200, QObject *parent = nullptr);
+    virtual ~LiveFileMonitor();
 
     void fileHasChanged(const std::string& filename);
-    QStringList files() const ;
+    QStringList files() const;
+    QString root() const;
+    void setRoot(const QString&);
 
 private slots:
-    void update() ;
+    void update();
 
 signals:
-    void filesChanged() ;
+    void filesChanged();
+    void rootChanged();
 
-private:
-    QQmlEngine*  m_engine;
+protected:
     QStringList m_files;
+    QString m_root;
     void addPathToMonitor(const std::string& filename);
 };
 
-}
+}  // namespace _livefilemonitor
 
-using livefilemonitor::LiveFileMonitor ;
+using _livefilemonitor::LiveFileMonitor;
 
-}
+}  // namespace sofa::qtquick
 
-}
-
-#endif // LIVEINTERFACEEDITOR_H
+#endif // LIVEFILEMONITOR_H

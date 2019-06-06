@@ -21,8 +21,14 @@ Menu {
 
     title: "Asset Content"
     visible: true
+    onAssetChanged: {
+        if (assetMenu.asset)
+            menuRepeater.model = assetMenu.asset.scriptContent
+    }
+
     onOpened: {
-        menuRepeater.model = assetMenu.asset.scriptContent
+        if (assetMenu.asset)
+            menuRepeater.model = assetMenu.asset.scriptContent
     }
 
     Repeater {
@@ -41,6 +47,10 @@ Menu {
                          (modelData.type === "PythonScriptController" ? "qrc:/icon/ICON_PYController.png" :
                          (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
             onTriggered: {
+                if (!parentNode)
+                    parentNode = sofaScene.root()
+                if (!parentNode.isNode())
+                    parentNode = parentNode.getFirstParent()
                 assetName = modelData.name
                 var p = createAsset()
                 if (!p)
@@ -56,6 +66,8 @@ Menu {
             function createAsset() {
                 var newNode = asset.create(assetName)
                 var hasNodes = newNode.getChildren().size()
+                console.error("ParentNode address: " + parentNode)
+                console.error("ParentNode Name: " + parentNode.getName())
                 newNode.copyTo(parentNode)
                 if (hasNodes) {
                     var childsList = parentNode.getChildren()

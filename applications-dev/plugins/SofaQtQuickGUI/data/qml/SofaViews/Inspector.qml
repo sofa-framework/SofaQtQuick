@@ -521,10 +521,15 @@ Item {
 
         Loader {
             id: assetLoaderId
-            source: root.selectedAsset ? root.selectedAsset.getAssetInspectorWidget() : "qrc:/SofaBasics/DynamicContent_Error.qml"
+            source: root.selectedAsset ? root.selectedAsset.getAssetInspectorWidget() : ""
             onLoaded: {
                 if (item) {
-                    item.selectedAsset = root.selectedAsset
+                    console.error(item)
+                    item.selectedAsset = Qt.binding(function() {
+                        if (root.selectedAsset)
+                            return root.selectedAsset
+                        else return null
+                    })
                     item.parent = assetArea
                 }
             }

@@ -13,7 +13,7 @@ namespace sofa {
 namespace qtquick {
 
 SofaProject::SofaProject() {}
-SofaProject::~SofaProject() {}
+SofaProject::~SofaProject() { if (m_fileMonitor) delete m_fileMonitor; }
 
 const QUrl& SofaProject::getRootDir() { return m_rootDir;  }
 
@@ -29,6 +29,19 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     msg_info("SofaProject") << "Setting root directory to '" << rootDir.toString().toStdString()<<"'";
     QDir root = QDir(m_rootDir.path());
     scanProject(root);
+}
+
+void SofaProject::onFilesChanged()
+{
+    for (const auto& f : m_fileMonitor->files())
+    {
+        std::cout << f.toStdString() << " changed" << std::endl;
+        QFileInfo finfo(f);
+        m_assets.erase(m_assets.find(finfo.filePath()));
+        m_assets.insert(assetMapPair(finfo.filePath(), AssetFactory::createInstance(
+                                         finfo.filePath(), finfo.suffix())));
+    }
+    emit filesChanged();
 }
 
 void SofaProject::scanProject(const QUrl& folder)
@@ -139,6 +152,7 @@ void SofaProject::_scanProject(const QDir& folder)
     if (!folder.exists())
         return;
 
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::processEvents();
     QStringList content = folder.entryList();
@@ -158,6 +172,8 @@ void SofaProject::_scanProject(const QDir& folder)
                                              f.filePath(), f.suffix())));
         }
     }
+    m_fileMonitor = new LiveFileMonitor(m_rootDir.path());
+    connect(m_fileMonitor, &LiveFileMonitor::filesChanged, this, &SofaProject::onFilesChanged);
     QApplication::restoreOverrideCursor();
 }
 

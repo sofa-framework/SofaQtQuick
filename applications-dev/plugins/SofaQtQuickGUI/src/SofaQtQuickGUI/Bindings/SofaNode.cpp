@@ -290,6 +290,17 @@ void SofaNode::addObject(SofaBaseObject* obj)
 
 void SofaNode::copyTo(SofaNode* node)
 {
+    std::cout << "node to copy stuff from: "<< this << std::endl;
+    std::cout << "node to copy stuff from: "<< this->getName().toStdString() << std::endl;
+
+    std::cout << "node to copy stuff to: " << node << std::endl;
+    std::cout << "node to copy stuff to: " << node->getName().toStdString() << std::endl;
+
+    std::cout << "node to copy stuff to: " << node->self() << std::endl;
+    std::cout << "node to copy stuff from: "<< this->self() << std::endl;
+
+    std::cout << "node to copy stuff to: " << node->self()->getName() << std::endl;
+    std::cout << "node to copy stuff from: "<< this->self()->getName() << std::endl;
     if ((isInAPrefab() && !attemptToBreakPrefab()) ||
             (node->isInAPrefab() && !node->attemptToBreakPrefab()))
         return;

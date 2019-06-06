@@ -87,8 +87,8 @@ using sofa::qtquick::TextureAsset;
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofaqtquick::bindings::SofaFactory;
 
-#include <SofaQtQuickGUI/LiveFileMonitor.h>
-using sofa::qtquick::livefilemonitor::LiveFileMonitor;
+#include <SofaQtQuickGUI/LiveQMLFileMonitor.h>
+using sofa::qtquick::LiveQMLFileMonitor;
 
 #include <sofa/helper/system/PluginManager.h>
 
@@ -122,7 +122,7 @@ static QObject* createConsole(QQmlEngine *engine,
 static QObject* createAnInstanceOfLiveFileMonitor(QQmlEngine *engine,
                                                   QJSEngine *scriptEngine){
     Q_UNUSED(scriptEngine)
-    return new LiveFileMonitor(engine) ;
+    return new LiveQMLFileMonitor(engine) ;
 }
 
 // Following the doc on creating a singleton component
@@ -248,7 +248,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                                 "SofaViewListModel",
                                                 createSofaViewListModel );            /// exported Name.
 
-    qmlRegisterSingletonType<LiveFileMonitor>("LiveFileMonitorSingleton",            // char* uri
+    qmlRegisterSingletonType<LiveQMLFileMonitor>("LiveFileMonitorSingleton",            // char* uri
                                               versionMajor, versionMinor,   // minor/major version number
                                               "LiveFileMonitorSingleton",       // exported name
                                               createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance

@@ -128,4 +128,12 @@ Menu {
         id: sceneEntriesLoader
         sourceComponent: (model && model.isScene) ? sceneSpecificEntries : null
     }
+
+    SofaAssetMenu {
+        asset: model
+        visible: false
+        sofaScene: sofaApplication.sofaScene
+        parentNode: sofaApplication.sofaScene.selectedComponent
+    }
+
 }

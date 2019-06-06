@@ -326,7 +326,7 @@ private:
 
     QList<Manipulator*>                         myManipulators;
     Manipulator*                                mySelectedManipulator;
-    SofaBase*                                   mySelectedComponent;
+    SofaBase*                                   mySelectedComponent {nullptr};
 
     SofaComponent*                              myCppGraph;
 

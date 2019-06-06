@@ -56,6 +56,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
     src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
     src/SofaQtQuickGUI/LiveFileMonitor.cpp
+    src/SofaQtQuickGUI/LiveQMLFileMonitor.cpp
     src/SofaQtQuickGUI/SofaProject.cpp
     src/SofaQtQuickGUI/Assets/Asset.cpp
     src/SofaQtQuickGUI/Assets/MeshAsset.cpp
@@ -117,6 +118,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Helper/QGTest.h
     src/SofaQtQuickGUI/Helper/QtStl/QtStl.h
     src/SofaQtQuickGUI/LiveFileMonitor.h
+    src/SofaQtQuickGUI/LiveQMLFileMonitor.h
     src/SofaQtQuickGUI/SofaProject.h
     src/SofaQtQuickGUI/Assets/Asset.h
     src/SofaQtQuickGUI/Assets/MeshAsset.h
