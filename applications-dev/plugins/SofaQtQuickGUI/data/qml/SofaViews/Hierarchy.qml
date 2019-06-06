@@ -523,10 +523,11 @@ Rectangle {
                                 nodeMenu.creationLocation = theComponent.getInstanciationLocation()
                             }
                             nodeMenu.nodeActivated = nodeMenu.activated.value;
-                            var pos = SofaApplication.getIdealPopupPos(nodeMenu)
-                            nodeMenu.popup();
-                            nodeMenu.x += pos[0]
-                            nodeMenu.y += pos[1]
+                            var pos = SofaApplication.getIdealPopupPos(nodeMenu, mouseArea)
+                            nodeMenu.x = mouseArea.mouseX + pos[0]
+                            nodeMenu.y = mouseArea.mouseY + pos[1]
+                            console.error(nodeMenu.x + " " + nodeMenu.y)
+                            nodeMenu.open();
                         } else {
                             if(theComponent.hasLocations()===true)
                             {
@@ -535,10 +536,11 @@ Rectangle {
                             }
                             objectMenu.currentModelIndex = srcIndex
                             objectMenu.name = theComponent.getData("name");
-                            pos = SofaApplication.getIdealPopupPos(objectMenu)
-                            objectMenu.popup()
-                            objectMenu.x += pos[0]
-                            objectMenu.y += pos[1]
+                            pos = SofaApplication.getIdealPopupPos(objectMenu, mouseArea)
+                            objectMenu.x = mouseArea.mouseX + pos[0]
+                            objectMenu.y = mouseArea.mouseY + pos[1]
+                            console.error(objectMenu.x + " " + objectMenu.y)
+                            objectMenu.open()
                         }
                     }
                 }

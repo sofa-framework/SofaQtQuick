@@ -34,15 +34,6 @@ ApplicationWindow {
 
     onClosing: Qt.quit()
 
-    property int mouseX: mouseArea.mouseX
-    property int mouseY: mouseArea.mouseY
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-    }
-
     property var sofaScene: SofaScene {
         id: sofaScene
 
@@ -67,7 +58,6 @@ ApplicationWindow {
 
     Component.onCompleted: {
         showNormal();
-        SofaApplication.mainWindow = root
     }
 
     menuBar: DefaultMenuBar {

@@ -95,12 +95,14 @@ Menu {
             }
         }
     }
+
+
     Component {
         id: folderSpecificEntries
         MenuItem {
             id: openAsProject
             text: "Open Folder As Project"
-            
+
             onTriggered: {
                 projectMenu.visible = false
                 sofaApplication.projectSettings.addRecent(filePath)
@@ -119,21 +121,23 @@ Menu {
             }
         }
     }
-    
+
     Loader {
         sourceComponent: fileIsDir ? folderSpecificEntries: fileSpecificEntries
     }
-    
     Loader {
         id: sceneEntriesLoader
         sourceComponent: (model && model.isScene) ? sceneSpecificEntries : null
     }
 
+    MenuSeparator {}
+
     SofaAssetMenu {
+        id: assetsList
         asset: model
-        visible: false
         sofaScene: sofaApplication.sofaScene
         parentNode: sofaApplication.sofaScene.selectedComponent
+        enabled: !fileIsDir
     }
 
 }

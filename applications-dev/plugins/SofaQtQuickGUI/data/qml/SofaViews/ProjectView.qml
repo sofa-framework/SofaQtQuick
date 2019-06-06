@@ -76,14 +76,14 @@ Item {
                 visible: false
             }
             MouseArea {
+                id: projectViewMouseArea
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
-                    var pos = sofaApplication.getIdealPopupPos(generalProjectMenu)
-                    generalProjectMenu.popup(mouseX, mouseY)
-                    generalProjectMenu.x += pos[0]
-                    generalProjectMenu.y += pos[1]
-                    console.error("offset: " + pos)
+                    var pos = sofaApplication.getIdealPopupPos(generalProjectMenu, projectViewMouseArea)
+                    generalProjectMenu.x = mouse.x + pos[0]
+                    generalProjectMenu.y = mouse.y + pos[1]
+                    generalProjectMenu.open()
                 }
             }
             ListView {
@@ -320,10 +320,11 @@ Item {
                             onClicked: {
                                 if (Qt.RightButton === mouse.button)
                                 {
-                                    var pos = sofaApplication.getIdealPopupPos(projectMenu)
-                                    projectMenu.popup(mouseX, mouseY)
-                                    projectMenu.x += pos[0]
-                                    projectMenu.y += pos[1]
+                                    var pos = sofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
+                                    projectMenu.x = mouse.x + pos[0]
+                                    projectMenu.y = mouse.y + pos[1]
+                                    console.error(projectMenu.x + " " + projectMenu.y)
+                                    projectMenu.open()
                                 }
                                 else if (Qt.LeftButton === mouse.button)
                                 {

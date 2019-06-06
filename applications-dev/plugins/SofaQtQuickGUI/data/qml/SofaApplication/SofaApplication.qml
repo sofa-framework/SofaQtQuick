@@ -35,20 +35,57 @@ SofaApplicationSingleton //
     id: root
 
     property var style : MainStyle
-    property ApplicationWindow mainWindow
 
-    function getIdealPopupPos(popup) {
-        console.error("abs mouse pos: " + mainWindow.mouseX + " " + mainWindow.mouseY)
-        console.error("win size: " + mainWindow.width + " " + mainWindow.height)
-        console.error("popup size: " + popup.width + " " + popup.height)
-        if (mainWindow.mouseX + popup.width < mainWindow.width) {
-            if (mainWindow.mouseY + popup.height < mainWindow.height) {
+    /// Returns the absolute position of the mouse in a mouseArea
+    /// Takes a MouseArea as argument
+    function getAbsolutePosition(node) {
+        var returnPos = _getAbsolutePosition(node)
+        returnPos.x += node.mouseX
+        returnPos.y += node.mouseY
+        return returnPos;
+    }
+
+    function _getAbsolutePosition(node) {
+        var returnPos = {};
+        returnPos.x = 0;
+        returnPos.y = 0;
+        if(node !== undefined && node !== null) {
+            var parentValue = _getAbsolutePosition(node.parent);
+            returnPos.x = parentValue.x + node.x;
+            returnPos.y = parentValue.y + node.y;
+        }
+
+        return returnPos;
+    }
+
+    /// Returns the dimensions of the top parent window
+    /// Takes a MouseArea as argument
+    function getWindowDimensions(node) {
+        var returnPos = {};
+        if (node === undefined || node === null) {
+            return returnPos
+        }
+
+        if (node.parent === undefined || node.parent === null) {
+            returnPos.x = node.width;
+            returnPos.y = node.height;
+            return returnPos;
+        }
+        return getWindowDimensions(node.parent);
+    }
+
+    /// Returns the ideal positioning of a popup, relative to the mouse's position
+    function getIdealPopupPos(popup, mouseArea) {
+        var absPos = getAbsolutePosition(mouseArea)
+        var absDim = getWindowDimensions(mouseArea)
+        if (absPos.x + popup.width < absDim.x) {
+            if (absPos.y + popup.height < absDim.y) {
                 return [0, 0]
             } else {
                 return [0, -popup.height]
             }
         } else {
-            if (mainWindow.mouseY + popup.height < mainWindow.height) {
+            if (absPos.y + popup.height < absDim.y) {
                 return [-popup.width, 0]
             } else {
                 return [-popup.width, -popup.height]

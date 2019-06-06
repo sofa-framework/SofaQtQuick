@@ -20,15 +20,20 @@ Menu {
     property var selection
 
     title: "Asset Content"
-    visible: true
     onAssetChanged: {
-        if (assetMenu.asset)
+        if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
+            if (menuRepeater.model.count)
+                enabled = true
+        }
     }
 
     onOpened: {
-        if (assetMenu.asset)
+        if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
+            if (menuRepeater.model.count)
+                enabled = true
+        }
     }
 
     Repeater {
@@ -55,12 +60,14 @@ Menu {
                 var p = createAsset()
                 if (!p)
                     return
-                var srcIndex = basemodel.getIndexFromBase(p)
-                var index = sceneModel.mapFromSource(srcIndex);
-                treeView.collapseAncestors(index)
-                treeView.expandAncestors(index)
-                treeView.expand(index)
-                treeView.selection.setCurrentIndex(index, selection)
+                if (basemodel) {
+                    var srcIndex = basemodel.getIndexFromBase(p)
+                    var index = sceneModel.mapFromSource(srcIndex);
+                    treeView.collapseAncestors(index)
+                    treeView.expandAncestors(index)
+                    treeView.expand(index)
+                    treeView.selection.setCurrentIndex(index, selection)
+                }
             }
 
             function createAsset() {
@@ -86,6 +93,4 @@ Menu {
             }
         }
     }
-
-
 }
