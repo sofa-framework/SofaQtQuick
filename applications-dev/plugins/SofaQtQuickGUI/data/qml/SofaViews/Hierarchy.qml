@@ -488,6 +488,19 @@ Rectangle {
 
             Drag.active: mouseArea.drag.active
             Drag.dragType: Drag.Automatic
+            SofaNodeMenu
+            {
+                id: nodeMenu
+                model: basemodel
+                currentModelIndex: sceneModel.mapToSource(styleData.index)
+            }
+
+            SofaObjectMenu
+            {
+                id: objectMenu
+                model: basemodel
+                currentModelIndex: sceneModel.mapToSource(styleData.index)
+            }
 
             MouseArea {
                 id: mouseArea
@@ -515,7 +528,7 @@ Rectangle {
                         treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
                     } else if (mouse.button === Qt.RightButton) {
                         if(theComponent.isNode()) {
-                            nodeMenu.currentModelIndex = srcIndex
+//                            nodeMenu.currentModelIndex = srcIndex
                             nodeMenu.activated = theComponent.getData("activated");
                             if(theComponent.hasLocations()===true)
                             {
@@ -534,7 +547,7 @@ Rectangle {
                                 objectMenu.sourceLocation = theComponent.getSourceLocation()
                                 objectMenu.creationLocation = theComponent.getInstanciationLocation()
                             }
-                            objectMenu.currentModelIndex = srcIndex
+//                            objectMenu.currentModelIndex = srcIndex
                             objectMenu.name = theComponent.getData("name");
                             pos = SofaApplication.getIdealPopupPos(objectMenu, mouseArea)
                             objectMenu.x = mouseArea.mouseX + pos[0]
@@ -624,20 +637,6 @@ Rectangle {
         QQC1.TableViewColumn {
             title: "Hierarchy"
             role: "name"
-        }
-
-        SofaNodeMenu
-        {
-            id: nodeMenu
-            model: basemodel
-            currentModelIndex: undefined
-        }
-
-        SofaObjectMenu
-        {
-            id: objectMenu
-            model: basemodel
-            currentModelIndex: undefined
         }
     }
 
