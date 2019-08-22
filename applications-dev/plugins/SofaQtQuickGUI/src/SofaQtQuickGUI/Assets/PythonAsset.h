@@ -2,10 +2,16 @@
 
 #include "Asset.h"
 
+#ifdef SOFAQTQUICK_WITH_SOFAPYTHON3
+#include <SofaPython3/PythonEnvironment.h>
+using sofapython3::PythonEnvironment;
+#else
 #include <SofaPython/Binding.h>
 #include <SofaPython/PythonEnvironment.h>
 #include <SofaPython/PythonFactory.h>
 using sofa::simulation::PythonEnvironment;
+#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
+
 
 
 #include <QQmlListProperty>

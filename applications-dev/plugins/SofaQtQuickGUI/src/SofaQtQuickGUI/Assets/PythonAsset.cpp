@@ -1,18 +1,23 @@
 #include "PythonAsset.h"
 
+#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
 #include <SofaPython/SceneLoaderPY.h>
 #include <SofaPython/PythonEnvironment.h>
+#include <SofaPython/PythonFactory.h>
+using sofa::simulation::PythonEnvironment;
+#else
+#include <SofaPython3/PythonEnvironment.h>
+using sofapython3::PythonEnvironment;
+namespace py = pybind11;
+#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
 
 #include <memory>
 #include <experimental/filesystem>
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/PythonFactory.h>
 #include <QMessageBox>
 
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
 
-using sofa::simulation::PythonEnvironment;
 
 namespace fs = std::experimental::filesystem;
 
@@ -61,6 +66,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
     root->setName("NEWNAME");
 
+#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
     PythonEnvironment::gil lock(__func__);
     PyObject* mpath = PyString_FromString(path.c_str());
     PyObject* mname = PyString_FromString(stem.c_str());
@@ -69,6 +75,14 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
 
     PyObject* args = PyTuple_Pack(4, mpath, mname, pname, assetnode);
     PythonEnvironment::callObject("loadPythonAsset", "SofaPython", args);
+#else
+    py::object assetNode = py::cast(root);
+    py::module::import("SofaQtQuick").attr("loadPythonAsset")(
+                py::make_tuple(path, stem, assetName.toStdString(), assetNode)
+                );
+
+#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
+
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
     node->init(sofa::core::ExecParams::defaultInstance());

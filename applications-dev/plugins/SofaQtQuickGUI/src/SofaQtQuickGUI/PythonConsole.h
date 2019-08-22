@@ -20,8 +20,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #ifndef PYTHONCONSOLE_H
 #define PYTHONCONSOLE_H
 
-#include <SofaPython/PythonMacros.h>
-
 #include <SofaQtQuickGUI/config.h>
 #include <QObject>
 #include <QString>
@@ -39,7 +37,7 @@ class SOFA_SOFAQTQUICKGUI_API PythonConsole : public QObject
     Q_OBJECT
 
 public:
-    PythonConsole(QObject *parent = 0);
+    PythonConsole(QObject *parent = nullptr);
     ~PythonConsole();
 
 signals:

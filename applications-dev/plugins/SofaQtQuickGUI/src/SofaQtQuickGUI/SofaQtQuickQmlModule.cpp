@@ -22,7 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/ProcessState.h>
 #include <SofaQtQuickGUI/Camera.h>
 #include <SofaQtQuickGUI/SofaParticleInteractor.h>
-#include <SofaQtQuickGUI/SofaPythonInteractor.h>
+//#include <SofaQtQuickGUI/SofaPythonInteractor.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h>
@@ -173,7 +173,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
-    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
+//    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
     qmlRegisterType<Manipulator>                                    ("Manipulator"                          , versionMajor, versionMinor, "Manipulator");
     qmlRegisterType<Manipulator2D_Translation>                      ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");
     qmlRegisterType<Manipulator2D_Rotation>                         ("Manipulator2D_Rotation"               , versionMajor, versionMinor, "Manipulator2D_Rotation");
