@@ -6,8 +6,9 @@
 #include <SofaPython/PythonFactory.h>
 using sofa::simulation::PythonEnvironment;
 #else
+#include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
+using sofaqtquick::PythonEnvironment;
 #include <SofaPython3/PythonEnvironment.h>
-using sofapython3::PythonEnvironment;
 namespace py = pybind11;
 #endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
 
@@ -102,7 +103,13 @@ QString PythonAssetModel::getDocstring() const { return QString(m_docstring.c_st
 void PythonAsset::getDetails()
 {
     if (m_detailsLoaded) return;
-    QString docstring(PythonEnvironment::getPythonModuleDocstring(m_path).c_str());
+
+    fs::path obj(m_path);
+
+    std::string stem = obj.stem();
+    std::string path = obj.parent_path().string();
+
+    QString docstring(PythonEnvironment::getPythonScriptDocstring(path, stem).c_str());
     if (!docstring.contains("type: SofaContent"))
     {
         QMessageBox mbox;
@@ -117,13 +124,8 @@ void PythonAsset::getDetails()
         return;
     }
 
-    fs::path obj(m_path);
 
-    std::string stem = obj.stem();
-    std::string path = obj.parent_path().string();
-
-    std::map<std::string, std::map<std::string, std::string>> map;
-    map = PythonEnvironment::getPythonModuleContent(path, stem);
+    auto map = PythonEnvironment::getPythonScriptContent(path, stem);
 
     for (auto item : m_scriptContent)
         delete item;
@@ -131,8 +133,8 @@ void PythonAsset::getDetails()
     for (auto pair : map)
         m_scriptContent.append(new PythonAssetModel(
                                    pair.first,
-                                   pair.second["type"],
-                               pair.second["docstring"]));
+                                   pair.second.first,
+                               pair.second.second));
     m_detailsLoaded = true;
 }
 

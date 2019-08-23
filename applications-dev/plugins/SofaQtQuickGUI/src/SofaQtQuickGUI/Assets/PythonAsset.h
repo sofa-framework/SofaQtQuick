@@ -3,8 +3,7 @@
 #include "Asset.h"
 
 #ifdef SOFAQTQUICK_WITH_SOFAPYTHON3
-#include <SofaPython3/PythonEnvironment.h>
-using sofapython3::PythonEnvironment;
+#include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
 #else
 #include <SofaPython/Binding.h>
 #include <SofaPython/PythonEnvironment.h>
@@ -15,6 +14,7 @@ using sofa::simulation::PythonEnvironment;
 
 
 #include <QQmlListProperty>
+#include <experimental/filesystem>
 
 namespace sofa::qtquick
 {
@@ -66,7 +66,12 @@ protected:
     {
         if (m_extension == "py")
         {
-            QString docstring(PythonEnvironment::getPythonModuleDocstring(m_path).c_str());
+            namespace fs = std::experimental::filesystem;
+
+            fs::path p(m_path);
+            auto module = p.stem();
+            auto path = p.parent_path();
+            QString docstring(sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module).c_str());
             if (docstring.contains("type: SofaContent"))
                 return true;
         }

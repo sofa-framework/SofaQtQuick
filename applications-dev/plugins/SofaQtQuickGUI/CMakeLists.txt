@@ -88,6 +88,7 @@ if (SofaPython_FOUND)
 else ()
   list(APPEND SOURCE_FILES
       src/SofaQtQuickGUI/Python3Console.cpp
+      src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.cpp
       # src/SofaQtQuickGUI/SofaPython3Interactor.cpp
       )
 endif ()
@@ -154,6 +155,10 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Assets/AssetFactory.h
     src/SofaQtQuickGUI/Assets/AssetFactory.inl
     )
+
+if (SofaPython3_FOUND)
+  list(APPEND HEADER_FILES src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h)
+endif ()
 
 set(ASSET_TEMPLATES
     data/config/templates/MeshAsset.py
