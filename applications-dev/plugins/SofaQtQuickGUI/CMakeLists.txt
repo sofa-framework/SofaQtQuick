@@ -8,18 +8,13 @@ find_package(SofaOpenglVisual REQUIRED)
 find_package(SofaGeneral REQUIRED)
 find_package(SofaCommon REQUIRED)
 
-find_package(SofaPython QUIET)
 find_package(SofaPython3 QUIET)
 if (SofaPython3_FOUND)
   set (SOFAPYTHON_LIBRARY SofaPython3)
   include_directories(${SofaPython3_INCLUDE_DIRS})
-  add_definitions("-DSOFAQTQUICK_WITH_SOFAPYTHON3")
-elseif (SofaPython_FOUND)
-  set (SOFAPYTHON_LIBRARY SofaPython)
-  include_directories(${SofaPython_INCLUDE_DIRS})
-  add_definitions("-DSOFAQTQUICK_WITH_SOFAPYTHON")
+#  add_definitions("-DSOFAQTQUICK_WITH_SOFAPYTHON3")
 else()
-  message(FATAL_ERROR "Either SofaPython3 or SofaPython is required to compile SofaQtQuick")
+  message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
 endif ()
 
 
@@ -195,6 +190,7 @@ set(EXTRA_FILES
 set(PYTHON_FILES
     data/python/BaseHeader.py
     data/python/PythonConsole.py
+    data/python/SofaQtQuick.py
 )
 sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "data/python")
 

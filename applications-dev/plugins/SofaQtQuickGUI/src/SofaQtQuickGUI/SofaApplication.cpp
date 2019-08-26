@@ -32,12 +32,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/logging/ConsoleMessageHandler.h>
 #include <sofa/helper/AdvancedTimer.h>
 
-#ifdef SOFAQTQUICK_WITH_SOFAPYTHON3
 #include <SofaPython3/PythonEnvironment.h>
 using sofapython3::PythonEnvironment;
-#else
-#include <SofaPython/PythonEnvironment.h>
-#endif // SOFAQTQUICK_WITH_SOFAPYTHON3
 
 #include <QQuickStyle>
 #include <QInputDialog>

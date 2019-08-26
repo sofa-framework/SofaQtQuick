@@ -83,50 +83,50 @@ def getAbsPythonCallPath(node, rootNode):
         # rootNode.getPathName() = "/Snake/physics"
         # node.getPathName() = "/Snake/physics/visu/eye"
         # relPath = physics.visu.eye
-        return rootNode.name + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
+        return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
 
 def buildDataParams(datas, indent, scn):
     s = ""
     for data in datas:
         if data.hasParent():
             scn[0] += indent + "### THERE WAS A LINK. "
-            scn[0] += data.getParentPath() + "=>" + data.getLinkPath() + "\n"
-            if data.name != "name" and data.isPersistant():
-                s += ", " + data.name + "=" + repr(data.getParentPath())
+            scn[0] += data.getParent().getLinkPath() + "=>" + data.getLinkPath() + "\n"
+            if data.getName() != "name" and data.isPersistent():
+                s += ", " + data.getName()+ "=" + repr(data.getParent().getLinkPath())
         else:
-            if data.name != "name" and data.isPersistant():
-                if " " not in data.name and data.name != "Help":
-                    if data.name != "modulepath":
-                        if data.name != "depend":
-                            s += ", " + data.name + "=" + repr(data.value)
+            if data.getName() != "name" and data.isPersistent():
+                if " " not in data.getName() and data.getName() != "Help":
+                    if data.getName() != "modulepath":
+                        if data.getName() != "depend":
+                            s += ", " + data.getName() + "=" + repr(data.value)
     return s
 
 
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
-    for o in node.getObjects():
-        s = buildDataParams(o.getListOfDataFields(), indent, scn)
+    for o in node.objects:
+        s = buildDataParams(o.getDataFields(), indent, scn)
         print('createObject')
         scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".createObject('"
-        scn[0] += o.getClassName() + "', name='" + o.name + "'" + s + ")\n"
+        scn[0] += o.getClassName() + "', name='" + o.name.value + "'" + s + ")\n"
 
-    for child in node.getChildren():
-        s = buildDataParams(child.getListOfDataFields(), indent, scn)
+    for child in node.children:
+        s = buildDataParams(child.getDataFields(), indent, scn)
         if child.getData("Prefab type") is not None:
             print('createPrefab')
             scn[0] += (indent + "####################### Prefab: " +
                        child.name + " #########################\n")
             scn[0] += (indent + child.getData("Prefab type").value +
                        "(" + getAbsPythonCallPath(node, rootNode) +
-                       ".createChild('" + child.name + "'))\n")
+                       ".createChild('" + child.name.value + "'))\n")
             scn[0] += ("\n")
             modules.append(child.getData("Defined in").value)
             modulepaths.append(child.getData("modulepath").value)
         else:
             print("createNode")
-            scn[0] += (indent + "####################### Node: " + child.name +
+            scn[0] += (indent + "####################### Node: " + child.name.value +
                        " #########################\n")
             scn[0] += (indent + getAbsPythonCallPath(node, rootNode) +
-                       ".createChild('" + child.name + "')\n")
+                       ".createChild('" + child.name.value + "')\n")
             saveRec(child, indent, modules, modulepaths, scn, rootNode)
             scn[0] += ("\n")
 
@@ -157,7 +157,7 @@ def getRelPath(path, relativeTo):
 
 
 def saveAsPythonScene(fileName, node):
-    try:
+#    try:
         root = node.getRootContext()
         fd = open(fileName, "w+")
 
@@ -182,13 +182,13 @@ def saveAsPythonScene(fileName, node):
         fd.write("\n\ndef createScene(root):\n")
         fd.write(scn[0])
         return True
-    except Exception as e:
-        Sofa.msg_error(e)
-        return False
+#    except Exception as e:
+#        Sofa.msg_error(e)
+#        return False
 
 
 def createPrefabFromNode(fileName, node, name, help):
-    try:
+#    try:
         print('Saving prefab')
         fd = open(fileName, "w+")
         fd.write("import sys\n")
@@ -210,11 +210,11 @@ def createPrefabFromNode(fileName, node, name, help):
         fd.write("\n\n@SofaPrefab\n")
         fd.write("class " + name + "():\n")
         fd.write("\t\"\"\" " + help + " \"\"\"\n")
-        fd.write("\tdef __init__(self, " + node.name + "):\n")
-        fd.write("\t\tself.node = " + node.name + "\n")
+        fd.write("\tdef __init__(self, " + node.name.value + "):\n")
+        fd.write("\t\tself.node = " + node.name.value + "\n")
         fd.write(scn[0])
         return True
-    except Exception as e:
-        Sofa.msg_error(e)
-        return False
+#    except Exception as e:
+#        Sofa.msg_error(e)
+#        return False
 

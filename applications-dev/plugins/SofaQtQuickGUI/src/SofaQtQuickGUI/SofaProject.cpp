@@ -1,15 +1,10 @@
 #include "SofaProject.h"
 #include "SofaApplication.h"
 
-#ifdef SOFAQTQUICK_WITH_SOFAPYTHON3
 #include <SofaPython3/PythonEnvironment.h>
+#include <SofaPython3/PythonFactory.h>
 using sofapython3::PythonEnvironment;
 namespace py = pybind11;
-#else
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/PythonFactory.h>
-using sofa::simulation::PythonEnvironment;
-#endif
 #include <QWindow>
 #include <QInputDialog>
 #include <QFileDialog>
@@ -223,24 +218,10 @@ bool SofaProject::createPrefab(SofaBase* node)
     {
         std::string fileName = dialog.selectedFiles().first().toStdString();
         {
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-            PythonEnvironment::gil lock(__func__);
-            PyObject* file = PyString_FromString(fileName.c_str());
-            PyObject* rootNode = sofa::PythonFactory::toPython(node->base()->toBaseNode());
-            PyObject* n = PyString_FromString(name.toStdString().c_str());
-            PyObject* h = PyString_FromString(help.toStdString().c_str());
-            PyObject* args = PyTuple_Pack(4, file, rootNode, n, h);
-            PyObject* ret = PythonEnvironment::callObject("createPrefabFromNode", "SofaPython", args);
-            return PyObject_IsTrue(ret);
-#else
-            py::str file(fileName);
-            py::object rootNode = py::cast(node->base()->toBaseNode());
-            py::str n(name.toStdString());
-            py::str h(help.toStdString());
-            py::tuple args = py::make_tuple(file, rootNode, n ,h);
+            py::module::import("Sofa.Core");
+            py::object rootNode = sofapython3::PythonFactory::toPython(node->base()->toBaseNode());
             py::module m = py::module::import("SofaQtQuick");
-            return py::cast<bool>(m.attr("createPrefabFromNode")(args));
-#endif
+            return py::cast<bool>(m.attr("createPrefabFromNode")(fileName, rootNode, name.toStdString(), help.toStdString()));
         }
     }
     return false;

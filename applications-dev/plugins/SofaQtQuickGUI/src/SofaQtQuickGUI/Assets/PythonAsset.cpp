@@ -1,20 +1,14 @@
 #include "PythonAsset.h"
 
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-#include <SofaPython/SceneLoaderPY.h>
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/PythonFactory.h>
-using sofa::simulation::PythonEnvironment;
-#else
 #include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
 using sofaqtquick::PythonEnvironment;
 #include <SofaPython3/PythonEnvironment.h>
 namespace py = pybind11;
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
 
 #include <memory>
 #include <experimental/filesystem>
 #include <QMessageBox>
+#include <QProcess>
 
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
@@ -67,22 +61,10 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
     root->setName("NEWNAME");
 
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-    PythonEnvironment::gil lock(__func__);
-    PyObject* mpath = PyString_FromString(path.c_str());
-    PyObject* mname = PyString_FromString(stem.c_str());
-    PyObject* pname = PyString_FromString(assetName.toStdString().c_str());
-    PyObject* assetnode = sofa::PythonFactory::toPython(root.get());
-
-    PyObject* args = PyTuple_Pack(4, mpath, mname, pname, assetnode);
-    PythonEnvironment::callObject("loadPythonAsset", "SofaPython", args);
-#else
     py::object assetNode = py::cast(root);
     py::module::import("SofaQtQuick").attr("loadPythonAsset")(
                 py::make_tuple(path, stem, assetName.toStdString(), assetNode)
                 );
-
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
 
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
@@ -107,7 +89,18 @@ void PythonAsset::getDetails()
     fs::path obj(m_path);
 
     std::string stem = obj.stem();
+    std::string ext = obj.extension();
     std::string path = obj.parent_path().string();
+    std::cout << ext << std::endl;
+    if (ext == ".pyscn")
+    {
+        QProcess process;
+        process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
+        process.waitForFinished(-1);
+        process.start("/bin/cp", QStringList() << obj.string().c_str() << QString("/tmp/runSofa2/") + stem.c_str() + ".py");
+        process.waitForFinished(-1);
+        path = "/tmp/runSofa2";
+    }
 
     QString docstring(PythonEnvironment::getPythonScriptDocstring(path, stem).c_str());
     if (!docstring.contains("type: SofaContent"))

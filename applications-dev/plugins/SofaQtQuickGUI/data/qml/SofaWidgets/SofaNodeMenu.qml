@@ -137,15 +137,13 @@ Menu {
         text: "Add object..."
         onTriggered: {
             var popupComponent = SofaDataWidgetFactory.getWidget("qrc:/SofaWidgets/PopupWindowCreateComponent.qml")
-            var popup2 = popupComponent.createObject(nodeMenu.parent,
-                                                     {"sofaNode": model.getBaseFromIndex(currentModelIndex)});
-
-            var pos = SofaApplication.getIdealPopupPos(popup2)
-            popup2.popup(mouseLoc.mouseX, mouseLoc.mouseY)
-            popup2.x += pos[0]
-            popup2.y += pos[1]
-            popup2.forceActiveFocus()
-        }
+            var popup2 = popupComponent.createObject(nodeMenu.parent, {
+                                                         "sofaNode": model.getBaseFromIndex(currentModelIndex),
+                                                         "x" : mouseLoc.mouseX,
+                                                         "y" : mouseLoc.mouseY
+                                                     });
+            popup2.open()
+            popup2.forceActiveFocus()        }
         MouseArea
         {
             id: mouseLoc

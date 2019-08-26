@@ -55,17 +55,10 @@ using sofa::core::objectmodel::MouseEvent ;
 #include <sofa/core/visual/VisualParams.h>
 #include <sofa/core/visual/DrawToolGL.h>
 
-#ifdef SOFAQTQUICK_WITH_SOFAPYTHON3
-  #include <SofaPython3/PythonEnvironment.h>
-  #include <SofaPython3/SceneLoaderPY3.h>
-  using sofapython3::PythonEnvironment;
-  namespace py = pybind11;
-#else
-  #include <SofaPython/SceneLoaderPY.h>
-  #include <SofaPython/PythonEnvironment.h>
-  #include <SofaPython/PythonFactory.h>
-  //#include <SofaPython/PythonScriptController.h>
-#endif // SOFAQTQUICK_WITH_SOFAPYTHON3
+#include <SofaPython3/PythonEnvironment.h>
+#include <SofaPython3/SceneLoaderPY3.h>
+using sofapython3::PythonEnvironment;
+namespace py = pybind11;
 
 
 #include <SofaBaseVisual/VisualStyle.h>
@@ -167,11 +160,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent),
 
     // plugins
     QVector<QString> plugins;
-#ifdef SOFAQTQUICK_WITH_SOFAPYTHON3
     plugins.append("SofaPython3");
-#else
-    plugins.append("SofaPython");
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
     plugins.append("SofaAllCommonComponents");
     for(const QString& plugin : plugins)
     {
@@ -407,24 +396,6 @@ void SofaScene::open()
             msg_deprecated("SofaQtQuickGUI") << "The extension format of your scene qml interface is deprecated, use directly ***.qml instead of ***.py.qml";
     }
     setPathQML(QString::fromStdString(finalQmlFilepath));
-
-    // python header (didn't find a reason to use this in SofaPython3..)
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-    QString finalHeader;
-    QFile baseHeaderFile(":/python/BaseHeader.py");
-    if(!baseHeaderFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        msg_error("SofaQtQuickGUI") << "base header not found";
-    }
-    else
-    {
-        finalHeader += QTextStream(&baseHeaderFile).readAll();
-    }
-
-    finalHeader += myHeader;
-
-    SceneLoaderPY::setHeader(finalHeader.toStdString());
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
 
     // load the requested scene synchronously / asynchronously
     if(currentAsynchronous)
@@ -1420,15 +1391,6 @@ SofaComponent* SofaScene::visualStyleComponent()
 
 bool SofaScene::save2()
 {
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-    PythonEnvironment::gil lock(__func__);
-    PyObject* file = PyString_FromString(path().toStdString().c_str());
-    PyObject* rootNode = sofa::PythonFactory::toPython(mySofaRootNode->toBaseNode());
-    PyObject* args = PyTuple_Pack(2, file, rootNode);
-    PyObject* ret = PythonEnvironment::callObject("saveAsPythonScene", "SofaPython", args);
-    msg_info("runSofa2") << "File saved to "  << path().toStdString();
-    return PyObject_IsTrue(ret);
-#else
     py::str file(path().toStdString());
     py::object rootNode = py::cast(mySofaRootNode);
     py::tuple args = py::make_tuple(file, rootNode);
@@ -1440,7 +1402,6 @@ bool SofaScene::save2()
         msg_error("runSofa2") << "Could not save to file "  << path().toStdString();
     }
     return ret;
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
 }
 
 
@@ -1453,15 +1414,6 @@ bool SofaScene::save(const QString& projectRootDir)
     {
         std::string fileName = dialog.selectedFiles().first().toStdString();
         {
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-            PythonEnvironment::gil lock(__func__);
-            PyObject* file = PyString_FromString(fileName.c_str());
-            PyObject* rootNode = sofa::PythonFactory::toPython(mySofaRootNode->toBaseNode());
-            PyObject* args = PyTuple_Pack(2, file, rootNode);
-            PyObject* ret = PythonEnvironment::callObject("saveAsPythonScene", "SofaPython", args);
-            std::cout << "Processing output" << std::endl;
-            return PyObject_IsTrue(ret);
-#else
             py::str file(fileName);
             py::object rootNode = py::cast(mySofaRootNode);
             py::tuple args = py::make_tuple(file, rootNode);
@@ -1473,7 +1425,6 @@ bool SofaScene::save(const QString& projectRootDir)
                 msg_error("runSofa2") << "Could not save to file "  << path().toStdString();
             }
             return ret;
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
         }
     }
     return false;

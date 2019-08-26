@@ -7,16 +7,9 @@
 #include <sofa/simulation/DefaultAnimationLoop.h>
 #include <sofa/simulation/DefaultVisualManagerLoop.h>
 
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-//#include <SofaPython/SceneLoaderPY.h>
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/PythonFactory.h>
-using sofa::simulation::PythonEnvironment;
-#else
 #include <SofaPython3/PythonEnvironment.h>
 using sofapython3::PythonEnvironment;
 namespace py = pybind11;
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
 
 using sofa::component::visualmodel::OglModel;
 using sofa::core::loader::MeshLoader;
@@ -70,21 +63,10 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(const QString& assetName)
 
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
 
-#ifndef SOFAQTQUICK_WITH_SOFAPYTHON3
-    PythonEnvironment::gil lock(__func__);
-    PyObject* loaderType = PyString_FromString(b->getClassName().c_str());
-    PyObject* meshPath = PyString_FromString(m_path.c_str());
-    PyObject* rootNode = sofa::PythonFactory::toPython(root.get()->toBaseNode());
-
-    PyObject* args = PyTuple_Pack(3, loaderType, meshPath, rootNode);
-    PyObject* ret = PythonEnvironment::callObject("loadMeshAsset", "SofaPython", args);
-    if (PyObject_IsTrue(ret))
-#else
     bool ret = py::cast<bool>(py::module::import("SofaQtQuick").attr("loadMeshAsset")(
                 py::make_tuple(b->getClassName(), m_path, py::cast(root))
                 ));
     if (ret)
-#endif  // SOFAQTQUICK_WITH_SOFAPYTHON3
     {
         root->setName("NEWNODE");
         sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(

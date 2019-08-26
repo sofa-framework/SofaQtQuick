@@ -91,13 +91,13 @@ Menu {
         text: "Add object..."
         onTriggered: {
             var popupComponent = Qt.createComponent("qrc:/SofaWidgets/PopupWindowCreateComponent.qml")
-            var popup2 = popupComponent.createObject(nodeMenu.parent,
-                                                     {"sofaNode": model.getBaseFromIndex(currentModelIndex).getFirstParent(),
-                                                      "x" : mouseLoc.mouseX,
-                                                      "y" : mouseLoc.mouseY
-                                                     }
-
-                                                     );
+            var popup2 =
+                    popupComponent.createObject(nodeMenu.parent,
+                                                {
+                                                    "sofaNode": model.getBaseFromIndex(currentModelIndex).getFirstParent(),
+                                                    "x" : mouseLoc.mouseX,
+                                                    "y" : mouseLoc.mouseY
+                                                });
             popup2.open()
             popup2.forceActiveFocus()
         }
