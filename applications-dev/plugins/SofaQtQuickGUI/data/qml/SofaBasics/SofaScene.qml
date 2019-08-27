@@ -74,7 +74,7 @@ SofaScene {
     readonly property bool loading: status === SofaScene.Loading
 
     // allow us to interact with the python script controller
-    property var sofaPythonInteractor: SofaPythonInteractor {sofaScene: root}
+//    property var sofaPythonInteractor: SofaPythonInteractor {sofaScene: root}
 
     // allow us to interact with the sofa scene particles
     // by default there is no particle-interactor

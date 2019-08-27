@@ -3,7 +3,13 @@
 @PACKAGE_INIT@
 
 find_package(SofaMisc REQUIRED)
-find_package(SofaPython REQUIRED)
+find_package(SofaPython QUIET)
+find_package(SofaPython3 QUIET)
+
+if(NOT SofPython3_FOUND AND NOT SofaPython_FOUND)
+  find_package(SofaPython3 REQUIRED)
+endif ()
+
 find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml REQUIRED)
 
 if(NOT TARGET SofaQtQuickGUI)

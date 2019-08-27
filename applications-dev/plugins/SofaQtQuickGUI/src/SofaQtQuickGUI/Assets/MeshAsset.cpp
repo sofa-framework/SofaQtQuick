@@ -6,11 +6,11 @@
 #include <sofa/simulation/InitVisitor.h>
 #include <sofa/simulation/DefaultAnimationLoop.h>
 #include <sofa/simulation/DefaultVisualManagerLoop.h>
-//#include <SofaPython/SceneLoaderPY.h>
 
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/PythonFactory.h>
-using sofa::simulation::PythonEnvironment;
+#include <SofaPython3/PythonEnvironment.h>
+#include <SofaPython3/PythonFactory.h>
+using sofapython3::PythonEnvironment;
+namespace py = pybind11;
 
 using sofa::component::visualmodel::OglModel;
 using sofa::core::loader::MeshLoader;
@@ -64,24 +64,14 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(const QString& assetName)
 
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
 
-    PythonEnvironment::gil lock(__func__);
-    PyObject* loaderType = PyString_FromString(b->getClassName().c_str());
-    PyObject* meshPath = PyString_FromString(m_path.c_str());
-    PyObject* rootNode = sofa::PythonFactory::toPython(root.get()->toBaseNode());
+    py::module::import("Sofa.Core");
+    py::module::import("SofaQtQuick").attr("loadMeshAsset")(b->getClassName(), m_path, sofapython3::PythonFactory::toPython(root->toBaseNode()));
+    root->setName("NEWNODE");
+    sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
+                dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
+    node->init(sofa::core::ExecParams::defaultInstance());
 
-    PyObject* args = PyTuple_Pack(3, loaderType, meshPath, rootNode);
-    PyObject* ret = PythonEnvironment::callObject("loadMeshAsset", "SofaPython", args);
-    if (PyObject_IsTrue(ret))
-    {
-        root->setName("NEWNODE");
-        sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
-                    dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
-        node->init(sofa::core::ExecParams::defaultInstance());
-
-        return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
-    }
-    msg_error("Something went wrong...");
-    return nullptr;
+    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
 void MeshAsset::getDetails()

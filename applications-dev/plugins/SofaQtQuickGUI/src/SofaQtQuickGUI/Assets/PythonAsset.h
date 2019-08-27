@@ -1,14 +1,12 @@
 #pragma once
 
 #include "Asset.h"
-
-#include <SofaPython/Binding.h>
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/PythonFactory.h>
-using sofa::simulation::PythonEnvironment;
-
+#include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
 
 #include <QQmlListProperty>
+#include <QProcess>
+
+#include <experimental/filesystem>
 
 namespace sofa::qtquick
 {
@@ -60,7 +58,29 @@ protected:
     {
         if (m_extension == "py")
         {
-            QString docstring(PythonEnvironment::getPythonModuleDocstring(m_path).c_str());
+            namespace fs = std::experimental::filesystem;
+
+            fs::path p(m_path);
+            auto module = p.stem();
+            auto path = p.parent_path();
+            QString docstring(sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module).c_str());
+            if (docstring.contains("type: SofaContent"))
+                return true;
+        }
+        if (m_extension == "pyscn" || m_extension == "py3")
+        {
+            namespace fs = std::experimental::filesystem;
+
+            fs::path p(m_path);
+            auto module = p.stem();
+            auto path = p.parent_path();
+            QProcess process;
+            process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
+            process.waitForFinished(-1);
+            process.start("/bin/cp", QStringList() << p.string().c_str() << QString("/tmp/runSofa2/") + module.c_str() + ".py");
+            process.waitForFinished(-1);
+            path = "/tmp/runSofa2";
+            QString docstring(sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module).c_str());
             if (docstring.contains("type: SofaContent"))
                 return true;
         }

@@ -4,8 +4,19 @@ project(SofaQtQuickGUI VERSION 1.0)
 set (CMAKE_CXX_STANDARD 17)
 
 find_package(SofaFramework REQUIRED)
-find_package(SofaPython REQUIRED)
 find_package(SofaOpenglVisual REQUIRED)
+find_package(SofaGeneral REQUIRED)
+find_package(SofaCommon REQUIRED)
+
+find_package(SofaPython3 QUIET)
+if (SofaPython3_FOUND)
+  set (SOFAPYTHON_LIBRARY SofaPython3)
+  include_directories(${SofaPython3_INCLUDE_DIRS})
+#  add_definitions("-DSOFAQTQUICK_WITH_SOFAPYTHON3")
+else()
+  message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
+endif ()
+
 
 set(SOURCE_FILES
     src/SofaQtQuickGUI/DataHelper.cpp
@@ -22,9 +33,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SelectableManipulator.cpp
     src/SofaQtQuickGUI/SelectableSofaComponent.cpp
     src/SofaQtQuickGUI/SelectableSofaParticle.cpp
-    src/SofaQtQuickGUI/SofaPythonInteractor.cpp
     src/SofaQtQuickGUI/Console.cpp
-    src/SofaQtQuickGUI/PythonConsole.cpp
     src/SofaQtQuickGUI/SofaParticleInteractor.cpp
     src/SofaQtQuickGUI/Bindings/SofaFactory.cpp
     src/SofaQtQuickGUI/Bindings/SofaCamera.cpp
@@ -66,6 +75,19 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Assets/AssetFactory.cpp
     )
 
+if (SofaPython_FOUND)
+  list(APPEND SOURCE_FILES
+      src/SofaQtQuickGUI/PythonConsole.cpp
+      # src/SofaQtQuickGUI/SofaPythonInteractor.cpp
+      )
+else ()
+  list(APPEND SOURCE_FILES
+      src/SofaQtQuickGUI/Python3Console.cpp
+      src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.cpp
+      # src/SofaQtQuickGUI/SofaPython3Interactor.cpp
+      )
+endif ()
+
 set(HEADER_FILES
     src/SofaQtQuickGUI/config.h
     src/SofaQtQuickGUI/DataHelper.h
@@ -83,7 +105,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SelectableManipulator.h
     src/SofaQtQuickGUI/SelectableSofaComponent.h
     src/SofaQtQuickGUI/SelectableSofaParticle.h
-    src/SofaQtQuickGUI/SofaPythonInteractor.h
+    # src/SofaQtQuickGUI/SofaPythonInteractor.h
     src/SofaQtQuickGUI/Console.h
     src/SofaQtQuickGUI/PythonConsole.h
     src/SofaQtQuickGUI/SofaParticleInteractor.h
@@ -129,6 +151,10 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Assets/AssetFactory.inl
     )
 
+if (SofaPython3_FOUND)
+  list(APPEND HEADER_FILES src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h)
+endif ()
+
 set(ASSET_TEMPLATES
     data/config/templates/MeshAsset.py
     data/config/templates/PythonAsset.py
@@ -164,6 +190,7 @@ set(EXTRA_FILES
 set(PYTHON_FILES
     data/python/BaseHeader.py
     data/python/PythonConsole.py
+    data/python/SofaQtQuick.py
 )
 sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "data/python")
 
@@ -221,7 +248,7 @@ set(HEADER_FILES ${HEADER_FILES}
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
-target_link_libraries(${PROJECT_NAME} PUBLIC SofaPython SofaOpenglVisual SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine stdc++fs)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaComponentBase SofaMeshCollision Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine stdc++fs)
 #target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")

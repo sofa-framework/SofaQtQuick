@@ -1,18 +1,19 @@
 #include "PythonAsset.h"
 
-#include <SofaPython/SceneLoaderPY.h>
-#include <SofaPython/PythonEnvironment.h>
+#include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
+using sofaqtquick::PythonEnvironment;
+#include <SofaPython3/PythonEnvironment.h>
+#include <SofaPython3/PythonFactory.h>
+namespace py = pybind11;
 
 #include <memory>
 #include <experimental/filesystem>
-#include <SofaPython/PythonEnvironment.h>
-#include <SofaPython/PythonFactory.h>
 #include <QMessageBox>
+#include <QProcess>
 
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
 
-using sofa::simulation::PythonEnvironment;
 
 namespace fs = std::experimental::filesystem;
 
@@ -60,15 +61,11 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
 
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
     root->setName("NEWNAME");
+    py::module::import("Sofa.Core");
+    py::object assetNode = sofapython3::PythonFactory::toPython(root->toBaseNode());
+    py::module::import("SofaQtQuick").attr(
+                "loadPythonAsset")(path, stem, assetName.toStdString(), assetNode);
 
-    PythonEnvironment::gil lock(__func__);
-    PyObject* mpath = PyString_FromString(path.c_str());
-    PyObject* mname = PyString_FromString(stem.c_str());
-    PyObject* pname = PyString_FromString(assetName.toStdString().c_str());
-    PyObject* assetnode = sofa::PythonFactory::toPython(root.get());
-
-    PyObject* args = PyTuple_Pack(4, mpath, mname, pname, assetnode);
-    PythonEnvironment::callObject("loadPythonAsset", "SofaPython", args);
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
     node->init(sofa::core::ExecParams::defaultInstance());
@@ -88,7 +85,24 @@ QString PythonAssetModel::getDocstring() const { return QString(m_docstring.c_st
 void PythonAsset::getDetails()
 {
     if (m_detailsLoaded) return;
-    QString docstring(PythonEnvironment::getPythonModuleDocstring(m_path).c_str());
+
+    fs::path obj(m_path);
+
+    std::string stem = obj.stem();
+    std::string ext = obj.extension();
+    std::string path = obj.parent_path().string();
+    std::cout << ext << std::endl;
+    if (ext == ".pyscn")
+    {
+        QProcess process;
+        process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
+        process.waitForFinished(-1);
+        process.start("/bin/cp", QStringList() << obj.string().c_str() << QString("/tmp/runSofa2/") + stem.c_str() + ".py");
+        process.waitForFinished(-1);
+        path = "/tmp/runSofa2";
+    }
+
+    QString docstring(PythonEnvironment::getPythonScriptDocstring(path, stem).c_str());
     if (!docstring.contains("type: SofaContent"))
     {
         QMessageBox mbox;
@@ -103,13 +117,8 @@ void PythonAsset::getDetails()
         return;
     }
 
-    fs::path obj(m_path);
 
-    std::string stem = obj.stem();
-    std::string path = obj.parent_path().string();
-
-    std::map<std::string, std::map<std::string, std::string>> map;
-    map = PythonEnvironment::getPythonModuleContent(path, stem);
+    auto map = PythonEnvironment::getPythonScriptContent(path, stem);
 
     for (auto item : m_scriptContent)
         delete item;
@@ -117,8 +126,8 @@ void PythonAsset::getDetails()
     for (auto pair : map)
         m_scriptContent.append(new PythonAssetModel(
                                    pair.first,
-                                   pair.second["type"],
-                               pair.second["docstring"]));
+                                   pair.second.first,
+                               pair.second.second));
     m_detailsLoaded = true;
 }
 

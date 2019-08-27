@@ -31,7 +31,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/logging/Messaging.h>
 #include <sofa/helper/logging/ConsoleMessageHandler.h>
 #include <sofa/helper/AdvancedTimer.h>
-#include <SofaPython/PythonEnvironment.h>
+
+#include <SofaPython3/PythonEnvironment.h>
+using sofapython3::PythonEnvironment;
 
 #include <QQuickStyle>
 #include <QInputDialog>
