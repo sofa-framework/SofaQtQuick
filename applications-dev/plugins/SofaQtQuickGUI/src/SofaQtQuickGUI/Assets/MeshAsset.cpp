@@ -8,6 +8,7 @@
 #include <sofa/simulation/DefaultVisualManagerLoop.h>
 
 #include <SofaPython3/PythonEnvironment.h>
+#include <SofaPython3/PythonFactory.h>
 using sofapython3::PythonEnvironment;
 namespace py = pybind11;
 
@@ -63,21 +64,14 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(const QString& assetName)
 
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
 
-    bool ret = py::cast<bool>(py::module::import("SofaQtQuick").attr("loadMeshAsset")(
-                py::make_tuple(b->getClassName(), m_path, py::cast(root))
-                ));
-    if (ret)
-    {
-        root->setName("NEWNODE");
-        sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
-                    dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
-        node->init(sofa::core::ExecParams::defaultInstance());
+    py::module::import("Sofa.Core");
+    py::module::import("SofaQtQuick").attr("loadMeshAsset")(b->getClassName(), m_path, sofapython3::PythonFactory::toPython(root->toBaseNode()));
+    root->setName("NEWNODE");
+    sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
+                dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
+    node->init(sofa::core::ExecParams::defaultInstance());
 
-        return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
-    }
-
-    msg_error("Something went wrong...");
-    return nullptr;
+    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
 void MeshAsset::getDetails()

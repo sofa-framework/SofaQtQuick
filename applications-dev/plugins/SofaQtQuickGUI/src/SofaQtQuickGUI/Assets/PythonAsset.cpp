@@ -3,6 +3,7 @@
 #include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
 using sofaqtquick::PythonEnvironment;
 #include <SofaPython3/PythonEnvironment.h>
+#include <SofaPython3/PythonFactory.h>
 namespace py = pybind11;
 
 #include <memory>
@@ -60,11 +61,10 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
 
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
     root->setName("NEWNAME");
-
-    py::object assetNode = py::cast(root);
-    py::module::import("SofaQtQuick").attr("loadPythonAsset")(
-                py::make_tuple(path, stem, assetName.toStdString(), assetNode)
-                );
+    py::module::import("Sofa.Core");
+    py::object assetNode = sofapython3::PythonFactory::toPython(root->toBaseNode());
+    py::module::import("SofaQtQuick").attr(
+                "loadPythonAsset")(path, stem, assetName.toStdString(), assetNode);
 
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
