@@ -2,113 +2,93 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.0
 import SofaColorScheme 1.0
+import SofaBasics 1.0
 
-SpinBox {
-    property alias cornerPositions: backgroundID.cornerPositions
-    property alias position: backgroundID.position
+TextField
+{
+    id: self
+    enabled: true
 
-    property string prefix: ""
-    property string suffix: ""
+    selectByMouse: true
 
-    id: control
-    value: 50
-    editable: true
-    hoverEnabled: true
-    height: 20
-    implicitHeight: 20
-    implicitWidth: inputText.implicitWidth + up.indicator.width + down.indicator.width
+    property int decimals: 3
+    property int stepSize: 0.1
+    property var value
 
-    onActiveFocusChanged: {
-        backgroundID.setControlState(control.enabled && control.editable, control.hovered, control.activeFocus)
-    }
-    onHoveredChanged: {
-        backgroundID.setControlState(control.enabled && control.editable, control.hovered, control.activeFocus)
-    }
-    Component.onCompleted: {
-        backgroundID.setControlState(control.enabled && control.editable, control.hovered, control.activeFocus)
+//    property int refreshCounter : 0
+//    onRefreshCounterChanged:
+//    {
+//        self.text = Number(Number(value).toFixed(decimals)).toString();
+//    }
+
+    onAccepted:
+    {
+        focus = false
     }
 
-    function formatText(value, locale, prefix, suffix) {
-        var str = ""
-        if (prefix !== "")
-            str += qsTr(prefix)
-        str += qsTr("%1").arg(value)
-        if (suffix !== "")
-            str += qsTr(suffix)
-        return str
+    text: Qt.binding(function() { return value.toFixed(decimals).toString() })
+
+    function getValue()
+    {
+        return Number(Number(text).toFixed(decimals))
     }
 
-    contentItem: Rectangle {
-        anchors.fill: parent
-        color: "transparent"
-        TextInput {
-            id: inputText
-            z: 2
-            anchors.centerIn: parent
-            text: formatText(value, locale, prefix, suffix)
-            font: control.font
-            color: control.editable ? "black" : "#464646"
-            //        selectionColor: "#21be2b"
-            //        selectedTextColor: "#ffffff"
-            horizontalAlignment: Qt.AlignHCenter
-            verticalAlignment: Qt.AlignVCenter
+    function incrementValue(initialValue, incrVal)
+    {
+        value = initialValue + incrVal*stepSize*0.1
+    }
 
-            readOnly: !control.editable
-            validator: control.validator
-            inputMethodHints: Qt.ImhFormattedNumbersOnly
+    MouseArea
+    {
+        anchors.fill: self
+        preventStealing: true
+        property bool isDragging: false
+        property var initialPosition : Qt.vector2d(0,0)
+        property var initialValue: 0.0
+
+        onPressed:
+        {
+            isDragging = false
+            initialValue = self.getValue()
+            initialPosition = Qt.vector2d(mouseX, mouseY)
+        }
+
+        onPositionChanged:
+        {
+            var currentPosition = Qt.vector2d(mouseX, mouseY)
+            if( Math.abs(currentPosition.x - initialPosition.x) > 10 )
+            {
+                isDragging = true
+                self.incrementValue(initialValue, currentPosition.x - initialPosition.x)
+            }
+        }
+
+        onReleased:
+        {
+            if(isDragging)
+            {
+                isDragging = false
+            }
+            else
+            {
+                self.forceActiveFocus(Qt.MouseFocusReason)
+                self.cursorPosition = self.positionAt(mouseX, mouseY)
+            }
         }
     }
 
-    up.indicator: Rectangle {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
-        width: 20
-        height: parent.height
-        color: "transparent"
-        Image {
-            id: rightup
-            x: control.mirrored ? 7 : parent.width - width - 7
-            y: parent.height / 4
-            width: 9
-            height: width
-            source: "qrc:icon/spinboxRight.png"
+    property var intValidator: IntValidator {
+        Component.onCompleted: {
+            var min = self.properties.min;
+            if(undefined !== min)
+                bottom = min;
         }
     }
 
-    down.indicator: Rectangle {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        width: 20
-        height: parent.height
-        color: "transparent"
-        Image {
-            id: leftdown
-            x: control.mirrored ? parent.width - width - 7 : 7
-            y: parent.height / 4
-            width: 9
-            height: width
-            source: "qrc:icon/spinboxLeft.png"
-        }
+    property var doubleValidator: DoubleValidator {
+        decimals: self.decimals
     }
 
-    background: ControlsBackground {
-        id: backgroundID
-        implicitWidth: 40
-        implicitHeight: 20
-
-        borderColor: control.readOnly ? "#393939" : "#505050";
-        controlType: controlTypes["InputField"]
-    }
-
-    //    DropShadow {
-    //        z: -1
-    //        anchors.fill: backgroundRect
-    //        horizontalOffset: 0
-    //        verticalOffset: -1
-    //        radius: 4.0
-    //        samples: 17
-    //        color: "#50000000"
-    //        source: backgroundRect
-    //    }
+    validator: decimals > 0 ? doubleValidator : intValidator
 
 }

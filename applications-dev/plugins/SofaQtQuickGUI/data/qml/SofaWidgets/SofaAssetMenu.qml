@@ -72,17 +72,19 @@ Menu {
 
             function createAsset() {
                 var newNode = asset.create(assetName)
-                var hasNodes = newNode.getChildren().size()
-                console.error("ParentNode address: " + parentNode)
-                console.error("ParentNode Name: " + parentNode.getName())
-                newNode.copyTo(parentNode)
-                if (hasNodes) {
-                    var childsList = parentNode.getChildren()
-                    if (childsList.size() !== 0) {
-                        return childsList.last()
-                    }
-                }
-                return parentNode
+//                var hasNodes = newNode.getChildren().size()
+//                console.error("ParentNode address: " + parentNode)
+//                console.error("ParentNode Name: " + parentNode.getName())
+//                newNode.copyTo(parentNode)
+//                if (hasNodes) {
+//                    var childsList = parentNode.getChildren()
+//                    if (childsList.size() !== 0) {
+//                        return childsList.last()
+//                    }
+//                }
+//                return parentNode
+                parentNode.addChild(newNode)
+                return newNode
             }
 
             ToolTip {

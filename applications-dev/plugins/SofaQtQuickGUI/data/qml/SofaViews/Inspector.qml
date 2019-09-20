@@ -239,7 +239,6 @@ Item {
                             model : VisualDataModel {
                                 property int parentIndex:
                                 {
-                                    console.log("setting parentIndex/grroupIndex....."+theItem.groupIndex )
                                     theItem.groupIndex
                                 }
 

@@ -41,5 +41,6 @@ TextField {
     onAccepted:
     {
         sofaData.value = text
+        root.focus = false
     }
 }

@@ -224,6 +224,17 @@ def loadMeshAsset(type, path, node):
     vmodel = node.createObject("OglModel", name="vmodel", src=loader.getLinkPath())
     return node
 
+def instantiatePrefab(func, node):
+    inspect = importlib.import_module("inspect")
+    f = func.__init__ if inspect.isclass(func) else func
+    node.addData(name="modulename", value=inspect.getmodulename(f.__code__.co_filename), type="string", help="module containing the prefab", group="Infos")
+    node.addData(name="prefabname", value=f.__code__.co_name, type="string", help="prefab's function name", group="Infos")
+    node.addData(name="modulepath", value=f.__code__.co_filename, type="string", help="module path for this prefab", group="Infos")
+    node.addData(name="lineno", value=f.__code__.co_firstlineno, type="int", help="first line number of the prefab in the module", group="Infos")
+    node.addData(name="sourcecode", value=inspect.getsource(func), type="string", help="The prefab's source code", group="Infos")
+    node.addData(name="args", value=inspect.getfullargspec(f).args, type="vector<string>", help="The prefab's arguments list", group="Infos")
+    func(node)
+
 
 def loadPythonAsset(moduledir, modulename, prefabname, node):
 #    print("#############   LOADING PYTHON ASSET")
@@ -272,19 +283,19 @@ def loadPythonAsset(moduledir, modulename, prefabname, node):
             return node
         # 2nd, call the first prefab available:
         if len(prefabs) > 0:
-            prefabs.items()[0][1](node)
+            instantiatePrefab(prefabs.items()[0][1], node)
             return node
         # 3rd, call the first PythonScript:
         if len(pythonScripts) > 0:
-            pythonScripts.items()[0][1](node)
+            instantiatePrefab(pythonScripts.items()[0][1], node)
             return node
         # 4th, call the first class:
         if len(classes) > 0:
-            classes.items()[0][1](node)
+            instantiatePrefab(classes.items()[0][1], node)
             return node
         # finally, try to call the first python function available:
         if len(functions) > 0:
-            functions.items()[0][1](node)
+            instantiatePrefab(functions.items()[0][1], node)
             return node
         print ("PythonAsset ERROR: No callable found in " + str(m))
     else:
@@ -295,16 +306,16 @@ def loadPythonAsset(moduledir, modulename, prefabname, node):
             functions["createScene"](node)
         elif pyName in prefabs.keys():
             print('Loading ' + pyName)
-            prefabs[pyName](node)
+            instantiatePrefab(prefabs[pyName], node)
         elif pyName in pythonScripts.keys():
             print('Loading ' + pyName)
-            pythonScripts[pyName](node)
+            instantiatePrefab(pythonScripts[pyName], node)
         elif pyName in classes.keys():
             print('Loading ' + pyName)
-            classes[pyName](node)
+            instantiatePrefab(classes[pyName], node)
         elif pyName in functions.keys():
             print('Loading ' + pyName)
-            functions[pyName](node)
+            instantiatePrefab(functions[pyName], node)
         else:
             print ("PythonAsset ERROR: No callable object with name " + pyName)
     return node
