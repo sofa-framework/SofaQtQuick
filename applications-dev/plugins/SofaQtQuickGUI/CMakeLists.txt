@@ -35,6 +35,9 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SelectableSofaParticle.cpp
     src/SofaQtQuickGUI/Console.cpp
     src/SofaQtQuickGUI/SofaParticleInteractor.cpp
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterPython.cpp
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterCpp.cpp
+    src/SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.cpp
     src/SofaQtQuickGUI/Bindings/SofaFactory.cpp
     src/SofaQtQuickGUI/Bindings/SofaCamera.cpp
     src/SofaQtQuickGUI/Bindings/SofaComponent.cpp
@@ -109,6 +112,9 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Console.h
     src/SofaQtQuickGUI/PythonConsole.h
     src/SofaQtQuickGUI/SofaParticleInteractor.h
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterPython.h
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterCpp.h
+    src/SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.h
     src/SofaQtQuickGUI/Bindings/SofaFactory.h
     src/SofaQtQuickGUI/Bindings/SofaComponent.h
     src/SofaQtQuickGUI/Bindings/SofaCamera.h

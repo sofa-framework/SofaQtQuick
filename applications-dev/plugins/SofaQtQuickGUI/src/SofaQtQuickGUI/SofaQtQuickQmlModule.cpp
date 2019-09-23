@@ -90,6 +90,9 @@ using sofaqtquick::bindings::SofaFactory;
 #include <SofaQtQuickGUI/LiveQMLFileMonitor.h>
 using sofa::qtquick::LiveQMLFileMonitor;
 
+#include <SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.h>
+using sofa::qtquick::HighlightComponent;
+
 #include <sofa/helper/system/PluginManager.h>
 
 #include <QQmlPropertyMap>
@@ -202,6 +205,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterUncreatableType<Asset>                               ("Asset"                                , versionMajor, versionMinor, "Asset", QString("It is not possible to create an Asset"));
     qmlRegisterType<PythonAsset>                                    ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset");
     qmlRegisterType<PythonAssetModel>                               ("PythonAssetModel"                     , versionMajor, versionMinor, "PythonAssetModel");
+    qmlRegisterType<HighlightComponent>                             ("HighlightComponent"                   , versionMajor, versionMinor, "HighlightComponent");
     qmlRegisterUncreatableType<MeshAsset>                           ("MeshAsset"                            , versionMajor, versionMinor, "MeshAsset", QString("It is not possible to create a MeshAsset"));
     qmlRegisterUncreatableType<TextureAsset>                        ("TextureAsset"                         , versionMajor, versionMinor, "TextureAsset", QString("It is not possible to create a TextureAsset"));
 
@@ -258,6 +262,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     {
         return SofaNode::createFrom(obj);
     });
+
 }
 
 void SofaQtQuickQmlModule::RegisterTypes(QQmlEngine* engine)

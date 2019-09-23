@@ -10,6 +10,33 @@ import Sofa.Core
 #################### INTROSPECTING HELPER METHODS ####################
 ######################################################################
 
+def isScriptContent(m, obj):
+    if inspect.isbuiltin(obj) or not callable(obj):
+        return False
+    if inspect.getmodule(obj).__file__ != m.__file__:
+        return False
+    return True
+
+
+def collectMetaData(obj):
+    data = {}
+    data["name"] = obj.__name__
+    print(data["name"])
+    if inspect.isclass(obj):
+        func = obj.__init__
+        data["type"] = "Controller" if issubclass(obj, Sofa.Core.Controller) else "DataEngine" if issubclass(obj, Sofa.Core.DataEngine) else "Class"
+
+    else:
+        func = obj
+        data["type"] = "SofaScene" if obj.__name__ is "createScene" else "function"
+
+    data["lineno"] = func.__code__.co_firstlineno
+    data["params"] = inspect.getfullargspec(func).args
+    data["sourcecode"] = inspect.getsource(func)
+    data["docstring"] = obj.__doc__
+    return data
+
+
 # returns a dictionary of all callable objects in the module, with their type as key
 def getPythonScriptContent(moduledir, modulename):
     objects = {}
@@ -28,32 +55,11 @@ def getPythonScriptContent(moduledir, modulename):
         print ("Exception: in " + modulename + ":\n" + str(e))
         return objects
 
-    # module loaded, let's see what's inside:
-    if "createScene" in dir(m):
-        print ("We've got a createScene entry point!")
-        objects["createScene"] = { "type":"function", "docstring": m.createScene.__doc__ }
     for i in dir(m):
-        if i == "SofaObject" or i == "SofaPrefab" or inspect.isbuiltin(i) or not callable(getattr(m, i)):
-            continue
-        class_ = getattr(m, i)
-        if inspect.getmodule(class_).__file__ != m.__file__:
-            continue
+        obj = getattr(m, i)
+        if isScriptContent(m, obj):
+            objects[i] = collectMetaData(obj)
 
-        docstring = str(class_.__doc__) if class_.__doc__ != None else "Undocumented prefab"
-        if inspect.isclass(eval("m." + i)):
-            if issubclass(eval("m." + i), Sofa.Core.Controller):
-                objects[i] = { "type":"PythonScriptController", "docstring": docstring }
-            elif issubclass(eval("m." + i), Sofa.Core.DataEngine):
-                objects[i] = { "type":"PythonScriptDataEngine", "docstring": docstring }
-            else:
-                objects[i] = { "type":"Class", "docstring": docstring }
-        else:
-            if class_.__class__.__name__ == "SofaPrefab" \
-               and i != "SofaPrefab":
-                objects[i] = { "type":"SofaPrefab", "docstring": docstring }
-            else:
-                objects[i] = { "type":"function", "docstring": docstring }
-    print(objects)
     return objects
 
 

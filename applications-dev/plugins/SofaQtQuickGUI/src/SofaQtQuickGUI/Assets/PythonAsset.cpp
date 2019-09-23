@@ -72,15 +72,30 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
-PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring)
-    : m_name(name),
-      m_type(type),
-      m_docstring(docstring)
-{}
+PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring, int lineno, std::vector<std::string> params, std::string sourcecode)
+    : m_name(name.c_str()),
+      m_type(type.c_str()),
+      m_docstring(docstring.c_str()),
+      m_sourcecode(sourcecode.c_str()),
+      m_lineno(lineno)
+{
+    for (const auto& p : params)
+        m_params.push_back(p.c_str());
+}
 
-QString PythonAssetModel::getName() const { return QString(m_name.c_str()); }
-QString PythonAssetModel::getType() const { return QString(m_type.c_str()); }
-QString PythonAssetModel::getDocstring() const { return QString(m_docstring.c_str()); }
+const QString& PythonAssetModel::getName() const { return m_name; }
+const QString& PythonAssetModel::getType() const { return m_type; }
+const QString& PythonAssetModel::getDocstring() const { return m_docstring; }
+int PythonAssetModel::getLineno() const { return m_lineno; }
+const QStringList& PythonAssetModel::getParams() const { return m_params; }
+const QString& PythonAssetModel::getSourceCode() const { return m_sourcecode; }
+
+void PythonAssetModel::setName(const QString& name) { m_name = name; }
+void PythonAssetModel::setType(const QString& type) { m_type = type; }
+void PythonAssetModel::setDocstring(const QString& docstring) { m_docstring = docstring; }
+void PythonAssetModel::setLineno(int lineno) { m_lineno = lineno; }
+void PythonAssetModel::setParams(const QStringList& params) { m_params = params; }
+void PythonAssetModel::setSourceCode(const QString& sourcecode) { m_sourcecode = sourcecode; }
 
 void PythonAsset::getDetails()
 {
@@ -91,7 +106,6 @@ void PythonAsset::getDetails()
     std::string stem = obj.stem();
     std::string ext = obj.extension();
     std::string path = obj.parent_path().string();
-    std::cout << ext << std::endl;
     if (ext == ".pyscn")
     {
         QProcess process;
@@ -118,16 +132,30 @@ void PythonAsset::getDetails()
     }
 
 
-    auto map = PythonEnvironment::getPythonScriptContent(path, stem);
+    auto dict = PythonEnvironment::getPythonScriptContent(path, stem);
 
     for (auto item : m_scriptContent)
         delete item;
     m_scriptContent.clear();
-    for (auto pair : map)
+
+
+
+    for (auto pair : dict)
+    {
+        if (!py::isinstance<py::dict>(pair.second))
+            return;
+        py::dict data = py::cast<py::dict>(pair.second);
+        std::vector<std::string> params;
+        for (auto p : py::cast<py::list>(data["params"]))
+            params.push_back(py::cast<std::string>(p));
         m_scriptContent.append(new PythonAssetModel(
-                                   pair.first,
-                                   pair.second.first,
-                               pair.second.second));
+                py::cast<std::string>(pair.first),
+                py::cast<std::string>(data["type"]),
+                py::cast<std::string>(data["docstring"]),
+                py::cast<int>(data["lineno"]),
+                params,
+                py::cast<std::string>(data["sourcecode"])));
+    }
     m_detailsLoaded = true;
 }
 
@@ -151,7 +179,7 @@ bool PythonAsset::isScene()
 {
     getDetails();
     for (const auto& item : m_scriptContent){
-        if (item->getName() == "createScene")
+        if (item->getType() == "SofaScene")
             return true;
     }
     return false;

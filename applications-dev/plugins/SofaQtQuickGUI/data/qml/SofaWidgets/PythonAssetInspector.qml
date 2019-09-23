@@ -8,6 +8,7 @@ import QtQuick.Window 2.2
 import SofaBasics 1.0
 import Asset 1.0
 import PythonAsset 1.0
+import HighlightComponent 1.0
 
 Item {
     id: root
@@ -21,7 +22,7 @@ Item {
             GroupBox {
                 width: root.parent.width
                 title: modelData.name
-                titleIcon: (modelData.type  === "function" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
+                titleIcon: (modelData.type === "function" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
                                                                                                  (modelData.type === "class" ? "qrc:/icon/ICON_PYTHON.png" :
                                                                                                  (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
                                                                                                  (modelData.type === "PythonScriptController" ? "qrc:/icon/ICON_PYController.png" :
@@ -31,12 +32,18 @@ Item {
                     color: 'transparent'
                     width: root.parent.width / 4 * 3
                     implicitHeight: docstringLbl.implicitHeight
-                    Label {
-                        color: "#eeeeec"
+                    TextArea {
                         id: docstringLbl
                         anchors.fill: parent
-                        text: modelData.docstring
+                        text: modelData.sourcecode
                         wrapMode: Text.Wrap
+                        readOnly: true
+
+                        HighlightComponent {
+                            id: testTextArea
+                            syntax: "py"
+                            Component.onCompleted: testTextArea.onCompleted()
+                        }
                     }
                 }
             }

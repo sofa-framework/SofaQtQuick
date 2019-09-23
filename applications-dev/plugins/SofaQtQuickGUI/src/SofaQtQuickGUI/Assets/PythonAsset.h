@@ -20,22 +20,43 @@ class PythonAssetModel : public QObject
 
 public:
     PythonAssetModel() {}
-    PythonAssetModel(std::string name, std::string type, std::string docstring = "");
+    PythonAssetModel(std::string name, std::string type, std::string docstring, int lineno, std::vector<std::string> params, std::string sourcecode);
 
-    Q_PROPERTY(QString name READ getName NOTIFY nameChanged)
-    Q_PROPERTY(QString type READ getType NOTIFY typeChanged)
-    Q_PROPERTY(QString docstring READ getDocstring NOTIFY docstringChanged)
+    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString type READ getType WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString docstring READ getDocstring WRITE setDocstring NOTIFY docstringChanged)
+    Q_PROPERTY(int lineno READ getLineno WRITE setLineno NOTIFY linenoChanged)
+    Q_PROPERTY(QStringList params READ getParams WRITE setParams NOTIFY paramsChanged)
+    Q_PROPERTY(QString sourcecode READ getSourceCode WRITE setSourceCode NOTIFY sourceCodeChanged)
 
-    Q_INVOKABLE QString getName() const;
-    Q_INVOKABLE QString getType() const;
-    Q_INVOKABLE QString getDocstring() const;
+    Q_INVOKABLE const QString& getName() const;
+    Q_INVOKABLE const QString& getType() const;
+    Q_INVOKABLE const QString& getDocstring() const;
+    Q_INVOKABLE int getLineno() const;
+    Q_INVOKABLE const QStringList& getParams() const;
+    Q_INVOKABLE const QString& getSourceCode() const;
+
+    Q_INVOKABLE void setName(const QString& name);
+    Q_INVOKABLE void setType(const QString& type);
+    Q_INVOKABLE void setDocstring(const QString& docstring);
+    Q_INVOKABLE void setLineno(int lineno);
+    Q_INVOKABLE void setParams(const QStringList& params);
+    Q_INVOKABLE void setSourceCode(const QString& sourcecode);
 private:
     Q_SIGNAL void nameChanged(QString);
     Q_SIGNAL void typeChanged(QString);
     Q_SIGNAL void docstringChanged(QString);
-    const std::string m_name;
-    const std::string m_type;
-    const std::string m_docstring;
+    Q_SIGNAL void linenoChanged(int);
+    Q_SIGNAL void paramsChanged(QStringList);
+    Q_SIGNAL void sourceCodeChanged(QString);
+
+    QString m_name;
+    QString m_type;
+    QString m_docstring;
+    QStringList m_params;
+    QString m_sourcecode;
+    int m_lineno;
+    int _padding;
 };
 
 class PythonAsset : public Asset
