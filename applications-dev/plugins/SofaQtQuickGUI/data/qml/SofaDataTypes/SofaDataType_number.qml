@@ -46,6 +46,7 @@ TextField
 
     onAccepted:
     {
+        sofaData.value = getValue()
         focus = false
     }
 
@@ -53,7 +54,7 @@ TextField
     {
         if(!activeFocus)
         {
-            upload()
+            sofaData.value = getValue()
         }
     }
 
@@ -125,15 +126,4 @@ TextField
 
     validator: decimals > 0 ? doubleValidator : intValidator
 
-//    function download() {
-//        root.text = Number(Number(dataObject.value).toFixed(decimals)).toString();
-//        cursorPosition = 0;
-//        console.log("DOWNLOADING DATA FROM: "+dataObject.name)
-//    }
-
-//    function upload() {
-//        console.log("XUPLOADING DATA TO: "+dataObject.name)
-//        var newValue = Number(Number(root.text).toFixed(decimals));
-//        dataObject.value = newValue;
-//    }
 }

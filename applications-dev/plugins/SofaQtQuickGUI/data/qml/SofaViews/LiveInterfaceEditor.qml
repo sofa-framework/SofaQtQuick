@@ -43,16 +43,17 @@ QQC1.SplitView {
     }
 
     onFilesChanged: {
-            container.children=""
-            /// Reload the component using the non cached version (because of Data.now())
-            var viewedcomponent=Qt.createComponent("file://"+files+"?t="+Date.now())
-            if(viewedcomponent.status == Component.Ready)
-            {
-                viewedcomponent.createObject(container)
-                console.log("Component updated !!!")
-            }else{
-                var err = viewedcomponent.errorString();
-                console.log("Error at " + err + "<br />")
-            }
+        container.children=""
+        console.error(files)
+        /// Reload the component using the non cached version (because of Data.now())
+        var viewedcomponent=Qt.createComponent("file://"+files+"?t="+Date.now())
+        if(viewedcomponent.status === Component.Ready)
+        {
+            viewedcomponent.createObject(container)
+            console.log("Component updated !!!")
+        }else{
+            var err = viewedcomponent.errorString();
+            console.log("Error at " + err + "<br />")
+        }
     }
 }

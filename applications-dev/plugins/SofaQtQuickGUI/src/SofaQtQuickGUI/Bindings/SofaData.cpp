@@ -126,7 +126,7 @@ bool SofaData::setLink(const QString& path)
 
 QString SofaData::getHelp() const
 {
-    return rawData()->getHelp();
+    return rawData()->getHelp().c_str();
 
 }
 
@@ -142,7 +142,7 @@ bool SofaData::isReadOnly() const
 
 QString SofaData::getGroup() const
 {
-    return rawData()->getGroup();
+    return rawData()->getGroup().c_str();
 }
 
 } /// namespace sofaqtquick::bindings

@@ -13,7 +13,6 @@ TextField {
     leftPadding: 7
     rightPadding: 7
     hoverEnabled: true
-
     background: ControlsBackground {
         id: backgroundID
         implicitWidth: 50
