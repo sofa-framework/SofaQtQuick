@@ -194,7 +194,7 @@ BaseNode* SofaNode::getPrefabAncestor(BaseNode* n) const
 {
     if (n)
     {
-        if (n->findData("Prefab type")) return n;
+        if (n->findData("prefabname")) return n;
         for (const auto& p : n->getParents())
         {
             BaseNode* prefab = getPrefabAncestor(p);
@@ -211,7 +211,7 @@ bool SofaNode::isPrefab() const
     BaseNode* n = rawBase()->toBaseNode();
     if (n)
     {
-        return (n->findData("Prefab type"))?true:false;
+        return (n->findData("prefabname"))?true:false;
     }
     return false;
 }
@@ -254,10 +254,13 @@ bool SofaNode::attemptToBreakPrefab()
     title += prefab->getName().c_str();
     if (QMessageBox::question(nullptr, title, tr("Are your sure that you want to proceed?")) == QMessageBox::StandardButton::Yes)
     {
-        prefab->removeData(prefab->findData("Prefab type"));
-        prefab->removeData(prefab->findData("Defined in"));
-        prefab->removeData(prefab->findData("Instantiated in"));
+        prefab->removeData(prefab->findData("modulename"));
+        prefab->removeData(prefab->findData("prefabname"));
         prefab->removeData(prefab->findData("modulepath"));
+        prefab->removeData(prefab->findData("lineno"));
+        prefab->removeData(prefab->findData("sourcecode"));
+        prefab->removeData(prefab->findData("docstring"));
+        prefab->removeData(prefab->findData("args"));
         return true;
     }
     return false;
@@ -290,17 +293,6 @@ void SofaNode::addObject(SofaBaseObject* obj)
 
 void SofaNode::copyTo(SofaNode* node)
 {
-    std::cout << "node to copy stuff from: "<< this << std::endl;
-    std::cout << "node to copy stuff from: "<< this->getName().toStdString() << std::endl;
-
-    std::cout << "node to copy stuff to: " << node << std::endl;
-    std::cout << "node to copy stuff to: " << node->getName().toStdString() << std::endl;
-
-    std::cout << "node to copy stuff to: " << node->self() << std::endl;
-    std::cout << "node to copy stuff from: "<< this->self() << std::endl;
-
-    std::cout << "node to copy stuff to: " << node->self()->getName() << std::endl;
-    std::cout << "node to copy stuff from: "<< this->self()->getName() << std::endl;
     if ((isInAPrefab() && !attemptToBreakPrefab()) ||
             (node->isInAPrefab() && !node->attemptToBreakPrefab()))
         return;

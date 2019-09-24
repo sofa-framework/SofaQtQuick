@@ -28,11 +28,11 @@ def collectMetaData(obj):
 
     else:
         func = obj
-        data["type"] = "SofaScene" if obj.__name__ is "createScene" else "function"
+        data["type"] = "SofaScene" if obj.__name__ is "createScene" else "Function"
 
     data["lineno"] = func.__code__.co_firstlineno
     data["params"] = inspect.getfullargspec(func).args
-    data["sourcecode"] = inspect.getsource(func)
+    data["sourcecode"] = inspect.getsource(obj)
     data["docstring"] = obj.__doc__
     return data
 
@@ -238,7 +238,15 @@ def instantiatePrefab(func, node):
     node.addData(name="modulepath", value=f.__code__.co_filename, type="string", help="module path for this prefab", group="Infos")
     node.addData(name="lineno", value=f.__code__.co_firstlineno, type="int", help="first line number of the prefab in the module", group="Infos")
     node.addData(name="sourcecode", value=inspect.getsource(func), type="string", help="The prefab's source code", group="Infos")
-    node.addData(name="args", value=inspect.getfullargspec(f).args, type="vector<string>", help="The prefab's arguments list", group="Infos")
+    node.addData(name="docstring", value=func.__doc__, type="string", help="The prefab's docstring", group="Infos")
+
+    node.addData(name="args", value=inspect.getfullargspec(f).args, type="vector<string>", help="Positional arguments", group="Infos")
+    node.addData(name="varargs", value=inspect.getfullargspec(f).varargs, type="string", help="Uncollected positional arguments", group="Infos")
+    node.addData(name="varkw", value=inspect.getfullargspec(f).varkw, type="string", help="Uncollected keyword arguments", group="Infos")
+    node.addData(name="defaults", value=str(inspect.getfullargspec(f).defaults), type="string", help="Positional arguments defaults (serialized)", group="Infos")
+    node.addData(name="kwonlyargs", value=inspect.getfullargspec(f).kwonlyargs, type="vector<string>", help="Keyword arguments", group="Infos")
+    node.addData(name="kwonlydefaults", value=str(inspect.getfullargspec(f).kwonlydefaults), type="string", help="Keyword arguments defaults (serialized)", group="Infos")
+    node.addData(name="annotations", value=str(inspect.getfullargspec(f).annotations), type="string", help="function's annotations (serialized)", group="Infos")
     func(node)
 
 

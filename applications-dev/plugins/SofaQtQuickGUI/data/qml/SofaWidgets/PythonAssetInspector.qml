@@ -14,37 +14,51 @@ Item {
     id: root
     property Asset selectedAsset
 
-    Column {
+    ScrollView {
+        anchors.top: root.top
+        width: root.parent.width
+        height: root.parent.height
 
-        spacing: 10
-        Repeater {
-            model: selectedAsset.scriptContent
-            GroupBox {
-                width: root.parent.width
-                title: modelData.name
-                titleIcon: (modelData.type === "function" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
-                                                                                                 (modelData.type === "class" ? "qrc:/icon/ICON_PYTHON.png" :
-                                                                                                 (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
-                                                                                                 (modelData.type === "PythonScriptController" ? "qrc:/icon/ICON_PYController.png" :
-                                                                                                 (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
 
-                Rectangle {
-                    color: 'transparent'
-                    width: root.parent.width / 4 * 3
-                    implicitHeight: docstringLbl.implicitHeight
-                    TextArea {
-                        id: docstringLbl
-                        anchors.fill: parent
-                        text: modelData.sourcecode
-                        wrapMode: Text.Wrap
-                        readOnly: true
+        Column {
+            id: columnID
+            spacing: 10
+            Repeater {
+                model: selectedAsset.scriptContent
+                GroupBox {
+                    width: root.parent.width
+                    title: modelData.name
+                    titleIcon: (modelData.type === "SofaScene" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
+                                                                                                     (modelData.type === "Class" ? "qrc:/icon/ICON_PYTHON.png" :
+                                                                                                                                   (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
+                                                                                                                                                                      (modelData.type === "Controller" ? "qrc:/icon/ICON_PYController.png" :
+                                                                                                                                                                                                         (modelData.type === "DataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
 
-                        HighlightComponent {
-                            id: testTextArea
-                            syntax: "py"
-                            Component.onCompleted: testTextArea.onCompleted()
+                    Rectangle {
+                        color: 'transparent'
+                        width: root.parent.width / 4 * 3
+                        implicitHeight: docstringLbl.implicitHeight
+                        TextArea {
+                            id: docstringLbl
+                            anchors.fill: parent
+                            text: modelData.sourcecode
+                            wrapMode: Text.Wrap
+                            readOnly: true
+                            hoverEnabled: true
+                            ToolTip {
+                                text: modelData.type
+                                description: modelData.docstring
+                            }
+
+                            HighlightComponent {
+                                id: testTextArea
+                                syntax: "py"
+                                Component.onCompleted: testTextArea.onCompleted()
+                            }
                         }
                     }
+
+
                 }
             }
         }

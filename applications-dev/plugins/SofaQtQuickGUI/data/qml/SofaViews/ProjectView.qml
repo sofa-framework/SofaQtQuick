@@ -33,7 +33,7 @@ Item {
     }
 
     ColumnLayout {
-        anchors.fill: parent
+        anchors.fill: root.parent
         Rectangle {
             id: headerID
             Layout.fillWidth: true
@@ -68,8 +68,8 @@ Item {
         ScrollView {
             id: scrollview
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            width: root.parent.width
+            height: root.parent.height - 42
             ProjectViewMenu {
                 id: generalProjectMenu
                 filePath: folderModel.folder.toString().replace("file://", "")
@@ -88,8 +88,10 @@ Item {
             }
             ListView {
                 id: folderView
-                height: contentHeight
-                width: parent.width
+                anchors.fill: parent
+                Layout.fillWidth: true
+                Layout.preferredHeight: contentHeight
+                clip: true
 
                 header: RowLayout{
                     implicitWidth: folderView.width
@@ -283,7 +285,7 @@ Item {
                             }
 
                             function insertAsset(index, rootNode)
-                            {                                    
+                            {
                                 var newNode = self.project.getAsset(folderModel.get(index, "filePath")).create()
                                 var _parent = sofaScene.selectedComponent
                                 if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
@@ -362,6 +364,4 @@ Item {
             }
         }
     }
-
-
 }

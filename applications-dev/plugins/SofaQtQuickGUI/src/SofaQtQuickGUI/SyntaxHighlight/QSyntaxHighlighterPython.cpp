@@ -1,5 +1,6 @@
 #include "QSyntaxHighlighterPython.h"
-
+#include <iostream>
+#include <string>
 namespace sofa::qtquick {
 
 QSyntaxHighlighterPython::QSyntaxHighlighterPython(QTextDocument *parent)
@@ -52,16 +53,19 @@ QSyntaxHighlighterPython::QSyntaxHighlighterPython(QTextDocument *parent)
     rule.format = functionFormat;
     highlightingRules.append(rule);
 
-    singleLineCommentFormat.setForeground(Qt::red);
-    rule.pattern = QRegularExpression(QStringLiteral("//[^\n]*"));
+    singleLineCommentFormat.setFontItalic(true);
+    singleLineCommentFormat.setForeground(Qt::gray);
+    rule.pattern = QRegularExpression(QStringLiteral("#.*"));
     rule.format = singleLineCommentFormat;
     highlightingRules.append(rule);
 
-    multiLineCommentFormat.setForeground(Qt::red);
+    multiLineCommentFormat.setFontItalic(true);
+    multiLineCommentFormat.setForeground(Qt::gray);
 
-    commentStartExpression = QRegularExpression(QStringLiteral("/\\*"));
-    commentEndExpression = QRegularExpression(QStringLiteral("\\*/"));
+    commentStartExpression = QRegularExpression(QStringLiteral("\"\"\""));
+    commentEndExpression = QRegularExpression(QStringLiteral("\"\"\""));
 }
+
 
 void QSyntaxHighlighterPython::highlightBlock(const QString &text)
 {
@@ -83,7 +87,7 @@ void QSyntaxHighlighterPython::highlightBlock(const QString &text)
 
     while (startIndex >= 0)
     {
-        QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
+        QRegularExpressionMatch match = commentEndExpression.match(text, startIndex+3);
         int endIndex = match.capturedStart();
         int commentLength = 0;
         if (endIndex == -1)
@@ -95,6 +99,7 @@ void QSyntaxHighlighterPython::highlightBlock(const QString &text)
         {
             commentLength = endIndex - startIndex
                             + match.capturedLength();
+            setCurrentBlockState(0);
         }
         setFormat(startIndex, commentLength, multiLineCommentFormat);
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
