@@ -9,7 +9,12 @@ namespace py = pybind11;
 #include <memory>
 #include <experimental/filesystem>
 #include <QMessageBox>
+#include <QWizard>
 #include <QProcess>
+#include <QLabel>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
@@ -45,6 +50,66 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 {
 }
 
+QWizardPage* createArgsPage(py::list args, py::tuple defaults, py::dict annotations, std::list<QLineEdit*>& values)
+{
+    QWizardPage *page = new QWizardPage;
+    page->setTitle("Positional Arguments");
+
+    QLabel *label = new QLabel("This Prefab requires " + QString(std::to_string(args.size() - 1).c_str()) + " positional arguments.\nPlease fill in the required fields:");
+    label->setWordWrap(true);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(label);
+    page->setLayout(layout);
+    QVBoxLayout* form = new QVBoxLayout;
+
+    ///!\ YUCK!! Please don't look, garbage POC code ahead...:
+    size_t i = 0;
+    size_t diff = args.size() - defaults.size();
+    for (; i < defaults.size() ; i++)
+    {
+
+        QHBoxLayout* entry = new QHBoxLayout;
+        QLabel* lbl = new QLabel(py::cast<std::string>(args[i+diff]).c_str());
+        QLineEdit* value = new QLineEdit(py::cast<std::string>(py::str(defaults[i])).c_str());
+        if (annotations.contains(py::cast<std::string>(args[i+diff]).c_str())) {
+            value->setToolTip(py::cast<std::string>(annotations[py::cast<std::string>(py::str(args[i+diff])).c_str()]).c_str());
+            value->setToolTipDuration(1000);
+            std::cout << value->toolTip().toStdString() << std::endl;
+        }
+        values.push_back(value);
+        entry->addWidget(lbl);
+        entry->addWidget(value);
+        form->addLayout(entry);
+    }
+    int j = 0;
+    for (size_t k = 0; k < args.size()-i ; k++)
+    {
+        QHBoxLayout* entry = new QHBoxLayout;
+        QLabel* lbl = new QLabel(py::cast<std::string>(args[k]).c_str());
+        QLineEdit* value = new QLineEdit();
+        if (k == 0)
+            value->setText("${node}");
+        if (annotations.contains(py::cast<std::string>(args[k]).c_str())) {
+            value->setToolTip(py::cast<std::string>(annotations[py::cast<std::string>(py::str(args[k])).c_str()]).c_str());
+            value->setToolTipDuration(1000);
+            std::cout << value->toolTip().toStdString() << std::endl;
+        }
+        if (k != 0) {
+            auto it = values.begin();
+            std::advance(it, j-1);
+            values.insert(it, value);
+        }
+        entry->addWidget(lbl);
+        entry->addWidget(value);
+        form->insertLayout(j, entry);
+        j++;
+    }
+    layout->addLayout(form);
+    return page;
+}
+
+
 sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
 {
     if (_loaders.find(m_extension) == _loaders.end() ||
@@ -61,10 +126,40 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
 
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
     root->setName("NEWNAME");
+
     py::module::import("Sofa.Core");
     py::object assetNode = sofapython3::PythonFactory::toPython(root->toBaseNode());
-    py::module::import("SofaQtQuick").attr(
-                "loadPythonAsset")(path, stem, assetName.toStdString(), assetNode);
+    py::module inspect = py::module::import("inspect");
+    py::module sys = py::module::import("sys");
+    sys.attr("path").attr("append")(path);
+    py::object callable = py::module::import(stem.c_str()).attr(assetName.toStdString().c_str());
+
+    py::module::import("SofaQtQuick").attr("getPrefabMetaData")(callable, sofapython3::PythonFactory::toPython(root->toBaseNode()));
+    py::module::import("math");
+    py::module::import("numpy");
+    py::object fullargspec = inspect.attr("getfullargspec")(callable);
+    py::list args = fullargspec.attr("args");
+//    py::str varargs = fullargspec.attr("varargs");
+//    py::str varkw = fullargspec.attr("varkw");
+    py::tuple defaults = fullargspec.attr("defaults");
+//    py::list kwonlyargs = fullargspec.attr("kwonlyargs");
+//    py::dict kwonlydefaults = fullargspec.attr("kwonlydefaults");
+    py::dict annotations = fullargspec.attr("annotations");
+
+    QWizard wizard;
+    std::list<QLineEdit*> values;
+    py::list expressions;
+    QWizardPage* page = createArgsPage(args, defaults, annotations, values);
+    if (page != nullptr)
+        wizard.addPage(page);
+    wizard.setWindowTitle("Prefab instantiation wizard");
+    wizard.exec();
+
+    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+    for (auto entry : values)
+        expressions.append(py::eval(entry->text().toStdString()));
+
+    callable(*expressions);
 
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
