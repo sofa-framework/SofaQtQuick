@@ -23,16 +23,14 @@ def collectMetaData(obj):
     data = {}
     data["name"] = obj.__name__
     if inspect.isclass(obj):
-        func = obj.__init__
         data["type"] = "Controller" if issubclass(obj, Sofa.Core.Controller) else "DataEngine" if issubclass(obj, Sofa.Core.DataEngine) else "Class"
 
     else:
-        func = obj
         data["type"] = "SofaScene" if obj.__name__ is "createScene" else "SofaPrefab" if type(obj) == splib.SofaPrefab else "Function"
 
     if data["type"] == "Class" or data["type"] == "Function":
         return None
-    data["params"] = inspect.getfullargspec(func).args
+    data["params"] = inspect.getfullargspec(obj.__wrapped__ if "__wrapped__" in dir(obj) else obj)
     data["sourcecode"] = inspect.getsource(obj)
     data["docstring"] = obj.__doc__
     return data
@@ -63,7 +61,6 @@ def getPythonScriptContent(moduledir, modulename):
             meta = collectMetaData(obj)
             if meta != None:
                 objects[i] = meta
-
     return objects
 
 

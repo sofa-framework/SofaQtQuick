@@ -50,19 +50,10 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 {
 }
 
-QWizardPage* createArgsPage(py::list args, py::tuple defaults, py::dict annotations, std::list<QLineEdit*>& values, sofa::simulation::Node::SPtr parent)
+
+QList<QObject*> getPrefabParams(py::list args, py::tuple defaults, py::dict annotations)
 {
-    QWizardPage *page = new QWizardPage;
-    page->setTitle("Positional Arguments");
-
-    QLabel *label = new QLabel("This Prefab requires " + QString(std::to_string(args.size() - 1).c_str()) + " positional arguments.\nPlease fill in the required fields:");
-    label->setWordWrap(true);
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(label);
-    page->setLayout(layout);
-    QVBoxLayout* form = new QVBoxLayout;
-
+    QList<QObject*> params;
     size_t diff = args.size() - defaults.size();
     for (size_t i = 0 ; i < diff ; ++i)
     {
@@ -72,23 +63,57 @@ QWizardPage* createArgsPage(py::list args, py::tuple defaults, py::dict annotati
     }
     for (size_t i = 0 ; i < args.size() ; i++)
     {
-        QString argname = QString::fromStdString(py::cast<std::string>(args[i]));
-        QString defaultValue = QString::fromStdString((defaults.size() > i) ? py::cast<std::string>(py::str(defaults[i])) : "");
-        QString annotation = (annotations.contains(args[i]) ? QString::fromStdString(py::cast<std::string>(annotations[args[i]])) : "");
+        std::string argname = py::cast<std::string>(args[i]);
+        std::string value = py::cast<std::string>(py::str(defaults[i]));
+        std::string annotation = annotations.contains(args[i]) ? py::str(annotations[args[i]]) : "";
 
-        if (argname == "self")
+        if (argname == "self" || argname == "parent")
             continue;
 
-        QHBoxLayout* entry = new QHBoxLayout;
-        QLabel* lbl = new QLabel(argname);
-        QLineEdit* value = new QLineEdit(defaultValue);
-        if (argname == "parent") {
-            value->setText(QString("@") + parent->getPathName().c_str());
-            value->setReadOnly(true);
-            value->setEnabled(false);
-        }
-        if (annotation.size()) {
-            value->setToolTip(annotation);
+        params.append(new PythonParam(argname, value, annotation));
+    }
+    return params;
+}
+
+QWizardPage* createArgsPage(QList<QObject*> params, std::list<QLineEdit*>& values, sofa::simulation::Node::SPtr parent = nullptr)
+{
+    QWizardPage *page = new QWizardPage;
+    page->setTitle("Positional Arguments");
+
+    QLabel *label = new QLabel("This Prefab requires " + QString(std::to_string(params.size() + 1).c_str()) + " positional arguments.\nPlease fill in the required fields:");
+    label->setWordWrap(true);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(label);
+    page->setLayout(layout);
+    QVBoxLayout* form = new QVBoxLayout;
+
+    // Add the parent param:
+    QHBoxLayout* entry = new QHBoxLayout;
+    QLabel* lbl = new QLabel("parent");
+    QLineEdit* value = new QLineEdit("${Sofa.Core.Node}");
+    if (parent != nullptr)
+        value->setText(QString("@") + parent->getPathName().c_str());
+    value->setReadOnly(true);
+    value->setEnabled(false);
+    value->setToolTip("the parent node for this prefab (non-modifyable)");
+    value->setToolTipDuration(1000);
+    values.push_back(value);
+    entry->addWidget(lbl);
+    entry->addWidget(value);
+    form->addLayout(entry);
+
+    // Add all other editable params:
+    for (auto& param : params)
+    {
+        PythonParam* p = dynamic_cast<PythonParam*>(param);
+
+        entry = new QHBoxLayout;
+        lbl = new QLabel(p->getName());
+        value = new QLineEdit(p->getValue());
+        if (p->getAnnotation().size())
+        {
+            value->setToolTip(p->getAnnotation());
             value->setToolTipDuration(1000);
         }
         values.push_back(value);
@@ -131,25 +156,22 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     local["Sofa"]["Core"] = py::module::import("Sofa.Core");
 
     py::object callable = py::module::import(stem.c_str()).attr(assetName.toStdString().c_str());
-    py::object fullargspec = inspect.attr("getfullargspec")(callable.attr("__wrapped__"));
-    py::list args = fullargspec.attr("args");
-//    py::str varargs = fullargspec.attr("varargs");
-//    py::str varkw = fullargspec.attr("varkw");
-    py::tuple defaults = fullargspec.attr("defaults");
-//    py::list kwonlyargs = fullargspec.attr("kwonlyargs");
-//    py::dict kwonlydefaults = fullargspec.attr("kwonlydefaults");
-    py::dict annotations = fullargspec.attr("annotations");
 
     QWizard wizard;
     std::list<QLineEdit*> values;
     py::list expressions;
-    QWizardPage* page = createArgsPage(args, defaults, annotations, values, root);
+    PythonAssetModel* model = nullptr;
+    for (auto& m : m_scriptContent)
+        if (m->getName() == assetName)
+            model = m;
+    if (model == nullptr)
+        return nullptr;
+    QWizardPage* page = createArgsPage(model->getParams(), values, root);
     if (page != nullptr)
         wizard.addPage(page);
     wizard.setWindowTitle("Prefab instantiation wizard");
-    wizard.exec();
+    if (!wizard.exec()) return nullptr;
 
-    py::module ctypes = py::module::import("ctypes");
     for (auto entry : values)
     {
         if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
@@ -157,35 +179,55 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
         else
             expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
     }
-    std::cout << py::cast<std::string>(py::str(expressions)) << std::endl;
     py::object prefab = callable(*expressions);
 
+
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
-                dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
+                dynamic_cast<sofa::simulation::graph::DAGNode*>(py::cast<sofa::simulation::Node*>(prefab)));
     node->init(sofa::core::ExecParams::defaultInstance());
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
-PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring, std::vector<std::string> params, std::string sourcecode)
+PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring, std::string sourcecode, QList<QObject*> params)
     : m_name(name.c_str()),
       m_type(type.c_str()),
       m_docstring(docstring.c_str()),
-      m_sourcecode(sourcecode.c_str())
+      m_sourcecode(sourcecode.c_str()),
+      m_params(params)
 {
-    for (const auto& p : params)
-        m_params.push_back(p.c_str());
+}
+
+void PythonAssetModel::openSettings()
+{
+    QWizard wizard;
+    std::list<QLineEdit*> values;
+    py::list expressions;
+    QWizardPage* page = createArgsPage(m_params, values);
+    if (page != nullptr)
+        wizard.addPage(page);
+    wizard.setWindowTitle("Prefab instantiation wizard");
+    wizard.exec();
+
+    int i = 0;
+    for (auto entry : values)
+    {
+        if (entry->isReadOnly())
+            continue;
+        dynamic_cast<PythonParam*>(m_params[i])->setValue(entry->text());
+        i++;
+    }
 }
 
 const QString& PythonAssetModel::getName() const { return m_name; }
 const QString& PythonAssetModel::getType() const { return m_type; }
 const QString& PythonAssetModel::getDocstring() const { return m_docstring; }
-const QStringList& PythonAssetModel::getParams() const { return m_params; }
+const QList<QObject*>& PythonAssetModel::getParams() const { return m_params; }
 const QString& PythonAssetModel::getSourceCode() const { return m_sourcecode; }
 
 void PythonAssetModel::setName(const QString& name) { m_name = name; }
 void PythonAssetModel::setType(const QString& type) { m_type = type; }
 void PythonAssetModel::setDocstring(const QString& docstring) { m_docstring = docstring; }
-void PythonAssetModel::setParams(const QStringList& params) { m_params = params; }
+void PythonAssetModel::setParams(const QList<QObject*>& params) { m_params = params; }
 void PythonAssetModel::setSourceCode(const QString& sourcecode) { m_sourcecode = sourcecode; }
 
 void PythonAsset::getDetails()
@@ -229,22 +271,22 @@ void PythonAsset::getDetails()
         delete item;
     m_scriptContent.clear();
 
-
-
     for (auto pair : dict)
     {
         if (!py::isinstance<py::dict>(pair.second))
             return;
         py::dict data = py::cast<py::dict>(pair.second);
-        std::vector<std::string> params;
-        for (auto p : py::cast<py::list>(data["params"]))
-            params.push_back(py::cast<std::string>(p));
-        m_scriptContent.append(new PythonAssetModel(
-                py::cast<std::string>(pair.first),
-                py::cast<std::string>(data["type"]),
-                py::cast<std::string>(data["docstring"]),
-                params,
-                py::cast<std::string>(data["sourcecode"])));
+        m_scriptContent.append(
+                    new PythonAssetModel(
+                        py::cast<std::string>(pair.first),
+                        py::cast<std::string>(data["type"]),
+                        py::cast<std::string>(data["docstring"]),
+                        py::cast<std::string>(data["sourcecode"]),
+                        getPrefabParams(
+                            data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
+                            data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
+                            data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
+                ));
     }
     m_detailsLoaded = true;
 }

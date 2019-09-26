@@ -14,6 +14,9 @@ GroupBox {
     property bool expanded: true
     property int expandedHeight: 0
     property url titleIcon: ""
+    property string buttonIconSource: undefined
+    property var buttonAction
+
     onExpandedChanged: {
         contentItem.visible = expanded
         if (!expanded)
@@ -77,6 +80,17 @@ GroupBox {
             elide: Text.ElideRight
             anchors.left: titleIconId.right
             anchors.leftMargin: 5
+        }
+        IconButton {
+            id: extraButton
+            anchors.left: label.right
+            anchors.leftMargin: 5
+            anchors.verticalCenter: label.verticalCenter
+            implicitWidth: 20
+            implicitHeight: 20
+            visible: true
+            iconSource: buttonIconSource
+            onClicked: buttonAction()
         }
     }
     background: Rectangle {

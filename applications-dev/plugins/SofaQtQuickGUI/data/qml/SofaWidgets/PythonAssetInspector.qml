@@ -33,7 +33,8 @@ Item {
                                                                                                                                    (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
                                                                                                                                                                       (modelData.type === "Controller" ? "qrc:/icon/ICON_PYController.png" :
                                                                                                                                                                                                          (modelData.type === "DataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
-
+                    buttonIconSource: modelData.type !== "SofaScene" ? "qrc:/icon/ICON_GEAR.png" : undefined
+                    buttonAction: modelData.type !== "SofaScene" ? modelData.openSettings : undefined
                     Rectangle {
                         color: 'transparent'
                         width: root.parent.width / 4 * 3
