@@ -286,16 +286,16 @@ Item {
 
                             function insertAsset(index, rootNode)
                             {
-                                var newNode = self.project.getAsset(folderModel.get(index, "filePath")).create()
                                 var _parent = sofaScene.selectedComponent
                                 if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
                                 if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
 
+                                var newNode = self.project.getAsset(folderModel.get(index, "filePath")).create(_parent)
                                 var hasNodes = newNode.getChildren().size()
                                 console.error("ParentNode type: " + _parent)
                                 console.error("newNode type: " + newNode)
                                 _parent.dump()
-                                newNode.copyTo(_parent)
+//                                newNode.copyTo(_parent)
                                 console.error("bah shit")
                                 if (hasNodes) {
                                     var childsList = _parent.getChildren()

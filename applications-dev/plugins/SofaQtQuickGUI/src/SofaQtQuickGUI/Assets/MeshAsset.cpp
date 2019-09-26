@@ -50,7 +50,7 @@ MeshAsset::MeshAsset(std::string path, std::string extension)
 {
 }
 
-sofaqtquick::bindings::SofaNode* MeshAsset::create(const QString& assetName)
+sofaqtquick::bindings::SofaNode* MeshAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
 {
     SOFA_UNUSED(assetName);
     if (_loaders.find(m_extension) == _loaders.end() ||
@@ -71,6 +71,7 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(const QString& assetName)
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
     node->init(sofa::core::ExecParams::defaultInstance());
 
+    parent->self()->addChild(node);
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 

@@ -50,7 +50,7 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 {
 }
 
-QWizardPage* createArgsPage(py::list args, py::tuple defaults, py::dict annotations, std::list<QLineEdit*>& values)
+QWizardPage* createArgsPage(py::list args, py::tuple defaults, py::dict annotations, std::list<QLineEdit*>& values, sofa::simulation::Node::SPtr parent)
 {
     QWizardPage *page = new QWizardPage;
     page->setTitle("Positional Arguments");
@@ -63,54 +63,45 @@ QWizardPage* createArgsPage(py::list args, py::tuple defaults, py::dict annotati
     page->setLayout(layout);
     QVBoxLayout* form = new QVBoxLayout;
 
-    ///!\ YUCK!! Please don't look, garbage POC code ahead...:
-    size_t i = 0;
     size_t diff = args.size() - defaults.size();
-    for (; i < defaults.size() ; i++)
+    for (size_t i = 0 ; i < diff ; ++i)
     {
+        py::dict locals = py::dict();
+        locals["defaults"] = defaults;
+        defaults = py::eval("('',) + defaults", py::dict(), locals);
+    }
+    for (size_t i = 0 ; i < args.size() ; i++)
+    {
+        QString argname = QString::fromStdString(py::cast<std::string>(args[i]));
+        QString defaultValue = QString::fromStdString((defaults.size() > i) ? py::cast<std::string>(py::str(defaults[i])) : "");
+        QString annotation = (annotations.contains(args[i]) ? QString::fromStdString(py::cast<std::string>(annotations[args[i]])) : "");
+
+        if (argname == "self")
+            continue;
 
         QHBoxLayout* entry = new QHBoxLayout;
-        QLabel* lbl = new QLabel(py::cast<std::string>(args[i+diff]).c_str());
-        QLineEdit* value = new QLineEdit(py::cast<std::string>(py::str(defaults[i])).c_str());
-        if (annotations.contains(py::cast<std::string>(args[i+diff]).c_str())) {
-            value->setToolTip(py::cast<std::string>(annotations[py::cast<std::string>(py::str(args[i+diff])).c_str()]).c_str());
+        QLabel* lbl = new QLabel(argname);
+        QLineEdit* value = new QLineEdit(defaultValue);
+        if (argname == "parent") {
+            value->setText(QString("@") + parent->getPathName().c_str());
+            value->setReadOnly(true);
+            value->setEnabled(false);
+        }
+        if (annotation.size()) {
+            value->setToolTip(annotation);
             value->setToolTipDuration(1000);
-            std::cout << value->toolTip().toStdString() << std::endl;
         }
         values.push_back(value);
         entry->addWidget(lbl);
         entry->addWidget(value);
         form->addLayout(entry);
     }
-    int j = 0;
-    for (size_t k = 0; k < args.size()-i ; k++)
-    {
-        QHBoxLayout* entry = new QHBoxLayout;
-        QLabel* lbl = new QLabel(py::cast<std::string>(args[k]).c_str());
-        QLineEdit* value = new QLineEdit();
-        if (k == 0)
-            value->setText("${node}");
-        if (annotations.contains(py::cast<std::string>(args[k]).c_str())) {
-            value->setToolTip(py::cast<std::string>(annotations[py::cast<std::string>(py::str(args[k])).c_str()]).c_str());
-            value->setToolTipDuration(1000);
-            std::cout << value->toolTip().toStdString() << std::endl;
-        }
-        if (k != 0) {
-            auto it = values.begin();
-            std::advance(it, j-1);
-            values.insert(it, value);
-        }
-        entry->addWidget(lbl);
-        entry->addWidget(value);
-        form->insertLayout(j, entry);
-        j++;
-    }
     layout->addLayout(form);
     return page;
 }
 
 
-sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
+sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
 {
     if (_loaders.find(m_extension) == _loaders.end() ||
             _loaders.find(m_extension)->second == nullptr)
@@ -124,20 +115,23 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
     std::string stem = obj.stem();
     std::string path = obj.parent_path().string();
 
-    sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
-    root->setName("NEWNAME");
+    sofa::simulation::Node::SPtr root = parent->self();
 
     py::module::import("Sofa.Core");
     py::object assetNode = sofapython3::PythonFactory::toPython(root->toBaseNode());
     py::module inspect = py::module::import("inspect");
     py::module sys = py::module::import("sys");
     sys.attr("path").attr("append")(path);
-    py::object callable = py::module::import(stem.c_str()).attr(assetName.toStdString().c_str());
 
-    py::module::import("SofaQtQuick").attr("getPrefabMetaData")(callable, sofapython3::PythonFactory::toPython(root->toBaseNode()));
-    py::module::import("math");
-    py::module::import("numpy");
-    py::object fullargspec = inspect.attr("getfullargspec")(callable);
+    auto local = py::dict();
+    local["math"] = py::module::import("math");
+    local["numpy"] = py::module::import("numpy");
+    local["Sofa"] = py::module::import("Sofa");
+    local["Sofa"] = py::dict();
+    local["Sofa"]["Core"] = py::module::import("Sofa.Core");
+
+    py::object callable = py::module::import(stem.c_str()).attr(assetName.toStdString().c_str());
+    py::object fullargspec = inspect.attr("getfullargspec")(callable.attr("__wrapped__"));
     py::list args = fullargspec.attr("args");
 //    py::str varargs = fullargspec.attr("varargs");
 //    py::str varkw = fullargspec.attr("varkw");
@@ -149,17 +143,22 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
     QWizard wizard;
     std::list<QLineEdit*> values;
     py::list expressions;
-    QWizardPage* page = createArgsPage(args, defaults, annotations, values);
+    QWizardPage* page = createArgsPage(args, defaults, annotations, values, root);
     if (page != nullptr)
         wizard.addPage(page);
     wizard.setWindowTitle("Prefab instantiation wizard");
     wizard.exec();
 
-    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+    py::module ctypes = py::module::import("ctypes");
     for (auto entry : values)
-        expressions.append(py::eval(entry->text().toStdString()));
-
-    callable(*expressions);
+    {
+        if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
+            expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+        else
+            expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+    }
+    std::cout << py::cast<std::string>(py::str(expressions)) << std::endl;
+    py::object prefab = callable(*expressions);
 
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
@@ -167,12 +166,11 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(const QString& assetName)
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
-PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring, int lineno, std::vector<std::string> params, std::string sourcecode)
+PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring, std::vector<std::string> params, std::string sourcecode)
     : m_name(name.c_str()),
       m_type(type.c_str()),
       m_docstring(docstring.c_str()),
-      m_sourcecode(sourcecode.c_str()),
-      m_lineno(lineno)
+      m_sourcecode(sourcecode.c_str())
 {
     for (const auto& p : params)
         m_params.push_back(p.c_str());
@@ -181,14 +179,12 @@ PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::stri
 const QString& PythonAssetModel::getName() const { return m_name; }
 const QString& PythonAssetModel::getType() const { return m_type; }
 const QString& PythonAssetModel::getDocstring() const { return m_docstring; }
-int PythonAssetModel::getLineno() const { return m_lineno; }
 const QStringList& PythonAssetModel::getParams() const { return m_params; }
 const QString& PythonAssetModel::getSourceCode() const { return m_sourcecode; }
 
 void PythonAssetModel::setName(const QString& name) { m_name = name; }
 void PythonAssetModel::setType(const QString& type) { m_type = type; }
 void PythonAssetModel::setDocstring(const QString& docstring) { m_docstring = docstring; }
-void PythonAssetModel::setLineno(int lineno) { m_lineno = lineno; }
 void PythonAssetModel::setParams(const QStringList& params) { m_params = params; }
 void PythonAssetModel::setSourceCode(const QString& sourcecode) { m_sourcecode = sourcecode; }
 
@@ -247,7 +243,6 @@ void PythonAsset::getDetails()
                 py::cast<std::string>(pair.first),
                 py::cast<std::string>(data["type"]),
                 py::cast<std::string>(data["docstring"]),
-                py::cast<int>(data["lineno"]),
                 params,
                 py::cast<std::string>(data["sourcecode"])));
     }

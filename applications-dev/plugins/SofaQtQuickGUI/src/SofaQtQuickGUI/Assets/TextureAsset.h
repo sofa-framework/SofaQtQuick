@@ -14,7 +14,7 @@ class TextureAsset : public Asset
 {
   public:
     TextureAsset(std::string path, std::string extension);
-    virtual sofaqtquick::bindings::SofaNode* create(const QString& assetName = "") override;
+    virtual sofaqtquick::bindings::SofaNode* create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName = "") override;
     virtual void getDetails() override;
 
     static LoaderMap createLoaders();

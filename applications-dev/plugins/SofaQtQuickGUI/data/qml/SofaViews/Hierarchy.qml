@@ -610,8 +610,8 @@ Rectangle {
                             assetMenu.open()
                         }
                         else {
-                            var assetNode = src.asset.create()
-                            node.addChild(assetNode)
+                            var assetNode = src.asset.create(node)
+//                            node.addChild(assetNode)
                             var srcIndex = basemodel.getIndexFromBase(assetNode)
                             var index = sceneModel.mapFromSource(srcIndex);
                             treeView.collapseAncestors(index)

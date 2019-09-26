@@ -39,7 +39,7 @@ TextureAsset::TextureAsset(std::string path, std::string extension)
 {
 }
 
-sofaqtquick::bindings::SofaNode* TextureAsset::create(const QString& assetName)
+sofaqtquick::bindings::SofaNode* TextureAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
 {
     SOFA_UNUSED(assetName);
     if (_loaders.find(m_extension) == _loaders.end())
@@ -48,7 +48,7 @@ sofaqtquick::bindings::SofaNode* TextureAsset::create(const QString& assetName)
         return new sofaqtquick::bindings::SofaNode(nullptr);
     }
     sofa::simulation::Node::SPtr root;
-    root->setName("root");
+    root->setName("NEWTEXTURE");
     OglModel::SPtr vmodel = sofa::core::objectmodel::New<OglModel>();
     vmodel->setFilename("mesh/cube.obj");
     vmodel->setName("vmodel");
@@ -58,6 +58,7 @@ sofaqtquick::bindings::SofaNode* TextureAsset::create(const QString& assetName)
     root->init(sofa::core::ExecParams::defaultInstance());
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
+    parent->self()->addChild(node);
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 

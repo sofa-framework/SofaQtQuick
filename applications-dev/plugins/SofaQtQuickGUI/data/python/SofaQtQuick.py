@@ -30,7 +30,6 @@ def collectMetaData(obj):
         func = obj
         data["type"] = "SofaScene" if obj.__name__ is "createScene" else "Function"
 
-    data["lineno"] = func.__code__.co_firstlineno
     data["params"] = inspect.getfullargspec(func).args
     data["sourcecode"] = inspect.getsource(obj)
     data["docstring"] = obj.__doc__

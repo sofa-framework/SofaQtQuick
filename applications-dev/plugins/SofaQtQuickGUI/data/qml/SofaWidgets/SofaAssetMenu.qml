@@ -71,7 +71,7 @@ Menu {
             }
 
             function createAsset() {
-                var newNode = asset.create(assetName)
+                var newNode = asset.create(parentNode, assetName)
 //                var hasNodes = newNode.getChildren().size()
 //                console.error("ParentNode address: " + parentNode)
 //                console.error("ParentNode Name: " + parentNode.getName())
@@ -83,7 +83,6 @@ Menu {
 //                    }
 //                }
 //                return parentNode
-                parentNode.addChild(newNode)
                 return newNode
             }
 
