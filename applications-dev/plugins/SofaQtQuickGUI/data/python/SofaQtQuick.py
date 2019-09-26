@@ -5,6 +5,7 @@ import sys
 import inspect
 import importlib
 import Sofa.Core
+import splib
 
 ######################################################################
 #################### INTROSPECTING HELPER METHODS ####################
@@ -21,22 +22,24 @@ def isScriptContent(m, obj):
 def collectMetaData(obj):
     data = {}
     data["name"] = obj.__name__
-    print(data["name"])
     if inspect.isclass(obj):
         func = obj.__init__
         data["type"] = "Controller" if issubclass(obj, Sofa.Core.Controller) else "DataEngine" if issubclass(obj, Sofa.Core.DataEngine) else "Class"
 
     else:
         func = obj
-        data["type"] = "SofaScene" if obj.__name__ is "createScene" else "Function"
+        data["type"] = "SofaScene" if obj.__name__ is "createScene" else "SofaPrefab" if type(obj) == splib.SofaPrefab else "Function"
 
+    if data["type"] == "Class" or data["type"] == "Function":
+        return None
     data["params"] = inspect.getfullargspec(func).args
     data["sourcecode"] = inspect.getsource(obj)
     data["docstring"] = obj.__doc__
     return data
 
 
-# returns a dictionary of all callable objects in the module, with their type as key
+# returns a dictionary of all callable SOFA objects in the module (Prefabs & createScenes),
+# with their type as key
 def getPythonScriptContent(moduledir, modulename):
     objects = {}
     # First let's load that script:
@@ -57,7 +60,9 @@ def getPythonScriptContent(moduledir, modulename):
     for i in dir(m):
         obj = getattr(m, i)
         if isScriptContent(m, obj):
-            objects[i] = collectMetaData(obj)
+            meta = collectMetaData(obj)
+            if meta != None:
+                objects[i] = meta
 
     return objects
 
