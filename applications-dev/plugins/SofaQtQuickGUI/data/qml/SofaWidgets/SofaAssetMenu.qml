@@ -6,6 +6,7 @@ import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaWidgets 1.0
 import Sofa.Core.SofaNode 1.0
+import QtQml 2.3
 
 Menu {
     id: assetMenu
@@ -23,6 +24,8 @@ Menu {
     onAssetChanged: {
         if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
+            if (menuRepeater.model.length)
+                enabled = true
             if (menuRepeater.model.count)
                 enabled = true
         }
@@ -31,67 +34,34 @@ Menu {
     onOpened: {
         if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
+            if (menuRepeater.model.length)
+                enabled = true
             if (menuRepeater.model.count)
                 enabled = true
         }
     }
 
+    MenuSeparator {}
+
+
     Repeater {
         id: menuRepeater
-        MenuItem {
-            text: modelData.name
-            onTextChanged: {
-                if (text === "createScene")
-                    asset.isSceneFile = true
-                else asset.isSceneFile = false
-            }
 
-            icon.source: (modelData.type  === "function" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
-                         (modelData.type === "class" ? "qrc:/icon/ICON_PYTHON.png" :
-                         (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
-                         (modelData.type === "PythonScriptController" ? "qrc:/icon/ICON_PYController.png" :
-                         (modelData.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
-            onTriggered: {
-                if (!parentNode)
-                    parentNode = sofaScene.root()
-                if (!parentNode.isNode())
-                    parentNode = parentNode.getFirstParent()
-                assetName = modelData.name
-                var p = createAsset()
-                if (!p)
-                    return
-                if (basemodel) {
-                    var srcIndex = basemodel.getIndexFromBase(p)
-                    var index = sceneModel.mapFromSource(srcIndex);
-                    treeView.collapseAncestors(index)
-                    treeView.expandAncestors(index)
-                    treeView.expand(index)
-                    treeView.selection.setCurrentIndex(index, selection)
-                }
-            }
+        Component {
+            id: prefabSubmenuComponent
+            PrefabSubMenu {}
+        }
 
-            function createAsset() {
-                var newNode = asset.create(parentNode, assetName)
-//                var hasNodes = newNode.getChildren().size()
-//                console.error("ParentNode address: " + parentNode)
-//                console.error("ParentNode Name: " + parentNode.getName())
-//                newNode.copyTo(parentNode)
-//                if (hasNodes) {
-//                    var childsList = parentNode.getChildren()
-//                    if (childsList.size() !== 0) {
-//                        return childsList.last()
-//                    }
-//                }
-//                return parentNode
-                return newNode
-            }
+        Loader {
+            id: assetLoader
+            sourceComponent: prefabSubmenuComponent
 
-            ToolTip {
-                text: modelData.docstring
-            }
-            Component.onCompleted: {
-                assetName = modelData.name
+
+            onLoaded: {
+                item.model = modelData
+                assetMenu.addMenu(item)
             }
         }
     }
+
 }

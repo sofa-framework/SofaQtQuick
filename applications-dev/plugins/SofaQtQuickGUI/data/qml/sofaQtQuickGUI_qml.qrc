@@ -116,5 +116,6 @@
         <file>SofaWidgets/ProjectViewMenu.qml</file>
         <file>SofaWidgets/MeshAssetInspector.qml</file>
         <file>SofaWidgets/PythonAssetInspector.qml</file>
+        <file>SofaWidgets/PrefabSubMenu.qml</file>
     </qresource>
 </RCC>

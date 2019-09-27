@@ -170,17 +170,34 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     if (page != nullptr)
         wizard.addPage(page);
     wizard.setWindowTitle("Prefab instantiation wizard");
-    if (!wizard.exec()) return nullptr;
 
-    for (auto entry : values)
-    {
-        if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
-            expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
-        else
-            expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+    try {
+        for (auto entry : values)
+        {
+            if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
+                expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+            else
+                expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+        }
+    } catch (py::error_already_set&){
+        if (!wizard.exec())
+            return nullptr;
+        expressions = py::list();
+        for (auto entry : values)
+        {
+            if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
+                expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+            else {
+                try {
+                    expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+                } catch (py::error_already_set&){
+                    msg_error("PythonAsset") << "The provided value for parameter " << entry->text().toStdString() << " is invalid.";
+                    return nullptr;
+                }
+            }
+        }
     }
     py::object prefab = callable(*expressions);
-
 
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(py::cast<sofa::simulation::Node*>(prefab)));
@@ -280,12 +297,12 @@ void PythonAsset::getDetails()
                     new PythonAssetModel(
                         py::cast<std::string>(pair.first),
                         py::cast<std::string>(data["type"]),
-                        py::cast<std::string>(data["docstring"]),
-                        py::cast<std::string>(data["sourcecode"]),
-                        getPrefabParams(
-                            data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
-                            data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
-                            data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
+                    py::cast<std::string>(data["docstring"]),
+                py::cast<std::string>(data["sourcecode"]),
+                getPrefabParams(
+                    data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
+                data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
+                data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
                 ));
     }
     m_detailsLoaded = true;
