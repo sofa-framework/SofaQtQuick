@@ -218,10 +218,10 @@ void SofaBase::dump() const
     }
 }
 
-QString SofaBase::statusAsString() const
+QString SofaBase::componentStateAsString() const
 {
     std::stringstream s;
-    s << rawBase()->d_status.getValue();
+    s << rawBase()->d_componentstate.getValue();
     return QString::fromStdString(s.str());
 }
 

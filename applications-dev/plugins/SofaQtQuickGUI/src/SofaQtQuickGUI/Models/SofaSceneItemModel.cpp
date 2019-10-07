@@ -291,7 +291,7 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
     case Roles::Row:
         return QVariant(index.row());
     case Roles::Status:
-        return QVariant(QString::fromStdString(currentBase->d_status.getValueString()));
+        return QVariant(QString::fromStdString(currentBase->d_componentstate.getValueString()));
     }
 
     return QVariant(QString("INVALID ROLE"));
