@@ -100,7 +100,6 @@ public:
     virtual QUrl getAssetInspectorWidget() override;
 
     Q_PROPERTY(QVariantList scriptContent READ scriptContent NOTIFY scriptContentChanged)
-    Q_PROPERTY(bool isScene READ isScene NOTIFY isSceneChanged)
 
 protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
@@ -145,8 +144,7 @@ public:
     static LoaderMap createLoaders();
 
 private:
-    bool isScene();
-    Q_SIGNAL void isSceneChanged(bool);
+    virtual bool isScene() override;
     QVariantList scriptContent();
     Q_SIGNAL void scriptContentChanged(QVariantList);
     QList<sofa::qtquick::PythonAssetModel*> m_scriptContent;

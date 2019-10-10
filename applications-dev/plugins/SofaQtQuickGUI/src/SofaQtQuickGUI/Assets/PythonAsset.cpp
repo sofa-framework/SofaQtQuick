@@ -156,49 +156,55 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     local["Sofa"]["Core"] = py::module::import("Sofa.Core");
 
     py::object callable = py::module::import(stem.c_str()).attr(assetName.toStdString().c_str());
-
-    QWizard wizard;
-    std::list<QLineEdit*> values;
-    py::list expressions;
-    PythonAssetModel* model = nullptr;
-    for (auto& m : m_scriptContent)
-        if (m->getName() == assetName)
-            model = m;
-    if (model == nullptr)
-        return nullptr;
-    QWizardPage* page = createArgsPage(model->getParams(), values, root);
-    if (page != nullptr)
-        wizard.addPage(page);
-    wizard.setWindowTitle("Prefab instantiation wizard");
-
-    try {
-        for (auto entry : values)
-        {
-            if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
-                expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
-            else
-                expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
-        }
-    } catch (py::error_already_set&){
-        if (!wizard.exec())
+    py::object prefab;
+    if (assetName != "createScene")
+    {
+        QWizard wizard;
+        std::list<QLineEdit*> values;
+        py::list expressions;
+        PythonAssetModel* model = nullptr;
+        for (auto& m : m_scriptContent)
+            if (m->getName() == assetName)
+                model = m;
+        if (model == nullptr)
             return nullptr;
-        expressions = py::list();
-        for (auto entry : values)
-        {
-            if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
-                expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
-            else {
-                try {
+        QWizardPage* page = createArgsPage(model->getParams(), values, root);
+        if (page != nullptr)
+            wizard.addPage(page);
+        wizard.setWindowTitle("Prefab instantiation wizard");
+
+        try {
+            for (auto entry : values)
+            {
+                if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
+                    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+                else
                     expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
-                } catch (py::error_already_set&){
-                    msg_error("PythonAsset") << "The provided value for parameter " << entry->text().toStdString() << " is invalid.";
-                    return nullptr;
+            }
+        } catch (py::error_already_set&){
+            if (!wizard.exec())
+                return nullptr;
+            expressions = py::list();
+            for (auto entry : values)
+            {
+                if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
+                    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+                else {
+                    try {
+                        expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+                    } catch (py::error_already_set&){
+                        msg_error("PythonAsset") << "The provided value for parameter " << entry->text().toStdString() << " is invalid.";
+                        return nullptr;
+                    }
                 }
             }
         }
+        prefab = callable(*expressions);
     }
-    py::object prefab = callable(*expressions);
-
+    else
+    {
+        prefab = callable(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+    }
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(py::cast<sofa::simulation::Node*>(prefab)));
     node->init(sofa::core::ExecParams::defaultInstance());

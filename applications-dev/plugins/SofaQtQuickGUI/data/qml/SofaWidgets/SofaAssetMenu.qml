@@ -24,20 +24,40 @@ Menu {
     onAssetChanged: {
         if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
-            if (menuRepeater.model.length)
+            if (menuRepeater.model === undefined) {
+                enabled = false
+                visible = false
+            }
+            else if (menuRepeater.model.length) {
                 enabled = true
-            if (menuRepeater.model.count)
+            }
+            else if (menuRepeater.model.count) {
                 enabled = true
+            }
+            else {
+                enabled = false
+                visible = false
+            }
         }
     }
 
     onOpened: {
         if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
-            if (menuRepeater.model.length)
+            if (menuRepeater.model === undefined) {
+                enabled = false
+                visible = false
+            }
+            else if (menuRepeater.model.length) {
                 enabled = true
-            if (menuRepeater.model.count)
+            }
+            else if (menuRepeater.model.count) {
                 enabled = true
+            }
+            else {
+                enabled = false
+                visible = false
+            }
         }
     }
 
