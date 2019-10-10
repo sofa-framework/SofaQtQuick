@@ -272,8 +272,18 @@ void PythonAsset::getDetails()
         path = "/tmp/runSofa2";
     }
 
-    QString docstring(PythonEnvironment::getPythonScriptDocstring(path, stem).c_str());
-    if (!docstring.contains("type: SofaContent"))
+    std::string docstring;
+    if (!PythonEnvironment::getPythonScriptDocstring(path, stem, docstring))
+    {
+        QMessageBox mbox;
+        mbox.setText(QString("Could not load module ") + path.c_str());
+        mbox.setInformativeText(docstring.c_str());
+        mbox.setIcon(QMessageBox::Critical);
+        mbox.setDefaultButton(QMessageBox::Ok);
+        mbox.exec();
+        return;
+    }
+    if (!QString(docstring.c_str()).contains("type: SofaContent"))
     {
         QMessageBox mbox;
         mbox.setText("This python module does not contain the safe-guard "

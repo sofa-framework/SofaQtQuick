@@ -113,8 +113,10 @@ protected:
             fs::path p(m_path);
             auto module = p.stem();
             auto path = p.parent_path();
-            QString docstring(sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module).c_str());
-            if (docstring.contains("type: SofaContent"))
+            std::string docstring;
+            if (!sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module, docstring)) return false;
+
+            if (QString(docstring.c_str()).contains("type: SofaContent"))
                 return true;
         }
         if (m_extension == "pyscn" || m_extension == "py3")
@@ -130,8 +132,9 @@ protected:
             process.start("/bin/cp", QStringList() << p.string().c_str() << QString("/tmp/runSofa2/") + module.c_str() + ".py");
             process.waitForFinished(-1);
             path = "/tmp/runSofa2";
-            QString docstring(sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module).c_str());
-            if (docstring.contains("type: SofaContent"))
+            std::string docstring;
+            if (!sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module, docstring)) return false;
+            if (QString(docstring.c_str()).contains("type: SofaContent"))
                 return true;
         }
         return false;

@@ -13,12 +13,19 @@ py::dict PythonEnvironment::getPythonScriptContent(const std::string& moduleDir,
 }
 
 
-std::string PythonEnvironment::getPythonScriptDocstring(const std::string& moduleDir, const std::string& moduleName)
+bool PythonEnvironment::getPythonScriptDocstring(const std::string& moduleDir, const std::string& moduleName, std::string& docstring)
 {
-    py::module sys = py::module::import("sys");
-    sys.attr("path").attr("insert")(1, moduleDir.c_str());
-    py::module m = py::module::import(moduleName.c_str());
-    return py::str(m.doc());
+    try {
+
+        py::module sys = py::module::import("sys");
+        sys.attr("path").attr("insert")(1, moduleDir.c_str());
+        py::module m = py::module::import(moduleName.c_str());
+        docstring = py::str(m.doc());
+    } catch (std::exception& e) {
+        docstring = e.what();
+        return false;
+    }
+    return true;
 }
 
 }  // namespace sofaqtquick
