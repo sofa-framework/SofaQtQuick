@@ -335,8 +335,50 @@ bool setDataValueFromQVariant(BaseData* data, const QVariant& value)
 QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& properties)
 {
     properties.insert("readOnly", data->isReadOnly());
-    const AbstractTypeInfo* typeinfo = data->getValueTypeInfo();
 
+    /// DataFilename are use to sœœtores path to files.
+    auto aDataFilename = dynamic_cast<const DataFileName*>(data) ;
+
+    /// OptionsGroup are used to encode a finite set of alternatives.
+    auto anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
+
+    /// OptionsGroup are used to encode a finite set of alternatives.
+    auto aRGBAColor =  dynamic_cast<const Data<RGBAColor>*>(data) ;
+
+    if(aDataFilename)
+    {
+        std::cout << "DATA FILE NAME DETECTED FOR " << data->getName() << std::endl;
+        properties.insert("type", "FileName");
+        properties.insert("url", QString::fromStdString(aDataFilename->getFullPath())) ;
+
+        const std::string& directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
+        properties.insert("folderurl",  QString::fromStdString(directory)) ;
+        return properties;
+    }
+
+    if(anOptionGroup)
+    {
+        QStringList choices;
+
+        const OptionsGroup& group = anOptionGroup->getValue();
+        for(unsigned int i=0;i<group.size();++i)
+        {
+            choices.append(QString::fromStdString(group[i]));
+        }
+        properties.insert("type", "OptionsGroup");
+        properties.insert("choices", choices);
+        properties.insert("autoUpdate", true);
+        return properties;
+    }
+
+    if(aRGBAColor)
+    {
+        properties.insert("type", "RGBAColor");
+        properties.insert("autoUpdate", true);
+        return properties;
+    }
+
+    const AbstractTypeInfo* typeinfo = data->getValueTypeInfo();
     if(!typeinfo->Container()){
         if(typeinfo->Integer())
         {
@@ -380,47 +422,6 @@ QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& prop
     const AbstractTypeInfo* baseTypeinfo = typeinfo->BaseType();
     if(baseTypeinfo->FixedSize())
         properties.insert("innerStatic", true);
-
-    /// DataFilename are use to sœœtores path to files.
-    auto aDataFilename = dynamic_cast<const DataFileName*>(data) ;
-
-    /// OptionsGroup are used to encode a finite set of alternatives.
-    auto anOptionGroup =  dynamic_cast<const Data<OptionsGroup>*>(data) ;
-
-    /// OptionsGroup are used to encode a finite set of alternatives.
-    auto aRGBAColor =  dynamic_cast<const Data<RGBAColor>*>(data) ;
-
-    if(aDataFilename)
-    {
-        properties.insert("type", "FileName");
-        properties.insert("url", QString::fromStdString(aDataFilename->getFullPath())) ;
-
-        const std::string& directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
-        properties.insert("folderurl",  QString::fromStdString(directory)) ;
-        return properties;
-    }
-
-    if(anOptionGroup)
-    {
-        QStringList choices;
-
-        const OptionsGroup& group = anOptionGroup->getValue();
-        for(unsigned int i=0;i<group.size();++i)
-        {
-            choices.append(QString::fromStdString(group[i]));
-        }
-        properties.insert("type", "OptionsGroup");
-        properties.insert("choices", choices);
-        properties.insert("autoUpdate", true);
-        return properties;
-    }
-
-    if(aRGBAColor)
-    {
-        properties.insert("type", "RGBAColor");
-        properties.insert("autoUpdate", true);
-        return properties;
-    }
 
     QString widget(data->getWidget());
     if(!widget.isEmpty())
