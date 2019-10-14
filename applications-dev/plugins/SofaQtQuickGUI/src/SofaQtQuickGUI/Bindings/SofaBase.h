@@ -80,7 +80,7 @@ public:
 
     Q_INVOKABLE void dump() const;
 
-    Q_INVOKABLE QString statusAsString() const;
+    Q_INVOKABLE QString componentStateAsString() const;
 
     Base*      rawBase() const { return m_self.get(); }
     Base::SPtr base(){ return m_self; }

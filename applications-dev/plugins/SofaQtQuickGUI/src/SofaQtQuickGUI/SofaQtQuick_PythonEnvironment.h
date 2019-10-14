@@ -17,7 +17,7 @@ class SOFA_SOFAQTQUICKGUI_API PythonEnvironment
 {
 public:
     /// Retrieves the global docstring present in a python script
-    static std::string getPythonScriptDocstring(const std::string& moduleDir, const std::string& moduleName);
+    static bool getPythonScriptDocstring(const std::string& moduleDir, const std::string& moduleName, std::string& docstring);
 
     /// Retrieves a map of all callable functions present in a python script.
     /// The map contains as keys the name of the callable functions,

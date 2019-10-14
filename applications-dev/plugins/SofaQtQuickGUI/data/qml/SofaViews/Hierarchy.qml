@@ -528,7 +528,7 @@ Rectangle {
                         treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
                     } else if (mouse.button === Qt.RightButton) {
                         if(theComponent.isNode()) {
-//                            nodeMenu.currentModelIndex = srcIndex
+                            //                            nodeMenu.currentModelIndex = srcIndex
                             nodeMenu.activated = theComponent.getData("activated");
                             if(theComponent.hasLocations()===true)
                             {
@@ -547,7 +547,7 @@ Rectangle {
                                 objectMenu.sourceLocation = theComponent.getSourceLocation()
                                 objectMenu.creationLocation = theComponent.getInstanciationLocation()
                             }
-//                            objectMenu.currentModelIndex = srcIndex
+                            //                            objectMenu.currentModelIndex = srcIndex
                             objectMenu.name = theComponent.getData("name");
                             pos = SofaApplication.getIdealPopupPos(objectMenu, mouseArea)
                             objectMenu.x = mouseArea.mouseX + pos[0]
@@ -598,7 +598,7 @@ Rectangle {
 
                     function dropFromProjectView(src) {
                         var menuComponent = Qt.createComponent("qrc:/SofaWidgets/SofaAssetMenu.qml")
-                        if (src.asset.typeString === "Python prefab")  {
+                        if (src.asset.typeString === "Python prefab" && src.assetName === "") {
                             var assetMenu = menuComponent.createObject(dropArea, {
                                                                            "asset": src.asset,
                                                                            "parentNode": node,
@@ -610,7 +610,7 @@ Rectangle {
                             assetMenu.open()
                         }
                         else {
-                            var assetNode = src.asset.create(node)
+                            var assetNode = src.asset.create(node, src.assetName)
                             var srcIndex = basemodel.getIndexFromBase(assetNode)
                             var index = sceneModel.mapFromSource(srcIndex);
                             treeView.collapseAncestors(index)
@@ -625,7 +625,7 @@ Rectangle {
                         if (drag.source.origin === "Hierarchy") {
                             dropFromHierarchy(drag.source)
                         }
-                        else if (drag.source.origin === "ProjectView") {
+                        else {
                             dropFromProjectView(drag.source)
                         }
                     }

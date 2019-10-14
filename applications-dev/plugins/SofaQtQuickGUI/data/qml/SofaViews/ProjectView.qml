@@ -343,16 +343,11 @@ Item {
                                     draggedData.asset = wrapper.asset
                             }
 
-                            Item {
+                            DraggableAssetItem {
                                 id: draggedData
+
+                                origin: "ProjectView"
                                 Drag.active: !fileIsDir ? mouseRegion.drag.active : false
-                                Drag.dragType: Drag.Automatic
-                                Drag.supportedActions: Qt.CopyAction
-                                Drag.mimeData: {
-                                    "text/plain": "Copied text"
-                                }
-                                property string origin: "ProjectView"
-                                property Asset asset
                             }
                         }
                     }

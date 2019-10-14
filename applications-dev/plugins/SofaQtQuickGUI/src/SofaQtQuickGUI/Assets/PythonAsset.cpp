@@ -156,32 +156,55 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     local["Sofa"]["Core"] = py::module::import("Sofa.Core");
 
     py::object callable = py::module::import(stem.c_str()).attr(assetName.toStdString().c_str());
-
-    QWizard wizard;
-    std::list<QLineEdit*> values;
-    py::list expressions;
-    PythonAssetModel* model = nullptr;
-    for (auto& m : m_scriptContent)
-        if (m->getName() == assetName)
-            model = m;
-    if (model == nullptr)
-        return nullptr;
-    QWizardPage* page = createArgsPage(model->getParams(), values, root);
-    if (page != nullptr)
-        wizard.addPage(page);
-    wizard.setWindowTitle("Prefab instantiation wizard");
-    if (!wizard.exec()) return nullptr;
-
-    for (auto entry : values)
+    py::object prefab;
+    if (assetName != "createScene")
     {
-        if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
-            expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
-        else
-            expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+        QWizard wizard;
+        std::list<QLineEdit*> values;
+        py::list expressions;
+        PythonAssetModel* model = nullptr;
+        for (auto& m : m_scriptContent)
+            if (m->getName() == assetName)
+                model = m;
+        if (model == nullptr)
+            return nullptr;
+        QWizardPage* page = createArgsPage(model->getParams(), values, root);
+        if (page != nullptr)
+            wizard.addPage(page);
+        wizard.setWindowTitle("Prefab instantiation wizard");
+
+        try {
+            for (auto entry : values)
+            {
+                if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
+                    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+                else
+                    expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+            }
+        } catch (py::error_already_set&){
+            if (!wizard.exec())
+                return nullptr;
+            expressions = py::list();
+            for (auto entry : values)
+            {
+                if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
+                    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+                else {
+                    try {
+                        expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
+                    } catch (py::error_already_set&){
+                        msg_error("PythonAsset") << "The provided value for parameter " << entry->text().toStdString() << " is invalid.";
+                        return nullptr;
+                    }
+                }
+            }
+        }
+        prefab = callable(*expressions);
     }
-    py::object prefab = callable(*expressions);
-
-
+    else
+    {
+        prefab = callable(sofapython3::PythonFactory::toPython(root->toBaseNode()));
+    }
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(py::cast<sofa::simulation::Node*>(prefab)));
     node->init(sofa::core::ExecParams::defaultInstance());
@@ -249,8 +272,18 @@ void PythonAsset::getDetails()
         path = "/tmp/runSofa2";
     }
 
-    QString docstring(PythonEnvironment::getPythonScriptDocstring(path, stem).c_str());
-    if (!docstring.contains("type: SofaContent"))
+    std::string docstring;
+    if (!PythonEnvironment::getPythonScriptDocstring(path, stem, docstring))
+    {
+        QMessageBox mbox;
+        mbox.setText(QString("Could not load module ") + path.c_str());
+        mbox.setInformativeText(docstring.c_str());
+        mbox.setIcon(QMessageBox::Critical);
+        mbox.setDefaultButton(QMessageBox::Ok);
+        mbox.exec();
+        return;
+    }
+    if (!QString(docstring.c_str()).contains("type: SofaContent"))
     {
         QMessageBox mbox;
         mbox.setText("This python module does not contain the safe-guard "
@@ -280,12 +313,12 @@ void PythonAsset::getDetails()
                     new PythonAssetModel(
                         py::cast<std::string>(pair.first),
                         py::cast<std::string>(data["type"]),
-                        py::cast<std::string>(data["docstring"]),
-                        py::cast<std::string>(data["sourcecode"]),
-                        getPrefabParams(
-                            data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
-                            data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
-                            data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
+                    py::cast<std::string>(data["docstring"]),
+                py::cast<std::string>(data["sourcecode"]),
+                getPrefabParams(
+                    data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
+                data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
+                data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
                 ));
     }
     m_detailsLoaded = true;

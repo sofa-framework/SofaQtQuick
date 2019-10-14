@@ -38,6 +38,7 @@ class Asset : public QObject
     Q_PROPERTY(QUrl iconPath READ getIconPath NOTIFY iconPathChanged)
     Q_PROPERTY(bool isSofaContent READ getIsSofaContent NOTIFY isSofaContentChanged)
     Q_PROPERTY(QString path READ path NOTIFY pathChanged)
+    Q_PROPERTY(bool isScene READ isScene NOTIFY isSceneChanged)
 
   protected:
     Q_INVOKABLE virtual QString getTypeString() { return "Unknown file format"; }
@@ -45,11 +46,13 @@ class Asset : public QObject
     Q_INVOKABLE virtual bool getIsSofaContent() { return false; }
 
     Q_INVOKABLE QString path() { return QString(m_path.c_str()); }
+    virtual bool isScene() { return false; }
 
     Q_SIGNAL void typeStringChanged(const QUrl& type);
     Q_SIGNAL void iconPathChanged(const QUrl& path);
     Q_SIGNAL void pathChanged(const QString& type);
     Q_SIGNAL void isSofaContentChanged(bool val);
+    Q_SIGNAL void isSceneChanged(bool);
 
 
     typedef std::map<std::string, BaseAssetLoader *> LoaderMap;

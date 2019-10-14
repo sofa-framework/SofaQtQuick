@@ -32,7 +32,7 @@ def collectMetaData(obj):
         return None
     data["params"] = inspect.getfullargspec(obj.__wrapped__ if "__wrapped__" in dir(obj) else obj)
     data["sourcecode"] = inspect.getsource(obj)
-    data["docstring"] = obj.__doc__
+    data["docstring"] = obj.__doc__ if obj.__doc__ != None else ""
     return data
 
 

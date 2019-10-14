@@ -200,8 +200,13 @@ bool LoaderProcess(SofaScene* sofaScene)
     if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
 
-    sofaScene->sofaRootNode() = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().constData());
-    if( sofaScene->sofaRootNode() )
+    std::cout << sofaScene->path().toLatin1().toStdString() << std::endl;
+
+    Node::SPtr n = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().toStdString());
+    std::cout << "LoaderProcess Node PTR: " << n.get() << std::endl;
+    std::cout << "Node name: " << n.get()->name.getValue() << std::endl;
+    sofaScene->setSofaRootNode(n);
+    if( sofaScene->sofaRootNode().get() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
 
@@ -400,6 +405,7 @@ void SofaScene::open()
     // load the requested scene synchronously / asynchronously
     if(currentAsynchronous)
     {
+        std::cout << " ...ASYNC LOADING... " << std::endl;
         LoaderThread* loaderThread = new LoaderThread(this);
 
         connect(loaderThread, &QThread::finished, this, [this, loaderThread]() {
@@ -418,6 +424,7 @@ void SofaScene::open()
     }
     else
     {
+        std::cout << " ...SYNCHRONOUS LOADING... " << std::endl;
         if(!LoaderProcess(this))
             setStatus(Status::Error);
         else

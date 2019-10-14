@@ -5,7 +5,10 @@ import SofaBasics 1.0 as SB
 import SofaApplication 1.0
 
 Menu {
-    delegate: SB.MenuItem {}
+    id: root
+    delegate: SB.MenuItem {
+        id: itemMenu
+    }
     background: Rectangle {
         id: backgroundID
         implicitWidth: 200
