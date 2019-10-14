@@ -366,8 +366,8 @@ QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& prop
             return properties;
         }
 
-        /// Default type...
-        properties.insert("type","undefined");
+        /// Specific type...
+        properties.insert("type",data->getValueTypeString().c_str());
         return properties;
     }
 

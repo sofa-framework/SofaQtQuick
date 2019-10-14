@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.4
 import SofaBasics 1.0
@@ -27,13 +27,18 @@ ColumnLayout {
     id: root
     spacing: -1
 
-    property var dataObject: null
+    height: 40
+    implicitHeight: height
+    property var sofaData: null
 
-    property var values: undefined !== dataObject.value ? dataObject.value.split(' ') : []
-    onValuesChanged: {
-        console.error("BoundingBox Value Changed: "+values)
+
+    property var values: []
+    onSofaDataChanged: {
+        var valStrings = sofaData.value.split(' ')
+        for (var i = 0 ; i < valStrings.length ; i++) {
+            values.push(Number(valStrings[i]))
+        }
     }
-
     RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -41,82 +46,82 @@ ColumnLayout {
 
         Text {
             id: minLabel
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
+            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth) - 5
             text: "Min "
         }
 
-        TextField {
-            id: textField0
+        SpinBox {
+            id: spinBox0
             property int index: 0
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            readOnly: dataObject.readOnly
-//            enabled: !dataObject.readOnly
+            showIndicators: false
+            enabled: !sofaData.isReadOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: Number(root.values[index])
+            onValueChanged: {
+                if(!sofaData.isReadOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField0
-                property: "text"
-                value: root.values[textField0.index]
-//                when: !dataObject.readOnly
+                target: spinBox0
+                property: "value"
+                value: root.values[spinBox0.index]
             }
 
             position: cornerPositions["TopLeft"]
         }
 
-        TextField {
-            id: textField1
+        SpinBox {
+            id: spinBox1
             property int index: 1
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            readOnly: dataObject.readOnly
-            // enabled: !dataObject.readOnly
+            showIndicators: false
+            enabled: !sofaData.isReadOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: Number(root.values[index])
+            onValueChanged: {
+                if(!sofaData.isReadOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField1
-                property: "text"
-                value: root.values[textField1.index]
-                //when: !dataObject.readOnly
+                target: spinBox1
+                property: "value"
+                value: root.values[spinBox1.index]
             }
             position: cornerPositions["Middle"]
         }
 
-        TextField {
-            id: textField2
+        SpinBox {
+            id: spinBox2
             property int index: 2
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            readOnly: dataObject.readOnly
-            //enabled: !dataObject.readOnly
+            showIndicators: false
+            enabled: !sofaData.isReadOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: Number(root.values[index])
+            onValueChanged: {
+                if(!sofaData.isReadOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField2
-                property: "text"
-                value: root.values[textField2.index]
-                // when: !dataObject.readOnly
+                target: spinBox2
+                property: "value"
+                value: root.values[spinBox2.index]
             }
             position: cornerPositions["TopRight"]
         }
@@ -129,81 +134,81 @@ ColumnLayout {
         Text {
             id: maxLabel
             text: "Max "
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
+            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth) - 5
         }
 
-        TextField {
-            id: textField3
+        SpinBox {
+            id: spinBox3
             property int index: 3
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            readOnly: dataObject.readOnly
-            // enabled: !dataObject.readOnly
+            showIndicators: false
+            enabled: !sofaData.isReadOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: Number(root.values[index])
+            onValueChanged: {
+                if(!sofaData.isReadOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField3
-                property: "text"
-                value: root.values[textField3.index]
-                //when: !dataObject.readOnly
+                target: spinBox3
+                property: "value"
+                value: root.values[spinBox3.index]
             }
             position: cornerPositions["BottomLeft"]
 
         }
 
-        TextField {
-            id: textField4
+        SpinBox {
+            id: spinBox4
             property int index: 4
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            readOnly: dataObject.readOnly
-            //enabled: !dataObject.readOnly
+            showIndicators: false
+            enabled: !sofaData.isReadOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: Number(root.values[index])
+            onValueChanged: {
+                if(!sofaData.isReadOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField4
-                property: "text"
-                value: root.values[textField4.index]
-                //when: !dataObject.readOnly
+                target: spinBox4
+                property: "value"
+                value: root.values[spinBox4.index]
             }
             position: cornerPositions["Middle"]
         }
 
-        TextField {
-            id: textField5
+        SpinBox {
+            id: spinBox5
             property int index: 5
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            readOnly: dataObject.readOnly
-            //enabled: !dataObject.readOnly
+            showIndicators: false
+            enabled: !sofaData.isReadOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: Number(root.values[index])
+            onValueChanged: {
+                if(!sofaData.isReadOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField5
-                property: "text"
-                value: root.values[textField5.index]
-                //when: !dataObject.readOnly
+                target: spinBox5
+                property: "value"
+                value: root.values[spinBox5.index]
             }
             position: cornerPositions["BottomRight"]
         }

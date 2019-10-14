@@ -28,7 +28,7 @@ Item {
     id: self
 
     implicitWidth: gridlayout.implicitWidth
-    implicitHeight: gridlayout.implicitHeight
+    implicitHeight: dataWidget.implicitHeight
 
     signal doubleClickedOnLabel;
 
@@ -100,6 +100,7 @@ Item {
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
             Layout.minimumWidth: 100
+
             RowLayout {
                 Layout.fillWidth: true
                 visible: sofaData && 0 !== sofaData.name.length && (linkButton.checked || (0 !== sofaData.linkPath.length && !self.showLinkButton))
@@ -176,13 +177,11 @@ Item {
     {
         if(sofaData)
         {
-            console.log("creating widget for data field: " + sofaData.name)
             /// Returns the widget's properties associated with this SofaData
             var component = SofaDataWidgetFactory.getWidgetForData(sofaData)
-            var o = component.createObject(datawidget,
-                                               {"sofaData": sofaData,
+            var o = component.createObject(datawidget, {"sofaData": sofaData,
                                                 "Layout.fillWidth":true})
-            o.refreshCounter = Qt.binding(function(){return refreshCounter})
+            self.implicitHeight = o.implicitHeight
         }
     }
 }
