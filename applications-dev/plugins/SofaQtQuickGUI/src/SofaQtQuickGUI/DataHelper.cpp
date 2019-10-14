@@ -347,12 +347,15 @@ QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& prop
 
     if(aDataFilename)
     {
-        std::cout << "DATA FILE NAME DETECTED FOR " << data->getName() << std::endl;
         properties.insert("type", "FileName");
         properties.insert("url", QString::fromStdString(aDataFilename->getFullPath())) ;
 
-        const std::string& directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
-        properties.insert("folderurl",  QString::fromStdString(directory)) ;
+        if(aDataFilename->getValueString() == ""){
+            properties.insert("folderurl",  "") ;
+        }else{
+            std::string directory = FileSystem::getParentDirectory( aDataFilename->getFullPath() ) ;
+            properties.insert("folderurl",  QString::fromStdString(directory)) ;
+        }
         return properties;
     }
 

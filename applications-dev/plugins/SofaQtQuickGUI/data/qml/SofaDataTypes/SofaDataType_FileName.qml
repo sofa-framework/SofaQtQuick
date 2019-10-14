@@ -23,6 +23,7 @@ import QtQuick.Dialogs 1.0
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
 import Sofa.Core.SofaData 1.0
+import SofaApplication 1.0
 
 /***************************************************************************************************
   *
@@ -81,9 +82,15 @@ Row {
 
         }
         onClicked: {
-            console.log("TOTO ")
             /// Open the FileDialog at the specified location.
-            fileDialog.folder =  "file://"+dataObject.properties.folderurl
+            var url = "";
+            if( dataObject.properties.folderurl !== ""){
+                url = "file://"+dataObject.properties.folderurl
+            }else{
+                url = SofaApplication.currentProject.rootDir
+            }
+
+            fileDialog.folder = url
             fileDialog.open()
         }
         position: cornerPositions["Right"]
@@ -97,7 +104,6 @@ Row {
         onAccepted: {
             /// Get the URL from the file chooser and convert it to a string.
             dataObject.value = fileDialog.fileUrl.toString().replace("file://","") ;
-            dataObject.upload();
             textField.text = dataObject.value.toString();
         }
     }
