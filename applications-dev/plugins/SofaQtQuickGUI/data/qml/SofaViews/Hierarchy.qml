@@ -341,7 +341,7 @@ Rectangle {
             property bool isMultiParent : model && model.isMultiParent ? model.isMultiParent : false
             property bool hasMessage : model && testForMessage(styleData.index, styleData.isExpanded)
             property bool hasChildMessage : model && testForChildMessage(styleData.index, styleData.isExpanded)
-            property string componentState: model && model.statusString
+            property string statusString: model && model.statusString
             property var index: styleData.index
             property var tmpParent
 
@@ -353,12 +353,13 @@ Rectangle {
                     return "qrc:/icon/state_bubble_2.png"
                 if(s === "Busy")
                     return "qrc:/icon/state_bubble_2.png"
-                if(s === "Busy")
-                    return "qrc:/icon/state_bubble_2.png"
+                if(s === "Valid")
+                    return "qrc:/icon/state_bubble_3.png"
                 if(s === "Ready")
                     return "qrc:/icon/state_bubble_3.png"
                 if(s === "Invalid")
                     return "qrc:/icon/state_bubble_4.png"
+
                 return "qrc:/icon/state_bubble_1.png"
             }
 
@@ -457,8 +458,9 @@ Rectangle {
                 height: 12
                 width: 12
                 visible: true
-                source: getIconFromStatus()
+                source: getIconFromStatus(statusString)
                 opacity: 0.75
+
             }
             Image {
                 id:childError
