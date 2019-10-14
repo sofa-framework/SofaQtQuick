@@ -22,7 +22,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.0
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
-
+import Sofa.Core.SofaData 1.0
 
 /***************************************************************************************************
   *
@@ -37,7 +37,7 @@ Row {
     spacing : -1
     width: parent.width
 
-    property var dataObject: null
+    property SofaData dataObject: null
 
     TextField {
         id: textField
@@ -81,12 +81,14 @@ Row {
 
         }
         onClicked: {
+            console.log("TOTO ")
             /// Open the FileDialog at the specified location.
             fileDialog.folder =  "file://"+dataObject.properties.folderurl
             fileDialog.open()
         }
         position: cornerPositions["Right"]
     }
+
 
     FileDialog {
         id: fileDialog

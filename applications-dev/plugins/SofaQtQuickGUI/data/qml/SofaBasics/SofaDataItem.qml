@@ -179,8 +179,8 @@ Item {
         {
             /// Returns the widget's properties associated with this SofaData
             var component = SofaDataWidgetFactory.getWidgetForData(sofaData)
-            var o = component.createObject(datawidget, {"sofaData": sofaData,
-                                                "Layout.fillWidth":true})
+            var o = component.createObject(datawidget, {"dataObject": sofaData,
+                                                        "Layout.fillWidth":true})
             self.implicitHeight = o.implicitHeight
         }
     }
