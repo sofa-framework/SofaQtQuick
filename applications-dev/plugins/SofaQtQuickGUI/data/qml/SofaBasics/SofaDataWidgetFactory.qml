@@ -44,6 +44,7 @@ Item
             type = "undefined"
         }
 
+        console.log(data.name + "    " + type)
         var filename = "qrc:/SofaDataTypes/SofaDataType_" + type + ".qml"
         return getWidget(filename)
     }

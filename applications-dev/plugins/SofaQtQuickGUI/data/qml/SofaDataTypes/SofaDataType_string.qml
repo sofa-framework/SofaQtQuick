@@ -40,6 +40,13 @@ TextField {
 
     onAccepted:
     {
+        console.log("Accepted")
+        sofaData.value = text
+        root.focus = false
+    }
+    onEditingFinished:
+    {
+        console.log("EditingFinished")
         sofaData.value = text
         root.focus = false
     }

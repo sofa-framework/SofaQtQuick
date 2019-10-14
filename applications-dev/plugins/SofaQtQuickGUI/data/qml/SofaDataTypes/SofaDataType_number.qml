@@ -27,103 +27,21 @@ import QtQuick.Controls 2.4
 import SofaBasics 1.0
 import Sofa.Core.SofaData 1.0
 
-TextField
+SpinBox
 {
     id: self
     enabled: !sofaData.readOnly
-    //readOnly: sofaData.readOnly
-    selectByMouse: true
 
     property SofaData sofaData: null
     property var properties: sofaData.properties
-    readonly property int decimals: properties["decimals"]
+    decimals: properties["decimals"]
+    step: properties["step"]
 
-    property int refreshCounter : 0
-    onRefreshCounterChanged:
-    {
-        self.text = Number(Number(sofaData.value).toFixed(decimals)).toString();
+    onValueChanged: {
+        sofaData.value = value
     }
 
-    onAccepted:
-    {
-        sofaData.value = getValue()
-        focus = false
+    value: {
+        sofaData.value.toFixed(decimals);
     }
-
-    onActiveFocusChanged:
-    {
-        if(!activeFocus)
-        {
-            sofaData.value = getValue()
-        }
-    }
-
-    text: Number(Number(sofaData.value).toFixed(decimals)).toString();
-
-    function getValue()
-    {
-        return Number(Number(self.text).toFixed(decimals))
-    }
-
-    function incrementValue(initialValue, incrVal)
-    {
-        var step = self.properties["step"]
-        var newValue = initialValue + incrVal*step*0.1
-        self.text = Number(Number(newValue).toFixed(3)).toString()
-        sofaData.value = newValue
-    }
-
-    MouseArea
-    {
-        anchors.fill: self
-        preventStealing: true
-        property bool isDragging: false
-        property var initialPosition : Qt.vector2d(0,0)
-        property var initialValue: 0.0
-
-        onPressed:
-        {
-            isDragging = false
-            initialValue = self.getValue()
-            initialPosition = Qt.vector2d(mouseX, mouseY)
-        }
-
-        onPositionChanged:
-        {
-            var currentPosition = Qt.vector2d(mouseX, mouseY)
-            if( Math.abs(currentPosition.x - initialPosition.x) > 10 )
-            {
-                isDragging = true
-                self.incrementValue(initialValue, currentPosition.x - initialPosition.x)
-            }
-        }
-
-        onReleased:
-        {
-            if(isDragging)
-            {
-                isDragging = false
-            }
-            else
-            {
-                self.forceActiveFocus(Qt.MouseFocusReason)
-                self.cursorPosition = self.positionAt(mouseX, mouseY)
-            }
-        }
-    }
-
-    property var intValidator: IntValidator {
-        Component.onCompleted: {
-            var min = self.properties.min;
-            if(undefined !== min)
-                bottom = min;
-        }
-    }
-
-    property var doubleValidator: DoubleValidator {
-        decimals: self.decimals
-    }
-
-    validator: decimals > 0 ? doubleValidator : intValidator
-
 }

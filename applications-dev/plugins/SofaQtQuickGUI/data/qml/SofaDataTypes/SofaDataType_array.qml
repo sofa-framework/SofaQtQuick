@@ -208,7 +208,7 @@ ColumnLayout {
                     for(var i = 0; i < values.length; ++i)
                     {
                         fields[i] = textFieldComponent.createObject(rowLayout, {index: i});
-                        if (i == 0)
+                        if (i === 0)
                             fields[i].position = fields[i].cornerPositions['Left']
                         else if (i === values.length -1)
                             fields[i].position = fields[i].cornerPositions['Right']
@@ -224,28 +224,31 @@ ColumnLayout {
                         values = sofaData.value[0];
 
                     for(var i = 0; i < values.length; ++i) {
-                        fields[i].text = values[i].toString();
+                        fields[i].value = values[i];
                     }
                 }
 
                 Component {
                     id: textFieldComponent
 
-                    TextField {
+                    SpinBox {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.alignment: Qt.AlignTop
-                        readOnly: sofaData & sofaData.readOnly
+//                        readOnly: sofaData & sofaData.readOnly
                         enabled: !sofaData.readOnlyTableViewColumn
                         position: cornerPositions['Middle']
+                        showIndicators: false
+
 
                         property int index
-                        onEditingFinished: {
-                            if(rowLayout.innerArray)
-                                sofaData.value[0][index] = text;
-                            else
-                                sofaData.value[index] = text;
 
+                        value: sofaData.value[0][index]
+                        onValueChanged: {
+                            if(rowLayout.innerArray)
+                                sofaData.value[0][index] = value;
+                            else
+                                sofaData.value[index] = value;
                             sofaData.modified = true;
                         }
                     }
@@ -288,7 +291,7 @@ ColumnLayout {
                     }
                     SpinBox {
                         id: rowNumber
-                        editable: !sofaData.readOnly && showEditButton.checked
+                        enabled: !sofaData.readOnly && showEditButton.checked
                         Layout.fillWidth: true
                         value: sofaData.value.length
                         onValueChanged : {
@@ -308,9 +311,6 @@ ColumnLayout {
                             if(loader.item)
                                 loader.item.populate();
                         }
-
-                        from : 0
-                        to : Number.MAX_VALUE
                         position: cornerPositions["Left"]
                     }
                     Button {
