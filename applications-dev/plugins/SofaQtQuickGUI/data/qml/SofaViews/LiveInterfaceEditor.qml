@@ -35,6 +35,10 @@ QQC1.SplitView {
     property var files : LiveFileMonitorSingleton.files
 
     property alias container: container
+    property string fileContent
+    onFileContentChanged: {
+        var viewedcomponent=Qt.createQmlObject(fileContent, container)
+    }
 
     Item {
         id: container
@@ -42,18 +46,23 @@ QQC1.SplitView {
         Layout.fillHeight: true
     }
 
+    function readTextFile(fileUrl) {
+        var xhr = new XMLHttpRequest;
+        xhr.open("GET", fileUrl); // set Method and File
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === XMLHttpRequest.DONE){ // if request_status == DONE
+                var response = xhr.responseText;
+
+                root.fileContent = response
+            }
+        }
+        xhr.send(); // begin the request
+    }
+
     onFilesChanged: {
         container.children=""
-        console.error(files)
+        var fileUrl = "file://"+files+"?t="+Date.now()
         /// Reload the component using the non cached version (because of Data.now())
-        var viewedcomponent=Qt.createComponent("file://"+files+"?t="+Date.now())
-        if(viewedcomponent.status === Component.Ready)
-        {
-            viewedcomponent.createObject(container)
-            console.log("Component updated !!!")
-        }else{
-            var err = viewedcomponent.errorString();
-            console.log("Error at " + err + "<br />")
-        }
+        readTextFile(fileUrl)
     }
 }
