@@ -111,8 +111,8 @@ def buildDataParams(datas, indent, scn):
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
     for o in node.objects:
         s = buildDataParams(o.getDataFields(), indent, scn)
-        print('createObject')
-        scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".createObject('"
+        print('addObject')
+        scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".addObject('"
         scn[0] += o.getClassName() + "', name='" + o.name.value + "'" + s + ")\n"
 
     for child in node.children:
@@ -226,8 +226,8 @@ def createPrefabFromNode(fileName, node, name, help):
 
 
 def loadMeshAsset(type, path, node):
-    loader = node.createObject(type, name="loader", filename=path)
-    vmodel = node.createObject("OglModel", name="vmodel", src=loader.getLinkPath())
+    loader = node.addObject(type, name="loader", filename=path)
+    vmodel = node.addObject("OglModel", name="vmodel", src=loader.getLinkPath())
     return node
 
 def getPrefabMetaData(func, node):
