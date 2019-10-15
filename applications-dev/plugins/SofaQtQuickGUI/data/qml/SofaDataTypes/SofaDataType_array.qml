@@ -255,7 +255,6 @@ ColumnLayout {
                                 val[index] = value
                                 sofaData.value = val;
                             }
-                            console.log(sofaData.value[0])
                             sofaData.modified = true;
                         }
                     }
@@ -272,9 +271,9 @@ ColumnLayout {
             id: staticArrayView
             TextField {
                 id: textField
-                readOnly: sofaData.readOnly
-                enabled: !sofaData.readOnly
-                text: undefined !== sofaData.value ? sofaData.value.toString() : ""
+                readOnly: root.sofaData.readOnly
+                enabled: !root.sofaData.readOnly
+                text: undefined !== root.sofaData.value ? root.sofaData.value.toString() : ""
                 Binding {
                     target: root.sofaData
                     property: "value"
@@ -298,22 +297,22 @@ ColumnLayout {
                     }
                     SpinBox {
                         id: rowNumber
-                        enabled: !sofaData.readOnly && showEditButton.checked
+                        enabled: !root.sofaData.readOnly && showEditButton.checked
                         Layout.fillWidth: true
-                        value: sofaData.value.length
+                        value: root.sofaData.value.length
                         onValueChanged : {
-                            if(value === sofaData.value.length)
+                            if(value === root.sofaData.value.length)
                                 return;
 
-                            var oldLength = sofaData.value.length;
-                            sofaData.value.length = value;
-                            for(var j = oldLength; j < sofaData.value.length; ++j) {
-                                sofaData.value[j] = [];
+                            var oldLength = root.sofaData.value.length;
+                            root.sofaData.value.length = value;
+                            for(var j = oldLength; j < root.sofaData.value.length; ++j) {
+                                root.sofaData.value[j] = [];
                                 for(var i = 0; i < properties.cols; ++i)
-                                    sofaData.value[j][i] = 0;
+                                    root.sofaData.value[j][i] = 0;
                             }
 
-                            sofaData.modified = true;
+                            root.sofaData.modified = true;
 
                             if(loader.item)
                                 loader.item.populate();
