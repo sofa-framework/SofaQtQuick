@@ -38,9 +38,12 @@ Rectangle {
 
     property string prefix: ""  // a prefix for this spinbox (the name of the variable for instance "x: ")
     property string suffix: ""  // a suffix for this spinbox (for instance a unit of measure)
-    property int decimals: 2  // the number of decimals (0 for integers)
-    property double step: 0.1  // the step size to scale mouse / indicators interactions
-    property double value: 42250.0  // the value stored in this spinbox
+    property int decimals: 3  // the number of decimals (0 for integers)
+    property double step: 0.00001  // the step size to scale mouse / indicators interactions
+    property double value: 50.0  // the value stored in this spinbox
+
+    property double from: 0.0
+    property double to: 100.0
 
     property alias cornerPositions: backgroundID.cornerPositions
     property alias position: backgroundID.position
@@ -76,6 +79,10 @@ Rectangle {
     {
         var step = control.step
         var newValue = initialValue + incrVal
+        if (newValue > to)
+            newValue = to
+        if (newValue < from)
+            newValue = from
         control.value = newValue
     }
 
@@ -212,7 +219,7 @@ Rectangle {
                         if (!pressed)
                             return
                         var currentPosition = Qt.vector2d(mouseX, mouseY)
-                        setValue(initialValue, (currentPosition.x - initialPosition.x) * 0.1)
+                        setValue(initialValue, (currentPosition.x - initialPosition.x) * step)
                     }
 
                     onReleased: {
@@ -241,7 +248,12 @@ Rectangle {
                 focus: true
                 selectByMouse: true
                 onEditingFinished: {
-                    value = Number(Number(text.replace(/[^\d.-]/g, '')).toFixed(decimals)).toString();
+                    var v = Number(Number(text.replace(/[^\d.-]/g, '')).toFixed(decimals)).toString();
+                    if (v > to)
+                        v = to
+                    if (v < from)
+                        v = from
+                    value = v
                     isEditing = false
                 }
 
