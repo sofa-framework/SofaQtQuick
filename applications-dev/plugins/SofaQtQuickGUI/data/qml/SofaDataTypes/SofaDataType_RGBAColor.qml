@@ -59,6 +59,7 @@ RowLayout {
             v[0] = value
             values = v;
         }
+        showIndicators: false
         to: 1.0
         from: 0.0
         step: 0.01
@@ -77,6 +78,7 @@ RowLayout {
             v[1] = value
             values = v;
         }
+        showIndicators: false
         to: 1.0
         from: 0.0
         step: 0.01
@@ -95,6 +97,7 @@ RowLayout {
             v[2] = value
             values = v;
         }
+        showIndicators: false
         to: 1.0
         from: 0.0
         step: 0.01
@@ -113,11 +116,12 @@ RowLayout {
             v[3] = value
             values = v;
         }
+        showIndicators: false
         to: 1.0
         from: 0.0
         step: 0.01
         decimals: 2
-        position: cornerPositions['Right']
+        position: cornerPositions['Middle']
     }
 
     ColorChooser {

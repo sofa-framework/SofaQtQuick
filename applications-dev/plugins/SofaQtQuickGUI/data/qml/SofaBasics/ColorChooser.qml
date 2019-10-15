@@ -30,6 +30,7 @@ RowLayout {
         Layout.fillWidth:  root.fillWidth
         color: root.color
         radius: 0
+        border.color: "#393939"
 
         MouseArea {
             anchors.fill: parent
