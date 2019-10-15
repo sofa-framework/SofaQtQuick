@@ -31,5 +31,5 @@ Text {
     id: root
     property SofaData dataObject: null
     enabled:true
-    text: dataObject===nullptr? "Undefined" :  dataObject.value
+    text: dataObject===nullptr? "Missing" :  dataObject.value
 }
