@@ -36,18 +36,18 @@ Row {
     spacing : -1
     width: parent.width
 
-    property var dataObject: null
-    property var values: undefined !== dataObject.value ? dataObject.value[0] : []
+    property var sofaData: null
+    property var values: undefined !== sofaData.value ? sofaData.value[0] : []
 
     TextField {
         id: textField
         enabled: true
         width: root.width - colorChooser.width - root.spacing
-        text: undefined !== dataObject.value ? dataObject.value.toString() : ""
+        text: undefined !== sofaData.value ? sofaData.value.toString() : ""
 
         onAccepted: {
-            dataObject.value = [textField.text.split(',').map(Number)] ;
-            dataObject.upload();
+            sofaData.value = [textField.text.split(',').map(Number)] ;
+            sofaData.upload();
             colorChooser.setValueFromArray(values) ;
         }
     }
@@ -64,8 +64,8 @@ Row {
                             +", "+((1.0*g)).toFixed(2)
                             +", "+((1.0*b)).toFixed(2)
                             +", "+((1.0*a)).toFixed(2);
-            dataObject.value = [[r,g,b,a]] ;
-            dataObject.upload();
+            sofaData.value = [[r,g,b,a]] ;
+            sofaData.upload();
         }
     }
 }

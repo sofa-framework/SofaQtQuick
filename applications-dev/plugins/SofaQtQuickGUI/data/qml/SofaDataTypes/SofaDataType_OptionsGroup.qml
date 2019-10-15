@@ -27,29 +27,29 @@ import SofaBasics 1.0
   * an optiongroups have a dedicated property holding the possible choices represented with
   * string.
   * To access these choices you can use:
-  *   - root.dataObject.properties.choices
+  *   - root.sofaData.properties.choices
   *
   *************************************************************************************************/
 ComboBox {
     id: root
 
-    property var dataObject: null
+    property var sofaData
 
-    enabled: !dataObject.readOnly
+    enabled: !sofaData.readOnly
 
     model: {
-        return dataObject.properties.choices;
+        return sofaData.properties.choices;
     }
 
     onModelChanged: {
         var values = model.toString().split(',');
         for (var idx = 0 ; idx < values.length ; idx++)
-            if (values[idx] === dataObject.value)
+            if (values[idx] === sofaData.value)
                 currentIndex = idx;
     }
 
     onCurrentTextChanged: {
-        dataObject.value = currentText;
-        dataObject.upload();
+        sofaData.value = currentText;
+        sofaData.upload();
     }
 }

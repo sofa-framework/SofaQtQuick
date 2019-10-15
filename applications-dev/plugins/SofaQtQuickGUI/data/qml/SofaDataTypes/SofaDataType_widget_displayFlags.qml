@@ -32,7 +32,7 @@ TreeView {
     implicitWidth: 300
     implicitHeight: flickableItem.contentHeight
 
-    property var dataObject: null
+    property var sofaData: null
 
     frameVisible: false
     headerVisible: false
@@ -46,7 +46,7 @@ TreeView {
     model: SofaDisplayFlagsTreeModel {
         id: displayFlagsModel
 
-        displayFlagsData: root.dataObject ? root.dataObject.dataObject : null
+        displayFlagsData: root.sofaData ? root.sofaData : null
     }
 
     Component.onCompleted: expandAll();

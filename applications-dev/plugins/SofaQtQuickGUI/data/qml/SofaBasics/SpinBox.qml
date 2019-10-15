@@ -82,17 +82,17 @@ Rectangle {
 
     Rectangle {
         id: upIndicator
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: control.verticalCenter
         anchors.right: control.right
         width: 20
         implicitWidth: 20
-        height: parent.height
+        height: control.height
         visible: !isEditing && showIndicators
         color: "transparent"
         Image {
             id: rightup
-            x: control.mirrored ? 2 : parent.width - width - 2
-            y: parent.height / 4
+            x: control.mirrored ? 2 : upIndicator.width - width - 2
+            y: upIndicator.height / 4
             width: 9
             height: width
             source: "qrc:icon/spinboxRight.png"
@@ -120,17 +120,17 @@ Rectangle {
 
     Rectangle {
         id: downIndicator
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
+        anchors.verticalCenter: control.verticalCenter
+        anchors.left: control.left
         width: 20
         implicitWidth: 20
-        height: parent.height
+        height: control.height
         color: "transparent"
         visible: !isEditing && showIndicators
         Image {
             id: leftdown
-            x: control.mirrored ? parent.width - width - 2 : 2
-            y: parent.height / 4
+            x: control.mirrored ? downIndicator.width - width - 2 : 2
+            y: downIndicator.height / 4
             width: 9
             height: width
             source: "qrc:icon/spinboxLeft.png"
@@ -159,9 +159,9 @@ Rectangle {
 
     Rectangle {
         id: content
-        anchors.left: isEditing || !showIndicators ? parent.left : downIndicator.right
-        anchors.right: isEditing || !showIndicators ? parent.right: upIndicator.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: isEditing || !showIndicators ? control.left : downIndicator.right
+        anchors.right: isEditing || !showIndicators ? control.right: upIndicator.left
+        anchors.verticalCenter: control.verticalCenter
         color: "transparent"
         implicitWidth: modeLoader.item.implicitWidth
         implicitHeight: 20
@@ -186,7 +186,7 @@ Rectangle {
                     property var initialPosition : Qt.vector2d(0,0)
                     property var initialValue
 
-                    anchors.fill: parent
+                    anchors.fill: labelID
                     hoverEnabled: true
                     acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
 
