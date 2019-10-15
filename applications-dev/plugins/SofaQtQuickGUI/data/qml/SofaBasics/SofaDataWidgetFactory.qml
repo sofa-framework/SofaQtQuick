@@ -58,6 +58,7 @@ Item
                 components[filename] = component
             }else{
                 console.error("Error loading data component:", component.errorString());
+                return getWidget("qrc:/SofaDataTypes/SofaDataType_string.qml")
             }
         }
         return components[filename]

@@ -287,7 +287,7 @@ Item {
                                             implicitWidth : theItem.width
                                             implicitHeight: 20
 
-                                            dataObject : getObject(sofaInspectorDataListModel.getDataById(childModel.parentIndex, index))
+                                            sofaData: getObject(sofaInspectorDataListModel.getDataById(childModel.parentIndex, index))
                                             refreshCounter: topRect.refreshCounter
 
                                             nameLabelWidth:200

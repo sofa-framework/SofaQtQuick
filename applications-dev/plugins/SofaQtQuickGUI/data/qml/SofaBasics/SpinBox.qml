@@ -79,7 +79,7 @@ Rectangle {
     Rectangle {
         id: upIndicator
         anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
+        anchors.right: control.right
         width: 20
         implicitWidth: 20
         height: parent.height
@@ -172,7 +172,6 @@ Rectangle {
                 MouseArea {
                     id: contentMouseArea
 
-                    property bool isDragging: false
                     property var initialPosition : Qt.vector2d(0,0)
                     property var initialValue
 
@@ -193,24 +192,22 @@ Rectangle {
 
                     onPressed:
                     {
-                        isDragging = true
                         initialValue = control.value
                         initialPosition = Qt.vector2d(mouseX, mouseY)
                     }
 
                     onPositionChanged:
                     {
-                        if (!isDragging)
+                        if (!pressed)
                             return
                         var currentPosition = Qt.vector2d(mouseX, mouseY)
                         setValue(initialValue, (currentPosition.x - initialPosition.x) * 0.1)
                     }
 
                     onReleased: {
-                        isDragging = false
-                    }
-                    onClicked: {
-                        isEditing = true
+                        var currentPosition = Qt.vector2d(mouseX, mouseY)
+                        if (currentPosition.x - initialPosition.x === 0)
+                            isEditing = true
                     }
                 }
             }

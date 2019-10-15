@@ -27,8 +27,8 @@ ColumnLayout {
     id: root
     spacing: 0
 
-    property SofaData dataObject: null
-    property var properties: dataObject.properties
+    property SofaData sofaData: null
+    property var properties: sofaData.properties
     property int refreshCounter: 0
 
     Loader {
@@ -38,8 +38,8 @@ ColumnLayout {
 
         sourceComponent: {
             if(properties.static) {
-                if((!properties.innerStatic && dataObject.value.length <= 7) ||
-                   (properties.innerStatic && 1 === dataObject.value.length && properties.cols <= 7))
+                if((!properties.innerStatic && sofaData.value.length <= 7) ||
+                   (properties.innerStatic && 1 === sofaData.value.length && properties.cols <= 7))
                     return staticSmallArrayView;
                 else if(properties.innerStatic && properties.cols <= 7)
                     return staticInStaticTableView;
@@ -90,11 +90,11 @@ ColumnLayout {
                 }
 
                 Connections {
-                    target: root.dataObject
+                    target: root.sofaData
                     onValueChanged: {
                         listModel.update();
 
-                        dataObject.modified = false;
+                        sofaData.modified = false;
                     }
                 }
 
@@ -106,12 +106,12 @@ ColumnLayout {
                     property int previousCount: 0
 
                     function populate() {
-                        var newCount = dataObject.value.length;
+                        var newCount = sofaData.value.length;
                         if(previousCount < newCount)
                             for(var j = previousCount; j < newCount; ++j) {
                                 var values = {};
                                 for(var i = previousCount; i < properties.cols; ++i)
-                                    values["c" + i.toString()] = dataObject.value[j][i];
+                                    values["c" + i.toString()] = sofaData.value[j][i];
 
                                 append(values);
                             }
@@ -122,13 +122,13 @@ ColumnLayout {
                     }
 
                     function update() {
-                        if(count !== dataObject.value.length)
+                        if(count !== sofaData.value.length)
                             populate();
 
                         for(var j = 0; j < count; ++j) {
                             var values = {};
                             for(var i = previousCount; i < properties.cols; ++i)
-                                values["c" + i.toString()] = dataObject.value[j][i];
+                                values["c" + i.toString()] = sofaData.value[j][i];
 
                             set(j, values);
                         }
@@ -148,21 +148,21 @@ ColumnLayout {
                     anchors.leftMargin: 6
                     anchors.rightMargin: 6
                     clip: true
-                    readOnly: -1 === styleData.row || dataObject.readOnly || 0 === styleData.column
+                    readOnly: -1 === styleData.row || sofaData.readOnly || 0 === styleData.column
                     color: styleData.textColor
                     horizontalAlignment: TextEdit.AlignHCenter
                     text: {
                         if (styleData.column === 0)
                             return styleData.row;
                         else if(-1 !== styleData.row && styleData.column !== 0) {
-                            return dataObject.value[styleData.row][styleData.column - 1];
+                            return sofaData.value[styleData.row][styleData.column - 1];
                         }
 
                         return "";
                     }
                     property int previousRow: -1
                     onTextChanged: {
-                        if(-1 === styleData.row || dataObject.readOnly || 0 === styleData.column)
+                        if(-1 === styleData.row || sofaData.readOnly || 0 === styleData.column)
                             return;
 
                         if(previousRow !== styleData.row) {
@@ -171,12 +171,12 @@ ColumnLayout {
                         }
 
                         if(styleData.column !== 0) {
-                            var oldValue = dataObject.value[styleData.row][styleData.column - 1];
+                            var oldValue = sofaData.value[styleData.row][styleData.column - 1];
 
                             var value = text;
                             if(value !== oldValue) {
-                                dataObject.value[styleData.row][styleData.column - 1] = value;
-                                dataObject.modified = true;
+                                sofaData.value[styleData.row][styleData.column - 1] = value;
+                                sofaData.modified = true;
                             }
                         }
                     }
@@ -188,9 +188,9 @@ ColumnLayout {
             id: staticSmallArrayView
             RowLayout {
                 id: rowLayout
-                //width: parent.width
+                Layout.preferredWidth: (parent.width - 1) / sofaData.value.length + 1
                 spacing: -1
-                enabled: !dataObject.readOnly
+                enabled: !sofaData.readOnly
 
                 property var fields: []
                 property bool innerArray: false
@@ -198,10 +198,10 @@ ColumnLayout {
                 Component.onCompleted: populate();
 
                 function populate() {
-                    var values = dataObject.value;
+                    var values = sofaData.value;
                     if(1 === values.length && Array.isArray(values[0]))
                     {
-                        values = dataObject.value[0];
+                        values = sofaData.value[0];
                         innerArray = true;
                     }
 
@@ -220,9 +220,9 @@ ColumnLayout {
                 }
 
                 function update() {
-                    var values = dataObject.value;
+                    var values = sofaData.value;
                     if(innerArray)
-                        values = dataObject.value[0];
+                        values = sofaData.value[0];
 
                     for(var i = 0; i < values.length; ++i) {
                         fields[i].value = values[i];
@@ -233,30 +233,36 @@ ColumnLayout {
                     id: textFieldComponent
 
                     SpinBox {
-                        Layout.fillWidth: true
+                        Layout.preferredWidth: (parent.width- 1) / (rowLayout.innerArray ? sofaData.value[0].length : sofaData.value.length) + 1
                         Layout.fillHeight: true
                         Layout.alignment: Qt.AlignTop
-//                        readOnly: dataObject & dataObject.readOnly
-                        enabled: !dataObject.readOnlyTableViewColumn
+                        enabled: !sofaData.readOnlyTableViewColumn
                         position: cornerPositions['Middle']
                         showIndicators: false
 
 
                         property int index
 
-                        value: dataObject.value[0][index]
+                        value: sofaData.value[0][index]
                         onValueChanged: {
-                            if(rowLayout.innerArray)
-                                dataObject.value[0][index] = value;
-                            else
-                                dataObject.value[index] = value;
-                            dataObject.modified = true;
+                            if(rowLayout.innerArray) {
+                                var val = sofaData.value
+                                val[0][index] = value
+                                sofaData.value = val;
+                            }
+                            else {
+                                val = sofaData.value
+                                val[index] = value
+                                sofaData.value = val;
+                            }
+                            console.log(sofaData.value[0])
+                            sofaData.modified = true;
                         }
                     }
                 }
 
                 Connections {
-                    target: root.dataObject
+                    target: root.sofaData
                     onValueChanged: rowLayout.update();
                 }
             }
@@ -266,11 +272,11 @@ ColumnLayout {
             id: staticArrayView
             TextField {
                 id: textField
-                readOnly: dataObject.readOnly
-                enabled: !dataObject.readOnly
-                text: undefined !== dataObject.value ? dataObject.value.toString() : ""
+                readOnly: sofaData.readOnly
+                enabled: !sofaData.readOnly
+                text: undefined !== sofaData.value ? sofaData.value.toString() : ""
                 Binding {
-                    target: root.dataObject
+                    target: root.sofaData
                     property: "value"
                     value: textField.text
                 }
@@ -292,22 +298,22 @@ ColumnLayout {
                     }
                     SpinBox {
                         id: rowNumber
-                        enabled: !dataObject.readOnly && showEditButton.checked
+                        enabled: !sofaData.readOnly && showEditButton.checked
                         Layout.fillWidth: true
-                        value: dataObject.value.length
+                        value: sofaData.value.length
                         onValueChanged : {
-                            if(value === dataObject.value.length)
+                            if(value === sofaData.value.length)
                                 return;
 
-                            var oldLength = dataObject.value.length;
-                            dataObject.value.length = value;
-                            for(var j = oldLength; j < dataObject.value.length; ++j) {
-                                dataObject.value[j] = [];
+                            var oldLength = sofaData.value.length;
+                            sofaData.value.length = value;
+                            for(var j = oldLength; j < sofaData.value.length; ++j) {
+                                sofaData.value[j] = [];
                                 for(var i = 0; i < properties.cols; ++i)
-                                    dataObject.value[j][i] = 0;
+                                    sofaData.value[j][i] = 0;
                             }
 
-                            dataObject.modified = true;
+                            sofaData.modified = true;
 
                             if(loader.item)
                                 loader.item.populate();
@@ -338,21 +344,21 @@ ColumnLayout {
 
             TextField {
                 id: textField
-                readOnly: dataObject & dataObject.readOnly
-                enabled: !dataObject.readOnly
+                readOnly: sofaData & sofaData.readOnly
+                enabled: !sofaData.readOnly
 
                 onTextChanged: {
-                    if(!dataObject.readOnly)
-                        if(Array.isArray(dataObject.value))
-                            dataObject.value = text.split(' ')
+                    if(!sofaData.readOnly)
+                        if(Array.isArray(sofaData.value))
+                            sofaData.value = text.split(' ')
                         else
-                            dataObject.value = text
+                            sofaData.value = text
                 }
 
                 Binding {
                     target: textField
                     property: "text"
-                    value: Array.isArray(dataObject.value) ? dataObject.value.join(' ') : dataObject.value
+                    value: Array.isArray(sofaData.value) ? sofaData.value.join(' ') : sofaData.value
                 }
             }
         }
