@@ -48,7 +48,6 @@ ColumnLayout {
         CheckBox {
             id: control
             anchors.centerIn: parent
-            //enabled: !data.isReadOnly
             checked: dataObject.value
 
             onCheckedChanged:

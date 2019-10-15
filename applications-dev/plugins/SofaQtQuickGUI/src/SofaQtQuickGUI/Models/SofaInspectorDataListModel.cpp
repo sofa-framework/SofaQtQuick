@@ -189,7 +189,7 @@ void SofaInspectorDataListModel::setCurrentSofaComponent(SofaBase* newSofaCompon
     //        if(newSofaComponent->base())
     //            std::cout << " base: " << newSofaComponent->base()->getName();
     //    }
-    std::cout << std::endl;
+
     beginResetModel();
     m_currentSofaComponent = newSofaComponent;
 

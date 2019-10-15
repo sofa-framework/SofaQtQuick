@@ -102,12 +102,14 @@ Item {
             id: visualModel
             model : theModel
             property var currentChild
-            property var theModel : SofaInspectorDataListModel {
+            property SofaInspectorDataListModel theModel : SofaInspectorDataListModel {
                 id : sofaInspectorDataListModel
                 currentSofaComponent: theView.sofaSelectedComponent
             }
 
+
             delegate: Component {
+                id: delegateView
                 Rectangle{
                     id: theItem
                     property int groupIndex: index
@@ -236,7 +238,9 @@ Item {
                                 clip = true
                             }
 
-                            model : VisualDataModel {
+                            model : visualModel
+
+                            property var visualModel : VisualDataModel {
                                 property int parentIndex:
                                 {
                                     theItem.groupIndex
@@ -247,7 +251,6 @@ Item {
                                 rootIndex : visualModel.modelIndex(theItem.groupIndex)
 
                                 delegate : visibleItem ;
-
                                 property Component visibleItem :
                                     Column {
                                     Loader{
@@ -255,7 +258,6 @@ Item {
                                         width: theItem.width
 
                                         sourceComponent: {
-
                                             if(isReadOnly && !topRect.showDebug)
                                                 return hiddenItem;
                                             switch(type){
@@ -284,13 +286,19 @@ Item {
                                             id: sofaDataItem
                                             implicitWidth : theItem.width
                                             implicitHeight: 20
-                                            sofaData: {
-                                                return sofaInspectorDataListModel.getDataById(childModel.parentIndex, index)
-                                            }
 
+                                            dataObject : getObject(sofaInspectorDataListModel.getDataById(childModel.parentIndex, index))
                                             refreshCounter: topRect.refreshCounter
 
                                             nameLabelWidth:200
+
+                                            property var cachedObject : null;
+                                            function getObject(d){
+                                                if(d!==null)
+                                                    cachedObject=d;
+                                                return cachedObject;
+                                            }
+
 
                                             Component.onCompleted: updateNameLabelWidth();
                                             onNameLabelImplicitWidthChanged: updateNameLabelWidth();
@@ -327,6 +335,7 @@ Item {
                                                     anchors.fill: parent;
                                                     onEntered: function(drag)
                                                     {
+                                                        console.log("DRAG DROPPP");
                                                         if (!isReadOnly && drag.source && drag.source.sofacomponent)
                                                         {
                                                             var sofalink = SofaApplication.sofaScene.link(path)
