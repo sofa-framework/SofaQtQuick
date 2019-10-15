@@ -32,7 +32,8 @@ import SofaBasics 1.0 as SB
 Rectangle {
     id: control
 
-    property bool enabled: true  // like in other QtQuick controls, enables / disables the edition of this control
+    property bool readOnly: false // like in other QtQuick controls, enables / disables edition for this control
+    property bool enabled: true  // like in other QtQuick controls, enables / disables the edition of this control & grays it out
     property bool showIndicators: true  // shows / hides the up / down indicators for this spinBox
 
     property string prefix: ""  // a prefix for this spinbox (the name of the variable for instance "x: ")
@@ -101,14 +102,14 @@ Rectangle {
             id: upMouseArea
             anchors.fill: upIndicator
             hoverEnabled: true
-            acceptedButtons: control.enabled ? Qt.LeftButton : Qt.NoButton
+            acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
 
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
                 if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 } else {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 }
             }
             onClicked: {
@@ -138,15 +139,17 @@ Rectangle {
             id: downMouseArea
             anchors.fill: downIndicator
             hoverEnabled: true
-            acceptedButtons: control.enabled ? Qt.LeftButton : Qt.NoButton
+            acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
+
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
                 if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 } else {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 }
             }
+
 
             onClicked: {
                 control.setValue(control.value, -control.step)
@@ -181,16 +184,16 @@ Rectangle {
 
                     anchors.fill: parent
                     hoverEnabled: true
-                    acceptedButtons: control.enabled ? Qt.LeftButton : Qt.NoButton
+                    acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
 
                     onHoveredChanged: {
-                        if (control.enabled) {
+                        if (control.enabled && !control.readOnly) {
                             cursorShape = Qt.SizeHorCursor
                         }
                         if (containsMouse) {
-                            backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                         } else {
-                            backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                         }
                     }
 
@@ -242,6 +245,10 @@ Rectangle {
                     forceActiveFocus()
                     selectAll()                    
                 }
+                position: backgroundID.position
+                enabled: control.enabled
+                readOnly: control.readOnly
+
             }
         }
 
@@ -250,14 +257,13 @@ Rectangle {
             sourceComponent: spinBoxMode
             anchors.fill: parent
         }
-
     }
 
     onEnabledChanged: {
-        backgroundID.setControlState(control.enabled, false, control.focus)
+        backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
     }
     Component.onCompleted: {
-        backgroundID.setControlState(control.enabled, false, control.focus)
+        backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
     }
 
     ControlsBackground {

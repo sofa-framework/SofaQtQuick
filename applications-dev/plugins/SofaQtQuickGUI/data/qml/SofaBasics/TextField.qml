@@ -23,13 +23,13 @@ TextField {
     }
 
     onActiveFocusChanged: {
-        backgroundID.setControlState(control.enabled && !control.readOnly, control.hovered, control.activeFocus)
+        backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
     }
     onHoveredChanged: {
-        backgroundID.setControlState(control.enabled && !control.readOnly, control.hovered, control.activeFocus)
+        backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
     }
     Component.onCompleted: {
-        backgroundID.setControlState(control.enabled && !control.readOnly, control.hovered, control.activeFocus)
+        backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
     }
 
 

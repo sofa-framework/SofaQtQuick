@@ -58,13 +58,10 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
-            value: {
-                console.log(root.values[index])
-                console.log(root.values[index])
-                return root.values[index]
-            }
+            value: root.values[index]
+
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -88,7 +85,7 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
             value: root.values[index]
             onValueChanged: {
@@ -113,7 +110,7 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
             value: root.values[index]
             onValueChanged: {
@@ -149,7 +146,7 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
             value: root.values[index]
             onValueChanged: {
@@ -175,7 +172,7 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
             value: root.values[index]
             onValueChanged: {
@@ -200,7 +197,7 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
             value: root.values[index]
             onValueChanged: {
