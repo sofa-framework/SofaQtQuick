@@ -32,14 +32,15 @@ import SofaBasics 1.0 as SB
 Rectangle {
     id: control
 
-    property bool enabled: true  // like in other QtQuick controls, enables / disables the edition of this control
+    property bool readOnly: false // like in other QtQuick controls, enables / disables edition for this control
+    property bool enabled: true  // like in other QtQuick controls, enables / disables the edition of this control & grays it out
     property bool showIndicators: true  // shows / hides the up / down indicators for this spinBox
 
     property string prefix: ""  // a prefix for this spinbox (the name of the variable for instance "x: ")
     property string suffix: ""  // a suffix for this spinbox (for instance a unit of measure)
     property int decimals: 2  // the number of decimals (0 for integers)
     property double step: 0.1  // the step size to scale mouse / indicators interactions
-    property double value: 50.0  // the value stored in this spinbox
+    property double value: 42250.0  // the value stored in this spinbox
 
     property alias cornerPositions: backgroundID.cornerPositions
     property alias position: backgroundID.position
@@ -63,9 +64,12 @@ Rectangle {
         var str = ""
         if (prefix !== "")
             str += qsTr(prefix)
-        str += qsTr("%1").arg(v.toFixed(decimals))
+        var fixedValue = v.toFixed(decimals).toString()
+        if ((fixedValue.length - decimals - 1 ) > 4)
+            fixedValue = Number(fixedValue).toExponential(3)
+        str += fixedValue
         if (suffix !== "")
-            str += qsTr(suffix)
+            str += qsTr(suffix) + " "
         return str
     }
     function setValue(initialValue, incrVal)
@@ -78,17 +82,17 @@ Rectangle {
 
     Rectangle {
         id: upIndicator
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: control.verticalCenter
         anchors.right: control.right
         width: 20
         implicitWidth: 20
-        height: parent.height
+        height: control.height
         visible: !isEditing && showIndicators
         color: "transparent"
         Image {
             id: rightup
-            x: control.mirrored ? 2 : parent.width - width - 2
-            y: parent.height / 4
+            x: control.mirrored ? 2 : upIndicator.width - width - 2
+            y: upIndicator.height / 4
             width: 9
             height: width
             source: "qrc:icon/spinboxRight.png"
@@ -98,14 +102,14 @@ Rectangle {
             id: upMouseArea
             anchors.fill: upIndicator
             hoverEnabled: true
-            acceptedButtons: control.enabled ? Qt.LeftButton : Qt.NoButton
+            acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
 
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
                 if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 } else {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 }
             }
             onClicked: {
@@ -116,17 +120,17 @@ Rectangle {
 
     Rectangle {
         id: downIndicator
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
+        anchors.verticalCenter: control.verticalCenter
+        anchors.left: control.left
         width: 20
         implicitWidth: 20
-        height: parent.height
+        height: control.height
         color: "transparent"
         visible: !isEditing && showIndicators
         Image {
             id: leftdown
-            x: control.mirrored ? parent.width - width - 2 : 2
-            y: parent.height / 4
+            x: control.mirrored ? downIndicator.width - width - 2 : 2
+            y: downIndicator.height / 4
             width: 9
             height: width
             source: "qrc:icon/spinboxLeft.png"
@@ -135,15 +139,17 @@ Rectangle {
             id: downMouseArea
             anchors.fill: downIndicator
             hoverEnabled: true
-            acceptedButtons: control.enabled ? Qt.LeftButton : Qt.NoButton
+            acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
+
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
                 if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 } else {
-                    backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                 }
             }
+
 
             onClicked: {
                 control.setValue(control.value, -control.step)
@@ -153,40 +159,45 @@ Rectangle {
 
     Rectangle {
         id: content
-        anchors.left: isEditing || !showIndicators ? parent.left : downIndicator.right
-        anchors.right: isEditing || !showIndicators ? parent.right: upIndicator.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: isEditing || !showIndicators ? control.left : downIndicator.right
+        anchors.right: isEditing || !showIndicators ? control.right: upIndicator.left
+        anchors.verticalCenter: control.verticalCenter
         color: "transparent"
         implicitWidth: modeLoader.item.implicitWidth
         implicitHeight: 20
 
         Component {
             id: spinBoxMode
-            Label {
+            TextInput {
                 id: labelID
+
                 anchors.centerIn: parent
-                text: formatText(value, prefix, suffix)
-                color: control.enabled ? "black" : "#464646"
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
+
+                text: formatText(value, prefix, suffix)
+                color: control.enabled ? (control.readOnly ? "#393939" : "black") : "#464646"
+                clip: true
+                selectByMouse: control.readOnly || control.enabled ? true : false
+                readOnly: true
                 MouseArea {
                     id: contentMouseArea
 
                     property var initialPosition : Qt.vector2d(0,0)
                     property var initialValue
 
-                    anchors.fill: parent
+                    anchors.fill: labelID
                     hoverEnabled: true
-                    acceptedButtons: control.enabled ? Qt.LeftButton : Qt.NoButton
+                    acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
 
                     onHoveredChanged: {
-                        if (control.enabled) {
+                        if (control.enabled && !control.readOnly) {
                             cursorShape = Qt.SizeHorCursor
                         }
                         if (containsMouse) {
-                            backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                         } else {
-                            backgroundID.setControlState(control.enabled, containsMouse, upIndicator.focus)
+                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                         }
                     }
 
@@ -224,8 +235,9 @@ Rectangle {
                 verticalAlignment: Qt.AlignVCenter
 
                 text: formatText(value, prefix, suffix).replace(prefix, "").replace(suffix, "")
+                clip: true
                 validator: DoubleValidator{}
-                color: control.enabled ? "black" : "#464646"
+                color: control.readOnly ? "#393939" : "black"
                 focus: true
                 selectByMouse: true
                 onEditingFinished: {
@@ -237,6 +249,10 @@ Rectangle {
                     forceActiveFocus()
                     selectAll()                    
                 }
+                position: backgroundID.position
+                enabled: control.enabled
+                readOnly: control.readOnly
+
             }
         }
 
@@ -245,14 +261,13 @@ Rectangle {
             sourceComponent: spinBoxMode
             anchors.fill: parent
         }
-
     }
 
     onEnabledChanged: {
-        backgroundID.setControlState(control.enabled, false, control.focus)
+        backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
     }
     Component.onCompleted: {
-        backgroundID.setControlState(control.enabled, false, control.focus)
+        backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
     }
 
     ControlsBackground {

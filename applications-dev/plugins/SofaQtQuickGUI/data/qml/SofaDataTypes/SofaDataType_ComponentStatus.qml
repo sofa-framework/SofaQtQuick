@@ -29,7 +29,7 @@ import Sofa.Core.SofaData 1.0
   *************************************************************************************************/
 Text {
     id: root
-    property SofaData dataObject: null
+    property SofaData sofaData: null
     enabled:true
-    text: dataObject===nullptr? "Missing" :  dataObject.value
+    text: sofaData===nullptr? "Missing" :  sofaData.value
 }

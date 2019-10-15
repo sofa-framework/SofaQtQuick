@@ -32,7 +32,6 @@ TextField {
     property var sofaData: null
     property int refreshCounter: 0
     readOnly: sofaData ? (sofaData.type !== "string" ? true : sofaData.readOnly) : sofaData.readOnly
-    enabled: !sofaData.readOnly
     text: sofaData.value.toString()
     implicitWidth: parent.width
 

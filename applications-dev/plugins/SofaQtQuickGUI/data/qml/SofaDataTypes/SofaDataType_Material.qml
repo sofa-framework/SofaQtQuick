@@ -24,16 +24,16 @@ import SofaBasics 1.0
 TextField {
     id: root
 
-    property var dataObject: null
+    property var sofaData: null
 
-    readOnly: dataObject.readOnly
-    enabled: !dataObject.readOnly
-    text: undefined !== dataObject.value ? dataObject.value.toString() : ""
+    readOnly: sofaData.readOnly
+    enabled: !sofaData.readOnly
+    text: undefined !== sofaData.value ? sofaData.value.toString() : ""
 
     Binding {
-        target: dataObject
+        target: sofaData
         property: "value"
         value: root.text
-        when: !dataObject.readOnly
+        when: !sofaData.readOnly
     }
 }

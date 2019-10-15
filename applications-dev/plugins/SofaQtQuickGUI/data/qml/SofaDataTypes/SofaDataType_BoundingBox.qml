@@ -58,9 +58,10 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
+
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -84,9 +85,9 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -109,9 +110,9 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -145,9 +146,9 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -171,9 +172,9 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -196,9 +197,9 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            readOnly: sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
