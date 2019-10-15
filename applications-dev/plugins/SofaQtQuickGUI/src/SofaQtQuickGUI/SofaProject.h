@@ -14,6 +14,8 @@ using sofaqtquick::bindings::SofaBase;
 namespace sofa {
 namespace qtquick {
 
+class ProjectFileMonitor;
+
 /**
  *  \brief Holds the current project's properties
  *
@@ -37,14 +39,18 @@ public:
     Q_INVOKABLE bool createProjectTree(const QUrl& dir);
     Q_INVOKABLE QString importProject(const QUrl& archive);
     Q_INVOKABLE bool exportProject(const QUrl& projectName);
-    Q_INVOKABLE void scanProject(const QDir& folder);
+
+    Q_INVOKABLE void scanProject(const QFileInfo& folder);
     Q_INVOKABLE void scanProject(const QUrl& url);
+
     Q_INVOKABLE const QString getFileCount(const QUrl& url);
 
     Q_INVOKABLE Asset* getAsset(const QString& filePath);
     Q_INVOKABLE QStringList getSupportedTypes() const;
 
     Q_INVOKABLE bool createPrefab(SofaBase* node);
+
+    void updatePath(const std::string& file);
 
 private slots:
     void onFilesChanged();
@@ -58,9 +64,9 @@ private:
     using assetMapIterator = std::map<QString, std::shared_ptr<Asset> >::iterator;
     std::map<QString, std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
 
-    void _scanProject(const QDir& folder);
+    void _scanProject(const QFileInfo &file);
 
-    LiveFileMonitor* m_fileMonitor {nullptr};
+    ProjectFileMonitor* m_fileMonitor {nullptr};
 };
 
 }  // namespace qtquick

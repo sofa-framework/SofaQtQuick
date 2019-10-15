@@ -1,6 +1,9 @@
 #include "SofaProject.h"
 #include "SofaApplication.h"
 
+#include <sofa/helper/system/FileMonitor.h>
+using sofa::helper::system::FileMonitor;
+
 #include <SofaPython3/PythonEnvironment.h>
 #include <SofaPython3/PythonFactory.h>
 using sofapython3::PythonEnvironment;
@@ -8,14 +11,38 @@ namespace py = pybind11;
 #include <QWindow>
 #include <QInputDialog>
 #include <QFileDialog>
+#include "Assets/AssetFactory.h"
+using sofa::qtquick::AssetFactory;
 
 #include <fstream>
 
 namespace sofa {
 namespace qtquick {
 
-SofaProject::SofaProject() {}
-SofaProject::~SofaProject() { if (m_fileMonitor) delete m_fileMonitor; }
+class ProjectFileMonitor : public FileEventListener
+{
+public:
+    ProjectFileMonitor(SofaProject* project)
+    {
+        m_project=project;
+    }
+    void fileHasChanged(const std::string& filename)
+    {
+        msg_info("ProjectFileMonitor") << "Update: " << filename;
+        m_project->updatePath(filename);
+    }
+    SofaProject* m_project;
+};
+
+SofaProject::SofaProject()
+{
+    m_fileMonitor = new ProjectFileMonitor(this);
+}
+
+SofaProject::~SofaProject() {
+    if (m_fileMonitor)
+        delete m_fileMonitor;
+}
 
 const QUrl& SofaProject::getRootDir() { return m_rootDir;  }
 
@@ -29,26 +56,38 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     }
 
     msg_info("SofaProject") << "Setting root directory to '" << rootDir.toString().toStdString()<<"'";
-    QDir root = QDir(m_rootDir.path());
+
+    QFileInfo root = QFileInfo(m_rootDir.path());
     scanProject(root);
 }
 
+
+//void LiveFileMonitor::addPathToMonitor(const std::string& path)
+//{
+//    std::string p = path;
+//    if (p.back() == '/')
+//        p.pop_back();
+//    std::vector<std::string> files;
+//    FileSystem::listDirectory(p, files) ;
+//    for(auto& filename: files)
+//    {
+//        if (FileSystem::isDirectory(p + "/" + filename))
+//        {
+//            addPathToMonitor(p + "/" + filename) ;
+//        }
+//        else
+//        {
+//            if (FileSystem::isFile(p + "/" + filename))
+//            {
+//                sofa::helper::system::FileMonitor::addFile(p + "/" + filename, this);
+//            }
+//        }
+//    }
+//}
+
 void SofaProject::onFilesChanged()
 {
-    for (const auto& f : m_fileMonitor->files())
-    {
-        std::cout << f.toStdString() << " changed" << std::endl;
-        QFileInfo finfo(f);
-        m_assets.erase(m_assets.find(finfo.filePath()));
-        m_assets.insert(assetMapPair(finfo.filePath(), AssetFactory::createInstance(
-                                         finfo.filePath(), finfo.suffix())));
-    }
-    emit filesChanged();
-}
-
-void SofaProject::scanProject(const QUrl& folder)
-{
-    _scanProject(QDir(folder.path()));
+    //emit filesChanged();
 }
 
 QString SofaProject::createProject(const QUrl& dir)
@@ -144,39 +183,82 @@ bool SofaProject::exportProject(const QUrl& srcUrl)
     return false;
 }
 
-void SofaProject::scanProject(const QDir& folder)
+void SofaProject::updatePath(const std::string& filepath)
 {
-    _scanProject(folder);
+
+    QFileInfo finfo { QString::fromStdString(filepath) };
+    scanProject(finfo);
 }
 
-void SofaProject::_scanProject(const QDir& folder)
+void SofaProject::scanProject(const QUrl& folder)
 {
-    if (!folder.exists())
+    _scanProject(QFileInfo(folder.path()));
+}
+
+
+void SofaProject::scanProject(const QFileInfo& folder)
+{
+    //QApplication::setOverrideCursor(Qt::WaitCursor);
+    //QApplication::processEvents();
+
+
+    _scanProject(folder);
+
+    //QApplication::restoreOverrideCursor();
+}
+
+void SofaProject::_scanProject(const QFileInfo& file)
+{
+    if (!file.exists())
         return;
 
+    msg_info("SofaProject") << file.absoluteFilePath().toStdString() ;
 
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
-    QStringList content = folder.entryList();
-    QFileInfoList contentInfo = folder.entryInfoList();
-    for (int idx = 0 ; idx < content.size() ; ++idx)
+    QString filePath = file.absoluteFilePath();
+
+    /// Already monitored...
+    if (m_assets.find(file.absoluteFilePath()) == m_assets.end())
     {
-        QFileInfo f = contentInfo[idx];
-        if (f.isDir())
-        {
-            if (f.fileName() == "." || f.fileName() == "..")
-                continue;
-            _scanProject(QDir(f.filePath()));
-        }
-        else
-        {
-            m_assets.insert(assetMapPair(f.filePath(), AssetFactory::createInstance(
-                                             f.filePath(), f.suffix())));
-        }
+        msg_info("SofaProject") << file.absoluteFilePath().toStdString() << " REGISTERING THE FILE" ;
+        FileMonitor::addFile(filePath.toStdString(), m_fileMonitor);
     }
-    m_fileMonitor = new LiveFileMonitor(m_rootDir.path());
-    connect(m_fileMonitor, &LiveFileMonitor::filesChanged, this, &SofaProject::onFilesChanged);
-    QApplication::restoreOverrideCursor();
+
+    /// The file needs to be added
+    if(file.isFile())
+    {
+        msg_info("SofaProject") << file.absoluteFilePath().toStdString() << " ADDING FILE IN REPOSITORY !" ;
+        m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
+        return;
+    }
+
+    msg_info("SofaProject") << file.absoluteFilePath().toStdString() << " ADDING DIR IN REPOSITORY !" ;
+    m_assets[filePath] = AssetFactory::createInstance(file.filePath(), "DIRECTORY");
+
+    /// We add the children of the current directory.
+    for (QFileInfo& finfo : file.dir().entryInfoList())
+    {
+        _scanProject(finfo);
+    }
+    return;
+
+//    QStringList content = folder.entryList();
+//    QFileInfoList contentInfo = folder.entryInfoList();
+//    for (int idx = 0 ; idx < content.size() ; ++idx)
+//    {
+//        QFileInfo f = contentInfo[idx];
+//        if (f.isDir())
+//        {
+//            if (f.fileName() == "." || f.fileName() == "..")
+//                continue;
+//            //_scanProject(QDir(f.filePath()));
+//        }
+//        else
+//        {
+//            m_assets.insert(assetMapPair(f.filePath(),
+//                                         AssetFactory::createInstance(
+//                                             f.filePath(), f.suffix())));
+//        }
+//    }
 }
 
 const QString SofaProject::getFileCount(const QUrl& url)
