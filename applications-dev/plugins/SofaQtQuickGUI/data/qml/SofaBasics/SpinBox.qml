@@ -168,14 +168,18 @@ Rectangle {
 
         Component {
             id: spinBoxMode
-            Label {
+            TextInput {
                 id: labelID
+
                 anchors.centerIn: parent
-                text: formatText(value, prefix, suffix)
-                color: control.enabled ? "black" : "#464646"
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
+
+                text: formatText(value, prefix, suffix)
+                color: control.enabled ? (control.readOnly ? "#393939" : "black") : "#464646"
                 clip: true
+                selectByMouse: control.readOnly || control.enabled ? true : false
+                readOnly: true
                 MouseArea {
                     id: contentMouseArea
 
@@ -233,7 +237,7 @@ Rectangle {
                 text: formatText(value, prefix, suffix).replace(prefix, "").replace(suffix, "")
                 clip: true
                 validator: DoubleValidator{}
-                color: control.enabled ? "black" : "#464646"
+                color: control.readOnly ? "#393939" : "black"
                 focus: true
                 selectByMouse: true
                 onEditingFinished: {

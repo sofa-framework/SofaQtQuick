@@ -9,7 +9,7 @@ TextField {
 
     id: control
     placeholderText: qsTr("None")
-    color: readOnly ? "#464646" : "black"
+    color: control.enabled ? (readOnly ? "#393939" : "black") : "#464646"
     leftPadding: 7
     rightPadding: 7
     hoverEnabled: true
