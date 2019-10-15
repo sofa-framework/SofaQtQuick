@@ -60,7 +60,11 @@ ColumnLayout {
             showIndicators: false
             enabled: !sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: {
+                console.log(root.values[index])
+                console.log(root.values[index])
+                return root.values[index]
+            }
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -86,7 +90,7 @@ ColumnLayout {
             showIndicators: false
             enabled: !sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -111,7 +115,7 @@ ColumnLayout {
             showIndicators: false
             enabled: !sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -147,7 +151,7 @@ ColumnLayout {
             showIndicators: false
             enabled: !sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -173,7 +177,7 @@ ColumnLayout {
             showIndicators: false
             enabled: !sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;
@@ -198,7 +202,7 @@ ColumnLayout {
             showIndicators: false
             enabled: !sofaData.isReadOnly
 
-            value: Number(root.values[index])
+            value: root.values[index]
             onValueChanged: {
                 if(!sofaData.isReadOnly) {
                     root.values[index] = value;

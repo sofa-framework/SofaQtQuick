@@ -426,7 +426,7 @@ QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& prop
     if(baseTypeinfo->FixedSize())
         properties.insert("innerStatic", true);
 
-    QString widget(data->getWidget());
+    QString widget = QString::fromStdString(data->getWidget());
     if(!widget.isEmpty())
     {
         properties.insert("type",widget);
@@ -544,7 +544,7 @@ QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
         properties.insert("autoUpdate", true);
     }
 
-    QString widget(data->getWidget());
+    QString widget(QString::fromStdString(data->getWidget()));
     if(!widget.isEmpty())
         type = widget;
 
@@ -552,9 +552,9 @@ QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
 
     //object.insert("sofaData", QVariant::fromValue(sofaData));
     object.insert("name", data->getName().c_str());
-    object.insert("description", data->getHelp());
+    object.insert("description", QString::fromStdString(data->getHelp()));
     object.insert("type", type);
-    object.insert("group", data->getGroup());
+    object.insert("group", QString::fromStdString(data->getGroup()));
     object.insert("properties", properties);
     object.insert("link", QString::fromStdString(data->getLinkPath()));
     object.insert("value", createQVariantFromData(data));

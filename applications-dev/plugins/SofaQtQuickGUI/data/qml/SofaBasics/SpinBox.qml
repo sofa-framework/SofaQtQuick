@@ -39,7 +39,7 @@ Rectangle {
     property string suffix: ""  // a suffix for this spinbox (for instance a unit of measure)
     property int decimals: 2  // the number of decimals (0 for integers)
     property double step: 0.1  // the step size to scale mouse / indicators interactions
-    property double value: 50.0  // the value stored in this spinbox
+    property double value: 42250.0  // the value stored in this spinbox
 
     property alias cornerPositions: backgroundID.cornerPositions
     property alias position: backgroundID.position
@@ -63,9 +63,12 @@ Rectangle {
         var str = ""
         if (prefix !== "")
             str += qsTr(prefix)
-        str += qsTr("%1").arg(v.toFixed(decimals))
+        var fixedValue = v.toFixed(decimals).toString()
+        if ((fixedValue.length - decimals - 1 ) > 4)
+            fixedValue = Number(fixedValue).toExponential(3)
+        str += fixedValue
         if (suffix !== "")
-            str += qsTr(suffix)
+            str += qsTr(suffix) + " "
         return str
     }
     function setValue(initialValue, incrVal)
@@ -169,6 +172,7 @@ Rectangle {
                 color: control.enabled ? "black" : "#464646"
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
+                clip: true
                 MouseArea {
                     id: contentMouseArea
 
@@ -224,6 +228,7 @@ Rectangle {
                 verticalAlignment: Qt.AlignVCenter
 
                 text: formatText(value, prefix, suffix).replace(prefix, "").replace(suffix, "")
+                clip: true
                 validator: DoubleValidator{}
                 color: control.enabled ? "black" : "#464646"
                 focus: true
