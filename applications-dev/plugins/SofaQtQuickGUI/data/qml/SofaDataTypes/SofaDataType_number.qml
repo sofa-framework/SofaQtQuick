@@ -30,18 +30,18 @@ import Sofa.Core.SofaData 1.0
 SpinBox
 {
     id: self
-    enabled: !dataObject.readOnly
+    enabled: !sofaData.readOnly
 
-    property SofaData dataObject: null
-    property var properties: dataObject.properties
+    property SofaData sofaData: null
+    property var properties: sofaData.properties
     decimals: properties["decimals"]
-    step: properties["step"]
+    step: properties["step"] !== undefined ? properties["step"] : 1
 
     onValueChanged: {
-        dataObject.value = value
+        sofaData.value = value
     }
 
     value: {
-        dataObject.value.toFixed(decimals);
+        sofaData.value.toFixed(decimals);
     }
 }

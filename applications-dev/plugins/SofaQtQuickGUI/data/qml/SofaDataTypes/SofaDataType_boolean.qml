@@ -32,27 +32,28 @@ ColumnLayout {
     id: root
     spacing: 0
 
-    property SofaData dataObject: null
+    property SofaData sofaData: null
     property int refreshCounter : 0
     onRefreshCounterChanged:
     {
-        control.checked = dataObject.value
+        control.checked = sofaData.value
     }
 
     Item {
         id: item
         Layout.fillWidth: true
         Layout.minimumWidth: control.implicitWidth
-        Layout.preferredHeight: control.implicitHeight
+        Layout.preferredHeight: control.implicitHeight + 2
 
         CheckBox {
             id: control
             anchors.centerIn: parent
-            checked: dataObject.value
+            //enabled: !data.isReadOnly
+            checked: sofaData.value
 
             onCheckedChanged:
             {
-                dataObject.value = checked;
+                sofaData.value = checked;
             }
         }
     }

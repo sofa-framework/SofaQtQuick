@@ -14,7 +14,7 @@ GroupBox {
     property bool expanded: true
     property int expandedHeight: 0
     property url titleIcon: ""
-    property string buttonIconSource: undefined
+    property string buttonIconSource: ""
     property var buttonAction
 
     onExpandedChanged: {
@@ -88,7 +88,7 @@ GroupBox {
             anchors.verticalCenter: label.verticalCenter
             implicitWidth: 20
             implicitHeight: 20
-            visible: true
+            visible: buttonIconSource !== ""
             iconSource: buttonIconSource
             onClicked: buttonAction()
         }

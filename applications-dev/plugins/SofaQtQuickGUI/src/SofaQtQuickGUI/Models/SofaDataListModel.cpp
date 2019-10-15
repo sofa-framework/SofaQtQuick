@@ -146,7 +146,7 @@ SofaDataListModel::Item SofaDataListModel::buildItem(BaseData* data) const
     SofaDataListModel::Item item;
 
     item.name = QString::fromStdString(data->getName());
-    item.group = data->getGroup();
+    item.group = QString::fromStdString(data->getGroup());
     item.type = SofaDataType;
     item.data = QVariant::fromValue((void*) data);
 

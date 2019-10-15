@@ -32,7 +32,7 @@ Item {
 
     signal doubleClickedOnLabel;
 
-    property SofaData dataObject: null
+    property SofaData sofaData: null
     property var widget: null
 
     property int nameLabelWidth: -1
@@ -47,14 +47,14 @@ Item {
 
     function updateData(newValue)
     {
-        console.log("Update Data " + dataObject.name);
-        dataObject.value = newValue;
+        console.log("Update Data " + sofaData.name);
+        sofaData.value = newValue;
     }
 
     function updateLink()
     {
-        console.log("Update Link" + dataObject.name)
-        dataObject.setLink(linkTextField.visible ? linkTextField.text : "");
+        console.log("Update Link" + sofaData.name)
+        sofaData.setLink(linkTextField.visible ? linkTextField.text : "");
     }
 
     GridLayout {
@@ -71,7 +71,7 @@ Item {
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
             visible: self.showName
-            text: dataObject? dataObject.name : ""
+            text: sofaData ? sofaData.name : ""
             font.italic: true
             color: "black"
             width: parent.width
@@ -85,8 +85,8 @@ Item {
                 onDoubleClicked: self.doubleClickedOnLabel();
             }
             ToolTip {
-                text: dataObject? dataObject.name : ""
-                description: dataObject? dataObject.help : ""
+                text: sofaData? sofaData.name : ""
+                description: sofaData ? sofaData.help : ""
                 visible: dataLabelMouseArea.containsMouse
             }
 
@@ -102,15 +102,15 @@ Item {
 
             RowLayout {
                 Layout.fillWidth: true
-                visible: dataObject && 0 !== dataObject.name.length && (linkButton.checked || (0 !== dataObject.linkPath.length && !self.showLinkButton))
+                visible: sofaData && 0 !== sofaData.name.length && (linkButton.checked || (0 !== sofaData.linkPath.length && !self.showLinkButton))
                 spacing: 0
 
                 TextField {
                     id: linkTextField
                     Layout.fillWidth: true
-                    placeholderText: dataObject ? "Link: @./path/component." + dataObject.name : ""
-                    color: 0 === dataObject.linkpathlength ? "black" : "green"
-                    text: dataObject? dataObject.linkPath : ""
+                    placeholderText: sofaData ? "Link: @./path/component." + sofaData.name : ""
+                    color: 0 === sofaData.linkpathlength ? "black" : "green"
+                    text: sofaData ? sofaData.linkPath : ""
                     width: parent.width
                     clip: true
                     onTextChanged: updateLink();
@@ -119,7 +119,7 @@ Item {
                 Image {
                     Layout.preferredWidth: 16
                     Layout.preferredHeight: Layout.preferredWidth
-                    source: 0 === dataObject.linkPath.length ? "qrc:/icon/invalid.png" : "qrc:/icon/correct.png"
+                    source: 0 === sofaData.linkPath.length ? "qrc:/icon/invalid.png" : "qrc:/icon/correct.png"
                 }
             }
         }
@@ -135,7 +135,7 @@ Item {
                 anchors.fill: parent
                 anchors.margins: 3
                 checkable: true
-                checked: dataObject ? 0 !== dataObject.linkPath.length : false
+                checked: sofaData ? 0 !== sofaData.linkPath.length : false
 
                 ToolTip {
                     text: "Link the data to another one."
@@ -152,7 +152,7 @@ Item {
 
 //        CheckBox {
 //            id: trackButton
-//            visible: self.showTrackButton && 0 !== dataObject.name.length
+//            visible: self.showTrackButton && 0 !== sofaData.name.length
 //            checked: false
 
 //            onClicked: self.updateObject();
@@ -172,15 +172,15 @@ Item {
 //        }
     }
 
-    onDataObjectChanged:
+    onSofaDataChanged:
     {
-        if(dataObject)
+        if(sofaData)
         {
             /// Returns the widget's properties associated with this SofaData
-            var component = SofaDataWidgetFactory.getWidgetForData(dataObject)
-            var o = component.createObject(datawidget, {"dataObject": dataObject,
-                                                        "Layout.fillWidth":true})
-            self.implicitHeight = o.implicitHeight
+            var component = SofaDataWidgetFactory.getWidgetForData(sofaData)
+            var o = component.createObject(datawidget, {"sofaData": sofaData,
+                                                "Layout.fillWidth":true})
+            self.implicitHeight = o.implicitHeight < 20 ? 20 : o.implicitHeight
         }
     }
 }
