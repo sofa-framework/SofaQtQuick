@@ -29,25 +29,25 @@ import SofaBasics 1.0
 TextField {
     id: root
 
-    property var sofaData: null
+    property var dataObject: null
     property int refreshCounter: 0
-    readOnly: sofaData & sofaData.readOnly
-    enabled: !sofaData.readOnly
-    text: sofaData.value.toString()
+    readOnly: dataObject & dataObject.readOnly
+    enabled: !dataObject.readOnly
+    text: dataObject.value.toString()
     implicitWidth: parent.width
 
-    onRefreshCounterChanged:  text = sofaData.value.toString()
+    onRefreshCounterChanged:  text = dataObject.value.toString()
 
     onAccepted:
     {
         console.log("Accepted")
-        sofaData.value = text
+        dataObject.value = text
         root.focus = false
     }
     onEditingFinished:
     {
         console.log("EditingFinished")
-        sofaData.value = text
+        dataObject.value = text
         root.focus = false
     }
 }

@@ -22,6 +22,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.4
 import SofaBasics 1.0
 import SofaColorScheme 1.0
+import Sofa.Core.SofaData 1.0
 
 ColumnLayout {
     id: root
@@ -29,12 +30,12 @@ ColumnLayout {
 
     height: 40
     implicitHeight: height
-    property var sofaData: null
+    property SofaData dataObject: null
 
 
     property var values: []
-    onSofaDataChanged: {
-        var valStrings = sofaData.value.split(' ')
+    onDataObjectChanged: {
+        var valStrings = dataObject.value.split(' ')
         for (var i = 0 ; i < valStrings.length ; i++) {
             values.push(Number(valStrings[i]))
         }
@@ -57,13 +58,13 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            enabled: !dataObject.isReadOnly
 
             value: Number(root.values[index])
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!dataObject.isReadOnly) {
                     root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
+                    dataObject.value = root.values.join(' ');
                 }
             }
 
@@ -83,13 +84,13 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            enabled: !dataObject.isReadOnly
 
             value: Number(root.values[index])
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!dataObject.isReadOnly) {
                     root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
+                    dataObject.value = root.values.join(' ');
                 }
             }
 
@@ -108,13 +109,13 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            enabled: !dataObject.isReadOnly
 
             value: Number(root.values[index])
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!dataObject.isReadOnly) {
                     root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
+                    dataObject.value = root.values.join(' ');
                 }
             }
 
@@ -144,13 +145,13 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            enabled: !dataObject.isReadOnly
 
             value: Number(root.values[index])
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!dataObject.isReadOnly) {
                     root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
+                    dataObject.value = root.values.join(' ');
                 }
             }
 
@@ -170,13 +171,13 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            enabled: !dataObject.isReadOnly
 
             value: Number(root.values[index])
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!dataObject.isReadOnly) {
                     root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
+                    dataObject.value = root.values.join(' ');
                 }
             }
 
@@ -195,13 +196,13 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            enabled: !sofaData.isReadOnly
+            enabled: !dataObject.isReadOnly
 
             value: Number(root.values[index])
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!dataObject.isReadOnly) {
                     root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
+                    dataObject.value = root.values.join(' ');
                 }
             }
 

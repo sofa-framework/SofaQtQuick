@@ -108,12 +108,11 @@ def buildDataParams(datas, indent, scn):
                             s += ", " + data.getName() + "=" + repr(data.value)
     return s
 
-
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
     for o in node.objects:
         s = buildDataParams(o.getDataFields(), indent, scn)
-        print('createObject')
-        scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".createObject('"
+        print('addObject')
+        scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".addObject('"
         scn[0] += o.getClassName() + "', name='" + o.name.value + "'" + s + ")\n"
 
     for child in node.children:
@@ -124,7 +123,7 @@ def saveRec(node, indent, modules, modulepaths, scn, rootNode):
                        child.name + " #########################\n")
             scn[0] += (indent + child.getData("Prefab type").value +
                        "(" + getAbsPythonCallPath(node, rootNode) +
-                       ".createChild('" + child.name.value + "'))\n")
+                       ".addChild('" + child.name.value + "'))\n")
             scn[0] += ("\n")
             modules.append(child.getData("Defined in").value)
             modulepaths.append(child.getData("modulepath").value)
@@ -133,7 +132,7 @@ def saveRec(node, indent, modules, modulepaths, scn, rootNode):
             scn[0] += (indent + "####################### Node: " + child.name.value +
                        " #########################\n")
             scn[0] += (indent + getAbsPythonCallPath(node, rootNode) +
-                       ".createChild('" + child.name.value + "')\n")
+                       ".addChild('" + child.name.value + "')\n")
             saveRec(child, indent, modules, modulepaths, scn, rootNode)
             scn[0] += ("\n")
 
@@ -227,8 +226,8 @@ def createPrefabFromNode(fileName, node, name, help):
 
 
 def loadMeshAsset(type, path, node):
-    loader = node.createObject(type, name="loader", filename=path)
-    vmodel = node.createObject("OglModel", name="vmodel", src=loader.getLinkPath())
+    loader = node.addObject(type, name="loader", filename=path)
+    vmodel = node.addObject("OglModel", name="vmodel", src=loader.getLinkPath())
     return node
 
 def getPrefabMetaData(func, node):

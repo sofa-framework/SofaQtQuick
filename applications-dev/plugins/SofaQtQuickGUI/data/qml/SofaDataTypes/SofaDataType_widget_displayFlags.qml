@@ -46,7 +46,7 @@ TreeView {
     model: SofaDisplayFlagsTreeModel {
         id: displayFlagsModel
 
-        displayFlagsData: root.dataObject ? root.dataObject.sofaData : null
+        displayFlagsData: root.dataObject ? root.dataObject.dataObject : null
     }
 
     Component.onCompleted: expandAll();

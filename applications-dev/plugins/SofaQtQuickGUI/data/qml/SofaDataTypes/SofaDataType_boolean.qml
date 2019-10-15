@@ -32,11 +32,11 @@ ColumnLayout {
     id: root
     spacing: 0
 
-    property SofaData sofaData: null
+    property SofaData dataObject: null
     property int refreshCounter : 0
     onRefreshCounterChanged:
     {
-        control.checked = sofaData.value
+        control.checked = dataObject.value
     }
 
     Item {
@@ -49,11 +49,11 @@ ColumnLayout {
             id: control
             anchors.centerIn: parent
             //enabled: !data.isReadOnly
-            checked: sofaData.value
+            checked: dataObject.value
 
             onCheckedChanged:
             {
-                sofaData.value = checked;
+                dataObject.value = checked;
             }
         }
     }
