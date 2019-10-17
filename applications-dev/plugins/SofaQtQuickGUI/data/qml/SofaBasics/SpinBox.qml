@@ -50,6 +50,8 @@ Rectangle {
 
     implicitHeight: 20
     implicitWidth: content.implicitWidth + upIndicator.width + downIndicator.width
+    activeFocusOnTab: true
+    onActiveFocusChanged: isEditing = true
 
     property bool isEditing: false
     onIsEditingChanged: {

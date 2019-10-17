@@ -53,8 +53,11 @@ Item {
 
     function updateLink()
     {
-        console.log("Update Link" + sofaData.name)
+        console.log("Update Link " + sofaData.name + " with value: " + linkTextField.text)
+
         sofaData.setLink(linkTextField.visible ? linkTextField.text : "");
+        linkTextField.borderColor = Qt.binding(function (){return (0 === sofaData.linkPath.length) ? "red" : "#393939"})
+        sofaData.value = sofaData.value
     }
 
     GridLayout {
@@ -109,17 +112,12 @@ Item {
                     id: linkTextField
                     Layout.fillWidth: true
                     placeholderText: sofaData ? "Link: @./path/component." + sofaData.name : ""
-                    color: 0 === sofaData.linkpathlength ? "black" : "green"
+                    placeholderTextColor: "gray"
                     text: sofaData ? sofaData.linkPath : ""
                     width: parent.width
                     clip: true
-                    onTextChanged: updateLink();
-                }
-
-                Image {
-                    Layout.preferredWidth: 16
-                    Layout.preferredHeight: Layout.preferredWidth
-                    source: 0 === sofaData.linkPath.length ? "qrc:/icon/invalid.png" : "qrc:/icon/correct.png"
+                    onEditingFinished: updateLink();
+                    borderColor: 0 === sofaData.linkPath.length ? "red" : "#393939"
                 }
             }
         }
@@ -136,13 +134,14 @@ Item {
                 anchors.margins: 3
                 checkable: true
                 checked: sofaData ? 0 !== sofaData.linkPath.length : false
-
+                activeFocusOnTab: false
                 ToolTip {
                     text: "Link the data to another one."
                 }
 
-                onClicked: updateLink()
-
+                onClicked: {
+                    updateLink()
+                }
                 Image {
                     anchors.fill: parent
                     source: "qrc:/icon/link.png"
@@ -181,6 +180,7 @@ Item {
             var o = component.createObject(datawidget, {"sofaData": sofaData,
                                                 "Layout.fillWidth":true})
             self.implicitHeight = o.implicitHeight < 20 ? 20 : o.implicitHeight
+            o.visible = Qt.binding(function() { return !linkButton.checked })
         }
     }
 }

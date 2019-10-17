@@ -12,6 +12,9 @@ CheckBox {
     checkable: true
     hoverEnabled: true
 
+    activeFocusOnTab: true
+    onActiveFocusChanged: backgroundID.setControlState((enabled && checkable), activeFocus, checked)
+
     background: ControlsBackground {
         id: backgroundID
         controlType: controlTypes["CheckBox"]

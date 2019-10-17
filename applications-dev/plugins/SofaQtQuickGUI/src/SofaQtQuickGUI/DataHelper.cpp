@@ -165,10 +165,9 @@ bool setDataLink(BaseData* data, const QString& link)
         return false;
 
     if(link.isEmpty())
-        data->setParent(0);
+        data->setParent(nullptr);
     else
         data->setParent(link.toStdString());
-
     return data->getParent();
 }
 
