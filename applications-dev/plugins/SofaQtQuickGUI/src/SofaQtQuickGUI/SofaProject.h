@@ -2,9 +2,12 @@
 
 #include <QObject>
 #include <QDir>
+#include <QMap>
 #include <QUrl>
+#include <QFileSystemWatcher>
 
 #include "SofaQtQuickGUI/Assets/AssetFactory.h"
+#include "SofaQtQuickGUI/Assets/DirectoryAsset.h"
 #include "SofaQtQuickGUI/config.h"
 #include "SofaQtQuickGUI/Bindings/SofaBase.h"
 using sofaqtquick::bindings::SofaBase;
@@ -14,7 +17,24 @@ using sofaqtquick::bindings::SofaBase;
 namespace sofa {
 namespace qtquick {
 
-class ProjectFileMonitor;
+class ProjectMonitor : public QObject, public FileEventListener
+{
+    Q_OBJECT
+public:
+
+    QFileSystemWatcher m_dirwatcher;
+
+    ProjectMonitor();
+
+    void addDirectory(const QString& filepath);
+    void addFile(const QString& filepath);
+    void addPath(const QString& path);
+    void fileHasChanged(const std::string& filename);
+    void removePath(const QString& path);
+signals:
+    void directoryChanged(const QString& filename);
+    void fileChanged(const QString& filename);
+};
 
 /**
  *  \brief Holds the current project's properties
@@ -50,23 +70,26 @@ public:
 
     Q_INVOKABLE bool createPrefab(SofaBase* node);
 
-    void updatePath(const std::string& file);
+    void removeDirEntries(DirectoryAsset& folder);
+    void updateDirectory(const QFileInfo& finfo);
+    void updateAsset(const QFileInfo& path);
 
 private slots:
-    void onFilesChanged();
+    void onDirectoryChanged(const QString &path);
+    void onFileChanged(const QString &path);
+
 signals:
     void filesChanged();
 
 private:
     QUrl m_rootDir; // The Project's root fs directory
 
-    using assetMapPair = std::pair<QString, std::shared_ptr<Asset> >;
-    using assetMapIterator = std::map<QString, std::shared_ptr<Asset> >::iterator;
-    std::map<QString, std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
+    QMap<QString, std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
+    QMap<QString, std::shared_ptr<DirectoryAsset> > m_directories;
 
     void _scanProject(const QFileInfo &file);
 
-    ProjectFileMonitor* m_fileMonitor {nullptr};
+    ProjectMonitor* m_watcher;
 };
 
 }  // namespace qtquick
