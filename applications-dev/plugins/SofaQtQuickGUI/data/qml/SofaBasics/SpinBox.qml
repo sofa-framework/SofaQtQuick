@@ -23,7 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - bruno.josue.marques@inria.fr
 ********************************************************************/
 
-import QtQuick 2.0
+import QtQuick 2.4
 import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.0
 import SofaColorScheme 1.0
@@ -38,12 +38,12 @@ Rectangle {
 
     property string prefix: ""  // a prefix for this spinbox (the name of the variable for instance "x: ")
     property string suffix: ""  // a suffix for this spinbox (for instance a unit of measure)
-    property int decimals: 3  // the number of decimals (0 for integers)
-    property double step: 0.00001  // the step size to scale mouse / indicators interactions
+    property int precision: 6  // visual round up of the
+    property double step: 0.01  // the step size to scale mouse / indicators interactions
     property double value: 50.0  // the value stored in this spinbox
 
-    property double from: 0.0
-    property double to: 100.0
+    property double from: -Infinity
+    property double to: Infinity
 
     property alias cornerPositions: backgroundID.cornerPositions
     property alias position: backgroundID.position
@@ -63,19 +63,28 @@ Rectangle {
         }
     }
     color: "transparent"
-    function formatText(v, prefix, suffix) {
+
+
+    TextMetrics {
+        id: textMetrics
+        font.family: "Arial"
+        elide: Text.ElideRight
+        elideWidth: control.width - 10
+        text: formatText(control.value, control.prefix, control.suffix)
+    }
+
+
+    function formatText(v, prefix, suffix, truncate = true) {
         var str = ""
         if (prefix !== "")
             str += qsTr(prefix)
-        var fixedValue = v.toFixed(decimals).toString()
-        if ((fixedValue.length - decimals - 1 ) > 4)
-            fixedValue = Number(fixedValue).toExponential(3)
-        str += fixedValue
+        str += Number(v.toPrecision(precision)).toString()
         if (suffix !== "")
             str += qsTr(suffix) + " "
         return str
     }
-    function setValue(initialValue, incrVal)
+
+    function incValue(initialValue, incrVal)
     {
         var step = control.step
         var newValue = initialValue + incrVal
@@ -84,6 +93,13 @@ Rectangle {
         if (newValue < from)
             newValue = from
         control.value = newValue
+        textMetrics.text = formatText(newValue, control.prefix, control.suffix)
+    }
+
+    function setValue(_value)
+    {
+        control.value = _value
+        textMetrics.text = formatText(_value, control.prefix, control.suffix)
     }
 
 
@@ -120,7 +136,7 @@ Rectangle {
                 }
             }
             onClicked: {
-                control.setValue(control.value, control.step)
+                control.incValue(control.value, control.step)
             }
         }
     }
@@ -159,7 +175,7 @@ Rectangle {
 
 
             onClicked: {
-                control.setValue(control.value, -control.step)
+                control.incValue(control.value, -control.step)
             }
         }
     }
@@ -173,6 +189,7 @@ Rectangle {
         implicitWidth: modeLoader.item.implicitWidth
         implicitHeight: 20
 
+
         Component {
             id: spinBoxMode
             TextInput {
@@ -182,7 +199,7 @@ Rectangle {
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
 
-                text: formatText(value, prefix, suffix)
+                text: textMetrics.elidedText
                 color: control.enabled ? (control.readOnly ? "#393939" : "black") : "#464646"
                 clip: true
                 selectByMouse: control.readOnly || control.enabled ? true : false
@@ -219,7 +236,7 @@ Rectangle {
                         if (!pressed)
                             return
                         var currentPosition = Qt.vector2d(mouseX, mouseY)
-                        setValue(initialValue, (currentPosition.x - initialPosition.x) * step)
+                        incValue(initialValue, (currentPosition.x - initialPosition.x) * step)
                     }
 
                     onReleased: {
@@ -241,25 +258,26 @@ Rectangle {
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
 
-                text: formatText(value, prefix, suffix).replace(prefix, "").replace(suffix, "")
+//                text: formatText(value, prefix, suffix, false).replace(prefix, "").replace(suffix, "")
+                text: +(Number(control.value).toString())
                 clip: true
                 validator: DoubleValidator{}
                 color: control.readOnly ? "#393939" : "black"
                 focus: true
                 selectByMouse: true
                 onEditingFinished: {
-                    var v = Number(Number(text.replace(/[^\d.-]/g, '')).toFixed(decimals)).toString();
+                    var v = +text
                     if (v > to)
                         v = to
                     if (v < from)
                         v = from
-                    value = v
+                    setValue(v)
                     isEditing = false
                 }
 
                 Component.onCompleted: {
                     forceActiveFocus()
-                    selectAll()                    
+                    selectAll()
                 }
                 position: backgroundID.position
                 enabled: control.enabled
