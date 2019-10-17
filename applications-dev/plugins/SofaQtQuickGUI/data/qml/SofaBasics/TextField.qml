@@ -6,6 +6,7 @@ import SofaColorScheme 1.0
 TextField {
     property alias cornerPositions: backgroundID.cornerPositions
     property alias position: backgroundID.position
+    property var borderColor: undefined
 
     id: control
     placeholderText: qsTr("None")
@@ -18,7 +19,7 @@ TextField {
         implicitWidth: 50
         implicitHeight: 20
 
-        borderColor: control.readOnly ? "#393939" : "#505050";
+        borderColor: control.borderColor === undefined ? control.readOnly ? "#393939" : "#505050" : control.borderColor
         controlType: controlTypes["InputField"]
     }
 

@@ -38,13 +38,13 @@ Row {
     spacing : -1
     width: parent.width
 
-    property SofaData sofaData: null
+    property SofaData sofaData
 
     TextField {
         id: textField
         enabled: true
         width: root.width - openButton.width - root.spacing
-        text: undefined !== sofaData.value ? sofaData.value.toString() : ""
+        text: sofaData.value.toString()
 
         onAccepted: {
             /// Get the URL from the file chooser and convert it to a string.

@@ -27,7 +27,6 @@ TextField {
     property var sofaData: null
 
     readOnly: sofaData.readOnly
-    enabled: !sofaData.readOnly
     text: undefined !== sofaData.value ? sofaData.value.toString() : ""
 
     Binding {

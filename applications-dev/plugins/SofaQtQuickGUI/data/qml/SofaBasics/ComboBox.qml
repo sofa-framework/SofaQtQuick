@@ -18,16 +18,11 @@ ComboBox {
     model: ["Cats", "Dogs", "Bunnies"]
     hoverEnabled: true
 
-    onDownChanged: {
-        backgroundID.setControlState(enabled, hovered, down)
-    }
-    onHoveredChanged: {
-        backgroundID.setControlState(enabled, hovered, down)
-    }
-    Component.onCompleted: {
-        backgroundID.setControlState(enabled, hovered, down)
-    }
-
+    activeFocusOnTab: true
+    onActiveFocusChanged: backgroundID.setControlState(enabled, activeFocus, down)
+    onDownChanged: backgroundID.setControlState(enabled, hovered, down)
+    onHoveredChanged: backgroundID.setControlState(enabled, hovered, down)
+    Component.onCompleted: backgroundID.setControlState(enabled, hovered, down)
 
     delegate: ItemDelegate {
         id: itemDelegate
