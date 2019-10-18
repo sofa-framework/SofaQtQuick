@@ -51,7 +51,10 @@ QVariant SofaData::getValue() const
 bool SofaData::setValue(const QVariant& value)
 {
     if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
+    {
+        m_self->setPersistent(true);
         return true;
+    }
     return false;
 }
 

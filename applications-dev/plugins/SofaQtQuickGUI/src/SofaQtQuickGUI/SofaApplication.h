@@ -36,12 +36,14 @@ class QQuickItem;
 class QSettings;
 
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaPython3/PythonEnvironment.h>
 
 namespace sofa
 {
 
 namespace qtquick
 {
+
 
 class ProcessState;
 

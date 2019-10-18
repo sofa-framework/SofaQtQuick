@@ -114,12 +114,16 @@ SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
             myDataDirectory = path + "/";
             break;
         }
+
+    PythonEnvironment::Init();
 }
 
 SofaApplication::~SofaApplication()
 {
     if(this == OurInstance)
         OurInstance = nullptr;
+
+    PythonEnvironment::Release();
 }
 
 SofaApplication* SofaApplication::Instance()
