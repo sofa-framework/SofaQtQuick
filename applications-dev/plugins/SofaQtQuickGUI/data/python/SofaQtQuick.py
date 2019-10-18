@@ -67,7 +67,7 @@ def getPythonScriptContent(moduledir, modulename):
 import code
 def getPythonModuleDocstring(mpath):
     "Get module-level docstring of Python module at mpath, e.g. 'path/to/file.py'."
-    print(mpath)
+    print("LOADING THE DOCSTRING FROM: "+mpath)
     co = compile(open(mpath).read(), mpath, 'exec')
     if co.co_consts and isinstance(co.co_consts[0], basestring):
         docstring = co.co_consts[0]

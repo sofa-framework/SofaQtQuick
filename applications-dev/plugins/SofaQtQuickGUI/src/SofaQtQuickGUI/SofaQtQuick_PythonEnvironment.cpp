@@ -1,32 +1,44 @@
 #include "SofaQtQuick_PythonEnvironment.h"
+#include <QString>
+#include <sofa/helper/logging/Messaging.h>
 
 namespace sofaqtquick {
 
 namespace py = pybind11;
 
-py::dict PythonEnvironment::getPythonScriptContent(const std::string& moduleDir, const std::string& moduleName)
+py::dict PythonEnvironment::getPythonScriptContent(const QString& moduleDir, const QString& moduleName)
 {
     py::module m = py::module::import("SofaQtQuick");
     m.reload();
 
-    py::dict dict = m.attr("getPythonScriptContent")(moduleDir, moduleName);
+    py::dict dict = m.attr("getPythonScriptContent")(moduleDir.toStdString(), moduleName.toStdString());
     return dict;
 }
 
+py::dict PythonEnvironment::m_globals;
 
-bool PythonEnvironment::getPythonScriptDocstring(const std::string& moduleDir, const std::string& moduleName, std::string& docstring)
+void PythonEnvironment::Init()
+{
+    static bool inited {false};
+    if(inited)
+        return;
+    m_globals["Sofa"] = py::module::import("Sofa");
+    m_globals["Sofa.Core"] = py::module::import("Sofa.Core");
+    m_globals["SofaQtQuick"] = py::module::import("SofaQtQuick");
+    inited=true;
+}
+
+QString PythonEnvironment::getPythonModuleDocstring(const QString& modulePath)
 {
     try {
-        py::module sys = py::module::import("sys");
-        sys.attr("path").attr("insert")(1, moduleDir.c_str());
-        py::module m = py::module::import(moduleName.c_str());
-        m.reload();
-        docstring = py::str(m.doc());
-    } catch (std::exception& e) {
-        docstring = e.what();
-        return false;
+        py::dict local;
+        local["modulePath"] = modulePath.toStdString();
+        py::exec("SofaQtQuick.getPythonModuleDocstring(modulePath)", m_globals, local);
+    } catch (std::exception& e)
+    {
+        msg_error("MINCE") << e.what();
     }
-    return true;
+    return QString("");
 }
 
 }  // namespace sofaqtquick

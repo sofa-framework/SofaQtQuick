@@ -278,6 +278,8 @@ Rectangle {
 
         function getExpandedState()
         {
+            print("GET ExpANDED STATE")
+
             var nsArray = SofaApplication.nodeSettings.nodeState.split(';')
             for (var idx in nsArray)
             {
@@ -291,6 +293,8 @@ Rectangle {
         }
 
         function restoreNodeState() {
+            print("RESTORE NODE STATE")
+
             if (Object.keys(nodeSettings.nodeState).length === 0 && SofaApplication.nodeSettings.nodeState !== "")
                 getExpandedState()
             for (var key in nodeSettings.nodeState) {
@@ -299,12 +303,15 @@ Rectangle {
                     var idx = null
                     idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
                     treeView.expand(idx)
+                    expandAncestors(idx);
                     console.error("expanded " + key)
                 }
             }
         }
 
-        function storeExpandedState(index) {
+        function storeExpandedState(index)
+        {
+            print("STORE EXPANDED STATE FOR " + index)
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getBaseFromIndex(srcIndex)
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
@@ -448,7 +455,7 @@ Rectangle {
                 color: styleData.textColor
                 font.italic: hasMultiParent
                 elide: styleData.elideMode
-                text: name //+ "(" + model.row + "/"+ styleData.row + ")"
+                text: isNode ? name : typename //+ "(" + model.row + "/"+ styleData.row + ")"
             }
 
             Image {

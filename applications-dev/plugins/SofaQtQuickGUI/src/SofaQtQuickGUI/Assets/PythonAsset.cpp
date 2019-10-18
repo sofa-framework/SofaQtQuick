@@ -1,7 +1,8 @@
 #include "PythonAsset.h"
 
 #include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
-using sofaqtquick::PythonEnvironment;
+using RSPythonEnvironment = sofaqtquick::PythonEnvironment;
+
 #include <SofaPython3/PythonEnvironment.h>
 #include <SofaPython3/PythonFactory.h>
 namespace py = pybind11;
@@ -64,7 +65,7 @@ QList<QObject*> getPrefabParams(py::list args, py::tuple defaults, py::dict anno
     for (size_t i = 0 ; i < args.size() ; i++)
     {
         std::string argname = py::cast<std::string>(args[i]);
-        std::string value = py::cast<std::string>(py::str(defaults[i]));
+        std::string value = py::cast<std::string>(py::repr(defaults[i]));
         std::string annotation = annotations.contains(args[i]) ? py::str(annotations[args[i]]) : "";
 
         if (argname == "self" || argname == "parent")
@@ -212,7 +213,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(py::cast<sofa::simulation::Node*>(prefab)));
 
     if(node.get()!=nullptr)
-       node->init(sofa::core::ExecParams::defaultInstance());
+        node->init(sofa::core::ExecParams::defaultInstance());
 
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
@@ -278,23 +279,19 @@ void PythonAsset::getDetails()
         parentDirPath = "/tmp/runSofa2";
     }
 
-    std::string docstring;
-    if (!PythonEnvironment::getPythonScriptDocstring(parentDirPath, stem, docstring))
-    {
-        msg_warning_withfile("PythonAsset", m_path, 0) << "Unable to load the module";
-        return;
-    }
-    if (!QString(docstring.c_str()).contains("type: SofaContent"))
+    QString docstring = RSPythonEnvironment::getPythonModuleDocstring(QString::fromStdString(filePath));
+    if (docstring.contains("type: SofaContent"))
     {
         msg_warning_withfile("PythonAsset", m_path, 0) << "This python module does not contain the safe-guard module docstring" << msgendl
-                                   << "To be able to load this asset in runSofa2, "
-                                      "append these lines at the top of the python "
-                                      "script:\n \"\"\"type: SofaContent\"\"\"";
+                                                       << "To be able to load this asset in runSofa2, "
+                                                          "append these lines at the top of the python "
+                                                          "script:\n \"\"\"type: SofaContent\"\"\"";
         return;
     }
 
 
-    auto dict = PythonEnvironment::getPythonScriptContent(parentDirPath, stem);
+    auto dict = RSPythonEnvironment::getPythonScriptContent(QString::fromStdString(parentDirPath),
+                                                            QString::fromStdString(stem));
 
     for (auto item : m_scriptContent)
         delete item;
@@ -313,8 +310,8 @@ void PythonAsset::getDetails()
                 py::cast<std::string>(data["sourcecode"]),
                 getPrefabParams(
                     data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
-                data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
-                data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
+                    data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
+                    data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
                 ));
     }
     m_detailsLoaded = true;
@@ -322,6 +319,40 @@ void PythonAsset::getDetails()
 
 QUrl PythonAsset::getAssetInspectorWidget() {
     return QUrl("qrc:/SofaWidgets/PythonAssetInspector.qml");
+}
+
+bool PythonAsset::getIsSofaContent()
+{
+    if (m_extension == "py")
+    {
+        namespace fs = std::experimental::filesystem;
+
+        fs::path p(m_path);
+        auto module = p.stem();
+        auto path = p.parent_path();
+
+        QString docstring = RSPythonEnvironment::getPythonModuleDocstring(QString::fromStdString(m_path));
+        if (docstring.contains("type: SofaContent"))
+            return true;
+    }
+    if (m_extension == "pyscn" || m_extension == "py3")
+    {
+        namespace fs = std::experimental::filesystem;
+
+        fs::path p(m_path);
+        auto module = p.stem();
+        auto path = p.parent_path();
+        QProcess process;
+        process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
+        process.waitForFinished(-1);
+        process.start("/bin/cp", QStringList() << p.string().c_str() << QString("/tmp/runSofa2/") + module.c_str() + ".py");
+        process.waitForFinished(-1);
+        path = "/tmp/runSofa2";
+        QString docstring = RSPythonEnvironment::getPythonModuleDocstring(QString::fromStdString(m_path));
+        if(docstring.contains("type: SofaContent"))
+            return true;
+    }
+    return false;
 }
 
 

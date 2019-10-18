@@ -317,7 +317,6 @@ void SofaScene::open()
         return;
 
     // reset properties
-
     setAnimate(false);
 
     setSelectedComponent(nullptr);
