@@ -50,6 +50,5 @@ ComboBox {
 
     onCurrentTextChanged: {
         sofaData.value = currentText;
-        sofaData.upload();
     }
 }

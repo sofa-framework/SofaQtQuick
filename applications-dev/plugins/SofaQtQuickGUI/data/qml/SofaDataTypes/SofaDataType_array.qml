@@ -35,26 +35,36 @@ ColumnLayout {
         id: loader
         Layout.fillWidth: true
         Layout.fillHeight: true
-
+        Layout.minimumHeight: item.height
         sourceComponent: {
+            console.log(sofaData.name)
             if(properties.static) {
                 if((!properties.innerStatic && sofaData.value.length <= 7) ||
-                   (properties.innerStatic && 1 === sofaData.value.length && properties.cols <= 7))
+                   (properties.innerStatic && 1 === sofaData.value.length && properties.cols <= 7)) {
+                    console.log ("staticSmallArrayView")
                     return staticSmallArrayView;
-                else if(properties.innerStatic && properties.cols <= 7)
+                } else if(properties.innerStatic && properties.cols <= 7) {
+                    console.log ("staticInStaticTableView")
                     return staticInStaticTableView;
-                else
+                } else {
+                    console.log ("staticArrayView")
                     return staticArrayView;
+                }
             }
             else {
                 if(properties.innerStatic) {
-                    if(properties.cols <= 7 || properties.cols === 12) // Case of Affine type
+                    if(properties.cols <= 7 || properties.cols === 12) {
+                        // Case of Affine type
+                        console.log("staticInDynamicTableView")
                         return staticInDynamicTableView;
-                    else
+                    } else {
+                        console.log("dynamicArrayView")
                         return dynamicArrayView;
+                    }
                 }
             }
 
+            console.log("dynamicArrayView")
             return dynamicArrayView;
         }
 
@@ -324,17 +334,39 @@ ColumnLayout {
                         text: "Edit"
                         checkable: true
                         position: cornerPositions["Right"]
+                        enabled: rowNumber.value !== 0
                     }
                 }
 
                 Loader {
-                    id: loader
+                    id: loader2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     visible: showEditButton.checked
+                    onVisibleChanged: {
+                        if (visible) {
+                            Layout.minimumHeight = 200
+                            loader.Layout.minimumHeight = 224
+                            root.Layout.minimumHeight = 224
+                            parent.Layout.minimumHeight = 220
+                        } else {
+                            Layout.minimumHeight = 20
+                            loader.Layout.minimumHeight = 20
+                            root.Layout.minimumHeight = 20
+                            parent.Layout.minimumHeight = 20
+                        }
+                    }
+
                     active: visible
+
                     sourceComponent: staticInStaticTableView
                 }
+                Rectangle {
+                    visible: loader2.visible
+                    color: "transparent"
+                    implicitHeight: 1
+                }
+
             }
         }
 

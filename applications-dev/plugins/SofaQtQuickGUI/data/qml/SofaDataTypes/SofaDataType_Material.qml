@@ -26,13 +26,13 @@ TextField {
 
     property var sofaData: null
 
-    readOnly: sofaData.readOnly
+    readOnly: sofaData.isReadOnly
     text: undefined !== sofaData.value ? sofaData.value.toString() : ""
 
     Binding {
         target: sofaData
         property: "value"
         value: root.text
-        when: !sofaData.readOnly
+        when: !sofaData.isReadOnly
     }
 }
