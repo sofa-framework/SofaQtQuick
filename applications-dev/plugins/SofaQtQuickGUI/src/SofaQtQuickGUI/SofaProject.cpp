@@ -10,6 +10,9 @@ using sofa::helper::system::FileMonitor;
 using sofapython3::PythonEnvironment;
 namespace py = pybind11;
 
+#include <SofaPython3/PythonFactory.h>
+using sofapython3::PythonFactory;
+
 #include <QWindow>
 #include <QInputDialog>
 #include <QFileDialog>
@@ -104,7 +107,10 @@ void SofaProject::setRootDir(const QUrl& rootDir)
 const QUrl& SofaProject::getRootDir() { return m_rootDir;  }
 
 bool SofaProject::getDebug() const { return m_debug; }
-void SofaProject::setDebug(bool state) { m_debug = state; }
+void SofaProject::setDebug(bool state) {
+    m_debug = state;
+    emit debugChanged(state);
+}
 
 
 void SofaProject::onDirectoryChanged(const QString &path)
@@ -385,5 +391,27 @@ bool SofaProject::createPrefab(SofaBase* node)
     }
     return false;
 }
+
+void SofaProject::saveScene(const QString filepath, SofaNode* node)
+{
+    PythonEnvironment::executePython([this, filepath, node]()
+    {
+        std::string ppath = filepath.toStdString();
+        py::module SofaQtQuick = py::module::import("SofaQtQuick");
+        SofaQtQuick.reload();
+
+        py::object rootNode = PythonFactory::toPython(node->self());
+
+        py::str file(ppath);
+        bool ret =  py::cast<bool>(SofaQtQuick.attr("saveAsPythonScene")(file, rootNode));
+        if (ret) {
+            msg_info("runSofa2") << "File saved to "  << ppath;
+        } else {
+            msg_error("runSofa2") << "Could not save to file "  << ppath;
+        }
+    });
+    return;
+}
+
 
 }  /// namespace sofa::qtquick

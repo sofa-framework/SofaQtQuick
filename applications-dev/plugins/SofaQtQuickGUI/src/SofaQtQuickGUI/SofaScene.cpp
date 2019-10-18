@@ -60,8 +60,6 @@ using sofa::core::objectmodel::MouseEvent ;
 using sofapython3::PythonEnvironment;
 namespace py = pybind11;
 
-#include <SofaPython3/PythonFactory.h>
-using sofapython3::PythonFactory;
 
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
@@ -1394,55 +1392,6 @@ SofaComponent* SofaScene::visualStyleComponent()
     }
 
     return nullptr;
-}
-
-bool SofaScene::save2()
-{
-    PythonEnvironment::executePython([this]()
-    {
-        std::string ppath = path().toStdString();
-        py::module SofaQtQuick = py::module::import("SofaQtQuick");
-        SofaQtQuick.reload();
-
-        std::cout << "ZUT: " << DAGNode::GetClass()->className << std::endl;
-        std::cout << "ZUT: " << mySofaRootNode->getClass()->className << std::endl;
-        py::object rootNode = PythonFactory::toPython(mySofaRootNode.get());
-
-        py::str file(ppath);
-        bool ret =  py::cast<bool>(SofaQtQuick.attr("saveAsPythonScene")(file, rootNode));
-        if (ret) {
-            msg_info("runSofa2") << "File saved to "  << ppath;
-        } else {
-            msg_error("runSofa2") << "Could not save to file "  << ppath;
-        }
-    });
-    return true;
-}
-
-
-bool SofaScene::save(const QString& projectRootDir)
-{
-    QFileDialog dialog(nullptr, tr("Save Scene File"), projectRootDir, tr("All files (*)"));
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    if (dialog.exec())
-    {
-        std::string fileName = dialog.selectedFiles().first().toStdString();
-        {
-            py::str file(fileName);
-            py::object rootNode = py::cast(mySofaRootNode);
-            py::tuple args = py::make_tuple(file, rootNode);
-            py::module m = py::module::import("SofaRuntime");
-            bool ret =  py::cast<bool>(m.attr("saveAsPythonScene")(args));
-            if (ret) {
-                msg_info("runSofa2") << "File saved to "  << path().toStdString();
-            } else {
-                msg_error("runSofa2") << "Could not save to file "  << path().toStdString();
-            }
-            return ret;
-        }
-    }
-    return false;
 }
 
 QVariant SofaScene::onDataValueByPath(const QString& path) const
