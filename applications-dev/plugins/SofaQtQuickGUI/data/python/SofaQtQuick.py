@@ -164,7 +164,7 @@ def getRelPath(path, relativeTo):
 
 def saveAsPythonScene(fileName, node):
 #    try:
-        root = node.getRootContext()
+        root = node
         fd = open(fileName, "w+")
 
         fd.write("import sys\n")

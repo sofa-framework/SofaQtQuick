@@ -14,8 +14,11 @@ using sofaqtquick::bindings::SofaBase;
 
 #include "LiveFileMonitor.h"
 
-namespace sofa {
-namespace qtquick {
+
+namespace sofa::qtquick
+{
+
+using sofaqtquick::bindings::SofaNode;
 
 class ProjectMonitor : public QObject, public FileEventListener
 {
@@ -46,7 +49,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaProject : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QUrl rootDir READ getRootDir WRITE setRootDir NOTIFY rootDirChanged)
-    Q_PROPERTY(bool isDebugPrintEnabled READ getDebug WRITE setDebug)
+    Q_PROPERTY(bool isDebugPrintEnabled READ getDebug WRITE setDebug NOTIFY debugChanged)
 
 public:
     SofaProject();
@@ -74,6 +77,8 @@ public:
     Q_INVOKABLE QString importProject(const QUrl& archive);
     Q_INVOKABLE bool exportProject(const QUrl& projectName);
 
+    Q_INVOKABLE void saveScene(const QString filepath, SofaNode* node);
+
 private slots:
     void onDirectoryChanged(const QString &path);
     void onFileChanged(const QString &path);
@@ -81,6 +86,7 @@ private slots:
 signals:
     void filesChanged();
     void rootDirChanged(QUrl& rootDir);
+    void debugChanged(bool value);
 
 private:
     void removeDirEntries(DirectoryAsset& folder);
@@ -97,7 +103,6 @@ private:
     bool m_debug {false};
 };
 
-}  // namespace qtquick
-}  // namespace sofa
+}  // namespace sofa::qtquick
 
 
