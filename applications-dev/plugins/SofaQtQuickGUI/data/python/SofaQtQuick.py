@@ -111,7 +111,6 @@ def buildDataParams(datas, indent, scn):
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
     for o in node.objects:
         s = buildDataParams(o.getDataFields(), indent, scn)
-        print('addObject')
         scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".addObject('"
         scn[0] += o.getClassName() + "', name='" + o.name.value + "'" + s + ")\n"
 
@@ -128,7 +127,6 @@ def saveRec(node, indent, modules, modulepaths, scn, rootNode):
             modules.append(child.getData("Defined in").value)
             modulepaths.append(child.getData("modulepath").value)
         else:
-            print("createNode")
             scn[0] += (indent + "####################### Node: " + child.name.value +
                        " #########################\n")
             scn[0] += (indent + getAbsPythonCallPath(node, rootNode) +

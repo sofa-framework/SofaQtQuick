@@ -135,10 +135,9 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
         return new sofaqtquick::bindings::SofaNode(nullptr);
     }
 
-    fs::path obj(m_path);
-
-    std::string stem = obj.stem();
-    std::string path = obj.parent_path().string();
+    fs::path filePath(m_path);
+    std::string stem = filePath.stem();
+    std::string parentDirPath = filePath.parent_path().string();
 
     sofa::simulation::Node::SPtr root = parent->self();
 
@@ -146,7 +145,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     py::object assetNode = sofapython3::PythonFactory::toPython(root->toBaseNode());
     py::module inspect = py::module::import("inspect");
     py::module sys = py::module::import("sys");
-    sys.attr("path").attr("append")(path);
+    sys.attr("path").attr("append")(parentDirPath);
 
     auto local = py::dict();
     local["math"] = py::module::import("math");
@@ -257,48 +256,37 @@ void PythonAsset::getDetails()
 {
     if (m_detailsLoaded) return;
 
-    fs::path obj(m_path);
-
-    std::string stem = obj.stem();
-    std::string ext = obj.extension();
-    std::string path = obj.parent_path().string();
+    fs::path filePath(m_path);
+    std::string stem = filePath.stem();
+    std::string ext = filePath.extension();
+    std::string parentDirPath = filePath.parent_path().string();
     if (ext == ".pyscn")
     {
         QProcess process;
         process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
         process.waitForFinished(-1);
-        process.start("/bin/cp", QStringList() << obj.string().c_str() << QString("/tmp/runSofa2/") + stem.c_str() + ".py");
+        process.start("/bin/cp", QStringList() << filePath.string().c_str() << QString("/tmp/runSofa2/") + stem.c_str() + ".py");
         process.waitForFinished(-1);
-        path = "/tmp/runSofa2";
+        parentDirPath = "/tmp/runSofa2";
     }
 
     std::string docstring;
-    if (!PythonEnvironment::getPythonScriptDocstring(path, stem, docstring))
+    if (!PythonEnvironment::getPythonScriptDocstring(parentDirPath, stem, docstring))
     {
-        QMessageBox mbox;
-        mbox.setText(QString("Could not load module ") + path.c_str());
-        mbox.setInformativeText(docstring.c_str());
-        mbox.setIcon(QMessageBox::Critical);
-        mbox.setDefaultButton(QMessageBox::Ok);
-        mbox.exec();
+        msg_warning_withfile("PythonAsset", m_path, 0) << "Unable to load the module";
         return;
     }
     if (!QString(docstring.c_str()).contains("type: SofaContent"))
     {
-        QMessageBox mbox;
-        mbox.setText("This python module does not contain the safe-guard "
-                     "module docstring");
-        mbox.setInformativeText("To be able to load this asset in runSofa2, "
-                                "append these lines at the top of the python "
-                                "script:\n \"\"\"type: SofaContent\"\"\"");
-        mbox.setIcon(QMessageBox::Critical);
-        mbox.setDefaultButton(QMessageBox::Ok);
-        mbox.exec();
+        msg_warning_withfile("PythonAsset", m_path, 0) << "This python module does not contain the safe-guard module docstring" << msgendl
+                                   << "To be able to load this asset in runSofa2, "
+                                      "append these lines at the top of the python "
+                                      "script:\n \"\"\"type: SofaContent\"\"\"";
         return;
     }
 
 
-    auto dict = PythonEnvironment::getPythonScriptContent(path, stem);
+    auto dict = PythonEnvironment::getPythonScriptContent(parentDirPath, stem);
 
     for (auto item : m_scriptContent)
         delete item;

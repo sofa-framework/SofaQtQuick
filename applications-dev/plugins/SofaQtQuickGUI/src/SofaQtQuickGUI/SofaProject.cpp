@@ -91,13 +91,11 @@ SofaProject::~SofaProject()
 
 void SofaProject::setRootDir(const QUrl& rootDir)
 {
+    if(rootDir.isEmpty())
+        return;
     m_rootDir = rootDir;
     m_assets.clear();
-    if(rootDir.isEmpty())
-    {
-        msg_warning() << "Empty project directory...skipping." ;
-        return;
-    }
+    m_directories.clear();
 
     msg_info() << "Setting root directory to '" << rootDir.toString().toStdString()<<"'";
     QFileInfo root = QFileInfo(m_rootDir.path());
@@ -356,9 +354,14 @@ const QString SofaProject::getFileCount(const QUrl& url)
 
 Asset* SofaProject::getAsset(const QString& filePath)
 {
+    msg_info() << "getAsset for: " << filePath.toStdString() << " = > " << m_assets.size();
     const auto& it = m_assets.find(filePath);
-    if (it != m_assets.end() && it.value() != nullptr)
-        return it.value().get();
+    if (it != m_assets.end())
+    {
+        msg_info() << "getAsset for: " << filePath.toStdString() << " => " << it.value();
+        if(it.value() != nullptr)
+            return it.value().get();
+    }
     return nullptr;
 }
 
