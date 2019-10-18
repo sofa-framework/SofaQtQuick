@@ -14,11 +14,14 @@ import TextureAsset 1.0
 import MeshAsset 1.0
 
 Item {
-
     property var sofaApplication: null
+    property bool isDebugPrintEnabled: self.project.isDebugPrintEnabled
+
+    onIsDebugPrintEnabledChanged: {
+        self.project.isDebugPrintEnabled =  isDebugPrintEnabled
+    }
 
     id: root
-
     anchors.fill : parent
 
     Item {

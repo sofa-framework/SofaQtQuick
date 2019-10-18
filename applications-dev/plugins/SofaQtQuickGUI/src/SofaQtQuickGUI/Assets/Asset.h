@@ -1,9 +1,9 @@
 #pragma once
 
-#include "SofaQtQuickGUI/Bindings/SofaNode.h"
 #include <SofaSimulationGraph/DAGNode.h>
 #include <sofa/core/objectmodel/BaseObject.h>
 
+#include "SofaQtQuickGUI/Bindings/SofaNode.h"
 using sofa::core::objectmodel::BaseObject;
 
 #include <QUrl>

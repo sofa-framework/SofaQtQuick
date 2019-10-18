@@ -41,8 +41,6 @@ namespace liveqmlfilemonitor
 LiveQMLFileMonitor::LiveQMLFileMonitor(QQmlEngine *engine, QObject *parent)
     : LiveFileMonitor (SOFAQTQUICKGUI_QML_DIR, 200, parent)
 {
-    msg_info("LiveFileMonitor") << "Creating a LiveQMLFileMonitor singleton with data directory '"
-                                << SOFAQTQUICKGUI_QML_DIR << "'" ;
     m_files = QStringList() ;
 
     std::string path(SOFAQTQUICKGUI_QML_DIR);

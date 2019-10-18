@@ -46,6 +46,7 @@ namespace sofa::qtquick::_livefilemonitor
 
 void LiveFileMonitor::addPathToMonitor(const std::string& path)
 {
+
     std::string p = path;
     if (p.back() == '/')
         p.pop_back();
@@ -69,6 +70,8 @@ void LiveFileMonitor::addPathToMonitor(const std::string& path)
 
 LiveFileMonitor::LiveFileMonitor(const QString& root, int msec, QObject *parent)
 {
+    msg_info("LiveFileMonitor") << "Creating a LiveFileMonitor singleton with data directory '"
+                                << root.toStdString() << "'" ;
     Q_UNUSED(parent);
 
     m_files = QStringList() ;
@@ -110,6 +113,7 @@ QString LiveFileMonitor::root() const
 
 void LiveFileMonitor::setRoot(const QString& root)
 {
+    msg_info("LiveMonitor") << "setRoot to: " << root.toStdString() ;
     m_root = root;
     sofa::helper::system::FileMonitor::removeListener(this);
     addPathToMonitor(m_root.toStdString());

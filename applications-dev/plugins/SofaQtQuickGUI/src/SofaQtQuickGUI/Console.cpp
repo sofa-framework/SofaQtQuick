@@ -67,9 +67,9 @@ void Console::process(Message &m)
 {
     m_messages.push_back(m) ;
 
-    if(m_messages.size() > 50){
-        m_messages.erase(m_messages.begin(),m_messages.begin()+1);
-    }
+    //if(m_messages.size() > 50){
+    //    m_messages.erase(m_messages.begin(),m_messages.begin()+1);
+    //}
 
     emit messageCountChanged();
 }
