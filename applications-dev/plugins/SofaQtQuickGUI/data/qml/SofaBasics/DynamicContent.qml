@@ -223,6 +223,24 @@ Item {
                         description: "Activates Live coding on the current view"
                     }
                 }
+
+                Label {
+                    id: showDebugLogLabel
+                    Layout.alignment: Qt.AlignVCenter
+                    text: "Debug:"
+                    color: "black"
+                }
+                CheckBox {
+                    id : showDebugLogCheckBox
+                    Layout.alignment: Qt.AlignVCenter
+                    ToolTip {
+                        text: "Show debug message"
+                        description: "Activates printing of extra message in the current view"
+                    }
+                    onCheckedChanged: {
+                        loaderLocation.contentItem.isDebugPrintEnabled = checked;
+                    }
+                }
             }
         }
 
