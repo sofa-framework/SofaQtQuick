@@ -416,8 +416,9 @@ QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& prop
     }
 
     int nbCols = typeinfo->size();
-
+    int nbRows = typeinfo->size(data->getValueVoidPtr()) / nbCols;
     properties.insert("cols", nbCols);
+    properties.insert("rows", nbRows);
     if(typeinfo->FixedSize())
         properties.insert("static", true);
 

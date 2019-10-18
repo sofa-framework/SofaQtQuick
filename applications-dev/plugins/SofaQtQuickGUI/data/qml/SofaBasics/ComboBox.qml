@@ -98,6 +98,7 @@ ComboBox {
     }
 
     popup: Popup {
+        id: popupId
         y: control.height - 1
         width: control.width
         implicitHeight: contentItem.implicitHeight
@@ -113,21 +114,22 @@ ComboBox {
         }
 
         background: Rectangle {
+            id: backgroundId
             border.color: "transparent"
             color: "transparent"
             Rectangle {
                 id: topRect
-                anchors.top: parent.top
-                implicitWidth: parent.implicitWidth
+                anchors.top: backgroundId.top
+                implicitWidth: backgroundId.implicitWidth
                 implicitHeight: 5
                 color: "#70393939"
             }
             Rectangle {
                 id: bottomRect
-                anchors.fill: parent
+                anchors.fill: backgroundId
                 color: SofaApplication.style.transparentBackgroundColor
                 radius: 5
-                anchors.bottom: parent.bottom
+                anchors.bottom: backgroundId.bottom
                 anchors.bottomMargin: -5
             }
             DropShadow {
