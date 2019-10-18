@@ -19,20 +19,112 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 pragma Singleton
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
 import SofaApplicationSingleton 1.0
+import SofaMessageList 1.0
+import SofaViewListModel 1.0
+import SofaProject 1.0
 
-SofaApplication {
+SofaApplicationSingleton //
+{
     id: root
 
-////////////////////////////////////////////////// SOFASCENE
+    property var style : MainStyle
 
+    /// Returns the absolute position of the mouse in a mouseArea
+    /// Takes a MouseArea as argument
+    function getAbsolutePosition(node) {
+        var returnPos = _getAbsolutePosition(node)
+        returnPos.x += node.mouseX
+        returnPos.y += node.mouseY
+        return returnPos;
+    }
+
+    function _getAbsolutePosition(node) {
+        var returnPos = {};
+        returnPos.x = 0;
+        returnPos.y = 0;
+        if(node !== undefined && node !== null) {
+            var parentValue = _getAbsolutePosition(node.parent);
+            returnPos.x = parentValue.x + node.x;
+            returnPos.y = parentValue.y + node.y;
+        }
+
+        return returnPos;
+    }
+
+    /// Returns the dimensions of the top parent window
+    /// Takes a MouseArea as argument
+    function getWindowDimensions(node) {
+        var returnPos = {};
+        if (node === undefined || node === null) {
+            return returnPos
+        }
+
+        if (node.parent === undefined || node.parent === null) {
+            returnPos.x = node.width;
+            returnPos.y = node.height;
+            return returnPos;
+        }
+        return getWindowDimensions(node.parent);
+    }
+
+    /// Returns the ideal positioning of a popup, relative to the mouse's position
+    function getIdealPopupPos(popup, mouseArea) {
+        var absPos = getAbsolutePosition(mouseArea)
+        var absDim = getWindowDimensions(mouseArea)
+        if (absPos.x + popup.width < absDim.x) {
+            if (absPos.y + popup.height < absDim.y) {
+                return [0, 0]
+            } else {
+                return [0, -popup.height]
+            }
+        } else {
+            if (absPos.y + popup.height < absDim.y) {
+                return [-popup.width, 0]
+            } else {
+                return [-popup.width, -popup.height]
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////// SOFASCENE
     property var sofaScene: null
+    property QtObject sofaMessageList : SofaMessageList
+
+    property var nodeSettings: Settings {
+        category: "Hierarchy"
+        property string nodeState: ""
+    }
+
+
+    ////////////////////////////////////////////////// PROJECTSETTINGS
+    property var currentProject : SofaProject {
+        property var selectedAsset: null
+        rootDir: projectSettings.currentProject()
+    }
+
+    property var projectSettings: Settings {
+        id: projectSettings
+        category: "projects"
+        property string recentProjects
+
+        function addRecent(path) {
+            recentProjects = path + ";" + recentProjects.replace(path + ";", "");
+        }
+        function currentProject() {
+            var recentsList = recentProjects.split(";")
+            if (recentsList === [])
+                return ""
+            return recentsList[0]
+        }
+    }
+
 
     property var sceneSettings: Settings {
         category: "scene"
@@ -50,25 +142,19 @@ SofaApplication {
 
             return "file:" + recent;
         }
-
-        function recentsList() {
-            return sofaSceneRecents.split(';');
-        }
-
-        function clearRecents() {
-            sofaSceneRecents = "";
-        }
     }
 
-////////////////////////////////////////////////// TOOLBAR
+    ////////////////////////////////////////////////// VIEWS MODEL
+    property var sofaViewListModel: SofaViewListModel
+    ////////////////////////////////////////////////// TOOLBAR
 
     property var toolBar: null
 
-////////////////////////////////////////////////// STATUSBAR
+    ////////////////////////////////////////////////// STATUSBAR
 
     property var statusBar: null
 
-////////////////////////////////////////////////// SOFAVIEWER
+    ////////////////////////////////////////////////// SOFAVIEWER
 
     readonly property alias focusedSofaViewer: viewerPrivate.focusedSofaViewer
     readonly property alias sofaViewers: viewerPrivate.sofaViewers
@@ -106,7 +192,7 @@ SofaApplication {
 
     }
 
-////////////////////////////////////////////////// CAMERA
+    ////////////////////////////////////////////////// CAMERA
 
     function retrieveAllSofaViewerCameras() {
         var cameras = [];
@@ -123,8 +209,8 @@ SofaApplication {
             visitor(sofaViewers[i].camera);
     }
 
-////////////////////////////////////////////////// SETTINGS
-
+    ////////////////////////////////////////////////// SETTINGS
+    /// This stores all the created view in the UI.
     property var uiSettings: Settings {
         category: "ui"
 
@@ -195,14 +281,14 @@ SofaApplication {
         }
     }
 
-////////////////////////////////////////////////// INTERACTOR
+    ////////////////////////////////////////////////// INTERACTOR
 
     property string defaultInteractorName: "SofaParticleInteractor"
     readonly property string interactorName: {
         if(interactorComponent)
-            for(var key in interactorComponentMap)
-                if(interactorComponentMap.hasOwnProperty(key) && interactorComponent === interactorComponentMap[key])
-                    return key;
+        for(var key in interactorComponentMap)
+        if(interactorComponentMap.hasOwnProperty(key) && interactorComponent === interactorComponentMap[key])
+        return key;
 
         return "";
     }
@@ -312,7 +398,7 @@ SofaApplication {
         }
     }
 
-////////////////////////////////////////////////// SCREENSHOT
+    ////////////////////////////////////////////////// SCREENSHOT
 
     function formatDateForScreenshot() {
         var today = new Date();
@@ -354,7 +440,7 @@ SofaApplication {
         property bool saveVideo: false
         onSaveVideoChanged: {
             if(!saveVideo)
-                return;
+            return;
 
             videoFrameNumber = 0;
 
@@ -384,12 +470,12 @@ SofaApplication {
         }
     }
 
-////////////////////////////////////////////////// MISC
+    ////////////////////////////////////////////////// MISC
 
     function urlToPath(url) {
         return  Qt.platform.os === "windows" ? Qt.resolvedUrl(url).toString().replace("file:///", "") : Qt.resolvedUrl(url).toString().replace("file://", "")
     }
 
-//////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
 }

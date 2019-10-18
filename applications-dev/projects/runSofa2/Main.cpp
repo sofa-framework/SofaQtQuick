@@ -17,24 +17,90 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sofa/helper/logging/Messaging.h>
+#include <sofa/helper/logging/MessageDispatcher.h>
+using  sofa::helper::logging::MessageDispatcher;
+
+#include <sofa/core/logging/PerComponentLoggingMessageHandler.h>
+using  sofa::helper::logging::MainPerComponentLoggingMessageHandler;
+
 #include <SofaQtQuickGUI/SofaApplication.h>
+#include <QtWebView/QtWebView>
+#include <runSofa2/runSofa2.h>
+#include <QQuickStyle>
+
+#include <thread>         // std::thread
+#include <mutex>          // std::mutex, std::unique_lock, std::defer_lock
+
+std::mutex mtx;           // mutex for critical section
+
+
+void convertQMessagesToSofa(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    std::unique_lock<std::mutex> lck (mtx,std::defer_lock);
+     // critical section (exclusive access to std::cout signaled by locking lck):
+     lck.lock();
+
+    QByteArray localMsg = msg.toLocal8Bit();
+
+    const char* file="undefined";
+    if(context.file)
+        file=context.file;
+
+    const char* function="runSofa2";
+    if(context.function)
+        function=context.function;
+
+    /// Promote the message to error if they contains "error" in their text message.
+    if( localMsg.contains("Error") )
+        type = QtCriticalMsg;
+
+    if( localMsg.contains("qml:") && !strcmp(function, "runSofa2"))
+        function = "qml";
+
+    switch (type) {
+    case QtDebugMsg:
+        dmsg_info_withfile(function, file, context.line) << localMsg.constData();
+        break;
+    case QtInfoMsg:
+        msg_info_withfile(function, file, context.line) << localMsg.constData();
+        break;
+    case QtWarningMsg:
+        msg_warning_withfile(function, file, context.line) << localMsg.constData();
+        break;
+    case QtCriticalMsg:
+        msg_error_withfile(function, file, context.line) << localMsg.constData();
+        break;
+    case QtFatalMsg:
+        msg_error_withfile(function, file, context.line) << localMsg.constData();
+        //abort();
+    }
+    lck.unlock();
+}
 
 int main(int argc, char **argv)
 {
-    // IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
+    /// Install the handler the Sofa message hook into the Qt messaging system.
+    MessageDispatcher::addHandler(&MainPerComponentLoggingMessageHandler::getInstance()) ;
+
+
+    /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofa::qtquick::SofaApplication::Initialization();
 
     QApplication app(argc, argv);
+    QtWebView::initialize();
     QQmlApplicationEngine applicationEngine;
+    QQuickStyle::setStyle("Imagine");
 
-    // application specific settings
+    /// application specific settings
     app.setOrganizationName("Sofa Consortium");
     app.setApplicationName("runSofa2");
     app.setApplicationVersion("v1.0");
 
-    // common settings for most sofaqtquick applications
+    /// common settings for most sofaqtquick applications
     if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
 
     return app.exec();
 }
+

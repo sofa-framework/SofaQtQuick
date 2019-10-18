@@ -17,16 +17,17 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.3
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaApplication 1.0
+import SofaBasics 1.0
+import SofaColorScheme 1.0
 
 ToolBar {
     id: root
-    implicitHeight: 25
+    height: 25
 
     property var sofaScene: SofaApplication.sofaScene
 
@@ -42,24 +43,25 @@ ToolBar {
     enabled: sofaScene ? sofaScene.ready : false
 
     Row {
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        anchors.verticalCenter: parent.verticalCenter
+        id: mainrow
         spacing: 5
+        anchors.fill: parent
 
         Text {
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            text: "Interaction"
+            text: " Interaction"
+            anchors.verticalCenter: parent.verticalCenter
             verticalAlignment: Text.AlignVCenter
             font.bold: true
-            color: "darkblue"
+            color: "lightgrey"
         }
-
+        ToolSeparator {
+            anchors.verticalCenter: parent.verticalCenter
+        }
         Row {
             id: interactorPositioner
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: -1
             Component {
                 id: interactorButtonComponent
 
@@ -68,6 +70,7 @@ ToolBar {
                     property string interactorName
                     property Component interactorComponent
 
+                    height: root.height - 3
                     width: implicitWidth + 10
 
                     text: interactorName
@@ -86,7 +89,9 @@ ToolBar {
                         if(interactorName === SofaApplication.interactorName)
                             interactorButton.checked = true;
                         else
+                        {
                             interactorButton.checked = false;
+                        }
                     }
                 }
             }
@@ -101,9 +106,11 @@ ToolBar {
                     children[i].destroy();
 
                 var interactorComponentMap = SofaApplication.interactorComponentMap;
+                var tmpIncubator
                 for(var key in interactorComponentMap)
                     if(interactorComponentMap.hasOwnProperty(key)) {
                         var incubator = interactorButtonComponent.incubateObject(interactorPositioner, {interactorName: key, interactorComponent: interactorComponentMap[key]});
+                        tmpIncubator = incubator
                         incubator.forceCompletion();
                     }
             }
@@ -111,17 +118,18 @@ ToolBar {
 
         Row {
             id: simulationControlTools
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            spacing: 5
+            spacing: -1
+            anchors.verticalCenter: parent.verticalCenter
 
             ToolButton {
                 id: animateButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                width: 22
+                iconSource: animateButton.checked ? "qrc:/icon/pause.png" : "qrc:/icon/play.png"
+                ToolTip {
+                    text: animateButton.checked ? "Stop" : "Animate"
+                    description: "Starts / Stop the animation loop"
 
-                iconSource: animateButton.checked ? "qrc:/icon/stopButton.png" : "qrc:/icon/playButton.png"
-                tooltip: animateButton.checked ? "Stop" : "Animate"
+                }
                 checkable: true
                 checked: false
                 onCheckedChanged: if(sofaScene) sofaScene.animate = animateButton.checked
@@ -137,11 +145,13 @@ ToolBar {
 
             ToolButton {
                 id: stepButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-
-                iconSource: "qrc:/icon/stepButton.png"
-                tooltip: "Step"
+                width: 22
+                checkable: false
+                iconSource: "qrc:/icon/step.png"
+                ToolTip {
+                    text: "Step"
+                    description: "Performs a single simulation step"
+                }
 
                 onClicked: {
                     if(sofaScene)
@@ -151,24 +161,35 @@ ToolBar {
 
             ToolButton {
                 id: resetButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                width: 22
+                checkable: false
 
-                iconSource: "qrc:/icon/resetButton.png"
-                tooltip: "Reset the sofa scene"
+                iconSource: "qrc:/icon/replay.png"
+                ToolTip {
+                    text: "Reset"
+                    description: "Reloads the simulation from the scene files"
+                }
 
                 onClicked: {
                     if(sofaScene)
-                        sofaScene.reset();
+                        sofaScene.reload();
                 }
             }
+            ToolSeparator {
+                anchors.verticalCenter: parent.verticalCenter
+            }
 
-            RowLayout {
+            Row {
+                anchors.verticalCenter: parent.verticalCenter
+
                 Label {
-                    text: "DT (s)"
+                    color: "black"
+                    text: "DT (s) "
+                    anchors.verticalCenter: parent.verticalCenter
                 }
                 TextField {
                     id: dtSpinBox
+                    height: root.height - 3
                     Layout.preferredWidth: 68
                     validator: DoubleValidator {bottom: 0}
                     text: root.sofaScene ? root.sofaScene.dt.toString() : Number(0.04).toString()
@@ -184,17 +205,15 @@ ToolBar {
 
         Row {
             id: captureLayout
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            spacing: 5
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: -1
 
             ToolButton {
                 id: screenshotButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
                 iconSource: "qrc:/icon/screenshot.png"
+                height: root.height - 5
+                width: 22
 
-                checked: false
                 checkable: false
 
                 onClicked: saveScreenshotDialog.open();
@@ -211,25 +230,16 @@ ToolBar {
                     }
                 }
 
-                Rectangle {
-                    anchors.fill: parent
-                    visible: screenshotButton.checked
-                    z: -1
-                    radius: 5
-                    color: "white"
-                }
-
                 ToolTip {
-                    anchors.fill: parent
-                    description: "Save screenshot"
+                    text: "Save screenshot"
+                    description: "Captures a screenshot and saves it on the filesystem"
                 }
             }
 
             ToolButton {
                 id: movieButton
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
                 iconSource: "qrc:/icon/movieRecording.png"
+                width: 22
 
                 checked: false
                 checkable: true
@@ -256,19 +266,29 @@ ToolBar {
                     }
                 }
 
-                Rectangle {
-                    anchors.fill: parent
-                    visible: movieButton.checked
-                    z: -1
-                    radius: 5
-                    color: "white"
-                }
-
                 ToolTip {
-                    anchors.fill: parent
-                    description: "Save video"
+                    text: "Video Capture"
+                    description: "Records a video of the simulation (until next press on this button)"
+
                 }
             }
+        }
+    }
+    background: Rectangle {
+        color: hovered ? "#757575" : "#686868"
+        border.color: "black"
+
+        GBRect {
+            anchors.top: parent.top
+            anchors.topMargin: 1
+            implicitHeight: parent.implicitHeight - 1
+            implicitWidth: parent.implicitWidth + 2
+            borderWidth: 1
+            borderGradient: Gradient {
+                GradientStop { position: 0.0; color: "#7a7a7a" }
+                GradientStop { position: 1.0; color: "#5c5c5c" }
+            }
+            color: "transparent"
         }
     }
 }

@@ -2,11 +2,16 @@
     <qresource prefix="/">
         <file>SofaApplication/qmldir</file>
         <file>SofaApplication/SofaApplication.qml</file>
+        <file>SofaApplication/MainStyle.qml</file>
+        <file>SofaColorScheme/qmldir</file>
+        <file>SofaColorScheme/ColorScheme.qml</file>
+        <file>SofaColorScheme/ControlsBackground.qml</file>
         <file>SofaBasics/qmldir</file>
         <file>SofaBasics/IconButton.qml</file>
         <file>SofaBasics/DefaultStatusBar.qml</file>
         <file>SofaBasics/DefaultToolBar.qml</file>
         <file>SofaBasics/DefaultMenuBar.qml</file>
+        <file>SofaBasics/DefaultQmlUICanvas.qml</file>
         <file>SofaBasics/SofaScene.qml</file>
         <file>SofaBasics/SofaSceneInterface.qml</file>
         <file>SofaBasics/SofaPythonInteractor.qml</file>
@@ -25,26 +30,35 @@
         <file>SofaBasics/DynamicContent.qml</file>
         <file>SofaBasics/SofaDataItem.qml</file>
         <file>SofaBasics/ToolTip.qml</file>
+        <file>SofaBasics/ToolButton.qml</file>
+        <file>SofaBasics/TreeView.qml</file>
         <file>SofaBasics/BubbleToolTip.qml</file>
         <file>SofaBasics/MementoBar.qml</file>
         <file>SofaBasics/MementoManager.qml</file>
         <file>SofaBasics/MementoObject.qml</file>
+        <file>SofaBasics/QmlUIArea.qml</file>
         <file>SofaBasics/WindowResizer.qml</file>
-        <file>SofaWidgets/qmldir</file>
-        <file>SofaWidgets/QML_LiveCoding.qml</file>
-        <file>SofaWidgets/SofaViewer.qml</file>
-        <file>SofaWidgets/ControlledSofaViewer.qml</file>
-        <file>SofaWidgets/ImageViewer.qml</file>
-        <file>SofaWidgets/SofaDataView.qml</file>
-        <file>SofaWidgets/PythonConsole.qml</file>
-        <file>SofaWidgets/SofaSimulationControl.qml</file>
-        <file>SofaWidgets/SofaVisualizationControl.qml</file>
-        <file>SofaWidgets/SofaSceneToolPanel.qml</file>
-        <file>SofaWidgets/SofaSceneGraphView.qml</file>
-        <file>SofaWidgets/SofaDataListView.qml</file>
-        <file>SofaWidgets/AffineTransformationController.qml</file>
-        <file>SofaWidgets/ColorSelector.qml</file>
-        <file>SofaDataTypes/SofaDataType_notimplementedyet.qml</file>
+        <file>SofaBasics/ClipPlane.qml</file>
+        <file>SofaBasics/ColorChooser.qml</file>
+        <file>SofaBasics/DynamicContent_Error.qml</file>
+        <file>SofaBasics/TextField.qml</file>
+        <file>SofaBasics/SpinBox.qml</file>
+        <file>SofaBasics/CheckBox.qml</file>
+        <file>SofaBasics/Button.qml</file>
+        <file>SofaBasics/GroupBox.qml</file>
+        <file>SofaBasics/ComboBox.qml</file>
+        <file>SofaBasics/Vector2DSpinBox.qml</file>
+        <file>SofaBasics/Vector4DSpinBox.qml</file>
+        <file>SofaBasics/DoubleSpinBox.qml</file>
+        <file>SofaBasics/MenuBar.qml</file>
+        <file>SofaBasics/MenuSeparator.qml</file>
+        <file>SofaBasics/SofaSceneFileDialog.qml</file>
+        <file>SofaBasics/MenuItem.qml</file>
+        <file>SofaBasics/Menu.qml</file>
+        <file>SofaBasics/SofaDataWidgetFactory.qml</file>
+        <file>SofaBasics/SuggestionBox.qml</file>
+        <file>SofaBasics/SidePanel.qml</file>
+        <file>SofaDataTypes/SofaDataType_undefined.qml</file>
         <file>SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml</file>
         <file>SofaDataTypes/SofaDataType_array.qml</file>
         <file>SofaDataTypes/SofaDataType_boolean.qml</file>
@@ -68,14 +82,41 @@
         <file>SofaManipulators/Manipulator2D_Rotation.qml</file>
         <file>SofaManipulators/Manipulator3D_Translation.qml</file>
         <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
-        <file>SofaBasics/Vector2DSpinBox.qml</file>
-        <file>SofaBasics/Vector4DSpinBox.qml</file>
-        <file>SofaWidgets/SofaSceneViewer.qml</file>
-        <file>SofaBasics/ClipPlane.qml</file>
-        <file>SofaWidgets/Inspector.qml</file>
-        <file>SofaWidgets/Message.qml</file>
+        <file>SofaViews/qmldir</file>
+        <file>SofaViews/CameraView.qml</file>
+        <file>SofaViews/EditView.qml</file>
+        <file>SofaViews/Hierarchy.qml</file>
+        <file>SofaViews/ImageViewer.qml</file>
+        <file>SofaViews/Inspector.qml</file>
+        <file>SofaViews/LiveInterfaceEditor.qml</file>
+        <file>SofaViews/Message.qml</file>
+        <file>SofaViews/PythonConsole.qml</file>
+        <file>SofaViews/SceneGraph.qml</file>
+        <file>SofaViews/WebBrowserView.qml</file>
         <file>SofaDataTypes/SofaDataType_FileName.qml</file>
-        <file>SofaBasics/ColorChooser.qml</file>
         <file>SofaDataTypes/SofaDataType_RGBAColor.qml</file>
+        <file>SofaWidgets/SofaSearchBar.qml</file>
+        <file>SofaWidgets/qmldir</file>
+        <file>SofaWidgets/SofaNodeMenu.qml</file>
+        <file>SofaWidgets/SofaObjectMenu.qml</file>
+        <file>SofaWidgets/SofaWindowDataListView.qml</file>
+        <file>SofaWidgets/SofaWindowComponentHelp.qml</file>
+        <file>SofaWidgets/SofaWindowComponentMessages.qml</file>
+        <file>SofaWidgets/PopupWindowCreateComponent.qml</file>
+        <file>SofaColorScheme/GBRect.qml</file>
+        <file>QmlGTestCase/qmldir</file>
+        <file>QmlGTestCase/QmlGTestCase.qml</file>
+        <file>SofaViews/ProjectView.qml</file>
+        <file>SofaWidgets/SofaAssetMenu.qml</file>
+        <file>SofaWidgets/AssetPreview.qml</file>
+        <file>SofaWidgets/RenameMenu.qml</file>
+        <file>SofaBasics/Popup.qml</file>
+        <file>SofaBasics/ListViewDelegate.qml</file>
+        <file>SofaDataTypes/SofaDataType_ComponentStatus.qml</file>
+        <file>SofaWidgets/ProjectViewMenu.qml</file>
+        <file>SofaWidgets/MeshAssetInspector.qml</file>
+        <file>SofaWidgets/PythonAssetInspector.qml</file>
+        <file>SofaWidgets/PrefabSubMenu.qml</file>
+        <file>SofaWidgets/DraggableAssetItem.qml</file>
     </qresource>
 </RCC>

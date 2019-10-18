@@ -18,10 +18,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.2
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.0
 import QtQuick.Layouts 1.0
-
+import SofaBasics 1.0
+import Sofa.Core.SofaData 1.0
+import SofaApplication 1.0
 
 /***************************************************************************************************
   *
@@ -33,21 +35,36 @@ import QtQuick.Layouts 1.0
   *************************************************************************************************/
 Row {
     id: root
-    spacing : 10
+    spacing : -1
     width: parent.width
 
-    property var dataObject: null
+    property SofaData sofaData
 
     TextField {
         id: textField
         enabled: true
         width: root.width - openButton.width - root.spacing
-        text: undefined !== dataObject.value ? dataObject.value.toString() : ""
+        text: sofaData.value.toString()
 
         onAccepted: {
             /// Get the URL from the file chooser and convert it to a string.
             dataObject.value = textField.text ;
-            dataObject.upload();
+        }
+        position: cornerPositions["Left"]
+
+        DropArea {
+            id: dropArea
+            anchors.fill: parent
+            onEntered: {
+                if(  drag.source.url )
+                    drag.accept(false)
+            }
+            onDropped: {
+                if(drag.source.url)
+                {
+                    textField.text = drag.source.localPath
+                }
+            }
         }
     }
 
@@ -55,25 +72,38 @@ Row {
         id: openButton
         Layout.alignment: Qt.AlignTop
 
-        width: 16
-        height: 16
-        iconSource: "qrc:/icon/open.png"
+        Image {
+            width: 16
+            height: 16
+            source: "qrc:/icon/open.png"
+            anchors.centerIn: parent
+            fillMode: Image.PreserveAspectFit
+
+        }
         onClicked: {
             /// Open the FileDialog at the specified location.
-            fileDialog.folder =  "file://"+dataObject.properties.folderurl
+            var url = "";
+            if( sofaData.properties.folderurl !== ""){
+                url = "file://"+sofaData.properties.folderurl
+            }else{
+                url = SofaApplication.currentProject.rootDir
+            }
+
+            fileDialog.folder = url
             fileDialog.open()
         }
+        position: cornerPositions["Right"]
     }
+
 
     FileDialog {
         id: fileDialog
         title: "Please choose a file"
-        folder: "file://"+dataObject.properties.folderurl
+        folder: "file://"+sofaData.properties.folderurl
         onAccepted: {
             /// Get the URL from the file chooser and convert it to a string.
-            dataObject.value = fileDialog.fileUrl.toString().replace("file://","") ;
-            dataObject.upload();
-            textField.text = dataObject.value.toString();
+            sofaData.value = fileDialog.fileUrl.toString().replace("file://","") ;
+            textField.text = sofaData.value.toString();
         }
     }
 

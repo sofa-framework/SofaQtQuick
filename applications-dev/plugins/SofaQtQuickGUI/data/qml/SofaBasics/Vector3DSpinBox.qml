@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 
 GridLayout {
@@ -54,34 +54,37 @@ GridLayout {
     property int    decimals:           2
     property real   stepSize:           1
 
-    SpinBox {
+    DoubleSpinBox {
         id: vxSpinBox
         Layout.fillWidth:               true
         Layout.preferredWidth:          20
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                   root.minimumValue
+        realTo:                   root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                          0.0
+        realStepSize:                       root.stepSize
+        position: cornerPositions["Left"]
     }
-    SpinBox {
+    DoubleSpinBox {
         id: vySpinBox
         Layout.fillWidth:               true
         Layout.preferredWidth:          20
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                   root.minimumValue
+        realTo:                   root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                          0.0
+        realStepSize:                       root.stepSize
+        position: cornerPositions["Middle"]
     }
-    SpinBox {
+    DoubleSpinBox {
         id: vzSpinBox
         Layout.fillWidth:               true
         Layout.preferredWidth:          20
-        minimumValue:                   root.minimumValue
-        maximumValue:                   root.maximumValue
+        realFrom:                   root.minimumValue
+        realTo:                   root.maximumValue
         decimals:                       root.decimals
-        value:                          0.0
-        stepSize:                       root.stepSize
+        realValue:                          0.0
+        realStepSize:                       root.stepSize
+        position: cornerPositions["Right"]
     }
 }

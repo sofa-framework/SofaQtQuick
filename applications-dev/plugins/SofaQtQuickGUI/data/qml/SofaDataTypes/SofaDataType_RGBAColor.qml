@@ -21,7 +21,7 @@ Contributors:
 */
 
 import QtQuick 2.2
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.0
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
@@ -31,41 +31,111 @@ import SofaBasics 1.0
   * A widget dedicated to edit Data<RGBAColor>
   *
   *************************************************************************************************/
-Row {
+RowLayout {
     id: root
-    spacing : 10
-    width: parent.width
+    Layout.fillWidth: true
+    spacing : -1
 
-    property var dataObject: null
-    property var values: undefined !== dataObject.value ? dataObject.value.split(' ') : []
+    property var sofaData: null
+    property var values: sofaData.value[0]
+    onValuesChanged: {
+        colorChooser.setValueFromArray(values) ;
+        _R.value = values[0]
+        _G.value = values[1]
+        _B.value = values[2]
+        _A.value = values[3]
+        sofaData.value = [values];
+    }
 
-    TextField {
-        id: textField
-        enabled: true
-        width: root.width - colorChooser.width - root.spacing
-        text: undefined !== dataObject.value ? dataObject.value.toString() : ""
-
-        onAccepted: {
-            dataObject.value = textField.text ;
-            dataObject.upload();
-            colorChooser.setValueFromArray(values) ;
+    SpinBox {
+        id: _R
+        readOnly: sofaData.isReadOnly
+        Layout.fillWidth: true
+        value: sofaData.values[0]
+        onValueChanged: {
+            if (values[0] === value)
+                return;
+            var v = values
+            v[0] = value
+            values = v;
         }
+        showIndicators: false
+        to: 1.0
+        from: 0.0
+        step: 0.01
+        decimals: 2
+        position: cornerPositions['Left']
+    }
+    SpinBox {
+        id: _G
+        readOnly: sofaData.isReadOnly
+        Layout.fillWidth: true
+        value: sofaData.values[1]
+        onValueChanged: {
+            if (values[1] === value)
+                return;
+            var v = values
+            v[1] = value
+            values = v;
+        }
+        showIndicators: false
+        to: 1.0
+        from: 0.0
+        step: 0.01
+        decimals: 2
+        position: cornerPositions['Middle']
+    }
+    SpinBox {
+        id: _B
+        readOnly: sofaData.isReadOnly
+        Layout.fillWidth: true
+        value: sofaData.values[2]
+        onValueChanged: {
+            if (values[2] === value)
+                return;
+            var v = values
+            v[2] = value
+            values = v;
+        }
+        showIndicators: false
+        to: 1.0
+        from: 0.0
+        step: 0.01
+        decimals: 2
+        position: cornerPositions['Middle']
+    }
+    SpinBox {
+        id: _A
+        readOnly: sofaData.isReadOnly
+        Layout.fillWidth: true
+        value: sofaData.values[3]
+        onValueChanged: {
+            if (values[3] === value)
+                return;
+            var v = values
+            v[3] = value
+            values = v;
+        }
+        showIndicators: false
+        to: 1.0
+        from: 0.0
+        step: 0.01
+        decimals: 2
+        position: cornerPositions['Middle']
     }
 
     ColorChooser {
         id: colorChooser
+        Layout.maximumWidth: 20
         Layout.alignment: Qt.AlignTop
-        width: 16
-        height: 16
-        color : Qt.rgba(root.values[0], root.values[1], root.values[2], root.values[3])
+        color : Qt.rgba(values[0], values[1], values[2], values[3])
 
         onColorChanged: {
-            textField.text =  ""+((1.0*r)).toFixed(2)
-                            +" "+((1.0*g)).toFixed(2)
-                            +" "+((1.0*b)).toFixed(2)
-                            +" "+((1.0*a)).toFixed(2);
-            dataObject.value = textField.text ;
-            dataObject.upload();
+            if (r === values[0] && g === values[1] &&
+                    b === values[2] && a === values[3])
+                return;
+            var val = [((1.0*r)).toFixed(2), ((1.0*g)).toFixed(2), ((1.0*b)).toFixed(2), ((1.0*a)).toFixed(2)]
+            root.values = val
         }
     }
 }
