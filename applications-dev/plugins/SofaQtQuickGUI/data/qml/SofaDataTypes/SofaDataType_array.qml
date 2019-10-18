@@ -22,6 +22,9 @@ import QtQuick.Layouts 1.0
 import QtQuick.Controls 1.4 as QQC1
 import SofaBasics 1.0
 import Sofa.Core.SofaData 1.0
+import SofaApplication 1.0
+import SofaColorScheme 1.0
+import SofaDataContainerListModel 1.0
 
 ColumnLayout {
     id: root
@@ -73,6 +76,31 @@ ColumnLayout {
             QQC1.TableView {
                 id: tableView
 
+                rowDelegate: Rectangle {
+                    color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
+                }
+                headerDelegate: GBRect {
+                    color: "#757575"
+                    border.color: "black"
+                    borderWidth: 1
+                    borderGradient: Gradient {
+                        GradientStop { position: 0.0; color: "#5a5a5a" }
+                        GradientStop { position: 1.0; color: "#3c3c3c" }
+                    }
+                    height: 20
+                    width: textItem.implicitWidth
+                    Text {
+                        id: textItem
+                        anchors.fill: parent
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: styleData.textAlignment
+                        anchors.leftMargin: 12
+                        text: styleData.value
+                        elide: Text.ElideRight
+                        color: styleData.textColor
+                        renderType: Text.NativeRendering
+                    }
+                }
                 Component {
                     id: columnComponent
                     QQC1.TableViewColumn {
@@ -93,104 +121,88 @@ ColumnLayout {
                     }
                 }
 
-                Component.onCompleted: {
-                    addColumn(columnLines.createObject(tableView, {"title": "", "role": "printLinesNumber"}));
-                    for(var i = 0; i < properties.cols; ++i)
-                        addColumn(columnComponent.createObject(tableView, {"title": i.toString(), "role": "c" + i.toString()}));
-                }
 
-                Connections {
-                    target: root.sofaData
-                    onValueChanged: {
-                        listModel.update();
-
-                        sofaData.modified = false;
-                    }
-                }
-
-                model: ListModel {
+                model: SofaDataContainerListModel {
                     id: listModel
-
-                    Component.onCompleted: populate();
-
-                    property int previousCount: 0
-
-                    function populate() {
-                        var newCount = sofaData.value.length;
-                        if(previousCount < newCount)
-                            for(var j = previousCount; j < newCount; ++j) {
-                                var values = {};
-                                for(var i = previousCount; i < properties.cols; ++i)
-                                    values["c" + i.toString()] = sofaData.value[j][i];
-
-                                append(values);
-                            }
-                        else if(previousCount > newCount)
-                            remove(newCount, previousCount - newCount);
-
-                        previousCount = count;
+                    sofaData: root.sofaData
+                    Component.onCompleted: {
+                        addColumn(columnLines.createObject(tableView));
+                        for (var i = 0 ; i < sofaData.properties.cols ; i++)
+                            addColumn(columnComponent.createObject(tableView));
                     }
-
-                    function update() {
-                        if(count !== sofaData.value.length)
-                            populate();
-
-                        for(var j = 0; j < count; ++j) {
-                            var values = {};
-                            for(var i = previousCount; i < properties.cols; ++i)
-                                values["c" + i.toString()] = sofaData.value[j][i];
-
-                            set(j, values);
-                        }
-                    }
-                }
-
-                function populate() {
-                    listModel.populate();
-                }
-
-                function update() {
-                    listModel.update();
                 }
 
                 itemDelegate: TextInput {
                     anchors.fill: parent
-                    anchors.leftMargin: 6
-                    anchors.rightMargin: 6
-                    clip: true
-                    readOnly: -1 === styleData.row || sofaData.readOnly || 0 === styleData.column
-                    color: styleData.textColor
-                    horizontalAlignment: TextEdit.AlignHCenter
-                    text: {
-                        if (styleData.column === 0)
-                            return styleData.row;
-                        else if(-1 !== styleData.row && styleData.column !== 0) {
-                            return sofaData.value[styleData.row][styleData.column - 1];
-                        }
-
-                        return "";
-                    }
-                    property int previousRow: -1
-                    onTextChanged: {
-                        if(-1 === styleData.row || sofaData.readOnly || 0 === styleData.column)
-                            return;
-
-                        if(previousRow !== styleData.row) {
-                            previousRow = styleData.row;
-                            return;
-                        }
-
-                        if(styleData.column !== 0) {
-                            var oldValue = sofaData.value[styleData.row][styleData.column - 1];
-
-                            var value = text;
-                            if(value !== oldValue) {
-                                sofaData.value[styleData.row][styleData.column - 1] = value;
-                                sofaData.modified = true;
-                            }
-                        }
-                    }
+                    text: styleData.value
+                    readOnly: true
                 }
+
+//                itemDelegate: TextField {
+//                    DoubleValidator {
+//                        id: doubleValidator
+//                    }
+
+//                    anchors.fill: parent
+//                    anchors.leftMargin: 6
+//                    anchors.rightMargin: 6
+//                    clip: true
+//                    readOnly: -1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column
+//                    color: styleData.textColor
+//                    horizontalAlignment: TextEdit.AlignHCenter
+//                    validator: { if (styleData.column !== 0) return doubleValidator; }
+//                    function setText() {
+//                        if (styleData.column === 0)
+//                            return styleData.row;
+//                        else if(-1 !== styleData.row && styleData.column !== 0) {
+//                            return Number(styleData.value).toPrecision(6);
+//                        }
+//                        return "";
+//                    }
+//                    text: setText()
+//                    background: Rectangle{ color: "transparent" }
+//                    property int previousRow: -1
+
+//                    MouseArea {
+//                        id: mouseArea
+//                        anchors.fill: parent
+//                        onClicked: {
+//                            parent.forceActiveFocus()
+//                        }
+//                    }
+//                    activeFocusOnTab: styleData.column !== 0 ? true : false
+//                    onActiveFocusChanged: {
+//                        if (activeFocus) {
+//                            text = styleData.value
+//                            mouseArea.cursorShape = Qt.IBeamCursor
+//                            background.color = "#82878c"
+//                        } else {
+//                            mouseArea.cursorShape = Qt.UpArrowCursor
+//                            background.color = "transparent"
+//                        }
+//                    }
+
+//                    onEditingFinished: {
+//                        if(-1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column)
+//                            return;
+
+//                        if(previousRow !== styleData.row) {
+//                            previousRow = styleData.row;
+//                            return;
+//                        }
+
+//                        if(styleData.column !== 0) {
+//                            var oldValue = styleData.value;
+
+//                            var value = text;
+//                            if(value !== oldValue) {
+//                                styleData.value = value;
+//                                sofaData.modified = true;
+//                            }
+//                        }
+//                        text = setText()
+//                    }
+//                }
             }
         }
 
