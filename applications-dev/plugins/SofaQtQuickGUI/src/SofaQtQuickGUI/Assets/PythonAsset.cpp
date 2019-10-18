@@ -196,7 +196,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
                     try {
                         expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
                     } catch (py::error_already_set&){
-                        msg_error("PythonAsset") << "The provided value for parameter " << entry->text().toStdString() << " is invalid.";
+                        msg_error("PythonAsset") << "The provided value for parameter '" << entry->text().toStdString() << "' is invalid.";
                         return nullptr;
                     }
                 }
@@ -261,7 +261,8 @@ void PythonAssetModel::setSourceCode(const QString& sourcecode) { m_sourcecode =
 
 void PythonAsset::getDetails()
 {
-    if (m_detailsLoaded) return;
+    if (m_detailsLoaded)
+        return;
 
     fs::path filePath(m_path);
     std::string stem = filePath.stem();
