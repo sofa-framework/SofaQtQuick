@@ -161,10 +161,10 @@ def getRelPath(path, relativeTo):
 
 
 def saveAsPythonScene(fileName, node):
-#    try:
         root = node
         fd = open(fileName, "w+")
 
+        fd.write('""" type: SofaContent """\n')
         fd.write("import sys\n")
         fd.write("import os\n")
 
@@ -186,9 +186,6 @@ def saveAsPythonScene(fileName, node):
         fd.write("\n\ndef createScene(root):\n")
         fd.write(scn[0])
         return True
-#    except Exception as e:
-#        Sofa.msg_error(e)
-#        return False
 
 
 def createPrefabFromNode(fileName, node, name, help):

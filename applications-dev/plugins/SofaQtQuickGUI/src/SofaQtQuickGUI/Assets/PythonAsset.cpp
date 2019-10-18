@@ -132,7 +132,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
             _loaders.find(m_extension)->second == nullptr)
     {
         std::cout << "Unknown file format." << std::endl;
-        return new sofaqtquick::bindings::SofaNode(nullptr);
+        return nullptr;
     }
 
     fs::path filePath(m_path);
@@ -154,7 +154,11 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     local["Sofa"] = py::dict();
     local["Sofa"]["Core"] = py::module::import("Sofa.Core");
 
-    py::object callable = py::module::import(stem.c_str()).attr(assetName.toStdString().c_str());
+    py::object module = py::module::import(stem.c_str());
+    if(!module)
+        return nullptr;
+
+    py::object callable = module.attr(assetName.toStdString().c_str());
     py::object prefab;
     if (assetName != "createScene")
     {
@@ -206,7 +210,10 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     }
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(py::cast<sofa::simulation::Node*>(prefab)));
-    node->init(sofa::core::ExecParams::defaultInstance());
+
+    if(node.get()!=nullptr)
+       node->init(sofa::core::ExecParams::defaultInstance());
+
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 

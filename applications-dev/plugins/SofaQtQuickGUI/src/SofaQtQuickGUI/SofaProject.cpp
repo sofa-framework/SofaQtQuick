@@ -340,6 +340,7 @@ void SofaProject::updateAsset(const QFileInfo& file)
     QString filePath = file.absoluteFilePath();
     msg_info() << "updateAsset: " << filePath.toStdString();
     m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
+    emit filesChanged();
 }
 
 const QString SofaProject::getFileCount(const QUrl& url)
