@@ -42,6 +42,6 @@ SpinBox
     }
 
     value: {
-        sofaData.value.toPrecision(precision);
+        sofaData.value.toPrecision(precision?precision:6);
     }
 }

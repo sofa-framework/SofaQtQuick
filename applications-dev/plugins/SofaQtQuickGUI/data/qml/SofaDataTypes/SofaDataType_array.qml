@@ -81,12 +81,8 @@ ColumnLayout {
                 }
                 headerDelegate: GBRect {
                     color: "#757575"
-                    border.color: "black"
-                    borderWidth: 1
-                    borderGradient: Gradient {
-                        GradientStop { position: 0.0; color: "#5a5a5a" }
-                        GradientStop { position: 1.0; color: "#3c3c3c" }
-                    }
+                    border.width: 1
+                    border.color: "#393939"
                     height: 20
                     width: textItem.implicitWidth
                     Text {
@@ -95,9 +91,8 @@ ColumnLayout {
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: styleData.textAlignment
                         anchors.leftMargin: 12
-                        text: styleData.value
+                        text: { console.log("Values: " + styleData.value + " " + styleData.row + " " + styleData.column); return styleData.value }
                         elide: Text.ElideRight
-                        color: styleData.textColor
                         renderType: Text.NativeRendering
                     }
                 }
@@ -105,19 +100,26 @@ ColumnLayout {
                     id: columnComponent
                     QQC1.TableViewColumn {
                         movable: false
-                        resizable: false
+                        resizable: true
                         horizontalAlignment: Text.AlignHCenter
                         width: (tableView.width - 58) / (tableView.columnCount - 1)
+                        Component.onCompleted: {
+                            resizeToContents()
+                        }
                     }
                 }
+
 
                 Component {
                     id: columnLines
                     QQC1.TableViewColumn {
                         movable: false
-                        resizable: false
+                        resizable: true
                         horizontalAlignment: Text.AlignHCenter
                         width: 58
+                        Component.onCompleted: {
+                            resizeToContents()
+                        }
                     }
                 }
 
@@ -126,83 +128,95 @@ ColumnLayout {
                     id: listModel
                     sofaData: root.sofaData
                     Component.onCompleted: {
-                        addColumn(columnLines.createObject(tableView));
+                        addColumn(columnLines.createObject(tableView, { "title": "", "role": 0}));
                         for (var i = 0 ; i < sofaData.properties.cols ; i++)
-                            addColumn(columnComponent.createObject(tableView));
+                            addColumn(columnComponent.createObject(tableView, { "id": ""+i, "title": headerData(i, Qt.Horizontal, ""), "role": i}));
                     }
                 }
 
-                itemDelegate: TextInput {
-                    anchors.fill: parent
-                    text: styleData.value
-                    readOnly: true
-                }
-
-//                itemDelegate: TextField {
-//                    DoubleValidator {
-//                        id: doubleValidator
-//                    }
-
+//                itemDelegate: TextInput {
 //                    anchors.fill: parent
-//                    anchors.leftMargin: 6
-//                    anchors.rightMargin: 6
-//                    clip: true
-//                    readOnly: -1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column
-//                    color: styleData.textColor
-//                    horizontalAlignment: TextEdit.AlignHCenter
-//                    validator: { if (styleData.column !== 0) return doubleValidator; }
-//                    function setText() {
-//                        if (styleData.column === 0)
-//                            return styleData.row;
-//                        else if(-1 !== styleData.row && styleData.column !== 0) {
-//                            return Number(styleData.value).toPrecision(6);
-//                        }
-//                        return "";
-//                    }
-//                    text: setText()
-//                    background: Rectangle{ color: "transparent" }
-//                    property int previousRow: -1
-
-//                    MouseArea {
-//                        id: mouseArea
-//                        anchors.fill: parent
-//                        onClicked: {
-//                            parent.forceActiveFocus()
-//                        }
-//                    }
-//                    activeFocusOnTab: styleData.column !== 0 ? true : false
-//                    onActiveFocusChanged: {
-//                        if (activeFocus) {
-//                            text = styleData.value
-//                            mouseArea.cursorShape = Qt.IBeamCursor
-//                            background.color = "#82878c"
-//                        } else {
-//                            mouseArea.cursorShape = Qt.UpArrowCursor
-//                            background.color = "transparent"
-//                        }
-//                    }
-
-//                    onEditingFinished: {
-//                        if(-1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column)
-//                            return;
-
-//                        if(previousRow !== styleData.row) {
-//                            previousRow = styleData.row;
-//                            return;
-//                        }
-
-//                        if(styleData.column !== 0) {
-//                            var oldValue = styleData.value;
-
-//                            var value = text;
-//                            if(value !== oldValue) {
-//                                styleData.value = value;
-//                                sofaData.modified = true;
-//                            }
-//                        }
-//                        text = setText()
-//                    }
+//                    text: listModel.data(listModel.index(styleData.row, 0), styleData.column)
+//                    readOnly: true
 //                }
+
+                itemDelegate: TextField {
+                    id: cell
+
+                    Component {
+                        id: bgComponent
+                        Rectangle{ color: "transparent" }
+                    }
+
+                    anchors.fill: parent
+                    anchors.leftMargin: -1
+                    anchors.rightMargin: -1
+                    clip: true
+                    readOnly: sofaData.isReadOnly || styleData.column === 0
+                    color: styleData.textColor
+                    horizontalAlignment: TextEdit.AlignHCenter
+                    verticalAlignment: TextEdit.AlignVCenter
+                    validator: DoubleValidator {}
+                    function getText() {
+                        if (styleData.column === 0)
+                            cell.text = styleData.row;
+                        else if(-1 !== styleData.row && styleData.column !== 0) {
+                            cell.text = Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)).toPrecision(6);
+                        }
+                        else {
+                            cell.text = "#REF!" // Hum... maybe a better "invalid cell" convention than ms excel....?
+                        }
+                        return cell.text
+                    }
+                    text: getText()
+                    property int previousRow: -1
+                    position: cornerPositions['Middle']
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        acceptedButtons: cell.readOnly ? Qt.NoButton : Qt.LeftButton
+                        onClicked: {
+                            parent.forceActiveFocus()
+                        }
+                    }
+                    activeFocusOnTab: styleData.column !== 0 ? true : false
+                    onActiveFocusChanged: {
+                        if (!cell.readOnly) {
+                            if (activeFocus) {
+                                text = listModel.data(listModel.index(styleData.row, 0), styleData.column)
+                                mouseArea.cursorShape = Qt.IBeamCursor
+                                background.color = "#82878c"
+                            } else {
+                                mouseArea.cursorShape = Qt.ArrowCursor
+                                background.color = "transparent"
+                                text = getText()
+                            }
+                        }
+                    }
+
+                    onEditingFinished: {
+                        if(-1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column)
+                            return;
+
+                        if(previousRow !== styleData.row) {
+                            previousRow = styleData.row;
+                            return;
+                        }
+
+                        if(styleData.column !== 0) {
+                            var oldValue = listModel.data(listModel.index(styleData.row, 0), styleData.column);
+                            var value = text;
+                            if(value !== oldValue) {
+                                listModel.setData(listModel.index(styleData.row, 0), text, styleData.column)
+                            }
+                        }
+                        text = getText()
+                    }
+                    Component.onCompleted: {
+                        if (0 === styleData.column) cell.background = bgComponent.createObject(cell)
+                    }
+                }
             }
         }
 
@@ -293,8 +307,8 @@ ColumnLayout {
             id: staticArrayView
             TextField {
                 id: textField
-                readOnly: root.sofaData.readOnly
-                enabled: !root.sofaData.readOnly
+                readOnly: root.sofaData.isReadOnly
+                enabled: !root.sofaData.isReadOnly
                 text: undefined !== root.sofaData.value ? root.sofaData.value.toString() : ""
                 Binding {
                     target: root.sofaData

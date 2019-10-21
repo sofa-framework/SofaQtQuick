@@ -38,28 +38,33 @@ int	SofaDataContainerListModel::columnCount(const QModelIndex & parent) const
 
 QVariant SofaDataContainerListModel::data(const QModelIndex &index, int role) const
 {
-    SOFA_UNUSED(role);
     size_t row = size_t(index.row());
-    size_t col = size_t(index.column());
+    size_t col = size_t(role);
 
+    if (index == QModelIndex() || col == 0)
+        return QVariant::fromValue(index.row());
 
     const AbstractTypeInfo* typeinfo = m_sofaData->rawData()->getValueTypeInfo();
+
     if (typeinfo->Scalar())
         return QVariant::fromValue(typeinfo->getScalarValue(
                                        m_sofaData->rawData()->getValueVoidPtr(),
-                                       col * size_t(columnCount()) + row));
+                                       row * size_t(columnCount()) + (col-1)));
     else if (typeinfo->Integer())
         return QVariant::fromValue(typeinfo->getIntegerValue(
                                        m_sofaData->rawData()->getValueVoidPtr(),
-                                       col * size_t(columnCount()) + row));
+                                       row * size_t(columnCount()) + (col-1)));
     else
         return  QVariant();
 }
 
+
 QVariant SofaDataContainerListModel::headerData(int section, Qt::Orientation orientation, int role) const
+
 {
-    if (orientation == Qt::Vertical)
+    if (orientation == Qt::Vertical) {
         return QVariant::fromValue<int>(section);
+    }
     else
     {
         switch (section)
@@ -95,6 +100,29 @@ QVariant SofaDataContainerListModel::headerData(int section, Qt::Orientation ori
             return QVariant::fromValue<int>(section);
         }
     }
+}
+
+bool SofaDataContainerListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    size_t row = size_t(index.row());
+    size_t col = size_t(role);
+
+    if (index == QModelIndex() || col == 0)
+        return false;
+
+    const AbstractTypeInfo* typeinfo = m_sofaData->rawData()->getValueTypeInfo();
+
+    if (typeinfo->Scalar())
+        typeinfo->setScalarValue(m_sofaData->rawData()->beginEditVoidPtr(),
+                                 row * size_t(columnCount()) + (col-1),
+                                 value.toReal());
+    else if (typeinfo->Integer())
+        typeinfo->setScalarValue(m_sofaData->rawData()->beginEditVoidPtr(),
+                                 row * size_t(columnCount()) + (col-1),
+                                 value.toInt());
+    else
+        return  false;
+    return true;
 }
 
 }  // namespace sofaqtquick

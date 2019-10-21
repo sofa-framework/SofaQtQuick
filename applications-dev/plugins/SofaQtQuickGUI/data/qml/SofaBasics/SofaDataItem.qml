@@ -179,7 +179,6 @@ Item {
             var component = SofaDataWidgetFactory.getWidgetForData(sofaData)
             var o = component.createObject(datawidget, {"sofaData": sofaData,
                                                 "Layout.fillWidth":true})
-            console.log(sofaData.name + "    " + o.implicitHeight)
             self.implicitHeight = Qt.binding(function(){ return o.implicitHeight < 20 ? 20 : o.implicitHeight })
             o.visible = Qt.binding(function() { return !linkButton.checked })
         }

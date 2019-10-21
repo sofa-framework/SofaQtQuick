@@ -80,7 +80,7 @@ Rectangle {
         var str = ""
         if (prefix !== "")
             str += qsTr(prefix)
-        str += Number(v.toPrecision(precision)).toString()
+        str += Number(v.toPrecision((!precision) ? 6 : precision)).toString()
         if (suffix !== "")
             str += qsTr(suffix) + " "
         return str
