@@ -39,24 +39,6 @@ signals:
     void fileChanged(const QString& filename);
 };
 
-class ProjectMonitor : public QObject, public FileEventListener
-{
-    Q_OBJECT
-public:
-
-    QFileSystemWatcher m_dirwatcher;
-
-    ProjectMonitor();
-
-    void addDirectory(const QString& filepath);
-    void addFile(const QString& filepath);
-    void addPath(const QString& path);
-    void fileHasChanged(const std::string& filename);
-    void removePath(const QString& path);
-signals:
-    void directoryChanged(const QString& filename);
-    void fileChanged(const QString& filename);
-};
 
 /**
  *  \brief Holds the current project's properties
