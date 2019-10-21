@@ -1,3 +1,7 @@
+#include <QFile>
+#include <QDir>
+#include <QTemporaryFile>
+#include <QFileInfo>
 #include "PythonAsset.h"
 
 #include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
@@ -218,11 +222,12 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
-PythonAssetModel::PythonAssetModel(std::string name, std::string type, std::string docstring, std::string sourcecode, QList<QObject*> params)
-    : m_name(name.c_str()),
-      m_type(type.c_str()),
-      m_docstring(docstring.c_str()),
-      m_sourcecode(sourcecode.c_str()),
+PythonAssetModel::PythonAssetModel(const QString& name, const QString& type,
+                                   const QString& docstring, const QString& sourcecode, QList<QObject*> params)
+    : m_name(name),
+      m_type(type),
+      m_docstring(docstring),
+      m_sourcecode(sourcecode),
       m_params(params)
 {
 }
@@ -260,39 +265,34 @@ void PythonAssetModel::setDocstring(const QString& docstring) { m_docstring = do
 void PythonAssetModel::setParams(const QList<QObject*>& params) { m_params = params; }
 void PythonAssetModel::setSourceCode(const QString& sourcecode) { m_sourcecode = sourcecode; }
 
+QString py2qt(const py::handle s)
+{
+    return QString::fromStdString(py::cast<std::string>(s));
+}
+
 void PythonAsset::getDetails()
 {
     if (m_detailsLoaded)
         return;
 
-    fs::path filePath(m_path);
-    std::string stem = filePath.stem();
-    std::string ext = filePath.extension();
-    std::string parentDirPath = filePath.parent_path().string();
-    if (ext == ".pyscn")
-    {
-        QProcess process;
-        process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
-        process.waitForFinished(-1);
-        process.start("/bin/cp", QStringList() << filePath.string().c_str() << QString("/tmp/runSofa2/") + stem.c_str() + ".py");
-        process.waitForFinished(-1);
-        parentDirPath = "/tmp/runSofa2";
-    }
+    /// The file is destructed when the QTemporaryFile is removed.
+    QString inFile { QString::fromStdString(m_path) };
+    QString outFile { getTemporaryFileName(inFile) };
+    QFileInfo outFile_finfo { outFile };
+    copyFileToCache(inFile, outFile);
 
-    QString docstring = RSPythonEnvironment::getPythonModuleDocstring(QString::fromStdString(filePath));
-    if (docstring.contains("type: SofaContent"))
+    if (!RSPythonEnvironment::IsASofaPythonModule(outFile))
     {
-        msg_warning_withfile("PythonAsset", m_path, 0) << "This python module does not contain the safe-guard module docstring" << msgendl
+        msg_warning_withfile("PythonAsset", m_path, 0) << "This python module '"<< inFile.toStdString() <<"' does not contain the safe-guard module docstring" << msgendl
                                                        << "To be able to load this asset in runSofa2, "
                                                           "append these lines at the top of the python "
                                                           "script:\n \"\"\"type: SofaContent\"\"\"";
+        m_detailsLoaded=true;
         return;
     }
 
-
-    auto dict = RSPythonEnvironment::getPythonScriptContent(QString::fromStdString(parentDirPath),
-                                                            QString::fromStdString(stem));
-
+    auto dict = RSPythonEnvironment::GetPythonModuleContent(outFile_finfo.absolutePath(),
+                                                            outFile_finfo.fileName());
     for (auto item : m_scriptContent)
         delete item;
     m_scriptContent.clear();
@@ -300,19 +300,20 @@ void PythonAsset::getDetails()
     for (auto pair : dict)
     {
         if (!py::isinstance<py::dict>(pair.second))
-            return;
+            continue;
+
         py::dict data = py::cast<py::dict>(pair.second);
         m_scriptContent.append(
                     new PythonAssetModel(
-                        py::cast<std::string>(pair.first),
-                        py::cast<std::string>(data["type"]),
-                    py::cast<std::string>(data["docstring"]),
-                py::cast<std::string>(data["sourcecode"]),
-                getPrefabParams(
-                    data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
-                    data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
-                    data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
-                ));
+                        py2qt(pair.first),
+                        py2qt(data["type"]),
+                        py2qt(data["docstring"]),
+                        py2qt(data["sourcecode"]),
+                        getPrefabParams(
+                           data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
+                           data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
+                           data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
+                        ));
     }
     m_detailsLoaded = true;
 }
@@ -321,40 +322,33 @@ QUrl PythonAsset::getAssetInspectorWidget() {
     return QUrl("qrc:/SofaWidgets/PythonAssetInspector.qml");
 }
 
-bool PythonAsset::getIsSofaContent()
+QString PythonAsset::getTemporaryFileName(const QString& inFile) const
 {
-    if (m_extension == "py")
-    {
-        namespace fs = std::experimental::filesystem;
-
-        fs::path p(m_path);
-        auto module = p.stem();
-        auto path = p.parent_path();
-
-        QString docstring = RSPythonEnvironment::getPythonModuleDocstring(QString::fromStdString(m_path));
-        if (docstring.contains("type: SofaContent"))
-            return true;
-    }
-    if (m_extension == "pyscn" || m_extension == "py3")
-    {
-        namespace fs = std::experimental::filesystem;
-
-        fs::path p(m_path);
-        auto module = p.stem();
-        auto path = p.parent_path();
-        QProcess process;
-        process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
-        process.waitForFinished(-1);
-        process.start("/bin/cp", QStringList() << p.string().c_str() << QString("/tmp/runSofa2/") + module.c_str() + ".py");
-        process.waitForFinished(-1);
-        path = "/tmp/runSofa2";
-        QString docstring = RSPythonEnvironment::getPythonModuleDocstring(QString::fromStdString(m_path));
-        if(docstring.contains("type: SofaContent"))
-            return true;
-    }
-    return false;
+    return QDir::tempPath() + "/" + QFileInfo(inFile).completeBaseName()+".py";
 }
 
+void PythonAsset::copyFileToCache(const QString& inFile, const QString& outFile) const
+{
+    /// The file is destructed when the QTemporaryFile is removed.
+    QFileInfo foutFile { outFile };
+
+    /// Copy does not work if the file already exists so we remove it.
+    if( foutFile.exists() )
+        QFile::remove(foutFile.absoluteFilePath());
+
+    /// Copy the file.
+    QFile::copy(inFile, foutFile.absoluteFilePath());
+}
+
+bool PythonAsset::getIsSofaContent()
+{
+    /// The file is destructed when the QTemporaryFile is removed.
+    QString inFile { QString::fromStdString(m_path) };
+    QString outFile { getTemporaryFileName(inFile) };
+
+    copyFileToCache(inFile, outFile);
+    return RSPythonEnvironment::IsASofaPythonModule(outFile);
+}
 
 QVariantList PythonAsset::scriptContent()
 {

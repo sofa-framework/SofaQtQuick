@@ -117,6 +117,8 @@ SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
             break;
         }
 
+
+
     /// Initialize the general python3 environment.
     PythonEnvironment::Init();
 

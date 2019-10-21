@@ -4,6 +4,7 @@
 #include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
 
 #include <QQmlListProperty>
+#include <QFile>
 #include <QProcess>
 
 #include <experimental/filesystem>
@@ -54,7 +55,8 @@ class PythonAssetModel : public QObject
 
 public:
     PythonAssetModel() {}
-    PythonAssetModel(std::string name, std::string type, std::string docstring, std::string sourcecode, QList<QObject*> params);
+    PythonAssetModel(const QString& name, const QString& type,
+                     const QString& docstring, const QString& sourcecode, QList<QObject*> params);
 
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString type READ getType WRITE setType NOTIFY typeChanged)
@@ -81,6 +83,7 @@ private:
     Q_SIGNAL void docstringChanged(QString);
     Q_SIGNAL void paramsChanged(QList<QObject*>);
     Q_SIGNAL void sourceCodeChanged(QString);
+
 
     QString m_name;
     QString m_type;
@@ -113,6 +116,9 @@ public:
     static LoaderMap createLoaders();
 
 private:
+    QString getTemporaryFileName(const QString& inFile) const;
+    void copyFileToCache(const QString& inPath, const QString& outFile) const;
+
     virtual bool isScene() override;
     QVariantList scriptContent();
     Q_SIGNAL void scriptContentChanged(QVariantList);

@@ -4,7 +4,11 @@ import os
 import sys
 import inspect
 import importlib
+import importlib.util
+import code
+import Sofa
 import Sofa.Core
+import Sofa.Helper
 import splib
 
 ######################################################################
@@ -13,8 +17,6 @@ import splib
 
 def isScriptContent(m, obj):
     if inspect.isbuiltin(obj) or not callable(obj):
-        return False
-    if inspect.getmodule(obj).__file__ != m.__file__:
         return False
     return True
 
@@ -35,25 +37,15 @@ def collectMetaData(obj):
     data["docstring"] = obj.__doc__ if obj.__doc__ != None else ""
     return data
 
-
-# returns a dictionary of all callable SOFA objects in the module (Prefabs & createScenes),
-# with their type as key
-def getPythonScriptContent(moduledir, modulename):
+# returns a dictionary of all callable objects in the module, with their type as key
+def getPythonModuleContent(moduledir, modulename):
     objects = {}
-    # First let's load that script:
-    try:
-        sys.path.append(moduledir)
 
-        if modulename in sys.modules:
-            del(sys.modules[modulename])
-        m = importlib.import_module(modulename)
-    except ImportError as e:
-        print ("PythonAsset ERROR: could not import module " + modulename)
-        print (e)
-        return objects
-    except Exception as e:
-        print ("Exception: in " + modulename + ":\n" + str(e))
-        return objects
+    # First let's load that script:
+    spec = importlib.util.spec_from_file_location(modulename, moduledir+"/"+modulename)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    m.__file__=moduledir+"/"+modulename
 
     for i in dir(m):
         obj = getattr(m, i)
@@ -67,21 +59,18 @@ def getPythonScriptContent(moduledir, modulename):
 import code
 def getPythonModuleDocstring(mpath):
     "Get module-level docstring of Python module at mpath, e.g. 'path/to/file.py'."
-    print("LOADING THE DOCSTRING FROM: "+mpath)
+    print(mpath)
     co = compile(open(mpath).read(), mpath, 'exec')
-    if co.co_consts and isinstance(co.co_consts[0], basestring):
+    if co.co_consts and isinstance(co.co_consts[0], str):
         docstring = co.co_consts[0]
     else:
         docstring = ""
     return str(docstring)
 
 
-
 ######################################################################
 #################### SCENE GRAPH / PREFABS SAVING ####################
 ######################################################################
-
-
 def getAbsPythonCallPath(node, rootNode):
     if rootNode.getPathName() == "/":
         return "root" + node.getPathName().replace("/", ".")[1:]
