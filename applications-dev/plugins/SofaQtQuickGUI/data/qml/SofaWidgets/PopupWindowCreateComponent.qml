@@ -20,10 +20,6 @@ Popup {
     padding: 10
     margins: 0
 
-//    background: Rectangle {
-//        color: "transparent"
-//    }
-
 
     MessageDialog
     {

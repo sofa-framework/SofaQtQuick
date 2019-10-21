@@ -35,6 +35,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaPython3/PythonEnvironment.h>
 using sofapython3::PythonEnvironment;
 
+#include "SofaQtQuick_PythonEnvironment.h"
+
 #include <QQuickStyle>
 #include <QInputDialog>
 #include <QLineEdit>
@@ -115,7 +117,13 @@ SofaApplication::SofaApplication(QObject* parent) : QObject(parent),
             break;
         }
 
+
+
+    /// Initialize the general python3 environment.
     PythonEnvironment::Init();
+
+    /// Initialize the layer specific to sofaqtquick environment.
+    sofaqtquick::PythonEnvironment::Init();
 }
 
 SofaApplication::~SofaApplication()
@@ -1008,7 +1016,8 @@ bool SofaApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &appl
     sofa::helper::console::setStatus(sofa::helper::console::Status::On);
 
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
-    qputenv("QSG_RENDER_LOOP", "threaded");
+    // "threaded" vs "single"
+    qputenv("QSG_RENDER_LOOP", "single");
 
     if(!app.testAttribute(Qt::AA_ShareOpenGLContexts))
         qCritical() << "CRITICAL: SofaApplication::initialization() must be called before QApplication instanciation";

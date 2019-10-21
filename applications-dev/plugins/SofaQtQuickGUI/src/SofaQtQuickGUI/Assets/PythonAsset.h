@@ -4,6 +4,7 @@
 #include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
 
 #include <QQmlListProperty>
+#include <QFile>
 #include <QProcess>
 
 #include <experimental/filesystem>
@@ -54,7 +55,8 @@ class PythonAssetModel : public QObject
 
 public:
     PythonAssetModel() {}
-    PythonAssetModel(std::string name, std::string type, std::string docstring, std::string sourcecode, QList<QObject*> params);
+    PythonAssetModel(const QString& name, const QString& type,
+                     const QString& docstring, const QString& sourcecode, QList<QObject*> params);
 
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString type READ getType WRITE setType NOTIFY typeChanged)
@@ -82,6 +84,7 @@ private:
     Q_SIGNAL void paramsChanged(QList<QObject*>);
     Q_SIGNAL void sourceCodeChanged(QString);
 
+
     QString m_name;
     QString m_type;
     QString m_docstring;
@@ -104,41 +107,7 @@ public:
 protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
     Q_INVOKABLE virtual QUrl getIconPath() override { return QUrl("qrc:/icon/ICON_PYTHON.png"); }
-    Q_INVOKABLE virtual bool getIsSofaContent() override
-    {
-        if (m_extension == "py")
-        {
-            namespace fs = std::experimental::filesystem;
-
-            fs::path p(m_path);
-            auto module = p.stem();
-            auto path = p.parent_path();
-            std::string docstring;
-            if (!sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module, docstring)) return false;
-
-            if (QString(docstring.c_str()).contains("type: SofaContent"))
-                return true;
-        }
-        if (m_extension == "pyscn" || m_extension == "py3")
-        {
-            namespace fs = std::experimental::filesystem;
-
-            fs::path p(m_path);
-            auto module = p.stem();
-            auto path = p.parent_path();
-            QProcess process;
-            process.start("/bin/mkdir", QStringList() << "-p" << "/tmp/runSofa2");
-            process.waitForFinished(-1);
-            process.start("/bin/cp", QStringList() << p.string().c_str() << QString("/tmp/runSofa2/") + module.c_str() + ".py");
-            process.waitForFinished(-1);
-            path = "/tmp/runSofa2";
-            std::string docstring;
-            if (!sofaqtquick::PythonEnvironment::getPythonScriptDocstring(path, module, docstring)) return false;
-            if (QString(docstring.c_str()).contains("type: SofaContent"))
-                return true;
-        }
-        return false;
-    }
+    Q_INVOKABLE virtual bool getIsSofaContent() override ;
 
     static const LoaderMap _loaders;
 
@@ -147,6 +116,9 @@ public:
     static LoaderMap createLoaders();
 
 private:
+    QString getTemporaryFileName(const QString& inFile) const;
+    void copyFileToCache(const QString& inPath, const QString& outFile) const;
+
     virtual bool isScene() override;
     QVariantList scriptContent();
     Q_SIGNAL void scriptContentChanged(QVariantList);
