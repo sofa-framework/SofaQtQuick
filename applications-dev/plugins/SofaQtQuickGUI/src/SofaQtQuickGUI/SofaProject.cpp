@@ -10,6 +10,9 @@ using sofa::helper::system::FileMonitor;
 using sofapython3::PythonEnvironment;
 namespace py = pybind11;
 
+#include <SofaPython3/PythonFactory.h>
+using sofapython3::PythonFactory;
+
 #include <QWindow>
 #include <QInputDialog>
 #include <QFileDialog>
@@ -88,13 +91,11 @@ SofaProject::~SofaProject()
 
 void SofaProject::setRootDir(const QUrl& rootDir)
 {
+    if(rootDir.isEmpty())
+        return;
     m_rootDir = rootDir;
     m_assets.clear();
-    if(rootDir.isEmpty())
-    {
-        msg_warning() << "Empty project directory...skipping." ;
-        return;
-    }
+    m_directories.clear();
 
     msg_info() << "Setting root directory to '" << rootDir.toString().toStdString()<<"'";
     QFileInfo root = QFileInfo(m_rootDir.path());
@@ -104,7 +105,10 @@ void SofaProject::setRootDir(const QUrl& rootDir)
 const QUrl& SofaProject::getRootDir() { return m_rootDir;  }
 
 bool SofaProject::getDebug() const { return m_debug; }
-void SofaProject::setDebug(bool state) { m_debug = state; }
+void SofaProject::setDebug(bool state) {
+    m_debug = state;
+    emit debugChanged(state);
+}
 
 
 void SofaProject::onDirectoryChanged(const QString &path)
@@ -336,6 +340,7 @@ void SofaProject::updateAsset(const QFileInfo& file)
     QString filePath = file.absoluteFilePath();
     msg_info() << "updateAsset: " << filePath.toStdString();
     m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
+    emit filesChanged();
 }
 
 const QString SofaProject::getFileCount(const QUrl& url)
@@ -350,9 +355,14 @@ const QString SofaProject::getFileCount(const QUrl& url)
 
 Asset* SofaProject::getAsset(const QString& filePath)
 {
+    msg_info() << "getAsset for: " << filePath.toStdString() << " = > " << m_assets.size();
     const auto& it = m_assets.find(filePath);
-    if (it != m_assets.end() && it.value() != nullptr)
-        return it.value().get();
+    if (it != m_assets.end())
+    {
+        msg_info() << "getAsset for: " << filePath.toStdString() << " => " << it.value();
+        if(it.value() != nullptr)
+            return it.value().get();
+    }
     return nullptr;
 }
 
@@ -385,5 +395,27 @@ bool SofaProject::createPrefab(SofaBase* node)
     }
     return false;
 }
+
+void SofaProject::saveScene(const QString filepath, SofaNode* node)
+{
+    PythonEnvironment::executePython([this, filepath, node]()
+    {
+        std::string ppath = filepath.toStdString();
+        py::module SofaQtQuick = py::module::import("SofaQtQuick");
+        SofaQtQuick.reload();
+
+        py::object rootNode = PythonFactory::toPython(node->self());
+
+        py::str file(ppath);
+        bool ret =  py::cast<bool>(SofaQtQuick.attr("saveAsPythonScene")(file, rootNode));
+        if (ret) {
+            msg_info("runSofa2") << "File saved to "  << ppath;
+        } else {
+            msg_error("runSofa2") << "Could not save to file "  << ppath;
+        }
+    });
+    return;
+}
+
 
 }  /// namespace sofa::qtquick

@@ -33,7 +33,7 @@ Menu {
 
     }
     MenuItem {
-        text: "Create instance"
+        text: "Execute function"
         icon.source: getIconSource()
 
         onTriggered: {

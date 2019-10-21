@@ -209,37 +209,45 @@ MenuBar {
                 reloadMenuItem.reload()
             }
         }
+
         MenuItem {
             text: "Save";
-            function save() {
-                sofaApplication.sofaScene.save2()
+            id: saveItem
+
+            function saveScene()
+            {
+                var filePath = sofaApplication.sofaScene.path;
+                sofaApplication.currentProject.saveScene(filePath.replace('file://', ''),
+                                                         sofaApplication.sofaScene.root())
             }
 
             Shortcut {
                 sequence: StandardKey.Save
                 context: Qt.ApplicationShortcut
-                onActivated: { sofaApplication.sofaScene.save2() }
+                onActivated: { saveItem.saveScene() }
             }
-            onTriggered:  { sofaApplication.sofaScene.save2() }
+            onTriggered:  { saveItem.saveScene() }
         }
         MenuItem {
-            id: saveSceneAsMenuItem
             text: "Save as..."
 
-            function save() {
-                var str = sofaApplication.currentProject.rootDir.toString()
-                sofaApplication.sofaScene.save(str.replace('file://', ''))
+            FileDialog
+            {
+                id: fileDialog;
+                visible: false
+                selectExisting: false ///< indicate that the file dialog can be used to create new files.
+                folder: sofaApplication.currentProject.rootDir.toString()
+                onSelectionAccepted: {
+                    sofaApplication.currentProject.saveScene(fileUrl.toString().replace('file://', ""), sofaApplication.sofaScene.root())
+                }
             }
 
             Shortcut {
                 sequence: StandardKey.SaveAs
                 context: Qt.ApplicationShortcut
-                onActivated: saveSceneAsMenuItem.save()
+                onActivated: fileDialog.open()
             }
-            onTriggered:  {
-                saveSceneAsMenuItem.save();
-            }
-
+            onTriggered: fileDialog.open()
         }
         MenuItem { text: "Export as...(TODO)"; enabled : false }
         MenuSeparator {}

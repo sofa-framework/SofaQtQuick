@@ -12,7 +12,7 @@ Menu {
     id: assetMenu
 
     property var asset
-    property string assetName: ""
+    property string assetName: asset ? asset.getTypeString() : "()"
     property var parentNode
     property var basemodel
     property var sceneModel
@@ -20,7 +20,7 @@ Menu {
     property var treeView
     property var selection
 
-    title: "Asset Content"
+    title: "Asset Content " + assetName
     onAssetChanged: {
         if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
