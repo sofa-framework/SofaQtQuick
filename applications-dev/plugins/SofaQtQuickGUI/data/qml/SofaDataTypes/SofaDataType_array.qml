@@ -22,6 +22,9 @@ import QtQuick.Layouts 1.0
 import QtQuick.Controls 1.4 as QQC1
 import SofaBasics 1.0
 import Sofa.Core.SofaData 1.0
+import SofaApplication 1.0
+import SofaColorScheme 1.0
+import SofaDataContainerListModel 1.0
 
 ColumnLayout {
     id: root
@@ -73,106 +76,127 @@ ColumnLayout {
             QQC1.TableView {
                 id: tableView
 
+                rowDelegate: Rectangle {
+                    color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
+                }
+                headerDelegate: GBRect {
+                    color: "#757575"
+                    border.width: 1
+                    border.color: "#393939"
+                    height: 20
+                    width: textItem.implicitWidth
+                    Text {
+                        id: textItem
+                        anchors.fill: parent
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: styleData.textAlignment
+                        anchors.leftMargin: 12
+                        text: { console.log("Values: " + styleData.value + " " + styleData.row + " " + styleData.column); return styleData.value }
+                        elide: Text.ElideRight
+                        renderType: Text.NativeRendering
+                    }
+                }
                 Component {
                     id: columnComponent
                     QQC1.TableViewColumn {
                         movable: false
-                        resizable: false
+                        resizable: true
                         horizontalAlignment: Text.AlignHCenter
                         width: (tableView.width - 58) / (tableView.columnCount - 1)
+                        Component.onCompleted: {
+                            resizeToContents()
+                        }
                     }
                 }
+
 
                 Component {
                     id: columnLines
                     QQC1.TableViewColumn {
                         movable: false
-                        resizable: false
+                        resizable: true
                         horizontalAlignment: Text.AlignHCenter
                         width: 58
-                    }
-                }
-
-                Component.onCompleted: {
-                    addColumn(columnLines.createObject(tableView, {"title": "", "role": "printLinesNumber"}));
-                    for(var i = 0; i < properties.cols; ++i)
-                        addColumn(columnComponent.createObject(tableView, {"title": i.toString(), "role": "c" + i.toString()}));
-                }
-
-                Connections {
-                    target: root.sofaData
-                    onValueChanged: {
-                        listModel.update();
-
-                        sofaData.modified = false;
-                    }
-                }
-
-                model: ListModel {
-                    id: listModel
-
-                    Component.onCompleted: populate();
-
-                    property int previousCount: 0
-
-                    function populate() {
-                        var newCount = sofaData.value.length;
-                        if(previousCount < newCount)
-                            for(var j = previousCount; j < newCount; ++j) {
-                                var values = {};
-                                for(var i = previousCount; i < properties.cols; ++i)
-                                    values["c" + i.toString()] = sofaData.value[j][i];
-
-                                append(values);
-                            }
-                        else if(previousCount > newCount)
-                            remove(newCount, previousCount - newCount);
-
-                        previousCount = count;
-                    }
-
-                    function update() {
-                        if(count !== sofaData.value.length)
-                            populate();
-
-                        for(var j = 0; j < count; ++j) {
-                            var values = {};
-                            for(var i = previousCount; i < properties.cols; ++i)
-                                values["c" + i.toString()] = sofaData.value[j][i];
-
-                            set(j, values);
+                        Component.onCompleted: {
+                            resizeToContents()
                         }
                     }
                 }
 
-                function populate() {
-                    listModel.populate();
+
+                model: SofaDataContainerListModel {
+                    id: listModel
+                    sofaData: root.sofaData
+                    Component.onCompleted: {
+                        addColumn(columnLines.createObject(tableView, { "title": "", "role": 0}));
+                        for (var i = 0 ; i < sofaData.properties.cols ; i++)
+                            addColumn(columnComponent.createObject(tableView, { "id": ""+i, "title": headerData(i, Qt.Horizontal, ""), "role": i}));
+                    }
                 }
 
-                function update() {
-                    listModel.update();
-                }
+//                itemDelegate: TextInput {
+//                    anchors.fill: parent
+//                    text: listModel.data(listModel.index(styleData.row, 0), styleData.column)
+//                    readOnly: true
+//                }
 
-                itemDelegate: TextInput {
+                itemDelegate: TextField {
+                    id: cell
+
+                    Component {
+                        id: bgComponent
+                        Rectangle{ color: "transparent" }
+                    }
+
                     anchors.fill: parent
-                    anchors.leftMargin: 6
-                    anchors.rightMargin: 6
+                    anchors.leftMargin: -1
+                    anchors.rightMargin: -1
                     clip: true
-                    readOnly: -1 === styleData.row || sofaData.readOnly || 0 === styleData.column
+                    readOnly: sofaData.isReadOnly || styleData.column === 0
                     color: styleData.textColor
                     horizontalAlignment: TextEdit.AlignHCenter
-                    text: {
+                    verticalAlignment: TextEdit.AlignVCenter
+                    validator: DoubleValidator {}
+                    function getText() {
                         if (styleData.column === 0)
-                            return styleData.row;
+                            cell.text = styleData.row;
                         else if(-1 !== styleData.row && styleData.column !== 0) {
-                            return sofaData.value[styleData.row][styleData.column - 1];
+                            cell.text = Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)).toPrecision(6);
                         }
-
-                        return "";
+                        else {
+                            cell.text = "#REF!" // Hum... maybe a better "invalid cell" convention than ms excel....?
+                        }
+                        return cell.text
                     }
+                    text: getText()
                     property int previousRow: -1
-                    onTextChanged: {
-                        if(-1 === styleData.row || sofaData.readOnly || 0 === styleData.column)
+                    position: cornerPositions['Middle']
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        acceptedButtons: cell.readOnly ? Qt.NoButton : Qt.LeftButton
+                        onClicked: {
+                            parent.forceActiveFocus()
+                        }
+                    }
+                    activeFocusOnTab: styleData.column !== 0 ? true : false
+                    onActiveFocusChanged: {
+                        if (!cell.readOnly) {
+                            if (activeFocus) {
+                                text = listModel.data(listModel.index(styleData.row, 0), styleData.column)
+                                mouseArea.cursorShape = Qt.IBeamCursor
+                                background.color = "#82878c"
+                            } else {
+                                mouseArea.cursorShape = Qt.ArrowCursor
+                                background.color = "transparent"
+                                text = getText()
+                            }
+                        }
+                    }
+
+                    onEditingFinished: {
+                        if(-1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column)
                             return;
 
                         if(previousRow !== styleData.row) {
@@ -181,14 +205,16 @@ ColumnLayout {
                         }
 
                         if(styleData.column !== 0) {
-                            var oldValue = sofaData.value[styleData.row][styleData.column - 1];
-
+                            var oldValue = listModel.data(listModel.index(styleData.row, 0), styleData.column);
                             var value = text;
                             if(value !== oldValue) {
-                                sofaData.value[styleData.row][styleData.column - 1] = value;
-                                sofaData.modified = true;
+                                listModel.setData(listModel.index(styleData.row, 0), text, styleData.column)
                             }
                         }
+                        text = getText()
+                    }
+                    Component.onCompleted: {
+                        if (0 === styleData.column) cell.background = bgComponent.createObject(cell)
                     }
                 }
             }
@@ -281,8 +307,8 @@ ColumnLayout {
             id: staticArrayView
             TextField {
                 id: textField
-                readOnly: root.sofaData.readOnly
-                enabled: !root.sofaData.readOnly
+                readOnly: root.sofaData.isReadOnly
+                enabled: !root.sofaData.isReadOnly
                 text: undefined !== root.sofaData.value ? root.sofaData.value.toString() : ""
                 Binding {
                     target: root.sofaData

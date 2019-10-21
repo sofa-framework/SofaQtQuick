@@ -60,6 +60,8 @@ using sofa::core::objectmodel::MouseEvent ;
 using sofapython3::PythonEnvironment;
 namespace py = pybind11;
 
+#include <SofaPython3/PythonFactory.h>
+using sofapython3::PythonFactory;
 
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>

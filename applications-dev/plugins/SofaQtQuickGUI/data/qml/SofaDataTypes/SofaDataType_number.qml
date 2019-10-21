@@ -34,7 +34,7 @@ SpinBox
 
     property SofaData sofaData: null
     property var properties: sofaData.properties
-    precision: properties["precision"]
+    precision: properties["decimals"]
     step: properties["step"] !== undefined ? properties["step"] : 1
 
     onValueChanged: {
@@ -42,6 +42,6 @@ SpinBox
     }
 
     value: {
-        sofaData.value.toFixed(decimals);
+        sofaData.value.toPrecision(precision?precision:6);
     }
 }
