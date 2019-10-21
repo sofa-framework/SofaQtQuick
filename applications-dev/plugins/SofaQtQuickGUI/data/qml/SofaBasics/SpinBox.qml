@@ -76,7 +76,7 @@ Rectangle {
     }
 
 
-    function formatText(v, prefix, suffix, truncate = true) {
+    function formatText(v, prefix, suffix) {
         var str = ""
         if (prefix !== "")
             str += qsTr(prefix)
