@@ -1,7 +1,7 @@
 #include "SofaQtQuick_PythonEnvironment.h"
 #include <QString>
 #include <sofa/helper/logging/Messaging.h>
-
+#include <sofa/core/objectmodel/Base.h>
 namespace sofaqtquick {
 
 namespace py = pybind11;
@@ -21,6 +21,32 @@ void PythonEnvironment::Init()
     m_globals["SofaQtQuick"] = py::module::import("SofaQtQuick");
     inited=true;
 }
+
+py::object PythonEnvironment::CallFunction(const QString& modulePath, const QString& functionName,
+                                           py::list args, py::dict kwargs, sofa::core::objectmodel::Base* ctx)
+{
+    try
+    {
+        py::dict locals = py::dict ("modulePath"_a=modulePath.toStdString(),
+                                    "functionName"_a=functionName.toStdString(),
+                                    "args"_a=args,
+                                    "kwargs"_a=kwargs);
+        return py::eval("SofaQtQuick.callFunction(modulePath, functionName, *args, **kwargs)", m_globals, locals);
+    } catch (std::exception& e)
+    {
+        if(ctx)
+            msg_error(ctx) << "Unable to call python code: " << functionName.toStdString()
+                                           << msgendl
+                                           << e.what();
+        else
+            msg_error("PythonEnvironment") << "Unable to call python code: " << functionName.toStdString()
+                                       << msgendl
+                                       << e.what();
+
+    }
+    return py::none();
+}
+
 
 QString PythonEnvironment::GetPythonModuleDocstring(const QString& modulePath)
 {
@@ -50,7 +76,7 @@ py::dict PythonEnvironment::GetPythonModuleContent(const QString& moduleDir, con
                                        << msgendl
                                        << e.what();
     }
-    return py::none();
+    return py::dict();
 }
 
 bool PythonEnvironment::IsASofaPythonModule(const QString &modulePath)
