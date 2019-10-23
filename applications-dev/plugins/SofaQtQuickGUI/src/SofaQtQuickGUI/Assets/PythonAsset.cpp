@@ -11,16 +11,6 @@ using RSPythonEnvironment = sofaqtquick::PythonEnvironment;
 #include <SofaPython3/PythonFactory.h>
 namespace py = pybind11;
 
-#include <memory>
-#include <experimental/filesystem>
-#include <QMessageBox>
-#include <QWizard>
-#include <QProcess>
-#include <QLabel>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
 
@@ -55,7 +45,6 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 {
 }
 
-
 QList<QObject*> getPrefabParams(py::list args, py::tuple defaults, py::dict annotations)
 {
     QList<QObject*> params;
@@ -80,56 +69,6 @@ QList<QObject*> getPrefabParams(py::list args, py::tuple defaults, py::dict anno
     return params;
 }
 
-QWizardPage* createArgsPage(QList<QObject*> params, std::list<QLineEdit*>& values, sofa::simulation::Node::SPtr parent = nullptr)
-{
-    QWizardPage *page = new QWizardPage;
-    page->setTitle("Positional Arguments");
-
-    QLabel *label = new QLabel("This Prefab requires " + QString(std::to_string(params.size() + 1).c_str()) + " positional arguments.\nPlease fill in the required fields:");
-    label->setWordWrap(true);
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(label);
-    page->setLayout(layout);
-    QVBoxLayout* form = new QVBoxLayout;
-
-    // Add the parent param:
-    QHBoxLayout* entry = new QHBoxLayout;
-    QLabel* lbl = new QLabel("parent");
-    QLineEdit* value = new QLineEdit("${Sofa.Core.Node}");
-    if (parent != nullptr)
-        value->setText(QString("@") + parent->getPathName().c_str());
-    value->setReadOnly(true);
-    value->setEnabled(false);
-    value->setToolTip("the parent node for this prefab (non-modifyable)");
-    value->setToolTipDuration(1000);
-    values.push_back(value);
-    entry->addWidget(lbl);
-    entry->addWidget(value);
-    form->addLayout(entry);
-
-    // Add all other editable params:
-    for (auto& param : params)
-    {
-        PythonParam* p = dynamic_cast<PythonParam*>(param);
-
-        entry = new QHBoxLayout;
-        lbl = new QLabel(p->getName());
-        value = new QLineEdit(p->getValue());
-        if (p->getAnnotation().size())
-        {
-            value->setToolTip(p->getAnnotation());
-            value->setToolTipDuration(1000);
-        }
-        values.push_back(value);
-        entry->addWidget(lbl);
-        entry->addWidget(value);
-        form->addLayout(entry);
-    }
-    layout->addLayout(form);
-    return page;
-}
-
 sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
 {    
     if (_loaders.find(m_extension) == _loaders.end() ||
@@ -150,14 +89,18 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     /// There must have a "root/parent" argument.
     sofa::simulation::Node::SPtr root = parent->self();
 
+    if(!m_assetsContent[assetName]->isContextFree())
+        args.append(sofapython3::PythonFactory::toPython(root.get()));
+
     /// call the function
     py::object res = RSPythonEnvironment::CallFunction(filePath, assetName, args, py::dict(), root.get());
 
-    ///py::print(py::str()),
     sofa::simulation::Node* resnode = py::cast<sofa::simulation::Node*>(res);
-    resnode->init(sofa::core::ExecParams::defaultInstance());
     if( resnode )
+    {
         root->addChild( resnode );
+        resnode->init(sofa::core::ExecParams::defaultInstance());
+    }
 
     return new sofaqtquick::bindings::SofaNode(dynamic_cast<sofa::simulation::graph::DAGNode*>(resnode), dynamic_cast<QObject*>(this));
 }
@@ -170,27 +113,10 @@ PythonAssetModel::PythonAssetModel(const QString& name, const QString& type,
       m_sourcecode(sourcecode),
       m_params(params)
 {
-}
-
-void PythonAssetModel::openSettings()
-{
-    QWizard wizard;
-    std::list<QLineEdit*> values;
-    py::list expressions;
-    QWizardPage* page = createArgsPage(m_params, values);
-    if (page != nullptr)
-        wizard.addPage(page);
-    wizard.setWindowTitle("Prefab instantiation wizard");
-    wizard.exec();
-
-    int i = 0;
-    for (auto entry : values)
-    {
-        if (entry->isReadOnly())
-            continue;
-        dynamic_cast<PythonParam*>(m_params[i])->setValue(entry->text());
-        i++;
-    }
+    if(m_type=="SofaPrefab")
+         m_isContextFree = true;
+    else
+         m_isContextFree = false;
 }
 
 const QString& PythonAssetModel::getName() const { return m_name; }
@@ -221,9 +147,9 @@ void PythonAsset::getDetails()
     QFileInfo outFile_finfo { outFile };
     copyFileToCache(inFile, outFile);
 
-    for (auto item : m_scriptContent)
+    for (auto item : m_assetsContent)
         delete item;
-    m_scriptContent.clear();
+    m_assetsContent.clear();
 
     if (!RSPythonEnvironment::IsASofaPythonModule(outFile))
     {
@@ -247,17 +173,16 @@ void PythonAsset::getDetails()
             continue;
 
         py::dict data = py::cast<py::dict>(pair.second);
-        m_scriptContent.append(
+        m_assetsContent[py2qt(pair.first)] =
                     new PythonAssetModel(
                         py2qt(pair.first),
                         py2qt(data["type"]),
-                    py2qt(data["docstring"]),
-                py2qt(data["sourcecode"]),
-                getPrefabParams(
-                    data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
-                data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
-                data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
-                ));
+                        py2qt(data["docstring"]),
+                        py2qt(data["sourcecode"]),
+                        getPrefabParams(
+                           data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
+                           data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
+                           data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations")));
     }
     m_detailsLoaded = true;
 }
@@ -298,7 +223,7 @@ QVariantList PythonAsset::scriptContent()
 {
     getDetails();
     QVariantList list;
-    for (const auto& item : m_scriptContent)
+    for (const auto& item : m_assetsContent)
     {
         list.append(QVariant::fromValue(item));
     }
@@ -308,7 +233,7 @@ QVariantList PythonAsset::scriptContent()
 bool PythonAsset::isScene()
 {
     getDetails();
-    for (const auto& item : m_scriptContent){
+    for (const auto& item : m_assetsContent){
         if (item->getType() == "SofaScene")
             return true;
     }

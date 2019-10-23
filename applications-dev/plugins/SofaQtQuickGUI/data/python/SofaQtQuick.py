@@ -9,7 +9,6 @@ import code
 import Sofa
 import Sofa.Core
 import Sofa.Helper
-import splib
 
 ######################################################################
 #################### INTROSPECTING HELPER METHODS ####################
@@ -35,12 +34,10 @@ def collectMetaData(obj):
             data["type"] = "Class"
     elif obj.__name__ is "createScene":
         data["type"] = "SofaScene"
-    elif obj.__name__ is "SofaPrefabF" or type(obj) == splib.SofaPrefab:
+    elif obj.__name__ is "SofaPrefabF" or type(obj) == Sofa.PrefabBuilder:
         data["type"] = "SofaPrefab"
     else:
         data["type"] = "Function"
-
-    print("IS OFA PREFAB", data["name"], data["type"])
 
     ## Class and Function are not callabled from the GUI. Unless having the callable decorator
     if data["type"] == "Class" or data["type"] == "Function":

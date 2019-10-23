@@ -64,8 +64,6 @@ public:
     Q_PROPERTY(QList<QObject*> params READ getParams WRITE setParams NOTIFY paramsChanged)
     Q_PROPERTY(QString sourcecode READ getSourceCode WRITE setSourceCode NOTIFY sourceCodeChanged)
 
-    Q_INVOKABLE void openSettings();
-
     Q_INVOKABLE const QString& getName() const;
     Q_INVOKABLE const QString& getType() const;
     Q_INVOKABLE const QString& getDocstring() const;
@@ -77,6 +75,8 @@ public:
     Q_INVOKABLE void setDocstring(const QString& docstring);
     Q_INVOKABLE void setParams(const QList<QObject*>& params);
     Q_INVOKABLE void setSourceCode(const QString& sourcecode);
+
+    Q_INVOKABLE bool isContextFree(){ return m_isContextFree; }
 private:
     Q_SIGNAL void nameChanged(QString);
     Q_SIGNAL void typeChanged(QString);
@@ -90,6 +90,9 @@ private:
     QString m_docstring;
     QString m_sourcecode;
     QList<QObject*> m_params;
+
+    /// Indicates that the asset can be created only with with a node as first parameter
+    bool m_isContextFree {false} ;
 };
 
 class PythonAsset : public Asset
@@ -98,7 +101,8 @@ class PythonAsset : public Asset
 public:
     PythonAsset() : Asset("", "") {}
     PythonAsset(std::string path, std::string extension);
-    virtual sofaqtquick::bindings::SofaNode* create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName = "") override;
+    virtual sofaqtquick::bindings::SofaNode* create(sofaqtquick::bindings::SofaNode* parent,
+                                                    const QString& assetName = "") override;
     virtual void getDetails() override;
     virtual QUrl getAssetInspectorWidget() override;
 
@@ -122,7 +126,7 @@ private:
     virtual bool isScene() override;
     QVariantList scriptContent();
     Q_SIGNAL void scriptContentChanged(QVariantList);
-    QList<sofa::qtquick::PythonAssetModel*> m_scriptContent;
+    QMap<QString, sofa::qtquick::PythonAssetModel*> m_assetsContent;
 };
 
 } // namespace sofa::qtquick

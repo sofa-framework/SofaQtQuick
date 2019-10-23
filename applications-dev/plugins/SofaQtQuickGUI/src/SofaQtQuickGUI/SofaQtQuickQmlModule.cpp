@@ -265,6 +265,10 @@ void registerSofaTypesToQml(const char* /*uri*/)
         return SofaNode::createFrom(obj);
     });
 
+    SofaCoreBindingFactory::registerType("Prefab", [](sofa::core::objectmodel::Base* obj)
+    {
+        return SofaNode::createFrom(obj);
+    });
 
 
     sofa::Data<sofa::defaulttype::Vec3d> d(sofa::defaulttype::Vec3d(3,2,1),"dummy helpmsg");
