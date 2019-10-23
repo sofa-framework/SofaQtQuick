@@ -24,7 +24,8 @@ public:
     Q_PROPERTY(sofaqtquick::bindings::SofaData* sofaData READ sofaData WRITE setSofaData NOTIFY sofaDataChanged)
     Q_PROPERTY(bool asGridViewModel READ asGridViewModel WRITE setAsGridViewModel NOTIFY asGridViewModelChanged)
 
-    inline int nCols() const { return m_sofaData ? m_sofaData->getProperties()["cols"].toInt() : 0; }
+    Q_INVOKABLE void insertRow(QVariantList list);
+
     inline sofaqtquick::bindings::SofaData* sofaData() const { return m_sofaData; }
     inline bool asGridViewModel() const { return m_asGridViewModel; }
 
@@ -45,11 +46,32 @@ protected:
 
     bool setData(const QModelIndex &index, const QVariant &value,
                  int role = Qt::EditRole);
+
+    bool insertRow(int row, const QModelIndex &parent = QModelIndex());
+    bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex());
+    bool removeRow(int row, const QModelIndex &parent = QModelIndex());
+    bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
+
 private:
     sofaqtquick::bindings::SofaData* m_sofaData;
     bool m_asGridViewModel;
 
     QString getCornerType(const QModelIndex& idx) const;
+
+    /// Returns the number of columns (always considers the data as a 2D array)
+    int nCols() const {
+        auto typeinfo = m_sofaData->rawData()->getValueTypeInfo();
+        int nbCols = int(typeinfo->BaseType()->size());
+        if (nbCols == 1)
+            return int(typeinfo->size());
+        return nbCols;
+    }
+    /// Returns the number of rows (always considers the data as a 2D array)
+    int nRows() const
+    {
+        auto typeinfo = m_sofaData->rawData()->getValueTypeInfo();
+        return int(typeinfo->size(m_sofaData->rawData()->getValueVoidPtr()) / size_t(nCols()));
+    }
 };
 
 }  // namespace sofaqtquick

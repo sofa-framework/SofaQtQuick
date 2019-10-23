@@ -23,6 +23,10 @@ Button {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
+    activeFocusOnTab: true
+    onActiveFocusChanged: {
+        backgroundID.setControlState(control.enabled, control.focus, (checkable ? control.checked : control.down))
+    }
 
     property alias position: backgroundID.position
     background: ControlsBackground {
