@@ -130,96 +130,36 @@ QWizardPage* createArgsPage(QList<QObject*> params, std::list<QLineEdit*>& value
     return page;
 }
 
-
 sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
-{
+{    
     if (_loaders.find(m_extension) == _loaders.end() ||
             _loaders.find(m_extension)->second == nullptr)
     {
-        std::cout << "Unknown file format." << std::endl;
+        msg_warning("PythonAsset") << " Unsupported asset type: '"<< assetName.toStdString() << "'" ;
         return nullptr;
     }
 
-    fs::path filePath(m_path);
-    std::string stem = filePath.stem();
-    std::string parentDirPath = filePath.parent_path().string();
+    QFileInfo fpath { QString::fromStdString(m_path) };
+    QString filePath = fpath.absoluteFilePath();
+    QString parentDirPath = fpath.dir().absolutePath();
 
+    /// Construct the arguments to the creation function.
+    py::list args;
+    py::dict kwargs;
+
+    /// There must have a "root/parent" argument.
     sofa::simulation::Node::SPtr root = parent->self();
 
-    py::module::import("Sofa.Core");
-    py::object assetNode = sofapython3::PythonFactory::toPython(root->toBaseNode());
-    py::module inspect = py::module::import("inspect");
-    py::module sys = py::module::import("sys");
-    sys.attr("path").attr("append")(parentDirPath);
+    /// call the function
+    py::object res = RSPythonEnvironment::CallFunction(filePath, assetName, args, py::dict(), root.get());
 
-    auto local = py::dict();
-    local["math"] = py::module::import("math");
-    local["numpy"] = py::module::import("numpy");
-    local["Sofa"] = py::module::import("Sofa");
-    local["Sofa"] = py::dict();
-    local["Sofa"]["Core"] = py::module::import("Sofa.Core");
+    ///py::print(py::str()),
+    sofa::simulation::Node* resnode = py::cast<sofa::simulation::Node*>(res);
+    resnode->init(sofa::core::ExecParams::defaultInstance());
+    if( resnode )
+        root->addChild( resnode );
 
-    py::object module = py::module::import(stem.c_str());
-    if(!module)
-        return nullptr;
-
-    py::object callable = module.attr(assetName.toStdString().c_str());
-    py::object prefab;
-    if (assetName != "createScene")
-    {
-        QWizard wizard;
-        std::list<QLineEdit*> values;
-        py::list expressions;
-        PythonAssetModel* model = nullptr;
-        for (auto& m : m_scriptContent)
-            if (m->getName() == assetName)
-                model = m;
-        if (model == nullptr)
-            return nullptr;
-        QWizardPage* page = createArgsPage(model->getParams(), values, root);
-        if (page != nullptr)
-            wizard.addPage(page);
-        wizard.setWindowTitle("Prefab instantiation wizard");
-
-        try {
-            for (auto entry : values)
-            {
-                if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
-                    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
-                else
-                    expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
-            }
-        } catch (py::error_already_set&){
-            if (!wizard.exec())
-                return nullptr;
-            expressions = py::list();
-            for (auto entry : values)
-            {
-                if (entry->isReadOnly()) // The only field read only is the parent, which is imposed during drag n drop
-                    expressions.append(sofapython3::PythonFactory::toPython(root->toBaseNode()));
-                else {
-                    try {
-                        expressions.append(py::eval(entry->text().toStdString(), py::dict(), local));
-                    } catch (py::error_already_set&){
-                        msg_error("PythonAsset") << "The provided value for parameter '" << entry->text().toStdString() << "' is invalid.";
-                        return nullptr;
-                    }
-                }
-            }
-        }
-        prefab = callable(*expressions);
-    }
-    else
-    {
-        prefab = callable(sofapython3::PythonFactory::toPython(root->toBaseNode()));
-    }
-    sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
-                dynamic_cast<sofa::simulation::graph::DAGNode*>(py::cast<sofa::simulation::Node*>(prefab)));
-
-    if(node.get()!=nullptr)
-        node->init(sofa::core::ExecParams::defaultInstance());
-
-    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
+    return new sofaqtquick::bindings::SofaNode(dynamic_cast<sofa::simulation::graph::DAGNode*>(resnode), dynamic_cast<QObject*>(this));
 }
 
 PythonAssetModel::PythonAssetModel(const QString& name, const QString& type,
@@ -281,6 +221,10 @@ void PythonAsset::getDetails()
     QFileInfo outFile_finfo { outFile };
     copyFileToCache(inFile, outFile);
 
+    for (auto item : m_scriptContent)
+        delete item;
+    m_scriptContent.clear();
+
     if (!RSPythonEnvironment::IsASofaPythonModule(outFile))
     {
         msg_warning_withfile("PythonAsset", m_path, 0) << "This python module '"<< inFile.toStdString() <<"' does not contain the safe-guard module docstring" << msgendl
@@ -293,9 +237,9 @@ void PythonAsset::getDetails()
 
     auto dict = RSPythonEnvironment::GetPythonModuleContent(outFile_finfo.absolutePath(),
                                                             outFile_finfo.fileName());
-    for (auto item : m_scriptContent)
-        delete item;
-    m_scriptContent.clear();
+
+    if(dict.is_none())
+        return;
 
     for (auto pair : dict)
     {
@@ -307,13 +251,13 @@ void PythonAsset::getDetails()
                     new PythonAssetModel(
                         py2qt(pair.first),
                         py2qt(data["type"]),
-                        py2qt(data["docstring"]),
-                        py2qt(data["sourcecode"]),
-                        getPrefabParams(
-                           data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
-                           data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
-                           data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
-                        ));
+                    py2qt(data["docstring"]),
+                py2qt(data["sourcecode"]),
+                getPrefabParams(
+                    data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
+                data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
+                data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations"))
+                ));
     }
     m_detailsLoaded = true;
 }
