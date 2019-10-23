@@ -299,7 +299,7 @@ Rectangle {
                     var idx = null
                     idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
                     treeView.expand(idx)
-                    console.error("expanded " + key)
+//                    console.error("expanded " + key)
                 }
             }
         }
