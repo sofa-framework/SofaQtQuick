@@ -25,13 +25,27 @@ def collectMetaData(obj):
     data = {}
     data["name"] = obj.__name__
     if inspect.isclass(obj):
-        data["type"] = "Controller" if issubclass(obj, Sofa.Core.Controller) else "DataEngine" if issubclass(obj, Sofa.Core.DataEngine) else "Class"
-
+        if issubclass(obj, Sofa.Core.Controller):
+            data["type"] = "Controller"
+        elif issubclass(obj, Sofa.Core.DataEngine):
+            data["type"] = "DataEngine"
+        elif issubclass(obj, Sofa.Core.Prefab):
+            data["type"] = "SofaPrefab"
+        else:
+            data["type"] = "Class"
+    elif obj.__name__ is "createScene":
+        data["type"] = "SofaScene"
+    elif obj.__name__ is "SofaPrefabF" or type(obj) == splib.SofaPrefab:
+        data["type"] = "SofaPrefab"
     else:
-        data["type"] = "SofaScene" if obj.__name__ is "createScene" else "SofaPrefab" if type(obj) == splib.SofaPrefab else "Function"
+        data["type"] = "Function"
 
+    print("IS OFA PREFAB", data["name"], data["type"])
+
+    ## Class and Function are not callabled from the GUI. Unless having the callable decorator
     if data["type"] == "Class" or data["type"] == "Function":
         return None
+
     data["params"] = inspect.getfullargspec(obj.__wrapped__ if "__wrapped__" in dir(obj) else obj)
     data["sourcecode"] = inspect.getsource(obj)
     data["docstring"] = obj.__doc__ if obj.__doc__ != None else ""
@@ -45,6 +59,8 @@ def getPythonModuleContent(moduledir, modulename):
     spec = importlib.util.spec_from_file_location(modulename, moduledir+"/"+modulename)
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
+    sys.modules[modulename] = m
+
     m.__file__=moduledir+"/"+modulename
 
     for i in dir(m):
@@ -55,11 +71,8 @@ def getPythonModuleContent(moduledir, modulename):
                 objects[i] = meta
     return objects
 
-
-import code
 def getPythonModuleDocstring(mpath):
     "Get module-level docstring of Python module at mpath, e.g. 'path/to/file.py'."
-    print(mpath)
     co = compile(open(mpath).read(), mpath, 'exec')
     if co.co_consts and isinstance(co.co_consts[0], str):
         docstring = co.co_consts[0]
@@ -176,9 +189,19 @@ def saveAsPythonScene(fileName, node):
         fd.write(scn[0])
         return True
 
+def callFunction(file, function, *args, **kwargs):
+    # First let's load that script:
+    importlib.invalidate_caches()
+
+    moduledir = os.path.dirname(file)
+    modulename = os.path.basename(file)
+    spec = importlib.util.spec_from_file_location(modulename, moduledir+"/"+modulename)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return getattr(m, function)(*args, **kwargs)
+
 
 def createPrefabFromNode(fileName, node, name, help):
-#    try:
         print('Saving prefab')
         fd = open(fileName, "w+")
         fd.write("import sys\n")
@@ -204,9 +227,6 @@ def createPrefabFromNode(fileName, node, name, help):
         fd.write("\t\tself.node = " + node.name.value + "\n")
         fd.write(scn[0])
         return True
-#    except Exception as e:
-#        Sofa.msg_error(e)
-#        return False
 
 
 def loadMeshAsset(type, path, node):

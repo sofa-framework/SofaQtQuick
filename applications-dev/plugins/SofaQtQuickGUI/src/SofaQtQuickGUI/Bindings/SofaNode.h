@@ -45,6 +45,7 @@ namespace _sofanode_
 using sofaqtquick::bindings::SofaBase;
 using sofaqtquick::bindings::_sofaobject_::SofaBaseObject;
 using sofa::simulation::graph::DAGNode;
+using sofa::core::objectmodel::BaseNode;
 
 class SofaNode;
 class SofaNodeList;
