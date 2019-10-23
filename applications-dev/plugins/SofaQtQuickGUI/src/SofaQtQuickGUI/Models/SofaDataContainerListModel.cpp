@@ -118,8 +118,6 @@ QVariant SofaDataContainerListModel::data(const QModelIndex& index, int role) co
 
     const AbstractTypeInfo* typeinfo = m_sofaData->rawData()->getValueTypeInfo();
 
-                     m_sofaData->rawData()->getValueVoidPtr(),
-                     row * size_t(nCols()) + col) << std::endl;
     if (typeinfo->Scalar())
         return QVariant::fromValue(typeinfo->getScalarValue(
                                        m_sofaData->rawData()->getValueVoidPtr(),
