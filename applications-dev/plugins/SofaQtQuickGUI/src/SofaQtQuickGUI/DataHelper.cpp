@@ -415,8 +415,10 @@ QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& prop
         return properties;
     }
 
-    int nbCols = typeinfo->size();
-    int nbRows = typeinfo->size(data->getValueVoidPtr()) / nbCols;
+    int nbCols = int(typeinfo->BaseType()->size());
+    if (nbCols == 1)
+        nbCols = int(typeinfo->size());
+    int nbRows = int(typeinfo->size(data->getValueVoidPtr()) / nbCols);
     properties.insert("cols", nbCols);
     properties.insert("rows", nbRows);
     if(typeinfo->FixedSize())

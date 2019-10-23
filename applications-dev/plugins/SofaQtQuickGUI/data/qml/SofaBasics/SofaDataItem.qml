@@ -28,7 +28,6 @@ Item {
     id: self
 
     implicitWidth: gridlayout.implicitWidth
-    implicitHeight: dataWidget.implicitHeight
 
     signal doubleClickedOnLabel;
 
@@ -77,7 +76,6 @@ Item {
             text: sofaData ? sofaData.name : ""
             font.italic: true
             color: "black"
-            width: parent.width
             clip: true
             elide: Text.ElideRight
 
@@ -179,7 +177,7 @@ Item {
             var component = SofaDataWidgetFactory.getWidgetForData(sofaData)
             var o = component.createObject(datawidget, {"sofaData": sofaData,
                                                 "Layout.fillWidth":true})
-            self.implicitHeight = Qt.binding(function(){ return o.implicitHeight < 20 ? 20 : o.implicitHeight })
+            self.height = Qt.binding(function(){ return (o.implicitHeight < 20 ? 20 : o.implicitHeight) +1 })
             o.visible = Qt.binding(function() { return !linkButton.checked })
         }
     }

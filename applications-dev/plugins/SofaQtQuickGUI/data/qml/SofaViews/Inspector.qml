@@ -285,12 +285,12 @@ Item {
 
                                             id: sofaDataItem
                                             implicitWidth : theItem.width
-                                            implicitHeight: 20
+//                                            implicitHeight: 20
 
                                             sofaData: getObject(sofaInspectorDataListModel.getDataById(childModel.parentIndex, index))
                                             refreshCounter: topRect.refreshCounter
 
-                                            nameLabelWidth:200
+                                            nameLabelWidth:128
 
                                             property var cachedObject : null;
                                             function getObject(d){
@@ -312,7 +312,7 @@ Item {
                                             id: linkView
                                             spacing: 1
 
-                                            Text {
+                                            Label {
                                                 id: linkNameLabel
                                                 Layout.preferredWidth: 100
                                                 Layout.fillHeight: true
@@ -320,7 +320,20 @@ Item {
 
                                                 text: name
                                                 font.italic: true
+                                                color: "black"
                                                 verticalAlignment: Text.AlignVCenter;
+                                                clip: true
+                                                elide: Text.ElideRight
+
+                                                MouseArea {
+                                                    id: linkLabelMouseArea
+                                                    hoverEnabled: true
+                                                    anchors.fill: parent
+                                                }
+                                                ToolTip {
+                                                    text: name
+                                                    visible: linkLabelMouseArea.containsMouse
+                                                }
                                             }
                                             TextField {
                                                 Layout.fillWidth: true
