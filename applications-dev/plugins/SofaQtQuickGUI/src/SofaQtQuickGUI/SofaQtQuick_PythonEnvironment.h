@@ -13,11 +13,17 @@
 #include <pybind11/eval.h>
 #pragma pop_macro("slots")
 
+namespace sofa::core::objectmodel { class Base; }
+
 namespace sofaqtquick {
 
 class SOFA_SOFAQTQUICKGUI_API PythonEnvironment
 {
 public:    
+    /// call a python function
+    static pybind11::object CallFunction(const QString& moduleName, const QString& functionName,
+                                         pybind11::list args, pybind11::dict kwargs, sofa::core::objectmodel::Base* b=nullptr);
+
     /// Retrieves the global docstring present in a python script
     static QString GetPythonModuleDocstring(const QString& modulePath);
 
