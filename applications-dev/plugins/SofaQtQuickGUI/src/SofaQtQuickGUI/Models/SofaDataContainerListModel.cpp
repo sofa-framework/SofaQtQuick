@@ -107,8 +107,8 @@ QVariant SofaDataContainerListModel::data(const QModelIndex& index, int role) co
 
         else if (role != ValueRole)
             return QVariant();
-        row = size_t(index.row()) / nCols();
-        col = size_t(index.row()) % nCols();
+        row = size_t(index.row() / nCols());
+        col = size_t(index.row() % nCols());
     }
     else {
         row = size_t(index.row());
@@ -178,6 +178,7 @@ bool SofaDataContainerListModel::setData(const QModelIndex &index, const QVarian
                                  value.toInt());
     else
         return  false;
+    emit sofaDataChanged(m_sofaData);
     return true;
 }
 
@@ -191,6 +192,7 @@ bool SofaDataContainerListModel::insertRow(int row, const QModelIndex &parent)
     if (typeinfo->FixedSize())
         return false;
     typeinfo->setSize(d->beginEditVoidPtr(), typeinfo->size(d->getValueVoidPtr()) + typeinfo->BaseType()->size());
+    emit m_sofaData->valueChanged(m_sofaData->getValue());
     return true;
 }
 

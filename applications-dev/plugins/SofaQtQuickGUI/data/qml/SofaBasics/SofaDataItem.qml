@@ -177,7 +177,7 @@ Item {
             var component = SofaDataWidgetFactory.getWidgetForData(sofaData)
             var o = component.createObject(datawidget, {"sofaData": sofaData,
                                                 "Layout.fillWidth":true})
-            self.implicitHeight = Qt.binding(function(){ console.log("CHANGING Field's HEIGHT to: " + o.implicitHeight); return o.implicitHeight })
+            self.implicitHeight = Qt.binding(function(){ return o.implicitHeight })
             o.visible = Qt.binding(function() { return !linkButton.checked })
         }
     }

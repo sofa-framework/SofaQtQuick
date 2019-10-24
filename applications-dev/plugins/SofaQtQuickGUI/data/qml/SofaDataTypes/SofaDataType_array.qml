@@ -32,14 +32,15 @@ ColumnLayout {
     spacing: 0
 
     property SofaData sofaData
+
     property var properties: sofaData.properties
     property int refreshCounter: 0
-
+    Layout.preferredHeight: loader.implicitHeight + 1
     Loader {
         id: loader
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.minimumHeight: item.height
+        Layout.minimumHeight: item.implicitHeight
         sourceComponent: properties.static ? staticContainerView : dynamicContainerView
 
         Component {
@@ -74,7 +75,6 @@ ColumnLayout {
                     showIndicators: listModel.columnCount() === 1
                     value: dataValue
                     onValueChanged: {
-                        console.log("plop")
                         listModel.setData(_index, value, 0)
                     }
                 }
@@ -84,12 +84,13 @@ ColumnLayout {
         Component {
             id: theTableView
             ColumnLayout {
-                anchors.fill: parent
+                Layout.minimumHeight: tableView.implicitHeight + addRowId.implicitHeight
                 spacing: 0
                 QQC1.TableView {
                     id: tableView
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    implicitHeight: (rowCount <= 10 ? rowCount * 16 : 160) + 20
+
                     horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
                     rowDelegate: Rectangle {
                         color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
@@ -136,6 +137,8 @@ ColumnLayout {
                     model: SofaDataContainerListModel {
                         id: listModel
                         sofaData: root.sofaData
+                        property var sofaDataValue: root.sofaData.value
+
                         Component.onCompleted: {
                             tableView.addColumn(columnLines.createObject(tableView, { "title": "", "role": "c0"}));
                             for (var i = 0 ; i < sofaData.properties.cols ; i++)
@@ -143,7 +146,13 @@ ColumnLayout {
                         }
                         asGridViewModel: false
                     }
+                    onRowCountChanged: {
+                        tableView.selection.clear()
+                        tableView.selection.select(rowCount - 1)
+                        tableView.__listView.positionViewAtEnd()
+                    }
 
+                    Component.onCompleted: tableView.selection.clear()
 
                     itemDelegate: TextField {
                         id: cell
@@ -227,8 +236,9 @@ ColumnLayout {
                     }
                 }
                 RowLayout {
+                    id: addRowId
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    implicitHeight: 20
                     enabled: sofaData? !sofaData.isReadOnly : false
                     spacing: -1
                     Repeater {
@@ -249,7 +259,6 @@ ColumnLayout {
                                 list[i] = repeaterId.itemAt(i).value
                             }
                             listModel.insertRow(list)
-
                         }
                         position: cornerPositions['Right']
                     }
@@ -263,13 +272,20 @@ ColumnLayout {
             ColumnLayout {
                 spacing: 0
                 id: tableViewParent
+                implicitHeight: loader2.implicitHeight + showTableLayoutId.implicitHeight
                 RowLayout {
                     id: showTableLayoutId
                     Layout.fillWidth: true
+                    implicitHeight: 20
                     Layout.alignment: Qt.AlignTop
                     spacing: -1
                     Text {
-                        text: root.sofaData.value.length + (root.sofaData.value.length === 1 ? " Entry" : " Entries")
+                        id: nEntriesLbl
+                        function updateText() {
+                            return root.sofaData.value.length + (root.sofaData.value.length === 1 ? " Entry" : " Entries")
+                        }
+
+                        text: updateText()
                         Layout.fillWidth: true
                     }
 
@@ -285,25 +301,22 @@ ColumnLayout {
                     id: loader2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    Layout.minimumHeight: visible && item ? item.Layout.minimumHeight : 0
                     visible: showEditButton.checked
-                    function getTableWindowHeight(nEntries) {
-                        return ((nEntries === 0 ? 0 : nEntries > 10 ? 10 : nEntries - 1)) * 20 + 40
-                    }
 
-                    onVisibleChanged: {
-                        if (visible) {
-                            Layout.preferredHeight = getTableWindowHeight(sofaData.value.length)
-                            loader.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
-                            root.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
-                            parent.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
-                        } else {
-                            root.implicitHeight = 20
-                            root.preferredHeight = 20
-                            root.height = 20
-                            root.minimumHeight = 20
-                            root.maximumHeight = 20
-                        }
-                    }
+//                    onVisibleChanged: {
+//                        if (visible) {
+//                            Layout.preferredHeight = getTableWindowHeight(sofaData.value.length)
+//                            loader.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
+//                            root.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
+//                            parent.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
+//                        } else {
+//                            root.implicitHeight = 20
+//                            root.height = 20
+//                            root.minimumHeight = 20
+//                            root.maximumHeight = 20
+//                        }
+//                    }
 
                     active: visible
 
@@ -311,5 +324,9 @@ ColumnLayout {
                 }
             }
         }
+    }
+    Rectangle {
+        height: 1
+        color: "transparent"
     }
 }
