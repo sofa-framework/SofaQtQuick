@@ -231,6 +231,10 @@ Rectangle {
                     {
                         initialValue = control.value
                         initialPosition = Qt.vector2d(mouseX, mouseY)
+                        // Ugly, but works: removes the activeFocus from potential other activeFocused spinBoxes
+                        forceActiveFocus()
+                        focus = false
+                        focus = true
                     }
 
                     onPositionChanged:
