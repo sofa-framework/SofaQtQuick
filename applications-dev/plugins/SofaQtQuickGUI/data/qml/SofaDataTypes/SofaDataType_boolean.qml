@@ -48,7 +48,7 @@ ColumnLayout {
         CheckBox {
             id: control
             anchors.centerIn: parent
-            //enabled: !data.isReadOnly
+            enabled: !sofaData.properties.readOnly
             checked: sofaData.value
 
             onCheckedChanged:

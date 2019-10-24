@@ -58,12 +58,12 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            readOnly: sofaData.isReadOnly
+            readOnly: sofaData.properties.readOnly
 
             value: root.values[index]
 
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!sofaData.properties.readOnly) {
                     root.values[index] = value;
                     sofaData.value = root.values.join(' ');
                 }
@@ -85,11 +85,11 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            readOnly: sofaData.isReadOnly
+            readOnly: sofaData.properties.readOnly
 
             value: root.values[index]
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!sofaData.properties.readOnly) {
                     root.values[index] = value;
                     sofaData.value = root.values.join(' ');
                 }
@@ -110,11 +110,11 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            readOnly: sofaData.isReadOnly
+            readOnly: sofaData.properties.readOnly
 
             value: root.values[index]
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!sofaData.properties.readOnly) {
                     root.values[index] = value;
                     sofaData.value = root.values.join(' ');
                 }
@@ -146,11 +146,11 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            readOnly: sofaData.isReadOnly
+            readOnly: sofaData.properties.readOnly
 
             value: root.values[index]
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!sofaData.properties.readOnly) {
                     root.values[index] = value;
                     sofaData.value = root.values.join(' ');
                 }
@@ -172,11 +172,11 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            readOnly: sofaData.isReadOnly
+            readOnly: sofaData.properties.readOnly
 
             value: root.values[index]
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!sofaData.properties.readOnly) {
                     root.values[index] = value;
                     sofaData.value = root.values.join(' ');
                 }
@@ -197,11 +197,11 @@ ColumnLayout {
             Layout.fillWidth: true
 
             showIndicators: false
-            readOnly: sofaData.isReadOnly
+            readOnly: sofaData.properties.readOnly
 
             value: root.values[index]
             onValueChanged: {
-                if(!sofaData.isReadOnly) {
+                if(!sofaData.properties.readOnly) {
                     root.values[index] = value;
                     sofaData.value = root.values.join(' ');
                 }
