@@ -25,6 +25,7 @@ public:
     Q_PROPERTY(bool asGridViewModel READ asGridViewModel WRITE setAsGridViewModel NOTIFY asGridViewModelChanged)
 
     Q_INVOKABLE void insertRow(QVariantList list);
+    Q_INVOKABLE void removeLastRow();
 
     inline sofaqtquick::bindings::SofaData* sofaData() const { return m_sofaData; }
     inline bool asGridViewModel() const { return m_asGridViewModel; }

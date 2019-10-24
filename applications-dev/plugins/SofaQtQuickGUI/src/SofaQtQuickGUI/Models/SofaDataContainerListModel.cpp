@@ -22,6 +22,13 @@ void SofaDataContainerListModel::insertRow(QVariantList list)
     endInsertRows();
 }
 
+void SofaDataContainerListModel::removeLastRow()
+{
+    beginRemoveRows(QModelIndex(), nRows() -1, nRows() -1);
+    removeRow(nRows() - 1);
+    endRemoveRows();
+}
+
 void SofaDataContainerListModel::setSofaData(sofaqtquick::bindings::SofaData* newSofaData)
 {
     if (!newSofaData->rawData()->getValueTypeInfo()->Container())
@@ -206,6 +213,7 @@ bool SofaDataContainerListModel::insertRows(int row, int count, const QModelInde
     if (typeinfo->FixedSize())
         return false;
     typeinfo->setSize(d->beginEditVoidPtr(), typeinfo->size(d->getValueVoidPtr()) + size_t(count) * typeinfo->BaseType()->size());
+    emit m_sofaData->valueChanged(m_sofaData->getValue());
     return true;
 }
 
@@ -219,6 +227,7 @@ bool SofaDataContainerListModel::removeRow(int row, const QModelIndex &parent)
     if (typeinfo->FixedSize())
         return false;
     typeinfo->setSize(d->beginEditVoidPtr(), typeinfo->size(d->getValueVoidPtr()) - typeinfo->BaseType()->size());
+    emit m_sofaData->valueChanged(m_sofaData->getValue());
     return true;
 }
 
@@ -232,6 +241,7 @@ bool SofaDataContainerListModel::removeRows(int row, int count, const QModelInde
     if (typeinfo->FixedSize())
         return false;
     typeinfo->setSize(d->beginEditVoidPtr(), typeinfo->size(d->getValueVoidPtr()) - size_t(count) * typeinfo->BaseType()->size());
+    emit m_sofaData->valueChanged(m_sofaData->getValue());
     return true;
 }
 

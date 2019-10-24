@@ -154,84 +154,108 @@ ColumnLayout {
 
                     Component.onCompleted: tableView.selection.clear()
 
-                    itemDelegate: TextField {
-                        id: cell
-
-                        Component {
-                            id: bgComponent
-                            Rectangle{ color: "transparent" }
-                        }
-
+                    itemDelegate: Loader {
                         anchors.fill: parent
-                        anchors.leftMargin: -1
-                        anchors.rightMargin: -1
-                        clip: true
-                        readOnly: sofaData.isReadOnly || styleData.column === 0
-                        color: styleData.textColor
-                        horizontalAlignment: TextEdit.AlignHCenter
-                        verticalAlignment: TextEdit.AlignVCenter
-                        validator: DoubleValidator {}
-                        function getText() {
-                            if (styleData.column === 0)
-                                cell.text = styleData.row;
-                            else if(-1 !== styleData.row && styleData.column !== 0) {
-                                cell.text = Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)).toPrecision(6);
-                            }
-                            else {
-                                cell.text = "#REF!" // Hum... maybe a better "invalid cell" convention than ms excel....?
-                            }
-                            return cell.text
+                        id: itemDelegateLoader
+                        sourceComponent: { console.log(styleData.column === 0 && styleData.row === tableView.rowCount-1 );
+                            return styleData.column === 0 && styleData.row === tableView.rowCount -1 ?
+                                        lastRowIdxComponent : cellComponent
                         }
-                        text: getText()
-                        property int previousRow: -1
-                        position: cornerPositions['Middle']
+                        onLoaded: item.styleData = styleData
+                    }
 
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            acceptedButtons: cell.readOnly ? Qt.NoButton : Qt.LeftButton
+                    Component {
+                        id: lastRowIdxComponent
+                        IconButton {
+                            property var styleData: parent.styleData
                             onClicked: {
-                                parent.forceActiveFocus()
+                                listModel.removeLastRow()
                             }
+                            iconSource: "qrc:/icon/invalid.png"
                         }
-                        activeFocusOnTab: styleData.column !== 0 ? true : false
-                        onActiveFocusChanged: {
-                            if (!cell.readOnly) {
-                                if (activeFocus) {
-                                    text = listModel.data(listModel.index(styleData.row, 0), styleData.column)
-                                    mouseArea.cursorShape = Qt.IBeamCursor
-                                    background.color = "#82878c"
-                                    cell.selectAll()
-                                } else {
-                                    mouseArea.cursorShape = Qt.ArrowCursor
-                                    background.color = "transparent"
-                                    text = getText()
+                    }
+
+                    Component {
+                        id: cellComponent
+                        TextField {
+                            id: cell
+                            property var styleData: parent.styleData
+
+                            Rectangle {
+                                id: idxBg
+                                anchors.fill: parent
+                                color: "transparent"
+                            }
+
+                            anchors.fill: parent
+                            anchors.leftMargin: -1
+                            anchors.rightMargin: -1
+                            clip: true
+                            readOnly: sofaData.isReadOnly || styleData.column === 0
+                            color: styleData.textColor
+                            horizontalAlignment: TextEdit.AlignHCenter
+                            verticalAlignment: TextEdit.AlignVCenter
+                            validator: DoubleValidator {}
+                            function getText() {
+                                if (styleData.column === 0)
+                                    cell.text = styleData.row;
+                                else if(-1 !== styleData.row && styleData.column !== 0) {
+                                    cell.text = Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)).toPrecision(6);
+                                }
+                                else {
+                                    cell.text = "#REF!" // Hum... maybe a better "invalid cell" convention than ms excel....?
+                                }
+                                return cell.text
+                            }
+                            text: getText()
+                            property int previousRow: -1
+                            position: cornerPositions['Middle']
+
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                acceptedButtons: cell.readOnly ? Qt.NoButton : Qt.LeftButton
+                                onClicked: {
+                                    parent.forceActiveFocus()
                                 }
                             }
-                        }
-
-                        onEditingFinished: {
-                            cell.focus = false
-                            if(-1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column)
-                                return;
-
-                            if(previousRow !== styleData.row) {
-                                previousRow = styleData.row;
-                                return;
-                            }
-
-                            if(styleData.column !== 0) {
-                                var oldValue = listModel.data(listModel.index(styleData.row, 0), styleData.column);
-                                var value = text;
-                                if(value !== oldValue) {
-                                    listModel.setData(listModel.index(styleData.row, 0), text, styleData.column)
+                            activeFocusOnTab: styleData.column !== 0 ? true : false
+                            onActiveFocusChanged: {
+                                if (!cell.readOnly) {
+                                    if (activeFocus) {
+                                        text = listModel.data(listModel.index(styleData.row, 0), styleData.column)
+                                        mouseArea.cursorShape = Qt.IBeamCursor
+                                        background.color = "#82878c"
+                                        cell.selectAll()
+                                    } else {
+                                        mouseArea.cursorShape = Qt.ArrowCursor
+                                        background.color = "transparent"
+                                        text = getText()
+                                    }
                                 }
                             }
-                            text = getText()
-                        }
 
-                        Component.onCompleted: {
-                            if (0 === styleData.column) cell.background = bgComponent.createObject(cell)
+                            onEditingFinished: {
+                                cell.focus = false
+                                if(-1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column)
+                                    return;
+
+                                if(previousRow !== styleData.row) {
+                                    previousRow = styleData.row;
+                                    return;
+                                }
+
+                                if(styleData.column !== 0) {
+                                    var oldValue = listModel.data(listModel.index(styleData.row, 0), styleData.column);
+                                    var value = text;
+                                    if(value !== oldValue) {
+                                        listModel.setData(listModel.index(styleData.row, 0), text, styleData.column)
+                                    }
+                                }
+                                text = getText()
+                            }
+
+                            background: styleData.column === 0 ? idxBg : background
                         }
                     }
                 }
@@ -304,19 +328,19 @@ ColumnLayout {
                     Layout.minimumHeight: visible && item ? item.Layout.minimumHeight : 0
                     visible: showEditButton.checked
 
-//                    onVisibleChanged: {
-//                        if (visible) {
-//                            Layout.preferredHeight = getTableWindowHeight(sofaData.value.length)
-//                            loader.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
-//                            root.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
-//                            parent.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
-//                        } else {
-//                            root.implicitHeight = 20
-//                            root.height = 20
-//                            root.minimumHeight = 20
-//                            root.maximumHeight = 20
-//                        }
-//                    }
+                    //                    onVisibleChanged: {
+                    //                        if (visible) {
+                    //                            Layout.preferredHeight = getTableWindowHeight(sofaData.value.length)
+                    //                            loader.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
+                    //                            root.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
+                    //                            parent.Layout.preferredHeight = getTableWindowHeight(sofaData.value.length) + showTableLayoutId.implicitHeight
+                    //                        } else {
+                    //                            root.implicitHeight = 20
+                    //                            root.height = 20
+                    //                            root.minimumHeight = 20
+                    //                            root.maximumHeight = 20
+                    //                        }
+                    //                    }
 
                     active: visible
 
