@@ -28,7 +28,7 @@ def collectMetaData(obj):
             data["type"] = "Controller"
         elif issubclass(obj, Sofa.Core.DataEngine):
             data["type"] = "DataEngine"
-        elif issubclass(obj, Sofa.Core.Prefab):
+        elif issubclass(obj, Sofa.Core.RawPrefab):
             data["type"] = "SofaPrefab"
         else:
             data["type"] = "Class"
