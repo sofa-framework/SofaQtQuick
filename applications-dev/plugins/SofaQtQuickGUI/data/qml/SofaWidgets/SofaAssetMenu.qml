@@ -23,7 +23,6 @@ Menu {
     title: "Asset Content " + assetName
 
     onAssetChanged: {
-        console.log("ASSET CHANGED .... " +assetMenu.asset.scriptContent)
         if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
             if (menuRepeater.model === undefined) {
