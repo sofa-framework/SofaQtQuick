@@ -273,7 +273,7 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
     case Roles::Name:
         return QVariant(QString::fromStdString(currentBase->getName()));
     case Roles::TypeName:
-        return QVariant::fromValue(QString::fromStdString(currentBase->getClass()->className));
+        return QVariant::fromValue(QString::fromStdString(currentBase->getClassName()));
     case Roles::IsNode:
         return QVariant(currentBase->toBaseNode()!=nullptr);
     case Roles::IsMultiParent:

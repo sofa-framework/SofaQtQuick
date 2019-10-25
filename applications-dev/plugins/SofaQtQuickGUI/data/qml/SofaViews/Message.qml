@@ -189,6 +189,7 @@ Column {
                                     /// to indicate where is that the "source" of the message
                                     MouseArea {
                                         anchors.fill: parent
+                                        visible: emitterpath != null
                                         enabled: emitterpath != null
                                         /// Change the cursor shape to apointing hand
                                         cursorShape: Qt.PointingHandCursor

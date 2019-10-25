@@ -455,7 +455,7 @@ Rectangle {
                 color: styleData.textColor
                 font.italic: hasMultiParent
                 elide: styleData.elideMode
-                text: isNode ? name : typename //+ "(" + model.row + "/"+ styleData.row + ")"
+                text: isNode ? name : typename
             }
 
             Image {
