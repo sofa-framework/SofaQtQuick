@@ -43,17 +43,23 @@ SofaData::SofaData(BaseData* self)
     m_self = self;
 }
 
-QVariant SofaData::getValue() const
+QVariant SofaData::getValue()
 {
-    return sofaqtquick::helper::createQVariantFromData(m_self);
+    m_previousValue = sofaqtquick::helper::createQVariantFromData(m_self);
+    return m_previousValue;
 }
 
 bool SofaData::setValue(const QVariant& value)
 {
-    if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
+    if(value != m_previousValue)
     {
-        m_self->setPersistent(true);
-        return true;
+        if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
+        {
+            m_self->setPersistent(true);
+            m_previousValue = value;
+            return true;
+        }
+        return false;
     }
     return false;
 }
