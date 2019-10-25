@@ -65,7 +65,9 @@ Console::~Console()
 
 void Console::process(Message &m)
 {
+    beginInsertRows(QModelIndex(), m_messages.size(), m_messages.size());
     m_messages.push_back(m) ;
+    endInsertRows();
 
     //if(m_messages.size() > 50){
     //    m_messages.erase(m_messages.begin(),m_messages.begin()+1);
@@ -76,7 +78,9 @@ void Console::process(Message &m)
 
 void Console::clear()
 {
+    beginResetModel();
     m_messages.clear() ;
+    endResetModel();
     emit messageCountChanged();
 }
 

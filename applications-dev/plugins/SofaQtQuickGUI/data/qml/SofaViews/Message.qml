@@ -104,7 +104,6 @@ Column {
         implicitHeight: parent.height
         color : SofaApplication.style.editviewBackgroundColor
 
-
         ScrollView {
             id: view
 
@@ -133,8 +132,13 @@ Column {
                 delegate: Component {
                     Rectangle{
                         id: viewitem
-                        state: showEmittingLocation ? "s1" : "s2"
+                        state: {
+                            if(filterByComponent)
+                                return "s3"
+                            return showEmittingLocation ? "s1" : "s2"
+                        }
                         width: parent.width;
+                        height: 5
                         clip : true
 
                         /// The message is showned iff the either the message match the emitter's activeFocus:
@@ -149,18 +153,6 @@ Column {
                                 return false
                             }
                             return true
-                        }
-
-                        Behavior on height {
-                            NumberAnimation {
-                                easing.type: Easing.InOutCubic
-                                easing.period: 1.5
-                            }
-                        }
-
-                        onChildrenRectChanged: {
-                            if(viewitem.state=="s1")
-                                height=baseinfo.height+extrainfo.height+3
                         }
 
                         property alias baseinfo: baseinfo
@@ -285,6 +277,15 @@ Column {
                                     target: viewitem
                                     extrainfo.visible: false
                                     height: childrenRect.height
+                                    color: SofaApplication.style.contentBackgroundColor
+                                }
+                            },
+                            State {
+                                name: "s3"
+                                PropertyChanges {
+                                    target: viewitem
+                                    extrainfo.visible: false
+                                    height: viewitem.visible ? childrenRect.height : 0
                                     color: SofaApplication.style.contentBackgroundColor
                                 }
                             }
