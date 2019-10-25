@@ -89,22 +89,41 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     /// There must have a "root/parent" argument.
     sofa::simulation::Node::SPtr root = parent->self();
 
+    /// An asset needs a context.
+    bool isContextFree { m_assetsContent[assetName]["type"] == "SofaPrefab" };
+
     /// Some python asset can be created in a root less manner. This is the case for
     /// the SofaPrefab.
-    if( m_assetsContent[assetName]["type"] != "SofaPrefab" )
+    if( !isContextFree )
         args.append(sofapython3::PythonFactory::toPython(root.get()));
 
     /// call the function
     py::object res = RSPythonEnvironment::CallFunction(filePath, assetName, args, py::dict(), root.get());
 
-    sofa::simulation::Node* resnode = py::cast<sofa::simulation::Node*>(res);
-    if( resnode )
+    if(res.is_none())
     {
-        root->addChild( resnode );
-        resnode->init(sofa::core::ExecParams::defaultInstance());
+        return parent;
     }
 
-    return new sofaqtquick::bindings::SofaNode(dynamic_cast<sofa::simulation::graph::DAGNode*>(resnode), dynamic_cast<QObject*>(this));
+    auto base = py::cast<sofa::core::objectmodel::Base*>(res);
+    if(base->toBaseNode() != nullptr)
+    {
+        auto resnode = dynamic_cast<sofa::simulation::graph::DAGNode*>(base->toBaseNode());
+
+        if(isContextFree)
+        {
+            root->addChild( resnode );
+        }
+        resnode->init(sofa::core::ExecParams::defaultInstance());
+        return new sofaqtquick::bindings::SofaNode(resnode, dynamic_cast<QObject*>(this));
+    }
+    if(base->toBaseObject() != nullptr)
+    {
+        auto object = base->toBaseObject();
+        root->addObject( object );
+        object->init();
+    }
+    return parent;
 }
 
 QString py2qt(const py::handle s)
