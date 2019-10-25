@@ -142,7 +142,7 @@ QVariant Console::data(const QModelIndex& index, int role) const
         {
             const std::string& classname= nfo->sender();
             const std::string& name = nfo->name();
-            return QVariant::fromValue(QString::fromStdString("[" + classname + "(" + name + ")] "));
+            return QVariant::fromValue(QString::fromStdString(classname + "(" + name + ")"));
         }
         return QVariant::fromValue(QString::fromStdString(item.sender()));
     }

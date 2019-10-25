@@ -72,5 +72,6 @@
         <file>icon/state_bubble_2.png</file>
         <file>icon/state_bubble_3.png</file>
         <file>icon/state_bubble_4.png</file>
+        <file>icon/leave_grayed.png</file>
     </qresource>
 </RCC>

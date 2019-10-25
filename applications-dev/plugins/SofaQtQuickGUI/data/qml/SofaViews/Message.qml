@@ -94,7 +94,7 @@ Column {
             anchors.top: header.top
             anchors.leftMargin: 6
             anchors.rightMargin: 6
-            checked: true
+            checked: false
         }
     }
 
@@ -116,7 +116,6 @@ Column {
                 id: p1scores
                 model: SofaApplication.sofaMessageList
                 Layout.fillWidth: true
-                Layout.preferredHeight: contentHeight
                 clip: true
                 focus: true
 
@@ -138,7 +137,6 @@ Column {
                             return showEmittingLocation ? "s1" : "s2"
                         }
                         width: parent.width;
-                        height: 5
                         clip : true
 
                         /// The message is showned iff the either the message match the emitter's activeFocus:
@@ -166,24 +164,24 @@ Column {
                                 id: baseinfo
                                 spacing : 10
                                 height: messagetext.height
-
                                 Text{
-                                    id: messagetype
+                                    id: messageemitter
+
                                     textFormat: Text.RichText
                                     text: {
                                         // Info=0, Advice, Deprecated, Warning, Error, Fatal,
                                         if(type == 0)
-                                            return "[<font color='#00ff00'><b>INFO</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
+                                            return "[<font color='#00ff00'><b>INFO</b></font>] <font color='#6495ed'>[<u>"+emitter+"</u>]</font>"
                                         if(type == 1)
-                                            return "[<font color='#00ff00'><b>ADVICE</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
+                                            return "[<font color='#00ff00'><b>ADVICE</b></font>] <font color='#6495ed'>[<u>"+emitter+"</u>]</font>"
                                         if(type == 2)
-                                            return "[<font color='#ff0000'><b>DEPRECATED</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
+                                            return "[<font color='#ffD700'><b>DEPRECATED</b></font>] <font color='#6495ed'>[<u>"+emitter+"</u>]</font>"
                                         if(type == 3)
-                                            return "[<font color='#998800'><b>WARNING</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
+                                            return "[<font color='#00FFFF'><b>WARNING</b></font>] <font color='#6495ed'>[<u>"+emitter+"</u>]</font>"
                                         if(type == 4)
-                                            return "[<font color='#ff0000'><b>ERROR</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
+                                            return "[<font color='#ff0000'><b>ERROR</b></font>] <font color='#6495ed'>[<u>"+emitter+"</u>]</font>"
                                         if(type == 5)
-                                            return "[<font color='#ff0000'><b>FATAL</b></font>]: <font color='#efefef'><u>"+emitter+"</font>"
+                                            return "[<font color='#ff0000'><b>FATAL</b></font>] <font color='#6495ed'>[<u>"+emitter+"</u>]</font>"
                                     }
                                     wrapMode: Text.Wrap
 
@@ -210,19 +208,42 @@ Column {
                                 }
                                 Text{
                                     id: messagetext
-                                    width: messagearea.width - messagetype.width-10
+                                    width: messagearea.implicitWidth - messageemitter.width - 40
                                     textFormat: Text.RichText
                                     wrapMode: Text.Wrap
                                     text: message
                                     color: "black"
                                 }
+
+                                IconButton
+                                {
+                                    id: messageicon
+                                    width: 16
+                                    height: 16
+                                    enabled: link !== "undefined"
+
+                                    iconSource:{
+                                        if(link !== "undefined")
+                                            return "qrc:/icon/leave.png"
+                                        return "qrc:/icon/leave_grayed.png"
+                                    }
+
+                                    opacity: link !== "undefined" ? 1.0: 0.5
+
+
+                                    onClicked: {
+                                        SofaApplication.openInEditor(link, line)
+                                    }
+                                }
                             }
+
+
                             Text {
                                 property string filename: link
                                 property string dline: line
                                 id : extrainfo
                                 width: messagearea.width
-                                wrapMode: Text.WrapAnywhere
+                                elide: Text.ElideRight
                                 textFormat: Text.RichText
                                 text: "Emitted from: <font color='#aeaeae'>"+link+":"+line+"</font>"
                                 color: "black"
@@ -248,6 +269,12 @@ Column {
                                 }
                             }
                             Rectangle{
+                                id: spacerline0
+                                width: p1scores.width
+                                height:6
+                                color: SofaApplication.style.contentBackgroundColor
+                            }
+                            Rectangle{
                                 id: spacerline1
                                 width: p1scores.width
                                 height:1
@@ -267,7 +294,7 @@ Column {
                                 PropertyChanges {
                                     target: viewitem
                                     extrainfo.visible: true
-                                    height: childrenRect.height
+                                    height: childrenRect.height + 4
                                     color: SofaApplication.style.contentBackgroundColor
                                 }
                             },
@@ -276,7 +303,7 @@ Column {
                                 PropertyChanges {
                                     target: viewitem
                                     extrainfo.visible: false
-                                    height: childrenRect.height
+                                    height: childrenRect.height + 4
                                     color: SofaApplication.style.contentBackgroundColor
                                 }
                             },
@@ -284,8 +311,8 @@ Column {
                                 name: "s3"
                                 PropertyChanges {
                                     target: viewitem
-                                    extrainfo.visible: false
-                                    height: viewitem.visible ? childrenRect.height : 0
+                                    extrainfo.visible: showEmittingLocation
+                                    height: viewitem.visible ? childrenRect.height + 4 : 0
                                     color: SofaApplication.style.contentBackgroundColor
                                 }
                             }
