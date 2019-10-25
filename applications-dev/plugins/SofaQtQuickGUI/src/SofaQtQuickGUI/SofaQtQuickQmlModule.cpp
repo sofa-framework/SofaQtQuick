@@ -79,7 +79,7 @@ using sofa::qtquick::SofaProject;
 using sofa::qtquick::Asset;
 #include <SofaQtQuickGUI/Assets/PythonAsset.h>
 using sofa::qtquick::PythonAsset;
-using sofa::qtquick::PythonAssetModel;
+
 #include <SofaQtQuickGUI/Assets/MeshAsset.h>
 using sofa::qtquick::MeshAsset;
 #include <SofaQtQuickGUI/Assets/TextureAsset.h>
@@ -206,7 +206,6 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
     qmlRegisterUncreatableType<Asset>                               ("Asset"                                , versionMajor, versionMinor, "Asset", QString("It is not possible to create an Asset"));
     qmlRegisterType<PythonAsset>                                    ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset");
-    qmlRegisterType<PythonAssetModel>                               ("PythonAssetModel"                     , versionMajor, versionMinor, "PythonAssetModel");
     qmlRegisterType<HighlightComponent>                             ("HighlightComponent"                   , versionMajor, versionMinor, "HighlightComponent");
     qmlRegisterUncreatableType<MeshAsset>                           ("MeshAsset"                            , versionMajor, versionMinor, "MeshAsset", QString("It is not possible to create a MeshAsset"));
     qmlRegisterUncreatableType<TextureAsset>                        ("TextureAsset"                         , versionMajor, versionMinor, "TextureAsset", QString("It is not possible to create a TextureAsset"));

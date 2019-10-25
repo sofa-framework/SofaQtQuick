@@ -139,10 +139,20 @@ void SofaProject::updateDirectory(const QFileInfo& finfo)
         if(isFileExcluded(nfinfo))
             continue;
 
-        /// Add the new content.
-        if( !m_assets.contains(nfinfo.absoluteFilePath()) )
+
+        if( nfinfo.isFile() )
         {
-            scan(nfinfo);
+            /// Add the new content.
+            if( !m_assets.contains(nfinfo.absoluteFilePath()) )
+            {
+                scan(nfinfo);
+            }
+
+            if( m_assets[nfinfo.absoluteFilePath()]->getLastModified()  != nfinfo.lastModified())
+            {
+                updateAsset(nfinfo);
+            }
+            continue;
         }
 
         /// Add the new content.
@@ -339,7 +349,12 @@ void SofaProject::updateAsset(const QFileInfo& file)
 {
     QString filePath = file.absoluteFilePath();
     msg_info() << "updateAsset: " << filePath.toStdString();
-    m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
+    if(!m_assets.contains(filePath))
+        m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
+    else
+        m_assets[filePath]->getDetails();
+
+    m_assets[filePath]->setLastModified(file.lastModified());
     emit filesChanged();
 }
 
@@ -355,7 +370,6 @@ const QString SofaProject::getFileCount(const QUrl& url)
 
 Asset* SofaProject::getAsset(const QString& filePath)
 {
-    msg_info() << "getAsset for: " << filePath.toStdString() << " = > " << m_assets.size();
     const auto& it = m_assets.find(filePath);
     if (it != m_assets.end())
     {
@@ -363,6 +377,8 @@ Asset* SofaProject::getAsset(const QString& filePath)
         if(it.value() != nullptr)
             return it.value().get();
     }
+    msg_info() << "getAsset not asset for: " << filePath.toStdString() ;
+
     return nullptr;
 }
 

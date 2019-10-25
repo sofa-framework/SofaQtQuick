@@ -193,6 +193,7 @@ Item {
                     caseSensitive: true
                     folder: ""
                     nameFilters: self.project.getSupportedTypes()
+
                 }
 
                 property var selectedItem: null
@@ -243,6 +244,7 @@ Item {
                                         leftPadding: 10
                                         text: fileIsDir ? "Folder" : asset.typeString
                                         color: fileIsDir || wrapper.asset.isSofaContent ? "#efefef" : "darkgrey"
+
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -298,7 +300,7 @@ Item {
                                 console.error("ParentNode type: " + _parent)
                                 console.error("newNode type: " + newNode)
                                 _parent.dump()
-//                                newNode.copyTo(_parent)
+                                //                                newNode.copyTo(_parent)
                                 console.error("bah shit")
                                 if (hasNodes) {
                                     var childsList = _parent.getChildren()

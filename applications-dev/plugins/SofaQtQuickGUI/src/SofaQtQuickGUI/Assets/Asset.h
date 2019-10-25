@@ -6,6 +6,7 @@
 #include "SofaQtQuickGUI/Bindings/SofaNode.h"
 using sofa::core::objectmodel::BaseObject;
 
+#include <QDateTime>
 #include <QUrl>
 
 namespace sofa
@@ -14,6 +15,7 @@ namespace qtquick
 {
 
 struct BaseAssetLoader;
+
 
 /**
  *  \brief Base class for Assets loaded through the AssetFactory
@@ -40,6 +42,8 @@ class Asset : public QObject
     Q_PROPERTY(QString path READ path NOTIFY pathChanged)
     Q_PROPERTY(bool isScene READ isScene NOTIFY isSceneChanged)
 
+    QDateTime getLastModified() { return m_lastModified; }
+    void setLastModified(const QDateTime& t) { m_lastModified = t; }
   protected:
     Q_INVOKABLE virtual QString getTypeString() { return "Unknown file format"; }
     Q_INVOKABLE virtual QUrl getIconPath() { return QUrl("qrc:/icon/ICON_FILE_BLANK"); }
@@ -58,9 +62,10 @@ class Asset : public QObject
     typedef std::map<std::string, BaseAssetLoader *> LoaderMap;
     static const LoaderMap _loaders;
 
+    QDateTime m_lastModified;
     const std::string m_path;
     const std::string m_extension;
-    bool m_detailsLoaded;
+    bool m_detailsLoaded {false};
 };
 
 struct BaseAssetLoader
