@@ -89,7 +89,9 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     /// There must have a "root/parent" argument.
     sofa::simulation::Node::SPtr root = parent->self();
 
-    if(!m_assetsContent[assetName]->isContextFree())
+    /// Some python asset can be created in a root less manner. This is the case for
+    /// the SofaPrefab.
+    if( m_assetsContent[assetName]["type"] != "SofaPrefab" )
         args.append(sofapython3::PythonFactory::toPython(root.get()));
 
     /// call the function
@@ -105,32 +107,6 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     return new sofaqtquick::bindings::SofaNode(dynamic_cast<sofa::simulation::graph::DAGNode*>(resnode), dynamic_cast<QObject*>(this));
 }
 
-PythonAssetModel::PythonAssetModel(const QString& name, const QString& type,
-                                   const QString& docstring, const QString& sourcecode, QList<QObject*> params)
-    : m_name(name),
-      m_type(type),
-      m_docstring(docstring),
-      m_sourcecode(sourcecode),
-      m_params(params)
-{
-    if(m_type=="SofaPrefab")
-         m_isContextFree = true;
-    else
-         m_isContextFree = false;
-}
-
-const QString& PythonAssetModel::getName() const { return m_name; }
-const QString& PythonAssetModel::getType() const { return m_type; }
-const QString& PythonAssetModel::getDocstring() const { return m_docstring; }
-const QList<QObject*>& PythonAssetModel::getParams() const { return m_params; }
-const QString& PythonAssetModel::getSourceCode() const { return m_sourcecode; }
-
-void PythonAssetModel::setName(const QString& name) { m_name = name; }
-void PythonAssetModel::setType(const QString& type) { m_type = type; }
-void PythonAssetModel::setDocstring(const QString& docstring) { m_docstring = docstring; }
-void PythonAssetModel::setParams(const QList<QObject*>& params) { m_params = params; }
-void PythonAssetModel::setSourceCode(const QString& sourcecode) { m_sourcecode = sourcecode; }
-
 QString py2qt(const py::handle s)
 {
     return QString::fromStdString(py::cast<std::string>(s));
@@ -138,8 +114,8 @@ QString py2qt(const py::handle s)
 
 void PythonAsset::getDetails()
 {
-    if (m_detailsLoaded)
-        return;
+    /// Let's clear the old content.
+    m_assetsContent.clear();
 
     /// The file is destructed when the QTemporaryFile is removed.
     QString inFile { QString::fromStdString(m_path) };
@@ -147,17 +123,12 @@ void PythonAsset::getDetails()
     QFileInfo outFile_finfo { outFile };
     copyFileToCache(inFile, outFile);
 
-    for (auto item : m_assetsContent)
-        delete item;
-    m_assetsContent.clear();
-
     if (!RSPythonEnvironment::IsASofaPythonModule(outFile))
     {
         msg_warning_withfile("PythonAsset", m_path, 0) << "This python module '"<< inFile.toStdString() <<"' does not contain the safe-guard module docstring" << msgendl
                                                        << "To be able to load this asset in runSofa2, "
                                                           "append these lines at the top of the python "
                                                           "script:\n \"\"\"type: SofaContent\"\"\"";
-        m_detailsLoaded=true;
         return;
     }
 
@@ -173,18 +144,12 @@ void PythonAsset::getDetails()
             continue;
 
         py::dict data = py::cast<py::dict>(pair.second);
-        m_assetsContent[py2qt(pair.first)] =
-                    new PythonAssetModel(
-                        py2qt(pair.first),
-                        py2qt(data["type"]),
-                        py2qt(data["docstring"]),
-                        py2qt(data["sourcecode"]),
-                        getPrefabParams(
-                           data["params"].attr("args").is_none() ? py::list() : data["params"].attr("args"),
-                           data["params"].attr("defaults").is_none() ? py::tuple() : data["params"].attr("defaults"),
-                           data["params"].attr("args").is_none() ? py::dict() : data["params"].attr("annotations")));
+        m_assetsContent[py2qt(pair.first)] = { {{"name", py2qt(pair.first)},
+                                               {"type", py2qt(data["type"])},
+                                               {"docstring", py2qt(data["docstring"])},
+                                               {"sourcecode", py2qt(data["sourcecode"])}}
+                                              };
     }
-    m_detailsLoaded = true;
 }
 
 QUrl PythonAsset::getAssetInspectorWidget() {
@@ -225,7 +190,7 @@ QVariantList PythonAsset::scriptContent()
     QVariantList list;
     for (const auto& item : m_assetsContent)
     {
-        list.append(QVariant::fromValue(item));
+        list.append( item );
     }
     return list;
 }
@@ -234,7 +199,7 @@ bool PythonAsset::isScene()
 {
     getDetails();
     for (const auto& item : m_assetsContent){
-        if (item->getType() == "SofaScene")
+        if (item["type"] == "SofaScene")
             return true;
     }
     return false;

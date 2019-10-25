@@ -6,6 +6,7 @@
 #include <QQmlListProperty>
 #include <QFile>
 #include <QProcess>
+#include <QVariantMap>
 
 #include <experimental/filesystem>
 
@@ -48,53 +49,6 @@ public:
 };
 
 
-class PythonAssetModel : public QObject
-{
-    Q_OBJECT
-
-
-public:
-    PythonAssetModel() {}
-    PythonAssetModel(const QString& name, const QString& type,
-                     const QString& docstring, const QString& sourcecode, QList<QObject*> params);
-
-    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString type READ getType WRITE setType NOTIFY typeChanged)
-    Q_PROPERTY(QString docstring READ getDocstring WRITE setDocstring NOTIFY docstringChanged)
-    Q_PROPERTY(QList<QObject*> params READ getParams WRITE setParams NOTIFY paramsChanged)
-    Q_PROPERTY(QString sourcecode READ getSourceCode WRITE setSourceCode NOTIFY sourceCodeChanged)
-
-    Q_INVOKABLE const QString& getName() const;
-    Q_INVOKABLE const QString& getType() const;
-    Q_INVOKABLE const QString& getDocstring() const;
-    Q_INVOKABLE const QList<QObject*>& getParams() const;
-    Q_INVOKABLE const QString& getSourceCode() const;
-
-    Q_INVOKABLE void setName(const QString& name);
-    Q_INVOKABLE void setType(const QString& type);
-    Q_INVOKABLE void setDocstring(const QString& docstring);
-    Q_INVOKABLE void setParams(const QList<QObject*>& params);
-    Q_INVOKABLE void setSourceCode(const QString& sourcecode);
-
-    Q_INVOKABLE bool isContextFree(){ return m_isContextFree; }
-private:
-    Q_SIGNAL void nameChanged(QString);
-    Q_SIGNAL void typeChanged(QString);
-    Q_SIGNAL void docstringChanged(QString);
-    Q_SIGNAL void paramsChanged(QList<QObject*>);
-    Q_SIGNAL void sourceCodeChanged(QString);
-
-
-    QString m_name;
-    QString m_type;
-    QString m_docstring;
-    QString m_sourcecode;
-    QList<QObject*> m_params;
-
-    /// Indicates that the asset can be created only with with a node as first parameter
-    bool m_isContextFree {false} ;
-};
-
 class PythonAsset : public Asset
 {
     Q_OBJECT
@@ -103,7 +57,7 @@ public:
     PythonAsset(std::string path, std::string extension);
     virtual sofaqtquick::bindings::SofaNode* create(sofaqtquick::bindings::SofaNode* parent,
                                                     const QString& assetName = "") override;
-    virtual void getDetails() override;
+    Q_INVOKABLE virtual void getDetails() override;
     virtual QUrl getAssetInspectorWidget() override;
 
     Q_PROPERTY(QVariantList scriptContent READ scriptContent NOTIFY scriptContentChanged)
@@ -126,7 +80,7 @@ private:
     virtual bool isScene() override;
     QVariantList scriptContent();
     Q_SIGNAL void scriptContentChanged(QVariantList);
-    QMap<QString, sofa::qtquick::PythonAssetModel*> m_assetsContent;
+    QMap<QString, QVariantMap> m_assetsContent;
 };
 
 } // namespace sofa::qtquick

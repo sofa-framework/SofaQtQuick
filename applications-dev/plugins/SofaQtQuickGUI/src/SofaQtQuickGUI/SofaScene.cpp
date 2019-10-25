@@ -423,7 +423,6 @@ void SofaScene::open()
     }
     else
     {
-        std::cout << " ...SYNCHRONOUS LOADING... " << std::endl;
         if(!LoaderProcess(this))
             setStatus(Status::Error);
         else

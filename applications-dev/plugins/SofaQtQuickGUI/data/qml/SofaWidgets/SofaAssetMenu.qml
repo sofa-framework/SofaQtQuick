@@ -21,27 +21,9 @@ Menu {
     property var selection
 
     title: "Asset Content " + assetName
-    onAssetChanged: {
-        if (assetMenu.asset) {
-            menuRepeater.model = assetMenu.asset.scriptContent
-            if (menuRepeater.model === undefined) {
-                enabled = false
-                visible = false
-            }
-            else if (menuRepeater.model.length) {
-                enabled = true
-            }
-            else if (menuRepeater.model.count) {
-                enabled = true
-            }
-            else {
-                enabled = false
-                visible = false
-            }
-        }
-    }
 
-    onOpened: {
+    onAssetChanged: {
+        console.log("ASSET CHANGED .... " +assetMenu.asset.scriptContent)
         if (assetMenu.asset) {
             menuRepeater.model = assetMenu.asset.scriptContent
             if (menuRepeater.model === undefined) {
@@ -66,58 +48,42 @@ Menu {
     Repeater {
         id: menuRepeater
 
-        Component {
-            id: prefabSubmenuComponent
-            MenuItem {
-                id: menuId
-                property var model
+        delegate : MenuItem {
+            text: modelData["name"]
+            icon.source: getIconSource(modelData["type"])
 
-                text: model.name
-                icon.source: getIconSource()
-
-                function getIconSource()
-                {
-                    if(model.type  === "SofaScene" && model.name === "createScene")
-                        return "qrc:/icon/ICON_PYSCN.png";
-                    if (model.type === "class")
-                        return "qrc:/icon/ICON_PYTHON.png";
-                    if (model.type === "SofaPrefab")
-                        return "qrc:/icon/ICON_PREFAB.png";
-                    if (model.type === "PythonScriptController")
-                        return "qrc:/icon/ICON_PYController.png";
-                    if (model.type === "PythonScriptDataEngine")
-                        return "qrc:/icon/ICON_PYEngine.png"
+            function getIconSource(type)
+            {
+                if(type  === "SofaScene")
+                    return "qrc:/icon/ICON_PYSCN.png";
+                if (type === "class")
                     return "qrc:/icon/ICON_PYTHON.png";
-                }
-
-                onClicked: {
-                    var p = asset.create(parentNode, text)
-                    if (!p){
-                        console.log("Unable to create and asset for: ", text)
-                        return
-                    }
-
-                    if (basemodel) {
-                        var srcIndex = basemodel.getIndexFromBase(p)
-                        var index = sceneModel.mapFromSource(srcIndex);
-                        treeView.collapseAncestors(index)
-                        treeView.expandAncestors(index)
-                        treeView.expand(index)
-                        treeView.selection.setCurrentIndex(index, selection)
-                    }
-                    assetMenu.visible=false
-                }
+                if (type === "SofaPrefab")
+                    return "qrc:/icon/ICON_PREFAB.png";
+                if (type === "PythonScriptController")
+                    return "qrc:/icon/ICON_PYController.png";
+                if (type === "PythonScriptDataEngine")
+                    return "qrc:/icon/ICON_PYEngine.png"
+                return "qrc:/icon/ICON_PYTHON.png";
             }
-        }
 
+            onTriggered:
+            {
+                var p = asset.create(parentNode, text)
+                if (!p){
+                    console.log("Unable to create and asset for: ", text)
+                    return
+                }
 
-        Loader {
-            id: assetLoader
-            sourceComponent: prefabSubmenuComponent
-
-            onLoaded: {
-                item.model = modelData
-                assetMenu.addMenuItem(item)
+                if (basemodel) {
+                    var srcIndex = basemodel.getIndexFromBase(p)
+                    var index = sceneModel.mapFromSource(srcIndex);
+                    treeView.collapseAncestors(index)
+                    treeView.expandAncestors(index)
+                    treeView.expand(index)
+                    treeView.selection.setCurrentIndex(index, selection)
+                }
+                assetMenu.visible=false
             }
         }
     }

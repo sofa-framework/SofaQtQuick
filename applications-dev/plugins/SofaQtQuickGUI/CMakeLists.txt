@@ -74,6 +74,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaProject.cpp
     src/SofaQtQuickGUI/Assets/Asset.cpp
     src/SofaQtQuickGUI/Assets/DirectoryAsset.cpp
+    src/SofaQtQuickGUI/Assets/FileAsset.cpp
     src/SofaQtQuickGUI/Assets/MeshAsset.cpp
     src/SofaQtQuickGUI/Assets/PythonAsset.cpp
     src/SofaQtQuickGUI/Assets/SceneAsset.cpp
@@ -155,6 +156,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaProject.h
     src/SofaQtQuickGUI/Assets/Asset.h
     src/SofaQtQuickGUI/Assets/DirectoryAsset.h
+    src/SofaQtQuickGUI/Assets/FileAsset.h
     src/SofaQtQuickGUI/Assets/MeshAsset.h
     src/SofaQtQuickGUI/Assets/PythonAsset.h
     src/SofaQtQuickGUI/Assets/TextureAsset.h

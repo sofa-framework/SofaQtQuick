@@ -1,5 +1,6 @@
 #include "AssetFactory.h"
 
+#include "FileAsset.h"
 #include "MeshAsset.h"
 #include "TextureAsset.h"
 #include "PythonAsset.h"
@@ -35,7 +36,8 @@ AssetFactory::createInstance(const QString& path,
 {
     const auto& creator = getFactoryCreators().find(extension.toStdString());
     if (creator == getFactoryCreators().end())
-        return nullptr; // TODO:@marques-bruno Instead of discarding unknown extensions, load custom templates from a user defined python templates dir
+        return std::shared_ptr<FileAsset>{new FileAsset(path.toStdString(),
+                                          extension.toStdString())};
     return creator->second->createInstance(path.toStdString(),
                                           extension.toStdString());
 }
