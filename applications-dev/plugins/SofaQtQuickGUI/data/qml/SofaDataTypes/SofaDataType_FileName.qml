@@ -43,6 +43,7 @@ Row {
     TextField {
         id: textField
         enabled: true
+        readOnly: sofaData.properties.readOnly
         width: root.width - openButton.width - root.spacing
         text: sofaData.value.toString()
 
@@ -56,11 +57,11 @@ Row {
             id: dropArea
             anchors.fill: parent
             onEntered: {
-                if(  drag.source.url )
+                if(  drag.source.url && !textField.readOnly)
                     drag.accept(false)
             }
             onDropped: {
-                if(drag.source.url)
+                if(drag.source.url && !textField.readOnly)
                 {
                     textField.text = drag.source.localPath
                 }
@@ -71,7 +72,7 @@ Row {
     Button {
         id: openButton
         Layout.alignment: Qt.AlignTop
-
+        enabled: !sofaData.properties.readOnly
         Image {
             width: 16
             height: 16

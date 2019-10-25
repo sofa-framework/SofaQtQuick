@@ -139,24 +139,10 @@ QVariant SofaDataContainerListModel::data(const QModelIndex& index, int role) co
 
 QVariant SofaDataContainerListModel::headerData(int section, Qt::Orientation orientation, int /*role*/) const
 {
+    std::vector<QString> labels;
+
     ///  @bmarques TODO: use typename to determine column header titles
-    if (orientation == Qt::Vertical) {
-        return QVariant::fromValue<int>(section);
-    }
-    else
-    {
-        switch (section)
-        {
-        case 0:
-            return QVariant::fromValue<QString>("x");
-        case 1:
-            return QVariant::fromValue<QString>("y");
-        case 2:
-            return QVariant::fromValue<QString>("z");
-        default:
-            return QVariant::fromValue<int>(section);
-        }
-    }
+    return QVariant::fromValue<int>(section);
 }
 
 bool SofaDataContainerListModel::setData(const QModelIndex &index, const QVariant &value, int role)

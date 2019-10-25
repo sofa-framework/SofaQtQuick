@@ -400,7 +400,7 @@ QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& prop
         {
             properties.insert("type", "number");
             properties.insert("step", 0.1);
-            properties.insert("decimals", 14);
+            properties.insert("precision", 6);
             return properties;
         }
 

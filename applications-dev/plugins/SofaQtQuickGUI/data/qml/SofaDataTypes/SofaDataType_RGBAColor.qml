@@ -63,7 +63,7 @@ RowLayout {
         to: 1.0
         from: 0.0
         step: 0.01
-        decimals: 2
+        precision: 3
         position: cornerPositions['Left']
     }
     SpinBox {
@@ -82,7 +82,7 @@ RowLayout {
         to: 1.0
         from: 0.0
         step: 0.01
-        decimals: 2
+        precision: 3
         position: cornerPositions['Middle']
     }
     SpinBox {
@@ -101,7 +101,7 @@ RowLayout {
         to: 1.0
         from: 0.0
         step: 0.01
-        decimals: 2
+        precision: 3
         position: cornerPositions['Middle']
     }
     SpinBox {
@@ -120,7 +120,7 @@ RowLayout {
         to: 1.0
         from: 0.0
         step: 0.01
-        decimals: 2
+        precision: 3
         position: cornerPositions['Middle']
     }
 

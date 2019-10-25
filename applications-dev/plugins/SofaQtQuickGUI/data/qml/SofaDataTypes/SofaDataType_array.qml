@@ -70,7 +70,7 @@ ColumnLayout {
                     id: cellItem
                     implicitWidth: gridView.cellWidth + 1
                     implicitHeight: 21
-                    readOnly: sofaData.isReadOnly
+                    readOnly: sofaData.properties.readOnly
                     position: cornerPositions[corner]
                     showIndicators: listModel.columnCount() === 1
                     value: dataValue
@@ -166,12 +166,18 @@ ColumnLayout {
 
                     Component {
                         id: lastRowIdxComponent
-                        IconButton {
+                        Button {
                             property var styleData: parent.styleData
                             onClicked: {
                                 listModel.removeLastRow()
                             }
-                            iconSource: "qrc:/icon/invalid.png"
+                            Image {
+                                width: 10
+                                height: 10
+                                source: "qrc:/icon/invalid.png"
+                                anchors.centerIn: parent
+                                fillMode: Image.PreserveAspectFit
+                            }
                         }
                     }
 
@@ -191,7 +197,7 @@ ColumnLayout {
                             anchors.leftMargin: -1
                             anchors.rightMargin: -1
                             clip: true
-                            readOnly: sofaData.isReadOnly || styleData.column === 0
+                            readOnly: sofaData.properties.readOnly || styleData.column === 0
                             color: styleData.textColor
                             horizontalAlignment: TextEdit.AlignHCenter
                             verticalAlignment: TextEdit.AlignVCenter
@@ -237,7 +243,7 @@ ColumnLayout {
 
                             onEditingFinished: {
                                 cell.focus = false
-                                if(-1 === styleData.row || sofaData.isReadOnly || 0 === styleData.column)
+                                if(-1 === styleData.row || sofaData.properties.readOnly || 0 === styleData.column)
                                     return;
 
                                 if(previousRow !== styleData.row) {
@@ -263,7 +269,7 @@ ColumnLayout {
                     id: addRowId
                     Layout.fillWidth: true
                     implicitHeight: 20
-                    enabled: sofaData? !sofaData.isReadOnly : false
+                    enabled: sofaData? !sofaData.properties.readOnly : false
                     spacing: -1
                     Repeater {
                         id: repeaterId
