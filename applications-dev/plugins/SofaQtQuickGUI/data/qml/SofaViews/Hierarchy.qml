@@ -203,6 +203,7 @@ Rectangle {
                 visible: false
             }
         }
+
         selection: ItemSelectionModel {
             model: treeView.model
             onSelectionChanged:
@@ -503,12 +504,13 @@ Rectangle {
                         var c = getFirstChildWithMessage(index)
                         var idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(c))
                         treeView.expandAncestors(idx)
+                        //treeView.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect)
+                        SofaApplication.selectedComponent = c;
                         return
                     }
 
                     var srcIndex = sceneModel.mapToSource(index)
                     var c = basemodel.getBaseFromIndex(srcIndex)
-
                     var w = windowMessage.createObject(nodeMenu.parent,{
                                                    "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
@@ -533,7 +535,6 @@ Rectangle {
                 onClicked: {
                     var srcIndex = sceneModel.mapToSource(index)
                     var c = basemodel.getBaseFromIndex(srcIndex)
-
                     var w = windowMessage.createObject(nodeMenu.parent,{
                                                    "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
@@ -578,7 +579,7 @@ Rectangle {
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {
-                        sofaScene.selectedComponent = theComponent
+                        SofaApplication.selectedComponent = theComponent
                         SofaApplication.currentProject.selectedAsset = null
 
                         treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)
@@ -673,7 +674,6 @@ Rectangle {
                             treeView.expandAncestors(index)
                             treeView.expand(index)
                             treeView.selection.setCurrentIndex(index, selection)
-
                         }
                     }
 
