@@ -222,12 +222,14 @@ bool SofaNode::isInAPrefab() const
     return getPrefabAncestor(n);
 }
 
-bool _hasMessageInChild(BaseNode* node)
+using sofa::core::objectmodel::Base;
+Base* _getMessageInChild(BaseNode* node)
 {
     for(auto& child : node->getChildren())
     {
-        if(_hasMessageInChild(child))
-            return true;
+        Base* base = _getMessageInChild(child);
+        if(base)
+            return base;
     }
 
     DAGNode* nnode = dynamic_cast<DAGNode*>(node);
@@ -236,15 +238,20 @@ bool _hasMessageInChild(BaseNode* node)
     for(auto& object : nnode->getNodeObjects())
     {
         if(object->countLoggedMessages() != 0)
-            return true;
+            return object;
     }
 
-    return false;
+    return nullptr;
 }
 
 bool SofaNode::hasMessageInChild() const
 {
-    return _hasMessageInChild(rawBase()->toBaseNode());
+    return _getMessageInChild(rawBase()->toBaseNode()) != nullptr;
+}
+
+SofaBase* SofaNode::getFirstChildWithMessage() const
+{
+    return new SofaBase(_getMessageInChild(rawBase()->toBaseNode()));
 }
 
 bool SofaNode::attemptToBreakPrefab()

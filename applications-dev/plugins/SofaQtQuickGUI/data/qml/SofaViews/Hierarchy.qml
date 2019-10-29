@@ -394,6 +394,16 @@ Rectangle {
                 return c.hasMessage();
             }
 
+            function getFirstChildWithMessage(index)
+            {
+                var srcIndex = sceneModel.mapToSource(index)
+                var c = basemodel.getBaseFromIndex(srcIndex)
+
+                if ( c===null )
+                    return null
+                return c.getFirstChildWithMessage()
+            }
+
             Item {
                 id: icon
                 anchors.verticalCenter: parent.verticalCenter
@@ -469,26 +479,47 @@ Rectangle {
                 opacity: 0.75
 
             }
-            Image {
+            SofaWindowComponentMessages { id: windowMessage }
+
+            IconButton {
+                /// This is the error button that shows when there is an error message on
+                /// an object or a node
                 id:childError
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: componentState.left
                 height: 16
                 width: 16
                 visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
-                source:
+                iconSource:
                 {
                     if(isNode)
                         return !hasChildMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
                     return hasMessage ? "qrc:/icon/iconerror.xpm" : "qrc:/icon/iconmessage_base.png"
                 }
+
+                onClicked: {
+                    if(isNode)
+                    {
+                        var c = getFirstChildWithMessage(index)
+                        var idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(c))
+                        treeView.expandAncestors(idx)
+                        return
+                    }
+
+                    var srcIndex = sceneModel.mapToSource(index)
+                    var c = basemodel.getBaseFromIndex(srcIndex)
+
+                    var w = windowMessage.createObject(nodeMenu.parent,{
+                                                   "parent" : nodeMenu.parent,
+                                                   "sofaComponent": c});
+                }
                 opacity: 0.75
+                z: 1
             }
 
             IconButton {
                 /// Window that contains the object message. The windows is only created when the menu item
                 /// is clicked
-                SofaWindowComponentMessages { id: windowMessage }
 
                 id: localError
                 anchors.verticalCenter: rowText.verticalCenter
@@ -498,13 +529,15 @@ Rectangle {
                 visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
                 iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
                 opacity: 0.75
-                onClicked: {7
+                enabled: false
+                onClicked: {
                     var srcIndex = sceneModel.mapToSource(index)
                     var c = basemodel.getBaseFromIndex(srcIndex)
 
                     var w = windowMessage.createObject(nodeMenu.parent,{
                                                    "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
+
                 }
                 z: 1
             }
@@ -545,7 +578,7 @@ Rectangle {
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {
-                        SofaApplication.selectedComponent = theComponent
+                        sofaScene.selectedComponent = theComponent
                         SofaApplication.currentProject.selectedAsset = null
 
                         treeView.selection.setCurrentIndex(styleData.index, ItemSelectionModel.ClearAndSelect)

@@ -81,6 +81,7 @@ public:
     Q_INVOKABLE bool isPrefab() const;
     Q_INVOKABLE bool isInAPrefab() const;
     Q_INVOKABLE bool hasMessageInChild() const;
+    Q_INVOKABLE SofaBase* getFirstChildWithMessage() const;
 
     Q_INVOKABLE void addChild(SofaNode* child);
     Q_INVOKABLE void copyTo(SofaNode* child);
