@@ -291,7 +291,7 @@ Item {
 
                             function insertAsset(index, rootNode)
                             {
-                                var _parent = sofaScene.selectedComponent
+                                var _parent = SofaApplication.selectedComponent
                                 if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
                                 if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
 
@@ -320,7 +320,7 @@ Item {
                                     }
                                     else {
                                         var rootNode = sofaApplication.sofaScene.root()
-                                        sofaScene.selectedComponent = insertAsset(index, rootNode)
+                                        SofaApplication.selectedComponent = insertAsset(index, rootNode)
                                     }
                                 }
                             }

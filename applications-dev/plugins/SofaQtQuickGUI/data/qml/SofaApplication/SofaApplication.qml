@@ -25,16 +25,22 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.1
-import SofaApplicationSingleton 1.0
+import SofaBaseApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
 import SofaProject 1.0
 
-SofaApplicationSingleton //
+Item //
 {
     id: root
 
     property var style : MainStyle
+
+    property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
+    function trimComponentCache()
+    {
+        SofaBaseApplicationSingleton.trimComponentCache();
+    }
 
     /// Returns the absolute position of the mouse in a mouseArea
     /// Takes a MouseArea as argument

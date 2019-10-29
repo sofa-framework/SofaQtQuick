@@ -97,6 +97,9 @@ using sofa::simulation::graph::DAGNode;
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
 using sofaqtquick::bindings::SofaCoreBindingFactory;
 
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
+using sofa::qtquick::SofaBaseApplication;
+
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -287,7 +290,7 @@ void SofaScene::loadCppGraph()
 
     // reset properties
     setAnimate(false);
-    setSelectedComponent(nullptr);
+    SofaBaseApplication::SetSelectedComponent(nullptr);
     setSelectedManipulator(nullptr);
     myManipulators.clear();
 
@@ -321,7 +324,7 @@ void SofaScene::open()
     // reset properties
     setAnimate(false);
 
-    setSelectedComponent(nullptr);
+    SofaBaseApplication::SetSelectedComponent(nullptr);
     setSelectedManipulator(nullptr);
     myManipulators.clear();
 
@@ -571,19 +574,6 @@ void SofaScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
     pyQtForceSynchronousChanged(newPyQtForceSynchronous);
 }
 
-void SofaScene::setSelectedComponent(sofaqtquick::bindings::SofaBase* newSelectedComponent)
-{
-    if(newSelectedComponent == mySelectedComponent)
-    {
-        return;
-    }
-
-    mySelectedComponent = nullptr;
-    if(newSelectedComponent)
-        mySelectedComponent = newSelectedComponent;
-
-    emit selectedComponentChanged(mySelectedComponent);
-}
 
 void SofaScene::setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator)
 {

@@ -36,6 +36,7 @@ class QQuickItem;
 class QSettings;
 
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
 #include <SofaPython3/PythonEnvironment.h>
 
 namespace sofa
@@ -48,19 +49,20 @@ namespace qtquick
 class ProcessState;
 
 /// \class Useful tool when creating applications
-class SOFA_SOFAQTQUICKGUI_API SofaApplication : public QObject
+class SOFA_SOFAQTQUICKGUI_API SofaBaseApplication : public QObject
 {
     Q_OBJECT
 
 protected:
-    SofaApplication(QObject* parent = nullptr);
+    SofaBaseApplication(QObject* parent = nullptr);
 
 public:
-    ~SofaApplication();
+    ~SofaBaseApplication();
 
-    static SofaApplication* Instance();
+    static SofaBaseApplication* Instance();
 
 public:
+    Q_PROPERTY(sofaqtquick::bindings::SofaBase* selectedComponent READ getSelectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(int overrideCursorShape READ overrideCursorShape WRITE setOverrideCursorShape NOTIFY overrideCursorShapeChanged)
 
 public:
@@ -70,6 +72,7 @@ public:
 signals:
     void overrideCursorShapeChanged();
     void signalComponent(QString path) ;
+    void selectedComponentChanged(sofaqtquick::bindings::SofaBase* newSelectedComponent);
 
 public:
     Q_SLOT void copyToClipboard(const QString& text);
@@ -124,8 +127,13 @@ public:
 
     Q_INVOKABLE QString toLocalFile(const QUrl& url);
 
+    sofaqtquick::bindings::SofaBase* getSelectedComponent() const ;
+    void setSelectedComponent(sofaqtquick::bindings::SofaBase* m_selectedComponent);
 
 public:
+    static void SetSelectedComponent(sofaqtquick::bindings::SofaBase* selectedComponent);
+    static sofaqtquick::bindings::SofaBase* GetSelectedComponent();
+
     static void InitOpenGL();
     static void SetOpenGLDebugContext();    // must be call before the window has been shown
     static void UseOpenGLDebugLogger();     // must be call after a valid opengl debug context has been made current
@@ -154,12 +162,12 @@ public:
 
 
 private:
-    static SofaApplication* OurInstance;
+    static SofaBaseApplication* OurInstance;
 
 	QString					myPythonDirectory;
     QString                 myDataDirectory;
 
-
+    sofa::core::objectmodel::Base::SPtr m_selectedComponent;
 };
 
 }

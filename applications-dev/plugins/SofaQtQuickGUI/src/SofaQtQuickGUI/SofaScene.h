@@ -107,7 +107,6 @@ public:
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
-    Q_PROPERTY(sofaqtquick::bindings::SofaBase* selectedComponent READ selectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
 
@@ -169,9 +168,6 @@ public:
     bool pyQtSynchronous() const                                {return myPyQtForceSynchronous;}
     void setPyQtForceSynchronous(bool newPyQtSynchronous);
 
-    sofaqtquick::bindings::SofaBase* selectedComponent() const     {return mySelectedComponent;}
-    void setSelectedComponent(sofaqtquick::bindings::SofaBase* newSelectedComponent);
-
     sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
     void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
 
@@ -195,7 +191,6 @@ signals:
     void defaultAnimateChanged(bool newDefaultAnimate);
     void asynchronousChanged(bool newAsynchronous);
     void pyQtForceSynchronousChanged(bool newPyQtSynchronous);
-    void selectedComponentChanged(sofaqtquick::bindings::SofaBase* newSelectedComponent);
     void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
 
 public:

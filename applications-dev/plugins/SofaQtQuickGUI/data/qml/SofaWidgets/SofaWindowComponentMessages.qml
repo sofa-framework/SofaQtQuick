@@ -34,7 +34,7 @@ Component {
             sourceComponent: MessageView
             {
                 filterByComponent: true
-                sofaSelectedComponent: sofaComponent
+                selectedComponent: sofaComponent
             }
         }
     }

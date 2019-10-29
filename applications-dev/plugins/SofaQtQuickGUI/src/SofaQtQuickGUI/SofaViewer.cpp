@@ -69,7 +69,7 @@ using sofa::component::visualmodel::VisualStyle;
 
 #include <SofaQtQuickGUI/SelectableManipulator.h>
 
-#include <SofaQtQuickGUI/SofaApplication.h>
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
 
 namespace sofa
 {
@@ -107,7 +107,7 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     m_visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
     m_visualParams->setSupported(sofa::core::visual::API_OpenGL);
 
-    sofa::qtquick::SofaApplication::InitOpenGL();
+    sofa::qtquick::SofaBaseApplication::InitOpenGL();
 }
 
 SofaViewer::~SofaViewer()
@@ -687,10 +687,13 @@ void SofaViewer::setupCamera(int width, int height, const SofaViewer& viewer) co
 
 void SofaViewer::drawSelectedComponents(sofa::core::visual::VisualParams* visualParams) const
 {
-    if( !visualParams || !mySofaScene || !mySofaScene->mySelectedComponent)
+    if( !visualParams || !mySofaScene )
         return ;
 
-    auto selectedBase = mySofaScene->selectedComponent()->rawBase();
+    if( SofaBaseApplication::GetSelectedComponent() == nullptr)
+        return;
+
+    auto selectedBase = SofaBaseApplication::GetSelectedComponent()->rawBase();
     if(selectedBase)
     {
         //glDepthFunc(GL_LEQUAL);

@@ -41,8 +41,8 @@ using sofa::core::objectmodel::BaseNode;
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 using sofa::qtquick::SofaComponent ;
 
-#include <SofaQtQuickGUI/SofaApplication.h>
-using sofa::qtquick::SofaApplication ;
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
+using sofa::qtquick::SofaBaseApplication ;
 
 namespace sofa
 {

@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
-#include <SofaQtQuickGUI/SofaApplication.h>
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/ProcessState.h>
 #include <SofaQtQuickGUI/Camera.h>
 #include <SofaQtQuickGUI/SofaParticleInteractor.h>
@@ -150,6 +150,15 @@ static QObject* createSofaViewListModel(QQmlEngine *engine,
     return new SofaViewListModel() ;
 }
 
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createSofaBaseApplication(QQmlEngine *engine,
+                                          QJSEngine *scriptEngine){
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    return SofaBaseApplication::Instance();
+}
 
 
 void registerSofaTypesToQml(const char* /*uri*/)
@@ -174,7 +183,6 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<sofaqtquick::bindings::SofaNode*>("SofaNode*");
     qRegisterMetaType<sofaqtquick::bindings::SofaNodeList*>("SofaNodeList*");
 
-    qmlRegisterType<SofaApplication>                                ("SofaApplicationSingleton"             , versionMajor, versionMinor, "SofaApplicationSingleton");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
@@ -236,6 +244,11 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                      versionMajor, versionMinor,
                                      "BaseObject");
 
+    /// registers the C++ type in the QML system with the name "Console",
+    qmlRegisterSingletonType<SofaBaseApplication>("SofaBaseApplicationSingleton", /// char* uri
+                                      versionMajor, versionMinor,             /// int majorVersion
+                                      "SofaBaseApplicationSingleton",
+                                      createSofaBaseApplication );   /// exported Name.
 
     /// registers the C++ type in the QML system with the name "Console",
     qmlRegisterSingletonType<Console>("SofaMessageList",                  /// char* uri

@@ -60,11 +60,7 @@ SofaScene {
         case SofaScene.Ready:
             statusMessage = 'SofaScene "' + root.path + '" loaded successfully';
             SofaApplication.sceneSettings.addRecent(root.path);
-
-            if( SofaApplication.sofaScene )
-            {
-                selectedComponent = SofaApplication.sofaScene.root() ;
-            }
+            SofaApplication.selectedComponent = SofaApplication.sofaScene.root() ;
             break;
         }
     }
