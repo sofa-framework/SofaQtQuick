@@ -116,10 +116,8 @@ void SofaLinkCompletionModel::updateModel()
     m_modelHelp.clear();
 
     if (!lastValid) {
-        msg_error("SofaLinkCompletionModel") << "invalid object";
         return;
     }
-    msg_error("SofaLinkCompletionModel") << "valid object found: " << lastValid->getName();
     if (lastValid->toBaseNode())
     {
         BaseNode* node = lastValid->toBaseNode();
@@ -142,13 +140,15 @@ void SofaLinkCompletionModel::updateModel()
 
     for (auto data : lastValid->getDataFields())
     {
-        m_modelText.push_back(lastValidLinkPath+QString::fromStdString(data_separator+data->getName()));
-        m_modelName.push_back(QString::fromStdString(data->getName()));
-        m_modelHelp.push_back(QString::fromStdString(data->getHelp()));
+        if (data->getValueTypeString() == sofaData()->rawData()->getValueTypeString())
+        {
+            m_modelText.push_back(lastValidLinkPath+QString::fromStdString(data_separator+data->getName()));
+            m_modelName.push_back(QString::fromStdString(data->getName()));
+            m_modelHelp.push_back(QString::fromStdString(data->getHelp()));
+        }
     }
     m_modelText.erase(std::remove_if(m_modelText.begin(), m_modelText.end(),
                      [this](const QString &s) { return !s.contains(m_linkPath); }), m_modelText.end());
-    msg_error("SofaLinkCompletionModel") << "all completions:" << m_modelText.join("\n").toStdString();
     endResetModel();
 }
 
