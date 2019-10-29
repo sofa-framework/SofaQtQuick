@@ -54,7 +54,7 @@ namespace sofaqtquick::bindings
 
             Q_INVOKABLE QString getName() const;
             Q_INVOKABLE QString getPathName() const;
-            Q_INVOKABLE QVariant getValue() const;
+            Q_INVOKABLE QVariant getValue() ;
             Q_INVOKABLE QString getValueType() const;
 
             Q_INVOKABLE QString getHelp() const;
@@ -73,7 +73,6 @@ namespace sofaqtquick::bindings
 
             BaseData* rawData() { return m_self; }
             const BaseData* rawData() const { return m_self; }
-
         signals:
             void valueChanged(const QVariant& newValue);
             void readOnlyChanged(const bool);
@@ -84,6 +83,8 @@ namespace sofaqtquick::bindings
             void propertiesChanged(const QVariantList newValues);
         private:
             BaseData* m_self {nullptr};
+            QVariant m_previousValue;
+
         };
     }
 

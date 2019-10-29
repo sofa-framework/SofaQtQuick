@@ -11,6 +11,8 @@ import QtQml 2.3
 Menu {
     id: assetMenu
 
+
+
     property var asset
     property string assetName: asset ? asset.getTypeString() : "()"
     property var parentNode
@@ -43,7 +45,6 @@ Menu {
     }
 
     MenuSeparator {}
-
     Repeater {
         id: menuRepeater
 
@@ -66,8 +67,8 @@ Menu {
                 return "qrc:/icon/ICON_PYTHON.png";
             }
 
-            onTriggered:
-            {
+
+            function doCreate() {
                 var p = asset.create(parentNode, text)
                 if (!p){
                     console.log("Unable to create and asset for: ", text)
@@ -82,9 +83,29 @@ Menu {
                     treeView.expand(index)
                     treeView.selection.setCurrentIndex(index, selection)
                 }
+            }
+
+            onTriggered:
+            {
                 assetMenu.visible=false
+                if(parentNode.isPrefab()){
+                    messageDialog.onYes.connect( doCreate )
+                    messageDialog.open()
+                    return
+                }
+                doCreate()
             }
         }
+    }
+
+    MessageDialog
+    {
+        visible: false
+        id: messageDialog
+        title: "Error"
+        text: "This will break the existing prefab. Are you sure ? "
+        icon: StandardIcon.Critical
+        standardButtons: StandardButton.Yes | StandardButton.No
     }
 }
 
