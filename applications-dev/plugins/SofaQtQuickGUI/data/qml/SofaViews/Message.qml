@@ -138,6 +138,7 @@ Column {
                         }
                         width: parent.width;
                         clip : true
+                        height: columnA.height
 
                         /// The message is showned iff the either the message match the emitter's activeFocus:
                         /// or filtering is disabled.
@@ -163,10 +164,8 @@ Column {
                             Row{
                                 id: baseinfo
                                 spacing : 10
-                                height: messagetext.height
                                 Text{
                                     id: messageemitter
-
                                     textFormat: Text.RichText
                                     text: {
                                         // Info=0, Advice, Deprecated, Warning, Error, Fatal,
@@ -215,7 +214,6 @@ Column {
                                     text: message
                                     color: "black"
                                 }
-
                                 IconButton
                                 {
                                     id: messageicon
@@ -237,7 +235,6 @@ Column {
                                     }
                                 }
                             }
-
 
                             Text {
                                 property string filename: link
@@ -295,7 +292,7 @@ Column {
                                 PropertyChanges {
                                     target: viewitem
                                     extrainfo.visible: true
-                                    height: childrenRect.height + 4
+                                    height: columnA.height + 4
                                     color: SofaApplication.style.contentBackgroundColor
                                 }
                             },
@@ -304,7 +301,7 @@ Column {
                                 PropertyChanges {
                                     target: viewitem
                                     extrainfo.visible: false
-                                    height: childrenRect.height + 4
+                                    height: columnA.height + 4
                                     color: SofaApplication.style.contentBackgroundColor
                                 }
                             },
@@ -313,7 +310,7 @@ Column {
                                 PropertyChanges {
                                     target: viewitem
                                     extrainfo.visible: showEmittingLocation
-                                    height: viewitem.visible ? childrenRect.height + 4 : 0
+                                    height: viewitem.visible ? columnA.height + 4 : 0
                                     color: SofaApplication.style.contentBackgroundColor
                                 }
                             }

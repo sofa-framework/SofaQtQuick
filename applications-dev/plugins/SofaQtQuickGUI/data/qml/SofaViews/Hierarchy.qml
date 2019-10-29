@@ -503,6 +503,7 @@ Rectangle {
                     var c = basemodel.getBaseFromIndex(srcIndex)
 
                     var w = windowMessage.createObject(nodeMenu.parent,{
+                                                   "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
                 }
                 z: 1
