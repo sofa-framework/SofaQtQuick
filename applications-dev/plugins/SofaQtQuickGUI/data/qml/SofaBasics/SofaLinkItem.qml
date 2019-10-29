@@ -7,10 +7,16 @@ import SofaLinkCompletionModel 1.0
 ColumnLayout {
     id: control
     property alias text: txtField.text
+    property var linkImage
     property var sofaData
     Layout.fillWidth: true
     Layout.fillHeight: true
     spacing: 0
+    onActiveFocusChanged: {
+        if (activeFocus)
+            txtField.forceActiveFocus()
+    }
+
     TextField {
         id: txtField
         Layout.fillWidth: true
@@ -24,8 +30,16 @@ ColumnLayout {
         clip: true
         borderColor: 0 === sofaData.linkPath.length ? "red" : "#393939"
         Keys.forwardTo: [listView.currentItem, listView]
+
         onEditingFinished: {
-            setLinkIfValid(listView.currentItem.text)
+            txtField.text = listView.currentItem.text
+            if (setLinkIfValid(listView.currentItem.text))
+                linkImage.source = "qrc:/icon/linkValid.png"
+            else
+                linkImage.source = "qrc:/icon/linkInvalid.png"
+
+            txtField.borderColor = "#393939"
+            focus = false
         }
         onTextEdited: {
             isLinkValid(text)
@@ -37,7 +51,7 @@ ColumnLayout {
             var oldlink = sofaData.getLinkPath()
             var ret = sofaData.isLinkValid(value)
             if (ret) {
-                txtField.borderColor = "#393939"
+                txtField.borderColor = "lightgreen"
                 popup.close()
             } else {
                 txtField.borderColor = "red"
@@ -47,25 +61,13 @@ ColumnLayout {
             return ret
         }
         function setLinkIfValid(value) {
-            if (isLinkValid(value))
+            if (isLinkValid(value)) {
                 sofaData.setLink(value)
+                return true
+            }
             return false
         }
 
-        Keys.onReturnPressed: event.accepted = false
-        Keys.onEnterPressed: event.accepted = false
-        Keys.onPressed:
-        {
-            if(event.key === Qt.Key_Return)
-            {
-                txtField.text = listView.currentItem.text
-                if (!setLinkIfValid(listView.currentItem.text)) {
-                    event.accepted = false
-                    event.editingFinished = false
-                    event.activeFocus = true
-                }
-            }
-        }
     }
     Popup {
         id: popup
@@ -94,6 +96,18 @@ ColumnLayout {
                     parent.height = parent.contentHeight
                 }
             }
+            Keys.onTabPressed: {
+                console.log("TAB pressed (in listView)")
+                txtField.text = listView.currentItem.text
+                if (txtField.isLinkValid(listView.currentItem.text)) {
+                    console.log("valid linkPath")
+                } else {
+                    console.log("invalid linkPath")
+                    completionModel.linkPath = txtField.text
+                    listView.currentIndex = 0;
+                }
+            }
+
             Keys.onDownPressed: {
                 currentIndex++
                 if (currentIndex >= listView.rowCount)

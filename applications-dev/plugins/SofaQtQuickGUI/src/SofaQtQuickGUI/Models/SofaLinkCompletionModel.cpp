@@ -107,6 +107,11 @@ void SofaLinkCompletionModel::updateModel()
     std::string path_separator = "/";
     std::string data_separator = ".";
     Base* lastValid = this->getLastValidObject(lastValidLinkPath);
+    if (lastValidLinkPath == "")
+    {
+        path_separator = "";
+        data_separator = "";
+    }
     if (lastValidLinkPath[lastValidLinkPath.size() -1] == "/")
         path_separator = "";
     if (lastValidLinkPath[lastValidLinkPath.size() -1] == ".")
