@@ -65,6 +65,7 @@ namespace sofaqtquick::bindings
             Q_INVOKABLE bool setValue(const QVariant& getValue);
             Q_INVOKABLE bool setLink(const QString& path);
             Q_INVOKABLE QString getLinkPath()const;
+            Q_INVOKABLE bool isLinkValid(const QString& path);
 
             [[deprecated("Remove, use directly the object")]]
             Q_INVOKABLE QVariantMap object();

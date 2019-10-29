@@ -133,6 +133,22 @@ bool SofaData::setLink(const QString& path)
     return false;
 }
 
+bool SofaData::isLinkValid(const QString &path)
+{
+    Base* owner = rawData()->getOwner();
+    BaseObject* o = owner->toBaseObject();
+    BaseNode* n = owner->toBaseNode();
+    BaseData* parent = nullptr;
+    if (o)
+        parent = sofaqtquick::helper::findData(o->getContext()->toBaseNode(), path);
+    else if (n)
+        parent = sofaqtquick::helper::findData(n, path);
+    else {
+        return false;
+    }
+
+    return (parent && rawData()->validParent(parent));
+}
 
 QString SofaData::getHelp() const
 {

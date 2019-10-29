@@ -25,22 +25,30 @@ ColumnLayout {
         borderColor: 0 === sofaData.linkPath.length ? "red" : "#393939"
         Keys.forwardTo: [listView.currentItem, listView]
         onEditingFinished: {
-            if (setLinkIfValid(listView.currentItem.text))
-                popup.close()
-
+            setLinkIfValid(listView.currentItem.text)
         }
         onTextEdited: {
-            if (!popup.opened)
-                popup.open()
+            isLinkValid(text)
             if (listView.currentIndex >= completionModel.rowCount())
                 listView.currentIndex = 0
             completionModel.linkPath = text
         }
-        function setLinkIfValid(value) {
+        function isLinkValid(value) {
             var oldlink = sofaData.getLinkPath()
-            if (sofaData.setLink(value))
-                return true
-            sofaData.setLink(oldlink)
+            var ret = sofaData.isLinkValid(value)
+            if (ret) {
+                txtField.borderColor = "#393939"
+                popup.close()
+            } else {
+                txtField.borderColor = "red"
+                if (!popup.opened)
+                    popup.open()
+            }
+            return ret
+        }
+        function setLinkIfValid(value) {
+            if (isLinkValid(value))
+                sofaData.setLink(value)
             return false
         }
 
@@ -55,10 +63,6 @@ ColumnLayout {
                     event.accepted = false
                     event.editingFinished = false
                     event.activeFocus = true
-                    focus = false;
-                }
-                else {
-                    popup.close()
                 }
             }
         }
@@ -70,6 +74,7 @@ ColumnLayout {
         padding: 0
         margins: 0
         implicitWidth: txtField.width
+        implicitHeight: contentHeight
         contentWidth: txtField.width - padding
         contentHeight: listView.implicitHeight < 20 ? 20 : listView.implicitHeight
         y: 20
@@ -83,9 +88,20 @@ ColumnLayout {
             model: SofaLinkCompletionModel {
                 id: completionModel
                 sofaData: control.sofaData
+                onModelReset: {
+                    listView.implicitHeight = completionModel.rowCount() * 20
+                    parent.contentHeight = completionModel.rowCount() * 20
+                    parent.height = parent.contentHeight
+                }
+            }
+            Keys.onDownPressed: {
+                currentIndex++
+                if (currentIndex >= listView.rowCount)
+                    currentIndex = listView.rowCount - 1
             }
 
             delegate: Rectangle {
+                id: delegateId
                 property Gradient highlightcolor: Gradient {
                     GradientStop { position: 0.0; color: "#7aa3e5" }
                     GradientStop { position: 1.0; color: "#5680c1" }

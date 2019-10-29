@@ -116,6 +116,7 @@ void SofaLinkCompletionModel::updateModel()
     m_modelHelp.clear();
 
     if (!lastValid) {
+        endResetModel();
         return;
     }
     if (lastValid->toBaseNode())
