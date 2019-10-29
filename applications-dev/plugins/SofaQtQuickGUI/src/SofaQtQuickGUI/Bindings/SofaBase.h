@@ -88,7 +88,7 @@ public:
 protected:
     SofaBase();
 
-    Base::SPtr m_self; ///< Hold are reference to the real sofa object.
+    Base::SPtr m_self {nullptr}; ///< Hold are reference to the real sofa object.
 };
 
 } /// namespace _sofabase_

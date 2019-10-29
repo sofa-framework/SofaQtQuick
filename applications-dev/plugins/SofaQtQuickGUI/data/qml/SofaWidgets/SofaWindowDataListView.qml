@@ -29,7 +29,7 @@ Component {
         title: sofaComponent ? ("Data of component: " + sofaComponent.getName()) : "No component to visualize"
         
         property var sofaScene: root.sofaScene
-        property var sofaComponent: sofaScene ? sofaScene.selectedComponent : null
+        property var sofaComponent: SofaApplication.selectedComponent
         
         Loader {
             id: loader

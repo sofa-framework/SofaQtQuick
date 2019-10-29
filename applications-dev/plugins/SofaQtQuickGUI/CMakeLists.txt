@@ -21,7 +21,7 @@ endif ()
 set(SOURCE_FILES
     src/SofaQtQuickGUI/DataHelper.cpp
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.cpp
-    src/SofaQtQuickGUI/SofaApplication.cpp
+    src/SofaQtQuickGUI/SofaBaseApplication.cpp
     src/SofaQtQuickGUI/SofaViewer.cpp
     src/SofaQtQuickGUI/Windows/CameraView.cpp
     src/SofaQtQuickGUI/Windows/EditView.cpp
@@ -100,7 +100,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/config.h
     src/SofaQtQuickGUI/DataHelper.h
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.h
-    src/SofaQtQuickGUI/SofaApplication.h
+    src/SofaQtQuickGUI/SofaBaseApplication.h
     src/SofaQtQuickGUI/ProcessState.h
     src/SofaQtQuickGUI/SofaViewer.h
     src/SofaQtQuickGUI/Windows/CameraView.h

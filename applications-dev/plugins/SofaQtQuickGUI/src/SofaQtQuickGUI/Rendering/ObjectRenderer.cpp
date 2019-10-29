@@ -142,7 +142,6 @@ void ObjectRenderer::draw(Base* object, Base* selected, VisualParams* visualPara
     if(object==nullptr)
         return;
 
-
     if(object->toBaseNode())
         return drawBaseNode(object->toBaseNode(), object, visualParams, isSelected);
 

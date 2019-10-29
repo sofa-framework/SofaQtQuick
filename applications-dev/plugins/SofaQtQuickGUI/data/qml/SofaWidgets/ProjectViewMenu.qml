@@ -135,7 +135,7 @@ Menu {
         id: assetsList
         asset: model
         sofaScene: sofaApplication.sofaScene
-        parentNode: sofaApplication.sofaScene.selectedComponent
+        parentNode: sofaApplication.selectedComponent
         enabled: !fileIsDir
     }
 

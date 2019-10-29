@@ -33,9 +33,9 @@ import SofaScene 1.0
 Column {
     property bool filterByComponent : false
     property var sofaScene: SofaApplication.sofaScene
-    property var sofaSelectedComponent: sofaScene.selectedComponent
+    property var selectedComponent: SofaApplication.selectedComponent
     property alias showEmittingLocation: buttonShowEmittingLocation.checked
-    property string selectedComponentPath : sofaSelectedComponent ? sofaSelectedComponent.getPathName() : ""
+    property string selectedComponentPath : selectedComponent ? selectedComponent.getPathName() : ""
 
     /// We want to reset the counter of selected elements. I'm not sure how to
     /// do that in a declarative way through properties.

@@ -1,5 +1,5 @@
 #include "SofaProject.h"
-#include "SofaApplication.h"
+#include "SofaBaseApplication.h"
 
 #include <sofa/helper/system/FileMonitor.h>
 using sofa::helper::system::FileEventListener;

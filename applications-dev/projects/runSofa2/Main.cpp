@@ -24,7 +24,7 @@ using  sofa::helper::logging::MessageDispatcher;
 #include <sofa/core/logging/PerComponentLoggingMessageHandler.h>
 using  sofa::helper::logging::MainPerComponentLoggingMessageHandler;
 
-#include <SofaQtQuickGUI/SofaApplication.h>
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <QtWebView/QtWebView>
 #include <runSofa2/runSofa2.h>
 #include <QQuickStyle>
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
 
     /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
-    sofa::qtquick::SofaApplication::Initialization();
+    sofa::qtquick::SofaBaseApplication::Initialization();
 
     QApplication app(argc, argv);
     QtWebView::initialize();
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     app.setApplicationVersion("v1.0");
 
     /// common settings for most sofaqtquick applications
-    if(!sofa::qtquick::SofaApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
+    if(!sofa::qtquick::SofaBaseApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
 
     return app.exec();

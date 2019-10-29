@@ -65,7 +65,7 @@ Item {
         anchors.leftMargin: 10
         anchors.rightMargin: 10
         property var sofaScene: SofaApplication.sofaScene
-        property var sofaSelectedComponent: sofaScene ? sofaScene.selectedComponent : null
+        property var sofaSelectedComponent: SofaApplication.selectedComponent
 
         property bool showDebug : isDebug.checked
         property int refreshCounter : 0
@@ -91,7 +91,7 @@ Item {
         {
             if (!topRect.sofaScene)
                 topRect.sofaScene = SofaApplication.sofaScene
-            topRect.sofaSelectedComponent = topRect.sofaScene ? topRect.sofaScene.selectedComponent : null
+            topRect.sofaSelectedComponent = SofaApplication.selectedComponent
         }
 
         /*
@@ -527,8 +527,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
-                property var sofaSelectedComponent: sofaScene.selectedComponent
-
+                property var sofaSelectedComponent: SofaApplication.selectedComponent
                 model : visualModel
             }
         }

@@ -1,7 +1,7 @@
 #include <sofa/helper/testing/BaseTest.h>
 using sofa::helper::testing::BaseTest ;
 
-class SofaApplication_test : public BaseTest
+class SofaBaseApplication_test : public BaseTest
 {
 public:
     void checkGetComponents(){
@@ -9,7 +9,7 @@ public:
     }
 };
 
-TEST_F(SofaApplication_test, checkGetComponents)
+TEST_F(SofaBaseApplication_test, checkGetComponents)
 {
     checkGetComponents() ;
 }
