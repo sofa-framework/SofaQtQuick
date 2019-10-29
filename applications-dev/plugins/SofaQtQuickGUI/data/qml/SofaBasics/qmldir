@@ -53,3 +53,4 @@ SofaSceneFileDialog 1.0 SofaSceneFileDialog.qml
 Popup 1.0 Popup.qml
 singleton SofaDataWidgetFactory 1.0 SofaDataWidgetFactory.qml
 ListViewDelegate 1.0 ListViewDelegate.qml
+SofaLinkItem 1.0 SofaLinkItem.qml

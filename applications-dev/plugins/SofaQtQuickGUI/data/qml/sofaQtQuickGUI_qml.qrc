@@ -119,5 +119,6 @@
         <file>SofaWidgets/PrefabSubMenu.qml</file>
         <file>SofaWidgets/DraggableAssetItem.qml</file>
         <file>SofaBasics/TableView.qml</file>
+        <file>SofaBasics/SofaLinkItem.qml</file>
     </qresource>
 </RCC>

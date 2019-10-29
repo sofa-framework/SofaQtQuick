@@ -1,5 +1,4 @@
 #pragma once
-#include <QObject>
 #include <QAbstractListModel>
 
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
