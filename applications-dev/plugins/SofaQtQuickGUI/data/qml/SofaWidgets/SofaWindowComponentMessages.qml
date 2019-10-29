@@ -14,20 +14,25 @@ import SofaViews 1.0
 Component {
     Window {
         property var sofaComponent: null
-        id: root
-        width: 600
+        id: self
+        width: parent.Window.window.width
         height: 400
         modality: Qt.NonModal
-        flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
         visible: true
         color: "lightgrey"
+
+        property int offX : 0
+        property int offY : 0
+        x: parent.Window.window.x + offX
+        y: parent.Window.window.y + offY
 
         title: sofaComponent ? ("Messages for component: " + sofaComponent.getName()) : "No component to visualize"
 
         Loader {
             id: loader
             anchors.fill: parent
-            sourceComponent: MessageView {
+            sourceComponent: MessageView
+            {
                 filterByComponent: true
                 sofaSelectedComponent: sofaComponent
             }

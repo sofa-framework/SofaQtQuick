@@ -484,15 +484,28 @@ Rectangle {
                 }
                 opacity: 0.75
             }
-            Image {
+
+            IconButton {
+                /// Window that contains the object message. The windows is only created when the menu item
+                /// is clicked
+                SofaWindowComponentMessages { id: windowMessage }
+
                 id: localError
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: childError.left
                 height: 16
                 width: 16
                 visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
-                source: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
+                iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
                 opacity: 0.75
+                onClicked: {7
+                    var srcIndex = sceneModel.mapToSource(index)
+                    var c = basemodel.getBaseFromIndex(srcIndex)
+
+                    var w = windowMessage.createObject(nodeMenu.parent,{
+                                                   "sofaComponent": c});
+                }
+                z: 1
             }
 
             Drag.active: mouseArea.drag.active
@@ -515,7 +528,7 @@ Rectangle {
                 id: mouseArea
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 anchors.fill: parent
-
+                hoverEnabled: true
                 drag.target: parent
                 drag.onActiveChanged: {
                     if (drag.active)
