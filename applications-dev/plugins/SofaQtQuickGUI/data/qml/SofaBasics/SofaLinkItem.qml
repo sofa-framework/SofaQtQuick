@@ -23,50 +23,66 @@ ColumnLayout {
         width: parent.width
         clip: true
         borderColor: 0 === sofaData.linkPath.length ? "red" : "#393939"
+        Keys.forwardTo: [listView.currentItem, listView]
         onEditingFinished: {
-            sofaData.setLink(text)
+            if (setLinkIfValid(listView.currentItem.text))
+                popup.close()
+
         }
         onTextEdited: {
+            if (!popup.opened)
+                popup.open()
+            if (listView.currentIndex >= completionModel.rowCount())
+                listView.currentIndex = 0
             completionModel.linkPath = text
         }
+        function setLinkIfValid(value) {
+            var oldlink = sofaData.getLinkPath()
+            if (sofaData.setLink(value))
+                return true
+            sofaData.setLink(oldlink)
+            return false
+        }
 
+        Keys.onReturnPressed: event.accepted = false
+        Keys.onEnterPressed: event.accepted = false
         Keys.onPressed:
         {
             if(event.key === Qt.Key_Return)
             {
-                inputField.text = SofaFactory.components[container.currentIndex]
-            }
-            if(Qt.Key_Down === event.key)
-            {
-                container.incrementCurrentIndex()
-                text = null
-            }
-            if(Qt.Key_Up === event.key)
-            {
-                container.decrementCurrentIndex()
-                text = null
+                txtField.text = listView.currentItem.text
+                if (!setLinkIfValid(listView.currentItem.text)) {
+                    event.accepted = false
+                    event.editingFinished = false
+                    event.activeFocus = true
+                    focus = false;
+                }
+                else {
+                    popup.close()
+                }
             }
         }
     }
     Popup {
+        id: popup
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         visible: txtField.activeFocus
-        contentWidth: txtField.width
-        contentHeight: listView.implicitHeight < 20 ? 20 : listView.implicitHeight
-        padding: 10
+        padding: 0
         margins: 0
+        implicitWidth: txtField.width
+        contentWidth: txtField.width - padding
+        contentHeight: listView.implicitHeight < 20 ? 20 : listView.implicitHeight
         y: 20
 
         ListView {
             id: listView
             visible: txtField.activeFocus
             anchors.fill: parent
-            currentIndex: 1
+            currentIndex: 0
             keyNavigationEnabled: true
             model: SofaLinkCompletionModel {
                 id: completionModel
                 sofaData: control.sofaData
-                onLinkPathChanged: console.log(rowCount())
             }
 
             delegate: Rectangle {
@@ -79,16 +95,17 @@ ColumnLayout {
                     GradientStop { position: 1.0; color: "transparent" }
                 }
                 property var view: listView
-
-                width: control.width
+                property alias text: entryText.text
+                width: popup.contentWidth
                 height: 20
                 gradient: view.currentIndex === index ? highlightcolor : nocolor
                 Text {
                     id: entryText
                     color: view.currentIndex === index ? "black" : itemMouseArea.containsMouse ? "lightgrey" : "white"
                     anchors.verticalCenter: parent.verticalCenter
-                    x: 3
-                    text: completionModel.linkPath + completion
+                    width: popup.contentWidth - x * 2
+                    x: 10
+                    text: "@" + completionModel.linkPath + completion
                     elide: Qt.ElideLeft
                     clip: true
                 }
