@@ -34,7 +34,7 @@ SpinBox
 
     property SofaData sofaData: null
     property var properties: sofaData.properties
-    precision: properties["decimals"]
+    precision: properties["precision"]
     step: properties["step"] !== undefined ? properties["step"] : 1
 
     onValueChanged: {

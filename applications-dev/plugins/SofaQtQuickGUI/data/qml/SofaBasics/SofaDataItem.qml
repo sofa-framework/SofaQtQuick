@@ -50,15 +50,6 @@ Item {
         sofaData.value = newValue;
     }
 
-    function updateLink()
-    {
-        console.log("Update Link " + sofaData.name + " with value: " + linkTextField.text)
-
-        sofaData.setLink(linkTextField.visible ? linkTextField.text : "");
-        linkTextField.borderColor = Qt.binding(function (){return (0 === sofaData.linkPath.length) ? "red" : "#393939"})
-        sofaData.value = sofaData.value
-    }
-
     GridLayout {
         id: gridlayout
         anchors.fill: parent
@@ -102,20 +93,17 @@ Item {
             Layout.minimumWidth: 100
 
             RowLayout {
+                id: linkLayout
                 Layout.fillWidth: true
+                Layout.fillHeight: true
                 visible: sofaData && 0 !== sofaData.name.length && (linkButton.checked || (0 !== sofaData.linkPath.length && !self.showLinkButton))
                 spacing: 0
-
-                TextField {
+                SofaLinkItem {
                     id: linkTextField
-                    Layout.fillWidth: true
-                    placeholderText: sofaData ? "Link: @./path/component." + sofaData.name : ""
-                    placeholderTextColor: "gray"
-                    text: sofaData ? sofaData.linkPath : ""
-                    width: parent.width
-                    clip: true
-                    onEditingFinished: updateLink();
-                    borderColor: 0 === sofaData.linkPath.length ? "red" : "#393939"
+                    sofaData: self.sofaData
+                    Component.onCompleted: self.implicitHeight = Qt.binding(function(){
+                        return linkLayout.visible ? linkTextField.implicitHeight : datawidget.implicitHeight
+                    })
                 }
             }
         }
@@ -137,9 +125,6 @@ Item {
                     text: "Link the data to another one."
                 }
 
-                onClicked: {
-                    updateLink()
-                }
                 Image {
                     anchors.fill: parent
                     source: "qrc:/icon/link.png"

@@ -120,6 +120,7 @@ bool SofaData::setLink(const QString& path)
         bool status = sofaqtquick::helper::setDataLink(data, path);
         std::cerr.rdbuf(backup);
 
+        emit linkPathChanged(QString::fromStdString(data->getLinkPath()));
         return status;
     }
 
