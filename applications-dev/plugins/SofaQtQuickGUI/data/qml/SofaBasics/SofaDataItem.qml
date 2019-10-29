@@ -101,6 +101,7 @@ Item {
                 SofaLinkItem {
                     id: linkTextField
                     sofaData: self.sofaData
+                    linkImage: linkButtonImage
                     Component.onCompleted: self.implicitHeight = Qt.binding(function(){
                         return linkLayout.visible ? linkTextField.implicitHeight : datawidget.implicitHeight
                     })
@@ -120,14 +121,19 @@ Item {
                 anchors.margins: 3
                 checkable: true
                 checked: sofaData ? 0 !== sofaData.linkPath.length : false
+                onCheckedChanged: {
+                    linkTextField.forceActiveFocus()
+                }
+
                 activeFocusOnTab: false
                 ToolTip {
                     text: "Link the data to another one."
                 }
 
                 Image {
+                    id: linkButtonImage
                     anchors.fill: parent
-                    source: "qrc:/icon/link.png"
+                    source: linkButton.checked ? "qrc:/icon/linkValid.png" : "qrc:/icon/link.png"
                 }
             }
         }
