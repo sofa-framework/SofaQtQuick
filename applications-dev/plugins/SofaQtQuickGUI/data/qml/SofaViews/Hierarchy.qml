@@ -490,6 +490,7 @@ Rectangle {
                 anchors.right: componentState.left
                 height: 16
                 width: 16
+                enabled: hasChildMessage
                 visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
                 iconSource:
                 {
@@ -504,7 +505,6 @@ Rectangle {
                         var c = getFirstChildWithMessage(index)
                         var idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(c))
                         treeView.expandAncestors(idx)
-                        //treeView.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect)
                         SofaApplication.selectedComponent = c;
                         return
                     }
@@ -531,7 +531,7 @@ Rectangle {
                 visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
                 iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
                 opacity: 0.75
-                enabled: false
+                enabled: hasMessage
                 onClicked: {
                     var srcIndex = sceneModel.mapToSource(index)
                     var c = basemodel.getBaseFromIndex(srcIndex)
