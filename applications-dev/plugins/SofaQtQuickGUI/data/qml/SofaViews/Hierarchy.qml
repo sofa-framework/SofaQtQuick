@@ -81,11 +81,12 @@ Rectangle {
 
     TreeView {
         id : treeView
+
         anchors.top: searchBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOn
+        verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
         alternatingRowColors: true
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
