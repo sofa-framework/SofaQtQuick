@@ -25,6 +25,8 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 import SofaBasics 1.0
+import SofaColorScheme 1.0
+import QtGraphicalEffects 1.12
 import SofaApplication 1.0
 import SofaComponent 1.0
 import SofaInspectorDataListModel 1.0
@@ -285,7 +287,7 @@ Item {
 
                                             id: sofaDataItem
                                             implicitWidth : theItem.width
-//                                            implicitHeight: 20
+                                            //                                            implicitHeight: 20
 
                                             sofaData: getObject(sofaInspectorDataListModel.getDataById(childModel.parentIndex, index))
                                             refreshCounter: topRect.refreshCounter
@@ -516,14 +518,85 @@ Item {
         }
 
         ScrollView {
+            id: scrollview
             anchors.top: header.bottom
             width: parent.width
             height: parent.height - 42
             // TODO(dmarchal): fix the following constant.
 
+            ScrollBar.vertical: ScrollBar {
+                id: scrollbar
+                policy: ScrollBar.AlwaysOn
+                parent: scrollview
+                x: scrollview.mirrored ? 0 : scrollview.width - width
+                size: 0.3
+                active: true
+                contentItem: GBRect {
+                    implicitWidth: 12
+                    implicitHeight: 100
+                    radius: 6
+                    border.color: "#3f3f3f"
+                    LinearGradient {
+                        cached: true
+                        source: parent
+                        anchors.left: parent.left
+                        anchors.leftMargin: 1
+                        anchors.right: parent.right
+                        anchors.rightMargin: 1
+                        anchors.top: parent.top
+                        anchors.topMargin: 0
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 0
+
+                        start: Qt.point(0, 0)
+                        end: Qt.point(12, 0)
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: "#979797" }
+                            GradientStop { position: 1.0; color: "#7b7b7b" }
+                        }
+                    }
+                    isHorizontal: true
+                    borderGradient: Gradient {
+                        GradientStop { position: 0.0; color: "#444444" }
+                        GradientStop { position: 1.0; color: "#515151" }
+                    }
+                }
+
+                background: GBRect {
+                    border.color: "#3f3f3f"
+                    radius: 6
+                    implicitWidth: 12
+                    implicitHeight: scrollview.height
+                    LinearGradient {
+                        cached: true
+                        source: parent
+                        anchors.left: parent.left
+                        anchors.leftMargin: 1
+                        anchors.right: parent.right
+                        anchors.rightMargin: 1
+                        anchors.top: parent.top
+                        anchors.topMargin: 0
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 0
+                        start: Qt.point(0, 0)
+                        end: Qt.point(12, 0)
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: "#565656" }
+                            GradientStop { position: 1.0; color: "#5d5d5d" }
+                        }
+                    }
+                    isHorizontal: true
+                    borderGradient: Gradient {
+                        GradientStop { position: 0.0; color: "#444444" }
+                        GradientStop { position: 1.0; color: "#515151" }
+                    }
+                }
+            }
+
             ListView {
                 id : theView
                 anchors.fill: parent
+                anchors.rightMargin: 12
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
