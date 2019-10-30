@@ -526,7 +526,7 @@ Item {
 
             ScrollBar.vertical: ScrollBar {
                 id: scrollbar
-                policy: ScrollBar.AlwaysOn
+                policy: scrollview.height > scrollview.contentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
                 parent: scrollview
                 x: scrollview.mirrored ? 0 : scrollview.width - width
                 size: 0.3
@@ -596,7 +596,7 @@ Item {
             ListView {
                 id : theView
                 anchors.fill: parent
-                anchors.rightMargin: 12
+                anchors.rightMargin: scrollbar.visible ? 12 : 0
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
