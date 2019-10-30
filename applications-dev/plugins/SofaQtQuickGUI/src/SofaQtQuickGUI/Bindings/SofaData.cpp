@@ -43,6 +43,24 @@ SofaData::SofaData(BaseData* self)
     m_self = self;
 }
 
+bool SofaData::hasParent() const
+{
+    return m_self->getParent() != nullptr;
+}
+
+SofaData* SofaData::getParent() const
+{
+    if(m_self->getParent())
+        return new SofaData(m_self->getParent());
+    return nullptr;
+}
+
+void SofaData::setParent(SofaData* data)
+{
+    m_self->setParent(data->m_self, data->getLinkPath().toStdString());
+    emit parentChanged(data);
+}
+
 QVariant SofaData::getValue()
 {
     m_previousValue = sofaqtquick::helper::createQVariantFromData(m_self);
@@ -110,7 +128,7 @@ QVariantMap SofaData::getProperties()const
 
 QString SofaData::getLinkPath() const
 {
-    return QString::fromStdString(rawData()->getLinkPath());
+    return QString("@")+getPathName();
 }
 
 
@@ -165,6 +183,12 @@ bool SofaData::isReadOnly() const
 {
     return rawData()->isReadOnly();
 }
+
+bool SofaData::isAutoLink() const
+{
+    return rawData()->isAutoLink();
+}
+
 
 QString SofaData::getGroup() const
 {

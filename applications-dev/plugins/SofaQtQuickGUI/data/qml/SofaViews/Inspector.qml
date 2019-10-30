@@ -96,6 +96,28 @@ Item {
             topRect.sofaSelectedComponent = SofaApplication.selectedComponent
         }
 
+        DropArea {
+            id: dropArea
+            anchors.fill: parent
+            onDropped: {
+                /// Drop of a SofaBase form the hierachy. This indicate that we want
+                /// to automatically connect all the data fields with similar names.
+                if (drag.source.origin === "Hierarchy") {
+                    var droppedItem = drag.source.item 
+                    /// Ecmascript6.0 'for..of' is valid, don't trust qtcreator
+                    for(var fname of droppedItem.getDataFields())
+                    {
+                        var data = SofaApplication.selectedComponent.findData(fname);
+                        if( data !== null && data.isAutoLink())
+                        {
+                            data.setParent(droppedItem.getData(fname))
+                            console.log("FNAME" + fname + "-> " + data)
+                        }
+                    }
+                }
+            }
+        }
+
         /*
           Each group is composed of an header bar with the group name.
           When clicked the bar collapsed or expand the content of the group.

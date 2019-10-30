@@ -466,7 +466,7 @@ Rectangle {
                 color: styleData.textColor
                 font.italic: hasMultiParent
                 elide: styleData.elideMode
-                text: isNode ? name : typename
+                text: isNode ? name : typename+"("+name+")"
             }
 
             Image {
@@ -543,8 +543,9 @@ Rectangle {
                 z: 1
             }
 
-            Drag.active: mouseArea.drag.active
-            Drag.dragType: Drag.Automatic
+
+            //Drag.active: mouseArea.drag.active
+            //Drag.dragType: Drag.Automatic
             SofaNodeMenu
             {
                 id: nodeMenu
@@ -559,19 +560,32 @@ Rectangle {
                 currentModelIndex: sceneModel.mapToSource(styleData.index)
             }
 
+            Item {
+                id: dragItem
+                property string origin: "Hierarchy"
+                property SofaBase item: {
+                    var srcIndex = sceneModel.mapToSource(styleData.index)
+                    var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                    dragItem.item = theComponent
+                }
+                Drag.active: mouseArea.drag.active
+                Drag.dragType: Drag.Automatic
+                Drag.supportedActions: Qt.CopyAction
+                Drag.mimeData: {
+                    "text/plain": "Copied text"
+                }
+            }
+
             MouseArea {
                 id: mouseArea
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 anchors.fill: parent
                 hoverEnabled: true
-                drag.target: parent
+
+                drag.target: dragItem
                 drag.onActiveChanged: {
-                    if (drag.active)
-                        itemDelegateID.tmpParent = itemDelegateID.parent
-                    else {
-                        itemDelegateID.parent = itemDelegateID.tmpParent
-                        itemDelegateID.anchors.verticalCenter = itemDelegateID.parent.verticalCenter
-                    }
+                    console.log("ON ACTIVE CANGE." + drag.active)
+                    console.log("DD" + drag.target.item)
                 }
 
                 onClicked:

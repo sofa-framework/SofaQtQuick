@@ -342,7 +342,6 @@ Item {
                             }
 
                             drag.target: draggedData
-
                             drag.onActiveChanged: {
                                 if (drag.active)
                                     draggedData.asset = wrapper.asset
