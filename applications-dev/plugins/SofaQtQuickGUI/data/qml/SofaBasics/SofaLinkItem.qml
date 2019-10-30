@@ -4,11 +4,14 @@ import QtQuick.Layouts 1.0
 import SofaBasics 1.0
 import SofaLinkCompletionModel 1.0
 
+/// Implement the widget for Links.
 ColumnLayout {
     id: control
     property alias text: txtField.text
     property var linkImage
     property var sofaData
+    property string parentLinkPath : sofaData.getParent() !== null ? sofaData.getParent().linkPath : ""
+
     Layout.fillWidth: true
     Layout.fillHeight: true
     spacing: 0
@@ -25,10 +28,10 @@ ColumnLayout {
         placeholderTextColor: "gray"
         font.family: "Helvetica"
         font.weight: Font.Thin
-        text: sofaData ? sofaData.linkPath : ""
+        text: parentLinkPath
         width: parent.width
         clip: true
-        borderColor: 0 === sofaData.linkPath.length ? "red" : "#393939"
+        borderColor: 0 === parentLinkPath.length ? "red" : "#393939"
         Keys.forwardTo: [listView.currentItem, listView]
 
         onEditingFinished: {
@@ -47,8 +50,9 @@ ColumnLayout {
                 listView.currentIndex = 0
             completionModel.linkPath = text
         }
-        function isLinkValid(value) {
-            var oldlink = sofaData.getLinkPath()
+
+        function isLinkValid(value)
+        {
             var ret = sofaData.isLinkValid(value)
             if (ret) {
                 txtField.borderColor = "lightgreen"
@@ -60,6 +64,7 @@ ColumnLayout {
             }
             return ret
         }
+
         function setLinkIfValid(value) {
             if (isLinkValid(value)) {
                 sofaData.setLink(value)

@@ -96,7 +96,7 @@ Item {
                 id: linkLayout
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                visible: sofaData && 0 !== sofaData.name.length && (linkButton.checked || (0 !== sofaData.linkPath.length && !self.showLinkButton))
+                visible: sofaData && 0 !== sofaData.name.length && (linkButton.checked || (null !== sofaData.getParent() && !self.showLinkButton))
                 spacing: 0
                 SofaLinkItem {
                     id: linkTextField
@@ -120,7 +120,7 @@ Item {
                 anchors.fill: parent
                 anchors.margins: 3
                 checkable: true
-                checked: sofaData ? 0 !== sofaData.linkPath.length : false
+                checked: sofaData ? null !== sofaData.getParent() : false
                 onCheckedChanged: {
                     linkTextField.forceActiveFocus()
                 }

@@ -86,6 +86,16 @@ QString SofaBase::getTemplateName() const
     return QString::fromStdString(m_self->getTemplateName());
 }
 
+QObject* SofaBase::findData(const QString& name) const
+{
+    auto* data = m_self->findData(name.toStdString());
+    if(!data)
+    {
+        return nullptr;
+    }
+    return new SofaData(data);
+}
+
 QObject* SofaBase::getData(const QString& name) const
 {
     auto* data = m_self->findData(name.toStdString());

@@ -203,6 +203,7 @@ Rectangle {
                 visible: false
             }
         }
+
         selection: ItemSelectionModel {
             model: treeView.model
             onSelectionChanged:
@@ -394,6 +395,16 @@ Rectangle {
                 return c.hasMessage();
             }
 
+            function getFirstChildWithMessage(index)
+            {
+                var srcIndex = sceneModel.mapToSource(index)
+                var c = basemodel.getBaseFromIndex(srcIndex)
+
+                if ( c===null )
+                    return null
+                return c.getFirstChildWithMessage()
+            }
+
             Item {
                 id: icon
                 anchors.verticalCenter: parent.verticalCenter
@@ -455,7 +466,7 @@ Rectangle {
                 color: styleData.textColor
                 font.italic: hasMultiParent
                 elide: styleData.elideMode
-                text: isNode ? name : typename
+                text: isNode ? name : typename+"("+name+")"
             }
 
             Image {
@@ -469,26 +480,48 @@ Rectangle {
                 opacity: 0.75
 
             }
-            Image {
+            SofaWindowComponentMessages { id: windowMessage }
+
+            IconButton {
+                /// This is the error button that shows when there is an error message on
+                /// an object or a node
                 id:childError
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: componentState.left
                 height: 16
                 width: 16
+                enabled: hasChildMessage
                 visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
-                source:
+                iconSource:
                 {
                     if(isNode)
                         return !hasChildMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
                     return hasMessage ? "qrc:/icon/iconerror.xpm" : "qrc:/icon/iconmessage_base.png"
                 }
+
+                onClicked: {
+                    if(isNode)
+                    {
+                        var c = getFirstChildWithMessage(index)
+                        var idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(c))
+                        treeView.expandAncestors(idx)
+                        SofaApplication.selectedComponent = c;
+                        return
+                    }
+
+                    var srcIndex = sceneModel.mapToSource(index)
+                    var c = basemodel.getBaseFromIndex(srcIndex)
+                    var w = windowMessage.createObject(nodeMenu.parent,{
+                                                   "parent" : nodeMenu.parent,
+                                                   "sofaComponent": c});
+                }
                 opacity: 0.75
+                z: 1
             }
 
             IconButton {
                 /// Window that contains the object message. The windows is only created when the menu item
                 /// is clicked
-                SofaWindowComponentMessages { id: windowMessage }
 
                 id: localError
                 anchors.verticalCenter: rowText.verticalCenter
@@ -498,19 +531,21 @@ Rectangle {
                 visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
                 iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
                 opacity: 0.75
-                onClicked: {7
+                enabled: hasMessage
+                onClicked: {
                     var srcIndex = sceneModel.mapToSource(index)
                     var c = basemodel.getBaseFromIndex(srcIndex)
-
                     var w = windowMessage.createObject(nodeMenu.parent,{
                                                    "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
+
                 }
                 z: 1
             }
 
-            Drag.active: mouseArea.drag.active
-            Drag.dragType: Drag.Automatic
+
+            //Drag.active: mouseArea.drag.active
+            //Drag.dragType: Drag.Automatic
             SofaNodeMenu
             {
                 id: nodeMenu
@@ -525,19 +560,32 @@ Rectangle {
                 currentModelIndex: sceneModel.mapToSource(styleData.index)
             }
 
+            Item {
+                id: dragItem
+                property string origin: "Hierarchy"
+                property SofaBase item: {
+                    var srcIndex = sceneModel.mapToSource(styleData.index)
+                    var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                    dragItem.item = theComponent
+                }
+                Drag.active: mouseArea.drag.active
+                Drag.dragType: Drag.Automatic
+                Drag.supportedActions: Qt.CopyAction
+                Drag.mimeData: {
+                    "text/plain": "Copied text"
+                }
+            }
+
             MouseArea {
                 id: mouseArea
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 anchors.fill: parent
                 hoverEnabled: true
-                drag.target: parent
+
+                drag.target: dragItem
                 drag.onActiveChanged: {
-                    if (drag.active)
-                        itemDelegateID.tmpParent = itemDelegateID.parent
-                    else {
-                        itemDelegateID.parent = itemDelegateID.tmpParent
-                        itemDelegateID.anchors.verticalCenter = itemDelegateID.parent.verticalCenter
-                    }
+                    console.log("ON ACTIVE CANGE." + drag.active)
+                    console.log("DD" + drag.target.item)
                 }
 
                 onClicked:
@@ -640,7 +688,6 @@ Rectangle {
                             treeView.expandAncestors(index)
                             treeView.expand(index)
                             treeView.selection.setCurrentIndex(index, selection)
-
                         }
                     }
 

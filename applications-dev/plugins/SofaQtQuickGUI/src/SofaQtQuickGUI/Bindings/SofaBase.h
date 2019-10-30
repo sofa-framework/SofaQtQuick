@@ -50,7 +50,10 @@ public:
     Q_INVOKABLE QString getTemplateName() const;
     Q_INVOKABLE QString getPathName() const;
 
-    /// get a data from its name
+    /// find a data from its name, returns null if not found.
+    Q_INVOKABLE QObject* findData(const QString& name) const;
+
+    /// get a data from its name, throw an exception if not there.
     Q_INVOKABLE QObject* getData(const QString& name) const;
     Q_INVOKABLE QStringList getDataFields() const;
 
