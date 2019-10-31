@@ -25,6 +25,7 @@ using sofa::core::ObjectFactory ;
 #include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
 
 #include <SofaSimulationGraph/SimpleApi.h>
+#include <tuple>
 
 namespace sofaqtquick::bindings
 {
@@ -97,6 +98,28 @@ QString SofaFactory::getComponentHelp(const QString& name)
     return s;
 }
 
+QStringList SofaFactory::getComponentTemplates(const QString& name)
+{
+    /// Recompute the filtered list.
+    std::vector<ObjectFactory::ClassEntry::SPtr> entries ;
+    ObjectFactory::getInstance()->getAllEntries(entries) ;
+
+    QStringList templates;
+    for (size_t i=0; i<entries.size(); i++)
+    {
+        QString cname = QString::fromStdString(entries[i]->className) ;
+        if( cname == name )
+        {
+            for (auto const& [key, value] : entries[i]->creatorMap)
+            {
+                SOFA_UNUSED(value);
+                templates.push_back(QString::fromStdString(key));
+            }
+            break;
+        }
+    }
+    return templates;
+}
 
 SofaNode* SofaFactory::createNode(const QString name) const
 {

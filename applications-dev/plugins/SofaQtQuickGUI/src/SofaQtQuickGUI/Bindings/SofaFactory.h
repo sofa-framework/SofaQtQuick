@@ -50,6 +50,7 @@ public:
     Q_INVOKABLE bool contains(const QString& name) ;
     Q_INVOKABLE QStringList getComponents() ;
     Q_INVOKABLE QString getComponentHelp(const QString& name) ;
+    Q_INVOKABLE QStringList getComponentTemplates(const QString& name) ;
     Q_INVOKABLE void setFilter(const QString& c) ;
 
     Q_INVOKABLE sofaqtquick::bindings::SofaNode* createNode(const QString name="unnamed") const;
