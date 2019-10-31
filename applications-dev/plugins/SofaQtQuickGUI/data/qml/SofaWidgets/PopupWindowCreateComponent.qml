@@ -20,6 +20,8 @@ Popup {
     padding: 10
     margins: 0
 
+    property alias componentName: inputField.text
+    property string templateName: ""
 
     MessageDialog
     {
@@ -58,10 +60,12 @@ Popup {
         font.italic: !SofaFactory.contains(text)
         focus: true
 
+        Keys.forwardTo: [container]
         Keys.onPressed:
         {
             if(event.key === Qt.Key_Return)
             {
+                console.log("inputField Ret pressed")
                 inputField.text = SofaFactory.components[container.currentIndex]
             }
             if(Qt.Key_Down === event.key)
@@ -81,12 +85,16 @@ Popup {
             SofaFactory.setFilter(text)
             container.currentIndex=-1
         }
+
         onAccepted:
         {
             if( SofaFactory.contains(text) )
             {
                 sofaNode.clearWarning()
-                var p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text) })
+                if (templateName !== "")
+                    var p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text), "template" : templateName })
+                else
+                    p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text) })
                 searchBar.close()
                 if(p!==null)
                 {
@@ -116,6 +124,10 @@ Popup {
         height: searchBar.contentHeight-inputField.height-(2*searchBar.padding)
         model: SofaFactory.components
 
+        Keys.onRightPressed: {
+            console.log("Plop")
+            currentItem.showTemplates()
+        }
         delegate: ListViewDelegate {
             listView: container
             ToolTip {
@@ -125,19 +137,68 @@ Popup {
                 timeout: 2000
             }
 
+            function showTemplates()
+            {
+                if (SofaFactory.getComponentTemplates(modelData).length > 1) {
+                    templatesMenu.popup(x + width, y - index * height)
+                }
+            }
+
             MouseArea {
                 id: itemMouseArea
                 anchors.fill: parent
                 hoverEnabled: true
+                onHoveredChanged: {
+                    if (containsMouse) {
+                        container.currentIndex = index
+                        inputField.forceActiveFocus()
+                        inputField.text = modelData
+                        parent.showTemplates()
+                    } else {
+                        templatesMenu.close()
+                    }
+                }
+
                 onClicked: {
-                    container.currentIndex = index
-                    inputField.forceActiveFocus()
-                    inputField.text = modelData
+                    inputField.accepted()
+                }
+                Menu {
+                    id: templatesMenu
+                    onClosed: {
+                        inputField.forceActiveFocus()
+                    }
+                    onOpened: {
+                        contentData[0].forceActiveFocus()
+                    }
+
+                    Repeater {
+                        model: SofaFactory.getComponentTemplates(modelData)
+                        MenuItem {
+                            text: modelData
+                            Keys.onLeftPressed: {
+                                templatesMenu.close()
+                            }
+                            Keys.onReturnPressed: {
+                                accept()
+                            }
+                            Keys.onEnterPressed: {
+                                accept()
+                            }
+                            function accept() {
+                                templatesMenu.close()
+                                searchBar.templateName = text
+                                inputField.text = SofaFactory.components[container.currentIndex]
+                                inputField.accepted()
+                            }
+
+                            onClicked: {
+                                accept()
+                            }
+                        }
+                    }
                 }
             }
-
         }
-
     }
 
     function updateFilter(s)
