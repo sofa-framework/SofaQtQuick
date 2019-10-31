@@ -148,11 +148,19 @@ Popup {
                 id: itemMouseArea
                 anchors.fill: parent
                 hoverEnabled: true
+                onHoveredChanged: {
+                    if (containsMouse) {
+                        container.currentIndex = index
+                        inputField.forceActiveFocus()
+                        inputField.text = modelData
+                        parent.showTemplates()
+                    } else {
+                        templatesMenu.close()
+                    }
+                }
+
                 onClicked: {
-                    container.currentIndex = index
-                    inputField.forceActiveFocus()
-                    inputField.text = modelData
-                    parent.showTemplates()
+                    inputField.accepted()
                 }
                 Menu {
                     id: templatesMenu
