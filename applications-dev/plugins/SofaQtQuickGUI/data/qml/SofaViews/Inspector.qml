@@ -85,6 +85,7 @@ Item {
             repeat: true
             onTriggered:
             {
+                print("COUCOU");
                 topRect.refreshCounter = topRect.refreshCounter + 1
             }
         }

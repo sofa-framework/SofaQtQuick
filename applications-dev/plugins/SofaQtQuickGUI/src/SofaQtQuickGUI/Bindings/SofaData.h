@@ -28,75 +28,100 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <sofa/core/objectmodel/BaseData.h>
-
+#include <sofa/core/objectmodel/DataCallback.h>
 namespace sofaqtquick::bindings
 {
-    namespace _sofadata_
-    {
-        using sofa::core::objectmodel::BaseData;
 
-        class SofaData : public QObject
-        {
-            Q_OBJECT
 
-            Q_PROPERTY(QString name READ getName NOTIFY nameChanged)
-            Q_PROPERTY(QString help READ getHelp NOTIFY helpChanged)
-            Q_PROPERTY(QString valueType READ getValueType NOTIFY valueTypeChanged)
-            Q_PROPERTY(QString group READ getGroup)
-            Q_PROPERTY(QVariantMap properties READ getProperties NOTIFY propertiesChanged)
-            Q_PROPERTY(bool isReadOnly READ isReadOnly NOTIFY readOnlyChanged)
+namespace _sofadata_
+{
+class QmlDDGNode : public QObject, public sofa::core::objectmodel::DDGNode
+{
+    Q_OBJECT
+public:
+    virtual void notifyEndEdit(const sofa::core::ExecParams* params = 0);
 
-            Q_PROPERTY(QString linkPath READ getLinkPath NOTIFY linkPathChanged)
-            Q_PROPERTY(SofaData* parent READ getParent WRITE setParent NOTIFY parentChanged)
-            Q_PROPERTY(QVariant value READ getValue WRITE setValue NOTIFY valueChanged)
+    /// Update this value
+    void update() override ;
+    sofa::core::objectmodel::BaseData* getData() const override {return nullptr;}
+    sofa::core::objectmodel::Base* getOwner() const override {return nullptr;}
 
-        public:
-            SofaData(BaseData* self);
+    const std::string& getName() const override  { return "";}
 
-            Q_INVOKABLE QString getName() const;
-            Q_INVOKABLE QString getPathName() const;
-            Q_INVOKABLE QVariant getValue() ;
-            Q_INVOKABLE QString getValueType() const;
+signals:
+    void valueChanged(const QVariant& newValue);
+public:
+    sofa::core::objectmodel::BaseData* self;
+};
 
-            Q_INVOKABLE QString getHelp() const;
-            Q_INVOKABLE bool isSet() const;
-            Q_INVOKABLE bool isReadOnly() const;
-            Q_INVOKABLE bool isAutoLink() const;
-            Q_INVOKABLE QString getGroup() const;
+using sofa::core::objectmodel::BaseData;
 
-            Q_INVOKABLE bool setValue(const QVariant& getValue);
-            Q_INVOKABLE bool setLink(const QString& path);
-            Q_INVOKABLE QString getLinkPath()const;
-            Q_INVOKABLE bool isLinkValid(const QString& path);
-            Q_INVOKABLE void setParent(SofaData* parent);
-            Q_INVOKABLE SofaData* getParent() const ;
-            Q_INVOKABLE bool hasParent() const ;
+class SofaData : public QObject
+{
+    Q_OBJECT
 
-            [[deprecated("Remove, use directly the object")]]
-            Q_INVOKABLE QVariantMap object();
+    Q_PROPERTY(QString name READ getName NOTIFY nameChanged)
+    Q_PROPERTY(QString help READ getHelp NOTIFY helpChanged)
+    Q_PROPERTY(QString valueType READ getValueType NOTIFY valueTypeChanged)
+    Q_PROPERTY(QString group READ getGroup)
+    Q_PROPERTY(QVariantMap properties READ getProperties NOTIFY propertiesChanged)
+    Q_PROPERTY(bool isReadOnly READ isReadOnly NOTIFY readOnlyChanged)
 
-            Q_INVOKABLE QVariantMap getProperties() const;
+    Q_PROPERTY(QString linkPath READ getLinkPath NOTIFY linkPathChanged)
+    Q_PROPERTY(SofaData* parent READ getParent WRITE setParent NOTIFY parentChanged)
+    Q_PROPERTY(QVariant value READ getValue WRITE setValue NOTIFY valueChanged)
 
-            BaseData* rawData() { return m_self; }
-            const BaseData* rawData() const { return m_self; }
+public:
+    SofaData(BaseData* self);
 
-        signals:
-            void valueChanged(const QVariant& newValue);
-            void readOnlyChanged(const bool);
-            void valueTypeChanged(const QString newValue);
-            void helpChanged(const QString newValue);
-            void nameChanged(const QString newValue);
-            void linkPathChanged(const QString newValue);
-            void propertiesChanged(const QVariantList newValues);
-            void parentChanged(const SofaData* newParent);
-        private:
-            BaseData* m_self {nullptr};
-            QVariant m_previousValue;
+    Q_INVOKABLE QString getName() const;
+    Q_INVOKABLE QString getPathName() const;
+    Q_INVOKABLE QVariant getValue() ;
+    Q_INVOKABLE QString getValueType() const;
 
-        };
-    }
+    Q_INVOKABLE QString getHelp() const;
+    Q_INVOKABLE bool isSet() const;
+    Q_INVOKABLE bool isReadOnly() const;
+    Q_INVOKABLE bool isAutoLink() const;
+    Q_INVOKABLE QString getGroup() const;
 
-    /// Import SofaData from its private namespace into the public one.
-    using _sofadata_::SofaData;
+    Q_INVOKABLE bool setValue(const QVariant& getValue);
+    Q_INVOKABLE bool setLink(const QString& path);
+    Q_INVOKABLE QString getLinkPath()const;
+    Q_INVOKABLE bool isLinkValid(const QString& path);
+    Q_INVOKABLE void setParent(SofaData* parent);
+    Q_INVOKABLE SofaData* getParent() const ;
+    Q_INVOKABLE bool hasParent() const ;
+
+    Q_INVOKABLE int getCounter() const;
+
+    [[deprecated("Remove, use directly the object")]]
+    Q_INVOKABLE QVariantMap object();
+
+    Q_INVOKABLE QVariantMap getProperties() const;
+
+    BaseData* rawData() { return m_self; }
+    const BaseData* rawData() const { return m_self; }
+
+signals:
+    void valueChanged(const QVariant& newValue);
+    void readOnlyChanged(const bool);
+    void valueTypeChanged(const QString newValue);
+    void helpChanged(const QString newValue);
+    void nameChanged(const QString newValue);
+    void linkPathChanged(const QString newValue);
+    void propertiesChanged(const QVariantList newValues);
+    void parentChanged(const SofaData* newParent);
+private:
+    BaseData* m_self {nullptr};
+    QVariant m_previousValue;
+    QmlDDGNode m_ddgnode;
+
+    sofa::core::objectmodel::DataCallback m_forwardEventToQml;
+};
+}
+
+/// Import SofaData from its private namespace into the public one.
+using _sofadata_::SofaData;
 }
 

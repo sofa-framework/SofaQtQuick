@@ -31,5 +31,18 @@ Text {
     id: root
     property SofaData sofaData: null
     enabled:true
-    text: sofaData===nullptr? "Missing" :  sofaData.value
+
+    text: sofaData.value
+
+    Connections
+    {
+        target: sofaData
+        onValueChanged: function(newValue){
+            console.log("MINce MINCE " + newValue)
+        }
+    }
+
+    onTextChanged: {
+        console.log("COUCOU COMPNENT STATE CHANGED " + sofaData.getCounter())
+    }
 }

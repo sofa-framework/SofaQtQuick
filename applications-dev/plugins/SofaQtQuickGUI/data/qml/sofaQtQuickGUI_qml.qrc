@@ -112,7 +112,6 @@
         <file>SofaWidgets/RenameMenu.qml</file>
         <file>SofaBasics/Popup.qml</file>
         <file>SofaBasics/ListViewDelegate.qml</file>
-        <file>SofaDataTypes/SofaDataType_ComponentStatus.qml</file>
         <file>SofaWidgets/ProjectViewMenu.qml</file>
         <file>SofaWidgets/MeshAssetInspector.qml</file>
         <file>SofaWidgets/PythonAssetInspector.qml</file>
@@ -120,5 +119,6 @@
         <file>SofaWidgets/DraggableAssetItem.qml</file>
         <file>SofaBasics/TableView.qml</file>
         <file>SofaBasics/SofaLinkItem.qml</file>
+        <file>SofaDataTypes/SofaDataType_ComponentState.qml</file>
     </qresource>
 </RCC>
