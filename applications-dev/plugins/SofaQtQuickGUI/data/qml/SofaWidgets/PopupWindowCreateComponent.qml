@@ -63,17 +63,17 @@ Popup {
         Keys.forwardTo: [container]
         Keys.onPressed:
         {
-            if(event.key === Qt.Key_Return)
+            if (event.key === Qt.Key_Return)
             {
                 console.log("inputField Ret pressed")
                 inputField.text = SofaFactory.components[container.currentIndex]
             }
-            if(Qt.Key_Down === event.key)
+            if (Qt.Key_Down === event.key)
             {
                 container.incrementCurrentIndex()
                 text = null
             }
-            if(Qt.Key_Up === event.key)
+            if (Qt.Key_Up === event.key)
             {
                 container.decrementCurrentIndex()
                 text = null
@@ -83,7 +83,7 @@ Popup {
         onTextEdited:
         {
             SofaFactory.setFilter(text)
-            container.currentIndex=-1
+            container.currentIndex = -1
         }
 
         onAccepted:
@@ -107,8 +107,15 @@ Popup {
                     messageDialog.visible = true
                 }
             }
-            else{
-                messageCreateWidget.visible = true
+            else {
+                if (text.includes("(create) ")) {
+                    var val =text.split(" ")[1]
+                    console.log("create a python " + val)
+                    SofaApplication.currentProject.createPythonPrefab(val, sofaNode)
+                    searchBar.close()
+                } else {
+                    messageCreateWidget.visible = true
+                }
             }
             SofaFactory.setFilter("")
         }

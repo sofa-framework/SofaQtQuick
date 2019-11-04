@@ -73,6 +73,7 @@ public:
 
     /// These are for assets "creation"
     Q_INVOKABLE bool createPrefab(SofaBase* node);
+    Q_INVOKABLE bool createPythonPrefab(QString name, SofaBase* node);
     Q_INVOKABLE QString createProject(const QUrl& dir);
     Q_INVOKABLE bool createProjectTree(const QUrl& dir);
     Q_INVOKABLE QString importProject(const QUrl& archive);

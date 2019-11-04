@@ -412,6 +412,60 @@ bool SofaProject::createPrefab(SofaBase* node)
     return false;
 }
 
+QString readPythonScriptTemplate(QString name, QString type) {
+    QFile f("config/templates/empty"+type+".py");
+    if (!f.open(QFile::ReadOnly | QFile::Text)) {
+        msg_error("SofaProject") << "file `config/templates/empty"+type.toStdString()+".py` does not exist";
+        return "";
+    }
+    QTextStream in(&f);
+    QString s = in.readAll();
+    f.close();
+    return s.replace("%Empty"+type+"%", name);
+}
+
+bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
+{
+    // Maybe not the most pertinent method name...
+    QString scriptContent = "";
+    if (name.endsWith("Controller"))
+        scriptContent = readPythonScriptTemplate(name, "Controller");
+    else if (name.endsWith("DataEngine"))
+        scriptContent = readPythonScriptTemplate(name, "DataEngine");
+    else if (name.endsWith("ForceField"))
+        scriptContent = readPythonScriptTemplate(name, "ForceField");
+    else if (name.endsWith("Prefab"))
+        scriptContent = readPythonScriptTemplate(name, "Prefab");
+    else
+        return false;
+
+    if (scriptContent == "")
+        return false;
+    QString filepath = getRootDir().toLocalFile() + "/assets/scripts/" + name.toLower() + ".py";
+    QString filename = name.toLower()+".py";
+    QString modulename = name.toLower();
+    QFile f(filepath);
+    if (f.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&f);
+        stream << scriptContent << endl;
+        f.close();
+
+        // TODO: move to SofaQtQuick.py -> loadPythonComponent ?
+        py::module sys = py::module::import("sys");
+        sys.attr("path").attr("append")(QString(getRootDir().toLocalFile() + "/assets/scripts/").toStdString());
+        py::module m = py::module::import(modulename.toUtf8().data());
+        py::object n = PythonFactory::toPython(
+                    static_cast<sofa::simulation::graph::DAGNode*>(node->rawBase()->toBaseNode()));
+        py::object __class = m.attr(name.toUtf8().data());
+        py::object instance = __class(name.toUtf8().data());
+        n.attr("addObject")(instance);
+        return true;
+    }
+    msg_error("SofaProject") << "could not open " << filepath.toStdString() << " in write-only.";
+    return false;
+}
+
 void SofaProject::saveScene(const QString filepath, SofaNode* node)
 {
     PythonEnvironment::executePython([this, filepath, node]()
