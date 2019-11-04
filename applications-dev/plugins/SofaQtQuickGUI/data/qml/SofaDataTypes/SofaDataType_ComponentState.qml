@@ -34,15 +34,12 @@ Text {
 
     text: sofaData.value
 
-    Connections
-    {
-        target: sofaData
-        onValueChanged: function(newValue){
-            console.log("MINce MINCE " + newValue)
-        }
-    }
+//    Connections
+//    {
+//        target: sofaData
+//        onValueChanged: function(newValue){
+//            console.log("MINce MINCE " + newValue)
+//        }
+//    }
 
-    onTextChanged: {
-        console.log("COUCOU COMPNENT STATE CHANGED " + sofaData.getCounter())
-    }
 }

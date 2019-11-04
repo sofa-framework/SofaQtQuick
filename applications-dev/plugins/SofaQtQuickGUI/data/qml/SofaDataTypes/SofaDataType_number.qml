@@ -37,81 +37,26 @@ SpinBox
     enabled: !sofaData.readOnly
     precision: properties["precision"]
     step: properties["step"] !== undefined ? properties["step"] : 1
+    value: sofaData.value
 
-    Item
+    Connections
     {
-        id: bidirectionalLink
-        property var value
-        property string src: "none"
-
-        onValueChanged:
-        {
-            console.log("SID: " + bidirectionalLink.src)
-            if(bidirectionalLink.src==="right")
-                sofaData.value=value
-            if(bidirectionalLink.src==="left")
-                spinbox.value=value
-        }
-
-        Connections
-        {
-            target: sofaData
-            onValueChanged: {
-                console.log("sofaData changed")
-                bidirectionalLink.setLeftValue(sofaData.value)
-            }
-        }
-
-        Connections
-        {
-            target: spinbox
-            onValueChanged: {
-                console.log("spinbox changed")
-                bidirectionalLink.setRightValue(spinbox.value)
-            }
-        }
-
-
-        function setLeftValue(newValue)
-        {
-            if(src!=="none")
-                return
-            console.log("LeftChanged" + newValue )
-            src="left"
-            value = newValue
-            src="none"
-        }
-
-        function setRightValue(newValue)
-        {
-            if(src!=="none")
-                return
-            console.log("RightChanged" + newValue )
-
-            //left.when = true
-            src="right"
-            value = newValue
-            src="none"
-
-            //left.when = false
+        target: sofaData
+        onValueChanged: {
+            value=sofaData.value
         }
     }
 
-    //    Connections
-    //    {
-    //        target: sofaData
-    //        onValueChanged: {
-    //            value=sofaData.value
-    //        }
-    //    }
-
-    //    Connections
-    //    {
-    //        target: spinbox
-    //        onValueEditted: function(newvalue)
-    //        {
-    //            console.log("COUCOUC2 " + newvalue)
-    //            sofaData.value = newvalue
-    //        }
-    //    }
+    onValueChanged: {
+        sofaData.value = value
+    }
+//    Connections
+//    {
+//        target: spinbox
+//        onValueEditted: function(newvalue)
+//        {
+//            console.log("COUCOUC2 " + newvalue)
+//            sofaData.value = newvalue
+//        }
+//    }
 }

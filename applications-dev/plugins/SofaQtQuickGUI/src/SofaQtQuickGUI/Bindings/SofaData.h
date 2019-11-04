@@ -123,5 +123,7 @@ private:
 
 /// Import SofaData from its private namespace into the public one.
 using _sofadata_::SofaData;
+using _sofadata_::QmlDDGNode;
+
 }
 
