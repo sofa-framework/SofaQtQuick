@@ -59,7 +59,7 @@ Popup {
         height: 20
         font.italic: !SofaFactory.contains(text)
         focus: true
-
+        selectByMouse: true
         Keys.forwardTo: [container]
         Keys.onPressed:
         {
@@ -125,7 +125,6 @@ Popup {
         model: SofaFactory.components
 
         Keys.onRightPressed: {
-            console.log("Plop")
             currentItem.showTemplates()
         }
         delegate: ListViewDelegate {
@@ -148,20 +147,22 @@ Popup {
                 id: itemMouseArea
                 anchors.fill: parent
                 hoverEnabled: true
-                onHoveredChanged: {
-                    if (containsMouse) {
+                onClicked: {
+                    if (container.currentIndex === index) {
+                        if (SofaFactory.getComponentTemplates(modelData).length > 1 && !templatesMenu.opened)
+                            parent.showTemplates()
+                        else {
+                            inputField.text = modelData
+                            inputField.accepted()
+                            templatesMenu.close()
+                        }
+                    } else {
                         container.currentIndex = index
                         inputField.forceActiveFocus()
-                        inputField.text = modelData
                         parent.showTemplates()
-                    } else {
-                        templatesMenu.close()
                     }
                 }
 
-                onClicked: {
-                    inputField.accepted()
-                }
                 Menu {
                     id: templatesMenu
                     onClosed: {
