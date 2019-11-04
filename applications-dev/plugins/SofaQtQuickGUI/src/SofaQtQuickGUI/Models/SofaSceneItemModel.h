@@ -24,12 +24,16 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #define SOFAQTQUICK_MODELS_SOFASCENEITEMMODEL_H
 
 #include <QAbstractItemModel>
+#include <QTimer>
 #include <sofa/simulation/MutationListener.h>
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <thread>
 #include <mutex>
+
+#include <sofa/core/DataTracker.h>
 
 namespace sofa
 {
@@ -39,6 +43,7 @@ namespace qtquick
 
 namespace _sofasceneitemmodel_
 {
+    using sofa::core::DataTracker;
     using sofa::simulation::MutationListener ;
     using sofa::simulation::Node ;
 
@@ -88,9 +93,10 @@ signals:
     void modelHasReset();
     void resetRequired();
 
-protected slots:
+public slots:
     void handleRootNodeChange();
     void onResetRequired();
+    void onTimeOutModelRefresh();
 
 protected:
     /// The following function are inhereted from MutationLister, they are called when there is
@@ -105,6 +111,7 @@ protected:
     void onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj) override;
     void onBeginRemoveObject(Node* parent, core::objectmodel::BaseObject* obj) override;
     void onEndRemoveObject(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void emitAllChanges(Node* node);
 
     /// Returns the ndex associated to the given node.
     /// If the node parameter is nullptr returns an invalid model index.
@@ -119,10 +126,14 @@ private:
     void removeNodeContent(Node* node);
     void addNodeContent(Node* node);
 
+    QTimer m_refreshModel;
+
     std::mutex m_lock;
     std::thread m_thread;
     bool m_isRefreshThreadRunning;
     bool m_needsRefresh;
+
+    DataTracker m_dataTracker;
 };
 
 } /// namespace _sofasceneitemmodel_
