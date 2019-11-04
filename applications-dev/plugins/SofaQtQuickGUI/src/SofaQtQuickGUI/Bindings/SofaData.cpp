@@ -38,9 +38,22 @@ using sofaqtquick::helper::convertDataInfoToProperties;
 namespace sofaqtquick::bindings::_sofadata_
 {
 
+void QmlDDGNode::notifyEndEdit(const sofa::core::ExecParams *params)
+{
+    DDGNode::notifyEndEdit(params);
+    emit valueChanged(QVariant(0));
+}
+
+void QmlDDGNode::update(){}
+
 SofaData::SofaData(BaseData* self)
 {
     m_self = self;
+    m_ddgnode.self=self;
+
+    /// Connect a dedicated node as output
+    m_self->addOutput(&m_ddgnode);
+    connect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
 }
 
 bool SofaData::hasParent() const
@@ -63,14 +76,19 @@ void SofaData::setParent(SofaData* data)
 
 QVariant SofaData::getValue()
 {
+    //std::cout << "SofaData::getValue: " << rawData()->getName()
+    //          << " counter:" << rawData()->getCounter() << std::endl;
     m_previousValue = sofaqtquick::helper::createQVariantFromData(m_self);
     return m_previousValue;
 }
 
 bool SofaData::setValue(const QVariant& value)
 {
+    std::cout << rawData()->getName() << std::endl;
+    //std::cout << "Trying to setValue: " << value.toString().toStdString() << " counter:" << rawData()->getCounter() << std::endl;
     if(value != m_previousValue)
     {
+        //std::cout << "Doin to setValue: " << value.toString().toStdString() << std::endl;
         if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
         {
             m_self->setPersistent(true);
@@ -194,5 +212,12 @@ QString SofaData::getGroup() const
 {
     return QString::fromStdString(rawData()->getGroup());
 }
+
+int SofaData::getCounter() const
+{
+    return rawData()->getCounter();
+}
+
+
 
 } /// namespace sofaqtquick::bindings

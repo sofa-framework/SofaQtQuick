@@ -3,8 +3,10 @@
 
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 
-namespace sofaqtquick {
+namespace sofaqtquick
+{
 
+using sofaqtquick::bindings::SofaData;
 
 class SofaDataContainerListModel : public QAbstractTableModel
 {
@@ -31,6 +33,9 @@ public:
 
     void setSofaData(sofaqtquick::bindings::SofaData* newSofaData);
     void setAsGridViewModel(bool asGridViewModel) { m_asGridViewModel = asGridViewModel; }
+
+public slots:
+    void onBaseDataValueChanged();
 
 signals:
     void sofaDataChanged(sofaqtquick::bindings::SofaData* newSofaData) const;

@@ -32,11 +32,20 @@ void SofaDataContainerListModel::removeLastRow()
 void SofaDataContainerListModel::setSofaData(sofaqtquick::bindings::SofaData* newSofaData)
 {
     if (!newSofaData->rawData()->getValueTypeInfo()->Container())
+    {
         msg_error("SofaDataContainerListModel") << "Trying to construct a table model from a non-container type.";
-    else
-        m_sofaData = newSofaData;
+        return;
+    }
+
+    m_sofaData = newSofaData;
+    connect(m_sofaData, &SofaData::valueChanged, this, &SofaDataContainerListModel::onBaseDataValueChanged);
 }
 
+void SofaDataContainerListModel::onBaseDataValueChanged()
+{
+    beginResetModel();
+    endResetModel();
+}
 
 int	SofaDataContainerListModel::rowCount(const QModelIndex & parent) const
 {

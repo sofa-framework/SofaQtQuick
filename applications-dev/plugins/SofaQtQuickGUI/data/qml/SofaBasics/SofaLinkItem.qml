@@ -10,7 +10,7 @@ ColumnLayout {
     property alias text: txtField.text
     property var linkImage
     property var sofaData
-    property string parentLinkPath : sofaData.getParent() !== null ? sofaData.getParent().linkPath : ""
+    property string parentLinkPath : sofaData.parent !== null ? sofaData.getParent().linkPath : ""
 
     Layout.fillWidth: true
     Layout.fillHeight: true

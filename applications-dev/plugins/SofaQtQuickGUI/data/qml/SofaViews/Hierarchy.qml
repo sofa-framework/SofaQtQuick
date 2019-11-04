@@ -54,18 +54,21 @@ Rectangle {
     readonly property var searchBar: searchBar
 
     Item {
+
         //    /// Connect the scenegraph view so that it can be notified when the SofaApplication
         //    /// is trying to notify that the user is interested to get visual feedback on where componets are.
         Connections {
             target: SofaApplication
-            onSignalComponent: {
-                var c = sofaScene.get(path)
+            onSignalComponent: function(objectpath){
+                var c = sofaScene.get(objectpath)
                 if(c)
                 {
                     var baseIndex = basemodel.getIndexFromBase(c)
                     var sceneIndex = sceneModel.mapFromSource(baseIndex)
                     treeView.expandAncestors(sceneIndex)
                     treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
+                    //treeView.__listView.positionViewAtIndex(sceneIndex, ListView.Contains)
+                    //_ _list  positionViewAtIndex(1,ListView.Beginning)
                 }
             }
         }
@@ -88,6 +91,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
         alternatingRowColors: true
+
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
         }
@@ -365,9 +369,9 @@ Rectangle {
                 if(s === "Valid")
                     return "qrc:/icon/state_bubble_3.png"
                 if(s === "Ready")
-                    return "qrc:/icon/state_bubble_3.png"
-                if(s === "Invalid")
                     return "qrc:/icon/state_bubble_4.png"
+                if(s === "Invalid")
+                    return "qrc:/icon/state_bubble_5.png"
 
                 return "qrc:/icon/state_bubble_1.png"
             }
@@ -491,7 +495,7 @@ Rectangle {
                 anchors.right: componentState.left
                 height: 16
                 width: 16
-                enabled: hasChildMessage
+                enabled: hasMessage || (hasChildMessage && !styleData.isExpanded)
                 visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
                 iconSource:
                 {
@@ -500,6 +504,7 @@ Rectangle {
                     return hasMessage ? "qrc:/icon/iconerror.xpm" : "qrc:/icon/iconmessage_base.png"
                 }
 
+
                 onClicked: {
                     if(isNode)
                     {
@@ -507,6 +512,8 @@ Rectangle {
                         var idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(c))
                         treeView.expandAncestors(idx)
                         SofaApplication.selectedComponent = c;
+                        treeView.__listView.positionViewAtIndex(index, "EnsureVisible")
+
                         return
                     }
 

@@ -27,21 +27,36 @@ import QtQuick.Controls 2.4
 import SofaBasics 1.0
 import Sofa.Core.SofaData 1.0
 
+
 SpinBox
 {
-    id: self
-    enabled: !sofaData.readOnly
-
+    id: spinbox
     property SofaData sofaData: null
     property var properties: sofaData.properties
+
+    enabled: !sofaData.readOnly
     precision: properties["precision"]
     step: properties["step"] !== undefined ? properties["step"] : 1
+    value: sofaData.value
+
+    Connections
+    {
+        target: sofaData
+        onValueChanged: {
+            value=sofaData.value
+        }
+    }
 
     onValueChanged: {
         sofaData.value = value
     }
-
-    value: {
-        sofaData.value.toPrecision(precision?precision:6);
-    }
+//    Connections
+//    {
+//        target: spinbox
+//        onValueEditted: function(newvalue)
+//        {
+//            console.log("COUCOUC2 " + newvalue)
+//            sofaData.value = newvalue
+//        }
+//    }
 }

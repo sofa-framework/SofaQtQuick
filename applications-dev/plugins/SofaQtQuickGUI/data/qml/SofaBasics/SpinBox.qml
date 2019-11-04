@@ -48,6 +48,9 @@ Rectangle {
     property alias cornerPositions: backgroundID.cornerPositions
     property alias position: backgroundID.position
 
+    /// A signal to set the value ?
+    signal valueEditted (double newvalue)
+
     implicitHeight: 20
     implicitWidth: content.implicitWidth + upIndicator.width + downIndicator.width
     activeFocusOnTab: true
@@ -72,7 +75,7 @@ Rectangle {
         font.family: "Arial"
         elide: Text.ElideRight
         elideWidth: control.width - 10
-        text: formatText(control.value, control.prefix, control.suffix)
+        text: "XXX"+formatText(control.value, control.prefix, control.suffix)
     }
 
 
@@ -95,15 +98,13 @@ Rectangle {
         if (newValue < from)
             newValue = from
         control.value = newValue
-        textMetrics.text = formatText(newValue, control.prefix, control.suffix)
+        valueEditted(value)
     }
 
-    function setValue(_value)
+    onValueChanged:
     {
-        control.value = _value
-        textMetrics.text = formatText(_value, control.prefix, control.suffix)
+        textMetrics.text = formatText(value, control.prefix, control.suffix)
     }
-
 
     Rectangle {
         id: upIndicator
@@ -277,7 +278,8 @@ Rectangle {
                         v = to
                     if (v < from)
                         v = from
-                    setValue(v)
+                    value=v
+                    valueEditted(v)
                     isEditing = false
                 }
 

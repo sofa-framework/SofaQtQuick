@@ -37,9 +37,18 @@ Item //
     property var style : MainStyle
 
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
+
+    /// Connect to this signal to be notified when a component need to be emphasized.
+    signal signalComponent(string objectpath)
+
     function trimComponentCache()
     {
         SofaBaseApplicationSingleton.trimComponentCache();
+    }
+
+    function openInEditor(fullpath, line)
+    {
+        SofaBaseApplicationSingleton.openInEditor(fullpath, line)
     }
 
     /// Returns the absolute position of the mouse in a mouseArea
