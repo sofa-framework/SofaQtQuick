@@ -75,7 +75,15 @@ void SofaFactory::setFilter(const QString& s)
 
 QStringList SofaFactory::getComponents()
 {
-    return m_filteredList ;
+    if (m_filteredList.size())
+        return m_filteredList;
+    else {
+        QStringList tmpList;
+        tmpList.push_back("(create) " + m_filter + "Controller");
+        tmpList.push_back("(create) " + m_filter + "DataEngine");
+        tmpList.push_back("(create) " + m_filter + "ForceField");
+        return tmpList;
+    }
 }
 
 QString SofaFactory::getComponentHelp(const QString& name)

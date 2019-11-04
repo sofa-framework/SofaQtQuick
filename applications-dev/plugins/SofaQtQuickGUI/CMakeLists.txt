@@ -174,6 +174,9 @@ endif ()
 set(ASSET_TEMPLATES
     data/config/templates/MeshAsset.py
     data/config/templates/PythonAsset.py
+    data/python/templates/emptyController.py
+    data/python/templates/emptyDataEngine.py
+    data/python/templates/emptyForceField.py
     )
 
 
