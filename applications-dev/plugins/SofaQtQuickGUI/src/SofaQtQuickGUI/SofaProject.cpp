@@ -1,10 +1,12 @@
 #include "SofaProject.h"
 #include "SofaBaseApplication.h"
 
+#include <sofa/helper/Utils.h>
 #include <sofa/helper/system/FileMonitor.h>
 using sofa::helper::system::FileEventListener;
 using sofa::helper::system::FileMonitor;
 
+#include "SofaQtQuickGUI/SofaBaseApplication.h"
 #include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
 using RSPythonEnvironment = sofaqtquick::PythonEnvironment;
 
@@ -432,11 +434,11 @@ bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
     // Maybe not the most pertinent method name...
     QString scriptContent = "";
     if (name.endsWith("Controller"))
-        scriptContent = readPythonScriptTemplate(name, "config/templates/emptyController.py");
+        scriptContent = readPythonScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyController.py"));
     else if (name.endsWith("DataEngine"))
-        scriptContent = readPythonScriptTemplate(name, "config/templates/emptyDataEngine.py");
+        scriptContent = readPythonScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyDataEngine.py"));
     else if (name.endsWith("ForceField"))
-        scriptContent = readPythonScriptTemplate(name, "config/templates/emptyForceField.py");
+        scriptContent = readPythonScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyForceField.py"));
     else
         return false;
 
@@ -459,6 +461,7 @@ bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
 
         py::object n = PythonFactory::toPython(static_cast<sofa::simulation::graph::DAGNode*>(node->rawBase()->toBaseNode()));
         n.attr("addObject")(instance);
+        SofaBaseApplication::Instance()->openInEditor(filepath);
         return true;
     }
     msg_error("SofaProject") << "could not open " << filepath.toStdString() << " in write-only.";

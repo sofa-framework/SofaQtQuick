@@ -51,6 +51,16 @@ Item //
         SofaBaseApplicationSingleton.openInEditor(fullpath, line)
     }
 
+    function openInExplorer(fullpath)
+    {
+        SofaBaseApplicationSingleton.openInExplorer(fullpath)
+    }
+
+    function openInTerminal(fullpath)
+    {
+        SofaBaseApplicationSingleton.openInTerminal(fullpath)
+    }
+
     /// Returns the absolute position of the mouse in a mouseArea
     /// Takes a MouseArea as argument
     function getAbsolutePosition(node) {
