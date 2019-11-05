@@ -247,4 +247,15 @@ SofaScene {
 
         property var sofaScene: root
     }
+
+    property Timer canvasLoaderTimer: Timer {
+        id: loadCanvasesTimer
+        interval: 200
+        repeat: true
+        running: true
+        onTriggered: {
+            checkForCanvases()
+        }
+    }
+
 }

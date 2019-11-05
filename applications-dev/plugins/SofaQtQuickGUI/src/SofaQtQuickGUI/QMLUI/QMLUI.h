@@ -25,6 +25,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QQuickItem>
 #include <QQmlContext>
 
+#include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
+
 namespace sofaqtquick::qmlui
 {
     typedef QList<QUrl> QUrlList;
@@ -45,8 +47,8 @@ namespace sofaqtquick::qmlui
         ~QmlUILoader() override;
 
     public slots:
-        void resetAndLoadAll(const QUrlList& list);
-        void load(const QUrl& filename);
+        void resetAndLoadAll(QList<QObject*> list);
+        void load(sofaqtquick::bindings::SofaBaseObject* canvas);
 
     private:
         QList<QQuickItem*> m_loadedItems;

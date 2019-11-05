@@ -96,7 +96,7 @@ public:
     Q_PROPERTY(sofa::qtquick::SofaScene::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
 
-    Q_PROPERTY(QUrlList canvas READ readCanvas NOTIFY notifyCanvasChanged)
+    Q_PROPERTY(QList<QObject*> canvas READ readCanvas NOTIFY notifyCanvasChanged)
 
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl sourceQML READ sourceQML WRITE setSourceQML NOTIFY sourceQMLChanged)
@@ -132,7 +132,8 @@ public:
 
     /// get the list of url pointing to the canvas currently associated with the
     /// current scene.
-    QUrlList readCanvas();
+    QList<QObject*> readCanvas();
+    Q_INVOKABLE void checkForCanvases();
     void addCanvas(const QUrl& canvas);
 
     /// set the url of the scene, when changed the SofaScene object will goes through
@@ -326,7 +327,7 @@ private:
 
     SofaComponent*                              myCppGraph;
 
-    QUrlList                                    m_canvas;
+    QList<QObject*>                                 m_canvas;
 };
 
 }

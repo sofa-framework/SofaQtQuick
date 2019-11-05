@@ -6,8 +6,11 @@
 #include "QMLUI.h"
 
 #include <sofa/helper/logging/Messaging.h>
+#include <sofa/core/objectmodel/DataFileName.h>
 
 #include <SofaQtQuickGUI/Helper/QtStl/QtStl.h>
+using sofaqtquick::bindings::SofaBaseObject;
+using sofaqtquick::bindings::SofaBase;
 
 namespace sofa::helper::logging
 {
@@ -28,7 +31,7 @@ QmlUILoader::QmlUILoader(QObject* parent)
 {
 }
 
-void QmlUILoader::resetAndLoadAll(const QUrlList& list)
+void QmlUILoader::resetAndLoadAll(QList<QObject*> list)
 {
     /// Remove the existing items.
     for(auto& item : m_loadedItems)
@@ -37,12 +40,15 @@ void QmlUILoader::resetAndLoadAll(const QUrlList& list)
         item->setParentItem(nullptr);
     }
 
+    m_loadedItems.clear();
     /// Re-add all of them.
-    for(auto& url : list)
-        load(url);
+    for(auto& o : list)
+    {
+        load(dynamic_cast<sofaqtquick::bindings::SofaBaseObject*>(o));
+    }
 }
 
-void QmlUILoader::load(const QUrl& filename)
+void QmlUILoader::load(SofaBaseObject* canvas)
 {
     QQmlEngine* engine = qmlEngine(this);
     if(!engine)
@@ -51,7 +57,9 @@ void QmlUILoader::load(const QUrl& filename)
         return;
     }
 
-    QQmlComponent component(engine, QUrl(filename));
+    engine->clearComponentCache();
+    auto file = dynamic_cast<sofa::core::objectmodel::DataFileName*>(canvas->rawBase()->findData("filename"));
+    QQmlComponent component(engine, QUrl(QString::fromStdString(file->getFullPath())));
     if(!component.isReady())
     {
         msg_error() << component.errorString();
@@ -61,11 +69,16 @@ void QmlUILoader::load(const QUrl& filename)
     QQuickItem *childItem = qobject_cast<QQuickItem*>(component.create());
     if(!childItem)
     {
-        msg_error() << "Unable to instanciate component from: " << filename.toString() ;
+        msg_error() << "Unable to instanciate component from: " << file->getFullPath() ;
         return;
     }
 
     childItem->setParentItem(this);
+    /// Need to fix that...
+    if (!childItem->setProperty("self", QVariant::fromValue(canvas)))
+        msg_error("QMLUI") << "could not set property `self` of canvas " << file->getFullPath() << ". Check that the property exist in qml";
+    childItem->setProperty("x", std::stoi(canvas->rawBase()->findData("x")->getValueString()));
+    childItem->setProperty("y", std::stoi(canvas->rawBase()->findData("y")->getValueString()));
     m_loadedItems.push_back(childItem);
 }
 
