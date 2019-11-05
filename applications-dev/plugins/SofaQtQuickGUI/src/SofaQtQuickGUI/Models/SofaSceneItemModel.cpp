@@ -104,12 +104,9 @@ void SofaSceneItemModel::emitAllChanges(Node* node)
 
 void SofaSceneItemModel::onTimeOutModelRefresh()
 {
-    int row = rrowCount_recurse(m_root.get());
-
-    if(m_root->getNodeObjects().size()==3){
-        emitAllChanges(m_root.get());
-        m_dataTracker.clean();
-    }
+    /// Recursively emit the dataChanged signal on object that have changed.
+    emitAllChanges(m_root.get());
+    m_dataTracker.clean();
 }
 
 QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &parent) const
@@ -325,8 +322,6 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
     }
 
     currentNode = currentBase->toBaseNode();
-
-    std::cout << "REFETCH DAT for: " << currentBase->getName() << " (with role " << role << ")" << std::endl ;
 
     switch(static_cast<Roles>(role))
     {
