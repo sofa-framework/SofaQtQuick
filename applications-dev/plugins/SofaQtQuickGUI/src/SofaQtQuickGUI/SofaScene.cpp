@@ -63,6 +63,9 @@ namespace py = pybind11;
 #include <SofaPython3/PythonFactory.h>
 using sofapython3::PythonFactory;
 
+#include <QmlUI/Canvas.h>
+using qmlui::Canvas;
+
 #include <SofaBaseVisual/VisualStyle.h>
 #include <SofaOpenglVisual/OglModel.h>
 #include <SofaBaseMechanics/MechanicalObject.h>
@@ -108,6 +111,7 @@ using sofa::qtquick::SofaBaseApplication;
 #include <QFile>
 #include <QFileDialog>
 #include <QTimer>
+#include <QDateTime>
 #include <QString>
 #include <QUrl>
 #include <QThread>
@@ -166,6 +170,7 @@ SofaScene::SofaScene(QObject *parent) : QObject(parent),
     // plugins
     QVector<QString> plugins;
     plugins.append("SofaPython3");
+    plugins.append("QmlUI");
     plugins.append("SofaAllCommonComponents");
     for(const QString& plugin : plugins)
     {
@@ -1483,7 +1488,11 @@ void SofaScene::reset()
 
 void SofaScene::addCanvas(const QUrl& canvas)
 {
-    m_canvas.push_back(canvas);
+    Canvas::SPtr newCanvas = sofa::core::objectmodel::New<Canvas>();
+    newCanvas->d_qmlFile.setValue(canvas.toLocalFile().toStdString());
+    sofaqtquick::bindings::SofaBaseObject* bo = new sofaqtquick::bindings::SofaBaseObject(newCanvas);
+    m_canvas.push_back(bo);
+    mySofaRootNode->addObject(newCanvas);
     emit notifyCanvasChanged();
 }
 
@@ -1493,9 +1502,68 @@ void SofaScene::unloadAllCanvas()
     emit notifyCanvasChanged();
 }
 
-QUrlList SofaScene::readCanvas()
+QList<QObject*> SofaScene::readCanvas()
 {
     return m_canvas;
+}
+
+class GetCanvasVisitor : public sofa::simulation::Visitor
+{
+public:
+    GetCanvasVisitor(const core::ExecParams* params = core::ExecParams::defaultInstance())
+        : sofa::simulation::Visitor(params),
+          needsRefresh(false)
+    {
+    }
+
+    sofa::simulation::Visitor::Result processNodeTopDown(Node* node) override
+    {
+        for (auto obj : node->object)
+            if (obj->getClassName() == "Canvas")
+            {
+                qmlui::Canvas* canvas = dynamic_cast<qmlui::Canvas*>(obj.get());
+
+                if (canvas->d_qmlFile.getFullPath() == "")
+                {
+                    if (canvas->d_lastModified.getValue() == 0)
+                        continue;
+                    else canvas->d_lastModified = 0;
+                }
+
+                QFileInfo f(QString::fromStdString(canvas->d_qmlFile.getFullPath()));
+
+                if (f.lastModified().toTime_t() != canvas->d_lastModified.getValue())
+                    canvas->d_lastModified.setValue(f.lastModified().toTime_t());
+                if (canvas->tracker.hasChanged(canvas->d_lastModified) ||
+                        canvas->tracker.hasChanged(canvas->d_x) ||
+                        canvas->tracker.hasChanged(canvas->d_y) ||
+                        canvas->tracker.hasChanged(canvas->d_qmlFile))
+                    needsRefresh = true;
+                canvas->tracker.clean();
+                m_canvases.append(new sofaqtquick::bindings::SofaBaseObject(obj));
+            }
+        return RESULT_CONTINUE;
+    }
+
+    const char* getClassName() const override { return "GetCanvasVisitor"; }
+
+    QList<QObject*>& getCanvases() { return m_canvases; }
+    bool needsRefresh;
+
+private:
+    QList<QObject*> m_canvases;
+};
+
+void SofaScene::checkForCanvases()
+{
+    GetCanvasVisitor visitor;
+    mySofaRootNode->executeVisitor(&visitor);
+    QList<QObject*> newCanvases = visitor.getCanvases();
+    if (newCanvases.size() != m_canvas.size() || visitor.needsRefresh)
+    {
+        m_canvas = newCanvases;
+        emit notifyCanvasChanged();
+    }
 }
 
 SelectableSofaParticle* SofaScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots)

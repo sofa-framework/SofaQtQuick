@@ -5,6 +5,7 @@
 find_package(SofaMisc REQUIRED)
 find_package(SofaPython QUIET)
 find_package(SofaPython3 QUIET)
+find_package(QmlUI REQUIRED)
 
 if(NOT SofPython3_FOUND AND NOT SofaPython_FOUND)
   find_package(SofaPython3 REQUIRED)

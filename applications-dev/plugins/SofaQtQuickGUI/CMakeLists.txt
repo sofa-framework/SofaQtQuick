@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION VERSION 3.14)
 project(SofaQtQuickGUI VERSION 1.0)
 
 set (CMAKE_CXX_STANDARD 17)
@@ -7,6 +7,7 @@ find_package(SofaFramework REQUIRED)
 find_package(SofaOpenglVisual REQUIRED)
 find_package(SofaGeneral REQUIRED)
 find_package(SofaCommon REQUIRED)
+find_package(QmlUI REQUIRED)
 
 find_package(SofaPython3 QUIET)
 if (SofaPython3_FOUND)
@@ -16,7 +17,6 @@ if (SofaPython3_FOUND)
 else()
   message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
 endif ()
-
 
 set(SOURCE_FILES
     src/SofaQtQuickGUI/DataHelper.cpp
@@ -268,10 +268,13 @@ set(HEADER_FILES ${HEADER_FILES}
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaComponentBase SofaMeshCollision
-    Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine stdc++fs)
+    Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine stdc++fs QmlUI)
 #target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>")
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+
+
 target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${ASSIMP_INCLUDE_DIR}>")
 
 file(COPY ${ASSET_TEMPLATES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates)
@@ -294,7 +297,7 @@ endif()
 
 set(SOFAQTQUICKGUI_VERSION 1.0)
 ## Install rules for the library; CMake package configurations files
-sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_INSTALL_DIR ${PROJECT_NAME})
+sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_INSTALL_DIR ${PROJECT_NAME} INCLUDE_SOURCE_DIR "src/${PROJECT_NAME}")
 
 if(SOFA_BUILD_TESTS)
     find_package(SofaTest QUIET)
