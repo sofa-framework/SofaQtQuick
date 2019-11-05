@@ -5,6 +5,9 @@
 using sofa::helper::system::FileEventListener;
 using sofa::helper::system::FileMonitor;
 
+#include "SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h"
+using RSPythonEnvironment = sofaqtquick::PythonEnvironment;
+
 #include <SofaPython3/PythonEnvironment.h>
 #include <SofaPython3/PythonFactory.h>
 using sofapython3::PythonEnvironment;
@@ -412,16 +415,16 @@ bool SofaProject::createPrefab(SofaBase* node)
     return false;
 }
 
-QString readPythonScriptTemplate(QString name, QString type) {
-    QFile f("config/templates/empty"+type+".py");
+QString readPythonScriptTemplate(QString name, QString file) {
+    QFile f(file);
     if (!f.open(QFile::ReadOnly | QFile::Text)) {
-        msg_error("SofaProject") << "file `config/templates/empty"+type.toStdString()+".py` does not exist";
+        msg_error("SofaProject") << "file `" + file.toStdString()+"` does not exist";
         return "";
     }
     QTextStream in(&f);
     QString s = in.readAll();
     f.close();
-    return s.replace("%Empty"+type+"%", name);
+    return s.replace("%ComponentName%", name);
 }
 
 bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
@@ -429,36 +432,32 @@ bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
     // Maybe not the most pertinent method name...
     QString scriptContent = "";
     if (name.endsWith("Controller"))
-        scriptContent = readPythonScriptTemplate(name, "Controller");
+        scriptContent = readPythonScriptTemplate(name, "config/templates/emptyController.py");
     else if (name.endsWith("DataEngine"))
-        scriptContent = readPythonScriptTemplate(name, "DataEngine");
+        scriptContent = readPythonScriptTemplate(name, "config/templates/emptyDataEngine.py");
     else if (name.endsWith("ForceField"))
-        scriptContent = readPythonScriptTemplate(name, "ForceField");
-    else if (name.endsWith("Prefab"))
-        scriptContent = readPythonScriptTemplate(name, "Prefab");
+        scriptContent = readPythonScriptTemplate(name, "config/templates/emptyForceField.py");
     else
         return false;
 
     if (scriptContent == "")
         return false;
     QString filepath = getRootDir().toLocalFile() + "/assets/scripts/" + name.toLower() + ".py";
-    QString filename = name.toLower()+".py";
-    QString modulename = name.toLower();
     QFile f(filepath);
     if (f.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&f);
         stream << scriptContent << endl;
         f.close();
+        py::list args;
+        args.append(name.toUtf8().data());
+        py::object instance = RSPythonEnvironment::CallFunction(filepath,
+                                          name,
+                                          args,
+                                          py::dict(),
+                                          node->rawBase());
 
-        // TODO: move to SofaQtQuick.py -> loadPythonComponent ?
-        py::module sys = py::module::import("sys");
-        sys.attr("path").attr("append")(QString(getRootDir().toLocalFile() + "/assets/scripts/").toStdString());
-        py::module m = py::module::import(modulename.toUtf8().data());
-        py::object n = PythonFactory::toPython(
-                    static_cast<sofa::simulation::graph::DAGNode*>(node->rawBase()->toBaseNode()));
-        py::object __class = m.attr(name.toUtf8().data());
-        py::object instance = __class(name.toUtf8().data());
+        py::object n = PythonFactory::toPython(static_cast<sofa::simulation::graph::DAGNode*>(node->rawBase()->toBaseNode()));
         n.attr("addObject")(instance);
         return true;
     }
