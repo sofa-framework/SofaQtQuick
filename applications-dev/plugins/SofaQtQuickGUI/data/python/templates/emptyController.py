@@ -1,7 +1,9 @@
+"""type: SofaContent"""
+
 import Sofa.Core
 
-class %EmptyController%(Sofa.Core.Controller):
-    """ custom %EmptyController% component for SOFA """
+class %ComponentName%(Sofa.Core.Controller):
+    """ custom %ComponentName% component for SOFA """
 
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)

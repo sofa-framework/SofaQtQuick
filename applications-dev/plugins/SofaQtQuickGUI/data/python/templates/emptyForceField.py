@@ -1,8 +1,10 @@
+"""type: SofaContent"""
+
 import Sofa.Core
 import numpy as np
 from Sofa.Helper import msg_info
 
-class %EmptyForcefield%(Sofa.Core.ForceField):
+class %ComponentName%(Sofa.Core.ForceField):
     def __init__(self, *args, **kwargs):
         Sofa.Core.ForceField.__init__(self, *args, **kwargs)
         pass

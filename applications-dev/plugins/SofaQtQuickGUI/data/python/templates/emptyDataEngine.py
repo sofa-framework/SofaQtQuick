@@ -1,9 +1,11 @@
+"""type: SofaContent"""
+
 import Sofa.Core
 from Sofa.Helper import msg_info
 
 
-class %EmptyDataEngine%(Sofa.Core.DataEngine):
-    """ custom %EmptyDataEngine% component for SOFA """
+class %ComponentName%(Sofa.Core.DataEngine):
+    """ custom %ComponentName% component for SOFA """
 
     def __init__(self, *args, **kwargs):
         Sofa.Core.DataEngine.__init__(self, *args, **kwargs)
