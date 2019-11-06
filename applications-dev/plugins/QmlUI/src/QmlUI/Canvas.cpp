@@ -11,6 +11,7 @@ namespace qmlui
       d_lastModified(initData(&d_lastModified, uint(0), "lastModified",
                               "the Timestamp of the last modification of filename", false, true))
   {
+      d_qmlFile.setRequired(true);
   }
 
   void Canvas::init()

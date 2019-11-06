@@ -32,6 +32,8 @@ Item {
     signal doubleClickedOnLabel;
 
     property SofaData sofaData: null
+
+    property var properties: sofaData.properties
     property var widget: null
 
     property int nameLabelWidth: -1
@@ -66,7 +68,7 @@ Item {
             visible: self.showName
             text: sofaData ? sofaData.name : ""
             font.italic: true
-            color: "black"
+            color: properties.required && !properties.set ? "#bb0000" : "black"
             clip: true
             elide: Text.ElideRight
 
@@ -162,6 +164,7 @@ Item {
 
     onSofaDataChanged:
     {
+        console.log("value changed")
         if(sofaData)
         {
             /// Returns the widget's properties associated with this SofaData
