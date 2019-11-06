@@ -91,14 +91,35 @@ def getAbsPythonCallPath(node, rootNode):
         # relPath = physics.visu.eye
         return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
 
+def myRelPath(path, relativeTo):
+    ps = path.split('/')
+    rs = relativeTo.split('/')
+
+    sharedprefix = ""
+    for p,r  in zip(ps, rs):
+        if p == "" and r == "":
+            continue
+        if p == r:
+            sharedprefix += "/"+p
+        else:
+            break
+
+    return os.path.relpath(path, relativeTo)
+
 def buildDataParams(datas, indent, scn):
     s = ""
     for data in datas:
         if data.hasParent():
             scn[0] += indent + "### THERE WAS A LINK. "
             scn[0] += data.getParent().getLinkPath() + "=>" + data.getLinkPath() + "\n"
-            if data.getName() != "name" and data.isPersistent():
-                s += ", " + data.getName()+ "=" + repr(data.getParent().getLinkPath())
+            if data.getName() != "name":
+                print("TOTO:", myRelPath("/home/bruno/dev/myproject/scripts",
+                                          "/home/bruno/dev/myproject/scenes/MyCoolFile.py"))
+
+                print("COMPUTE REL PATH: ", data.getParent().getPathName(), data.getPathName())
+                relPath = os.path.relpath(data.getPathName(), data.getParent().getPathName())
+                print("REL PATH: " , relPath)
+                s += ", " + data.getName()+ "=@" + relPath
         else:
             if data.getName() != "name" and data.isPersistent():
                 if " " not in data.getName() and data.getName() != "Help":
