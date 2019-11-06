@@ -201,13 +201,15 @@ def callFunction(file, function, *args, **kwargs):
 def createPrefabFromNode(fileName, node, name, help):
         print('Saving prefab')
         fd = open(fileName, "w+")
+        fd.write('"""type: SofaContent"""\n')
         fd.write("import sys\n")
         fd.write("import os\n")
+        fd.write("import Sofa.Core\n")
 
         modules = []
         modulepaths = []
         scn = [""]
-        saveRec(node, "\t\t", modules, modulepaths, scn, node)
+        saveRec(node, "    ", modules, modulepaths, scn, node)
 
         fd.write("# all Paths\n")
         for p in list(dict.fromkeys(modulepaths)):
@@ -217,11 +219,9 @@ def createPrefabFromNode(fileName, node, name, help):
         for m in list(dict.fromkeys(modules)):
             fd.write("from " + m + " import *\n")
 
-        fd.write("\n\n@SofaPrefab\n")
-        fd.write("class " + name + "():\n")
-        fd.write("\t\"\"\" " + help + " \"\"\"\n")
-        fd.write("\tdef __init__(self, " + node.name.value + "):\n")
-        fd.write("\t\tself.node = " + node.name.value + "\n")
+        fd.write("\n\n@Sofa.PrefabBuilder\n")
+        fd.write("def " + name + "("+node.name.value+"):\n")
+        fd.write("    \"\"\" " + help + " \"\"\"\n")
         fd.write(scn[0])
         return True
 
