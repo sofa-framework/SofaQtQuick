@@ -286,7 +286,7 @@ Item {
                                         sourceComponent: {
                                             if (!isDisplayed)
                                                 return hiddenItem;
-                                            if(isReadOnly && !topRect.showDebug)
+                                            if(isReadOnly && !topRect.showDebug && name!=="componentState")
                                                 return hiddenItem;
                                             switch(type){
                                             case 5: //sofaInspectorDataListModel.SofaDataType:

@@ -56,6 +56,12 @@ SofaData::SofaData(BaseData* self)
     connect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
 }
 
+SofaData::~SofaData()
+{
+    m_self->delOutput(&m_ddgnode);
+    disconnect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
+}
+
 bool SofaData::hasParent() const
 {
     return m_self->getParent() != nullptr;
@@ -84,7 +90,6 @@ QVariant SofaData::getValue()
 
 bool SofaData::setValue(const QVariant& value)
 {
-    std::cout << rawData()->getName() << std::endl;
     //std::cout << "Trying to setValue: " << value.toString().toStdString() << " counter:" << rawData()->getCounter() << std::endl;
     if(value != m_previousValue)
     {

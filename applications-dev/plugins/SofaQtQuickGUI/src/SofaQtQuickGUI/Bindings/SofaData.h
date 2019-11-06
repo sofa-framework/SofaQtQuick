@@ -73,6 +73,7 @@ class SofaData : public QObject
 
 public:
     SofaData(BaseData* self);
+    ~SofaData();
 
     Q_INVOKABLE QString getName() const;
     Q_INVOKABLE QString getPathName() const;
