@@ -136,6 +136,7 @@ Popup {
         }
         delegate: ListViewDelegate {
             listView: container
+            hasTemplates: SofaFactory.getComponentTemplates(modelData).length > 1
             ToolTip {
                 text: modelData
                 description:  SofaFactory.getComponentHelp(modelData)
