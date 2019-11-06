@@ -65,6 +65,7 @@ using sofapython3::PythonEnvironment;
 #include <QRunnable>
 #include <QTimer>
 #include <QDirIterator>
+#include <QFileDialog>
 
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 using sofaqtquick::bindings::SofaCoreBindingContext;

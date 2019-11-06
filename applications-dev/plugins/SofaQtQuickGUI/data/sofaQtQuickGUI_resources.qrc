@@ -76,5 +76,17 @@
         <file>icon/iconerror.png</file>
         <file>icon/iconinfo.png</file>
         <file>icon/iconwarning.png</file>
+        <file>icon/ICON_CANVAS.png</file>
+        <file>icon/ICON_CANVAS2.png</file>
+        <file>icon/ICON_CONTACT.png</file>
+        <file>icon/ICON_LOCK.png</file>
+        <file>icon/ICON_MAGNET.png</file>
+        <file>icon/ICON_PARAMS.png</file>
+        <file>icon/ICON_PIN.png</file>
+        <file>icon/ICON_PREFAB2.png</file>
+        <file>icon/ICON_PREFAB3.png</file>
+        <file>icon/ICON_CONTROLLER2.png</file>
+        <file>icon/ICON_ENGINE2.png</file>
+        <file>icon/ICON_ENGINE3.png</file>
     </qresource>
 </RCC>

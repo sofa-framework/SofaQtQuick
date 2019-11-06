@@ -46,6 +46,33 @@ Menu {
             sofaApplication.createFolderIn(filePath)
         }
     }
+    Menu {
+        id: newAsset
+        title: "New..."
+
+        MenuItem {
+            text: "QMLUI Canvas"
+            icon.source: "qrc:/icon/ICON_CANVAS2.png"
+            onTriggered: {
+            }
+        }
+        MenuItem {
+            text: "Python Controller"
+            icon.source: "qrc:/icon/ICON_CONTROLLER2.png"
+        }
+        MenuItem {
+            text: "Python ForceField"
+            icon.source: "qrc:/icon/ICON_MAGNET.png"
+        }
+        MenuItem {
+            text: "Python DataEngine"
+            icon.source: "qrc:/icon/ICON_ENGINE3.png"
+        }
+        MenuItem {
+            text: "Python Prefab"
+            icon.source: "qrc:/icon/ICON_PREFAB3.png"
+        }
+    }
     
     MenuItem {
         id: importAsset

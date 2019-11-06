@@ -469,9 +469,11 @@ Rectangle {
                 id: rowText
                 anchors.left: icon.right
                 anchors.right: parent.right
+                anchors.rightMargin: 40
                 color: styleData.textColor
                 font.italic: hasMultiParent
-                elide: styleData.elideMode
+                elide: Text.ElideRight
+                clip: true
                 text: {
                     if (isNode || typename == name)
                         return name
