@@ -326,7 +326,7 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
 
     currentNode = currentBase->toBaseNode();
 
-    std::cout << "REFETCH DAT for: " << currentBase->getName()  << std::endl ;
+    std::cout << "REFETCH DAT for: " << currentBase->getName() << " (with role " << role << ")" << std::endl ;
 
     switch(static_cast<Roles>(role))
     {

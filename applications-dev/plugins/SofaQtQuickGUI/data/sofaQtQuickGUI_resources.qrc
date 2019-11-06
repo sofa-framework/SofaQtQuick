@@ -64,9 +64,6 @@
         <file>icon/ICON_PYSCN.png</file>
         <file>icon/ICON_PYTHON.png</file>
         <file>icon/ICON_PREFAB.png</file>
-        <file>icon/iconerror.xpm</file>
-        <file>icon/iconinfo.xpm</file>
-        <file>icon/iconwarning.xpm</file>
         <file>icon/iconmessage_base.png</file>
         <file>icon/state_bubble_1.png</file>
         <file>icon/state_bubble_2.png</file>
@@ -76,5 +73,8 @@
         <file>icon/linkInvalid.png</file>
         <file>icon/linkValid.png</file>
         <file>icon/state_bubble_5.png</file>
+        <file>icon/iconerror.png</file>
+        <file>icon/iconinfo.png</file>
+        <file>icon/iconwarning.png</file>
     </qresource>
 </RCC>
