@@ -16,8 +16,6 @@ namespace qmlui
   void Canvas::init()
   {
       tracker.trackData(d_qmlFile);
-      tracker.trackData(d_x);
-      tracker.trackData(d_y);
       tracker.trackData(d_lastModified);
       if (!d_qmlFile.isSet() || d_qmlFile.getExtension() != "qml")
       {

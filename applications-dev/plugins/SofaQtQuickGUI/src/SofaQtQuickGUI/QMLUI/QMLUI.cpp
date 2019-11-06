@@ -2,6 +2,7 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QQuickItem>
+#include <QQuickView>
 
 #include "QMLUI.h"
 
@@ -74,11 +75,7 @@ void QmlUILoader::load(SofaBaseObject* canvas)
     }
 
     childItem->setParentItem(this);
-    /// Need to fix that...
-    if (!childItem->setProperty("self", QVariant::fromValue(canvas)))
-        msg_error("QMLUI") << "could not set property `self` of canvas " << file->getFullPath() << ". Check that the property exist in qml";
-    childItem->setProperty("x", std::stoi(canvas->rawBase()->findData("x")->getValueString()));
-    childItem->setProperty("y", std::stoi(canvas->rawBase()->findData("y")->getValueString()));
+    childItem->setProperty("__componentPath", canvas->getPathName());
     m_loadedItems.push_back(childItem);
 }
 
