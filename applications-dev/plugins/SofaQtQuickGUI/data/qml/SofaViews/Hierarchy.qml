@@ -364,11 +364,11 @@ Rectangle {
                 if(s === "Undefined")
                     return "qrc:/icon/state_bubble_1.png"
                 if(s === "Loading")
-                    return "qrc:/icon/state_bubble_2.png"
-                if(s === "Busy")
-                    return "qrc:/icon/state_bubble_2.png"
-                if(s === "Valid")
                     return "qrc:/icon/state_bubble_3.png"
+                if(s === "Busy")
+                    return "qrc:/icon/state_bubble_3.png"
+                if(s === "Valid")
+                    return "qrc:/icon/state_bubble_4.png"
                 if(s === "Ready")
                     return "qrc:/icon/state_bubble_4.png"
                 if(s === "Invalid")
