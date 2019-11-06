@@ -508,8 +508,8 @@ Rectangle {
                 iconSource:
                 {
                     if(isNode)
-                        return !hasChildMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
-                    return hasMessage ? "qrc:/icon/iconerror.xpm" : "qrc:/icon/iconmessage_base.png"
+                        return !hasChildMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.png"
+                    return hasMessage ? "qrc:/icon/iconerror.png" : "qrc:/icon/iconmessage_base.png"
                 }
 
 
@@ -545,7 +545,7 @@ Rectangle {
                 height: 16
                 width: 16
                 visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
-                iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.xpm"
+                iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.png"
                 opacity: 0.75
                 enabled: hasMessage
                 onClicked: {
