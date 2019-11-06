@@ -1535,8 +1535,6 @@ public:
                 if (f.lastModified().toTime_t() != canvas->d_lastModified.getValue())
                     canvas->d_lastModified.setValue(f.lastModified().toTime_t());
                 if (canvas->tracker.hasChanged(canvas->d_lastModified) ||
-                        canvas->tracker.hasChanged(canvas->d_x) ||
-                        canvas->tracker.hasChanged(canvas->d_y) ||
                         canvas->tracker.hasChanged(canvas->d_qmlFile))
                     needsRefresh = true;
                 canvas->tracker.clean();

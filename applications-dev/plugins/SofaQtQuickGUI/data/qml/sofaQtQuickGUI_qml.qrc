@@ -120,5 +120,6 @@
         <file>SofaBasics/TableView.qml</file>
         <file>SofaBasics/SofaLinkItem.qml</file>
         <file>SofaDataTypes/SofaDataType_ComponentState.qml</file>
+        <file>SofaBasics/SofaCanvas.qml</file>
     </qresource>
 </RCC>
