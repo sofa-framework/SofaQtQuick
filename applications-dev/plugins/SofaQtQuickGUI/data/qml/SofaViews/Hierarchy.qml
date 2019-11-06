@@ -349,6 +349,7 @@ Rectangle {
             property bool isSelected: false
             property string name : model && model.name ? model.name : ""
             property string typename : model && model.typename ? model.typename : ""
+            property string shortname : model && model.shortname ? model.shortname : ""
             property bool isNode: model && model.isNode ? model.isNode : false
             property bool hasMultiParent : model && model.hasMultiParent ? model.hasMultiParent : false
             property bool isMultiParent : model && model.isMultiParent ? model.isMultiParent : false
@@ -471,7 +472,14 @@ Rectangle {
                 color: styleData.textColor
                 font.italic: hasMultiParent
                 elide: styleData.elideMode
-                text: isNode ? name : typename+"("+name+")"
+                text: {
+                    if (isNode)
+                        return name
+                    if (shortname == name || typename == name)
+                        return name
+                    else
+                        return shortname+" ("+name+")"
+                }
             }
 
             Image {
@@ -582,6 +590,11 @@ Rectangle {
                 Drag.mimeData: {
                     "text/plain": "Copied text"
                 }
+            }
+
+            ToolTip {
+                text: typename
+                visible: mouseArea.containsMouse
             }
 
             MouseArea {

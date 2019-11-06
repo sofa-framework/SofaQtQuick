@@ -80,6 +80,7 @@ public:
     {
         Name = Qt::UserRole + 1,
         TypeName,
+        ShortName,
         IsNode,
         IsMultiParent,
         HasMultiParent,
