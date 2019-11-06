@@ -70,6 +70,7 @@ Item {
         property var sofaSelectedComponent: SofaApplication.selectedComponent
 
         property bool showDebug : isDebug.checked
+
         property int refreshCounter : 0
 
         visible: selectedAsset === null
@@ -283,6 +284,8 @@ Item {
                                         width: theItem.width
 
                                         sourceComponent: {
+                                            if (!isDisplayed)
+                                                return hiddenItem;
                                             if(isReadOnly && !topRect.showDebug)
                                                 return hiddenItem;
                                             switch(type){
@@ -307,7 +310,6 @@ Item {
 
                                         property Component dataItem : SofaDataItem
                                         {
-
                                             id: sofaDataItem
                                             implicitWidth : theItem.width
                                             //                                            implicitHeight: 20

@@ -347,6 +347,20 @@ QVariant SofaInspectorDataListModel::data(const QModelIndex& index, int role) co
                 return QVariant::fromValue( link->isReadOnly() );
             }
             return QVariant(false);
+        case VisibilityRole:
+            if(SofaDataType == item->m_type)
+            {
+                BaseData* data = (BaseData*) item->m_data.value<void*>();
+                return QVariant::fromValue( data->isDisplayed() );
+            }
+            return QVariant(true);
+        case RequiredRole:
+            if(SofaDataType == item->m_type)
+            {
+                BaseData* data = (BaseData*) item->m_data.value<void*>();
+                return QVariant::fromValue( data->isRequired() );
+            }
+            return QVariant(true);
         case PathRole:
             if(SofaDataType == item->m_type)
             {
@@ -400,7 +414,9 @@ QHash<int,QByteArray> SofaInspectorDataListModel::roleNames() const
     roles[TypeRole]         = "type" ;
     roles[ValueRole]        = "value" ;
     roles[PathRole]         = "path" ;
-    roles[ReadOnlyRole]         = "isReadOnly" ;
+    roles[ReadOnlyRole]     = "isReadOnly" ;
+    roles[VisibilityRole]   = "isDisplayed" ;
+    roles[RequiredRole]     = "isRequired" ;
     return roles;
 }
 

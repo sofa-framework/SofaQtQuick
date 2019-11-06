@@ -334,6 +334,9 @@ bool setDataValueFromQVariant(BaseData* data, const QVariant& value)
 QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& properties)
 {
     properties.insert("readOnly", data->isReadOnly());
+    properties.insert("required", data->isRequired());
+    properties.insert("displayed", data->isDisplayed());
+    properties.insert("set", data->isSet());
 
     /// DataFilename are use to sœœtores path to files.
     auto aDataFilename = dynamic_cast<const DataFileName*>(data) ;
@@ -551,6 +554,8 @@ QVariantMap getSofaDataProperties(const sofa::core::objectmodel::BaseData* data)
         type = widget;
 
     properties.insert("readOnly", data->isReadOnly());
+    properties.insert("required", data->isRequired());
+    properties.insert("displayed", data->isDisplayed());
 
     //object.insert("sofaData", QVariant::fromValue(sofaData));
     object.insert("name", data->getName().c_str());

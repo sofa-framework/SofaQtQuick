@@ -110,7 +110,7 @@ signals:
     void helpChanged(const QString newValue);
     void nameChanged(const QString newValue);
     void linkPathChanged(const QString newValue);
-    void propertiesChanged(const QVariantList newValues);
+    void propertiesChanged(const QVariantMap newValues);
     void parentChanged(const SofaData* newParent);
 private:
     BaseData* m_self {nullptr};

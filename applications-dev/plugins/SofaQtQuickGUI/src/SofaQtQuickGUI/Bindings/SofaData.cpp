@@ -93,6 +93,8 @@ bool SofaData::setValue(const QVariant& value)
         {
             m_self->setPersistent(true);
             m_previousValue = value;
+            emit valueChanged(value);
+            emit propertiesChanged(getProperties());
             return true;
         }
         return false;

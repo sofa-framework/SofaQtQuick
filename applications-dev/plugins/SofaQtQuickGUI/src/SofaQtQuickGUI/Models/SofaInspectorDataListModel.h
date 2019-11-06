@@ -169,7 +169,8 @@ private:
         ValueRole,
         PathRole,
         ReadOnlyRole,
-        VisibilityRole
+        VisibilityRole,
+        RequiredRole
     };
 
     ItemGroup* findOrCreateGroup(const QString& groupname) ;
