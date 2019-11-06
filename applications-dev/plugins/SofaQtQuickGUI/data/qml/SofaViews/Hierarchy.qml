@@ -473,12 +473,12 @@ Rectangle {
                 font.italic: hasMultiParent
                 elide: styleData.elideMode
                 text: {
-                    if (isNode)
+                    if (isNode || typename == name)
                         return name
-                    if (shortname == name || typename == name)
+                    else if (name == shortname)
                         return name
                     else
-                        return shortname+" ("+name+")"
+                        return typename+" ("+name+")"
                 }
             }
 
@@ -594,6 +594,7 @@ Rectangle {
 
             ToolTip {
                 text: typename
+                description: "status: " + statusString
                 visible: mouseArea.containsMouse
             }
 
