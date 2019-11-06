@@ -433,8 +433,12 @@ QString readScriptTemplate(QString name, QString file) {
 QString SofaProject::createTemplateFile(const QString& directory, const QString& templateType)
 {
     QString scriptContent = "";
+    QString extension = "py";
     if (templateType == "Canvas")
-        scriptContent = readScriptTemplate("EmptyCanvas", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyCanvas.py"));
+    {
+        extension ="qml";
+        scriptContent = readScriptTemplate("EmptyCanvas", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyCanvas.qml"));
+    }
     else if (templateType == "Controller")
         scriptContent = readScriptTemplate("EmptyController", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyController.py"));
     else if (templateType == "DataEngine")
@@ -449,10 +453,20 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     dir = (f.isDir()) ? directory : f.dir().path();
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::AnyFile);
-    QString strfile = dialog.getSaveFileName(nullptr, "Create New File", dir, "QtQuick UI (*.qml)");
+    QString strfile = dialog.getSaveFileName(nullptr, "Create New File", dir, "QtQuick UI (*."+extension+")");
     QFile file(strfile);
-    file.open(QIODevice::WriteOnly);
-    file.close();
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+        stream << scriptContent << endl;
+
+        file.close();
+        return strfile;
+    }
+    else {
+        msg_error("SofaProject") << "Could not open file " << strfile.toStdString();
+    }
+    return QString();
 }
 
 bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
@@ -460,11 +474,11 @@ bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
     // Maybe not the most pertinent method name...
     QString scriptContent = "";
     if (name.endsWith("Controller"))
-        scriptContent = readPythonScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyController.py"));
+        scriptContent = readScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyController.py"));
     else if (name.endsWith("DataEngine"))
-        scriptContent = readPythonScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyDataEngine.py"));
+        scriptContent = readScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyDataEngine.py"));
     else if (name.endsWith("ForceField"))
-        scriptContent = readPythonScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyForceField.py"));
+        scriptContent = readScriptTemplate(name, QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyForceField.py"));
     else
         return false;
 
