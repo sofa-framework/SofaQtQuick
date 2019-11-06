@@ -274,6 +274,8 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
         return QVariant(QString::fromStdString(currentBase->getName()));
     case Roles::TypeName:
         return QVariant::fromValue(QString::fromStdString(currentBase->getClassName()));
+    case Roles::ShortName:
+        return QVariant::fromValue(QString::fromStdString(currentBase->getClass()->shortName));
     case Roles::IsNode:
         return QVariant(currentBase->toBaseNode()!=nullptr);
     case Roles::IsMultiParent:
@@ -305,6 +307,7 @@ QHash<int, QByteArray> SofaSceneItemModel::roleNames() const
     static QHash<int, QByteArray> mapping {{
             { int(Roles::Name), "name" },
             { int(Roles::TypeName), "typename" },
+            { int(Roles::ShortName), "shortname" },
             { int(Roles::IsNode), "isNode" },
             { int(Roles::IsMultiParent), "isMultiParent" },
             { int(Roles::HasMultiParent), "hasMultiParent" },
