@@ -59,11 +59,11 @@ Menu {
                 if (type === "class")
                     return "qrc:/icon/ICON_PYTHON.png";
                 if (type === "SofaPrefab")
-                    return "qrc:/icon/ICON_PREFAB.png";
+                    return "qrc:/icon/ICON_PREFAB3.png";
                 if (type === "PythonScriptController")
-                    return "qrc:/icon/ICON_PYController.png";
+                    return "qrc:/icon/ICON_CONTROLLER2.png";
                 if (type === "PythonScriptDataEngine")
-                    return "qrc:/icon/ICON_PYEngine.png"
+                    return "qrc:/icon/ICON_ENGINE3.png"
                 return "qrc:/icon/ICON_PYTHON.png";
             }
 

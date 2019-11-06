@@ -24,7 +24,7 @@ Menu {
     function getIconSource() {
         return (model.type  === "SofaScene" && model.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
                                                                               (model.type === "class" ? "qrc:/icon/ICON_PYTHON.png" :
-                                                                                                        (model.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
-                                                                                                                                       (model.type === "PythonScriptController" ? "qrc:/icon/ICON_PYController.png" :                                                                                                                                                                              (model.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
+                                                                                                        (model.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB3.png" :
+                                                                                                                                       (model.type === "PythonScriptController" ? "qrc:/icon/ICON_CONTROLLER2.png" :                                                                                                                                                                              (model.type === "PythonScriptDataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
     }
 }

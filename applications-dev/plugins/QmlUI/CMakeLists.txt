@@ -18,7 +18,7 @@ set(HEADER_FILES
 )
 
 set(QML_TEMPLATES
-    data/qml/DefaultCanvas.qml
+    data/qml/emptyCanvas.qml
 )
 
 find_package(SofaFramework REQUIRED)

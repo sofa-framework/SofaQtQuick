@@ -18,7 +18,7 @@ Item {
     property bool isDebugPrintEnabled: self.project.isDebugPrintEnabled
 
     onIsDebugPrintEnabledChanged: {
-        self.project.isDebugPrintEnabled =  isDebugPrintEnabled
+        self.project.isDebugPrintEnabled = isDebugPrintEnabled
     }
 
     id: root
