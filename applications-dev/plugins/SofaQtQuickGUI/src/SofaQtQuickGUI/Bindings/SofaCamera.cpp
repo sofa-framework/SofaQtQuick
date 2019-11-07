@@ -148,7 +148,7 @@ bool SofaCamera::bindCameraFromScene(const SofaBaseScene* scene, const size_t in
         return false;
 
     auto cameras = node->getTreeObjects<BaseCamera>();
-    if(index < cameras.size())
+    if(index <= cameras.size())
         return false;
 
     m_baseCamera = cameras[index];

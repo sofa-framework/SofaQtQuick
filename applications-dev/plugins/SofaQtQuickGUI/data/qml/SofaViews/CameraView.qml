@@ -140,30 +140,34 @@ CameraView {
         }
     }
 
-    function recreateCamera() {
-        if(camera && !keepCamera) {
+    function destroyCamera() {
+        if(camera!==null) {
             camera.destroy();
             camera = null;
         }
-        if(!camera)
-        {
-            camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
-            camera.bindCameraFromScene(root.sofaScene, 0);
+    }
 
-            //Todo fetch index from somewhere
-            var defaultIndex = 0;
-            updateCameraFromIndex(0);
+    function recreateCamera() {
+        camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
+        camera.bindCameraFromScene(root.sofaScene, 0);
 
-            if(!keepCamera)
-                viewAll();
-        }
+        //Todo fetch index from somewhere
+        var defaultIndex = 0;
+        updateCameraFromIndex(0);
+
+        if(!keepCamera)
+            viewAll();
     }
 
     Connections {
         target: sofaScene
         onStatusChanged :{
-            if(SofaBaseScene.Ready === root.sofaScene.status)
+            if(SofaBaseScene.Ready === root.sofaScene.status){
                 root.recreateCamera();
+            }
+            if(SofaBaseScene.Unloading === root.sofaScene.status){
+                root.destroyCamera();
+            }
         }
     }
 
@@ -176,7 +180,7 @@ CameraView {
             savePath += ".png";
 
         if(root.width.toFixed(0) === captureWidthTextField.text &&
-           root.height.toFixed(0) === captureHeightTextField.text)
+                root.height.toFixed(0) === captureHeightTextField.text)
             root.saveScreenshot(savePath);
         else
             root.saveScreenshotWithResolution(savePath, Number(captureWidthTextField.text), Number(captureHeightTextField.text));
