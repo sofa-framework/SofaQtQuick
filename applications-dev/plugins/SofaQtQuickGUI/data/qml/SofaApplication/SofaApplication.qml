@@ -37,6 +37,9 @@ Item //
     property var style : MainStyle
 
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
+    onSelectedComponentChanged:{
+        SofaBaseApplicationSingleton.selectedComponent = selectedComponent
+    }
 
     /// Connect to this signal to be notified when a component need to be emphasized.
     signal signalComponent(string objectpath)

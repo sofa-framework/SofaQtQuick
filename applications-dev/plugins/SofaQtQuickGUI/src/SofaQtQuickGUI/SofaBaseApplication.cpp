@@ -1021,6 +1021,7 @@ sofaqtquick::bindings::SofaBase* SofaBaseApplication::getSelectedComponent() con
 
 void SofaBaseApplication::setSelectedComponent(sofaqtquick::bindings::SofaBase* selectedComponent)
 {
+    std::cout << "set selected component..." << std::endl;
     if(selectedComponent == nullptr)
     {
         m_selectedComponent = nullptr;
@@ -1029,7 +1030,6 @@ void SofaBaseApplication::setSelectedComponent(sofaqtquick::bindings::SofaBase* 
 
     if(selectedComponent->rawBase() == m_selectedComponent)
         return;
-
     m_selectedComponent = selectedComponent->rawBase();
     emit selectedComponentChanged(selectedComponent);
 }
