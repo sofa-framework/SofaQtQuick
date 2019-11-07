@@ -49,7 +49,7 @@ Row {
 
         onAccepted: {
             /// Get the URL from the file chooser and convert it to a string.
-            dataObject.value = textField.text ;
+            sofaData.value = textField.text ;
         }
         position: cornerPositions["Left"]
 
