@@ -1,8 +1,8 @@
 #include <sofa/helper/testing/BaseTest.h>
 using sofa::helper::testing::BaseTest ;
 
-#include <SofaQtQuickGUI/SofaScene.h>
-using sofa::qtquick::SofaScene ;
+#include <SofaQtQuickGUI/SofaBaseScene.h>
+using sofa::qtquick::SofaBaseScene ;
 
 #include <SofaQtQuickGUI/Models/SofaSceneListModel.h>
 using sofa::qtquick::SofaSceneListModel ;
@@ -28,7 +28,7 @@ SofaSceneModel_qtTests::SofaSceneModel_qtTests()
 
 void  SofaSceneModel_qtTests::testAll(){
     std::cout << SOFAQTQUICK_TEST_DIR << std::endl ;
-    SofaScene scene;
+    SofaBaseScene scene;
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_minimal.xml")));
     int cpt=0;
     while(!scene.isReady() && cpt < 50){ std::this_thread::sleep_for(std::chrono::milliseconds(100)); cpt++; };

@@ -34,7 +34,7 @@ namespace sofa {
         }
     }
     namespace qtquick {
-        class SofaScene;
+        class SofaBaseScene;
         class SofaComponent;
     }
 }
@@ -74,13 +74,13 @@ public:
     ~Console() override;
 
     Q_PROPERTY(int messageCount READ getMessageCount NOTIFY messageCountChanged)
-    Q_PROPERTY(SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
     Q_PROPERTY(SofaComponent* filter READ filter WRITE setFilter NOTIFY filterChanged)
 
     /// Set the scene associated with a message queue.
-    SofaScene* m_sofaScene {nullptr} ;
-    SofaScene* sofaScene(){ return m_sofaScene; }
-    void setSofaScene(SofaScene* s){ m_sofaScene = s; }
+    SofaBaseScene* m_sofaScene {nullptr} ;
+    SofaBaseScene* sofaScene(){ return m_sofaScene; }
+    void setSofaScene(SofaBaseScene* s){ m_sofaScene = s; }
 
     SofaComponent* m_filter {nullptr} ;
     /// Set a component to filter the message to return in the engine.

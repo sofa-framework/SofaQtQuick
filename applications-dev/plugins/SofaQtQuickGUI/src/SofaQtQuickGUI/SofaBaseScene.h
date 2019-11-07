@@ -67,7 +67,7 @@ namespace simulation
 namespace qtquick
 {
 
-class SofaScene;
+class SofaBaseScene;
 class SofaViewer;
 class PickUsingRasterizationWorker;
 using sofaqtquick::bindings::SofaBase;
@@ -77,7 +77,7 @@ typedef QList<QUrl> QUrlList;
 
 /// \class QtQuick wrapper for a Sofa scene, allowing us to simulate,
 /// modify and draw (basic function) a Sofa scene
-class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject
+class SOFA_SOFAQTQUICKGUI_API SofaBaseScene : public QObject
 {
     Q_OBJECT
 
@@ -86,14 +86,14 @@ class SOFA_SOFAQTQUICKGUI_API SofaScene : public QObject
     friend class EditView;
 
     friend class PickUsingRasterizationWorker;
-    friend bool LoaderProcess(SofaScene* scene);
+    friend bool LoaderProcess(SofaBaseScene* scene);
 
 public:
-    explicit SofaScene(QObject *parent = nullptr);
-    ~SofaScene();
+    explicit SofaBaseScene(QObject *parent = nullptr);
+    ~SofaBaseScene();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(sofa::qtquick::SofaBaseScene::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
 
     Q_PROPERTY(QList<QObject*> canvas READ readCanvas NOTIFY notifyCanvasChanged)
@@ -120,8 +120,8 @@ public:
     };
 
 public:
-    sofa::qtquick::SofaScene::Status status()	const               {return myStatus;}
-    void setStatus(sofa::qtquick::SofaScene::Status newStatus);
+    sofa::qtquick::SofaBaseScene::Status status()	const               {return myStatus;}
+    void setStatus(sofa::qtquick::SofaBaseScene::Status newStatus);
 
     bool isLoading() const                                      {return Status::Loading == myStatus;}
     bool isReady() const                                        {return Status::Ready == myStatus;}

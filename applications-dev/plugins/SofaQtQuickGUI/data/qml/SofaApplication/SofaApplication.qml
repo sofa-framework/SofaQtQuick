@@ -29,10 +29,14 @@ import SofaBaseApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
 import SofaProject 1.0
-
 Item //
 {
     id: root
+
+    ////////////////////////////////////////////////// SOFASCENE
+    property var sofaScene: null
+
+    property QtObject sofaMessageList : SofaMessageList
 
     property var style : MainStyle
 
@@ -120,10 +124,6 @@ Item //
             }
         }
     }
-
-    ////////////////////////////////////////////////// SOFASCENE
-    property var sofaScene: null
-    property QtObject sofaMessageList : SofaMessageList
 
     property var nodeSettings: Settings {
         category: "Hierarchy"

@@ -24,8 +24,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Helper/QMathExtensions.h>
 using sofaqtquick::helper::QMath ;
 
-#include <SofaQtQuickGUI/SofaScene.h>
-using sofa::qtquick::SofaScene;
+#include <SofaQtQuickGUI/SofaBaseScene.h>
+using sofa::qtquick::SofaBaseScene;
 
 #include <SofaBaseVisual/BaseCamera.h>
 using sofa::component::visualmodel::BaseCamera ;
@@ -138,7 +138,7 @@ QQuaternion SofaCamera::orientation() const
     return  QQuaternion::fromRotationMatrix(myModel.normalMatrix());
 }
 
-bool SofaCamera::bindCameraFromScene(const SofaScene* scene, const size_t index)
+bool SofaCamera::bindCameraFromScene(const SofaBaseScene* scene, const size_t index)
 {
     if(scene==nullptr)
         return false;

@@ -28,7 +28,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/simulation/MutationListener.h>
 
 #include <SofaQtQuickGUI/config.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <thread>
 #include <mutex>
@@ -54,7 +54,7 @@ class SofaSceneItemModel : public QAbstractItemModel, private MutationListener
     Q_OBJECT
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(sofa::qtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
 
     ///@brief Returns the sofa component corresponding to the provided index.
     Q_INVOKABLE sofaqtquick::bindings::SofaBase* getBaseFromIndex(const QModelIndex& index) const;
@@ -64,8 +64,8 @@ public:
     SofaSceneItemModel(QObject* parent = nullptr);
     ~SofaSceneItemModel() override;
 
-    SofaScene* sofaScene() const;
-    void setSofaScene(SofaScene* newScene);
+    SofaBaseScene* sofaScene() const;
+    void setSofaScene(SofaBaseScene* newScene);
 
     /// The following methods are inherited from QAbstractItemModel.
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override ;
@@ -119,7 +119,7 @@ protected:
     QModelIndex index(simulation::Node *node) const ;
     QModelIndex index(simulation::Node *node, sofa::core::objectmodel::BaseObject* obj) const ;
 
-    SofaScene*                      m_scene {nullptr};
+    SofaBaseScene*                      m_scene {nullptr};
     sofa::simulation::Node::SPtr    m_root  {nullptr};
 
 private:

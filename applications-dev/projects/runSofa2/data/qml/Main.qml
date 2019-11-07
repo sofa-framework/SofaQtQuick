@@ -21,7 +21,6 @@ import QtQuick 2.0
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import SofaScene 1.0
 import SofaApplication 1.0
 import SofaViews 1.0
 import SofaBasics 1.0
@@ -53,6 +52,10 @@ ApplicationWindow {
 
                 sofaScene.source = source;
             }
+        }
+
+        Component.onCompleted: {
+            SofaApplication.sofaScene = sofaScene
         }
     }
 

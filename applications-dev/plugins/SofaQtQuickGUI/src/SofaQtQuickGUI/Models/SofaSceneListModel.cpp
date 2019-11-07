@@ -49,7 +49,7 @@ void SofaSceneListModel::update()
     dataChanged(createIndex(0, 0), createIndex(rowCount() - 1, 0));
 }
 
-void SofaSceneListModel::handleSceneChange(SofaScene*)
+void SofaSceneListModel::handleSceneChange(SofaBaseScene*)
 {
     clear();
     if(mySofaScene)
@@ -60,10 +60,10 @@ void SofaSceneListModel::handleSceneChange(SofaScene*)
             onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());
         }
 
-        connect(mySofaScene, &SofaScene::statusChanged, this, [this]() {
+        connect(mySofaScene, &SofaBaseScene::statusChanged, this, [this]() {
             clear();
 
-            if(SofaScene::Ready == mySofaScene->status())
+            if(SofaBaseScene::Ready == mySofaScene->status())
             {
                 onBeginAddChild(nullptr, mySofaScene->sofaRootNode().get());
                 onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());
@@ -121,7 +121,7 @@ SofaSceneListModel::Item SofaSceneListModel::buildObjectItem(SofaSceneListModel:
     return item;
 }
 
-void SofaSceneListModel::setSofaScene(SofaScene* newSofaScene)
+void SofaSceneListModel::setSofaScene(SofaBaseScene* newSofaScene)
 {
     if(newSofaScene == mySofaScene)
         return;

@@ -28,7 +28,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 
 /// Bindings from c++ to QML/Javascript
 #include <SofaQtQuickGUI/Bindings/SofaCamera.h>
@@ -163,10 +163,10 @@ static QObject* createSofaBaseApplication(QQmlEngine *engine,
 
 void registerSofaTypesToQml(const char* /*uri*/)
 {
-    qRegisterMetaType<SofaScene::Status>("Status");
+    qRegisterMetaType<SofaBaseScene::Status>("Status");
     qRegisterMetaType<size_t>("const size_t");
     qRegisterMetaType<QVariantMap*>("QVariantMap*");
-    qRegisterMetaType<SofaScene*>("const SofaScene*");
+    qRegisterMetaType<SofaBaseScene*>("const SofaBaseScene*");
     qRegisterMetaType<Asset*>("Asset*");
     qRegisterMetaType<QUrlList>("QUrlList");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("sofaqtquick::bindings::SofaBaseObject*");
@@ -192,7 +192,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<Manipulator2D_Rotation>                         ("Manipulator2D_Rotation"               , versionMajor, versionMinor, "Manipulator2D_Rotation");
     qmlRegisterType<Manipulator3D_Translation>                      ("Manipulator3D_Translation"            , versionMajor, versionMinor, "Manipulator3D_Translation");
     qmlRegisterType<Manipulator3D_Rotation>                         ("Manipulator3D_Rotation"               , versionMajor, versionMinor, "Manipulator3D_Rotation");
-    qmlRegisterType<SofaScene>                                      ("SofaScene"                            , versionMajor, versionMinor, "SofaScene");
+    qmlRegisterType<SofaBaseScene>                                  ("SofaBaseScene"                            , versionMajor, versionMinor, "SofaBaseScene");
     qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
     qmlRegisterUncreatableType<SofaComponentList>                   ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
     qmlRegisterUncreatableType<Selectable>                          ("Selectable"                           , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");

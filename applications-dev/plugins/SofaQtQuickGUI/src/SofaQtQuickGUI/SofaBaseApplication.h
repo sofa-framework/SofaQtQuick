@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOFAAPPLICATION_H
-#define SOFAAPPLICATION_H
+#ifndef SOFABASEAPPLICATION_H
+#define SOFABASEAPPLICATION_H
 
 #include <SofaQtQuickGUI/config.h>
 

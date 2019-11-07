@@ -502,18 +502,18 @@ void SofaSceneItemModel::onEndRemoveObject(Node* parent, core::objectmodel::Base
 }
 
 
-SofaScene* SofaSceneItemModel::sofaScene() const
+SofaBaseScene* SofaSceneItemModel::sofaScene() const
 {
     return m_scene;
 }
 
-void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
+void SofaSceneItemModel::setSofaScene(SofaBaseScene* newScene)
 {    
     m_scene = newScene;
 
     /// The scene passed to this model is tracked to monitor if its status has changed.
     /// If this is the case then the model needs to be reseted.
-    connect(m_scene, &SofaScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
+    connect(m_scene, &SofaBaseScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
     emit sofaSceneChanged();
     emit handleRootNodeChange();
 }

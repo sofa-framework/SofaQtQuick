@@ -23,7 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QAbstractItemModel>
 
 #include <SofaQtQuickGUI/config.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 
 class QTimer;

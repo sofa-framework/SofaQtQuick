@@ -32,7 +32,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofaqtquick::binding
 {
 
-using sofa::qtquick::SofaScene;
+using sofa::qtquick::SofaBaseScene;
 using sofa::qtquick::Camera;
 
 /// \class SofaCamera expose a sofa::component::BaseCamera as a QtQuick Camera.
@@ -65,7 +65,7 @@ public:
     void setPixelResolution(double width, double height);
 
     Q_INVOKABLE QQuaternion orientation() const override;
-    Q_INVOKABLE bool bindCameraFromScene(const SofaScene* scene, const size_t index);
+    Q_INVOKABLE bool bindCameraFromScene(const SofaBaseScene* scene, const size_t index);
 
 private:
     sofa::qtquick::SofaComponent* m_sofaComponent {nullptr};
