@@ -372,22 +372,7 @@ void SofaScene::open()
     setPath(finalFilename);
     setStatus(Status::Loading);
 
-    // does scene contain PyQt ? if so, load it synchronously to avoid instantiation of a QApplication outside of the main thread
-
-    bool currentAsynchronous = myAsynchronous;
-    if(myPyQtForceSynchronous && currentAsynchronous)
-    {
-        QFile file(QString::fromStdString(filepath));
-        if(file.open(QIODevice::ReadOnly))
-        {
-            QTextStream in(&file);
-            QString content = in.readAll();
-            if(-1 != content.indexOf("PyQt", 0, Qt::CaseInsensitive)) {
-                currentAsynchronous = false;
-                msg_warning("SofaQtQuickGUI")  << "This scene seems to contain PyQt and will be loaded synchronously";
-            }
-        }
-    }
+    bool currentAsynchronous = false;
 
     // set the qml interface
 
@@ -427,10 +412,11 @@ void SofaScene::open()
         });
 
         loaderThread->start();
-
     }
     else
     {
+        std::cout << " ...SYNCHRONOUS LOADING... " << std::endl;
+
         if(!LoaderProcess(this))
             setStatus(Status::Error);
         else
@@ -1631,7 +1617,7 @@ void SofaScene::prepareSceneForDrawing()
     if(!myVisualDirty)
         return ;
 
-    mySofaSimulation->updateVisual(mySofaRootNode.get());
+   mySofaSimulation->updateVisual(mySofaRootNode.get());
     myVisualDirty = false;
 }
 
