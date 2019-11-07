@@ -88,12 +88,15 @@ void CameraView::internalRender(int width, int height) const
         setupCamera(width, height, *this) ;
 
         /// Prepare for a pure rendrering traversal of the scene graph.
+        auto oldFlags {m_visualParams->displayFlags()};
         m_visualParams->displayFlags().setShowAll(false) ;
         m_visualParams->displayFlags().setShowVisualModels(true) ;
 
         preDraw();
         drawVisuals();
         postDraw();
+
+        m_visualParams->displayFlags() = oldFlags;
     }
 }
 

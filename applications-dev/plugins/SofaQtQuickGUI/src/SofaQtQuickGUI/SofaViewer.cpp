@@ -632,10 +632,12 @@ void SofaViewer::drawEditorView(const QList<SofaComponent*>& roots,
 
     mySofaScene->prepareSceneForDrawing();
 
+
     for(Node* node : nodes)
     {
         if(!node)
             continue;
+
 
         mySofaScene->mySofaSimulation->draw(this->getVisualParams(), node);
     }
