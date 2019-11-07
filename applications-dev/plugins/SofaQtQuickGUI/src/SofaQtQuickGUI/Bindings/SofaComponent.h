@@ -30,7 +30,7 @@ namespace qtquick
 {
 
 
-class SofaScene;
+class SofaBaseScene;
 
 /// QtQuick wrapper for a sofa component (i.e baseObject / baseNode), allowing us to share a component in a QML context
 class SOFA_SOFAQTQUICKGUI_API SofaComponent : public QObject
@@ -40,7 +40,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaComponent : public QObject
     friend class SofaData;
 
 public:
-    SofaComponent(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base);
+    SofaComponent(SofaBaseScene* sofaScene, const sofa::core::objectmodel::Base* base);
     SofaComponent(const SofaComponent& sofaComponent);
     SofaComponent(const SofaComponent* sofaComponent);
 
@@ -71,7 +71,7 @@ public:
 
 	Q_INVOKABLE void reinit();
 
-    Q_INVOKABLE sofa::qtquick::SofaScene* sofaScene() const;
+    Q_INVOKABLE sofa::qtquick::SofaBaseScene* sofaScene() const;
 
     static bool hasTag(sofa::core::objectmodel::Base* base, const QStringList& tags)
     {
@@ -101,7 +101,7 @@ public:
     const sofa::core::objectmodel::Base* base() const;
 
 private:
-    SofaScene*                              mySofaScene;
+    SofaBaseScene*                              mySofaScene;
     const sofa::core::objectmodel::Base*    myBase;
 
 };

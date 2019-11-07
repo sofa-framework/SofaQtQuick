@@ -26,7 +26,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/simulation/MutationListener.h>
 
 #include <SofaQtQuickGUI/config.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 
 namespace sofa
 {
@@ -51,11 +51,11 @@ public slots:
     void clear();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(sofa::qtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
 
 public:
-    SofaScene* sofaScene() const		{return mySofaScene;}
-    void setSofaScene(SofaScene* newScene);
+    SofaBaseScene* sofaScene() const		{return mySofaScene;}
+    void setSofaScene(SofaBaseScene* newScene);
 
 protected:
     Q_INVOKABLE int computeModelRow(int itemIndex) const;
@@ -78,10 +78,10 @@ protected:
 
     Q_INVOKABLE QList<int> computeFilteredRows(const QString& filter) const;
 
-    void handleSceneChange(SofaScene* newScene);
+    void handleSceneChange(SofaBaseScene* newScene);
 
 signals:
-    void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
+    void sofaSceneChanged(sofa::qtquick::SofaBaseScene* newScene);
 
 protected:
 
@@ -137,7 +137,7 @@ private:
 
 private:
     QList<Item>                     myItems;
-    SofaScene*                      mySofaScene;
+    SofaBaseScene*                      mySofaScene;
 
 };
 

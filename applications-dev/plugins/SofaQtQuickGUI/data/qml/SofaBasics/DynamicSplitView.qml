@@ -53,6 +53,7 @@ Item {
 
     property bool isLoaded: false
     function load() {
+
         if(0 === uiId)
             return;
 
@@ -184,7 +185,8 @@ Item {
     }
 
     function createView(properties) {
-        if(undefined === properties)
+
+       if(undefined === properties)
             properties = {};
 
         var view = viewComponent.createObject(root, properties);

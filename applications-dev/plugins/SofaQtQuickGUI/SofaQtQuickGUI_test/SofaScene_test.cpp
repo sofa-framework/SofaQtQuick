@@ -1,8 +1,8 @@
 #include <sofa/helper/testing/BaseTest.h>
 using sofa::helper::testing::BaseTest ;
 
-#include <SofaQtQuickGUI/SofaScene.h>
-using sofa::qtquick::SofaScene ;
+#include <SofaQtQuickGUI/SofaBaseScene.h>
+using sofa::qtquick::SofaBaseScene ;
 
 #include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
 using sofaqtquick::SofaQtQuickQmlModule;
@@ -23,7 +23,7 @@ SofaScene_qtTests::SofaScene_qtTests()
 
 void SofaScene_qtTests::loadAScene()
 {
-    SofaScene scene;
+    SofaBaseScene scene;
 
     QVERIFY(!scene.isReady());
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_minimal.xml")));
@@ -35,7 +35,7 @@ void SofaScene_qtTests::loadAScene()
 
 void SofaScene_qtTests::testSceneQueries()
 {
-    SofaScene scene;
+    SofaBaseScene scene;
 
     QVERIFY(!scene.isReady());
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_minimal.xml")));
@@ -55,7 +55,7 @@ void SofaScene_qtTests::testSceneQueries()
 
 void SofaScene_qtTests::loadInvalidScene()
 {
-    SofaScene scene;
+    SofaBaseScene scene;
 
     QVERIFY(!scene.isReady());
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/test_broken.xml")));
@@ -69,7 +69,7 @@ void SofaScene_qtTests::loadInvalidScene()
 
 void SofaScene_qtTests::loadMissingScene()
 {
-    SofaScene scene;
+    SofaBaseScene scene;
 
     QVERIFY(!scene.isReady());
     scene.setSource(QUrl(QString("file://")+QString(SOFAQTQUICK_TEST_DIR)+QString("/not_existing.xml")));

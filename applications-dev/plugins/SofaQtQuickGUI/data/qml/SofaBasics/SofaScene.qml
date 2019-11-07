@@ -22,9 +22,10 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
 import SofaApplication 1.0
 import SofaParticleInteractor 1.0
-import SofaScene 1.0
+import SofaBaseScene 1.0
 
-SofaScene {
+SofaBaseScene
+{
     id: root
 
     asynchronous: false
@@ -33,31 +34,22 @@ SofaScene {
     sourceQML: ""
     property string statusMessage: ""
 
-    Component.onCompleted: {
-        SofaApplication.sofaScene = root;
-    }
-
-    Component.onDestruction: {
-        if(root === SofaApplication.sofaScene)
-            SofaApplication.sofaScene = null;
-    }
-
     onStatusChanged: {
         switch(status) {
-        case SofaScene.Null:
+        case SofaBaseScene.Null:
             statusMessage = 'SofaScene released';
             break;
-        case SofaScene.Loading:
+        case SofaBaseScene.Loading:
             statusMessage = 'SofaScene loading "' + root.path + '" please wait';
             break;
-        case SofaScene.Unloading:
+        case SofaBaseScene.Unloading:
             SofaApplication.sofaMessageList.clear()
             statusMessage = 'SofaScene releasing "' + root.path + '" please wait';
             break;
-        case SofaScene.Error:
+        case SofaBaseScene.Error:
             statusMessage = 'SofaScene "' + root.path + '" issued an error during loading';
             break;
-        case SofaScene.Ready:
+        case SofaBaseScene.Ready:
             statusMessage = 'SofaScene "' + root.path + '" loaded successfully';
             SofaApplication.sceneSettings.addRecent(root.path);
             SofaApplication.selectedComponent = SofaApplication.sofaScene.root() ;

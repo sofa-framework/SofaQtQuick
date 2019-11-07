@@ -42,7 +42,7 @@ namespace qtquick
 
 class SofaRenderer;
 class SofaComponent;
-class SofaScene;
+class SofaBaseScene;
 class Camera;
 class Manipulator;
 
@@ -69,7 +69,7 @@ public:
     ~SofaViewer();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(sofa::qtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
     Q_PROPERTY(sofa::qtquick::Camera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
     Q_PROPERTY(QQmlListProperty<sofa::qtquick::SofaComponent> roots READ rootsListProperty)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
@@ -86,8 +86,8 @@ public:
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
 
-    SofaScene* sofaScene() const        {return mySofaScene;}
-    void setSofaScene(SofaScene* newScene);
+    SofaBaseScene* sofaScene() const        {return mySofaScene;}
+    void setSofaScene(SofaBaseScene* newScene);
 
     Camera* camera() const      {return myCamera;}
     void setCamera(Camera* newCamera);
@@ -170,7 +170,7 @@ public:
 	QOpenGLFramebufferObject* getFBO() const;
     
 signals:
-    void sofaSceneChanged(sofa::qtquick::SofaScene* newScene);
+    void sofaSceneChanged(sofa::qtquick::SofaBaseScene* newScene);
     void rootsChanged(QList<sofa::qtquick::SofaComponent> newRoots);
     void cameraChanged(sofa::qtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
@@ -240,7 +240,7 @@ protected:
     QOpenGLFramebufferObject*   myPickingFBO         {nullptr};
     QOpenGLShaderProgram*       myHighlightShaderProgram {nullptr};
     QOpenGLShaderProgram*       myPickingShaderProgram   {nullptr};
-    SofaScene*                  mySofaScene          {nullptr};
+    SofaBaseScene*                  mySofaScene          {nullptr};
     Camera*						myCamera             {nullptr};
     QList<SofaComponent*>       myRoots;
     QColor                      myBackgroundColor;

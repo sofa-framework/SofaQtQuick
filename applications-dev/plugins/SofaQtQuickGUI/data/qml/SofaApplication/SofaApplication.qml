@@ -29,14 +29,21 @@ import SofaBaseApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
 import SofaProject 1.0
-
 Item //
 {
     id: root
 
+    ////////////////////////////////////////////////// SOFASCENE
+    property var sofaScene: null
+
+    property QtObject sofaMessageList : SofaMessageList
+
     property var style : MainStyle
 
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
+    onSelectedComponentChanged:{
+        SofaBaseApplicationSingleton.selectedComponent = selectedComponent
+    }
 
     /// Connect to this signal to be notified when a component need to be emphasized.
     signal signalComponent(string objectpath)
@@ -117,10 +124,6 @@ Item //
             }
         }
     }
-
-    ////////////////////////////////////////////////// SOFASCENE
-    property var sofaScene: null
-    property QtObject sofaMessageList : SofaMessageList
 
     property var nodeSettings: Settings {
         category: "Hierarchy"

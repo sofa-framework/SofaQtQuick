@@ -104,7 +104,7 @@ void SofaNode::reinit() const
     self()->reinit(ExecParams::defaultInstance());
 }
 
-sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaScene* scene)
+sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofa::qtquick::SofaBaseScene* scene)
 {
     msg_deprecated("SofaNode") << "DO NOT USE unless communicating with legacy code";
     return new sofa::qtquick::SofaComponent(scene, m_self.get());

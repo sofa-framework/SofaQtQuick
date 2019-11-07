@@ -21,7 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 //#include <GL/glew.h>
 
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 
 #include <sofa/core/ObjectFactory.h>
 
@@ -37,7 +37,7 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SofaComponent::SofaComponent(SofaScene* sofaScene, const sofa::core::objectmodel::Base* base) : QObject(),
+SofaComponent::SofaComponent(SofaBaseScene* sofaScene, const sofa::core::objectmodel::Base* base) : QObject(),
     mySofaScene(sofaScene),
     myBase(base)
 {
@@ -231,7 +231,7 @@ void SofaComponent::reinit()
     baseObject->reinit();
 }
 
-SofaScene* SofaComponent::sofaScene() const
+SofaBaseScene* SofaComponent::sofaScene() const
 {
     return mySofaScene;
 }

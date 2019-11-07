@@ -104,12 +104,9 @@ void SofaSceneItemModel::emitAllChanges(Node* node)
 
 void SofaSceneItemModel::onTimeOutModelRefresh()
 {
-    int row = rrowCount_recurse(m_root.get());
-
-    if(m_root->getNodeObjects().size()==3){
-        emitAllChanges(m_root.get());
-        m_dataTracker.clean();
-    }
+    /// Recursively emit the dataChanged signal on object that have changed.
+    emitAllChanges(m_root.get());
+    m_dataTracker.clean();
 }
 
 QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &parent) const
@@ -326,8 +323,6 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
 
     currentNode = currentBase->toBaseNode();
 
-    std::cout << "REFETCH DAT for: " << currentBase->getName() << " (with role " << role << ")" << std::endl ;
-
     switch(static_cast<Roles>(role))
     {
     case Roles::Name:
@@ -482,8 +477,6 @@ void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseO
     QModelIndex parentIndex = index(parent);
     int objIndex = int(parent->object.size());
     beginInsertRows(parentIndex, objIndex, objIndex);
-
-    std::cout << "ADD OBJECT/ " << std::endl;
 }
 
 void SofaSceneItemModel::onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj)
@@ -507,18 +500,18 @@ void SofaSceneItemModel::onEndRemoveObject(Node* parent, core::objectmodel::Base
 }
 
 
-SofaScene* SofaSceneItemModel::sofaScene() const
+SofaBaseScene* SofaSceneItemModel::sofaScene() const
 {
     return m_scene;
 }
 
-void SofaSceneItemModel::setSofaScene(SofaScene* newScene)
+void SofaSceneItemModel::setSofaScene(SofaBaseScene* newScene)
 {    
     m_scene = newScene;
 
     /// The scene passed to this model is tracked to monitor if its status has changed.
     /// If this is the case then the model needs to be reseted.
-    connect(m_scene, &SofaScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
+    connect(m_scene, &SofaBaseScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
     emit sofaSceneChanged();
     emit handleRootNodeChange();
 }
