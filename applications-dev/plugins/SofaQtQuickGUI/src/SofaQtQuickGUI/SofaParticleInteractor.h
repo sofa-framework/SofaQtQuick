@@ -89,7 +89,7 @@ namespace qtquick
 {
 
 class SofaComponent;
-class SofaScene;
+class SofaBaseScene;
 class Manipulator;
 
 class SofaBaseParticleInteraction

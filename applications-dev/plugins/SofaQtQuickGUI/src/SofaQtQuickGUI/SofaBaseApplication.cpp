@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <GL/glew.h>
 
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/ProcessState.h>
 
 #include <sofa/helper/system/FileSystem.h>
@@ -1191,7 +1191,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
 
         if(parser.isSet(animateOption) || parser.isSet(sceneOption))
         {
-            SofaScene* sofaScene = object->findChild<SofaScene*>();
+            SofaBaseScene* sofaScene = object->findChild<SofaBaseScene*>();
             if(parser.isSet(sceneOption))
             {
                 sofaScene->setSource(parser.value(sceneOption));

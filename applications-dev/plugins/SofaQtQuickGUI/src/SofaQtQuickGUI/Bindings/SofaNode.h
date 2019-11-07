@@ -33,7 +33,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofa::qtquick
 {
 class SofaComponent;
-class SofaScene;
+class SofaBaseScene;
 }  // namespace sofa::qtquick
 
 namespace sofaqtquick::bindings
@@ -64,7 +64,7 @@ public:
     DAGNode* self() const { return dynamic_cast<DAGNode*>(m_self.get()); } ///< Hold are reference to the real sofa object.
     DAGNode::SPtr selfptr()const { return DAGNode::SPtr(dynamic_cast<DAGNode*>(m_self.get())); } ///< Hold are reference to the real sofa object.
 
-    Q_INVOKABLE sofa::qtquick::SofaComponent* toSofaComponent(sofa::qtquick::SofaScene* scene = nullptr); ///< legacy method to return a deprecated SofaComponent class
+    Q_INVOKABLE sofa::qtquick::SofaComponent* toSofaComponent(sofa::qtquick::SofaBaseScene* scene = nullptr); ///< legacy method to return a deprecated SofaComponent class
 
 
     Q_INVOKABLE SofaNode* createChild(QString name);

@@ -28,8 +28,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/testing/BaseTest.h>
 using sofa::helper::testing::BaseTest ;
 
-#include <SofaQtQuickGUI/SofaScene.h>
-using sofa::qtquick::SofaScene ;
+#include <SofaQtQuickGUI/SofaBaseScene.h>
+using sofa::qtquick::SofaBaseScene ;
 
 #include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
 using sofaqtquick::SofaQtQuickQmlModule;

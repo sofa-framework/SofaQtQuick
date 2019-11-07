@@ -143,7 +143,7 @@ Item {
                     textRole: "name"
                     model: listModel
                     sizeToContents: true
-                    currentIndex: 0
+                    currentIndex: -1
 
                     onCurrentIndexChanged:
                     {
@@ -168,8 +168,12 @@ Item {
                     {
                         /// search in the model if there is one item with the
                         /// same name as in the combobox.
-                        if (findIndexFor(root.currentContentName))
+                        if (findIndexFor(root.currentContentName) !== null){
                             currentIndex = findIndexFor(root.currentContentName);
+                        }
+                        else{
+                            console.error("Unable to find index for view: " + root.currentContentName)
+                        }
                     }
                 }
 
@@ -263,6 +267,7 @@ Item {
             /// @brief refresh the content "area" of the view with the given name
             function refresh(viewEntry)
             {
+
                 if(!viewEntry)
                     return
 

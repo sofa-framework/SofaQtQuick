@@ -29,7 +29,7 @@ using sofa::component::visualmodel::BaseCamera;
 
 #include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/Bindings/SofaCamera.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 
 namespace sofa
 {
@@ -39,7 +39,6 @@ namespace qtquick
 
 CameraView::CameraView(QQuickItem* parent) : Parent(parent)
 {
-
 }
 
 CameraView::~CameraView()

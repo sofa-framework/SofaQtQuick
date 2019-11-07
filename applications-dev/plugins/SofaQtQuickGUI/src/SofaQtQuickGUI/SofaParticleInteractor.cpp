@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "SofaParticleInteractor.inl"
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
@@ -83,7 +83,7 @@ bool SofaParticleInteractor::start(SofaComponent* sofaComponent, int particleInd
 	if(!sofaComponent || -1 == particleIndex)
         return false;
 
-    const SofaScene* sofaScene = sofaComponent->sofaScene();
+    const SofaBaseScene* sofaScene = sofaComponent->sofaScene();
 
 	BaseMechanicalState* particleMechanicalState = dynamic_cast<BaseMechanicalState*>(sofaComponent->base());
 

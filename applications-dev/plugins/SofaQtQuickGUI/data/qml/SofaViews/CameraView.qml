@@ -23,9 +23,9 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
 import SofaBasics 1.0
+import SofaBaseScene 1.0
 import SofaApplication 1.0
 import CameraView 1.0
-import SofaScene 1.0
 
 CameraView {
     readonly property string docstring :
@@ -57,28 +57,6 @@ CameraView {
     implicitWidth: 800
     implicitHeight: 600
 
-    Timer
-    {
-        id: rescanForCameraTimer
-        interval: 1000
-        repeat: true
-        onTriggered: {
-            var cameraList = sofaScene.componentsByType("BaseCamera")
-            console.log("SEARCHING FOR CAMERA " +cameraList.size())
-
-            if(cameraList.size()!==0)
-            {
-                idComboList.clear()
-                for (var i = 0; i < cameraList.size(); ++i)
-                {
-                    idComboList.append({text: cameraList.at(i).getName()})
-                }
-                recreateCamera()
-                stop()
-            }
-        }
-    }
-
     Component.onCompleted: {
         SofaApplication.addSofaViewer(root);
 
@@ -86,9 +64,9 @@ CameraView {
             forceActiveFocus();
 
         if(root.sofaScene && root.sofaScene.ready)
+        {
             recreateCamera();
-
-        rescanForCameraTimer.start()
+        }
     }
 
     Component.onDestruction: {
@@ -170,7 +148,7 @@ CameraView {
         if(!camera)
         {
             camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
-            camera.bindCameraFromScene(root.SofaScene, 0);
+            camera.bindCameraFromScene(root.sofaScene, 0);
 
             //Todo fetch index from somewhere
             var defaultIndex = 0;
@@ -182,9 +160,9 @@ CameraView {
     }
 
     Connections {
-        target: root.sofaScene
-        onStatusChanged: {
-            if(root.sofaScene && SofaScene.Ready === root.sofaScene.status)
+        target: sofaScene
+        onStatusChanged :{
+            if(SofaBaseScene.Ready === root.sofaScene.status)
                 root.recreateCamera();
         }
     }

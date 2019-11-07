@@ -234,13 +234,13 @@ QVariant SofaDataListModel::data(const QModelIndex& index, int role) const
         {
             BaseData* data = (sofa::core::objectmodel::BaseData*) item.data.value<void*>();
 
-            return QVariant::fromValue(SofaScene::dataValue(data));
+            return QVariant::fromValue(SofaBaseScene::dataValue(data));
         }
         else if(SofaLinkType == item.type)
         {
             BaseLink* link = (sofa::core::objectmodel::BaseLink*) item.data.value<void*>();
 
-            return QVariant::fromValue(SofaScene::linkValue(link));
+            return QVariant::fromValue(SofaBaseScene::linkValue(link));
         }
         else if(LogType == item.type)
         {

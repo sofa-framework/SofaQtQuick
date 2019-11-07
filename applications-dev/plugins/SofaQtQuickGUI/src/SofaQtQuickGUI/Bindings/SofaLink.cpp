@@ -24,7 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h>
 using sofaqtquick::bindings::SofaCoreBindingContext;

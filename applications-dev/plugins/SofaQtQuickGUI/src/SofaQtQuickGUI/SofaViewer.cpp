@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <SofaQtQuickGUI/SofaViewer.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
 #include <sofa/simulation/Node.h>
@@ -123,7 +123,7 @@ QOpenGLFramebufferObject* SofaViewer::getFBO() const
 	return myFBO;
 }
 
-void SofaViewer::setSofaScene(SofaScene* newSofaScene)
+void SofaViewer::setSofaScene(SofaBaseScene* newSofaScene)
 {
     if(newSofaScene == mySofaScene)
         return;
@@ -402,7 +402,7 @@ public:
         if(!camera)
             return;
 
-        SofaScene* sofaScene = myViewer->sofaScene();
+        SofaBaseScene* sofaScene = myViewer->sofaScene();
         if(!sofaScene)
             return;
 
