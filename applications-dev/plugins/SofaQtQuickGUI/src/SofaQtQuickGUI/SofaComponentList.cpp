@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <SofaQtQuickGUI/SofaComponentList.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 
 #include <sofa/core/ObjectFactory.h>
 
@@ -33,14 +33,14 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SofaComponentList::SofaComponentList(SofaScene* sofaScene)
+SofaComponentList::SofaComponentList(SofaBaseScene* sofaScene)
     : QObject()
     , mySofaScene(sofaScene)
 {
 
 }
 
-SofaComponentList::SofaComponentList(SofaScene* sofaScene, const QList<SofaComponent*> baseList) 
+SofaComponentList::SofaComponentList(SofaBaseScene* sofaScene, const QList<SofaComponent*> baseList) 
     : QObject()
     , mySofaScene(sofaScene)
     , myComponentList(baseList)
@@ -56,7 +56,7 @@ SofaComponentList::SofaComponentList(const SofaComponentList& sofaComponentList)
 
 }
 
-SofaScene* SofaComponentList::sofaScene() const
+SofaBaseScene* SofaComponentList::sofaScene() const
 {
     return mySofaScene;
 }

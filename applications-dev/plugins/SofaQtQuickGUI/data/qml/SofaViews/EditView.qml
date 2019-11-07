@@ -25,7 +25,6 @@ import QtGraphicalEffects 1.0
 import SofaApplication 1.0
 import SofaInteractors 1.0
 import EditView 1.0
-import SofaScene 1.0
 import SofaColorScheme 1.0
 import SofaBasics 1.0
 

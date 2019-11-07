@@ -27,7 +27,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Windows/EditView.cpp
     src/SofaQtQuickGUI/Windows/AssetView.cpp
     src/SofaQtQuickGUI/Camera.cpp
-    src/SofaQtQuickGUI/SofaScene.cpp
+    src/SofaQtQuickGUI/SofaBaseScene.cpp
     src/SofaQtQuickGUI/SofaComponentList.cpp
     src/SofaQtQuickGUI/Selectable.cpp
     src/SofaQtQuickGUI/SelectableManipulator.cpp
@@ -109,7 +109,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Windows/EditView.h
     src/SofaQtQuickGUI/Windows/AssetView.h
     src/SofaQtQuickGUI/Camera.h
-    src/SofaQtQuickGUI/SofaScene.h
+    src/SofaQtQuickGUI/SofaBaseScene.h
     src/SofaQtQuickGUI/SofaComponentList.h
     src/SofaQtQuickGUI/Selectable.h
     src/SofaQtQuickGUI/SelectableManipulator.h

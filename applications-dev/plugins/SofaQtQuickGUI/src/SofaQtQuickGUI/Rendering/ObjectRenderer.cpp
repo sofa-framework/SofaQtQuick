@@ -66,10 +66,10 @@ void drawVisualModel(VisualModel* visualModel, VisualParams* visualParams, bool 
     if(visualStyle)
         visualStyle->fwdDraw(visualParams);
 
-    sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
+    auto oldState{ visualParams->displayFlags() };
     visualParams->displayFlags().setShowWireFrame(true);
     visualModel->drawVisual(visualParams);
-    visualParams->displayFlags().setShowWireFrame(state);
+    visualParams->displayFlags() = oldState;
 
     if(visualStyle)
         visualStyle->bwdDraw(visualParams);
@@ -87,16 +87,18 @@ void drawCollisionModel(CollisionModel* object, VisualParams *visualParams, bool
     if(visualStyle)
         visualStyle->fwdDraw(visualParams);
 
-    sofa::core::visual::tristate state = visualParams->displayFlags().getShowWireFrame();
+    auto oldState{ visualParams->displayFlags() };
     visualParams->displayFlags().setShowWireFrame(true);
 
     triangleModel->draw(visualParams);
 
-    visualParams->displayFlags().setShowWireFrame(state);
+    visualParams->displayFlags()=oldState;
 
     if(visualStyle)
         visualStyle->bwdDraw(visualParams);
 }
+
+
 
 void drawBaseObject(BaseObject* object, Base* selected, VisualParams* visualParams, bool isSelected)
 {
@@ -114,12 +116,13 @@ void drawBaseObject(BaseObject* object, Base* selected, VisualParams* visualPara
     if(collisionModel)
         drawCollisionModel(collisionModel, visualParams, isSelected) ;    
 
-    auto oldState = visualParams->displayFlags().getShowAll();
+
+    auto oldState{ visualParams->displayFlags() };
     visualParams->displayFlags().setShowAll(true);
 
     object->draw(visualParams);
 
-    visualParams->displayFlags().setShowAll(oldState);
+    visualParams->displayFlags()=oldState;
 }
 
 void drawBaseNode(BaseNode* node, Base* selected, VisualParams* visualParams, bool isSelected)

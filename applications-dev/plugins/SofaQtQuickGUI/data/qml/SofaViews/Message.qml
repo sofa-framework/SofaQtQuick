@@ -28,7 +28,6 @@ import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaBasics 1.0
 import SofaApplication 1.0
-import SofaScene 1.0
 
 Column {
     property bool filterByComponent : false

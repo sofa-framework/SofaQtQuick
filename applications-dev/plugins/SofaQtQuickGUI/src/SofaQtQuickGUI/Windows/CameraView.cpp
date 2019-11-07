@@ -29,7 +29,7 @@ using sofa::component::visualmodel::BaseCamera;
 
 #include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/Bindings/SofaCamera.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 
 namespace sofa
 {
@@ -39,7 +39,6 @@ namespace qtquick
 
 CameraView::CameraView(QQuickItem* parent) : Parent(parent)
 {
-
 }
 
 CameraView::~CameraView()
@@ -88,12 +87,15 @@ void CameraView::internalRender(int width, int height) const
         setupCamera(width, height, *this) ;
 
         /// Prepare for a pure rendrering traversal of the scene graph.
+        auto oldFlags {m_visualParams->displayFlags()};
         m_visualParams->displayFlags().setShowAll(false) ;
         m_visualParams->displayFlags().setShowVisualModels(true) ;
 
         preDraw();
         drawVisuals();
         postDraw();
+
+        m_visualParams->displayFlags() = oldFlags;
     }
 }
 

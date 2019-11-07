@@ -83,13 +83,15 @@ def getPythonModuleDocstring(mpath):
 ######################################################################
 def getAbsPythonCallPath(node, rootNode):
     if rootNode.getPathName() == "/":
-        return "root" + node.getPathName().replace("/", ".")[1:]
+        if node.getPathName() == "/":
+            return "root"
+        return "root" + node.getPathName().replace("/", ".")
     else:
         # example:
         # rootNode.getPathName() = "/Snake/physics"
         # node.getPathName() = "/Snake/physics/visu/eye"
         # relPath = physics.visu.eye
-        return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
+        return rootNode.name.value + "DD." + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
 
 def buildDataParams(datas, indent, scn):
     s = ""
@@ -97,10 +99,11 @@ def buildDataParams(datas, indent, scn):
         if data.hasParent():
             scn[0] += indent + "### THERE WAS A LINK. "
             scn[0] += data.getParent().getLinkPath() + "=>" + data.getLinkPath() + "\n"
-            if data.getName() != "name" and data.isPersistent():
-                s += ", " + data.getName()+ "=" + repr(data.getParent().getLinkPath())
+            if data.getName() != "name":
+                relPath = os.path.relpath(data.getParent().getPathName(), data.getOwner().getContext().getPathName())
+                s += ", " + data.getName()+ "='@" + relPath +"'"
         else:
-            if data.getName() != "name" and data.isPersistent():
+            if data.getName() not in ["name","prefabname", "docstring"] and data.isPersistent():
                 if " " not in data.getName() and data.getName() != "Help":
                     if data.getName() != "modulepath":
                         if data.getName() != "depend":
@@ -115,16 +118,16 @@ def saveRec(node, indent, modules, modulepaths, scn, rootNode):
 
     for child in node.children:
         s = buildDataParams(child.getDataFields(), indent, scn)
-        if child.getData("Prefab type") is not None:
-            print('createPrefab')
+        if child.getData("prefabname") is not None:
+            #print('createPrefab '+str(child.name))
             scn[0] += (indent + "####################### Prefab: " +
-                       child.name + " #########################\n")
-            scn[0] += (indent + child.getData("Prefab type").value +
-                       "(" + getAbsPythonCallPath(node, rootNode) +
-                       ".addChild('" + child.name.value + "'))\n")
+                       child.name.value + " #########################\n")
+            scn[0] += (indent + getAbsPythonCallPath(node, rootNode) +
+                       ".addChild(" + child.prefabname.value + "(name='"+ child.name.value +"'"+s+ "))\n")
             scn[0] += ("\n")
-            modules.append(child.getData("Defined in").value)
-            modulepaths.append(child.getData("modulepath").value)
+            dirname, filename = os.path.split(child.getDefinitionSourceFileName())
+            modules.append(filename)
+            modulepaths.append(dirname)
         else:
             scn[0] += (indent + "####################### Node: " + child.name.value +
                        " #########################\n")
@@ -170,7 +173,7 @@ def saveAsPythonScene(fileName, node):
         modules = []
         modulepaths = []
         scn = [""]
-        saveRec(root, "\t", modules, modulepaths, scn, root)
+        saveRec(root, "    ", modules, modulepaths, scn, root)
 
         fd.write("# all Paths\n")
         for p in list(dict.fromkeys(modulepaths)):
@@ -201,13 +204,15 @@ def callFunction(file, function, *args, **kwargs):
 def createPrefabFromNode(fileName, node, name, help):
         print('Saving prefab')
         fd = open(fileName, "w+")
+        fd.write('"""type: SofaContent"""\n')
         fd.write("import sys\n")
         fd.write("import os\n")
+        fd.write("import Sofa.Core\n")
 
         modules = []
         modulepaths = []
         scn = [""]
-        saveRec(node, "\t\t", modules, modulepaths, scn, node)
+        saveRec(node, "    ", modules, modulepaths, scn, node)
 
         fd.write("# all Paths\n")
         for p in list(dict.fromkeys(modulepaths)):
@@ -217,11 +222,9 @@ def createPrefabFromNode(fileName, node, name, help):
         for m in list(dict.fromkeys(modules)):
             fd.write("from " + m + " import *\n")
 
-        fd.write("\n\n@SofaPrefab\n")
-        fd.write("class " + name + "():\n")
-        fd.write("\t\"\"\" " + help + " \"\"\"\n")
-        fd.write("\tdef __init__(self, " + node.name.value + "):\n")
-        fd.write("\t\tself.node = " + node.name.value + "\n")
+        fd.write("\n\n@Sofa.PrefabBuilder\n")
+        fd.write("def " + name + "("+node.name.value+"):\n")
+        fd.write("    \"\"\" " + help + " \"\"\"\n")
         fd.write(scn[0])
         return True
 

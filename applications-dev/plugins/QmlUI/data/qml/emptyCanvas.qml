@@ -7,13 +7,13 @@ SofaCanvas {
     height: 100
     color: "red"
     Button {
-	text: "Hello World!"
-	anchors.centerIn: parent
-	onClicked: {
-	    if (text === "Hello World!")
-            text = "ComponentName:" + self.getName()
-	    else
-            text = "Hello World!"
-	}
+        text: "Hello World!"
+	      anchors.centerIn: parent
+	      onClicked: {
+	          if (text === "Hello World!")
+                text = "ComponentName:" + self.getName()
+	          else
+                text = "Hello World!"
+	      }
     }
 }

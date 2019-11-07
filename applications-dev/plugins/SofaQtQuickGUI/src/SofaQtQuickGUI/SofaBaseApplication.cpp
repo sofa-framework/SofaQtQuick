@@ -20,7 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <GL/glew.h>
 
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
-#include <SofaQtQuickGUI/SofaScene.h>
+#include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/ProcessState.h>
 
 #include <sofa/helper/system/FileSystem.h>
@@ -1021,6 +1021,7 @@ sofaqtquick::bindings::SofaBase* SofaBaseApplication::getSelectedComponent() con
 
 void SofaBaseApplication::setSelectedComponent(sofaqtquick::bindings::SofaBase* selectedComponent)
 {
+    std::cout << "set selected component..." << std::endl;
     if(selectedComponent == nullptr)
     {
         m_selectedComponent = nullptr;
@@ -1029,7 +1030,6 @@ void SofaBaseApplication::setSelectedComponent(sofaqtquick::bindings::SofaBase* 
 
     if(selectedComponent->rawBase() == m_selectedComponent)
         return;
-
     m_selectedComponent = selectedComponent->rawBase();
     emit selectedComponentChanged(selectedComponent);
 }
@@ -1054,8 +1054,8 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
     sofa::helper::console::setStatus(sofa::helper::console::Status::On);
 
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
-    // "threaded" vs "single"
-    qputenv("QSG_RENDER_LOOP", "single");
+    // "threaded" vs "basic"
+    qputenv("QSG_RENDER_LOOP", "basic");
 
     if(!app.testAttribute(Qt::AA_ShareOpenGLContexts))
         qCritical() << "CRITICAL: SofaBaseApplication::initialization() must be called before QApplication instanciation";
@@ -1191,7 +1191,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
 
         if(parser.isSet(animateOption) || parser.isSet(sceneOption))
         {
-            SofaScene* sofaScene = object->findChild<SofaScene*>();
+            SofaBaseScene* sofaScene = object->findChild<SofaBaseScene*>();
             if(parser.isSet(sceneOption))
             {
                 sofaScene->setSource(parser.value(sceneOption));
