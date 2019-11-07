@@ -64,6 +64,7 @@ class SofaData : public QObject
     Q_PROPERTY(QString help READ getHelp NOTIFY helpChanged)
     Q_PROPERTY(QString valueType READ getValueType NOTIFY valueTypeChanged)
     Q_PROPERTY(QString group READ getGroup)
+    Q_PROPERTY(QString ownerClass READ getOwnerClass)
     Q_PROPERTY(QVariantMap properties READ getProperties NOTIFY propertiesChanged)
     Q_PROPERTY(bool isReadOnly READ isReadOnly NOTIFY readOnlyChanged)
 
@@ -85,6 +86,7 @@ public:
     Q_INVOKABLE bool isReadOnly() const;
     Q_INVOKABLE bool isAutoLink() const;
     Q_INVOKABLE QString getGroup() const;
+    Q_INVOKABLE QString getOwnerClass() const;
 
     Q_INVOKABLE bool setValue(const QVariant& getValue);
     Q_INVOKABLE bool setLink(const QString& path);

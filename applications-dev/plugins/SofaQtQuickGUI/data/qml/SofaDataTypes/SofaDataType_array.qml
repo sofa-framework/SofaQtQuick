@@ -36,6 +36,8 @@ ColumnLayout {
     property var properties: sofaData.properties
     property int refreshCounter: 0
     Layout.preferredHeight: loader.implicitHeight + 1
+    Layout.fillWidth: true
+    implicitWidth: parent.implicitWidth
     Loader {
         id: loader
         Layout.fillWidth: true
