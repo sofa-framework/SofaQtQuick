@@ -477,8 +477,6 @@ void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseO
     QModelIndex parentIndex = index(parent);
     int objIndex = int(parent->object.size());
     beginInsertRows(parentIndex, objIndex, objIndex);
-
-    std::cout << "ADD OBJECT/ " << std::endl;
 }
 
 void SofaSceneItemModel::onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj)
