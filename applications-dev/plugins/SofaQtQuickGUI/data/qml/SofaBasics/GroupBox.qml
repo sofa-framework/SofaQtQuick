@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.impl 2.12
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.12
-//import SofaApplication 1.0
+import SofaBasics 1.0 as SB
 
 
 GroupBox {
@@ -13,7 +13,7 @@ GroupBox {
     property bool expandable: true
     property bool expanded: true
     property int expandedHeight: 0
-    property url titleIcon: ""
+    property url titleIcon
     property string buttonIconSource: ""
     property var buttonAction
 
@@ -64,10 +64,10 @@ GroupBox {
         }
         ColorImage {
             id: titleIconId
-            visible: control.titleIcon !== ""
+            visible: titleIcon.length ? true : false
             anchors.verticalCenter: label.verticalCenter
-            width: 20
-            height: 20
+            width: titleIcon.length ? 20 : 0
+            height: titleIcon.length ? 20 : 0
             source: titleIcon
             anchors.left: groupBoxArrow.right
         }
@@ -81,7 +81,7 @@ GroupBox {
             anchors.left: titleIconId.right
             anchors.leftMargin: 5
         }
-        IconButton {
+        SB.IconButton {
             id: extraButton
             anchors.left: label.right
             anchors.leftMargin: 5
@@ -100,6 +100,5 @@ GroupBox {
         height: parent.height - control.topPadding + control.bottomPadding
 
         color: "transparent"
-    }
-
+    }  
 }

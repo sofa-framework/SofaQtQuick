@@ -121,5 +121,28 @@
         <file>SofaBasics/SofaLinkItem.qml</file>
         <file>SofaDataTypes/SofaDataType_ComponentState.qml</file>
         <file>SofaBasics/SofaCanvas.qml</file>
+        <file>CustomInspectorWidgets/CustomInspector.qml</file>
+        <file>SofaBasics/LiveCoding.qml</file>
+        <file>SofaViews/deprecated/AffineTransformationController.qml</file>
+        <file>SofaViews/deprecated/BaseWidgetExample.qml</file>
+        <file>SofaViews/deprecated/ColorSelector.qml</file>
+        <file>SofaViews/deprecated/QML_LiveCoding.qml</file>
+        <file>SofaViews/deprecated/SceneToolsPanel.qml</file>
+        <file>SofaViews/deprecated/SofaDataListView.qml</file>
+        <file>SofaViews/deprecated/SofaDataView.qml</file>
+        <file>SofaViews/deprecated/SofaSceneGraph.qml</file>
+        <file>SofaViews/deprecated/SofaSceneGraphView.qml</file>
+        <file>SofaViews/deprecated/SofaSceneToolPanel.qml</file>
+        <file>SofaViews/deprecated/SofaSceneViewer.qml</file>
+        <file>SofaViews/deprecated/SofaSimulationControl.qml</file>
+        <file>SofaViews/deprecated/SofaViewer.qml</file>
+        <file>SofaViews/deprecated/SofaVisualizationControl.qml</file>
+        <file>SofaViews/deprecated/ToolPanel_deprecated.qml</file>
+        <file>SofaViews/ExampleView.qml</file>
+        <file>SofaWidgets/AssetView.qml</file>
+        <file>AssetView.qml</file>
+        <file>CustomInspectorWidgets/MeshLoaderInspector.qml</file>
+        <file>CustomInspectorWidgets/BaseInspector.qml</file>
+        <file>CustomInspectorWidgets/qmldir</file>
     </qresource>
 </RCC>

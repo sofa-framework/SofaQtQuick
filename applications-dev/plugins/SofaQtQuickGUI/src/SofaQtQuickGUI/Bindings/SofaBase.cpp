@@ -81,6 +81,14 @@ QString SofaBase::getClassName() const
     return QString::fromStdString(m_self->getClassName());
 }
 
+QStringList SofaBase::getInheritedClassNames() const
+{
+    QStringList list;
+    for (auto& __class : m_self->getClass()->parents)
+        list.push_back(__class->className.c_str());
+    return list;
+}
+
 QString SofaBase::getTemplateName() const
 {
     return QString::fromStdString(m_self->getTemplateName());
@@ -116,6 +124,15 @@ QObject* SofaBase::getLink(const QString& name) const
         return nullptr;
     }
     return new SofaLink(link);
+}
+
+QStringList SofaBase::getLinks() const
+{
+    const auto& links = m_self->getLinks();
+    QStringList list;
+    for (auto& link : links)
+        list.append(QString(link->getName().c_str()));
+    return list;
 }
 
 

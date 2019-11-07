@@ -219,6 +219,10 @@ QString SofaData::getGroup() const
 {
     return QString::fromStdString(rawData()->getGroup());
 }
+QString SofaData::getOwnerClass() const
+{
+    return QString::fromStdString(rawData()->getOwnerClass());
+}
 
 int SofaData::getCounter() const
 {

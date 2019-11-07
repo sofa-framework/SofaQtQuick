@@ -65,6 +65,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Models/SofaViewListModel.cpp
     src/SofaQtQuickGUI/Models/SofaDataContainerListModel.cpp
     src/SofaQtQuickGUI/Models/SofaLinkCompletionModel.cpp
+#    src/SofaQtQuickGUI/Models/CustomInspectorModel.cpp
     src/SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.cpp
     src/SofaQtQuickGUI/QMLUI/QMLUI.cpp
     src/SofaQtQuickGUI/QMLUI/View.cpp
@@ -146,6 +147,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Models/SofaViewListModel.h
     src/SofaQtQuickGUI/Models/SofaDataContainerListModel.h
     src/SofaQtQuickGUI/Models/SofaLinkCompletionModel.h
+#    src/SofaQtQuickGUI/Models/CustomInspectorModel.h
     src/SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.h
     src/SofaQtQuickGUI/QMLUI/QMLUI.h
     src/SofaQtQuickGUI/QMLUI/View.h

@@ -33,71 +33,19 @@ import SofaInspectorDataListModel 1.0
 import SofaWidgets 1.0
 
 
-/*
-  |--------------------------------------------------------|
-  | Inspector                                   Debug []   |
-  |--------------------------------------------------------|
-  | Group 1                                                |
-  |   Data 1:                                              |
-  |   Data 2:                                              |
-  |   Data ...:                                            |
-  |--------------------------------------------------------|
-  | Group 2                                                |
-  |   Data 1:                                              |
-  |   Data 2:                                              |
-  |   Data ...:                                            |
-  |--------------------------------------------------------|
-
-  One ListView is used to render
-      Inspector
-        Group 1
-        Group 2
-        ...
-  While each group have its own ListView.
-*/
 Item {
     id: root
+    anchors.fill: parent
     property var selectedAsset: SofaApplication.currentProject.selectedAsset
 
     Rectangle {
         id: topRect
         color: SofaApplication.style.contentBackgroundColor
-        clip: true
         anchors.fill: parent
         anchors.leftMargin: 10
         anchors.rightMargin: 10
-        property var sofaScene: SofaApplication.sofaScene
-        property var sofaSelectedComponent: SofaApplication.selectedComponent
-
-        property bool showDebug : isDebug.checked
-
-        property int refreshCounter : 0
 
         visible: selectedAsset === null
-        Connections {
-            target: sofaScene
-            onStepEnd: topRect.refreshCounter = topRect.refreshCounter + 1;
-        }
-
-        Timer
-        {
-            id:updateTimer
-            interval: 100
-            repeat: true
-            onTriggered:
-            {
-                print("COUCOU");
-                topRect.refreshCounter = topRect.refreshCounter + 1
-            }
-        }
-
-        Component.onCompleted:
-        {
-            if (!topRect.sofaScene)
-                topRect.sofaScene = SofaApplication.sofaScene
-            topRect.sofaSelectedComponent = SofaApplication.selectedComponent
-        }
-
         DropArea {
             id: dropArea
             anchors.fill: parent
@@ -120,516 +68,150 @@ Item {
             }
         }
 
-        /*
-          Each group is composed of an header bar with the group name.
-          When clicked the bar collapsed or expand the content of the group.
-        */
-        VisualDataModel {
-            id: visualModel
-            model : theModel
-            property var currentChild
-            property SofaInspectorDataListModel theModel : SofaInspectorDataListModel {
-                id : sofaInspectorDataListModel
-                currentSofaComponent: theView.sofaSelectedComponent
-            }
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 10
 
+            RowLayout {
+                z: 3
+                id: header
+                Layout.fillWidth: true
+                Layout.preferredHeight: 20
 
-            delegate: Component {
-                id: delegateView
-                Rectangle{
-                    id: theItem
-                    property int groupIndex: index
-
-                    state: sofaInspectorDataListModel.isGroupVisible(index) ? "expanded" : "collapsed"
-                    width: parent.width
-                    color: SofaApplication.style.contentBackgroundColor
-                    clip: true
-
-                    Component.onCompleted : {
-                        state =  sofaInspectorDataListModel.isGroupVisible(index) ? "expanded" : "collapsed"
-                    }
-
-                    states: [
-                        State {
-                            name: "expanded"
-                            PropertyChanges {
-                                target: theItem
-                                implicitHeight: childView.childHeight + 26
-                            }
-                        },
-                        State {
-                            name: "collapsed"
-                            PropertyChanges {
-                                target: theItem
-                                implicitHeight: 26
-                            }
-                        }
-                    ]
-
-                    /*
-                |--------------------------------------------------------|
-                | Group 1 (header)                                       |
-                |   Data 1:                                              |
-                |   Data 2:                                              |
-                |   Data ...:                                            |
-                |--------------------------------------------------------|*/
-                    Column{
-                        id : group
-                        anchors.fill: parent
-                        property int theIndex: index
-                        property string theName : name
-                        Rectangle{
-
-                            width: theView.width
-                            height: 26
-                            color: SofaApplication.style.contentBackgroundColor
-                            Rectangle {
-                                width: theView.width - 20
-                                height: 1
-                                color: "#393939"
-                                anchors.horizontalCenter: parent.horizontalCenter
-                            }
-                            Rectangle {
-                                y: 1
-                                width: theView.width - 20
-                                height: 1
-                                color: "#959595"
-                                anchors.horizontalCenter: parent.horizontalCenter
-                            }
-                            Row{
-                                y: 2
-                                width: parent.width
-                                height: parent.height
-                                ColorImage {
-                                    id: groupBoxArrow
-                                    y: 4
-                                    source: theItem.state ==="collapsed" ? "qrc:/icon/rightArrow.png" : "qrc:/icon/downArrow.png"
-                                    width: 14
-                                    height: 14
-                                    color: "#393939"
-                                    MouseArea {
-                                        id: mouse_area2
-                                        anchors.fill: parent
-                                        onClicked: {
-                                            if(theItem.state === "expanded")
-                                                theItem.state = "collapsed"
-                                            else
-                                                theItem.state = "expanded"
-
-                                            visualModel.model.setVisibility(index, !(theItem.state==="collapsed"))
-                                        }
-                                    }
-                                }
-
-                                Label{
-                                    id: titleText
-                                    verticalAlignment: Text.AlignVCenter
-                                    width: theView.width-20
-                                    height:20
-                                    text: name
-                                    color: "black"
-                                    MouseArea {
-                                        id: mouse_area1
-                                        z: 1
-                                        hoverEnabled: false
-                                        height : parent.height
-                                        width : parent.width - 20
-                                        onClicked: {
-                                            if(theItem.state === "expanded")
-                                                theItem.state = "collapsed"
-                                            else
-                                                theItem.state = "expanded"
-
-                                            visualModel.model.setVisibility(index, !(theItem.state==="collapsed"))
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-
-                        ListView{
-                            property int childHeight: contentHeight
-                            property int nameLabelWidth : 100
-                            property int nameLabelImplicitWidth : 100
-                            id: childView
-                            visible: theItem.state != "collapsed"
-
-                            width: theView.width
-                            implicitHeight: 2000
-                            clip: false
-
-                            Component.onCompleted: {
-                                implicitHeight: contentHeight
-                                clip = true
-                            }
-
-                            model : visualModel
-
-                            property var visualModel : VisualDataModel {
-                                property int parentIndex:
-                                {
-                                    theItem.groupIndex
-                                }
-
-                                id : childModel
-                                model : visualModel.theModel
-                                rootIndex : visualModel.modelIndex(theItem.groupIndex)
-
-                                delegate : visibleItem ;
-                                property Component visibleItem :
-                                    Column {
-                                    Loader{
-                                        id: dataLoader
-                                        width: theItem.width
-
-                                        sourceComponent: {
-                                            if (!isDisplayed)
-                                                return hiddenItem;
-                                            if(isReadOnly && !topRect.showDebug && name!=="componentState")
-                                                return hiddenItem;
-                                            switch(type){
-                                            case 5: //sofaInspectorDataListModel.SofaDataType:
-                                                return dataItem;
-                                            case 6: //sofaInspectorDataListModel.SofaLinkType:
-                                                return linkItem;
-                                            case 7: //sofaInspectorDataListModel.InfoItem:
-                                                return infoItem;
-                                            case 8: //sofaInspectorDataListModel.LogType:
-                                                return logItem;
-                                            }
-                                            return hiddenItem;
-                                        }
-
-                                        property Component hiddenItem : Rectangle
-                                        {
-                                            width : theItem.width ;
-                                            height: 0;
-                                            color : "yellow"
-                                        }
-
-                                        property Component dataItem : SofaDataItem
-                                        {
-                                            id: sofaDataItem
-                                            implicitWidth : theItem.width
-                                            //                                            implicitHeight: 20
-
-                                            sofaData: getObject(sofaInspectorDataListModel.getDataById(childModel.parentIndex, index))
-                                            refreshCounter: topRect.refreshCounter
-
-                                            nameLabelWidth:128
-
-                                            property var cachedObject : null;
-                                            function getObject(d){
-                                                if(d!==null)
-                                                    cachedObject=d;
-                                                return cachedObject;
-                                            }
-
-
-                                            Component.onCompleted: updateNameLabelWidth();
-                                            onNameLabelImplicitWidthChanged: updateNameLabelWidth();
-
-                                            function updateNameLabelWidth() {
-                                                childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
-                                            }
-                                        }
-
-                                        property Component linkItem: RowLayout {
-                                            id: linkView
-                                            spacing: 1
-
-                                            Label {
-                                                id: linkNameLabel
-                                                Layout.preferredWidth: 100
-                                                Layout.fillHeight: true
-                                                Layout.alignment: Qt.AlignTop
-
-                                                text: name
-                                                font.italic: true
-                                                color: "black"
-                                                verticalAlignment: Text.AlignVCenter;
-                                                clip: true
-                                                elide: Text.ElideRight
-
-                                                MouseArea {
-                                                    id: linkLabelMouseArea
-                                                    hoverEnabled: true
-                                                    anchors.fill: parent
-                                                }
-                                                ToolTip {
-                                                    text: name
-                                                    visible: linkLabelMouseArea.containsMouse
-                                                }
-                                            }
-                                            TextField {
-                                                Layout.fillWidth: true
-                                                Layout.fillHeight: true
-                                                readOnly: true
-
-                                                text: value.getLinkedPath().trim()
-                                                onTextChanged: cursorPosition = 0;
-
-                                                DropArea {
-                                                    id: dropArea;
-                                                    anchors.fill: parent;
-                                                    onEntered: function(drag)
-                                                    {
-                                                        console.log("DRAG DROPPP");
-                                                        if (!isReadOnly && drag.source && drag.source.sofacomponent)
-                                                        {
-                                                            var sofalink = SofaApplication.sofaScene.link(path)
-                                                            sofalink.setValue(drag.source.sofacomponent.getPathName())
-
-                                                            parent.background.border.color = "red";
-                                                            drag.accept (Qt.CopyAction);
-                                                        }
-                                                    }
-                                                    onDropped: {
-                                                    }
-                                                    onExited: {
-                                                        parent.background.border.color = "back";
-                                                    }
-                                                }
-
-                                            }
-
-                                            property int nameLabelWidth: childView.nameLabelImplicitWidth
-                                            readonly property int nameLabelImplicitWidth: linkView.implicitWidth
-
-                                            Component.onCompleted: updateNameLabelWidth();
-                                            onNameLabelImplicitWidthChanged: updateNameLabelWidth();
-
-                                            function updateNameLabelWidth() {
-                                                childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
-                                            }
-                                        }
-
-                                        property Component infoItem: RowLayout {
-                                            spacing: 1
-
-                                            Text {
-                                                id: infoNameLabel
-                                                Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
-                                                Layout.fillHeight: true
-                                                Layout.alignment: Qt.AlignTop
-
-                                                text: name
-                                                font.italic: true
-                                            }
-                                            Text {
-                                                Layout.fillWidth: true
-                                                Layout.fillHeight: true
-                                                Layout.preferredHeight: implicitHeight
-
-                                                text: value.toString().trim()
-                                                wrapMode: Text.WordWrap
-                                                onTextChanged: {
-                                                }
-                                            }
-
-                                            property int nameLabelWidth: childView.nameLabelImplicitWidth
-                                            readonly property int nameLabelImplicitWidth: infoNameLabel.implicitWidth
-
-                                            Component.onCompleted: updateNameLabelWidth();
-                                            onNameLabelImplicitWidthChanged: updateNameLabelWidth();
-
-                                            function updateNameLabelWidth() {
-                                                childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
-                                            }
-                                        }
-
-                                        property Component logItem: GridLayout {
-                                            columnSpacing: 1
-                                            rowSpacing: 1
-                                            columns: 2
-
-                                            Text {
-                                                id: logNameLabel
-                                                Layout.preferredWidth: -1 === nameLabelWidth ? implicitWidth : nameLabelWidth
-                                                Layout.fillHeight: true
-                                                Layout.alignment: Qt.AlignTop
-
-                                                text: name
-                                                font.italic: true
-
-                                                MouseArea {
-                                                    anchors.fill: parent
-                                                    onDoubleClicked: sofaDataWindowComponent.createObject(SofaApplication, {"sofaScene": root.sofaScene, "sofaComponent": root.sofaComponent});
-                                                }
-                                            }
-                                            TextArea {
-                                                id: logTextArea
-                                                Layout.fillWidth: true
-                                                Layout.fillHeight: true
-                                                Layout.minimumHeight: Math.min(implicitHeight, 400)
-
-                                                text: value.toString().trim()
-                                                onTextChanged: cursorPosition = 0;
-
-                                                wrapMode: Text.WordWrap
-                                                readOnly: true
-                                            }
-                                            Button {
-                                                Layout.columnSpan: 2
-                                                Layout.fillWidth: true
-
-                                                text: "Clear"
-                                                onClicked: {
-                                                    if(name === "output") root.sofaComponent.clearOutput();
-                                                    if(name === "warning") root.sofaComponent.clearWarning();
-                                                    logTextArea.text = ""
-                                                }
-                                            }
-
-                                            property int nameLabelWidth: childView.nameLabelImplicitWidth
-                                            readonly property int nameLabelImplicitWidth: logNameLabel.implicitWidth
-
-                                            Component.onCompleted: updateNameLabelWidth();
-                                            onNameLabelImplicitWidthChanged: updateNameLabelWidth();
-
-                                            function updateNameLabelWidth() {
-                                                childView.nameLabelImplicitWidth = Math.max(childView.nameLabelImplicitWidth, nameLabelImplicitWidth);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        Rectangle
-        {
-            id: header
-            width: parent.width
-            height: 20
-
-            /// This is the header of the inspector.
-            Rectangle{
-                id: header1
-                anchors.left: header.left
-                anchors.top: header.top
-                width : header.width
-                height : 20
-                color: SofaApplication.style.contentBackgroundColor
-
-                Text{
+                Text {
                     id: detailsArea
-                    anchors.top : header1.top
-                    anchors.left : header1.left
-                    anchors.verticalCenter: header1.verticalCenter
-                    text : "Details " + ((topRect.sofaSelectedComponent===null)? "" : "("+ topRect.sofaSelectedComponent.getClassName() + ")")
-                    //                    font.pixelSize: 14
-                    //                    font.bold: true
+                    Layout.fillWidth: true
+                    text : "Details " + ((SofaApplication.selectedComponent===null)? "" : "("+ SofaApplication.selectedComponent.getClassName() + ")")
                     color: "black"
                 }
                 Label {
                     id: showAllLabel
-                    anchors.right: isDebug.left
-                    anchors.verticalCenter: header1.verticalCenter
+//                    anchors.right: isDebug.left
+//                    anchors.verticalCenter: header1.verticalCenter
                     text: "Show all: "
                     color: "black"
                 }
                 CheckBox {
-                    id : isDebug
-                    anchors.right: header1.right
-                    anchors.verticalCenter: header1.verticalCenter
-                }
-            }
-        }
-
-        ScrollView {
-            id: scrollview
-            anchors.top: header.bottom
-            width: parent.width
-            height: parent.height - 42
-            // TODO(dmarchal): fix the following constant.
-
-            ScrollBar.vertical: ScrollBar {
-                id: scrollbar
-                policy: scrollview.height > scrollview.contentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
-                parent: scrollview
-                x: scrollview.mirrored ? 0 : scrollview.width - width
-                size: 0.3
-                active: true
-                contentItem: GBRect {
-                    implicitWidth: 12
-                    implicitHeight: 100
-                    radius: 6
-                    border.color: "#3f3f3f"
-                    LinearGradient {
-                        cached: true
-                        source: parent
-                        anchors.left: parent.left
-                        anchors.leftMargin: 1
-                        anchors.right: parent.right
-                        anchors.rightMargin: 1
-                        anchors.top: parent.top
-                        anchors.topMargin: 0
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: 0
-
-                        start: Qt.point(0, 0)
-                        end: Qt.point(12, 0)
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: "#979797" }
-                            GradientStop { position: 1.0; color: "#7b7b7b" }
-                        }
-                    }
-                    isHorizontal: true
-                    borderGradient: Gradient {
-                        GradientStop { position: 0.0; color: "#444444" }
-                        GradientStop { position: 1.0; color: "#515151" }
-                    }
-                }
-
-                background: GBRect {
-                    border.color: "#3f3f3f"
-                    radius: 6
-                    implicitWidth: 12
-                    implicitHeight: scrollview.height
-                    LinearGradient {
-                        cached: true
-                        source: parent
-                        anchors.left: parent.left
-                        anchors.leftMargin: 1
-                        anchors.right: parent.right
-                        anchors.rightMargin: 1
-                        anchors.top: parent.top
-                        anchors.topMargin: 0
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: 0
-                        start: Qt.point(0, 0)
-                        end: Qt.point(12, 0)
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: "#565656" }
-                            GradientStop { position: 1.0; color: "#5d5d5d" }
-                        }
-                    }
-                    isHorizontal: true
-                    borderGradient: Gradient {
-                        GradientStop { position: 0.0; color: "#444444" }
-                        GradientStop { position: 1.0; color: "#515151" }
-                    }
+                    id : showAll
+//                    anchors.right: header1.right
+//                    anchors.verticalCenter: header1.verticalCenter
                 }
             }
 
-            ListView {
-                id : theView
-                anchors.fill: parent
-                anchors.rightMargin: scrollbar.visible ? 12 : 0
+            ScrollView {
+                id: scrollview
+                Layout.fillHeight: true
                 Layout.fillWidth: true
-                Layout.preferredHeight: contentHeight
-                clip: true
-                property var sofaSelectedComponent: SofaApplication.selectedComponent
-                model : visualModel
+                /*
+                ScrollBar.vertical: ScrollBar {
+                    id: scrollbar
+                    policy: scrollview.height > scrollview.contentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
+                    parent: scrollview
+                    x: scrollview.mirrored ? 0 : scrollview.width - width
+                    size: 0.3
+                    active: true
+                    contentItem: GBRect {
+                        implicitWidth: 12
+                        implicitHeight: 100
+                        radius: 6
+                        border.color: "#3f3f3f"
+                        LinearGradient {
+                            cached: true
+                            source: parent
+                            anchors.left: parent.left
+                            anchors.leftMargin: 1
+                            anchors.right: parent.right
+                            anchors.rightMargin: 1
+                            anchors.top: parent.top
+                            anchors.topMargin: 0
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 0
+
+                            start: Qt.point(0, 0)
+                            end: Qt.point(12, 0)
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#979797" }
+                                GradientStop { position: 1.0; color: "#7b7b7b" }
+                            }
+                        }
+                        isHorizontal: true
+                        borderGradient: Gradient {
+                            GradientStop { position: 0.0; color: "#444444" }
+                            GradientStop { position: 1.0; color: "#515151" }
+                        }
+                    }
+
+                    background: GBRect {
+                        border.color: "#3f3f3f"
+                        radius: 6
+                        implicitWidth: 12
+                        implicitHeight: scrollview.height
+                        LinearGradient {
+                            cached: true
+                            source: parent
+                            anchors.left: parent.left
+                            anchors.leftMargin: 1
+                            anchors.right: parent.right
+                            anchors.rightMargin: 1
+                            anchors.top: parent.top
+                            anchors.topMargin: 0
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 0
+                            start: Qt.point(0, 0)
+                            end: Qt.point(12, 0)
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#565656" }
+                                GradientStop { position: 1.0; color: "#5d5d5d" }
+                            }
+                        }
+                        isHorizontal: true
+                        borderGradient: Gradient {
+                            GradientStop { position: 0.0; color: "#444444" }
+                            GradientStop { position: 1.0; color: "#515151" }
+                        }
+                    }
+                }
+*/
+
+
+                ColumnLayout {
+                    width: scrollview.width
+
+                    Loader {
+                        Layout.fillWidth: true
+                        id: customInspectorLoader
+                        function getWidget(component)
+                        {
+                            if (showAll.checked)
+                                return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
+
+                            var ui = Qt.createComponent("qrc:/CustomInspectorWidgets/" + component.getClassName() + "Inspector.qml")
+                            if (ui.status === Component.Ready)
+                            {
+                                return ui
+                            }
+                            else {
+                                var list = component.getInheritedClassNames()
+
+                                for (var i = 0 ; i < list.length; ++i) {
+                                    ui = Qt.createComponent("qrc:/CustomInspectorWidgets/" + list[i] + "Inspector.qml")
+                                    if (ui.status === Component.Ready) {
+                                        return ui
+                                    }
+                                }
+                            }
+                            return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
+                        }
+                        sourceComponent: getWidget(SofaApplication.selectedComponent)
+                        onLoaded: {
+                            item.showAll = Qt.binding(function(){ return showAll.checked})
+                        }
+                    }
+                }
             }
         }
     }
+
     Rectangle {
         id: assetArea
         width: parent.width

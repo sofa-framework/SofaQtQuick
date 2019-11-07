@@ -47,6 +47,7 @@ public:
     Q_INVOKABLE QString getName() const;
     Q_INVOKABLE void setName(const QString& name);
     Q_INVOKABLE QString getClassName() const;
+    Q_INVOKABLE QStringList getInheritedClassNames() const;
     Q_INVOKABLE QString getTemplateName() const;
     Q_INVOKABLE QString getPathName() const;
 
@@ -59,6 +60,8 @@ public:
 
     /// get a link from its name
     Q_INVOKABLE QObject* getLink(const QString& name) const;
+    Q_INVOKABLE QStringList getLinks() const;
+
 
     /// Returns true if the underlying Base is a Node.
     Q_INVOKABLE bool isNode() const;
