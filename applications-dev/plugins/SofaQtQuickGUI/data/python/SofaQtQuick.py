@@ -83,28 +83,15 @@ def getPythonModuleDocstring(mpath):
 ######################################################################
 def getAbsPythonCallPath(node, rootNode):
     if rootNode.getPathName() == "/":
-        return "root" + node.getPathName().replace("/", ".")[1:]
+        if node.getPathName() == "/":
+            return "root"
+        return "root" + node.getPathName().replace("/", ".")
     else:
         # example:
         # rootNode.getPathName() = "/Snake/physics"
         # node.getPathName() = "/Snake/physics/visu/eye"
         # relPath = physics.visu.eye
-        return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
-
-def myRelPath(path, relativeTo):
-    ps = path.split('/')
-    rs = relativeTo.split('/')
-
-    sharedprefix = ""
-    for p,r  in zip(ps, rs):
-        if p == "" and r == "":
-            continue
-        if p == r:
-            sharedprefix += "/"+p
-        else:
-            break
-
-    return os.path.relpath(path, relativeTo)
+        return rootNode.name.value + "DD." + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
 
 def buildDataParams(datas, indent, scn):
     s = ""
@@ -113,13 +100,8 @@ def buildDataParams(datas, indent, scn):
             scn[0] += indent + "### THERE WAS A LINK. "
             scn[0] += data.getParent().getLinkPath() + "=>" + data.getLinkPath() + "\n"
             if data.getName() != "name":
-                print("TOTO:", myRelPath("/home/bruno/dev/myproject/scripts",
-                                          "/home/bruno/dev/myproject/scenes/MyCoolFile.py"))
-
-                print("COMPUTE REL PATH: ", data.getParent().getPathName(), data.getPathName())
-                relPath = os.path.relpath(data.getPathName(), data.getParent().getPathName())
-                print("REL PATH: " , relPath)
-                s += ", " + data.getName()+ "=@" + relPath
+                relPath = os.path.relpath(data.getParent().getPathName(), data.getOwner().getContext().getPathName())
+                s += ", " + data.getName()+ "='@" + relPath +"'"
         else:
             if data.getName() != "name" and data.isPersistent():
                 if " " not in data.getName() and data.getName() != "Help":
@@ -136,16 +118,16 @@ def saveRec(node, indent, modules, modulepaths, scn, rootNode):
 
     for child in node.children:
         s = buildDataParams(child.getDataFields(), indent, scn)
-        if child.getData("Prefab type") is not None:
-            print('createPrefab')
+        if child.getData("prefabname") is not None:
+            #print('createPrefab '+str(child.name))
             scn[0] += (indent + "####################### Prefab: " +
-                       child.name + " #########################\n")
-            scn[0] += (indent + child.getData("Prefab type").value +
-                       "(" + getAbsPythonCallPath(node, rootNode) +
-                       ".addChild('" + child.name.value + "'))\n")
+                       child.name.value + " #########################\n")
+            scn[0] += (indent + getAbsPythonCallPath(node, rootNode) +
+                       ".addChild(" + child.prefabname.value + "(name='"+ child.name.value + "'))\n")
             scn[0] += ("\n")
-            modules.append(child.getData("Defined in").value)
-            modulepaths.append(child.getData("modulepath").value)
+            dirname, filename = os.path.split(child.getDefinitionSourceFileName())
+            modules.append(filename)
+            modulepaths.append(dirname)
         else:
             scn[0] += (indent + "####################### Node: " + child.name.value +
                        " #########################\n")
@@ -191,7 +173,7 @@ def saveAsPythonScene(fileName, node):
         modules = []
         modulepaths = []
         scn = [""]
-        saveRec(root, "\t", modules, modulepaths, scn, root)
+        saveRec(root, "    ", modules, modulepaths, scn, root)
 
         fd.write("# all Paths\n")
         for p in list(dict.fromkeys(modulepaths)):
