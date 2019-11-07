@@ -103,7 +103,7 @@ def buildDataParams(datas, indent, scn):
                 relPath = os.path.relpath(data.getParent().getPathName(), data.getOwner().getContext().getPathName())
                 s += ", " + data.getName()+ "='@" + relPath +"'"
         else:
-            if data.getName() != "name" and data.isPersistent():
+            if data.getName() not in ["name","prefabname", "docstring"] and data.isPersistent():
                 if " " not in data.getName() and data.getName() != "Help":
                     if data.getName() != "modulepath":
                         if data.getName() != "depend":
@@ -123,7 +123,7 @@ def saveRec(node, indent, modules, modulepaths, scn, rootNode):
             scn[0] += (indent + "####################### Prefab: " +
                        child.name.value + " #########################\n")
             scn[0] += (indent + getAbsPythonCallPath(node, rootNode) +
-                       ".addChild(" + child.prefabname.value + "(name='"+ child.name.value + "'))\n")
+                       ".addChild(" + child.prefabname.value + "(name='"+ child.name.value +"'"+s+ "))\n")
             scn[0] += ("\n")
             dirname, filename = os.path.split(child.getDefinitionSourceFileName())
             modules.append(filename)
