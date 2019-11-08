@@ -29,9 +29,13 @@ import SofaBaseApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
 import SofaProject 1.0
+import GraphView 1.0
+import SofaBaseScene 1.0
+
 Item //
 {
     id: root
+
 
     ////////////////////////////////////////////////// SOFASCENE
     property var sofaScene: null
@@ -41,8 +45,29 @@ Item //
     property var style : MainStyle
 
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
+
+    /// Bind the graph view to the currently selected component
+    Binding{
+        target: GraphView
+        property: "selectedComponent"
+        value: selectedComponent
+    }
+
+    Connections
+    {
+        target: sofaScene
+        onStatusChanged: {
+            console.log("YO LLLLLLLLLLLLLLLLLLLLLLL")
+            if(sofaScene.status == SofaBaseScene.Ready)
+            {
+                GraphView.rootNode = sofaScene.root()
+            }
+        }
+    }
+
     onSelectedComponentChanged:{
         SofaBaseApplicationSingleton.selectedComponent = selectedComponent
+        GraphView.open();
     }
 
     /// Connect to this signal to be notified when a component need to be emphasized.
