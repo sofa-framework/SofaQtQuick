@@ -9,7 +9,7 @@ import SofaComponent 1.0
 import Sofa.Core.SofaData 1.0
 import SofaWidgets 1.0
 import SofaBasics 1.0
-
+import GraphView 1.0
 Menu {
 
     function parsePython(c)
@@ -62,6 +62,9 @@ Menu {
                                        {"sofaComponent": model.getBaseFromIndex(currentModelIndex)});
         }
     }
+
+
+
 
     MenuSeparator {}
     MenuItem {

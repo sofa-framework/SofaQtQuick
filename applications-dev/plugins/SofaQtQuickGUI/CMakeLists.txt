@@ -11,12 +11,20 @@ find_package(QmlUI REQUIRED)
 
 find_package(SofaPython3 QUIET)
 if (SofaPython3_FOUND)
-  set (SOFAPYTHON_LIBRARY SofaPython3)
-  include_directories(${SofaPython3_INCLUDE_DIRS})
-#  add_definitions("-DSOFAQTQUICK_WITH_SOFAPYTHON3")
+    set (SOFAPYTHON_LIBRARY SofaPython3)
+    include_directories(${SofaPython3_INCLUDE_DIRS})
+    #  add_definitions("-DSOFAQTQUICK_WITH_SOFAPYTHON3")
 else()
-  message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
+    message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
 endif ()
+
+#NodeEditor
+#option(SOFAGUIQT_ENABLE_NODEGRAPH "Build the Node graph representation. NodeEditor library is needed." OFF)
+#if (SOFAGUIQT_ENABLE_NODEGRAPH)
+find_package(NodeEditor REQUIRED)
+#endif()
+#sofa_set_01(SOFAGUIQT_HAVE_NODEEDITOR VALUE ${SOFAGUIQT_ENABLE_NODEGRAPH} BOTH_SCOPES)
+
 
 set(SOURCE_FILES
     src/SofaQtQuickGUI/DataHelper.cpp
@@ -65,7 +73,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Models/SofaViewListModel.cpp
     src/SofaQtQuickGUI/Models/SofaDataContainerListModel.cpp
     src/SofaQtQuickGUI/Models/SofaLinkCompletionModel.cpp
-#    src/SofaQtQuickGUI/Models/CustomInspectorModel.cpp
+    #    src/SofaQtQuickGUI/Models/CustomInspectorModel.cpp
     src/SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.cpp
     src/SofaQtQuickGUI/QMLUI/QMLUI.cpp
     src/SofaQtQuickGUI/QMLUI/View.cpp
@@ -86,16 +94,16 @@ set(SOURCE_FILES
     )
 
 if (SofaPython_FOUND)
-  list(APPEND SOURCE_FILES
-      src/SofaQtQuickGUI/PythonConsole.cpp
-      # src/SofaQtQuickGUI/SofaPythonInteractor.cpp
-      )
+    list(APPEND SOURCE_FILES
+        src/SofaQtQuickGUI/PythonConsole.cpp
+        # src/SofaQtQuickGUI/SofaPythonInteractor.cpp
+        )
 else ()
-  list(APPEND SOURCE_FILES
-      src/SofaQtQuickGUI/Python3Console.cpp
-      src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.cpp
-      # src/SofaQtQuickGUI/SofaPython3Interactor.cpp
-      )
+    list(APPEND SOURCE_FILES
+        src/SofaQtQuickGUI/Python3Console.cpp
+        src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.cpp
+        # src/SofaQtQuickGUI/SofaPython3Interactor.cpp
+        )
 endif ()
 
 set(HEADER_FILES
@@ -147,7 +155,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Models/SofaViewListModel.h
     src/SofaQtQuickGUI/Models/SofaDataContainerListModel.h
     src/SofaQtQuickGUI/Models/SofaLinkCompletionModel.h
-#    src/SofaQtQuickGUI/Models/CustomInspectorModel.h
+    #    src/SofaQtQuickGUI/Models/CustomInspectorModel.h
     src/SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.h
     src/SofaQtQuickGUI/QMLUI/QMLUI.h
     src/SofaQtQuickGUI/QMLUI/View.h
@@ -172,8 +180,18 @@ set(HEADER_FILES
     )
 
 if (SofaPython3_FOUND)
-  list(APPEND HEADER_FILES src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h)
+    list(APPEND HEADER_FILES src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h)
 endif ()
+
+list(APPEND HEADER_FILES
+    src/SofaQtQuickGUI/Windows/GraphView.h
+    src/SofaQtQuickGUI/Models/SofaComponentGraphModel.h
+    )
+
+list(APPEND SOURCE_FILES
+    src/SofaQtQuickGUI/Windows/GraphView.cpp
+    src/SofaQtQuickGUI/Models/SofaComponentGraphModel.cpp
+    )
 
 set(ASSET_TEMPLATES
     data/config/templates/MeshAsset.py
@@ -204,23 +222,23 @@ set(CONFIG_FILES
     data/config/classic.ini
     data/config/fullview.ini
     data/config/quadview.ini
-)
+    )
 
 set(EXTRA_FILES
     src/SofaQtQuickGUI/QMLUI/Readme.md
-)
+    )
 
 set(PYTHON_FILES
     data/python/BaseHeader.py
     data/python/PythonConsole.py
     data/python/SofaQtQuick.py
-)
+    )
 sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "data/python")
 
 set(QRC_FILES
     data/sofaQtQuickGUI_resources.qrc
     data/qml/sofaQtQuickGUI_qml.qrc
-)
+    )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -268,7 +286,7 @@ qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 # We need to put the .inl after the call of qt5_wrap_cpp to avoid having the inline mocced.
 set(HEADER_FILES ${HEADER_FILES}
     src/SofaQtQuickGUI/SofaParticleInteractor.inl
-)
+    )
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaComponentBase SofaMeshCollision
@@ -277,9 +295,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVis
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
-
-
 target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${ASSIMP_INCLUDE_DIR}>")
+
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${NODEEDITOR_LIBRARY})
+sofa_install_libraries(LIBRARIES ${NODEEDITOR_LIBRARY})
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${NODEEDITOR_INCLUDE_PATH}>")
 
 file(COPY ${ASSET_TEMPLATES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates)
 install(FILES ${ASSET_TEMPLATES} DESTINATION bin/config/templates)

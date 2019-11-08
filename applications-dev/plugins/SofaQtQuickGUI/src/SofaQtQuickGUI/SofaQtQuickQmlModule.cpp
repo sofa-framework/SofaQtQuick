@@ -96,6 +96,9 @@ using sofa::qtquick::LiveQMLFileMonitor;
 #include <SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.h>
 using sofa::qtquick::HighlightComponent;
 
+#include <SofaQtQuickGUI/Windows/GraphView.h>
+using sofaqtquick::views::GraphView;
+
 #include <sofa/helper/system/PluginManager.h>
 
 #include <QQmlPropertyMap>
@@ -162,6 +165,22 @@ static QObject* createSofaBaseApplication(QQmlEngine *engine,
 }
 
 
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createGraphView(QQmlEngine *engine,
+                                QJSEngine *scriptEngine){
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    auto titi= new GraphView(nullptr);
+    std::cout << "=========================== CREATING A GRAPH VIEW !!!" << std::endl;
+    titi->show();
+    titi->raise();
+    titi->activateWindow();
+    return titi;
+}
+
+
 void registerSofaTypesToQml(const char* /*uri*/)
 {
     qRegisterMetaType<SofaBaseScene::Status>("Status");
@@ -187,7 +206,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
-//    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
+    //    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
     qmlRegisterType<Manipulator>                                    ("Manipulator"                          , versionMajor, versionMinor, "Manipulator");
     qmlRegisterType<Manipulator2D_Translation>                      ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");
     qmlRegisterType<Manipulator2D_Rotation>                         ("Manipulator2D_Rotation"               , versionMajor, versionMinor, "Manipulator2D_Rotation");
@@ -208,7 +227,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaDataContainerListModel>                     ("SofaDataContainerListModel"           , versionMajor, versionMinor, "SofaDataContainerListModel");
     qmlRegisterType<SofaLinkCompletionModel>                        ("SofaLinkCompletionModel"              , versionMajor, versionMinor, "SofaLinkCompletionModel");
     qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
-//    qmlRegisterType<CustomInspectorModel>                           ("CustomInspectorModel"                 , versionMajor, versionMinor, "CustomInspectorModel");
+    //    qmlRegisterType<CustomInspectorModel>                           ("CustomInspectorModel"                 , versionMajor, versionMinor, "CustomInspectorModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");
@@ -248,9 +267,9 @@ void registerSofaTypesToQml(const char* /*uri*/)
 
     /// registers the C++ type in the QML system with the name "Console",
     qmlRegisterSingletonType<SofaBaseApplication>("SofaBaseApplicationSingleton", /// char* uri
-                                      versionMajor, versionMinor,             /// int majorVersion
-                                      "SofaBaseApplicationSingleton",
-                                      createSofaBaseApplication );   /// exported Name.
+                                                  versionMajor, versionMinor,             /// int majorVersion
+                                                  "SofaBaseApplicationSingleton",
+                                                  createSofaBaseApplication );   /// exported Name.
 
     /// registers the C++ type in the QML system with the name "Console",
     qmlRegisterSingletonType<Console>("SofaMessageList",                  /// char* uri
@@ -271,10 +290,17 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                                 createSofaViewListModel );            /// exported Name.
 
     qmlRegisterSingletonType<LiveQMLFileMonitor>("LiveFileMonitorSingleton",            // char* uri
-                                              versionMajor, versionMinor,   // minor/major version number
-                                              "LiveFileMonitorSingleton",       // exported name
-                                              createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
-                                              );
+                                                 versionMajor, versionMinor,   // minor/major version number
+                                                 "LiveFileMonitorSingleton",       // exported name
+                                                 createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
+                                                 );
+
+    qmlRegisterSingletonType<GraphView>("GraphView",            // char* uri
+                                        versionMajor, versionMinor,   // minor/major version number
+                                        "GraphView",       // exported name
+                                        createGraphView // the function used to create the singleton instance
+                                        );
+
 
     SofaCoreBindingFactory::registerType("DAGNode", [](sofa::core::objectmodel::Base* obj)
     {
@@ -308,9 +334,9 @@ void SofaQtQuickQmlModule::RegisterTypes(QQmlEngine* engine)
         QJSValue factoryObj = engine->newQObject(new SofaNodeFactory());
         engine->globalObject().setProperty("_SofaNodeFactory", factoryObj);
         auto a= engine->evaluate(
-            "function as_SofaNode(o) {"
-            "    return _SofaNodeFactory.createInstance(o)"
-            "}");
+                    "function as_SofaNode(o) {"
+                    "    return _SofaNodeFactory.createInstance(o)"
+                    "}");
     }
 }
 
