@@ -24,10 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QObject>
 #include <QVector3D>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// QtQuick abstract wrapper for a selectable object
@@ -51,8 +48,6 @@ private:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SELECTABLE_H

@@ -26,10 +26,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QStack>
 #include <QDebug>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::helper;
@@ -302,6 +299,4 @@ void SofaDisplayFlagsTreeModel::disableFlag(int flag)
     myFlags &= ~flag;
 }
 
-}
-
-}
+}  // namespace sofaqtquick

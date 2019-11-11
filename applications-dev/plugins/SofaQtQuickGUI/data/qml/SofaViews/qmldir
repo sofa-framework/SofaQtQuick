@@ -12,3 +12,5 @@ WebBrowserView 1.0 WebBrowserView.qml
 LiveInterfaceEditor 1.0 LiveInterfaceEditor.qml
 BaseWidgetExample 1.0 BaseWidgetExample.qml
 SceneToolsPanel 1.0 SceneToolsPanel.qml
+CamView 1.0 CamView.qml
+PickCamView 1.0 PickCamView.qml

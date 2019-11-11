@@ -25,10 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QMatrix4x4>
 #include <QDebug>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 Manipulator2D_Translation::Manipulator2D_Translation(QObject* parent) : Manipulator(parent),
@@ -164,6 +161,4 @@ void Manipulator2D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
     glPopMatrix();
 }
 
-}
-
-}
+}  // namespace sofaqtquick

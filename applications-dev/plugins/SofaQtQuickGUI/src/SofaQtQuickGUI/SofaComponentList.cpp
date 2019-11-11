@@ -25,22 +25,20 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <qqml.h>
 #include <QQmlEngine>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::core::objectmodel;
+using namespace sofaqtquick::bindings;
 
-SofaComponentList::SofaComponentList(SofaBaseScene* sofaScene)
+SofaBaseList::SofaBaseList(SofaBaseScene* sofaScene)
     : QObject()
     , mySofaScene(sofaScene)
 {
 
 }
 
-SofaComponentList::SofaComponentList(SofaBaseScene* sofaScene, const QList<SofaComponent*> baseList) 
+SofaBaseList::SofaBaseList(SofaBaseScene* sofaScene, const QList<SofaBase*> baseList)
     : QObject()
     , mySofaScene(sofaScene)
     , myComponentList(baseList)
@@ -48,29 +46,28 @@ SofaComponentList::SofaComponentList(SofaBaseScene* sofaScene, const QList<SofaC
 
 }
 
-SofaComponentList::SofaComponentList(const SofaComponentList& sofaComponentList) 
+SofaBaseList::SofaBaseList(const SofaBaseList& SofaBaseList)
     : QObject()
-    , mySofaScene(sofaComponentList.sofaScene())
-    , myComponentList(sofaComponentList.componentList())
+    , mySofaScene(SofaBaseList.sofaScene())
+    , myComponentList(SofaBaseList.componentList())
 {
 
 }
 
-SofaBaseScene* SofaComponentList::sofaScene() const
+SofaBaseScene* SofaBaseList::sofaScene() const
 {
     return mySofaScene;
 }
 
-QList<SofaComponent*> SofaComponentList::componentList()
+QList<SofaBase*> SofaBaseList::componentList()
 {
     return myComponentList;
 }
 
-const QList<SofaComponent*> SofaComponentList::componentList() const
+const QList<SofaBase*> SofaBaseList::componentList() const
 {
     return myComponentList;
 }
 
-}
+}  // sofaqtquick
 
-}

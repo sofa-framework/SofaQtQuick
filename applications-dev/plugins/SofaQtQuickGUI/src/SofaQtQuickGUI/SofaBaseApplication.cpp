@@ -83,10 +83,7 @@ QQmlDebuggingEnabler enabler;
 #include <signal.h>
 #endif
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::helper;
@@ -121,7 +118,7 @@ SofaBaseApplication::SofaBaseApplication(QObject* parent) : QObject(parent),
 
 
     /// Initialize the general python3 environment.
-    PythonEnvironment::Init();
+    sofapython3::PythonEnvironment::Init();
 
     /// Initialize the layer specific to sofaqtquick environment.
     sofaqtquick::PythonEnvironment::Init();
@@ -132,7 +129,7 @@ SofaBaseApplication::~SofaBaseApplication()
     if(this == OurInstance)
         OurInstance = nullptr;
 
-    PythonEnvironment::Release();
+    sofapython3::PythonEnvironment::Release();
 }
 
 SofaBaseApplication* SofaBaseApplication::Instance()
@@ -478,12 +475,12 @@ bool SofaBaseApplication::screenshotComponent(const QUrl& componentUrl, const QS
 
 bool SofaBaseApplication::runPythonScript(const QString& script)
 {
-    return PythonEnvironment::runString(script.toStdString());
+    return sofapython3::PythonEnvironment::runString(script.toStdString());
 }
 
 bool SofaBaseApplication::runPythonFile(const QString& filename)
 {
-    return PythonEnvironment::runFile(filename.toLatin1().constData());
+    return sofapython3::PythonEnvironment::runFile(filename.toLatin1().constData());
 }
 
 QVariantList SofaBaseApplication::executeProcess(const QString& command, int timeOutMsecs)
@@ -1215,8 +1212,6 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
     }
 
     return true;
-}
-
 }
 
 }

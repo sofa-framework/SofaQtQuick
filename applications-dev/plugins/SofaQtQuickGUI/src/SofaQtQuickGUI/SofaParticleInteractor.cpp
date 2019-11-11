@@ -42,7 +42,9 @@ namespace sofa
 
 typedef sofa::simulation::Node Node;
 
-namespace qtquick
+}  // namespace sofa
+
+namespace sofaqtquick
 {
 
 using namespace sofa::defaulttype;
@@ -76,7 +78,7 @@ bool SofaParticleInteractor::interacting() const
     return myParticleInteraction;
 }
 
-bool SofaParticleInteractor::start(SofaComponent* sofaComponent, int particleIndex)
+bool SofaParticleInteractor::start(sofa::qtquick::SofaComponent* sofaComponent, int particleIndex)
 {
     release();
 
@@ -138,7 +140,7 @@ void SofaParticleInteractor::release()
     interactingChanged(false);
 }
 
-SofaComponent* SofaParticleInteractor::sofaComponent() const
+sofa::qtquick::SofaComponent* SofaParticleInteractor::sofaComponent() const
 {
 	if(!interacting())
 		return nullptr;
@@ -191,6 +193,4 @@ inline BaseInteractionForceField::SPtr SofaParticleInteraction<Rigid3dTypes>::cr
 	return interactionForceField;
 }
 
-}
-
-}
+}  // namespace sofaqtquick

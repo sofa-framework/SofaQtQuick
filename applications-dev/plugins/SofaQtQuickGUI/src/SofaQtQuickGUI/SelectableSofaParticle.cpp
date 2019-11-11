@@ -20,13 +20,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <GL/glew.h>
 #include <SofaQtQuickGUI/SelectableSofaParticle.h>
 
-namespace sofa
+namespace sofaqtquick
 {
 
-namespace qtquick
-{
-
-SelectableSofaParticle::SelectableSofaParticle(const SofaComponent& sofaComponent, int particleIndex) : SelectableSofaComponent(sofaComponent),
+SelectableSofaParticle::SelectableSofaParticle(sofaqtquick::bindings::SofaBaseObject* sofaComponent, int particleIndex) : SelectableSofaComponent(sofaComponent),
     myParticleIndex(particleIndex)
 {
 
@@ -34,8 +31,6 @@ SelectableSofaParticle::SelectableSofaParticle(const SofaComponent& sofaComponen
 
 SelectableSofaParticle::~SelectableSofaParticle()
 {
-
-}
 
 }
 

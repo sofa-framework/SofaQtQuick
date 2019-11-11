@@ -31,10 +31,7 @@ using sofa::component::visualmodel::BaseCamera;
 #include <SofaQtQuickGUI/Bindings/SofaCamera.h>
 #include <SofaQtQuickGUI/SofaBaseScene.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 CameraView::CameraView(QQuickItem* parent) : Parent(parent)
@@ -99,5 +96,4 @@ void CameraView::internalRender(int width, int height) const
     }
 }
 
-}
 }

@@ -62,7 +62,7 @@ using sofa::core::visual::VisualModel;
 using sofa::component::collision::TriangleModel;
 
 #include <SofaQtQuickGUI/Rendering/ObjectRenderer.h>
-using sofa::qtquick::ObjectRenderer;
+using sofaqtquick::ObjectRenderer;
 
 #include <SofaBaseVisual/VisualStyle.h>
 using sofa::component::visualmodel::VisualStyle;
@@ -70,11 +70,9 @@ using sofa::component::visualmodel::VisualStyle;
 #include <SofaQtQuickGUI/SelectableManipulator.h>
 
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
+using sofa::qtquick::SofaComponent;
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::simulation;
@@ -107,7 +105,7 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     m_visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
     m_visualParams->setSupported(sofa::core::visual::API_OpenGL);
 
-    sofa::qtquick::SofaBaseApplication::InitOpenGL();
+    sofaqtquick::SofaBaseApplication::InitOpenGL();
 }
 
 SofaViewer::~SofaViewer()
@@ -153,39 +151,39 @@ void SofaViewer::setAlwaysDraw(bool newChoiceAllwaysDraw)
 	alwaysDrawChanged(newChoiceAllwaysDraw);
 }
 
-static void appendRoot(QQmlListProperty<SofaComponent> *property, SofaComponent *value)
+static void appendRoot(QQmlListProperty<sofaqtquick::bindings::SofaBase> *property, sofaqtquick::bindings::SofaBase* value)
 {
-    static_cast<QList<SofaComponent*>*>(property->data)->append(value ? new SofaComponent(*value) : nullptr);
+    static_cast<QList<sofaqtquick::bindings::SofaBase*>*>(property->data)->append(value ? new SofaBase(*value) : nullptr);
 }
 
-static SofaComponent* atRoot(QQmlListProperty<SofaComponent> *property, int index)
+static SofaBase* atRoot(QQmlListProperty<SofaBase> *property, int index)
 {
-    return static_cast<QList<SofaComponent*>*>(property->data)->at(index);
+    return static_cast<QList<SofaBase*>*>(property->data)->at(index);
 }
 
-static void clearRoot(QQmlListProperty<SofaComponent> *property)
+static void clearRoot(QQmlListProperty<SofaBase> *property)
 {
-    QList<SofaComponent*>& roots = *static_cast<QList<SofaComponent*>*>(property->data);
+    QList<SofaBase*>& roots = *static_cast<QList<SofaBase*>*>(property->data);
 
-    for(SofaComponent* sofaComponent : roots)
-        delete sofaComponent;
+    for(SofaBase* sofaBase : roots)
+        delete sofaBase;
 
     roots.clear();
 }
 
-static int countRoot(QQmlListProperty<SofaComponent> *property)
+static int countRoot(QQmlListProperty<SofaBase> *property)
 {
-    return static_cast<QList<SofaComponent*>*>(property->data)->size();
+    return static_cast<QList<SofaBase*>*>(property->data)->size();
 }
 
-QList<SofaComponent*> SofaViewer::roots() const
+QList<SofaBase*> SofaViewer::roots() const
 {
     return myRoots;
 }
 
-QQmlListProperty<SofaComponent> SofaViewer::rootsListProperty()
+QQmlListProperty<SofaBase> SofaViewer::rootsListProperty()
 {
-    return QQmlListProperty<SofaComponent>(this, &myRoots, appendRoot, countRoot, atRoot, clearRoot);
+    return QQmlListProperty<SofaBase>(this, &myRoots, appendRoot, countRoot, atRoot, clearRoot);
 }
 
 void SofaViewer::clearRoots()
@@ -310,9 +308,14 @@ QVector3D SofaViewer::mapToWorld(const QPointF& ssPoint, double z) const
     if(mirroredVertically())
         nsPosition.setY(-nsPosition.y());
 
+    std::cout << "CORRECT PROJECTION: \n"
+              << myCamera->projection().data()[0] << " " << myCamera->projection().data()[1]<< " " << myCamera->projection().data()[2]<< " " << myCamera->projection().data()[3] << "\n"
+                                                                                                                                                                 << myCamera->projection().data()[4] << " " << myCamera->projection().data()[5]<< " " << myCamera->projection().data()[6]<< " " << myCamera->projection().data()[7] << "\n"
+                                                                                                                                                                                                                                                                                                                    << myCamera->projection().data()[8] << " " << myCamera->projection().data()[9]<< " " << myCamera->projection().data()[10]<< " " << myCamera->projection().data()[11] << std::endl;
     QVector4D vsPosition = myCamera->projection().inverted() * QVector4D(nsPosition, 1.0);
     vsPosition /= vsPosition.w();
 
+    std::cout << "VSPosition: " << vsPosition.x() << " "  << vsPosition.y() << " "  << vsPosition.z() << std::endl;
     return (myCamera->model() * vsPosition).toVector3D();
 }
 
@@ -571,6 +574,15 @@ SelectableSofaParticle* SofaViewer::pickParticleWithTags(const QPointF& ssPoint,
     return mySofaScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, tags, roots());
 }
 
+sofaqtquick::SelectableSofaParticle* SofaViewer::pickParticle2(const QVector3D& origin, const QVector3D& direction) const
+{
+    double distanceToRay = mySofaScene->radius() / 76.0;
+    double distanceToRayGrowth = 0.001;
+
+    return mySofaScene->pickParticle(origin, direction, distanceToRay, distanceToRayGrowth, QStringList(), roots());
+}
+
+
 sofa::core::visual::VisualParams* SofaViewer::setupVisualParams(sofa::core::visual::VisualParams* visualParams) const
 {
     if(!visualParams)
@@ -598,7 +610,7 @@ void SofaViewer::drawManipulator(const SofaViewer& viewer) const
             manipulator->draw(viewer);
 }
 
-void SofaViewer::drawEditorView(const QList<SofaComponent*>& roots,
+void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  roots,
                                 bool doDrawSelected, bool doDrawManipulators) const
 {
     if(!mySofaScene->isReady())
@@ -606,11 +618,11 @@ void SofaViewer::drawEditorView(const QList<SofaComponent*>& roots,
 
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
-    for(SofaComponent* sofaComponent : roots)
+    for(sofaqtquick::bindings::SofaBase* sofaComponent : roots)
     {
         if(sofaComponent)
         {
-            sofa::core::objectmodel::Base* base = sofaComponent->base();
+            sofa::core::objectmodel::Base* base = sofaComponent->rawBase();
             if(base)
             {
                 Node* node = down_cast<Node>(base->toBaseNode());
@@ -744,16 +756,16 @@ static int unpackPickingIndex(const std::array<unsigned char, 4>& i)
 }
 
 
-Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& tags, const QList<SofaComponent*>& roots)
+Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& tags, const QList<SofaBase*>& roots)
 {
     Selectable* selectable = nullptr;
 
     QList<sofa::simulation::Node*> nodes;
     nodes.reserve(roots.size());
-    for(SofaComponent* sofaComponent : roots)
+    for(SofaBase* sofaComponent : roots)
         if(sofaComponent)
         {
-            sofa::core::objectmodel::Base* base = sofaComponent->base();
+            sofa::core::objectmodel::Base* base = sofaComponent->rawBase();
             if(base)
                 nodes.append(down_cast<Node>(base->toBaseNode()));
         }
@@ -877,7 +889,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
         {
             if(index < visualModels.size())
             {
-                selectable = new SelectableSofaComponent(SofaComponent(mySofaScene, visualModels[index]));
+                selectable = new SelectableSofaComponent(new sofaqtquick::bindings::SofaBaseObject(visualModels[index], mySofaScene));
             }
             else
             {
@@ -885,7 +897,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
 
                 if(index < triangleModels.size())
                 {
-                    selectable = new SelectableSofaComponent(SofaComponent(mySofaScene, triangleModels[index]));
+                    selectable = new SelectableSofaComponent(new sofaqtquick::bindings::SofaBaseObject(triangleModels[index], mySofaScene));
                 }
                 else
                 {
@@ -1346,6 +1358,4 @@ void SofaViewer::SofaRenderer::render()
     myViewer->internalRender(myViewer->width(), myViewer->height());
 }
 
-}
-
-}
+}  // namespace sofaqtquick

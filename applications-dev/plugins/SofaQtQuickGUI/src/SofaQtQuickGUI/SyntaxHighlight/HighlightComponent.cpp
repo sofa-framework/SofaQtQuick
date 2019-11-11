@@ -3,7 +3,7 @@
 #include "QSyntaxHighlighterCpp.h"
 #include <QQuickTextDocument>
 
-namespace sofa::qtquick {
+namespace sofaqtquick {
 
 
 HighlightComponent::HighlightComponent(QObject* parent)
@@ -41,4 +41,4 @@ void HighlightComponent::setSyntax(const QString &newSyntax)
     }
 }
 
-} // namespace sofa::qtquick
+} // namespace sofaqtquick

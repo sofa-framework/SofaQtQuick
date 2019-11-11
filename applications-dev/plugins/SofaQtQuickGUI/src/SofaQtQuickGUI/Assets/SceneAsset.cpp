@@ -5,7 +5,7 @@
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 
 /// Register all mesh assets extensions to the factory
@@ -34,4 +34,4 @@ QUrl SceneAsset::getAssetInspectorWidget() {
 }
 
 
-} // namespace sofa::qtquick
+} // namespace sofaqtquick

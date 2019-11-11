@@ -2,10 +2,10 @@
 using sofa::helper::testing::BaseTest ;
 
 #include <SofaQtQuickGUI/SofaBaseScene.h>
-using sofa::qtquick::SofaBaseScene ;
+using sofaqtquick::SofaBaseScene ;
 
 #include <SofaQtQuickGUI/Models/SofaSceneListModel.h>
-using sofa::qtquick::SofaSceneListModel ;
+using sofaqtquick::SofaSceneListModel ;
 
 #include <QApplication>
 

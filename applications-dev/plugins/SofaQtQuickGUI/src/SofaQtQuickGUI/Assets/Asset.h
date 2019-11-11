@@ -9,9 +9,7 @@ using sofa::core::objectmodel::BaseObject;
 #include <QDateTime>
 #include <QUrl>
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 struct BaseAssetLoader;
@@ -88,5 +86,4 @@ template <class T> BaseObject::SPtr TBaseAssetLoader<T>::New()
     return sofa::core::objectmodel::New<T>();
 }
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

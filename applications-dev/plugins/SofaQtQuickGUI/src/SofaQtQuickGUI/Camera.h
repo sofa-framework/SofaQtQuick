@@ -26,10 +26,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QVector3D>
 #include <QPoint>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class Used in a SofaViewer to locate the user point of view
@@ -243,8 +240,6 @@ inline void Camera::setTarget(const QVector3D& newTarget)
     targetChanged(newTarget);
 }
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // CAMERA_H

@@ -32,10 +32,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 class QTimer;
 class QVector3D;
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class A Model allowing us to show a list of sofa data belonging to a specific sofa component in a ListView
@@ -58,11 +55,11 @@ public:
 		LogType,
         InfoType,
     };
-    Q_ENUMS(Type);
+    Q_ENUMS(Type)
 
 public:
-    SofaComponent* sofaComponent() const		{return mySofaComponent;}
-    void setSofaComponent(SofaComponent* newSofaComponent);
+    sofa::qtquick::SofaComponent* sofaComponent() const		{return mySofaComponent;}
+    void setSofaComponent(sofa::qtquick::SofaComponent* newSofaComponent);
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
@@ -71,7 +68,7 @@ protected:
 
     Q_INVOKABLE sofaqtquick::bindings::SofaData* getDataById(int row) const;
 signals:
-    void sofaComponentChanged(SofaComponent* newSofaComponent) const;
+    void sofaComponentChanged(sofa::qtquick::SofaComponent* newSofaComponent) const;
 
 private:
     enum {
@@ -105,12 +102,10 @@ private:
 private:
     QList<Item>             myItems;
     int                     myUpdatedCount;
-    mutable SofaComponent*  mySofaComponent;
+    mutable sofa::qtquick::SofaComponent*  mySofaComponent;
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SOFADATALISTMODEL_H

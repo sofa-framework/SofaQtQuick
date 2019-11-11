@@ -42,6 +42,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaBase : public QObject
     Q_OBJECT
 public:
     SofaBase(Base::SPtr self);
+    SofaBase(const SofaBase& o);
     ~SofaBase() {}
 
     Q_INVOKABLE QString getName() const;
@@ -65,6 +66,7 @@ public:
 
     /// Returns true if the underlying Base is a Node.
     Q_INVOKABLE bool isNode() const;
+    bool isSame(SofaBase* sofaComponent) const;
 
     /// The following three are used to get extra information about where
     /// the component is implemented (the source location)

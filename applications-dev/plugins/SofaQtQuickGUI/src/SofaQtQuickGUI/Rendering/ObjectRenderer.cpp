@@ -34,9 +34,7 @@ using sofa::component::visualmodel::BaseCamera ;
 
 #include "ObjectRenderer.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 namespace _objectrenderer_
 {
@@ -154,5 +152,4 @@ void ObjectRenderer::draw(Base* object, Base* selected, VisualParams* visualPara
 }
 
 } ///
-} /// qtquick
-} /// sofa
+} /// sofaqtquick

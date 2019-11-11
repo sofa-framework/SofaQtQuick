@@ -1,6 +1,6 @@
 #include "QSyntaxHighlighterCpp.h"
 
-namespace sofa::qtquick {
+namespace sofaqtquick {
 
 QSyntaxHighlighterCpp::QSyntaxHighlighterCpp(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
@@ -94,4 +94,4 @@ void QSyntaxHighlighterCpp::highlightBlock(const QString &text)
     }
 }
 
-}  // namespace sofa::qtquick
+}  // namespace sofaqtquick

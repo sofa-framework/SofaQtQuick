@@ -25,7 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 using sofaqtquick::helper::QMath ;
 
 #include <SofaQtQuickGUI/SofaBaseScene.h>
-using sofa::qtquick::SofaBaseScene;
+using sofaqtquick::SofaBaseScene;
 
 #include <SofaBaseVisual/BaseCamera.h>
 using sofa::component::visualmodel::BaseCamera ;
@@ -52,19 +52,19 @@ SofaCamera::~SofaCamera()
 
 }
 
-SofaComponent* SofaCamera::sofaComponent() const
+sofaqtquick::bindings::SofaBaseObject* SofaCamera::sofaComponent() const
 {
     return m_sofaComponent;
 }
 
-void SofaCamera::setSofaComponent(SofaComponent* sofaComponent)
+void SofaCamera::setSofaComponent(sofaqtquick::bindings::SofaBaseObject* sofaComponent)
 {
     if (sofaComponent == m_sofaComponent)
         return;
 
     m_sofaComponent = sofaComponent;
     if (sofaComponent)
-        m_sofaComponent = new SofaComponent(*sofaComponent);
+        m_sofaComponent = new sofaqtquick::bindings::SofaBaseObject(*sofaComponent);
 
     sofaComponentChanged();
 }
@@ -80,7 +80,7 @@ void SofaCamera::handleSofaDataChange()
     if (!m_sofaComponent)
         return;
 
-    Base* baseComponent = m_sofaComponent->base();
+    Base* baseComponent = m_sofaComponent->rawBase();
     if (!baseComponent)
         return;
     

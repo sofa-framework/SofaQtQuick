@@ -19,10 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/Selectable.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 Selectable::Selectable(QObject* parent) : QObject(parent)
@@ -40,6 +37,4 @@ void Selectable::setPosition(const QVector3D& position)
     myPosition = position;
 }
 
-}
-
-}
+}  // namespace sofaqtquick

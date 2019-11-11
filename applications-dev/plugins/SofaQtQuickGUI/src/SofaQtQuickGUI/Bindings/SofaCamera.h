@@ -28,12 +28,20 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Camera.h>
+#include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
+
+#include <sofa/defaulttype/Ray.h>
+#include <sofa/simulation/VisualVisitor.h>
+#include <SofaBaseMechanics/MechanicalObject.h>
+#include <sofa/simulation/MechanicalVisitor.h>
+
+#include <QMetaType>
 
 namespace sofaqtquick::binding
 {
 
-using sofa::qtquick::SofaBaseScene;
-using sofa::qtquick::Camera;
+using sofaqtquick::SofaBaseScene;
+using sofaqtquick::Camera;
 
 /// \class SofaCamera expose a sofa::component::BaseCamera as a QtQuick Camera.
 /// This allows to manipulate BaseCamera from QtQuick scripts.
@@ -41,7 +49,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaCamera : public Camera
 {
     Q_OBJECT
 
-    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaComponent READ sofaComponent WRITE setSofaComponent  NOTIFY sofaComponentChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaBaseObject* sofaComponent READ sofaComponent WRITE setSofaComponent  NOTIFY sofaComponentChanged)
 
 signals:
     void sofaComponentChanged();
@@ -52,8 +60,8 @@ public:
     explicit SofaCamera(QObject* parent = nullptr);
     ~SofaCamera() override;
 
-    sofa::qtquick::SofaComponent* sofaComponent() const;
-    void setSofaComponent(sofa::qtquick::SofaComponent* sofaComponent);
+    sofaqtquick::bindings::SofaBaseObject* sofaComponent() const;
+    void setSofaComponent(sofaqtquick::bindings::SofaBaseObject* sofaComponent);
 
     void setBaseCamera(sofa::component::visualmodel::BaseCamera* baseCamera);
     sofa::component::visualmodel::BaseCamera* getBaseCamera(){ return m_baseCamera; }
@@ -67,8 +75,51 @@ public:
     Q_INVOKABLE QQuaternion orientation() const override;
     Q_INVOKABLE bool bindCameraFromScene(const SofaBaseScene* scene, const size_t index);
 
+    Q_INVOKABLE QVector3D getOrigin(int x, int y)
+    {
+        sofa::defaulttype::Ray ray = m_baseCamera->screenPointToRay(sofa::defaulttype::Vec3(x,y,0.0));
+        return QVector3D(ray.origin()[0], ray.origin()[1], ray.origin()[2]);
+    }
+    Q_INVOKABLE QVector3D getDirection(int x, int y)
+    {
+        sofa::defaulttype::Ray ray = m_baseCamera->screenPointToRay(sofa::defaulttype::Vec3(x,y,1.0));
+        return QVector3D(ray.direction()[0], ray.direction()[1], ray.direction()[2]);
+    }
+
+    Q_INVOKABLE sofaqtquick::bindings::SofaBaseObject* pickMechanicalState(int x, int y)
+    {
+        sofa::defaulttype::Ray ray = m_baseCamera->screenPointToRay(sofa::defaulttype::Vec3(x,y,1000));
+
+
+        sofa::simulation::MechanicalPickParticlesVisitor visitor(sofa::core::ExecParams::defaultInstance(),
+                                                                 ray.origin(),
+                                                                 ray.direction(),
+                                                                 QVector3D(-103, -15, -15).length() / 76.0,
+                                                                 0.001);
+
+
+        visitor.execute(m_baseCamera->getContext()->getRootContext());
+
+        if(!visitor.particles.empty())
+        {
+            sofa::core::behavior::BaseMechanicalState* mstate;
+            unsigned int indexCollisionElement;
+            sofa::defaulttype::Vector3 point;
+            SReal rayLength;
+            visitor.getClosestParticle( mstate, indexCollisionElement, point, rayLength );
+            typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
+
+            MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(mstate);
+
+            std::cout <<  "got a Particle: position = " << point
+                       << " mstate: " << mstate->getName()
+                       << " rayLength = " << rayLength << std::endl;
+            return new sofaqtquick::bindings::SofaBaseObject(sofa::core::objectmodel::BaseObject::SPtr(mechanicalObject));
+        }
+        return nullptr;
+    }
 private:
-    sofa::qtquick::SofaComponent* m_sofaComponent {nullptr};
+    sofaqtquick::bindings::SofaBaseObject* m_sofaComponent {nullptr};
     mutable sofa::component::visualmodel::BaseCamera* m_baseCamera {nullptr};
 };
 

@@ -28,10 +28,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 
 #include "LiveQMLFileMonitor.h"
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 namespace liveqmlfilemonitor
@@ -57,8 +54,6 @@ LiveQMLFileMonitor::~LiveQMLFileMonitor()
 {
 }
 
-}
+}  // namespace liveqmlfilemonitor
 
-}
-
-}
+}  // namespace sofaqtquick

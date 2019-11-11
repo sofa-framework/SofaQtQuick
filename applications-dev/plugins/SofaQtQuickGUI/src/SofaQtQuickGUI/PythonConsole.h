@@ -25,10 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QString>
 #include <QSet>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class A basic Python console to be able to communicate with our sofa python scene using text commands
@@ -53,8 +50,6 @@ private:
     static QSet<PythonConsole*> OurPythonConsoles;
 
 };
-
-}
 
 }
 

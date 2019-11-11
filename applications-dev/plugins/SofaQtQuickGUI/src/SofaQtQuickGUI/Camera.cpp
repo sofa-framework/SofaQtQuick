@@ -22,10 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <qqml.h>
 #include <qmath.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 Camera::Camera(QObject* parent) : QObject(parent),
@@ -553,6 +550,4 @@ void Camera::setViewDirty(bool dirty) const
     }
 }
 
-}
-
-}
+}  // namespace sofaqtquick

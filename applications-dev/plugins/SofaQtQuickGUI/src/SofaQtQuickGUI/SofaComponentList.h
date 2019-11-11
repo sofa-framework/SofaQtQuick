@@ -21,44 +21,41 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #define SOFA_COMPONENTLIST_H
 
 #include <SofaQtQuickGUI/config.h>
-#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 class SofaBaseScene;
 
-/// \brief This class allows the use of a list of SofaComponent in a QML file
-/// as QList<SofaComponent> is not usable in a QML file
+/// \brief This class allows the use of a list of SofaBase in a QML file
+/// as QList<SofaBase> is not usable in a QML file
 
-class SOFA_SOFAQTQUICKGUI_API SofaComponentList : public QObject
+class SOFA_SOFAQTQUICKGUI_API SofaBaseList : public QObject
 {
     Q_OBJECT
 
 public:
-    SofaComponentList(SofaBaseScene* sofaScene);
-    SofaComponentList(SofaBaseScene* sofaScene, const QList<SofaComponent*> componentList);
-    SofaComponentList(const SofaComponentList& sofaComponentList);
+    SofaBaseList(SofaBaseScene* sofaScene);
+    SofaBaseList(SofaBaseScene* sofaScene, const QList<sofaqtquick::bindings::SofaBase*> componentList);
+    SofaBaseList(const SofaBaseList& SofaBaseList);
 
     /// \brief get the pointer to the Sofa Scene 
-    Q_INVOKABLE sofa::qtquick::SofaBaseScene* sofaScene() const;
+    Q_INVOKABLE sofaqtquick::SofaBaseScene* sofaScene() const;
 
     //List methods
-    /// \brief append a SofaComponent into the list 
-    Q_INVOKABLE void append(SofaComponent* sofaComponent) { myComponentList.append(sofaComponent); }
-    /// \brief retrieve a SofaComponent from the list at index i 
-    Q_INVOKABLE sofa::qtquick::SofaComponent* at(int i) { return ( i < myComponentList.size() ) ? myComponentList.at(i) : nullptr; }
+    /// \brief append a SofaBase into the list
+    Q_INVOKABLE void append(sofaqtquick::bindings::SofaBase* SofaBase) { myComponentList.append(SofaBase); }
+    /// \brief retrieve a SofaBase from the list at index i
+    Q_INVOKABLE sofaqtquick::bindings::SofaBase* at(int i) { return ( i < myComponentList.size() ) ? myComponentList.at(i) : nullptr; }
     /// \brief return the size of the list 
     Q_INVOKABLE int size() { return myComponentList.size(); }
 
 public:
-    QList<SofaComponent*> componentList();
-    const QList<SofaComponent*> componentList() const;
+    QList<sofaqtquick::bindings::SofaBase*> componentList();
+    const QList<sofaqtquick::bindings::SofaBase*> componentList() const;
 
-    void operator=(const SofaComponentList& scl) 
+    void operator=(const SofaBaseList& scl)
     { 
         this->mySofaScene = scl.sofaScene();
         this->myComponentList = scl.componentList(); 
@@ -66,12 +63,10 @@ public:
 
 private:
     SofaBaseScene*               mySofaScene;
-    QList<SofaComponent*>    myComponentList;
+    QList<sofaqtquick::bindings::SofaBase*>    myComponentList;
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SOFA_COMPONENTLIST_H

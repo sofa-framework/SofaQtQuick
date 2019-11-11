@@ -23,10 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QMatrix4x4>
 #include <QDebug>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 Manipulator::Manipulator(QObject* parent) : QObject(parent),
@@ -83,9 +80,9 @@ void clearManipulators(QQmlListProperty<Manipulator>* property)
     static_cast<QList<Manipulator*>*>(property->data)->clear();
 }
 
-QQmlListProperty<sofa::qtquick::Manipulator> Manipulator::manipulators()
+QQmlListProperty<sofaqtquick::Manipulator> Manipulator::manipulators()
 {
-    return QQmlListProperty<sofa::qtquick::Manipulator>(this, &myManipulators, appendManipulators, countManipulators, atManipulators, clearManipulators);
+    return QQmlListProperty<sofaqtquick::Manipulator>(this, &myManipulators, appendManipulators, countManipulators, atManipulators, clearManipulators);
 }
 
 void Manipulator::setVisible(bool newVisible)
@@ -166,6 +163,4 @@ void Manipulator::pick(const SofaViewer& viewer) const
     draw(viewer);
 }
 
-}
-
-}
+}  // namespace sofaqtquick

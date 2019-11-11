@@ -17,7 +17,7 @@ namespace py = pybind11;
 
 namespace fs = std::experimental::filesystem;
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 
 /// Register all python assets extensions to the factory
@@ -224,4 +224,4 @@ bool PythonAsset::isScene()
     return false;
 }
 
-} // namespace sofa::qtquick
+} // namespace sofaqtquick

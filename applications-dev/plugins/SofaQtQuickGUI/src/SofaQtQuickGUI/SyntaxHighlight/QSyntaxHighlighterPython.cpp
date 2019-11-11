@@ -1,7 +1,7 @@
 #include "QSyntaxHighlighterPython.h"
 #include <iostream>
 #include <string>
-namespace sofa::qtquick {
+namespace sofaqtquick {
 
 QSyntaxHighlighterPython::QSyntaxHighlighterPython(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
@@ -106,4 +106,4 @@ void QSyntaxHighlighterPython::highlightBlock(const QString &text)
     }
 }
 
-}  // namespace sofa::qtquick
+}  // namespace sofaqtquick

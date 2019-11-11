@@ -8,9 +8,7 @@
 
 
 //////////////////////////////// Definition ////////////////////////////////////////////////////////
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 namespace _scenerenderer_
 {
@@ -26,6 +24,6 @@ public:
 
 using _scenerenderer_::SceneRenderer ;
 
-} /// qtquick
-} /// sofa
+} /// sofaqtquick
+
 #endif /// SOFAQTQUICKGUI_SCENERENDERER_H

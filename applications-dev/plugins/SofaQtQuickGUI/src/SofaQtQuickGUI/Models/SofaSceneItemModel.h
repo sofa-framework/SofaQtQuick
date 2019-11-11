@@ -35,10 +35,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/core/DataTracker.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 namespace _sofasceneitemmodel_
@@ -54,7 +51,7 @@ class SofaSceneItemModel : public QAbstractItemModel, private MutationListener
     Q_OBJECT
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(sofaqtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
 
     ///@brief Returns the sofa component corresponding to the provided index.
     Q_INVOKABLE sofaqtquick::bindings::SofaBase* getBaseFromIndex(const QModelIndex& index) const;
@@ -108,16 +105,16 @@ protected:
     void onBeginRemoveChild(Node* parent, Node* child) override;
     void onEndRemoveChild(Node* parent, Node* child) override;
 
-    void onBeginAddObject(Node* parent, core::objectmodel::BaseObject* obj) override;
-    void onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj) override;
-    void onBeginRemoveObject(Node* parent, core::objectmodel::BaseObject* obj) override;
-    void onEndRemoveObject(Node* parent, core::objectmodel::BaseObject* obj) override;
+    void onBeginAddObject(Node* parent, sofa::core::objectmodel::BaseObject* obj) override;
+    void onEndAddObject(Node* parent, sofa::core::objectmodel::BaseObject* obj) override;
+    void onBeginRemoveObject(Node* parent, sofa::core::objectmodel::BaseObject* obj) override;
+    void onEndRemoveObject(Node* parent, sofa::core::objectmodel::BaseObject* obj) override;
     void emitAllChanges(Node* node);
 
     /// Returns the ndex associated to the given node.
     /// If the node parameter is nullptr returns an invalid model index.
-    QModelIndex index(simulation::Node *node) const ;
-    QModelIndex index(simulation::Node *node, sofa::core::objectmodel::BaseObject* obj) const ;
+    QModelIndex index(sofa::simulation::Node *node) const ;
+    QModelIndex index(sofa::simulation::Node *node, sofa::core::objectmodel::BaseObject* obj) const ;
 
     SofaBaseScene*                      m_scene {nullptr};
     sofa::simulation::Node::SPtr    m_root  {nullptr};
@@ -139,8 +136,6 @@ private:
 
 } /// namespace _sofasceneitemmodel_
     using _sofasceneitemmodel_::SofaSceneItemModel ;
-} /// namespace qtquick
-
-} /// namespace sofa
+} /// namespace sofaqtquick
 
 #endif /// SOFAQTQUICK_MODELS_SOFASCENEITEMMODEL_H

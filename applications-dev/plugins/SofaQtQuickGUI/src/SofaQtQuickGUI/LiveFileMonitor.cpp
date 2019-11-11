@@ -28,7 +28,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/logging/Messaging.h>
 
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
-using sofa::qtquick::SofaBaseApplication ;
+using sofaqtquick::SofaBaseApplication ;
 
 #include <sofa/helper/system/FileMonitor.h>
 using sofa::helper::system::FileMonitor ;
@@ -41,7 +41,7 @@ using sofa::helper::system::FileMonitor;
 
 #include "LiveFileMonitor.h"
 
-namespace sofa::qtquick::_livefilemonitor
+namespace sofaqtquick::_livefilemonitor
 {
 
 void LiveFileMonitor::addPathToMonitor(const std::string& path)
@@ -119,4 +119,4 @@ void LiveFileMonitor::setRoot(const QString& root)
     addPathToMonitor(m_root.toStdString());
 }
 
-}  // namespace sofa::qtquick::_livefilemonitor
+}  // namespace sofaqtquick::_livefilemonitor

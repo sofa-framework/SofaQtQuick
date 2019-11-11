@@ -252,12 +252,12 @@ CameraView {
                 root.sofaScene.mouseReleased(mouse, root);
         }
 
-        onWheel: {
-            if(root.sofaScene)
-                root.sofaScene.mouseWheel(wheel, root);
+//        onWheel: {
+//            if(root.sofaScene)
+//                root.sofaScene.mouseWheel(wheel, root);
 
-            wheel.accepted = true;
-        }
+//            wheel.accepted = true;
+//        }
 
         onPositionChanged: {
             if(root.sofaScene)
@@ -275,6 +275,7 @@ CameraView {
         if(root.sofaScene)
             root.sofaScene.keyPressed(event);
 
+        uiArea.keyPressed(event)
         event.accepted = true;
     }
 
@@ -685,6 +686,7 @@ CameraView {
 
     QmlUIArea
     {
+        id: uiArea
         canvasSources: SofaApplication.sofaScene.canvas
         anchors.top: parent.top
         anchors.right: parent.right
