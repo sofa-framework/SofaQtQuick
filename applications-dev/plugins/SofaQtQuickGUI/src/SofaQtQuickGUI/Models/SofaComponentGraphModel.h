@@ -33,23 +33,21 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 
+namespace sofa::core::objectmodel
+{
+class BaseObject;
+class BaseData;
+}
+
+
+namespace sofaqtquick::models
+{
+
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
-
-namespace sofa
-{
-    namespace core
-    {
-        namespace objectmodel
-        {
-            class BaseObject;
-            class BaseData;
-        }
-    }
-}
 
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
@@ -68,8 +66,6 @@ protected:
 };
 
 
-static const char* ignoredData[] = { "name", "printLog", "tags", "bbox", "listening", "componentState" };
-
 //------------------------------------------------------------------------------
 /**
 * This Class is a NodeDataModel specialisation to represent a Sofa component on the QtNodes graph.
@@ -86,7 +82,7 @@ public:
     /// constructor with a Sofa BaseObject as target
     SofaComponentGraphModel(sofa::core::objectmodel::BaseObject* _sofaObject, bool debugMode = false);
 
-    virtual ~SofaComponentGraphModel() {}
+    virtual ~SofaComponentGraphModel() override {}
 
     /// Interface for caption.
     QString caption() const override {return m_caption;}
@@ -147,3 +143,5 @@ protected:
     /// Pointer to the sofa object.
     sofa::core::objectmodel::BaseObject* m_SofaObject;
 };
+
+} /// sofaqtquick::models
