@@ -88,5 +88,8 @@
         <file>icon/ICON_CONTROLLER2.png</file>
         <file>icon/ICON_ENGINE2.png</file>
         <file>icon/ICON_ENGINE3.png</file>
+        <file>icon/ICON_ROTATION_MODIFIER.png</file>
+        <file>icon/ICON_SCALE_MODIFIER.png</file>
+        <file>icon/ICON_TRANLSATION_MODIFIER.png</file>
     </qresource>
 </RCC>
