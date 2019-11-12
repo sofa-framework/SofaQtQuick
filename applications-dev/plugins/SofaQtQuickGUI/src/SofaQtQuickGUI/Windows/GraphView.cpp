@@ -25,6 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #define NODE_EDITOR_SHARED
 #include <nodes/FlowView>
+#include <nodes/FlowViewStyle>
 #include <nodes/FlowScene>
 #include <nodes/DataModelRegistry>
 #include <nodes/ConnectionStyle>
@@ -33,8 +34,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/ComponentLibrary.h>
 
+#include <QAbstractAnimation>
+#include <QPropertyAnimation>
+
 #include "GraphView.h"
 #include <SofaQtQuickGUI/Models/SofaComponentGraphModel.h>
+using sofaqtquick::models::SofaComponentGraphModel;
 
 #include <SofaSimulationGraph/DAGNode.h>
 using sofa::simulation::graph::DAGNode;
@@ -43,11 +48,11 @@ namespace sofaqtquick::views
 {
 using namespace sofa::helper;
 
-
 using QtNodes::DataModelRegistry;
 using QtNodes::FlowScene;
 using QtNodes::FlowView;
 using QtNodes::ConnectionStyle;
+using QtNodes::FlowViewStyle;
 
 static std::shared_ptr<DataModelRegistry> registerDataModels()
 {
@@ -62,7 +67,7 @@ static std::shared_ptr<DataModelRegistry> registerDataModels()
     //    std::cout << compo->className << std::endl;
     //    ret->registerModel<SofaComponentGraphModel>(QString::fromStdString(compo->className));
     //}
- 
+
 
     /*
     We could have more models registered.
@@ -77,24 +82,35 @@ static std::shared_ptr<DataModelRegistry> registerDataModels()
 }
 
 
-static
-void
-setConnecStyle()
+static void setGraphStyle()
 {
+    FlowViewStyle::setStyle(
+                R"(
+                {
+                "FlowViewStyle": {
+                "BackgroundColor": [114, 114, 114],
+                "FineGridColor": [110,110,110],
+                "CoarseGridColor": [70,70,60]
+                }
+                }
+                )");
+
     ConnectionStyle::setConnectionStyle(
-        R"(
-  {
-    "ConnectionStyle": {
-      "LineWidth": 3.0,
-      "UseDataDefinedColors": true
-    }
-  }
-  )");
+                R"(
+                {
+                "ConnectionStyle": {
+                "LineWidth": 3.0,
+                "UseDataDefinedColors": true
+                }
+                }
+                )");
 }
 
 
 
 ///////////////////////////////////////// ProfilerChartView ///////////////////////////////////
+
+
 
 GraphView::GraphView(QWidget *parent)
     : QDialog(parent)
@@ -102,15 +118,16 @@ GraphView::GraphView(QWidget *parent)
     , m_scaleY(30)
     , m_posX(0)
     , m_posY(0)
-    , debugNodeGraph(false)
-{
-    setConnecStyle();
+{    
+    setStyleSheet("background-color:#727272;");
+    setWindowTitle("GraphView");
+    setGraphStyle();
     Qt::WindowFlags flags = windowFlags();
     flags |= Qt::WindowMaximizeButtonHint;
     flags |= Qt::WindowContextHelpButtonHint;
     setWindowFlags(flags);
 
-    m_graphScene = new FlowScene(registerDataModels());   
+    m_graphScene = new FlowScene(registerDataModels());
     m_exceptions = { "RequiredPlugin", "VisualStyle", "DefaultVisualManagerLoop", "InteractiveCamera" };
     
     QVBoxLayout* layout = new QVBoxLayout(this);
@@ -119,7 +136,6 @@ GraphView::GraphView(QWidget *parent)
     this->setLayout(layout);
     
     resize(1000, 800);
-    debugNodeGraph=true;
 
     if(m_rootNode==nullptr)
         return;
@@ -145,9 +161,37 @@ SofaBase* GraphView::getSelectedComponent()
     return new SofaBase(m_selectedComponent);
 }
 
-void GraphView::setSelectedComponent(SofaBase* c)
+void GraphView::setSelectedComponent(SofaBase* base)
 {
-    m_selectedComponent = c->rawBase();
+    m_selectedComponent = base->rawBase();
+
+    if( m_nodeToQUid.contains(base->getPathName()))
+    {
+        auto& node = m_nodeToQUid[base->getPathName()];
+        static MoveTooAnimation animation([this](double factor, MoveTooAnimation* self){
+            QPointF pos = (self->m_destPosition -self->m_sourcePosition)*factor+self->m_sourcePosition;
+            self->m_currentPosition = pos;
+
+            QVector2D d{self->m_destPosition-self->m_sourcePosition};
+            double es= d.length()/6000;
+            double rs = 1.0;
+            double df=factor*M_PI-M_PI_2;
+            df = ((1.0-cos(df))+0.5)/1.5;
+            if(es<0.5){
+                es = es;
+            }else{
+                es= 1.0;
+            }
+            rs = (df*es)+(1.0-es);
+            m_graphView->resetTransform();
+            m_graphView->centerOn(pos);
+            m_graphView->scale(rs,rs);
+        });
+
+        animation.set(animation.m_currentPosition, m_graphScene->getNodePosition(*node));
+        animation.start();
+    }
+
     emit selectedComponentChanged();
 }
 
@@ -158,11 +202,7 @@ SofaNode* GraphView::getRootNode()
 
 void GraphView::setRootNode(SofaNode* node)
 {
-    std::cout << "SETTING SOFA NODE " << node->getPathName().toStdString() << std::endl;
-    m_rootNode = node->self();
-    msg_error("ICI ZERO");
-
-    resetNodeGraph(m_rootNode);
+    resetNodeGraph(node->self());
     emit rootNodeChanged();
 }
 
@@ -184,6 +224,8 @@ void GraphView::clearNodeData()
 
 void GraphView::resetNodeGraph(sofa::simulation::Node* scene)
 {
+
+    setWindowTitle("GraphView: " + QString::fromStdString(scene->getPathName()));
     m_rootNode = scene;
     clearNodeData();
 
@@ -195,26 +237,53 @@ void GraphView::resetNodeGraph(sofa::simulation::Node* scene)
     connectNodeData();
 }
 
+QVector2D GraphView::getViewPosition()
+{
+    return m_viewPosition;
+}
+
+void GraphView::setViewPosition(QVector2D viewPosition)
+{
+    QVector2D dx = viewPosition-m_viewPosition;
+    m_viewPosition = viewPosition;
+
+    m_graphView->translate(dx.x(), dx.y());
+    std::cout << "TP" << m_graphView->pos().x() << " => " << m_graphView->pos().y() << std::endl;
+
+
+    emit viewPositionChanged();
+}
+
+void GraphView::findConnectedComponents(sofa::core::objectmodel::Base* base)
+{
+    if(base==nullptr)
+        return;
+
+    /// Explore the links
+    for(auto& link : base->getLinks())
+    {
+        auto linkedBased = link->getLinkedBase();
+    }
+
+    for(auto& data : base->getDataFields())
+    {
+
+    }
+}
 
 void GraphView::parseSimulationNode(sofa::simulation::Node* node, int posX)
 {
-    std::cout << "HLLOE WORLD..XXX" << std::endl;
-     if(node==nullptr)
+    if(node==nullptr)
         return;
-
-    std::cout << "HLLOE WORLD..YY" << std::endl;
 
     msg_info_when(debugNodeGraph, "SofaWindowDataGraph") << m_posY << " ### Child Name: " << node->getName();
     // first parse the list BaseObject inside this node
     std::vector<sofa::core::objectmodel::BaseObject*> bObjects = node->getNodeObjects();
     m_posX = posX;
     int maxData = 0;
-    std::cout << "HLLOE WORLD..YY: " << bObjects.size() << std::endl;
 
     for (auto bObject : bObjects)
-    {       
-       std::cout << "LA " << bObject->getName() << std::endl;
-
+    {
         bool skip = false;
         for (auto except : m_exceptions)
         {
@@ -228,7 +297,7 @@ void GraphView::parseSimulationNode(sofa::simulation::Node* node, int posX)
         
         if (skip)
             continue;
-    
+
         size_t nbrData = addSimulationObject(bObject);
         if (nbrData > maxData)
             maxData = nbrData;
@@ -257,13 +326,16 @@ size_t GraphView::addSimulationObject(sofa::core::objectmodel::BaseObject* bObje
     const std::string& name = bObject->getClassName() + " - " + bObject->getName();
     msg_info_when(debugNodeGraph, "SofaWindowDataGraph") << "addSimulationObject: " << name;
     
-    QtNodes::Node& fromNode = m_graphScene->createNode(std::make_unique<SofaComponentGraphModel>(bObject, debugNodeGraph));
-    fromNode.setObjectName(QString::fromStdString(bObject->getName()));
-    
+    QtNodes::Node& fromNode = m_graphScene->createNode(
+                std::make_unique<SofaComponentGraphModel>(bObject, debugNodeGraph));
+                fromNode.setObjectName(QString::fromStdString(bObject->getName()));
+
+    m_nodeToQUid[QString::fromStdString(bObject->getPathName())] = &fromNode;
+
     SofaComponentGraphModel* model = dynamic_cast<SofaComponentGraphModel*>(fromNode.nodeDataModel());
     model->setCaption(name);
 
-    auto& fromNgo = fromNode.nodeGraphicsObject();    
+    auto& fromNgo = fromNode.nodeGraphicsObject();
     fromNgo.setPos(m_posX, m_posY);
     m_posX += name.length() * m_scaleX;
 
@@ -309,8 +381,8 @@ void GraphView::connectNodeData()
                 msg_error("SofaWindowDataGraph") << "Object not found while creating connection between " << node->objectName().toStdString() << " and child: " << connection.second.first.toStdString();
                 continue;
             }
-        }        
-    }    
+        }
+    }
 }
 
 } // namespace sofaqtquick::views
