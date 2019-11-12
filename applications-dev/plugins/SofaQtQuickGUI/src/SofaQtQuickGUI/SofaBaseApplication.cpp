@@ -1052,7 +1052,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
 
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
     // "threaded" vs "basic"
-    qputenv("QSG_RENDER_LOOP", "basic");
+    qputenv("QSG_RENDER_LOOP", "threaded");
 
     if(!app.testAttribute(Qt::AA_ShareOpenGLContexts))
         qCritical() << "CRITICAL: SofaBaseApplication::initialization() must be called before QApplication instanciation";

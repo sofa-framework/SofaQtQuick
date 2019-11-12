@@ -22,10 +22,11 @@ set(QML_TEMPLATES
 )
 
 find_package(SofaFramework REQUIRED)
+find_package(SofaBase REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${QML_TEMPLATES})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC SofaCore)
+target_link_libraries(${PROJECT_NAME} PUBLIC SofaCore SofaBaseVisual)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")

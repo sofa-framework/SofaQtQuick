@@ -64,6 +64,7 @@ void CameraView::internalRender(int width, int height) const
     BaseCamera* baseCamera = sofaCamera->getBaseCamera();
     if(!baseCamera)
         return;
+
     if(mySofaScene && mySofaScene->isReady())
     {
         BackgroundSetting* settings = sofaCamera->getBaseCamera()->l_background.get();

@@ -72,6 +72,8 @@ using sofa::component::visualmodel::VisualStyle;
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 using sofa::qtquick::SofaComponent;
 
+using MechanicalObject = sofa::core::behavior::BaseMechanicalState;
+using ForceField = sofa::core::behavior::BaseForceField;
 namespace sofaqtquick
 {
 
@@ -284,6 +286,13 @@ QVector3D SofaViewer::mapFromWorld(const QVector3D& wsPoint) const
     if(!myCamera)
         return QVector3D();
 
+    sofa::defaulttype::Mat4x4 glP, glM;
+    for (int i = 0 ; i < 16 ; ++i)
+    {
+        glP.ptr()[i] = myCamera->projection().data()[i];
+        glM.ptr()[i] = myCamera->view().data()[i];
+    }
+
     QVector4D nsPosition = (myCamera->projection() * myCamera->view() * QVector4D(wsPoint, 1.0));
     nsPosition /= nsPosition.w();
 
@@ -293,29 +302,25 @@ QVector3D SofaViewer::mapFromWorld(const QVector3D& wsPoint) const
     if(mirroredVertically())
         nsPosition.setY(-nsPosition.y());
 
-    return QVector3D((nsPosition.x() * 0.5 + 0.5) * qCeil(width()) + 0.5, qCeil(height()) - (nsPosition.y() * 0.5 + 0.5) * qCeil(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
+    return QVector3D((nsPosition.x() * 0.5 + 0.5) * qFloor(width()) + 0.5, qFloor(height()) - (nsPosition.y() * 0.5 + 0.5) * qFloor(height()) + 0.5, (nsPosition.z() * 0.5 + 0.5));
 }
 
 QVector3D SofaViewer::mapToWorld(const QPointF& ssPoint, double z) const
 {
     if(!myCamera)
         return QVector3D();
-
-    QVector3D nsPosition = QVector3D(ssPoint.x() / (double) qCeil(width()) * 2.0 - 1.0, (1.0 - ssPoint.y() / (double) qCeil(height())) * 2.0 - 1.0, z * 2.0 - 1.0);
+    QVector3D nsPosition = QVector3D(ssPoint.x() / (double) qFloor(width()) * 2.0 - 1.0, (1.0 - ssPoint.y() / (double) qFloor(height())) * 2.0 - 1.0, z * 2.0 - 1.0);
     if(mirroredHorizontally())
         nsPosition.setX(-nsPosition.x());
 
     if(mirroredVertically())
         nsPosition.setY(-nsPosition.y());
 
-    std::cout << "CORRECT PROJECTION: \n"
-              << myCamera->projection().data()[0] << " " << myCamera->projection().data()[1]<< " " << myCamera->projection().data()[2]<< " " << myCamera->projection().data()[3] << "\n"
-                                                                                                                                                                 << myCamera->projection().data()[4] << " " << myCamera->projection().data()[5]<< " " << myCamera->projection().data()[6]<< " " << myCamera->projection().data()[7] << "\n"
-                                                                                                                                                                                                                                                                                                                    << myCamera->projection().data()[8] << " " << myCamera->projection().data()[9]<< " " << myCamera->projection().data()[10]<< " " << myCamera->projection().data()[11] << std::endl;
+    QVector4D nsPosition4 = QVector4D(nsPosition, 1.0);
+
     QVector4D vsPosition = myCamera->projection().inverted() * QVector4D(nsPosition, 1.0);
     vsPosition /= vsPosition.w();
 
-    std::cout << "VSPosition: " << vsPosition.x() << " "  << vsPosition.y() << " "  << vsPosition.z() << std::endl;
     return (myCamera->model() * vsPosition).toVector3D();
 }
 
@@ -384,13 +389,12 @@ class PickUsingRasterizationWorker : public QRunnable
 {
 public:
     PickUsingRasterizationWorker(const SofaViewer* viewer, const QPointF& ssPoint, const QStringList& tags, Selectable*& selectable, bool& finished) :
-        myViewer(viewer),
+        myViewer(const_cast<SofaViewer*>(viewer)),
         mySSPoint(ssPoint),
         myTags(tags),
         mySelectable(selectable),
         myFinished(finished)
     {
-
     }
 
     void run()
@@ -424,7 +428,7 @@ public:
         glPushMatrix();
         glLoadMatrixf(camera->view().constData());
 
-        //mySelectable = myViewer->pickObject(mySSPoint, myTags, myViewer->roots());
+        mySelectable = myViewer->pickObject(mySSPoint, myTags, myViewer->roots());
 
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
@@ -436,7 +440,7 @@ public:
     }
 
 private:
-    const SofaViewer*   myViewer;
+    SofaViewer*         myViewer;
     QPointF             mySSPoint;
     QStringList			myTags;
     Selectable*&        mySelectable;
@@ -789,8 +793,12 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
         glDisable(GL_BLEND);
 
         sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
+        if (!visualParams->drawTool())
+            visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
         QVector<VisualModel*> visualModels;
         QVector<TriangleModel*> triangleModels;
+        QVector<MechanicalObject*> mechanicalModels;
+        QVector<ForceField*> forceFieldsModels;
 
         // write object index
 
@@ -864,6 +872,74 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                 }
             }
 
+            for(sofa::simulation::Node* root : nodes)
+            {
+                if(!root)
+                    continue;
+
+                sofa::helper::vector<MechanicalObject*> currentMO;
+                root->getTreeObjects<MechanicalObject>(&currentMO);
+
+                if(!currentMO.empty())
+                {
+                    for(MechanicalObject* mo: currentMO)
+                    {
+                        if(SofaComponent::hasTag(mo, tags))
+                        {
+                            sofa::component::visualmodel::VisualStyle* visualStyle = nullptr;
+                            mo->getContext()->get(visualStyle);
+
+                            myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+
+                            if(visualStyle)
+                                visualStyle->fwdDraw(visualParams);
+
+                            mo->draw(visualParams);
+
+                            if(visualStyle)
+                                visualStyle->bwdDraw(visualParams);
+
+                            mechanicalModels.append(mo);
+                            index++;
+                        }
+                    }
+                }
+
+            }
+            for(sofa::simulation::Node* root : nodes)
+            {
+                if(!root)
+                    continue;
+
+                sofa::helper::vector<ForceField*> currentForceField;
+                root->getTreeObjects<ForceField>(&currentForceField);
+
+                if(!currentForceField.empty())
+                {
+                    for(ForceField* ff: currentForceField)
+                    {
+                        if(SofaComponent::hasTag(ff, tags))
+                        {
+                            sofa::component::visualmodel::VisualStyle* visualStyle = nullptr;
+                            ff->getContext()->get(visualStyle);
+
+                            myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+
+                            if(visualStyle)
+                                visualStyle->fwdDraw(visualParams);
+
+                            ff->draw(visualParams);
+
+                            if(visualStyle)
+                                visualStyle->bwdDraw(visualParams);
+
+                            forceFieldsModels.append(ff);
+                            index++;
+                        }
+                    }
+                }
+            }
+
             if(drawManipulators() && (tags.isEmpty() || tags.contains("manipulator", Qt::CaseInsensitive)))
                 for(Manipulator* manipulator : mySofaScene->myManipulators)
                 {
@@ -903,9 +979,27 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                 {
                     index -= triangleModels.size();
 
-                    if(drawManipulators())
-                        if((int) index < mySofaScene->myManipulators.size())
-                            selectable = new SelectableManipulator(*(mySofaScene->myManipulators[index]));
+                    if(index < mechanicalModels.size())
+                    {
+                        selectable = new SelectableSofaComponent(new sofaqtquick::bindings::SofaBaseObject(mechanicalModels[index], mySofaScene));
+                    }
+                    else
+                    {
+                        index -= mechanicalModels.size();
+
+                        if (index < forceFieldsModels.size())
+                        {
+                            selectable = new SelectableSofaComponent(new sofaqtquick::bindings::SofaBaseObject(forceFieldsModels[index], mySofaScene));
+                        }
+                        else
+                        {
+                            index -= forceFieldsModels.size();
+
+                            if(drawManipulators())
+                                if(int(index) < mySofaScene->myManipulators.size())
+                                    selectable = new SelectableManipulator(*(mySofaScene->myManipulators[index]));
+                        }
+                    }
                 }
             }
         }
@@ -1138,7 +1232,7 @@ QRect SofaViewer::nativeRect() const
     if(!window())
         return QRect();
 
-    QPointF realPos = mapToScene(QPointF(0.0, qCeil(height())));
+    QPointF realPos = mapToScene(QPointF(0.0, qFloor(height())));
     realPos.setX(realPos.x() * window()->devicePixelRatio());
     realPos.setY((window()->height() - realPos.y()) * window()->devicePixelRatio());  // OpenGL has its Y coordinate inverted compared to Qt
 

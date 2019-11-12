@@ -41,7 +41,6 @@ EditView
     mirroredVertically: false
     antialiasingSamples: 2
     sofaScene: SofaApplication.sofaScene
-    property bool configurable: true
 
     property bool transparentBackground: false
     Image {
@@ -92,12 +91,6 @@ EditView
         }
     }
 
-    Action{
-        shortcut: "F5"
-        onTriggered: root.viewAll()
-    }
-
-
     property alias busyIndicator: busyIndicator
     BusyIndicator {
         id: busyIndicator
@@ -117,16 +110,6 @@ EditView
         verticalAlignment: Text.AlignVCenter
 
         text: sofaScene ? "Error during sofa scene loading\n" + sofaScene.source.toString().replace("///", "/").replace("file:", "") : "No sofa scene object"
-    }
-
-    // camera
-
-    Component {
-        id: cameraComponent
-
-        Camera {
-
-        }
     }
 
     property bool defaultCameraOrthographic: false
@@ -155,69 +138,88 @@ EditView
         }
     }
 
-    // screenshot / video
+    // camera
 
-    function takeScreenshot(savePath) {
-        if(undefined === savePath)
-            savePath = "Captured/Screen/" + root.formatDateForScreenshot() + ".png";
+    Component {
+        id: cameraComponent
 
-        if(-1 === savePath.lastIndexOf("."))
-            savePath += ".png";
+        Camera {
 
-        if(root.width.toFixed(0) == captureWidthTextField.text && root.height.toFixed(0) == captureHeightTextField.text)
-            root.saveScreenshot(savePath);
-        else
-            root.saveScreenshotWithResolution(savePath, Number(captureWidthTextField.text), Number(captureHeightTextField.text));
-    }
-
-    function startVideoRecording(savePath) {
-        videoRecordingPrivate.videoPath = savePath;
-        videoRecordingPrivate.saveVideo = true;
-    }
-
-    function stopVideoRecording() {
-        videoRecordingPrivate.saveVideo = false;
-    }
-
-    property var _videoRecordingPrivate: QtObject {
-        id: videoRecordingPrivate
-
-        property string videoPath: ""
-        property bool saveVideo: false
-        onSaveVideoChanged: {
-            if(!saveVideo)
-                return;
-
-            videoFrameNumber = 0;
-
-            saveVideoFrame();
-        }
-
-        property int videoFrameNumber: 0
-        property var sceneConnections: Connections {
-            target: root.sofaScene && videoRecordingPrivate.saveVideo ? root.sofaScene : null
-            onStepEnd: videoRecordingPrivate.saveVideoFrame();
-        }
-
-        function saveVideoFrame() {
-            var savePath = videoRecordingPrivate.videoPath;
-            if(0 === savePath.length)
-                savePath = "Captured/Movie/" + SofaApplication.formatDateForScreenshot() + "/movie.png";
-
-            var dotIndex = savePath.lastIndexOf(".");
-            if(-1 === dotIndex) {
-                savePath += ".png"
-                dotIndex = savePath.lastIndexOf(".");
-            }
-
-            savePath = savePath.slice(0, dotIndex) + "_" + (videoRecordingPrivate.videoFrameNumber++).toString() + savePath.slice(dotIndex);
-
-            root.saveScreenshot(savePath);
         }
     }
+
+
+
+
+
+    //    // screenshot / video
+
+    //    function takeScreenshot(savePath) {
+    //        if(undefined === savePath)
+    //            savePath = "Captured/Screen/" + root.formatDateForScreenshot() + ".png";
+
+    //        if(-1 === savePath.lastIndexOf("."))
+    //            savePath += ".png";
+
+    //        if(root.width.toFixed(0) == captureWidthTextField.text && root.height.toFixed(0) == captureHeightTextField.text)
+    //            root.saveScreenshot(savePath);
+    //        else
+    //            root.saveScreenshotWithResolution(savePath, Number(captureWidthTextField.text), Number(captureHeightTextField.text));
+    //    }
+
+    //    function startVideoRecording(savePath) {
+    //        videoRecordingPrivate.videoPath = savePath;
+    //        videoRecordingPrivate.saveVideo = true;
+    //    }
+
+    //    function stopVideoRecording() {
+    //        videoRecordingPrivate.saveVideo = false;
+    //    }
+
+    //    property var _videoRecordingPrivate: QtObject {
+    //        id: videoRecordingPrivate
+
+    //        property string videoPath: ""
+    //        property bool saveVideo: false
+    //        onSaveVideoChanged: {
+    //            if(!saveVideo)
+    //                return;
+
+    //            videoFrameNumber = 0;
+
+    //            saveVideoFrame();
+    //        }
+
+    //        property int videoFrameNumber: 0
+    //        property var sceneConnections: Connections {
+    //            target: root.sofaScene && videoRecordingPrivate.saveVideo ? root.sofaScene : null
+    //            onStepEnd: videoRecordingPrivate.saveVideoFrame();
+    //        }
+
+    //        function saveVideoFrame() {
+    //            var savePath = videoRecordingPrivate.videoPath;
+    //            if(0 === savePath.length)
+    //                savePath = "Captured/Movie/" + SofaApplication.formatDateForScreenshot() + "/movie.png";
+
+    //            var dotIndex = savePath.lastIndexOf(".");
+    //            if(-1 === dotIndex) {
+    //                savePath += ".png"
+    //                dotIndex = savePath.lastIndexOf(".");
+    //            }
+
+    //            savePath = savePath.slice(0, dotIndex) + "_" + (videoRecordingPrivate.videoFrameNumber++).toString() + savePath.slice(dotIndex);
+
+    //            root.saveScreenshot(savePath);
+    //        }
+    //    }
+
+    Action{
+        shortcut: "F5"
+        onTriggered: root.viewAll()
+    }
+
 
     // interactor
-
     property alias interactor: interactorLoader.item
     property Component interactorComponent: SofaApplication.interactorComponent
 
