@@ -66,7 +66,7 @@ SofaComponentGraphModel::SofaComponentGraphModel(std::string name)
     m_caption = m_uniqName;
 }
 
-SofaComponentGraphModel::SofaComponentGraphModel(sofa::core::objectmodel::BaseObject* _sofaObject, bool debugMode)
+SofaComponentGraphModel::SofaComponentGraphModel(sofa::core::objectmodel::Base* _sofaObject, bool debugMode)
     : NodeDataModel()
     , debugNodeGraph(debugMode)
     , m_SofaObject(_sofaObject)

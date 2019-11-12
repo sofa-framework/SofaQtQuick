@@ -37,6 +37,7 @@ namespace sofa::core::objectmodel
 {
 class BaseObject;
 class BaseData;
+class Base;
 }
 
 
@@ -80,7 +81,7 @@ public:
     SofaComponentGraphModel(std::string name = "EmptyNode");
 
     /// constructor with a Sofa BaseObject as target
-    SofaComponentGraphModel(sofa::core::objectmodel::BaseObject* _sofaObject, bool debugMode = false);
+    SofaComponentGraphModel(sofa::core::objectmodel::Base* _sofaObject, bool debugMode = false);
 
     virtual ~SofaComponentGraphModel() override {}
 
@@ -141,7 +142,7 @@ protected:
     std::map <QString, std::pair < QString, QString> > m_dataConnections;
 
     /// Pointer to the sofa object.
-    sofa::core::objectmodel::BaseObject* m_SofaObject;
+    sofa::core::objectmodel::Base* m_SofaObject;
 };
 
 } /// sofaqtquick::models

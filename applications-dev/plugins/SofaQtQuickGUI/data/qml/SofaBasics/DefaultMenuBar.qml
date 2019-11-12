@@ -7,6 +7,7 @@ import QtQuick.Window 2.12
 import SofaBasics 1.0
 import SofaViewListModel 1.0
 import GraphView 1.0
+import ProfilerView 1.0
 
 MenuBar {
     id: menuBar
@@ -347,7 +348,7 @@ MenuBar {
             MenuSeparator {}
 
             MenuItem {
-                text: "GraphView";
+                text: "Connections";
                 onTriggered: {
                     GraphView.open()
                     windowMenu.close()
@@ -358,6 +359,17 @@ MenuBar {
                 }
             }
 
+            MenuItem {
+                text: "Profiler";
+                onTriggered: {
+                    ProfilerView.open()
+                    windowMenu.close()
+                }
+                ToolTip {
+                    text: qsTr("Open the default Profiler")
+                    description: "To visualize where the computation take place"
+                }
+            }
 
             MenuItem { text: "Add QML Views (TODO)"; enabled: false
                 ToolTip {

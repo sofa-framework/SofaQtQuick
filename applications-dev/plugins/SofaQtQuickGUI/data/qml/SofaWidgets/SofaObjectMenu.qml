@@ -35,6 +35,18 @@ Menu {
     property string creationLocation : null
 
     MenuItem {
+        enabled: true
+        text: "Show connections.."
+        onTriggered:
+        {
+            var node = model.getBaseFromIndex(currentModelIndex)
+            GraphView.showConnectedComponents(node)
+            GraphView.open()
+        }
+    }
+
+
+    MenuItem {
         enabled: creationLocation !== null && creationLocation.length !== 0
         text: "Go to instanciation..."
         onTriggered: {

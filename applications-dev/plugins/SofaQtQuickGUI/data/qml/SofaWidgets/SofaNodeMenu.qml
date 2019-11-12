@@ -52,13 +52,24 @@ Menu {
 
     MenuItem {
         enabled: true
-        text: "Show connections.."
+        text: "Inspect connections.."
+        onTriggered:
+        {
+            GraphView.showConnectedComponents(model.getBaseFromIndex(currentModelIndex))
+            GraphView.open()
+        }
+    }
+
+    MenuItem {
+        enabled: true
+        text: "Show local connections.."
         onTriggered:
         {
             GraphView.rootNode = model.getBaseFromIndex(currentModelIndex)
             GraphView.open()
         }
     }
+
 
     MenuItem {
         enabled: currentObject && currentObject.hasMessage()

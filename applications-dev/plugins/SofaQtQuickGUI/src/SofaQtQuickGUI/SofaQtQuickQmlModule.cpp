@@ -99,6 +99,9 @@ using sofaqtquick::HighlightComponent;
 #include <SofaQtQuickGUI/Windows/GraphView.h>
 using sofaqtquick::views::GraphView;
 
+#include <SofaQtQuickGUI/Windows/ProfilerView.h>
+using sofaqtquick::views::ProfilerView;
+
 #include <sofa/helper/system/PluginManager.h>
 
 #include <QQmlPropertyMap>
@@ -174,13 +177,27 @@ static QObject* createGraphView(QQmlEngine *engine,
                                 QJSEngine *scriptEngine){
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
-    auto titi= new GraphView(nullptr);
-    std::cout << "=========================== CREATING A GRAPH VIEW !!!" << std::endl;
-    titi->show();
-    titi->raise();
-    titi->activateWindow();
-    return titi;
+    auto g= new GraphView(nullptr);
+    g->show();
+    g->raise();
+    //g->activateWindow();
+    return g;
 }
+
+// Following the doc on creating a singleton component
+// we need to have function that return the singleton instance.
+// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+static QObject* createProfilerView(QQmlEngine *engine,
+                                QJSEngine *scriptEngine){
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+    auto p= new ProfilerView(nullptr);
+    p->show();
+    p->raise();
+    //p->activateWindow();
+    return p;
+}
+
 
 
 void registerSofaTypesToQml(const char* /*uri*/)
@@ -305,6 +322,11 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                         createGraphView // the function used to create the singleton instance
                                         );
 
+    qmlRegisterSingletonType<GraphView>("ProfilerView",            // char* uri
+                                        versionMajor, versionMinor,   // minor/major version number
+                                        "ProfilerView",       // exported name
+                                        createProfilerView // the function used to create the singleton instance
+                                        );
 
     SofaCoreBindingFactory::registerType("DAGNode", [](sofa::core::objectmodel::Base* obj)
     {

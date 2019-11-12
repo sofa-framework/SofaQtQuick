@@ -46,6 +46,23 @@ namespace sofaqtquick::views
 {
 using sofaqtquick::bindings::SofaBase;
 using sofaqtquick::bindings::SofaNode;
+using sofa::core::objectmodel::Base;
+using sofa::core::objectmodel::BaseObject;
+using sofa::core::objectmodel::BaseNode;
+using sofa::simulation::MutationListener ;
+using sofa::simulation::Node;
+
+class MyMutationListener : public QObject, public MutationListener
+{
+    Q_OBJECT
+public:
+    void onBeginAddObject(Node* parent, BaseObject* obj);
+    void onEndAddObject(Node* parent, BaseObject* obj);
+
+signals:
+    void addObject(Node* parent, BaseObject* obj);
+};
+
 
 class MoveTooAnimation : public QAbstractAnimation
 {
@@ -89,6 +106,7 @@ public:
     Q_PROPERTY(SofaNode* rootNode READ getRootNode WRITE setRootNode NOTIFY rootNodeChanged)
     Q_PROPERTY(QVector2D viewPosition READ getViewPosition WRITE setViewPosition NOTIFY viewPositionChanged)
 
+    Q_INVOKABLE void showConnectedComponents(SofaBase*);
     SofaBase* getSelectedComponent();
     void setSelectedComponent(SofaBase*);
 
@@ -106,6 +124,9 @@ public:
     /// Method to be called when graph need to be recomputed (like reloading scene). Take a pointer to the root node of the scene.
     void resetNodeGraph(sofa::simulation::Node* scene);
 
+public slots:
+   void onAddObject(Node* parent, BaseObject* object);
+
 signals:
     void selectedComponentChanged();
     void rootNodeChanged();
@@ -113,13 +134,14 @@ signals:
 
 protected:
     /// Internal method to parse all Sofa component inside a Sofa simulation Node. Will call @sa addSimulationObject for each compoenent then will iterate on children nodes.
-    void parseSimulationNode(sofa::simulation::Node* node, int posX = 0);
+    QRectF parseSimulationNode(sofa::simulation::Node* node, double posX, double posY);
 
     /// search for the connected component to display the corresponding graph.
-    void findConnectedComponents(sofa::core::objectmodel::Base* base);
+    void findConnectedComponents(Base *base);
 
     /// Internal method to create a Node for this sofa BaseObject.
-    size_t addSimulationObject(sofa::core::objectmodel::BaseObject* bObject);
+    QtNodes::Node* addSimulationObject(sofa::core::objectmodel::BaseObject* bObject, double x, double y);
+    QtNodes::Node* addSimulationNode(sofa::core::objectmodel::BaseNode* node, double x, double y);
 
     /// Internal method to create all connection between component on the graph.
     void connectNodeData();
@@ -127,6 +149,7 @@ protected:
     /// Internal method to clear the graph structures
     void clearNodeData();
 
+    void moveTo(Base*);
 protected:
     /// Pointer to the graphScene used to store nodes.
     QtNodes::FlowScene* m_graphScene;
@@ -150,6 +173,7 @@ protected:
 
     QMap<QString, QtNodes::Node*> m_nodeToQUid;
 
+    MyMutationListener m_mutationListener;
     bool debugNodeGraph {false}; ///< parameter to activate graph logs. False by default.
 };
 
