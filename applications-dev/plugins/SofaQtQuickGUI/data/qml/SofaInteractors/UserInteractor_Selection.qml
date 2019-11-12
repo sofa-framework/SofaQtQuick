@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 2.0
 import SofaBasics 1.0
 import SofaComponent 1.0
+import SofaApplication 1.0
 
 UserInteractor_MoveCamera {
     id: root
@@ -35,6 +36,7 @@ UserInteractor_MoveCamera {
             selectedComponent = sofaScene.selectedComponent;
 
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
+            console.log("picked selectable at pos: " + selectable.position)
             if(selectable) {
                 if(selectable.manipulator) {
                     selectedManipulator = selectable.manipulator;
@@ -57,19 +59,8 @@ UserInteractor_MoveCamera {
 
             } else if(selectedComponent) {
                 if(!sofaScene.areSameComponent(sofaScene.selectedComponent, selectedComponent)) {
-                    sofaScene.selectedComponent = selectedComponent;
-                }/* else {
-                    var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
-                    if(sofaComponentParticle) {
-                        sofaScene.sofaParticleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
-
-                        setMouseMovedMapping(function(mouse, sofaViewer) {
-                            var z = sofaViewer.computeDepth(sofaScene.sofaParticleInteractor.interactorPosition);
-                            var position = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
-                            sofaScene.sofaParticleInteractor.update(position);
-                        });
-                    }
-                }*/
+                    SofaApplication.selectedComponent = selectedComponent;
+                }
             } else {
                 sofaScene.selectedManipulator = null;
                 sofaScene.selectedComponent = null;

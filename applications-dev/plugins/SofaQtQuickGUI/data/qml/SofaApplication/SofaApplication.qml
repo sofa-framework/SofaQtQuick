@@ -67,7 +67,7 @@ Item //
 
     onSelectedComponentChanged:{
         SofaBaseApplicationSingleton.selectedComponent = selectedComponent
-        GraphView.open();
+//        GraphView.open();
     }
 
     /// Connect to this signal to be notified when a component need to be emphasized.

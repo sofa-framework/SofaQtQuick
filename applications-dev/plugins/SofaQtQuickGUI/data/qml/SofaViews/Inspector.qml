@@ -42,9 +42,6 @@ Item {
         id: topRect
         color: SofaApplication.style.contentBackgroundColor
         anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-
         visible: selectedAsset === null
         DropArea {
             id: dropArea
@@ -71,7 +68,6 @@ Item {
         ColumnLayout {
             anchors.fill: parent
             spacing: 10
-
             RowLayout {
                 z: 3
                 id: header
@@ -102,13 +98,19 @@ Item {
                 id: scrollview
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                /*
+                Layout.leftMargin: 5
+                clip: true
+                ScrollBar.horizontal: ScrollBar {
+                    policy: ScrollBar.AlwaysOff
+                }
+
                 ScrollBar.vertical: ScrollBar {
                     id: scrollbar
                     policy: scrollview.height > scrollview.contentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
                     parent: scrollview
-                    x: scrollview.mirrored ? 0 : scrollview.width - width
-                    size: 0.3
+                    height: parent.height
+                    width: 12
+                    size: 0.5
                     active: true
                     contentItem: GBRect {
                         implicitWidth: 12
@@ -171,12 +173,11 @@ Item {
                         }
                     }
                 }
-*/
 
 
                 ColumnLayout {
-                    width: scrollview.width
-
+                    width: scrollview.width - 12
+                    x: 12
                     Loader {
                         Layout.fillWidth: true
                         id: customInspectorLoader

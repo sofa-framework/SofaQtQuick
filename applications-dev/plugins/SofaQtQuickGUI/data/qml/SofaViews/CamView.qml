@@ -234,10 +234,10 @@ CameraView {
     onMousePressed: {
         console.log("picking with new picker:")
         var particle = pickParticle2(camera.getOrigin(mouse.x, mouse.y), camera.getDirection(mouse.x, mouse.y));
-//        console.log("particleIdx: " + particle !== null ? particle.particleIndex : "none")
+        console.log("particleIdx: " + particle !== null ? particle.particleIndex : "none")
         console.log("picking with old picker:")
-        var particle = pickParticle(Qt.point(mouse.x, mouse.y));
-//        console.log("particleIdx: " + particle !== null ? particle.particleIndex : "none")
+        particle = pickParticle(Qt.point(Math.floor(mouse.x), Math.floor(mouse.y)));
+        console.log("particleIdx: " + particle !== null ? particle.particleIndex : "none")
     }
 
     // visual info

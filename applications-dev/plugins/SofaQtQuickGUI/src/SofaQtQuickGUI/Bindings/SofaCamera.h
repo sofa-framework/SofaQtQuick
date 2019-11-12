@@ -82,6 +82,7 @@ public:
     }
     Q_INVOKABLE QVector3D getDirection(int x, int y)
     {
+        std::cout << "22222 Camera Direction" << std::endl;
         sofa::defaulttype::Ray ray = m_baseCamera->screenPointToRay(sofa::defaulttype::Vec3(x,y,1.0));
         return QVector3D(ray.direction()[0], ray.direction()[1], ray.direction()[2]);
     }

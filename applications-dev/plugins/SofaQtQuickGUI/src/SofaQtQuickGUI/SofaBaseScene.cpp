@@ -1558,7 +1558,6 @@ void SofaBaseScene::checkForCanvases()
 
 SelectableSofaParticle* SofaBaseScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaBase*>& roots)
 {
-    std::cout << "PICKPARTICLES origin: " << origin[0] << "," << origin[1] << "," << origin[2] << "\tdirection: " << direction[0] << "," << direction[1] << "," << direction[2] << std::endl;
     SelectableSofaParticle* selectableSofaParticle = nullptr;
 
     std::list<Tag> tagList(tags.size());
