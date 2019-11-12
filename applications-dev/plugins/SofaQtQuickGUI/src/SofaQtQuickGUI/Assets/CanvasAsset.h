@@ -6,9 +6,9 @@ namespace sofaqtquick
 {
 
 template <class T>
-struct CanvasAssetLoader : public sofa::qtquick::TBaseAssetLoader<T>{};
+struct CanvasAssetLoader : public sofaqtquick::TBaseAssetLoader<T>{};
 
-class CanvasAsset : public sofa::qtquick::Asset
+class CanvasAsset : public sofaqtquick::Asset
 {
 public:
     CanvasAsset(std::string path, std::string extension);

@@ -5,9 +5,7 @@
 #include <iostream>
 #include <map>
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 /**
@@ -61,5 +59,4 @@ class SOFA_SOFAQTQUICKGUI_API AssetFactory
     }
 };
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

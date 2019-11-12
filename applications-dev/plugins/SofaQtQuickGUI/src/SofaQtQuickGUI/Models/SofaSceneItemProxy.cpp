@@ -19,10 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaSceneItemProxy.h"
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 SofaSceneItemProxy::SofaSceneItemProxy(QObject* parent) :
@@ -82,6 +79,5 @@ void SofaSceneItemProxy::showOnlyNodes(bool value)
     invalidateFilter();
 }
 
-} ///namespace qtquick
-} ///namespace sofa
+} ///namespace sofaqtquick
 

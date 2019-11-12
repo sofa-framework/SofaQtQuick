@@ -1,9 +1,7 @@
 #include "Asset.h"
 
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 const Asset::LoaderMap Asset::_loaders = Asset::LoaderMap();
@@ -23,5 +21,4 @@ QUrl Asset::getAssetInspectorWidget() {
     return QUrl("qrc:/SofaBasics/DynamicContent_Error.qml");
 }
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

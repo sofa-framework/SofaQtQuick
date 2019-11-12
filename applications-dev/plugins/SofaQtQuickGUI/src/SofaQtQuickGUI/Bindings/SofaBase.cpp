@@ -55,6 +55,11 @@ SofaBase::SofaBase(Base::SPtr self)
     m_self = self;
 }
 
+SofaBase::SofaBase(const SofaBase& o)
+{
+    m_self = o.rawBase();
+}
+
 QString SofaBase::getName() const
 {
     return QString::fromStdString(m_self->getName());
@@ -235,6 +240,21 @@ bool SofaBase::isNode() const
     return rawBase()->toBaseNode() != nullptr;
 }
 
+bool SofaBase::isSame(SofaBase* sofaComponent) const
+{
+    if(!sofaComponent)
+        return false;
+
+    // same wrapper => same component
+    if(this == sofaComponent)
+        return true;
+
+    // same base object => same component
+    if(rawBase() == sofaComponent->rawBase())
+        return true;
+
+    return false;
+}
 
 void SofaBase::dump() const
 {

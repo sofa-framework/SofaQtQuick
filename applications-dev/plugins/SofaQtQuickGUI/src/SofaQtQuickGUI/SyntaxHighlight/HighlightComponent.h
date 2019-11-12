@@ -2,7 +2,7 @@
 
 #include <QSyntaxHighlighter>
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 
 class HighlightComponent : public QObject
@@ -53,5 +53,5 @@ private:
 
 
 
-}  // namespace sofa::qtquick
+}  // namespace sofaqtquick
 

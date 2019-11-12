@@ -59,14 +59,10 @@ namespace sofaqtquick::bindings
 
 ////////////////////////////////////// DECLARATION //////////////////////////////////////////
 //TODO(dmarchal:04/04/2019) The following is deprecated.
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using sofaqtquick::bindings::SofaLink;
 
-} /// qtquick
-} /// sofa
+} // namespace sofaqtquick
 

@@ -42,12 +42,9 @@ using sofa::core::objectmodel::BaseNode;
 using sofa::qtquick::SofaComponent ;
 
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
-using sofa::qtquick::SofaBaseApplication ;
+using sofaqtquick::SofaBaseApplication ;
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 namespace console
@@ -168,8 +165,6 @@ QHash<int,QByteArray> Console::roleNames() const
     return roles;
 }
 
-}
+}  // namespace console
 
-}
-
-}
+}  // namspace sofaqtquick

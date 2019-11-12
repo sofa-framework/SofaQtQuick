@@ -26,10 +26,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 
 class QQmlEngine;
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 namespace liveqmlfilemonitor
@@ -53,12 +50,11 @@ private:
     QQmlEngine*  m_engine;
 };
 
-}
+}  // namespace liveqmlfilemonitor
 
 using liveqmlfilemonitor::LiveQMLFileMonitor ;
 
-}
+} // namespace sofaqtquick
 
-}
 
 #endif // LIVEINTERFACEEDITOR_H

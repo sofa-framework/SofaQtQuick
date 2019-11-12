@@ -29,10 +29,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 class QTimer;
 class QVector3D;
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class A Model allowing us to show a tree of sofa display flags in a TreeView
@@ -324,8 +321,6 @@ private:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SOFADISPLAYFLAGSTREEMODEL_H

@@ -22,10 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaSceneListModel.h"
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class A Model of the sofa scene graph allowing us to show the graph in a ListView
@@ -41,8 +38,6 @@ public:
     virtual ~SofaSceneListProxy();
 
 };
-
-}
 
 }
 

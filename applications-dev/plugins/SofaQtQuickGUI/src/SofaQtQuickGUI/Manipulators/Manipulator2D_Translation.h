@@ -25,10 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QObject>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class A view space manipulator allowing us to translate things along X and / or Y axis
@@ -62,8 +59,6 @@ private:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // MANIPULATOR2D_TRANSLATION_H

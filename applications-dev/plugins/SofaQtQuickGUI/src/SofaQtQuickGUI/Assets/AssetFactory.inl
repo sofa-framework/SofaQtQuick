@@ -1,6 +1,4 @@
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 #include "AssetFactory.h"
@@ -16,5 +14,4 @@ std::shared_ptr<Asset> AssetCreator<T>::createInstance(std::string path,
     return std::shared_ptr<T>(new T(path, extension));
 }
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

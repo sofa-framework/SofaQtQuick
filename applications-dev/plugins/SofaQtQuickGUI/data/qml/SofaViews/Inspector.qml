@@ -55,15 +55,15 @@ Item {
                 if (drag.source.origin === "Hierarchy") {
                     var droppedItem = drag.source.item 
                     /// Ecmascript6.0 'for..of' is valid, don't trust qtcreator
-                    for(var fname of droppedItem.getDataFields())
-                    {
-                        var data = SofaApplication.selectedComponent.findData(fname);
-                        if( data !== null && data.isAutoLink())
-                        {
-                            data.setParent(droppedItem.getData(fname))
-                            console.log("FNAME" + fname + "-> " + data)
-                        }
-                    }
+//                    for(var fname of droppedItem.getDataFields())
+//                    {
+//                        var data = SofaApplication.selectedComponent.findData(fname);
+//                        if( data !== null && data.isAutoLink())
+//                        {
+//                            data.setParent(droppedItem.getData(fname))
+//                            console.log("FNAME" + fname + "-> " + data)
+//                        }
+//                    }
                 }
             }
         }

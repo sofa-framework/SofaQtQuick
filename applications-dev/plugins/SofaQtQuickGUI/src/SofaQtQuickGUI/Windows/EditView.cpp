@@ -20,10 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QQuickItem>
 #include <SofaQtQuickGUI/Windows/EditView.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 EditView::EditView(QQuickItem* parent) : Parent(parent)
@@ -36,7 +33,5 @@ EditView::~EditView()
 
 }
 
-
-}
 
 }

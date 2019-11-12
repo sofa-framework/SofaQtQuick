@@ -67,6 +67,7 @@ public:
     Q_INVOKABLE SofaBaseObject* at(unsigned int);
     Q_INVOKABLE SofaBaseObject* first();
     Q_INVOKABLE SofaBaseObject* last();
+    Q_INVOKABLE void append(SofaBaseObject* sofaBaseObject) { m_list.push_back(sofaBaseObject); }
 
     void addSofaBaseObject(sofa::core::objectmodel::BaseObject* obj);
 

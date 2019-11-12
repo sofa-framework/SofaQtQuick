@@ -3,7 +3,7 @@
 #include <QSyntaxHighlighter>
 #include <QRegularExpression>
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 
 class QSyntaxHighlighterCpp : public QSyntaxHighlighter
@@ -35,4 +35,4 @@ private:
     QTextCharFormat functionFormat;
 };
 
-}  // namespace sofa::qtquick
+}  // namespace sofaqtquick

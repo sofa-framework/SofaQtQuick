@@ -9,9 +9,7 @@
 #include <sofa/core/loader/MeshLoader.h>
 using namespace sofa::component::loader;
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 template <class T>
@@ -72,5 +70,5 @@ protected:
     Q_SIGNAL void primitiveTypeChanged();
 };
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick
+

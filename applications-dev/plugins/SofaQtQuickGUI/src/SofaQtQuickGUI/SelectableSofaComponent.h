@@ -22,12 +22,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Selectable.h>
-#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// QtQuick wrapper for a selectable object representing a sofa component
@@ -36,21 +33,19 @@ class SOFA_SOFAQTQUICKGUI_API SelectableSofaComponent : public Selectable
     Q_OBJECT
 
 public:
-    SelectableSofaComponent(const SofaComponent& sofaComponent);
+    SelectableSofaComponent(sofaqtquick::bindings::SofaBaseObject* sofaComponent);
     ~SelectableSofaComponent();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaComponent* sofaComponent READ sofaComponent)
+    Q_PROPERTY(sofaqtquick::bindings::SofaBaseObject* sofaComponent READ sofaComponent)
 
 public:
-    SofaComponent* sofaComponent() const {return mySofaComponent;}
+    sofaqtquick::bindings::SofaBaseObject* sofaComponent() const {return mySofaComponent;}
 
 private:
-    SofaComponent* mySofaComponent;
+    sofaqtquick::bindings::SofaBaseObject* mySofaComponent;
 
 };
-
-}
 
 }
 

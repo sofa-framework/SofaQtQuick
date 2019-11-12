@@ -10,7 +10,7 @@
 
 #include <experimental/filesystem>
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 
 template <class T>
@@ -83,5 +83,5 @@ private:
     QMap<QString, QVariantMap> m_assetsContent;
 };
 
-} // namespace sofa::qtquick
+} // namespace sofaqtquick
 

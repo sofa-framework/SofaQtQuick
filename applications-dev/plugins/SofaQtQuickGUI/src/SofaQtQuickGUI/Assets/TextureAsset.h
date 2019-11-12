@@ -2,9 +2,7 @@
 
 #include "Asset.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 template <class T>
@@ -26,5 +24,4 @@ protected:
     static const LoaderMap _loaders;
 };
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

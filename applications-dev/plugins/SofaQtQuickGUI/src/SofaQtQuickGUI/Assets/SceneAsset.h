@@ -2,9 +2,7 @@
 
 #include "Asset.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 template <class T>
@@ -27,5 +25,4 @@ protected:
     virtual bool isScene() override { return true; }
 };
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

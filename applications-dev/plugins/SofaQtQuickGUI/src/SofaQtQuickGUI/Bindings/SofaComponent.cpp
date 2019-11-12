@@ -37,7 +37,7 @@ namespace qtquick
 
 using namespace sofa::core::objectmodel;
 
-SofaComponent::SofaComponent(SofaBaseScene* sofaScene, const sofa::core::objectmodel::Base* base) : QObject(),
+SofaComponent::SofaComponent(sofaqtquick::SofaBaseScene* sofaScene, const sofa::core::objectmodel::Base* base) : QObject(),
     mySofaScene(sofaScene),
     myBase(base)
 {
@@ -231,7 +231,7 @@ void SofaComponent::reinit()
     baseObject->reinit();
 }
 
-SofaBaseScene* SofaComponent::sofaScene() const
+sofaqtquick::SofaBaseScene* SofaComponent::sofaScene() const
 {
     return mySofaScene;
 }

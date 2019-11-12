@@ -144,5 +144,7 @@
         <file>CustomInspectorWidgets/MeshLoaderInspector.qml</file>
         <file>CustomInspectorWidgets/BaseInspector.qml</file>
         <file>CustomInspectorWidgets/qmldir</file>
+        <file>SofaViews/CamView.qml</file>
+        <file>SofaViews/PickCamView.qml</file>
     </qresource>
 </RCC>

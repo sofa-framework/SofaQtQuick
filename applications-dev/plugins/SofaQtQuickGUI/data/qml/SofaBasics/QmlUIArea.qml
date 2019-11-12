@@ -29,6 +29,9 @@ Item
     /// In iterable set of url pointing to the different canvas to Loader
     /// interactively in the current widget
     property var canvasSources
+    signal keyPressed(var event);
+    onKeyPressed: {
+    }
 
     /// When the canvasSource change we need to reload all the canvas from
     /// their source file.

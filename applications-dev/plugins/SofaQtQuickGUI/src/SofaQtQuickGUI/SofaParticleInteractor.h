@@ -84,11 +84,11 @@ private:
 } // namespace visual
 
 } // namespace core
+} // namespace sofa
 
-namespace qtquick
+namespace sofaqtquick
 {
 
-class SofaComponent;
 class SofaBaseScene;
 class Manipulator;
 
@@ -105,7 +105,7 @@ public:
 	virtual void release() = 0;
 
 	virtual QVector3D position() const = 0;
-	virtual SofaComponent* sofaComponent() const = 0;
+    virtual sofa::qtquick::SofaComponent* sofaComponent() const = 0;
 	virtual int particleIndex() const = 0;
 
 };
@@ -114,8 +114,8 @@ template<class Types>
 class SofaParticleInteraction : public SofaBaseParticleInteraction
 {
 public:
-	SofaParticleInteraction<Types>(const SofaComponent* sofaComponent, int particleIndex, double stiffness) : SofaBaseParticleInteraction(),
-		mySofaComponent(new SofaComponent(*sofaComponent)),
+    SofaParticleInteraction<Types>(const sofa::qtquick::SofaComponent* sofaComponent, int particleIndex, double stiffness) : SofaBaseParticleInteraction(),
+        mySofaComponent(new sofa::qtquick::SofaComponent(*sofaComponent)),
 		myParticleIndex(particleIndex),
 		myStiffness(stiffness)
 	{
@@ -131,14 +131,14 @@ public:
 	virtual void release();
 
 	virtual QVector3D position() const;
-	virtual SofaComponent* sofaComponent() const;
+    virtual sofa::qtquick::SofaComponent* sofaComponent() const;
 	virtual int particleIndex() const;
 
 private:
     sofa::core::behavior::BaseInteractionForceField::SPtr createInteractionForceField() const;
 
 private:
-	SofaComponent*										mySofaComponent;
+    sofa::qtquick::SofaComponent*						mySofaComponent;
 	int													myParticleIndex;
 	double												myStiffness;
 
@@ -178,7 +178,7 @@ signals:
     void interactingChanged(bool);
 
 public slots:
-    bool start(SofaComponent* sofaComponent, int particleIndex);
+    bool start(sofa::qtquick::SofaComponent* sofaComponent, int particleIndex);
     bool update(const QVector3D& interactorNewPosition);
     void release();
 
@@ -189,8 +189,6 @@ private:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SOFAPARTICLEINTERACTOR_H

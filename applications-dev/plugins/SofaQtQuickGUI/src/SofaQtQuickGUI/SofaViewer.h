@@ -34,14 +34,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QList>
 
 #include <sofa/helper/io/Image.h>
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 class SofaRenderer;
-class SofaComponent;
 class SofaBaseScene;
 class Camera;
 class Manipulator;
@@ -69,9 +65,9 @@ public:
     ~SofaViewer();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
-    Q_PROPERTY(sofa::qtquick::Camera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::SofaComponent> roots READ rootsListProperty)
+    Q_PROPERTY(sofaqtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(sofaqtquick::Camera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
+    Q_PROPERTY(QQmlListProperty<sofaqtquick::bindings::SofaBase> roots READ rootsListProperty)
     Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(QUrl backgroundImageSource READ backgroundImageSource WRITE setBackgroundImageSource NOTIFY backgroundImageSourceChanged)
     Q_PROPERTY(int antialiasingSamples READ antialiasingSamples WRITE setAntialiasingSamples NOTIFY antialiasingSamplesChanged)
@@ -89,11 +85,11 @@ public:
     SofaBaseScene* sofaScene() const        {return mySofaScene;}
     void setSofaScene(SofaBaseScene* newScene);
 
-    Camera* camera() const      {return myCamera;}
-    void setCamera(Camera* newCamera);
+    sofaqtquick::Camera* camera() const      {return myCamera;}
+    void setCamera(sofaqtquick::Camera* newCamera);
 
-    QList<SofaComponent*> roots() const;
-    QQmlListProperty<SofaComponent> rootsListProperty();
+    QList<sofaqtquick::bindings::SofaBase*> roots() const;
+    QQmlListProperty<sofaqtquick::bindings::SofaBase> rootsListProperty();
     void clearRoots();
 
     QColor backgroundColor() const	{return myBackgroundColor;}
@@ -147,14 +143,16 @@ public:
     Q_INVOKABLE QVector4D projectOnGeometry(const QPointF& ssPoint) const;    // .w == 0 => background hit ; .w == 1 => geometry hit
 	Q_INVOKABLE QVector4D projectOnGeometryWithTags(const QPointF& ssPoint, const QStringList& tags) const;    // .w == 0 => background hit ; .w == 1 => geometry hit
 
-    Q_INVOKABLE sofa::qtquick::SelectableSofaParticle*    pickParticle(const QPointF& ssPoint) const;
-	Q_INVOKABLE sofa::qtquick::SelectableSofaParticle*    pickParticleWithTags(const QPointF& ssPoint, const QStringList& tags) const;
+    Q_INVOKABLE sofaqtquick::SelectableSofaParticle*    pickParticle(const QPointF& ssPoint) const;
 
-    sofa::qtquick::Selectable* pickObject(const QPointF& ssPoint,
+    Q_INVOKABLE sofaqtquick::SelectableSofaParticle*    pickParticle2(const QVector3D& origin, const QVector3D& direction) const;
+    Q_INVOKABLE sofaqtquick::SelectableSofaParticle*    pickParticleWithTags(const QPointF& ssPoint, const QStringList& tags) const;
+
+    sofaqtquick::Selectable* pickObject(const QPointF& ssPoint,
                                           const QStringList& tags,
-                                          const QList<SofaComponent*>& roots) ;
-    Q_INVOKABLE sofa::qtquick::Selectable*                pickObject(const QPointF& ssPoint) ;
-    Q_INVOKABLE sofa::qtquick::Selectable*                pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags) ;
+                                          const QList<sofaqtquick::bindings::SofaBase*>& roots) ;
+    Q_INVOKABLE sofaqtquick::Selectable*                pickObject(const QPointF& ssPoint) ;
+    Q_INVOKABLE sofaqtquick::Selectable*                pickObjectWithTags(const QPointF& ssPoint, const QStringList& tags) ;
 
     Q_INVOKABLE QPair<QVector3D, QVector3D> boundingBox() const;
 	Q_INVOKABLE QPair<QVector3D, QVector3D> rootsBoundingBox() const;
@@ -170,9 +168,9 @@ public:
 	QOpenGLFramebufferObject* getFBO() const;
     
 signals:
-    void sofaSceneChanged(sofa::qtquick::SofaBaseScene* newScene);
-    void rootsChanged(QList<sofa::qtquick::SofaComponent> newRoots);
-    void cameraChanged(sofa::qtquick::Camera* newCamera);
+    void sofaSceneChanged(sofaqtquick::SofaBaseScene* newScene);
+    void rootsChanged(QList<sofaqtquick::bindings::SofaBase> newRoots);
+    void cameraChanged(sofaqtquick::Camera* newCamera);
     void backgroundColorChanged(QColor newBackgroundColor);
     void backgroundImageSourceChanged(QUrl newBackgroundImageSource);
     void antialiasingSamplesChanged(int newAntialiasingSamples);
@@ -195,7 +193,7 @@ protected:
 
     sofa::core::visual::VisualParams* setupVisualParams(sofa::core::visual::VisualParams* visualParams) const ;
     void drawManipulator(const SofaViewer& viewer) const ;
-    void drawEditorView(const QList<SofaComponent*>& roots,
+    void drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>& roots,
                         bool doDrawSelected, bool doDrawManipulators) const ;
     void drawSelectedComponents(sofa::core::visual::VisualParams* visualParams) const ;
 
@@ -242,7 +240,7 @@ protected:
     QOpenGLShaderProgram*       myPickingShaderProgram   {nullptr};
     SofaBaseScene*                  mySofaScene          {nullptr};
     Camera*						myCamera             {nullptr};
-    QList<SofaComponent*>       myRoots;
+    QList<sofaqtquick::bindings::SofaBase*> myRoots;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
     QImage                      myBackgroundImage;
@@ -257,8 +255,6 @@ protected:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SOFAVIEWER_H

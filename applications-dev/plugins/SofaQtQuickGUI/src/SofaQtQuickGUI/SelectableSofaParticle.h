@@ -23,10 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SelectableSofaComponent.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// QtQuick wrapper for a selectable object representing a sofa particle (a dof)
@@ -35,7 +32,7 @@ class SOFA_SOFAQTQUICKGUI_API SelectableSofaParticle : public SelectableSofaComp
     Q_OBJECT
 
 public:
-    SelectableSofaParticle(const SofaComponent& sofaComponent, int particleIndex);
+    SelectableSofaParticle(sofaqtquick::bindings::SofaBaseObject* sofaComponent, int particleIndex);
     ~SelectableSofaParticle();
 
 public:
@@ -48,8 +45,6 @@ private:
     int myParticleIndex;
 
 };
-
-}
 
 }
 

@@ -1,9 +1,7 @@
 #include <QDir>
 #include "DirectoryAsset.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 DirectoryAsset::DirectoryAsset(QString fullpath) : m_path(fullpath)
@@ -17,6 +15,5 @@ void DirectoryAsset::getDetails()
     content = dir.entryInfoList();
 }
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick
 

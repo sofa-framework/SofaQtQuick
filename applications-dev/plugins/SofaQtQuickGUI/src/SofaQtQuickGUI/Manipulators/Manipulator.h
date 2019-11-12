@@ -27,10 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QVector3D>
 #include <QQuaternion>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 class SofaViewer;
@@ -50,8 +47,8 @@ public:
     ~Manipulator();
 
 public:
-    Q_PROPERTY(sofa::qtquick::Manipulator* rootManipulator READ rootManipulator NOTIFY rootManipulatorChanged)
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
+    Q_PROPERTY(sofaqtquick::Manipulator* rootManipulator READ rootManipulator NOTIFY rootManipulatorChanged)
+    Q_PROPERTY(QQmlListProperty<sofaqtquick::Manipulator> manipulators READ manipulators)
     Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQuaternion orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
@@ -63,7 +60,7 @@ public:
     Manipulator* rootManipulator() const {return myRootManipulator;}
     void setRootManipulator(Manipulator* newRootManipulator);
 
-    QQmlListProperty<sofa::qtquick::Manipulator> manipulators();
+    QQmlListProperty<sofaqtquick::Manipulator> manipulators();
 
     bool visible() const {return myVisible;}
     void setVisible(bool newVisible);
@@ -106,8 +103,7 @@ private:
 
 };
 
-}
+}  // namespace sofaqtquick
 
-}
 
 #endif // MANIPULATOR_H

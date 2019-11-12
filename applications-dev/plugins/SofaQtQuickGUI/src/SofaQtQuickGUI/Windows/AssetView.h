@@ -13,8 +13,7 @@
 #include <sofa/helper/io/Image.h>
 
 
-namespace sofa {
-namespace qtquick {
+namespace sofaqtquick {
 
 /// \class Displays an asset in a QQuickFramebufferObject
 /// \note Assets can be textures, meshes, prefabs, scripts etc.
@@ -26,5 +25,5 @@ public:
     ~AssetView() override;
 };
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick
+

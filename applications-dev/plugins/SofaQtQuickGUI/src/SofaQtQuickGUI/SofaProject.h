@@ -15,7 +15,7 @@ using sofaqtquick::bindings::SofaBase;
 #include "LiveFileMonitor.h"
 
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 
 using sofaqtquick::bindings::SofaNode;
@@ -106,6 +106,6 @@ private:
     bool m_debug {false};
 };
 
-}  // namespace sofa::qtquick
+}  // namespace sofaqtquick
 
 

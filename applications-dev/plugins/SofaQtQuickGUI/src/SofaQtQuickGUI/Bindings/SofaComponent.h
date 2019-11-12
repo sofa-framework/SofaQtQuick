@@ -23,14 +23,16 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 
+namespace sofaqtquick
+{
+class SofaBaseScene;
+}
+
 namespace sofa
 {
 
 namespace qtquick
 {
-
-
-class SofaBaseScene;
 
 /// QtQuick wrapper for a sofa component (i.e baseObject / baseNode), allowing us to share a component in a QML context
 class SOFA_SOFAQTQUICKGUI_API SofaComponent : public QObject
@@ -40,7 +42,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaComponent : public QObject
     friend class SofaData;
 
 public:
-    SofaComponent(SofaBaseScene* sofaScene, const sofa::core::objectmodel::Base* base);
+    SofaComponent(sofaqtquick::SofaBaseScene* sofaScene, const sofa::core::objectmodel::Base* base);
     SofaComponent(const SofaComponent& sofaComponent);
     SofaComponent(const SofaComponent* sofaComponent);
 
@@ -66,12 +68,12 @@ public:
     Q_INVOKABLE QString getSourceLocation() const ;
     Q_INVOKABLE QString getCreationLocation() const ;
 
-	Q_INVOKABLE QString output() const;
-	Q_INVOKABLE QString warning() const;
+    Q_INVOKABLE QString output() const;
+    Q_INVOKABLE QString warning() const;
 
-	Q_INVOKABLE void reinit();
+    Q_INVOKABLE void reinit();
 
-    Q_INVOKABLE sofa::qtquick::SofaBaseScene* sofaScene() const;
+    Q_INVOKABLE sofaqtquick::SofaBaseScene* sofaScene() const;
 
     static bool hasTag(sofa::core::objectmodel::Base* base, const QStringList& tags)
     {
@@ -90,18 +92,18 @@ public:
 
 
 public slots:
-	void clearOutput();
-	void clearWarning();
+    void clearOutput();
+    void clearWarning();
 
 public:
-	/// \brief check if the sofa component still exists, if you need to access the component it is recommended to directly call SofaComponent::base() because it already check the object existence
-	bool isValid() const;
+    /// \brief check if the sofa component still exists, if you need to access the component it is recommended to directly call SofaComponent::base() because it already check the object existence
+    bool isValid() const;
 
     sofa::core::objectmodel::Base* base();
     const sofa::core::objectmodel::Base* base() const;
 
 private:
-    SofaBaseScene*                              mySofaScene;
+    sofaqtquick::SofaBaseScene*                          mySofaScene;
     const sofa::core::objectmodel::Base*    myBase;
 
 };

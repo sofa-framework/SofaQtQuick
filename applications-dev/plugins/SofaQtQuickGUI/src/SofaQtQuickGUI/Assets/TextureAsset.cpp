@@ -7,9 +7,7 @@ using sofa::component::visualmodel::OglModel;
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// Register all python assets extensions to the factory
@@ -66,5 +64,4 @@ void TextureAsset::getDetails()
 {
 }
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

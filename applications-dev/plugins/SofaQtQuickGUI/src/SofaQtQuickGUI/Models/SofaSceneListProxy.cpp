@@ -19,10 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include "SofaSceneListProxy.h"
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 SofaSceneListProxy::SofaSceneListProxy(QObject* parent) :
@@ -47,6 +44,5 @@ void SofaSceneListProxy::setCollapsed(int modelRow, bool value)
 }
 
 
-} ///namespace qtquick
-} ///namespace sofa
+} ///namespace sofaqtquick
 
