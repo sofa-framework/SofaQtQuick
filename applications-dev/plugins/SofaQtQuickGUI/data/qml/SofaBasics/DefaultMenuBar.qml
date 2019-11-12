@@ -6,7 +6,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
 import SofaBasics 1.0
 import SofaViewListModel 1.0
-
+import GraphView 1.0
 
 MenuBar {
     id: menuBar
@@ -299,15 +299,31 @@ MenuBar {
 
 
     Menu {
+        id: windowMenu
         title: "&Windows"
 
         ColumnLayout {
-            MenuItem { text: "Plugins store (TODO)"; enabled: false
+
+
+            MenuItem {
+                text: "Open store..."
+                onTriggered: {
+                    var o = windowGraph.createObject(root, {
+                                                             "source": "qrc:///SofaViews/WebBrowserView.qml",
+                                                             "title" : "Sofa Ressources Repository",
+                                                             "url": "https://github.com/SofaDefrost/SPM/wiki/Sofa-Ressources",
+                                                             "width" : 800,
+                                                             "height": 600,
+                                                         });
+                    console.log(o.item)
+                    windowMenu.close()
+                }
                 ToolTip {
-                    text: qsTr("Opens SOFA's plugin store")
+                    text: qsTr("Opens SOFA's store")
                     description: "The plugin store allows you to install additional plugins for your project"
                 }
             }
+
             MenuSeparator {}
 
             Repeater {
@@ -320,6 +336,7 @@ MenuBar {
                                                          "source": "file:///"+model.filePath,
                                                          "title" : model.name
                                                      });
+                        windowMenu.close()
                     }
                     ToolTip {
                         text: qsTr("Open " + model.name + " in a new Window")
@@ -328,6 +345,20 @@ MenuBar {
                 }
             }
             MenuSeparator {}
+
+            MenuItem {
+                text: "GraphView";
+                onTriggered: {
+                    GraphView.open()
+                    windowMenu.close()
+                }
+                ToolTip {
+                    text: qsTr("Open the default GraphView")
+                    description: "To visualize the connection between different components"
+                }
+            }
+
+
             MenuItem { text: "Add QML Views (TODO)"; enabled: false
                 ToolTip {
                     text: "Adds additional views"
@@ -335,6 +366,31 @@ MenuBar {
                 }
             }
         }
+
+        Component {
+            id: windowGraph
+
+            Window {
+                property url source
+                property url url
+
+                id: window
+                width: 600
+                height: 400
+                modality: Qt.NonModal
+                flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                visible: true
+                color: sofaApplication.style.contentBackgroundColor
+
+                Loader {
+                    id: loader
+                    anchors.fill: parent
+                    source: window.source
+                    onLoaded: { item.url = url }
+                }
+            }
+        }
+
         Component {
             id: windowComponent
 
@@ -352,7 +408,8 @@ MenuBar {
                 Loader {
                     id: loader
                     anchors.fill: parent
-                    source: window.source
+                    source: window.source                    
+
                 }
             }
         }

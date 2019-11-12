@@ -94,12 +94,13 @@ Menu {
     
     MenuItem {
         id: importAsset
-        text: "Open asset store..."
+        text: "Open store..."
         
         onTriggered: {
             var o = windowComponent.createObject(root, {
                                                      "source": "qrc:///SofaViews/WebBrowserView.qml",
                                                      "title" : "Sofa Ressources Repository",
+                                                     "url" : "https://github.com/SofaDefrost/SPM/wiki/Sofa-Ressources",
                                                      "width" : 800,
                                                      "height": 600,
                                                  });
