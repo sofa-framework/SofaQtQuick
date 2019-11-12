@@ -39,10 +39,7 @@ class QSettings;
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
 #include <SofaPython3/PythonEnvironment.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 
@@ -103,7 +100,7 @@ public:
     Q_INVOKABLE bool runPythonFile(const QString& filename); // \return true if script ran successfuly, false on error
 
     Q_INVOKABLE QVariantList executeProcess(const QString& command, int timeOutMsecs = -1); // \return [exit status (0 on success, 1 on crash), exit code, standard output, standard error]
-    Q_INVOKABLE sofa::qtquick::ProcessState* executeProcessAsync(const QString& command, const QStringList& args, const QString& workingDirectory);
+    Q_INVOKABLE sofaqtquick::ProcessState* executeProcessAsync(const QString& command, const QStringList& args, const QString& workingDirectory);
 
 	Q_INVOKABLE void addNextFrameAction(QJSValue& jsFunction); // \brief will execute the jsfunction (that must live that far) at the next frame
 
@@ -169,8 +166,6 @@ private:
 
     sofa::core::objectmodel::Base::SPtr m_selectedComponent;
 };
-
-}
 
 }
 

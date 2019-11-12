@@ -19,8 +19,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <SofaQtQuickGUI/config.h>
-#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
 #include <SofaQtQuickGUI/Bindings/SofaNode.h>
 
 #include <SofaQtQuickGUI/SofaComponentList.h>
@@ -64,13 +64,17 @@ namespace simulation
     class Node;
 }
 
-namespace qtquick
+}
+
+namespace sofaqtquick
 {
 
 class SofaBaseScene;
 class SofaViewer;
 class PickUsingRasterizationWorker;
 using sofaqtquick::bindings::SofaBase;
+using sofaqtquick::bindings::SofaBaseObject;
+using sofaqtquick::bindings::SofaBaseObjectList;
 using sofaqtquick::bindings::SofaNode;
 
 typedef QList<QUrl> QUrlList;
@@ -93,7 +97,7 @@ public:
     ~SofaBaseScene();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaBaseScene::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(sofaqtquick::SofaBaseScene::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(QString header READ header WRITE setHeader NOTIFY headerChanged)
 
     Q_PROPERTY(QList<QObject*> canvas READ readCanvas NOTIFY notifyCanvasChanged)
@@ -107,8 +111,8 @@ public:
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
-    Q_PROPERTY(sofa::qtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
-    Q_PROPERTY(QQmlListProperty<sofa::qtquick::Manipulator> manipulators READ manipulators)
+    Q_PROPERTY(sofaqtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
+    Q_PROPERTY(QQmlListProperty<sofaqtquick::Manipulator> manipulators READ manipulators)
 
     Q_ENUMS(Status)
     enum Status {
@@ -120,8 +124,8 @@ public:
     };
 
 public:
-    sofa::qtquick::SofaBaseScene::Status status()	const               {return myStatus;}
-    void setStatus(sofa::qtquick::SofaBaseScene::Status newStatus);
+    sofaqtquick::SofaBaseScene::Status status()	const               {return myStatus;}
+    void setStatus(sofaqtquick::SofaBaseScene::Status newStatus);
 
     bool isLoading() const                                      {return Status::Loading == myStatus;}
     bool isReady() const                                        {return Status::Ready == myStatus;}
@@ -143,7 +147,7 @@ public:
     const QUrl& source() const                                  {return mySource;}
 
     /// Sets the rootNode of the scene, constructed from C++
-    void setCppSceneGraph(SofaComponent* newSource);
+    void setCppSceneGraph(SofaBase* newSource);
 
     const QUrl& sourceQML() const                               {return mySourceQML;}
     void setSourceQML(const QUrl& newSourceQML);
@@ -169,10 +173,10 @@ public:
     bool pyQtSynchronous() const                                {return myPyQtForceSynchronous;}
     void setPyQtForceSynchronous(bool newPyQtSynchronous);
 
-    sofa::qtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
-    void setSelectedManipulator(sofa::qtquick::Manipulator* newSelectedManipulator);
+    sofaqtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
+    void setSelectedManipulator(sofaqtquick::Manipulator* newSelectedManipulator);
 
-    QQmlListProperty<sofa::qtquick::Manipulator> manipulators();
+    QQmlListProperty<sofaqtquick::Manipulator> manipulators();
 
 signals:
     void notifyCanvasChanged();
@@ -183,7 +187,7 @@ signals:
     void rootNodeChanged();
     void headerChanged(const QString& newHeader);
     void sourceChanged(const QUrl& newSource);
-    void cppGraphChanged(SofaComponent* newCppGraph);
+    void cppGraphChanged(SofaBase* newCppGraph);
     void sourceQMLChanged(const QUrl& newSourceQML);
     void pathChanged(const QString& newPath);
     void pathQMLChanged(const QString& newPathQML);
@@ -192,7 +196,7 @@ signals:
     void defaultAnimateChanged(bool newDefaultAnimate);
     void asynchronousChanged(bool newAsynchronous);
     void pyQtForceSynchronousChanged(bool newPyQtSynchronous);
-    void selectedManipulatorChanged(sofa::qtquick::Manipulator* newSelectedManipulator);
+    void selectedManipulatorChanged(sofaqtquick::Manipulator* newSelectedManipulator);
 
 public:
     /// Returns an object, a node or a data according to its scene path.
@@ -205,18 +209,18 @@ public:
 
     Q_INVOKABLE double radius() const;
     Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max) const;
-    Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max, const QList<SofaComponent*>& roots) const;
+    Q_INVOKABLE void computeBoundingBox(QVector3D& min, QVector3D& max, const QList<SofaBase*>& roots) const;
     Q_INVOKABLE QString dumpGraph() const;
     Q_INVOKABLE bool reinitComponent(const QString& path);
-    Q_INVOKABLE bool removeComponent(SofaBase* sofaComponent);
+    Q_INVOKABLE bool removeComponent(SofaBase* SofaBase);
 
-    Q_INVOKABLE sofa::qtquick::SofaComponent* addNodeTo(sofa::qtquick::SofaComponent* sofaComponent);
-    Q_INVOKABLE void addExistingNodeTo(sofa::qtquick::SofaComponent* sofaComponent, sofa::qtquick::SofaComponent* sofaNode);
+    Q_INVOKABLE sofaqtquick::SofaBase* addNodeTo(sofaqtquick::SofaBase* SofaBase);
+    Q_INVOKABLE void addExistingNodeTo(sofaqtquick::SofaBase* SofaBase, sofaqtquick::SofaBase* sofaNode);
 
-    Q_INVOKABLE bool createAndAddComponentTo(SofaComponent* sofaComponent, QString name);
+    Q_INVOKABLE bool createAndAddComponentTo(SofaBase* SofaBase, QString name);
 
-    Q_INVOKABLE bool areSameComponent(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
-    Q_INVOKABLE bool areInSameBranch(SofaComponent* sofaComponentA, SofaComponent* sofaComponentB);
+    Q_INVOKABLE bool areSameComponent(SofaBase* SofaBaseA, SofaBase* SofaBaseB);
+    Q_INVOKABLE bool areInSameBranch(SofaBase* SofaBaseA, SofaBase* SofaBaseB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
 
 public:
@@ -233,33 +237,33 @@ public:
     QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data);
 
     QVariant dataValue(const QString& path) const;
-    QVariant dataValue(const SofaComponent* sofaComponent, const QString& name) const;
+    QVariant dataValue(const SofaBase* SofaBase, const QString& name) const;
 
     void setDataValue(const QString& path, const QVariant& value);
-    void setDataValue(SofaComponent* sofaComponent, const QString& name, const QVariant& value);
+    void setDataValue(SofaBase* SofaBase, const QString& name, const QVariant& value);
 
     Q_INVOKABLE sofaqtquick::bindings::SofaData* data(const QString& path);
-    Q_INVOKABLE SofaLink* link(const QString& path);
-    Q_INVOKABLE sofa::qtquick::SofaComponent* node(const QString& path);
-    Q_INVOKABLE sofa::qtquick::SofaComponent* component(const QString& path);
-    Q_INVOKABLE sofa::qtquick::SofaComponent* componentByType(const QString& typeName);
-    Q_INVOKABLE sofa::qtquick::SofaComponentList* componentsByType(const QString& typeName);
+    Q_INVOKABLE sofaqtquick::bindings::SofaLink* link(const QString& path);
+    Q_INVOKABLE sofaqtquick::bindings::SofaBase* node(const QString& path);
+    Q_INVOKABLE sofaqtquick::bindings::SofaBase* component(const QString& path);
+    Q_INVOKABLE sofaqtquick::bindings::SofaBaseObject* componentByType(const QString& typeName);
+    Q_INVOKABLE SofaBaseObjectList* componentsByType(const QString& typeName);
     Q_INVOKABLE sofaqtquick::bindings::SofaNode* root();
 
     // TODO: avoid this kind of specialization if possible
-    Q_INVOKABLE sofa::qtquick::SofaComponent* visualStyleComponent();
+    Q_INVOKABLE sofaqtquick::SofaBase* visualStyleComponent();
 
     //Q_INVOKABLE bool save(const QString& projectRootDir);
     //Q_INVOKABLE bool save2();
 
-    ///Q_INVOKABLE sofa::qtquick::SofaComponent* retrievePythonScriptController(SofaComponent* context, const QString& derivedFrom, const QString& module = "");
+    ///Q_INVOKABLE sofa::qtquick::SofaBase* retrievePythonScriptController(SofaBase* context, const QString& derivedFrom, const QString& module = "");
 
 protected:
     Q_INVOKABLE QVariant onDataValueByPath(const QString& path) const; /// \note From QML: directly call 'dataValue'
-    Q_INVOKABLE QVariant onDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name) const; /// \note From QML: directly call 'dataValue'
+    Q_INVOKABLE QVariant onDataValueByComponent(sofaqtquick::SofaBase* SofaBase, const QString& name) const; /// \note From QML: directly call 'dataValue'
 
     Q_INVOKABLE void onSetDataValueByPath(const QString& path, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
-    Q_INVOKABLE void onSetDataValueByComponent(sofa::qtquick::SofaComponent* sofaComponent, const QString& name, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
+    Q_INVOKABLE void onSetDataValueByComponent(sofaqtquick::SofaBase* SofaBase, const QString& name, const QVariant& value); /// \note From QML: directly call 'setDataValue' with variadic set parameters
 
 public slots:
     void reload();
@@ -303,8 +307,8 @@ public:
 protected:
     /// \brief      Low-level function for mechanical state particle picking
     /// \note       The best way to pick a particle is to use a Viewer instead of directly call this function
-    /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaComponent where it belongs
-    SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaComponent*>& roots = QList<SofaComponent*>());
+    /// \return     A 'SelectableSceneParticle' containing the picked particle and the SofaBase where it belongs
+    SelectableSofaParticle* pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaBase*>& roots = QList<SofaBase*>());
 
 private:
     Status                                      myStatus;
@@ -329,12 +333,10 @@ private:
     Manipulator*                                mySelectedManipulator;
     SofaBase*                                   mySelectedComponent {nullptr};
 
-    SofaComponent*                              myCppGraph;
+    SofaBase*                                   myCppGraph;
 
-    QList<QObject*>                                 m_canvas;
+    QList<QObject*>                             m_canvas;
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 

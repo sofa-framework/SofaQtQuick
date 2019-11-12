@@ -26,10 +26,7 @@ namespace py = pybind11;
 #include <QTextStream>
 #include <QFile>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::simulation;
@@ -91,8 +88,6 @@ void PythonConsole::InitConsoleRedirection()
 
         redirect = true;
     }
-}
-
 }
 
 }

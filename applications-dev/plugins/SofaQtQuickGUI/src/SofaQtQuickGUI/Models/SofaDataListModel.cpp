@@ -26,10 +26,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/helper/logging/Messaging.h>
 using sofa::helper::logging::Message ;
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::defaulttype;
@@ -88,7 +85,7 @@ void SofaDataListModel::update()
             myItems.append(buildItem("name", infoGroup, QString::fromStdString(base->getName())));
             myItems.append(buildItem("class", infoGroup,QString::fromStdString(base->getClassName())));
 
-            std::string namespaceName = core::objectmodel::BaseClass::decodeNamespaceName(typeid(*base));
+            std::string namespaceName = sofa::core::objectmodel::BaseClass::decodeNamespaceName(typeid(*base));
             if(!namespaceName.empty())
                 myItems.append(buildItem("namespace", infoGroup,QString::fromStdString(namespaceName)));
 
@@ -96,13 +93,13 @@ void SofaDataListModel::update()
             if(!templateName.empty())
                 myItems.append(buildItem("template", infoGroup,QString::fromStdString(templateName)));
 
-            core::ObjectFactory::ClassEntry entry = core::ObjectFactory::getInstance()->getEntry(base->getClassName());
+            sofa::core::ObjectFactory::ClassEntry entry = sofa::core::ObjectFactory::getInstance()->getEntry(base->getClassName());
             if(!entry.creatorMap.empty())
             {
                 if(!entry.description.empty() && std::string("TODO") != entry.description)
                     myItems.append(buildItem("description", infoGroup,QString::fromStdString(entry.description)));
 
-                core::ObjectFactory::CreatorMap::iterator it = entry.creatorMap.find(base->getTemplateName());
+                sofa::core::ObjectFactory::CreatorMap::iterator it = entry.creatorMap.find(base->getTemplateName());
                 if(entry.creatorMap.end() != it && *it->second->getTarget())
                     myItems.append(buildItem("provided by", infoGroup,QString::fromStdString(it->second->getTarget())));
             }
@@ -177,7 +174,7 @@ SofaDataListModel::Item SofaDataListModel::buildItem(const QString& name, const 
     return item;
 }
 
-void SofaDataListModel::setSofaComponent(SofaComponent* newSofaComponent)
+void SofaDataListModel::setSofaComponent(sofa::qtquick::SofaComponent* newSofaComponent)
 {
     if(newSofaComponent == mySofaComponent)
         return;
@@ -283,6 +280,4 @@ sofaqtquick::bindings::SofaData* SofaDataListModel::getDataById(int row) const
     return nullptr;
 }
 
-}
-
-}
+}  // namespace sofaqtquick

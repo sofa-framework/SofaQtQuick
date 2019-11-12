@@ -2,7 +2,7 @@
 using sofa::helper::testing::BaseTest ;
 
 #include <SofaQtQuickGUI/SofaBaseScene.h>
-using sofa::qtquick::SofaBaseScene ;
+using sofaqtquick::SofaBaseScene ;
 
 #include <SofaQtQuickGUI/SofaQtQuickQmlModule.h>
 using sofaqtquick::SofaQtQuickQmlModule;

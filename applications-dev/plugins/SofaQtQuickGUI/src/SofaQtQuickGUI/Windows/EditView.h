@@ -32,9 +32,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/helper/io/Image.h>
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class Display a Sofa Scene in a QQuickFramebufferObject. The scene elements 
@@ -50,7 +48,6 @@ public:
     ~EditView();
 };
 
-}
 }
 
 #endif // SOFAQTQUICK_EDITVIEW_H

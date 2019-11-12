@@ -22,15 +22,15 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QStack>
 #include <iostream>
 #include <algorithm>
-namespace sofa
-{
 
-namespace qtquick
+namespace sofaqtquick
 {
 
 using namespace sofa::defaulttype;
 using namespace sofa::core::objectmodel;
 using namespace sofa::simulation;
+
+using sofa::qtquick::SofaComponent;
 
 SofaSceneListModel::SofaSceneListModel(QObject* parent) : QAbstractListModel(parent), MutationListener(),
     myItems(),
@@ -502,6 +502,4 @@ void SofaSceneListModel::onEndRemoveObject(Node* parent, BaseObject* object)
     }
 }
 
-}
-
-}
+}  // namespace sofaqtquick

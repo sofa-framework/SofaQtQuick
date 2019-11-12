@@ -28,10 +28,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/SofaBaseScene.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class A Model of the sofa scene graph allowing us to show the graph in a ListView
@@ -51,7 +48,7 @@ public slots:
     void clear();
 
 public:
-    Q_PROPERTY(sofa::qtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
+    Q_PROPERTY(sofaqtquick::SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
 
 public:
     SofaBaseScene* sofaScene() const		{return mySofaScene;}
@@ -81,7 +78,7 @@ protected:
     void handleSceneChange(SofaBaseScene* newScene);
 
 signals:
-    void sofaSceneChanged(sofa::qtquick::SofaBaseScene* newScene);
+    void sofaSceneChanged(sofaqtquick::SofaBaseScene* newScene);
 
 protected:
 
@@ -141,8 +138,6 @@ private:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SOFASCENELISTMODEL_H

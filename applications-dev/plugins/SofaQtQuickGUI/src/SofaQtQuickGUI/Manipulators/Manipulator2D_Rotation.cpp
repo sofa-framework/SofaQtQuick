@@ -26,10 +26,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <qmath.h>
 #include <QDebug>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 Manipulator2D_Rotation::Manipulator2D_Rotation(QObject* parent) : Manipulator(parent),
@@ -232,6 +229,5 @@ void Manipulator2D_Rotation::internalDraw(const SofaViewer& viewer, bool isPicki
     glPopMatrix();
 }
 
-}
+}  // namespace sofaqtquick
 
-}

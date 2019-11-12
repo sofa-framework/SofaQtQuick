@@ -24,10 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QProcess>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class State of a process
@@ -59,8 +56,6 @@ private:
     QProcess*   myProcess;
 
 };
-
-}
 
 }
 

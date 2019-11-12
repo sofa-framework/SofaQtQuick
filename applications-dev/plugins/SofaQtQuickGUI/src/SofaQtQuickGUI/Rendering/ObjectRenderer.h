@@ -15,9 +15,7 @@ namespace sofa {
 
 
 //////////////////////////////// Definition ////////////////////////////////////////////////////////
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 namespace _objectrenderer_
 {
@@ -45,6 +43,6 @@ public:
 
 using _objectrenderer_::ObjectRenderer ;
 
-} /// qtquick
-} /// sofa
+} /// sofaqtquick
+
 #endif /// SOFAQTQUICKGUI_OBJECTRENDERER_H

@@ -19,14 +19,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SelectableSofaComponent.h>
 
-namespace sofa
+namespace sofaqtquick
 {
 
-namespace qtquick
-{
-
-SelectableSofaComponent::SelectableSofaComponent(const SofaComponent& sofaComponent) : Selectable(),
-    mySofaComponent(new SofaComponent(sofaComponent))
+SelectableSofaComponent::SelectableSofaComponent(sofaqtquick::bindings::SofaBaseObject* sofaComponent) : Selectable(),
+    mySofaComponent(sofaComponent)
 {
 
 }
@@ -34,8 +31,6 @@ SelectableSofaComponent::SelectableSofaComponent(const SofaComponent& sofaCompon
 SelectableSofaComponent::~SelectableSofaComponent()
 {
     delete mySofaComponent;
-}
-
 }
 
 }

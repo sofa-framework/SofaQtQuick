@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
 
     /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
-    sofa::qtquick::SofaBaseApplication::Initialization();
+    sofaqtquick::SofaBaseApplication::Initialization();
 
     QApplication app(argc, argv);
     QtWebView::initialize();
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     app.setApplicationVersion("v1.0");
 
     /// common settings for most sofaqtquick applications
-    if(!sofa::qtquick::SofaBaseApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
+    if(!sofaqtquick::SofaBaseApplication::DefaultMain(app, applicationEngine, "qrc:/qml/Main.qml"))
         return -1;
 
     return app.exec();

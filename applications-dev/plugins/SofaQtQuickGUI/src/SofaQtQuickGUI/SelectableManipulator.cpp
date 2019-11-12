@@ -20,10 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <GL/glew.h>
 #include <SofaQtQuickGUI/SelectableManipulator.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 SelectableManipulator::SelectableManipulator(Manipulator& manipulator) : Selectable(),
@@ -39,4 +36,3 @@ SelectableManipulator::~SelectableManipulator()
 
 }
 
-}

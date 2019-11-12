@@ -44,6 +44,7 @@ using sofaqtquick::bindings::SofaNodeFactory;
 
 #include <SofaQtQuickGUI/Bindings/SofaBaseObject.h>
 using sofaqtquick::bindings::SofaBaseObject;
+using sofaqtquick::bindings::SofaBaseObjectList;
 
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/Selectable.h>
@@ -69,32 +70,31 @@ using sofaqtquick::bindings::SofaBaseObject;
 using sofaqtquick::bindings::SofaCoreBindingFactory;
 
 #include <SofaQtQuickGUI/PythonConsole.h>
-using namespace sofa::qtquick;
 
 #include <SofaQtQuickGUI/Console.h>
-using sofa::qtquick::console::Console ;
+using sofaqtquick::console::Console ;
 
 #include <SofaQtQuickGUI/SofaProject.h>
-using sofa::qtquick::SofaProject;
+using sofaqtquick::SofaProject;
 
 #include <SofaQtQuickGUI/Assets/Asset.h>
-using sofa::qtquick::Asset;
+using sofaqtquick::Asset;
 #include <SofaQtQuickGUI/Assets/PythonAsset.h>
-using sofa::qtquick::PythonAsset;
+using sofaqtquick::PythonAsset;
 
 #include <SofaQtQuickGUI/Assets/MeshAsset.h>
-using sofa::qtquick::MeshAsset;
+using sofaqtquick::MeshAsset;
 #include <SofaQtQuickGUI/Assets/TextureAsset.h>
-using sofa::qtquick::TextureAsset;
+using sofaqtquick::TextureAsset;
 
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofaqtquick::bindings::SofaFactory;
 
 #include <SofaQtQuickGUI/LiveQMLFileMonitor.h>
-using sofa::qtquick::LiveQMLFileMonitor;
+using sofaqtquick::LiveQMLFileMonitor;
 
 #include <SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.h>
-using sofa::qtquick::HighlightComponent;
+using sofaqtquick::HighlightComponent;
 
 #include <SofaQtQuickGUI/Windows/GraphView.h>
 using sofaqtquick::views::GraphView;
@@ -103,6 +103,8 @@ using sofaqtquick::views::GraphView;
 
 #include <QQmlPropertyMap>
 #include <QQmlContext>
+
+using sofa::qtquick::SofaComponent;
 
 void initRessources()
 {
@@ -187,6 +189,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<size_t>("const size_t");
     qRegisterMetaType<QVariantMap*>("QVariantMap*");
     qRegisterMetaType<SofaBaseScene*>("const SofaBaseScene*");
+    qRegisterMetaType<SofaBaseScene*>("const SofaScene*");
     qRegisterMetaType<Asset*>("Asset*");
     qRegisterMetaType<QUrlList>("QUrlList");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("sofaqtquick::bindings::SofaBaseObject*");
@@ -214,7 +217,8 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<Manipulator3D_Rotation>                         ("Manipulator3D_Rotation"               , versionMajor, versionMinor, "Manipulator3D_Rotation");
     qmlRegisterType<SofaBaseScene>                                  ("SofaBaseScene"                            , versionMajor, versionMinor, "SofaBaseScene");
     qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
-    qmlRegisterUncreatableType<SofaComponentList>                   ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
+    qmlRegisterUncreatableType<SofaBaseList>                        ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
+    qmlRegisterUncreatableType<SofaBaseObjectList>                  ("SofaBaseObjectList"                   , versionMajor, versionMinor, "SofaBaseObjectList", "SofaBaseObjectList is not instantiable");
     qmlRegisterUncreatableType<Selectable>                          ("Selectable"                           , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
     qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator"                , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
     qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"              , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");

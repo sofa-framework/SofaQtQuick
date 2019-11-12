@@ -5,9 +5,7 @@
 #include "TextureAsset.h"
 #include "PythonAsset.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 BaseAssetCreator::~BaseAssetCreator() {}
@@ -51,5 +49,5 @@ bool AssetFactory::registerAsset(const std::string& extension,
     return true;
 }
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick
+

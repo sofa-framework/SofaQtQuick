@@ -27,10 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QAbstractListModel>
 #include <QList>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class A Model containing the name/filePath for the view files that are
@@ -76,8 +73,6 @@ private:
     QList<Item>             myItems;
 };
 
-}
-
-}
+}  // sofaqtquick
 
 #endif // RUNSOFA_SOFAVIEWLISTMODEL_H

@@ -24,10 +24,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Selectable.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// QtQuick wrapper for a selectable object representing a Manipulator
@@ -40,7 +37,7 @@ public:
     ~SelectableManipulator();
 
 public:
-    Q_PROPERTY(sofa::qtquick::Manipulator* manipulator READ manipulator)
+    Q_PROPERTY(sofaqtquick::Manipulator* manipulator READ manipulator)
 
 public:
     Manipulator* manipulator() const {return myManipulator;}
@@ -50,8 +47,6 @@ private:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // SELECTABLE_MANIPULATOR_H

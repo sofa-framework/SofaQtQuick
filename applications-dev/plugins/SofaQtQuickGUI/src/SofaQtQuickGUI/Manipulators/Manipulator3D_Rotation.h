@@ -25,10 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QObject>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 /// \class An object or world space manipulator allowing us to rotate things around X, Y or the Z axis
@@ -73,8 +70,6 @@ private:
 
 };
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // MANIPULATOR3D_ROTATION_H

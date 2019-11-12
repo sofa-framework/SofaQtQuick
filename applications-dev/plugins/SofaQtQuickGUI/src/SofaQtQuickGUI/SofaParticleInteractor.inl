@@ -34,10 +34,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <qqml.h>
 #include <QDebug>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 template<class Types>
@@ -119,7 +116,7 @@ inline QVector3D SofaParticleInteraction<Types>::position() const
 }
 
 template<class Types>
-inline SofaComponent* SofaParticleInteraction<Types>::sofaComponent() const
+inline sofa::qtquick::SofaComponent* SofaParticleInteraction<Types>::sofaComponent() const
 {
 	return mySofaComponent;
 }
@@ -141,6 +138,4 @@ inline sofa::core::behavior::BaseInteractionForceField::SPtr SofaParticleInterac
 	return interactionForceField;
 }
 
-}
-
-}
+}  // namespace sofaqtquick

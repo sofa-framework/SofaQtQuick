@@ -27,10 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "SofaViewListModel.h"
 #include <sofa/helper/logging/Messaging.h>
 
-namespace sofa
-{
-
-namespace qtquick
+namespace sofaqtquick
 {
 
 SofaViewListModel::SofaViewListModel(QObject* parent) :
@@ -118,6 +115,4 @@ QVariantMap SofaViewListModel::get(int row)
     return res;
 }
 
-}
-
-}
+}  // namespace sofaqtquick

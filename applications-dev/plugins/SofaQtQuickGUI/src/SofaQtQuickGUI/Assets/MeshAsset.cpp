@@ -24,7 +24,7 @@ using sofa::component::visualmodel::InteractiveCamera;
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 
 /// Register all mesh assets extensions to the factory
@@ -111,4 +111,4 @@ QUrl MeshAsset::getAssetInspectorWidget() {
 }
 
 
-} // namespace sofa::qtquick
+} // namespace sofaqtquick

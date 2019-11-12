@@ -35,13 +35,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////// FORWARD DECLARATION ///////////////////////////
 namespace sofaqtquick::binding
 {
-        class SofaCamera;
+class SofaCamera;
 }
 
 //////////////////////////////// DEFINITION /////////////////////////////
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 using sofaqtquick::binding::SofaCamera;
@@ -62,7 +60,6 @@ protected:
     virtual void internalRender(int width, int height) const override ;
 };
 
-}
-}
+}  // namespace sofaqtquick
 
 #endif // SOFAQTQUICK_CAMERAVIEW_H

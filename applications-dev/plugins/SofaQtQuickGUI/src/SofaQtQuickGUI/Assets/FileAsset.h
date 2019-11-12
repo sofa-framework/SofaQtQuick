@@ -3,9 +3,7 @@
 #include <QFileInfoList>
 #include "Asset.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 class FileAsset : public Asset
@@ -20,5 +18,4 @@ public:
 
 };
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick

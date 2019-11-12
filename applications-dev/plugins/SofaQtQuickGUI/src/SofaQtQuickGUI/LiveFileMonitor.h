@@ -31,7 +31,7 @@ using sofa::helper::system::FileEventListener;
 
 class QQmlEngine;
 
-namespace sofa::qtquick
+namespace sofaqtquick
 {
 namespace _livefilemonitor
 {
@@ -74,6 +74,6 @@ protected:
 
 using _livefilemonitor::LiveFileMonitor;
 
-}  // namespace sofa::qtquick
+}  // namespace sofaqtquick
 
 #endif // LIVEFILEMONITOR_H

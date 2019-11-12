@@ -21,11 +21,13 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 #define CONSOLE_H
 
 #include <SofaQtQuickGUI/config.h>
+#include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <QAbstractListModel>
 
 #include <sofa/helper/vector.h>
 
 #include <sofa/helper/logging/MessageHandler.h>
+
 /// Forward declaration
 namespace sofa {
     namespace helper {
@@ -33,14 +35,14 @@ namespace sofa {
             class Message;
         }
     }
-    namespace qtquick {
-        class SofaBaseScene;
-        class SofaComponent;
-    }
+}
+namespace sofa::qtquick {
+    class SofaComponent;
 }
 
-namespace sofa {
-namespace qtquick {
+
+namespace sofaqtquick {
+class SofaBaseScene;
 namespace console {
 
 // I can use 'using' because I'm in my private 'console' namespace so it
@@ -75,17 +77,17 @@ public:
 
     Q_PROPERTY(int messageCount READ getMessageCount NOTIFY messageCountChanged)
     Q_PROPERTY(SofaBaseScene* sofaScene READ sofaScene WRITE setSofaScene NOTIFY sofaSceneChanged)
-    Q_PROPERTY(SofaComponent* filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(sofa::qtquick::SofaComponent* filter READ filter WRITE setFilter NOTIFY filterChanged)
 
     /// Set the scene associated with a message queue.
     SofaBaseScene* m_sofaScene {nullptr} ;
     SofaBaseScene* sofaScene(){ return m_sofaScene; }
     void setSofaScene(SofaBaseScene* s){ m_sofaScene = s; }
 
-    SofaComponent* m_filter {nullptr} ;
+    sofa::qtquick::SofaComponent* m_filter {nullptr} ;
     /// Set a component to filter the message to return in the engine.
-    SofaComponent* filter(){ return m_filter; }
-    void setFilter(SofaComponent* c){ m_filter = c; }
+    sofa::qtquick::SofaComponent* filter(){ return m_filter; }
+    void setFilter(sofa::qtquick::SofaComponent* c){ m_filter = c; }
 
 
     /// inherited from QAbstractListModel
@@ -109,10 +111,8 @@ private:
     sofa::helper::vector<Message> m_messages ;
 };
 
-}
+}  // namespace console
 
-}
-
-}
+}  // namespace sofaqtquick
 
 #endif // CONSOLE_H

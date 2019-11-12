@@ -8,11 +8,11 @@
 namespace sofaqtquick
 {
 
-bool __qml = sofa::qtquick::AssetFactory::registerAsset("qml", new sofa::qtquick::AssetCreator<CanvasAsset>());
+bool __qml = sofaqtquick::AssetFactory::registerAsset("qml", new sofaqtquick::AssetCreator<CanvasAsset>());
 
 const CanvasAsset::LoaderMap CanvasAsset::_loaders = CanvasAsset::createLoaders();
 
-std::map<std::string, sofa::qtquick::BaseAssetLoader*> CanvasAsset::createLoaders()
+std::map<std::string, sofaqtquick::BaseAssetLoader*> CanvasAsset::createLoaders()
 {
     CanvasAsset::LoaderMap m;
     m["qml"] = new CanvasAssetLoader<BaseObject>();

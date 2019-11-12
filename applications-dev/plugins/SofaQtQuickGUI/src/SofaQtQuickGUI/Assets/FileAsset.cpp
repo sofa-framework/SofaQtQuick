@@ -1,9 +1,7 @@
 #include <QDir>
 #include "FileAsset.h"
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 
 FileAsset::FileAsset(const std::string& path, const std::string& extension) : Asset(path, extension)
@@ -21,6 +19,5 @@ sofaqtquick::bindings::SofaNode* FileAsset::create(sofaqtquick::bindings::SofaNo
     return nullptr;
 }
 
-} // namespace qtquick
-} // namespace sofa
+} // namespace sofaqtquick
 

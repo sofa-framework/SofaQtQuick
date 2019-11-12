@@ -25,7 +25,7 @@ using sofapython3::PythonFactory;
 
 #include "Assets/DirectoryAsset.h"
 #include "Assets/AssetFactory.h"
-using sofa::qtquick::AssetFactory;
+using sofaqtquick::AssetFactory;
 
 #include <fstream>
 
@@ -33,15 +33,15 @@ using sofa::qtquick::AssetFactory;
 namespace sofa::helper::logging
 {
 
-inline bool notMuted(const sofa::qtquick::SofaProject* p){ return p->getDebug(); }
-inline ComponentInfo::SPtr getComponentInfo(const sofa::qtquick::SofaProject* )
+inline bool notMuted(const sofaqtquick::SofaProject* p){ return p->getDebug(); }
+inline ComponentInfo::SPtr getComponentInfo(const sofaqtquick::SofaProject* )
 {
     return ComponentInfo::SPtr(new ComponentInfo("SofaProject")) ;
 }
 }
 
 
-namespace sofa::qtquick {
+namespace sofaqtquick {
 
 ProjectMonitor::ProjectMonitor()
 {
@@ -510,7 +510,7 @@ bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
 
 void SofaProject::saveScene(const QString filepath, SofaNode* node)
 {
-    PythonEnvironment::executePython([this, filepath, node]()
+    sofapython3::PythonEnvironment::executePython([this, filepath, node]()
     {
         std::string ppath = filepath.toStdString();
         py::module SofaQtQuick = py::module::import("SofaQtQuick");
@@ -530,4 +530,4 @@ void SofaProject::saveScene(const QString filepath, SofaNode* node)
 }
 
 
-}  /// namespace sofa::qtquick
+}  /// namespace sofaqtquick

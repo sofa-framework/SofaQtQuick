@@ -33,9 +33,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h>
 using sofaqtquick::bindings::SofaCoreBindingFactory;
 
-namespace sofa
-{
-namespace qtquick
+namespace sofaqtquick
 {
 namespace _sofasceneitemmodel_
 {
@@ -471,7 +469,7 @@ void SofaSceneItemModel::onEndRemoveChild(Node* parent, Node* child)
     endRemoveRows();
 }
 
-void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onBeginAddObject(Node* parent, sofa::core::objectmodel::BaseObject* obj)
 {
     SOFA_UNUSED(obj);
     QModelIndex parentIndex = index(parent);
@@ -479,20 +477,20 @@ void SofaSceneItemModel::onBeginAddObject(Node* parent, core::objectmodel::BaseO
     beginInsertRows(parentIndex, objIndex, objIndex);
 }
 
-void SofaSceneItemModel::onEndAddObject(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onEndAddObject(Node* parent, sofa::core::objectmodel::BaseObject* obj)
 {
     SOFA_UNUSED(obj);
     SOFA_UNUSED(parent);
     endInsertRows();
 }
-void SofaSceneItemModel::onBeginRemoveObject(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onBeginRemoveObject(Node* parent, sofa::core::objectmodel::BaseObject* obj)
 {
     QModelIndex parentIndex = index(parent);
     int objIndex = index(parent, obj).row();
     beginRemoveRows(parentIndex, objIndex, objIndex);
 
 }
-void SofaSceneItemModel::onEndRemoveObject(Node* parent, core::objectmodel::BaseObject* obj)
+void SofaSceneItemModel::onEndRemoveObject(Node* parent, sofa::core::objectmodel::BaseObject* obj)
 {
     SOFA_UNUSED(obj);
     SOFA_UNUSED(parent);
@@ -543,5 +541,4 @@ void SofaSceneItemModel::handleRootNodeChange()
 
 
 } /// namespace _sofasceneitemmodel_
-} /// namespace qtquick
-} /// namespace sofa
+} /// namespace sofaqtquick
