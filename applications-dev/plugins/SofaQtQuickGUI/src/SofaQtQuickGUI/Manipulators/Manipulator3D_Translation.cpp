@@ -20,6 +20,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Manipulator3D_Translation.h"
 #include <SofaQtQuickGUI/SofaViewer.h>
 
+#include <sofa/core/visual/DrawToolGL.h>
+
 #include <QApplication>
 #include <GL/glew.h>
 #include <QMatrix4x4>
@@ -29,7 +31,7 @@ namespace sofaqtquick
 {
 
 Manipulator3D_Translation::Manipulator3D_Translation(QObject* parent) : Manipulator(parent),
-    myAxis("xyz")
+    myAxis("xy")
 {
 
 }
@@ -61,6 +63,8 @@ void Manipulator3D_Translation::pick(const SofaViewer& viewer) const
 
 void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPicking) const
 {
+    sofa::core::visual::DrawToolGL drawTools;
+
     std::cout << "Drawing 3DTranslation!" << std::endl;
     if(!visible())
         return;
@@ -90,121 +94,112 @@ void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPi
 
     glTranslatef(position().x(), position().y(), position().z());
 
-    glColor3f(0.0f,0.0f,1.0f); //blue color
+    QVector3D axis = QVector3D(0.0, 0.0, 1.0);
+    if(xAxis)
+        axis = QVector3D(1.0, 0.0, 0.0);
+    else if(yAxis)
+        axis = QVector3D(0.0, 1.0, 0.0);
 
-    glPointSize(100.0f);//set point size to 10 pixels
+    // object
+    float height = 0.2f;
+    {
+        QVector4D p0 = camera->projection() * camera->view() * QVector4D(position(), 1.0);
+        QVector4D p1 = camera->projection() * camera->view() * QVector4D(position() + camera->up(), 1.0);
+        QVector3D direction = ((p1 / p1.w() - p0 / p0.w()).toVector3D());
 
-    glBegin(GL_POINTS); //starts drawing of points
-    glVertex3f(1.0f,1.0f,0.0f);//upper-right corner
-    glVertex3f(-1.0f,-1.0f,0.0f);//lower-left corner
-    glEnd();//end drawing of points
+        height *= 1.0 / direction.length();
+    }
 
-//    QVector3D axis = QVector3D(0.0, 0.0, 1.0);
-//    if(xAxis)
-//        axis = QVector3D(1.0, 0.0, 0.0);
-//    else if(yAxis)
-//        axis = QVector3D(0.0, 1.0, 0.0);
+    float width = height * 0.05f;
+    if(isPicking)
+        width *= 2.5f;
 
-//    // object
-//    float height = 0.2f;
-//    {
-//        QVector4D p0 = camera->projection() * camera->view() * QVector4D(position(), 1.0);
-//        QVector4D p1 = camera->projection() * camera->view() * QVector4D(position() + camera->up(), 1.0);
-//        QVector3D direction = ((p1 / p1.w() - p0 / p0.w()).toVector3D());
+    glDisable(GL_CULL_FACE);
 
-//        height *= 1.0 / direction.length();
-//    }
+    glLineWidth(width);
 
-//    float width = height * 0.05f;
-//    if(isPicking)
-//        width *= 2.5f;
+    QColor color(xAxis ? 255 : 0, yAxis ? 255 : 0, zAxis ? 255 : 0);
+    glColor3f(color.redF(), color.greenF(), color.blueF());
 
-//    glDisable(GL_CULL_FACE);
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glEnable(GL_COLOR_MATERIAL);
 
-//    glLineWidth(width);
+    // draw arrows
+    if(1 == axisNum)
+    {
+        width *= 0.5f;
 
-//    QColor color(xAxis ? 255 : 0, yAxis ? 255 : 0, zAxis ? 255 : 0);
-//    glColor3f(color.redF(), color.greenF(), color.blueF());
+        if(xAxis || yAxis)
+            glRotated(-90.0, 1.0, 0.0, 0.0);
 
-//    glEnable(GL_POLYGON_OFFSET_FILL);
-//    glEnable(GL_COLOR_MATERIAL);
+        if(xAxis)
+            glRotated(90.0, 0.0, 1.0, 0.0);
 
-//    // draw arrows
-//    if(1 == axisNum)
-//    {
-//        width *= 0.5f;
+        glPolygonOffset(-1.0f, -1.0f);
 
-//        if(xAxis || yAxis)
-//            glRotated(-90.0, 1.0, 0.0, 0.0);
+        glBegin(GL_QUADS);
+        {
+            glVertex3f(-0.2 * height,   0.0,    0.8 * height + width);
+            glVertex3f(-0.2 * height,   0.0,    0.8 * height - width);
+            glVertex3f( 0.0,            0.0,          height - width);
+            glVertex3f( 0.0,            0.0,          height + width);
 
-//        if(xAxis)
-//            glRotated(90.0, 0.0, 1.0, 0.0);
+            glVertex3f(-0.2 * height, width,            0.8 * height);
+            glVertex3f(-0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.0,         -width,                 height );
+            glVertex3f( 0.0,          width,                 height );
 
-//        glPolygonOffset(-1.0f, -1.0f);
+            glVertex3f( 0.0,            0.0,          height + width);
+            glVertex3f( 0.0,            0.0,          height - width);
+            glVertex3f( 0.2 * height,   0.0,    0.8 * height - width);
+            glVertex3f( 0.2 * height,   0.0,    0.8 * height + width);
 
-//        glBegin(GL_QUADS);
-//        {
-//            glVertex3f(-0.2 * height,   0.0,    0.8 * height + width);
-//            glVertex3f(-0.2 * height,   0.0,    0.8 * height - width);
-//            glVertex3f( 0.0,            0.0,          height - width);
-//            glVertex3f( 0.0,            0.0,          height + width);
+            glVertex3f( 0.0,          width,                  height);
+            glVertex3f( 0.0,         -width,                  height);
+            glVertex3f( 0.2 * height,-width,            0.8 * height);
+            glVertex3f( 0.2 * height, width,            0.8 * height);
 
-//            glVertex3f(-0.2 * height, width,            0.8 * height);
-//            glVertex3f(-0.2 * height,-width,            0.8 * height);
-//            glVertex3f( 0.0,         -width,                 height );
-//            glVertex3f( 0.0,          width,                 height );
+            glVertex3f(       -width,   0.0,          height - width);
+            glVertex3f(       -width,   0.0,                   width);
+            glVertex3f(        width,   0.0,                   width);
+            glVertex3f(        width,   0.0,          height - width);
 
-//            glVertex3f( 0.0,            0.0,          height + width);
-//            glVertex3f( 0.0,            0.0,          height - width);
-//            glVertex3f( 0.2 * height,   0.0,    0.8 * height - width);
-//            glVertex3f( 0.2 * height,   0.0,    0.8 * height + width);
+            glVertex3f(       0.0,   -width,          height - width);
+            glVertex3f(       0.0,   -width,                   width);
+            glVertex3f(       0.0,    width,                   width);
+            glVertex3f(       0.0,    width,          height - width);
+        }
+        glEnd();
+    }
+    else // draw quad surrounded by lines
+    {
+        height *= 0.33f;
+        if(isPicking)
+            height *= 1.25f;
 
-//            glVertex3f( 0.0,          width,                  height);
-//            glVertex3f( 0.0,         -width,                  height);
-//            glVertex3f( 0.2 * height,-width,            0.8 * height);
-//            glVertex3f( 0.2 * height, width,            0.8 * height);
+        if(!xAxis)
+            glRotated(-90.0, 0.0, 1.0, 0.0);
+        else if(!yAxis)
+            glRotated(90.0, 1.0, 0.0, 0.0);
 
-//            glVertex3f(       -width,   0.0,          height - width);
-//            glVertex3f(       -width,   0.0,                   width);
-//            glVertex3f(        width,   0.0,                   width);
-//            glVertex3f(        width,   0.0,          height - width);
+        glPolygonOffset(-1.0f, -3.0f);
 
-//            glVertex3f(       0.0,   -width,          height - width);
-//            glVertex3f(       0.0,   -width,                   width);
-//            glVertex3f(       0.0,    width,                   width);
-//            glVertex3f(       0.0,    width,          height - width);
-//        }
-//        glEnd();
-//    }
-//    else // draw quad surrounded by lines
-//    {
-//        height *= 0.33f;
-//        if(isPicking)
-//            height *= 1.25f;
+        glBegin(GL_QUADS);
+        {
+            glVertex3f(   0.0, height, 0.0);
+            glVertex3f(   0.0,    0.0, 0.0);
+            glVertex3f(height,    0.0, 0.0);
+            glVertex3f(height, height, 0.0);
+        }
+        glEnd();
+    }
 
-//        if(!xAxis)
-//            glRotated(-90.0, 0.0, 1.0, 0.0);
-//        else if(!yAxis)
-//            glRotated(90.0, 1.0, 0.0, 0.0);
+    glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_POLYGON_OFFSET_FILL);
 
-//        glPolygonOffset(-1.0f, -3.0f);
+    glLineWidth(1.0f);
 
-//        glBegin(GL_QUADS);
-//        {
-//            glVertex3f(   0.0, height, 0.0);
-//            glVertex3f(   0.0,    0.0, 0.0);
-//            glVertex3f(height,    0.0, 0.0);
-//            glVertex3f(height, height, 0.0);
-//        }
-//        glEnd();
-//    }
-
-//    glDisable(GL_COLOR_MATERIAL);
-//    glDisable(GL_POLYGON_OFFSET_FILL);
-
-//    glLineWidth(1.0f);
-
-//    glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();

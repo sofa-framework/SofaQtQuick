@@ -1246,8 +1246,8 @@ EditView
         Rectangle {
             id: translateRect
             Component.onCompleted: {
-                console.log("ADDING Manipulator Manipulator3D_Translation")
-                manipulatorControls.addManipulator("Manipulator3D_Translation")
+                console.log("ADDING Manipulator Manipulator3D_InPlaneTranslation")
+                manipulatorControls.addManipulator("Manipulator3D_InPlaneTranslation")
             }
 
             property bool selected: false
@@ -1255,16 +1255,17 @@ EditView
                 if (!selected)
                     return
 
-                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_Translation")
+                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_InPlaneTranslation")
                 if (!manipulator)
-                    manipulator = manipulatorControls.addManipulator("Manipulator3D_Translation")
+                    manipulator = manipulatorControls.addManipulator("Manipulator3D_InPlaneTranslation")
                 manipulator.visible = true
-                manipulator.position = Qt.binding(function(){
-                    var t = SofaApplication.selectedComponent.getData("translation").value
-
-                    return Qt.vector3d(t[0][0], t[0][1], t[0][2])
+                var t = SofaApplication.selectedComponent.getData("translation").value
+                manipulator.position = Qt.vector3d(t[0][0], t[0][1], t[0][2])
+                manipulator.positionChanged.connect(function(vec3d) {
+                    console.log("setting new position: " + [vec3d.x,vec3d.y,vec3d.z])
+                    SofaApplication.selectedComponent.getData("translation").value = [[vec3d.x,vec3d.y,vec3d.z]]
                 })
-                console.log("Manipulator3D_Translation " + manipulator.name)
+                console.log("Manipulator3D_InPlaneTranslation " + manipulator.name)
                 sofaScene.selectedManipulator = manipulator
             }
 
@@ -1324,15 +1325,13 @@ EditView
                 if (!selected)
                     return
 
-                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_Translation")
+                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_Rotation")
                 if (!manipulator)
                     manipulator = manipulatorControls.addManipulator("Manipulator3D_Rotation")
 
                 manipulator.visible = true
-                manipulator.position = Qt.binding(function(){
-                    var t = SofaApplication.selectedComponent.getData("translation").value
-                    return Qt.vector3d(t.x, t.y, t.z);
-                })
+                var t = SofaApplication.selectedComponent.getData("translation").value
+                manipulator.position = Qt.vector3d(t.x, t.y, t.z);
                 manipulator.rotation = Qt.binding(function(){
                     var r = SofaApplication.selectedComponent.getData("rotation").value
                     return Qt.vector3d(r.x, r.y, r.z);

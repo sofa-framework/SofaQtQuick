@@ -27,6 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator3D_InPlaneTranslation.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.h>
 #include <SofaQtQuickGUI/SofaBaseScene.h>
 
@@ -214,6 +215,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<Manipulator2D_Translation>                      ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");
     qmlRegisterType<Manipulator2D_Rotation>                         ("Manipulator2D_Rotation"               , versionMajor, versionMinor, "Manipulator2D_Rotation");
     qmlRegisterType<Manipulator3D_Translation>                      ("Manipulator3D_Translation"            , versionMajor, versionMinor, "Manipulator3D_Translation");
+    qmlRegisterType<Manipulator3D_InPlaneTranslation>               ("Manipulator3D_InPlaneTranslation"     , versionMajor, versionMinor, "Manipulator3D_InPlaneTranslation");
     qmlRegisterType<Manipulator3D_Rotation>                         ("Manipulator3D_Rotation"               , versionMajor, versionMinor, "Manipulator3D_Rotation");
     qmlRegisterType<SofaBaseScene>                                  ("SofaBaseScene"                        , versionMajor, versionMinor, "SofaBaseScene");
     qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
