@@ -38,6 +38,7 @@ ColumnLayout {
                     RowLayout {
                         id: sofaDataLayout
                         property var sofaData: component.getData(modelData)
+
                         Label {
                             Layout.minimumWidth: root.labelWidth
 

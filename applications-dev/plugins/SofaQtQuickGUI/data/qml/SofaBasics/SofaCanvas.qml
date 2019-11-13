@@ -9,8 +9,8 @@ Rectangle {
     on__ComponentPathChanged: {
         self = SofaApplication.sofaScene.get(__componentPath)
     }
-    property var __x: self.getData("x")
-    property var __y: self.getData("y")
-    x: __x.value
-    y: __y.value
+    property var __x: self ? self.getData("x") : 0
+    property var __y: self ? self.getData("y") : 0
+    x: __x ? __x.value : 0
+    y: __y ? __y.value : 0
 }

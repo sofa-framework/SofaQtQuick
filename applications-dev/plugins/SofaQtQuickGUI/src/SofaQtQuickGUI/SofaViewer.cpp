@@ -609,9 +609,11 @@ sofa::core::visual::VisualParams* SofaViewer::setupVisualParams(sofa::core::visu
 
 void SofaViewer::drawManipulator(const SofaViewer& viewer) const
 {
-    for(Manipulator* manipulator : mySofaScene->myManipulators)
-        if(manipulator)
-            manipulator->draw(viewer);
+    if(mySofaScene->mySelectedManipulator)
+    {
+        std::cout << "MySelectedManipulator:   " << mySofaScene->mySelectedManipulator << std::endl;
+        mySofaScene->mySelectedManipulator->draw(viewer);
+    }
 }
 
 void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  roots,

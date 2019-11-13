@@ -30,6 +30,8 @@ ColumnLayout {
 
     height: 40
     implicitHeight: height
+    implicitWidth: parent.implicitWidth
+    Layout.fillWidth: true
     property SofaData sofaData: null
 
 
@@ -39,6 +41,12 @@ ColumnLayout {
         for (var i = 0 ; i < valStrings.length ; i++) {
             values.push(Number(valStrings[i]))
         }
+        spinBox0.value = values[0]
+        spinBox1.value = values[1]
+        spinBox2.value = values[2]
+        spinBox3.value = values[3]
+        spinBox4.value = values[4]
+        spinBox5.value = values[5]
     }
     RowLayout {
         Layout.fillWidth: true
@@ -47,7 +55,7 @@ ColumnLayout {
 
         Text {
             id: minLabel
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth) - 5
+            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
             text: "Min "
         }
 
@@ -57,11 +65,11 @@ ColumnLayout {
 
             Layout.fillWidth: true
 
+
             showIndicators: false
             readOnly: sofaData.properties.readOnly
 
             value: root.values[index]
-
             onValueChanged: {
                 if(!sofaData.properties.readOnly) {
                     root.values[index] = value;
@@ -83,6 +91,7 @@ ColumnLayout {
             property int index: 1
 
             Layout.fillWidth: true
+
 
             showIndicators: false
             readOnly: sofaData.properties.readOnly
@@ -109,6 +118,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
 
+
             showIndicators: false
             readOnly: sofaData.properties.readOnly
 
@@ -131,12 +141,13 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
+        Layout.fillHeight: true
         spacing: -1
 
         Text {
             id: maxLabel
             text: "Max "
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth) - 5
+            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
         }
 
         SpinBox {
@@ -171,6 +182,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
 
+
             showIndicators: false
             readOnly: sofaData.properties.readOnly
 
@@ -195,6 +207,7 @@ ColumnLayout {
             property int index: 5
 
             Layout.fillWidth: true
+
 
             showIndicators: false
             readOnly: sofaData.properties.readOnly

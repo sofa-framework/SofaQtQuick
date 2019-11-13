@@ -27,6 +27,7 @@ import SofaInteractors 1.0
 import EditView 1.0
 import SofaColorScheme 1.0
 import SofaBasics 1.0
+import SofaManipulators 1.0
 
 EditView
 {
@@ -1172,9 +1173,101 @@ EditView
         anchors.leftMargin: 20
         anchors.topMargin: 20
 
+        property var selectedComponent: SofaApplication.selectedComponent
+        onSelectedComponentChanged: {
+            translateRect.selected = translateRect.selected
+            rotateRect.selected = rotateRect.selected
+            camViewRect.selected = camViewRect.selected
+        }
+
+        function addManipulator(manipulatorString) {
+            var manipulator = sofaScene.getManipulatorByName(manipulatorString)
+            if (!manipulator) {
+                manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml").createObject()
+                sofaScene.addManipulator(manipulator)
+            }
+            return manipulator
+        }
+
+        Rectangle {
+            id: camViewRect
+            property bool selected: true
+            onSelectedChanged: {
+                sofaScene.selectedManipulator = null
+            }
+
+            implicitHeight: 30
+            implicitWidth: 30
+            color: "transparent"
+            Rectangle {
+                anchors.fill: parent
+                color: camViewRect.selected ? "#8888ff" : "white"
+                opacity: camViewRect.selected ? 0.7 : camViewMarea.containsMouse ? 0.2 : 0.1
+            }
+
+            Image {
+                anchors.centerIn: parent
+                source: "qrc:/icon/ICON_VIEWPOINT_MODIFIER.png"
+                scale: 1.2
+                opacity: 0.9
+            }
+
+            MouseArea {
+                id: camViewMarea
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton
+                function trigger() {
+                    camViewRect.selected = true
+                    translateRect.selected = false
+                    rotateRect.selected = false
+                    scaleRect.selected = false
+                }
+
+                onClicked: {
+                    camViewMarea.trigger()
+                }
+                Shortcut {
+                    context: Qt.ApplicationShortcut
+                    sequence: "Shift+Space, Space";
+                    onActivated: {
+                        camViewMarea.trigger()
+                    }
+                }
+            }
+            ToolTip {
+                visible: camViewMarea.containsMouse
+                text: "Move"
+                description: "Translates the selected item\n Shortcut: Shift+Space, G"
+            }
+        }
+
+
         Rectangle {
             id: translateRect
+            Component.onCompleted: {
+                console.log("ADDING Manipulator Manipulator3D_Translation")
+                manipulatorControls.addManipulator("Manipulator3D_Translation")
+            }
+
             property bool selected: false
+            onSelectedChanged: {
+                if (!selected)
+                    return
+
+                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_Translation")
+                if (!manipulator)
+                    manipulator = manipulatorControls.addManipulator("Manipulator3D_Translation")
+                manipulator.visible = true
+                manipulator.position = Qt.binding(function(){
+                    var t = SofaApplication.selectedComponent.getData("translation").value
+
+                    return Qt.vector3d(t[0][0], t[0][1], t[0][2])
+                })
+                console.log("Manipulator3D_Translation " + manipulator.name)
+                sofaScene.selectedManipulator = manipulator
+            }
+
             implicitHeight: 30
             implicitWidth: 30
             color: "transparent"
@@ -1197,6 +1290,7 @@ EditView
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton
                 function trigger() {
+                    camViewRect.selected = false
                     translateRect.selected = true
                     rotateRect.selected = false
                     scaleRect.selected = false
@@ -1221,7 +1315,32 @@ EditView
         }
         Rectangle {
             id: rotateRect
+            Component.onCompleted: {
+                manipulatorControls.addManipulator("Manipulator3D_Rotation")
+            }
+
             property bool selected: false
+            onSelectedChanged: {
+                if (!selected)
+                    return
+
+                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_Translation")
+                if (!manipulator)
+                    manipulator = manipulatorControls.addManipulator("Manipulator3D_Rotation")
+
+                manipulator.visible = true
+                manipulator.position = Qt.binding(function(){
+                    var t = SofaApplication.selectedComponent.getData("translation").value
+                    return Qt.vector3d(t.x, t.y, t.z);
+                })
+                manipulator.rotation = Qt.binding(function(){
+                    var r = SofaApplication.selectedComponent.getData("rotation").value
+                    return Qt.vector3d(r.x, r.y, r.z);
+                })
+                console.log("Manipulator3D_Rotation " + manipulator.name)
+                sofaScene.selectedManipulator = manipulator
+            }
+
             implicitHeight: 30
             implicitWidth: 30
             color: "transparent"
@@ -1244,6 +1363,7 @@ EditView
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton
                 function trigger() {
+                    camViewRect.selected = false
                     translateRect.selected = false
                     rotateRect.selected = true
                     scaleRect.selected = false
@@ -1268,7 +1388,14 @@ EditView
         }
         Rectangle {
             id: scaleRect
+            Component.onCompleted: {
+//                addManipulator("Manipulator3D_Scale")
+            }
+
             property bool selected: false
+            onSelectedChanged: {
+            }
+
             implicitHeight: 30
             implicitWidth: 30
             color: "transparent"
@@ -1293,6 +1420,7 @@ EditView
                 function trigger() {
                     translateRect.selected = false
                     rotateRect.selected = false
+                    camViewRect.selected = false
                     scaleRect.selected = true
                 }
 

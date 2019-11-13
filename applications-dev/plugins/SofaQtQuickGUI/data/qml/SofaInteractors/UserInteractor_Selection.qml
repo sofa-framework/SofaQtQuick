@@ -42,13 +42,14 @@ UserInteractor_MoveCamera {
                 } else if(selectable.sofaComponent) {
                     selectedComponent = selectable.sofaComponent;
                 }
-            } else {
+            }
+             else {
                 selectedManipulator = null;
                 selectedComponent = null;
             }
 
             if(selectedManipulator) {
-                sofaScene.selectedManipulator = selectedManipulator;
+                console.log("UserInteractor_MoveCamera " + selectedManipulator.name)
 
                 if(selectedManipulator.mousePressed)
                     selectedManipulator.mousePressed(mouse, sofaViewer);
@@ -60,9 +61,6 @@ UserInteractor_MoveCamera {
                 if(!sofaScene.areSameComponent(sofaScene.selectedComponent, selectedComponent)) {
                     SofaApplication.selectedComponent = selectedComponent;
                 }
-            } else {
-                sofaScene.selectedManipulator = null;
-                sofaScene.selectedComponent = null;
             }
         });
 
@@ -70,8 +68,6 @@ UserInteractor_MoveCamera {
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, sofaViewer);
-
-            sofaScene.selectedManipulator = null;
 
             setMouseMovedMapping(null);
         });

@@ -25,6 +25,7 @@ Manipulator2D_Rotation {
 
     property real startAngle: 0.0
     property var  startOrientation
+    property string name: "Manipulator2D_Rotation"
 
     function mousePressed(mouse, sofaViewer) {
         // project on a specific plane parallel to our view plane

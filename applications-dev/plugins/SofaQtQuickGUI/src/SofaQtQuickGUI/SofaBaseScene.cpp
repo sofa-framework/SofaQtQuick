@@ -566,6 +566,7 @@ void SofaBaseScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
 
 void SofaBaseScene::setSelectedManipulator(sofaqtquick::Manipulator* newSelectedManipulator)
 {
+    std::cout << "Setting selected manipulator: " << newSelectedManipulator << std::endl;
     if(newSelectedManipulator == mySelectedManipulator)
         return;
 

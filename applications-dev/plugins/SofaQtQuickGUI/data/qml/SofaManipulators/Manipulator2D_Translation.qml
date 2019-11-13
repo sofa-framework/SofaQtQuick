@@ -24,6 +24,7 @@ Manipulator2D_Translation {
     id: root
 
     property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
+    property string name: "Manipulator2D_Translation"
 
     function mousePressed(mouse, sofaViewer) {
         var z = sofaViewer.computeDepth(root.position);

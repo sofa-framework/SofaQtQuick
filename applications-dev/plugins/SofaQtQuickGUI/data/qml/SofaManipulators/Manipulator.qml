@@ -23,6 +23,7 @@ import Manipulator 1.0
 Manipulator {
     id: root
 
+    property string name
     onPositionChanged: {
         for(var i = 0; i < manipulators.length; ++i)
             manipulators[i].position = position;

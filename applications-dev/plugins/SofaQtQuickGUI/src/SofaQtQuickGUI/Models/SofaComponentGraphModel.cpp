@@ -148,13 +148,13 @@ void SofaComponentGraphModel::parseSofaObjectData()
         {
             QString parentObject = QString::fromStdString(pData->getOwner()->getName());
             QString parentData = QString::fromStdString(pData->getName());
-            msg_info_when(debugNodeGraph, "SofaComponentGraphModel") << "- Parent: " << pData->getName() << " owwner: " << pData->getOwner()->getName();
+//            msg_info_when(debugNodeGraph, "SofaComponentGraphModel") << "- Parent: " << pData->getName() << " owwner: " << pData->getOwner()->getName();
             m_dataConnections[name] = std::pair<QString, QString>(parentObject, parentData);
         }
 
         if (!group.isEmpty())
         {
-            msg_info_when(debugNodeGraph, "SofaComponentGraphModel") << name.toStdString() << " -> " << data->getGroup();
+//            msg_info_when(debugNodeGraph, "SofaComponentGraphModel") << name.toStdString() << " -> " << data->getGroup();
         }
         m_data.push_back(std::pair<QString, QString>(name, QString::fromStdString(data->getValueTypeString())));
         m_Nodedata.push_back(std::make_shared<SofaComponentNodeData>(data));
@@ -231,7 +231,7 @@ void SofaComponentGraphModel::setInData(std::shared_ptr<NodeData> data, int port
     sofa::core::objectmodel::BaseData* childData = childNodeData->getData();
     sofa::core::objectmodel::BaseData* parentData = parentNodeData->getData();
 
-    msg_info_when(debugNodeGraph, m_caption.toStdString()) << "Here connect: {" << parentData->getOwner()->getName() << ", " << parentData->getName() << "} -> {"
-        << childData->getOwner()->getName() << ", " << childData->getName() << "}";
+//    msg_info_when(debugNodeGraph, m_caption.toStdString()) << "Here connect: {" << parentData->getOwner()->getName() << ", " << parentData->getName() << "} -> {"
+//        << childData->getOwner()->getName() << ", " << childData->getName() << "}";
 
 }

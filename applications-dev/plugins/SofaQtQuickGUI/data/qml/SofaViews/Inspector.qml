@@ -110,7 +110,7 @@ Item {
                     parent: scrollview
                     height: parent.height
                     width: 12
-                    size: 0.5
+                    size: 0.1
                     active: true
                     contentItem: GBRect {
                         implicitWidth: 12
