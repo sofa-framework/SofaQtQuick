@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
@@ -1165,4 +1165,154 @@ EditView
             }
         }
     }
+    Column {
+        id: manipulatorControls
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.leftMargin: 20
+        anchors.topMargin: 20
+
+        Rectangle {
+            id: translateRect
+            property bool selected: false
+            implicitHeight: 30
+            implicitWidth: 30
+            color: "transparent"
+            Rectangle {
+                anchors.fill: parent
+                color: translateRect.selected ? "#8888ff" : "white"
+                opacity: translateRect.selected ? 0.7 : translateMarea.containsMouse ? 0.2 : 0.1
+            }
+
+            Image {
+                anchors.centerIn: parent
+                source: "qrc:/icon/ICON_TRANLSATION_MODIFIER.png"
+                scale: 1.2
+                opacity: 0.9
+            }
+
+            MouseArea {
+                id: translateMarea
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton
+                function trigger() {
+                    translateRect.selected = true
+                    rotateRect.selected = false
+                    scaleRect.selected = false
+                }
+
+                onClicked: {
+                    translateMarea.trigger()
+                }
+                Shortcut {
+                    context: Qt.ApplicationShortcut
+                    sequence: "Shift+Space, G";
+                    onActivated: {
+                        translateMarea.trigger()
+                    }
+                }
+            }
+            ToolTip {
+                visible: translateMarea.containsMouse
+                text: "Move"
+                description: "Translates the selected item\n Shortcut: Shift+Space, G"
+            }
+        }
+        Rectangle {
+            id: rotateRect
+            property bool selected: false
+            implicitHeight: 30
+            implicitWidth: 30
+            color: "transparent"
+            Rectangle {
+                anchors.fill: parent
+                color: rotateRect.selected ? "#8888ff" : "white"
+                opacity: rotateRect.selected ? 0.7 : rotateMarea.containsMouse ? 0.2 : 0.1
+            }
+
+            Image {
+                anchors.centerIn: parent
+                source: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
+                scale: 1.2
+                opacity: 0.9
+            }
+
+            MouseArea {
+                id: rotateMarea
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton
+                function trigger() {
+                    translateRect.selected = false
+                    rotateRect.selected = true
+                    scaleRect.selected = false
+                }
+
+                onClicked: {
+                    rotateMarea.trigger()
+                }
+                Shortcut {
+                    context: Qt.ApplicationShortcut
+                    sequence: "Shift+Space, R";
+                    onActivated: {
+                        rotateMarea.trigger()
+                    }
+                }
+            }
+            ToolTip {
+                visible: rotateMarea.containsMouse
+                text: "Rotate"
+                description: "Rotates the selected item\n Shortcut: Shift+Space, R"
+            }
+        }
+        Rectangle {
+            id: scaleRect
+            property bool selected: false
+            implicitHeight: 30
+            implicitWidth: 30
+            color: "transparent"
+            Rectangle {
+                anchors.fill: parent
+                color: scaleRect.selected ? "#8888ff" : "white"
+                opacity: scaleRect.selected ? 0.7 : scaleMarea.containsMouse ? 0.2 : 0.1
+            }
+
+            Image {
+                anchors.centerIn: parent
+                source: "qrc:/icon/ICON_SCALE_MODIFIER.png"
+                scale: 1.2
+                opacity: 0.9
+            }
+
+            MouseArea {
+                id: scaleMarea
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton
+                function trigger() {
+                    translateRect.selected = false
+                    rotateRect.selected = false
+                    scaleRect.selected = true
+                }
+
+                onClicked: {
+                    scaleMarea.trigger()
+                }
+                Shortcut {
+                    context: Qt.ApplicationShortcut
+                    sequence: "Shift+Space, S";
+                    onActivated: {
+                        scaleMarea.trigger()
+                    }
+                }
+            }
+            ToolTip {
+                visible: scaleMarea.containsMouse
+                text: "Scale"
+                description: "Scales the selected item\n Shortcut: Shift+Space, S"
+            }
+        }
+    }
+
 }

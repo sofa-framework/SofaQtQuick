@@ -36,7 +36,6 @@ UserInteractor_MoveCamera {
             selectedComponent = sofaScene.selectedComponent;
 
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
-            console.log("picked selectable at pos: " + selectable.position)
             if(selectable) {
                 if(selectable.manipulator) {
                     selectedManipulator = selectable.manipulator;
@@ -68,8 +67,6 @@ UserInteractor_MoveCamera {
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-//            if(sofaScene.sofaParticleInteractor)
-//                sofaScene.sofaParticleInteractor.release();
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, sofaViewer);
