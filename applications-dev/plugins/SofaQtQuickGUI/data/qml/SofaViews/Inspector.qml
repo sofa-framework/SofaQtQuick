@@ -182,6 +182,9 @@ Item {
                         id: customInspectorLoader
                         function getWidget(component)
                         {
+                            if (!component)
+                                return null
+
                             if (showAll.checked)
                                 return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
 

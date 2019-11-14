@@ -73,9 +73,9 @@
         <file>SofaDataTypes/SofaDataType_Material.qml</file>
         <file>SofaDataTypes/SofaDataType_OptionsGroup.qml</file>
         <file>SofaInteractors/qmldir</file>
-        <file>SofaInteractors/UserInteractor_MoveCamera.qml</file>
-        <file>SofaInteractors/UserInteractor_Selection.qml</file>
-        <file>SofaInteractors/UserInteractor_SofaParticleInteractor.qml</file>
+        <file>SofaInteractors/UserInteractor_CameraMode.qml</file>
+        <file>SofaInteractors/UserInteractor_ObjectMode.qml</file>
+        <file>SofaInteractors/UserInteractor_EditMode.qml</file>
         <file>SofaManipulators/qmldir</file>
         <file>SofaManipulators/Manipulator.qml</file>
         <file>SofaManipulators/Manipulator2D_Translation.qml</file>

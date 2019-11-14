@@ -60,6 +60,7 @@ void Manipulator::setVisible(bool newVisible)
 const QVector3D Manipulator::position() const {
     if (!myPosition || !myPosition->rawData()) QVector3D();
 
+    std::cout << myPosition->getName().toStdString() << std::endl;
     const AbstractTypeInfo* typeinfo = myPosition->rawData()->getValueTypeInfo();
     const void* valueptr = myPosition->rawData()->getValueVoidPtr();
 

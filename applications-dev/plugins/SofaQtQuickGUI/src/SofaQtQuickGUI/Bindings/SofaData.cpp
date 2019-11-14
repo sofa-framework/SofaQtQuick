@@ -41,7 +41,6 @@ namespace sofaqtquick::bindings::_sofadata_
 void QmlDDGNode::notifyEndEdit(const sofa::core::ExecParams *params)
 {
     DDGNode::notifyEndEdit(params);
-    std::cout << "plop" << std::endl;
     emit valueChanged(QVariant(0));
 }
 
