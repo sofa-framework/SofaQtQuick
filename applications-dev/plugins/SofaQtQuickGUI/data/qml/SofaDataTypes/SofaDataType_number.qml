@@ -35,7 +35,7 @@ SpinBox
     property var properties: sofaData.properties
 
     enabled: !sofaData.readOnly
-    precision: properties["precision"]
+    precision: properties["precision"] ? properties["precision"] : 6
     step: properties["step"] !== undefined ? properties["step"] : 1
     value: sofaData.value
 

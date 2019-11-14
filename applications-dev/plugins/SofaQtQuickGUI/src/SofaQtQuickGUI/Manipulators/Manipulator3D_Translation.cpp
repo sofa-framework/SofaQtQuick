@@ -20,6 +20,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include "Manipulator3D_Translation.h"
 #include <SofaQtQuickGUI/SofaViewer.h>
 
+#include <sofa/core/visual/DrawToolGL.h>
+
 #include <QApplication>
 #include <GL/glew.h>
 #include <QMatrix4x4>
@@ -29,7 +31,7 @@ namespace sofaqtquick
 {
 
 Manipulator3D_Translation::Manipulator3D_Translation(QObject* parent) : Manipulator(parent),
-    myAxis("xyz")
+    myAxis("xy")
 {
 
 }
@@ -61,21 +63,29 @@ void Manipulator3D_Translation::pick(const SofaViewer& viewer) const
 
 void Manipulator3D_Translation::internalDraw(const SofaViewer& viewer, bool isPicking) const
 {
+    sofa::core::visual::DrawToolGL drawTools;
+
+    std::cout << "Drawing 3DTranslation!" << std::endl;
     if(!visible())
         return;
 
+    std::cout << "Visible!" << std::endl;
     Camera* camera = viewer.camera();
     if(!camera)
         return;
+    std::cout << "Camera Found!" << std::endl;
 
     bool xAxis = (-1 != myAxis.indexOf('x'));
     bool yAxis = (-1 != myAxis.indexOf('y'));
     bool zAxis = (-1 != myAxis.indexOf('z'));
     int axisNum = (xAxis ? 1 : 0) + (yAxis ? 1 : 0) + (zAxis ? 1 : 0);
 
+    std::cout << axisNum << "axes!" << std::endl;
+
     if(0 == axisNum || 3 == axisNum)
         return;
 
+    std::cout << "valid axes!" << std::endl;
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
 

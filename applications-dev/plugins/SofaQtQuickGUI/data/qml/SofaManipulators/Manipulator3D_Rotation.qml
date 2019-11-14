@@ -25,6 +25,7 @@ Manipulator3D_Rotation {
 
     property real startAngle: 0.0
     property var  startOrientation
+    property string name: "Manipulator3D_Rotation"
 
     function mousePressed(mouse, sofaViewer) {
         var xAxis = -1 !== axis.indexOf("x") ? true : false;

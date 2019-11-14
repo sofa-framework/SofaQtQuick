@@ -91,5 +91,7 @@
         <file>icon/ICON_ROTATION_MODIFIER.png</file>
         <file>icon/ICON_SCALE_MODIFIER.png</file>
         <file>icon/ICON_TRANLSATION_MODIFIER.png</file>
+        <file>icon/ICON_CAMERA_MODIFIER.png</file>
+        <file>icon/ICON_VIEWPOINT_MODIFIER.png</file>
     </qresource>
 </RCC>

@@ -132,17 +132,15 @@ SofaBaseScene
                       arguments.length);
     }
 
-    ///// MANIPULATOR
+    ///// MANIPULATORS
 
     // add manipulator and its children
     function addManipulator(manipulator) {
         var manipulators = [];
         for(var i = 0; i < root.manipulators.length; ++i)
             manipulators.push(root.manipulators[i]);
-
         manipulators.push(manipulator);
         root.manipulators = manipulators;
-
         // if the added manipulator is a compound also add its children manipulators
         if(manipulator.manipulators && 0 !== manipulator.manipulators.length)
             for(var ii = 0; ii < manipulator.manipulators.length; ++ii)
@@ -183,7 +181,7 @@ SofaBaseScene
         var manipulatorsToRemove = [];
         var childrenManipulatorsToRemove = [];
         for(var i = 0; i < root.manipulators.length; ++i) {
-            if(name === root.manipulators[i].objectName) {
+            if(name === root.manipulators[i].name) {
                 var manip = root.manipulators[i];
                 manipulatorsToRemove.push(manip);
                 // if the removed manipulator is a compound also remove its children manipulators
@@ -199,7 +197,7 @@ SofaBaseScene
 
     function getManipulatorByName(name) {
         for(var i = 0; i < root.manipulators.length; ++i)
-            if(name === root.manipulators[i].objectName)
+            if(name === root.manipulators[i].name)
                 return root.manipulators[i];
         return null;
     }

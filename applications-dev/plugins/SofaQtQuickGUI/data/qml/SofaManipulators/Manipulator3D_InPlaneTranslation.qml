@@ -18,24 +18,21 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import Manipulator 1.0
+import Manipulator3D_InPlaneTranslation 1.0
 
-Manipulator {
+Manipulator3D_InPlaneTranslation {
     id: root
 
-    property string name
-    onPositionChanged: {
-        for(var i = 0; i < manipulators.length; ++i)
-            manipulators[i].position = position;
+    property string name: "Manipulator3D_InPlaneTranslation"
+
+    property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
+
+    function mousePressed(mouse, sofaViewer) {
+        startVector = sofaViewer.projectOnPlane(Qt.point(mouse.x, mouse.y), root.position, sofaViewer.camera.direction());
     }
 
-    onOrientationChanged: {
-        for(var i = 0; i < manipulators.length; ++i)
-            manipulators[i].orientation = orientation;
-    }
-
-    onScaleChanged: {
-        for(var i = 0; i < manipulators.length; ++i)
-            manipulators[i].scale = scale;
+    function mouseMoved(mouse, sofaViewer) {
+        var newPosition = sofaViewer.projectOnPlane(Qt.point(mouse.x, mouse.y), root.position, sofaViewer.camera.direction());
+        root.position = newPosition;
     }
 }

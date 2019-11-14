@@ -23,6 +23,8 @@ import Manipulator3D_Translation 1.0
 Manipulator3D_Translation {
     id: root
 
+    property string name: "Manipulator3D_Translation"
+
     property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
 
     function mousePressed(mouse, sofaViewer) {
