@@ -91,6 +91,7 @@ LiveFileMonitor::~LiveFileMonitor()
 
 void LiveFileMonitor::update()
 {
+    std::cout << "UPDATE FILE MONITOR TIMER ...." << std::endl;
     FileMonitor::updates(0) ;
 }
 

@@ -10,6 +10,8 @@ import Sofa.Core.SofaData 1.0
 import SofaWidgets 1.0
 import SofaBasics 1.0
 import GraphView 1.0
+import SofaViews 1.0
+
 Menu {
 
     function parsePython(c)
@@ -75,6 +77,62 @@ Menu {
         }
     }
 
+
+
+    MenuItem {
+        /// todo(dmarchal 2018-15-06) : This should display the content of the description string
+        /// provided by Sofa, classname, definition location, declaration location.
+        text: "Documentation ..."
+        onTriggered: {
+            var dirtyHack = {
+                "DefaultAnimationLoop" : "https://www.sofa-framework.org/community/doc/using-sofa/components/animationloop/defaultanimationloop/",
+                "FreeMotionAnimationLoop" : "https://www.sofa-framework.org/community/doc/using-sofa/components/animationloop/freemotionanimationloop/",
+                "UniformMass" : "https://www.sofa-framework.org/community/doc/using-sofa/components/masses/uniformmass/",
+                "DiagonalMass" : "https://www.sofa-framework.org/community/doc/using-sofa/components/masses/diagonalmass/",
+                "EulerExplicitSolver" : "https://www.sofa-framework.org/community/doc/using-sofa/components/integrationscheme/eulerexplicitsolver/",
+                "EulerImplicitSolver" : "https://www.sofa-framework.org/community/doc/using-sofa/components/integrationscheme/eulerimplicitsolver/",
+                "CGLinearSolver" : "https://www.sofa-framework.org/community/doc/using-sofa/components/linearsolver/cglinearsolver/",
+                "SparseLDLSolver" : "https://www.sofa-framework.org/community/doc/using-sofa/components/linearsolver/sparseldlsolver/"
+            }
+            var base = model.getBaseFromIndex(currentModelIndex)
+            var className = base.getClassName()
+            var url = 'https://sofacomponents.readthedocs.io/en/latest/search.html?q='+className+'&check_keywords=yes&area=default'
+            if( className in dirtyHack )
+                url = dirtyHack[className]
+            var o = windowGraph.createObject(root, {
+                                                     "source": "qrc:///SofaViews/WebBrowserView.qml",
+                                                     "title" : "Sofa Ressources Repository",
+                                                     "url": url,
+                                                     "width" : 800,
+                                                     "height": 600,
+                                                 }
+                                             );
+        }
+
+        Component {
+            id: windowGraph
+
+            Window {
+                property url source
+                property url url
+
+                id: window
+                width: 600
+                height: 400
+                modality: Qt.NonModal
+                flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                visible: true
+                color: sofaApplication.style.contentBackgroundColor
+
+                Loader {
+                    id: loader
+                    anchors.fill: parent
+                    source: window.source
+                    onLoaded: { item.url = url }
+                }
+            }
+        }
+    }
 
 
 

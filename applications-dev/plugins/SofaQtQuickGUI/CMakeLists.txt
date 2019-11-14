@@ -189,14 +189,18 @@ endif ()
 
 list(APPEND HEADER_FILES
     src/SofaQtQuickGUI/Windows/GraphView.h
+    src/SofaQtQuickGUI/Windows/ShapeEditorView.h
     src/SofaQtQuickGUI/Windows/ProfilerView.h
     src/SofaQtQuickGUI/Models/SofaComponentGraphModel.h
+    src/SofaQtQuickGUI/Models/ShapeGraphModel.h
     )
 
 list(APPEND SOURCE_FILES
     src/SofaQtQuickGUI/Windows/GraphView.cpp
+    src/SofaQtQuickGUI/Windows/ShapeEditorView.cpp
     src/SofaQtQuickGUI/Windows/ProfilerView.cpp
     src/SofaQtQuickGUI/Models/SofaComponentGraphModel.cpp
+    src/SofaQtQuickGUI/Models/ShapeGraphModel.cpp
     )
 
 set(ASSET_TEMPLATES

@@ -27,6 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 /// Forward declartations.
 namespace sofa::core::objectmodel
 {
+class Base;
 class BaseData;
 class BaseNode;
 }
@@ -34,6 +35,7 @@ class BaseNode;
 /// Declaration
 namespace sofaqtquick::helper
 {
+    using sofa::core::objectmodel::Base;
     using sofa::core::objectmodel::BaseData;
     using sofa::core::objectmodel::BaseNode;
 
@@ -46,4 +48,6 @@ namespace sofaqtquick::helper
     QVariantMap& convertDataInfoToProperties(const BaseData* data, QVariantMap& properties);
 
     BaseData* findData(BaseNode* node, const QString& path);
+
+    const std::string getPathName(Base *base);
 }
