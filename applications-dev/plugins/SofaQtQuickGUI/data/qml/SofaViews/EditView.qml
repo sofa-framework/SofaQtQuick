@@ -1176,10 +1176,9 @@ EditView
         visible: SofaApplication.getInteractorName(SofaApplication.interactorComponent) !== "CameraMode"
         property var selectedComponent: SofaApplication.selectedComponent
         onSelectedComponentChanged: {
-            console.log(selectedComponent.getName())
-            camViewRect.selected = camViewRect.selected
-            translateRect.selected = translateRect.selected
-            rotateRect.selected = rotateRect.selected
+            console.log("NYANYANYA")
+            if (SofaApplication.selectedComponent === null)
+                sofaScene.selectedManipulator = null
         }
 
         function addManipulator(manipulatorString) {
@@ -1193,11 +1192,7 @@ EditView
 
         Rectangle {
             id: camViewRect
-            property bool selected: true
-            onSelectedChanged: {
-                if (selected)
-                    sofaScene.selectedManipulator = null
-            }
+            property bool selected: sofaScene.selectedManipulator === null
 
             implicitHeight: 30
             implicitWidth: 30
@@ -1220,21 +1215,15 @@ EditView
                 anchors.fill: parent
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton
-                function trigger() {
-                    camViewRect.selected = true
-                    translateRect.selected = false
-                    rotateRect.selected = false
-                    scaleRect.selected = false
-                }
 
                 onClicked: {
-                    camViewMarea.trigger()
+                    sofascene.selectedManipulator = null
                 }
                 Shortcut {
                     context: Qt.ApplicationShortcut
                     sequence: "Shift+Space, Space";
                     onActivated: {
-                        camViewMarea.trigger()
+                        sofascene.selectedManipulator = null
                     }
                 }
             }
@@ -1248,23 +1237,24 @@ EditView
 
         Rectangle {
             id: translateRect
+            property string manipulatorName: "Manipulator3D_InPlaneTranslation"
             Component.onCompleted: {
-                console.log("ADDING Manipulator Manipulator3D_InPlaneTranslation")
-                manipulatorControls.addManipulator("Manipulator3D_InPlaneTranslation")
+                manipulatorControls.addManipulator(manipulatorName)
             }
 
-            property bool selected: false
-            onSelectedChanged: {
-                if (!selected)
-                    return
+            property bool selected: sofaScene.selectedManipulator && sofaScene.selectedManipulator.name === manipulatorName
 
-                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_InPlaneTranslation")
+            function setManipulator() {
+                var manipulator = sofaScene.getManipulatorByName(manipulatorName)
                 if (!manipulator)
-                    manipulator = manipulatorControls.addManipulator("Manipulator3D_InPlaneTranslation")
+                    manipulator = manipulatorControls.addManipulator(manipulatorName)
                 manipulator.visible = true
+                if (!SofaApplication.selectedComponent.getData("translation")) {
+                    sofaScene.selectedManipulator = null
+                    return;
+                }
                 var t = SofaApplication.selectedComponent.getData("translation").value
                 manipulator.positionData = SofaApplication.selectedComponent.getData("translation")
-                console.log("Manipulator3D_InPlaneTranslation " + manipulator.name)
                 sofaScene.selectedManipulator = manipulator
             }
 
@@ -1289,21 +1279,15 @@ EditView
                 anchors.fill: parent
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton
-                function trigger() {
-                    camViewRect.selected = false
-                    translateRect.selected = true
-                    rotateRect.selected = false
-                    scaleRect.selected = false
-                }
 
                 onClicked: {
-                    translateMarea.trigger()
+                    translateRect.setManipulator()
                 }
                 Shortcut {
                     context: Qt.ApplicationShortcut
                     sequence: "Shift+Space, G";
                     onActivated: {
-                        translateMarea.trigger()
+                        translateRect.setManipulator()
                     }
                 }
             }
@@ -1313,29 +1297,31 @@ EditView
                 description: "Translates the selected item\n Shortcut: Shift+Space, G"
             }
         }
+
+
         Rectangle {
             id: rotateRect
+            property string manipulatorName: "Manipulator3D_Rotation"
             Component.onCompleted: {
-                manipulatorControls.addManipulator("Manipulator3D_Rotation")
+                manipulatorControls.addManipulator(manipulatorName)
             }
 
-            property bool selected: false
-            onSelectedChanged: {
-                if (!selected)
-                    return
+            property bool selected: sofaScene.selectedManipulator && sofaScene.selectedManipulator.name === manipulatorName
 
-                var manipulator = sofaScene.getManipulatorByName("Manipulator3D_Rotation")
+            function setManipulator() {
+                var manipulator = sofaScene.getManipulatorByName(manipulatorName)
                 if (!manipulator)
-                    manipulator = manipulatorControls.addManipulator("Manipulator3D_Rotation")
-
+                    manipulator = manipulatorControls.addManipulator(manipulatorName)
                 manipulator.visible = true
+                if (!SofaApplication.selectedComponent.getData("translation")) {
+                    sofaScene.selectedManipulator = null
+                    return;
+                }
                 var t = SofaApplication.selectedComponent.getData("translation").value
-                manipulator.position = Qt.vector3d(t.x, t.y, t.z);
-                manipulator.rotation = Qt.binding(function(){
-                    var r = SofaApplication.selectedComponent.getData("rotation").value
-                    return Qt.vector3d(r.x, r.y, r.z);
-                })
-                console.log("Manipulator3D_Rotation " + manipulator.name)
+                manipulator.positionData = SofaApplication.selectedComponent.getData("translation")
+                sofaScene.selectedManipulator = manipulator
+                var r = SofaApplication.selectedComponent.getData("orientation").value
+                manipulator.orientationData = SofaApplication.selectedComponent.getData("orientation")
                 sofaScene.selectedManipulator = manipulator
             }
 
@@ -1360,85 +1346,81 @@ EditView
                 anchors.fill: parent
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton
-                function trigger() {
-                    camViewRect.selected = false
-                    translateRect.selected = false
-                    rotateRect.selected = true
-                    scaleRect.selected = false
-                }
 
                 onClicked: {
-                    rotateMarea.trigger()
+                    setManipulator()
                 }
                 Shortcut {
                     context: Qt.ApplicationShortcut
                     sequence: "Shift+Space, R";
                     onActivated: {
-                        rotateMarea.trigger()
+                        setManipulator()
                     }
                 }
             }
             ToolTip {
                 visible: rotateMarea.containsMouse
-                text: "Rotate"
+                text: "Rotation"
                 description: "Rotates the selected item\n Shortcut: Shift+Space, R"
             }
         }
-        Rectangle {
-            id: scaleRect
-            Component.onCompleted: {
-//                addManipulator("Manipulator3D_Scale")
-            }
 
-            property bool selected: false
-            onSelectedChanged: {
-            }
 
-            implicitHeight: 30
-            implicitWidth: 30
-            color: "transparent"
-            Rectangle {
-                anchors.fill: parent
-                color: scaleRect.selected ? "#8888ff" : "white"
-                opacity: scaleRect.selected ? 0.7 : scaleMarea.containsMouse ? 0.2 : 0.1
-            }
+//        Rectangle {
+//            id: scaleRect
+//            Component.onCompleted: {
+////                addManipulator("Manipulator3D_Scale")
+//            }
 
-            Image {
-                anchors.centerIn: parent
-                source: "qrc:/icon/ICON_SCALE_MODIFIER.png"
-                scale: 1.2
-                opacity: 0.9
-            }
+//            property bool selected: false
+//            onSelectedChanged: {
+//            }
 
-            MouseArea {
-                id: scaleMarea
-                anchors.fill: parent
-                hoverEnabled: true
-                acceptedButtons: Qt.LeftButton
-                function trigger() {
-                    translateRect.selected = false
-                    rotateRect.selected = false
-                    camViewRect.selected = false
-                    scaleRect.selected = true
-                }
+//            implicitHeight: 30
+//            implicitWidth: 30
+//            color: "transparent"
+//            Rectangle {
+//                anchors.fill: parent
+//                color: scaleRect.selected ? "#8888ff" : "white"
+//                opacity: scaleRect.selected ? 0.7 : scaleMarea.containsMouse ? 0.2 : 0.1
+//            }
 
-                onClicked: {
-                    scaleMarea.trigger()
-                }
-                Shortcut {
-                    context: Qt.ApplicationShortcut
-                    sequence: "Shift+Space, S";
-                    onActivated: {
-                        scaleMarea.trigger()
-                    }
-                }
-            }
-            ToolTip {
-                visible: scaleMarea.containsMouse
-                text: "Scale"
-                description: "Scales the selected item\n Shortcut: Shift+Space, S"
-            }
-        }
+//            Image {
+//                anchors.centerIn: parent
+//                source: "qrc:/icon/ICON_SCALE_MODIFIER.png"
+//                scale: 1.2
+//                opacity: 0.9
+//            }
+
+//            MouseArea {
+//                id: scaleMarea
+//                anchors.fill: parent
+//                hoverEnabled: true
+//                acceptedButtons: Qt.LeftButton
+//                function trigger() {
+//                    translateRect.selected = false
+//                    rotateRect.selected = false
+//                    camViewRect.selected = false
+//                    scaleRect.selected = true
+//                }
+
+//                onClicked: {
+//                    scaleMarea.trigger()
+//                }
+//                Shortcut {
+//                    context: Qt.ApplicationShortcut
+//                    sequence: "Shift+Space, S";
+//                    onActivated: {
+//                        scaleMarea.trigger()
+//                    }
+//                }
+//            }
+//            ToolTip {
+//                visible: scaleMarea.containsMouse
+//                text: "Scale"
+//                description: "Scales the selected item\n Shortcut: Shift+Space, S"
+//            }
+//        }
     }
 
 }

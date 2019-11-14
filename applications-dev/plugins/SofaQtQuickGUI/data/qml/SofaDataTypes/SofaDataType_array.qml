@@ -77,7 +77,6 @@ ColumnLayout {
                     showIndicators: listModel.columnCount() === 1
                     value: dataValue
                     onValueChanged: {
-                        console.log("value changed!!!!!")
                         listModel.setData(_index, value, 0)
                     }
                 }

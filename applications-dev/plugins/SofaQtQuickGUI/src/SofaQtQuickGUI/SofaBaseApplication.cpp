@@ -1018,7 +1018,7 @@ sofaqtquick::bindings::SofaBase* SofaBaseApplication::getSelectedComponent() con
 
 void SofaBaseApplication::setSelectedComponent(sofaqtquick::bindings::SofaBase* selectedComponent)
 {
-    std::cout << "set selected component..." << std::endl;
+    std::cout << "SofaBaseApplication set selected component..." << std::endl;
     if(selectedComponent == nullptr)
     {
         m_selectedComponent = nullptr;
@@ -1052,7 +1052,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
 
     // TODO: this command disable the multithreaded render loop, currently we need this because our implementation of the sofa interface is not thread-safe
     // "threaded" vs "basic"
-    qputenv("QSG_RENDER_LOOP", "threaded");
+    qputenv("QSG_RENDER_LOOP", "basic");
 
     if(!app.testAttribute(Qt::AA_ShareOpenGLContexts))
         qCritical() << "CRITICAL: SofaBaseApplication::initialization() must be called before QApplication instanciation";

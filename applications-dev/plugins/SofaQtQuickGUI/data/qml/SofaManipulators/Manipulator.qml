@@ -24,18 +24,18 @@ Manipulator {
     id: root
 
     property string name
-    onPositionChanged: {
-        for(var i = 0; i < manipulators.length; ++i)
-            manipulators[i].position = position;
-    }
+//    onPositionChanged: {
+//        for(var i = 0; i < manipulators.length; ++i)
+//            manipulators[i].position = position;
+//    }
 
-    onOrientationChanged: {
-        for(var i = 0; i < manipulators.length; ++i)
-            manipulators[i].orientation = orientation;
-    }
+//    onOrientationChanged: {
+//        for(var i = 0; i < manipulators.length; ++i)
+//            manipulators[i].orientation = orientation;
+//    }
 
-    onScaleChanged: {
-        for(var i = 0; i < manipulators.length; ++i)
-            manipulators[i].scale = scale;
-    }
+//    onScaleChanged: {
+//        for(var i = 0; i < manipulators.length; ++i)
+//            manipulators[i].scale = scale;
+//    }
 }
