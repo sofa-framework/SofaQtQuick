@@ -1173,9 +1173,10 @@ EditView
         anchors.leftMargin: 20
         anchors.topMargin: 20
 
-        visible: SofaApplication.getInteractorName(SofaApplication.interactorComponent) !== "MoveCamera"
+        visible: SofaApplication.getInteractorName(SofaApplication.interactorComponent) !== "CameraMode"
         property var selectedComponent: SofaApplication.selectedComponent
         onSelectedComponentChanged: {
+            console.log(selectedComponent.getName())
             camViewRect.selected = camViewRect.selected
             translateRect.selected = translateRect.selected
             rotateRect.selected = rotateRect.selected

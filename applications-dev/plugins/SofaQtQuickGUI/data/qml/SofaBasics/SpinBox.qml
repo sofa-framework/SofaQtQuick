@@ -215,6 +215,7 @@ Rectangle {
 
                     anchors.fill: labelID
                     hoverEnabled: true
+                    preventStealing: true
                     acceptedButtons: !control.readOnly && control.enabled ? Qt.LeftButton : Qt.NoButton
 
                     onHoveredChanged: {

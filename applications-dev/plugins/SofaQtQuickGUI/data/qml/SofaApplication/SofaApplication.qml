@@ -346,7 +346,7 @@ Item //
 
     ////////////////////////////////////////////////// INTERACTOR
 
-    property string defaultInteractorName: "MoveCamera"
+    property string defaultInteractorName: "CameraMode"
     readonly property string interactorName: {
         if(interactorComponent)
         for(var key in interactorComponentMap)

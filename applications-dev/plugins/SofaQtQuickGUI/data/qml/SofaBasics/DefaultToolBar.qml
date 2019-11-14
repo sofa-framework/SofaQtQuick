@@ -66,17 +66,17 @@ ToolBar {
                 ListElement {
                     name: "Camera Mode"
                     image: "qrc:/icon/ICON_CAMERA_MODIFIER.png"
-                    interactor: "MoveCamera"
+                    interactor: "CameraMode"
                 }
                 ListElement {
                     name: "Object Mode"
                     image: "qrc:/icon/ICON_OBJECT_MODE.png"
-                    interactor: "Selection"
+                    interactor: "ObjectMode"
                 }
                 ListElement {
                     name: "Edit Mode"
                     image: "qrc:/icon/ICON_EDIT_MODE.png"
-                    interactor: "SofaParticleInteractor"
+                    interactor: "EditMode"
                 }
             }
             onCurrentIndexChanged: {

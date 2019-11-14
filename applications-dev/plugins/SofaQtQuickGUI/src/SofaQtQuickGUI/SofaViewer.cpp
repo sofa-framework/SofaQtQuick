@@ -940,13 +940,10 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
             }
 
             if(drawManipulators() && (tags.isEmpty() || tags.contains("manipulator", Qt::CaseInsensitive)))
-                for(Manipulator* manipulator : mySofaScene->myManipulators)
+                if(mySofaScene->mySelectedManipulator && mySofaScene->mySelectedManipulator->visible())
                 {
-                    if(manipulator)
-                    {
-                        myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                        manipulator->pick(*this);
-                    }
+                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                    mySofaScene->mySelectedManipulator->pick(*this);
 
                     index++;
                 }
@@ -995,8 +992,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                             index -= forceFieldsModels.size();
 
                             if(drawManipulators())
-                                if(int(index) < mySofaScene->myManipulators.size())
-                                    selectable = new SelectableManipulator(*(mySofaScene->myManipulators[index]));
+                                selectable = new SelectableManipulator(*(mySofaScene->mySelectedManipulator));
                         }
                     }
                 }
