@@ -24,6 +24,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <sofa/core/objectmodel/BaseData.h>
 #include <sofa/core/objectmodel/BaseNode.h>
+using sofa::core::objectmodel::BaseNode;
+
+#include <sofa/core/objectmodel/BaseObject.h>
+using sofa::core::objectmodel::BaseObject;
 
 #include <sofa/defaulttype/DataTypeInfo.h>
 using sofa::defaulttype::AbstractTypeInfo;
@@ -579,6 +583,19 @@ BaseData* findData(BaseNode* node, const QString& path)
     }
 
     return data;
+}
+
+const std::string getPathName(Base *base)
+{
+    BaseNode* node = base->toBaseNode();
+    if(node)
+        return node->getPathName();
+
+    BaseObject* object = base->toBaseObject();
+    if(object)
+        return object->getPathName();
+
+    return "invalid object";
 }
 
 

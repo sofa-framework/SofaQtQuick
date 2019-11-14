@@ -37,12 +37,11 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QAbstractAnimation>
 #include <QPropertyAnimation>
 
-#include <SofaQtQuickGUI/DataHelper.h>
-using sofaqtquick::helper::getPathName;
+#include <SofaQtQuickGUI/Windows/ShapeEditorView.h>
+using sofaqtquick::views::ShapeGraphView;
 
-#include "GraphView.h"
-#include <SofaQtQuickGUI/Models/SofaComponentGraphModel.h>
-using sofaqtquick::models::SofaComponentGraphModel;
+#include <SofaQtQuickGUI/Models/ShapeGraphModel.h>
+using sofaqtquick::models::ShapeGraphModel;
 
 #include <SofaSimulationGraph/DAGNode.h>
 using sofa::simulation::graph::DAGNode;
@@ -58,12 +57,12 @@ using QtNodes::ConnectionStyle;
 using QtNodes::FlowViewStyle;
 using sofa::core::objectmodel::Base;
 
-void MyMutationListener::onBeginAddObject(Node* parent, BaseObject* obj)
+void ShapeGraphMutationListener::onBeginAddObject(Node* parent, BaseObject* obj)
 {
     SOFA_UNUSED(obj);
 }
 
-void MyMutationListener::onEndAddObject(Node* parent, BaseObject* obj)
+void ShapeGraphMutationListener::onEndAddObject(Node* parent, BaseObject* obj)
 {
     emit addObject(parent, obj);
 }
@@ -76,23 +75,7 @@ static std::shared_ptr<DataModelRegistry> registerDataModels()
     std::vector<sofa::core::ClassEntry::SPtr> results;
     sofa::core::ObjectFactory::getInstance()->getAllEntries(results);
 
-    ret->registerModel<SofaComponentGraphModel>();
-    //for (auto compo : results)
-    //{
-    //    std::cout << compo->className << std::endl;
-    //    ret->registerModel<SofaComponentGraphModel>(QString::fromStdString(compo->className));
-    //}
-
-
-    /*
-    We could have more models registered.
-    All of them become items in the context meny of the scene.
-
-    ret->registerModel<AnotherDataModel>();
-    ret->registerModel<OneMoreDataModel>();
-
-    */
-
+    ret->registerModel<ShapeGraphModel>();
     return ret;
 }
 
@@ -125,9 +108,7 @@ static void setGraphStyle()
 
 ///////////////////////////////////////// ProfilerChartView ///////////////////////////////////
 
-
-
-GraphView::GraphView(QWidget *parent)
+ShapeGraphView::ShapeGraphView(QWidget *parent)
     : QDialog(parent)
     , m_scaleX(10)
     , m_scaleY(30)
@@ -152,7 +133,7 @@ GraphView::GraphView(QWidget *parent)
     
     resize(1000, 800);
 
-    connect(&m_mutationListener, &MyMutationListener::addObject, this, &GraphView::onAddObject);
+    connect(&m_mutationListener, &ShapeGraphMutationListener::addObject, this, &ShapeGraphView::onAddObject);
 
     if(m_rootNode==nullptr)
         return;
@@ -167,15 +148,15 @@ GraphView::GraphView(QWidget *parent)
 
 }
 
-void GraphView::onAddObject(Node* parent, BaseObject* object)
+void ShapeGraphView::onAddObject(Node* parent, BaseObject* object)
 {
     QtNodes::Node& addedNode = m_graphScene->createNode(
-                std::make_unique<SofaComponentGraphModel>(object, debugNodeGraph));
+                std::make_unique<ShapeGraphModel>(object, debugNodeGraph));
 
     m_nodeToQUid[QString::fromStdString(object->getPathName())] = &addedNode;
     addedNode.setObjectName(QString::fromStdString(object->getName()));
 
-    SofaComponentGraphModel* model = dynamic_cast<SofaComponentGraphModel*>(addedNode.nodeDataModel());
+    ShapeGraphModel* model = dynamic_cast<ShapeGraphModel*>(addedNode.nodeDataModel());
     model->setCaption(object->getName());
 
     /// SEt position in the node's frame
@@ -204,7 +185,7 @@ void GraphView::onAddObject(Node* parent, BaseObject* object)
     moveTo(object);
 }
 
-GraphView::~GraphView()
+ShapeGraphView::~ShapeGraphView()
 {
     std::cout << "SofaWindowDataGraph::~SofaWindowDataGraph()" << std::endl;
     clearNodeData();
@@ -212,62 +193,34 @@ GraphView::~GraphView()
     //delete m_graphView;
 }
 
-SofaBase* GraphView::getSelectedComponent()
+SofaBase* ShapeGraphView::getSelectedComponent()
 {
     return new SofaBase(m_selectedComponent);
 }
 
 
-
-void GraphView::moveTo(Base* base)
+void ShapeGraphView::moveTo(Base* base)
 {
-    if( m_nodeToQUid.contains(QString::fromStdString(getPathName(base))))
-    {
-        auto& node = m_nodeToQUid[QString::fromStdString(getPathName(base))];
-
-        static MoveTooAnimation animation([this](double factor, MoveTooAnimation* self){
-            QPointF pos = (self->m_destPosition -self->m_sourcePosition)*factor+self->m_sourcePosition;
-            self->m_currentPosition = pos;
-
-            QVector2D d{self->m_destPosition-self->m_sourcePosition};
-            double es= d.length()/6000;
-            double rs = 1.0;
-            double df=factor*M_PI-M_PI_2;
-            df = ((1.0-cos(df))+0.5)/1.5;
-            if(es<0.5){
-                es = es;
-            }else{
-                es= 1.0;
-            }
-            rs = (df*es)+(1.0-es);
-            m_graphView->resetTransform();
-            m_graphView->centerOn(pos);
-            m_graphView->scale(rs,rs);
-        });
-
-        animation.set(animation.m_currentPosition, m_graphScene->getNodePosition(*node));
-        animation.start();
-    }
 }
 
-void GraphView::setSelectedComponent(SofaBase* base)
+void ShapeGraphView::setSelectedComponent(SofaBase* base)
 {
     m_selectedComponent = base->rawBase();
     emit selectedComponentChanged();
 }
 
-SofaNode* GraphView::getRootNode()
+SofaNode* ShapeGraphView::getRootNode()
 {
     return new SofaNode(DAGNode::SPtr(dynamic_cast<DAGNode*>(m_rootNode->toBaseNode())));
 }
 
-void GraphView::setRootNode(SofaNode* node)
+void ShapeGraphView::setRootNode(SofaNode* node)
 {
     resetNodeGraph(node->self());
     emit rootNodeChanged();
 }
 
-void GraphView::clearNodeData()
+void ShapeGraphView::clearNodeData()
 {
     if (m_graphScene != nullptr)
     {
@@ -284,7 +237,7 @@ void GraphView::clearNodeData()
     m_nodeToQUid.clear();
 }
 
-void GraphView::resetNodeGraph(sofa::simulation::Node* scene)
+void ShapeGraphView::resetNodeGraph(sofa::simulation::Node* scene)
 {
     if(m_rootNode)
     {
@@ -304,12 +257,12 @@ void GraphView::resetNodeGraph(sofa::simulation::Node* scene)
     connectNodeData();
 }
 
-QVector2D GraphView::getViewPosition()
+QVector2D ShapeGraphView::getViewPosition()
 {
     return m_viewPosition;
 }
 
-void GraphView::setViewPosition(QVector2D viewPosition)
+void ShapeGraphView::setViewPosition(QVector2D viewPosition)
 {
     QVector2D dx = viewPosition-m_viewPosition;
     m_viewPosition = viewPosition;
@@ -321,36 +274,12 @@ void GraphView::setViewPosition(QVector2D viewPosition)
     emit viewPositionChanged();
 }
 
-//std::cout << "ADD OBJECT" << bObject << std::endl;
-
-//const std::string& name = bObject->getClassName() + " - " + bObject->getName();
-//msg_info_when(debugNodeGraph, "SofaWindowDataGraph") << "addSimulationObject: " << name;
-
-//QtNodes::Node& fromNode = m_graphScene->createNode(
-//            std::make_unique<SofaComponentGraphModel>(bObject, debugNodeGraph));
-//            fromNode.setObjectName(QString::fromStdString(bObject->getName()));
-
-
-//SofaComponentGraphModel* model = dynamic_cast<SofaComponentGraphModel*>(fromNode.nodeDataModel());
-//model->setCaption(name);
-
-//auto& fromNgo = fromNode.nodeGraphicsObject();
-//fromNgo.setPos(m_posX, m_posY);
-//m_posX += name.length() * m_scaleX;
-
-//return model->getNbrData();
-
-
-void GraphView::showConnectedComponents(SofaBase* base)
+void ShapeGraphView::showConnectedComponents(SofaBase* base)
 {
-    std::cout << " SHOW CONNECTED COMPONENT ..... " << base->getName().toStdString() << std::endl;
     moveTo(base->rawBase());
-    //clearNodeData();
-    //findConnectedComponents(base->rawBase());
-    //emit rootNodeChanged();
 }
 
-void GraphView::findConnectedComponents(Base* base)
+void ShapeGraphView::findConnectedComponents(Base* base)
 {
     if(base==nullptr)
         return;
@@ -365,16 +294,13 @@ void GraphView::findConnectedComponents(Base* base)
         return;
 
     QtNodes::Node& fromNode = m_graphScene->createNode(
-                std::make_unique<SofaComponentGraphModel>(object, debugNodeGraph));
+                std::make_unique<ShapeGraphModel>(object, debugNodeGraph));
 
     m_nodeToQUid[QString::fromStdString(object->getPathName())] = &fromNode;
     fromNode.setObjectName(QString::fromStdString(base->getName()));
 
-    SofaComponentGraphModel* model = dynamic_cast<SofaComponentGraphModel*>(fromNode.nodeDataModel());
+    ShapeGraphModel* model = dynamic_cast<ShapeGraphModel*>(fromNode.nodeDataModel());
     model->setCaption(object->getName());
-
-    //auto& fromNgo = fromNode.nodeGraphicsObject();
-    //fromNgo.setOpacity(0.5);
 
     /// Explore the links
     for(auto& link : base->getLinks())
@@ -390,7 +316,7 @@ void GraphView::findConnectedComponents(Base* base)
     }
 }
 
-QRectF GraphView::parseSimulationNode(sofa::simulation::Node* node, double posX, double posY)
+QRectF ShapeGraphView::parseSimulationNode(sofa::simulation::Node* node, double posX, double posY)
 {
     if(node==nullptr)
         return QRectF {};
@@ -452,18 +378,18 @@ QRectF GraphView::parseSimulationNode(sofa::simulation::Node* node, double posX,
 }
 
 
-QtNodes::Node* GraphView::addSimulationNode(sofa::core::objectmodel::BaseNode* node, double x, double y)
+QtNodes::Node* ShapeGraphView::addSimulationNode(sofa::core::objectmodel::BaseNode* node, double x, double y)
 {
     const std::string& name = node->getClassName() + " - " + node->getName();
     msg_info_when(debugNodeGraph, "SofaWindowDataGraph") << "addSimulationObject: " << name;
 
     QtNodes::Node& fromNode = m_graphScene->createNode(
-                std::make_unique<SofaComponentGraphModel>(node, debugNodeGraph));
+                std::make_unique<ShapeGraphModel>(node, debugNodeGraph));
     fromNode.setObjectName(QString::fromStdString(node->getName()));
 
     m_nodeToQUid[QString::fromStdString(node->getPathName())] = &fromNode;
 
-    SofaComponentGraphModel* model = dynamic_cast<SofaComponentGraphModel*>(fromNode.nodeDataModel());
+    ShapeGraphModel* model = dynamic_cast<ShapeGraphModel*>(fromNode.nodeDataModel());
     model->setCaption(name);
 
     auto& fromNgo = fromNode.nodeGraphicsObject();
@@ -472,18 +398,18 @@ QtNodes::Node* GraphView::addSimulationNode(sofa::core::objectmodel::BaseNode* n
     return &fromNode;
 }
 
-QtNodes::Node* GraphView::addSimulationObject(sofa::core::objectmodel::BaseObject* bObject, double x, double y)
+QtNodes::Node* ShapeGraphView::addSimulationObject(sofa::core::objectmodel::BaseObject* bObject, double x, double y)
 {
     const std::string& name = bObject->getClassName() + " - " + bObject->getName();
     msg_info_when(debugNodeGraph, "SofaWindowDataGraph") << "addSimulationObject: " << name;
 
     QtNodes::Node& fromNode = m_graphScene->createNode(
-                std::make_unique<SofaComponentGraphModel>(bObject, debugNodeGraph));
+                std::make_unique<ShapeGraphModel>(bObject, debugNodeGraph));
     fromNode.setObjectName(QString::fromStdString(bObject->getName()));
 
     m_nodeToQUid[QString::fromStdString(bObject->getPathName())] = &fromNode;
 
-    SofaComponentGraphModel* model = dynamic_cast<SofaComponentGraphModel*>(fromNode.nodeDataModel());
+    ShapeGraphModel* model = dynamic_cast<ShapeGraphModel*>(fromNode.nodeDataModel());
     model->setCaption(name);
 
     auto& fromNgo = fromNode.nodeGraphicsObject();
@@ -494,14 +420,14 @@ QtNodes::Node* GraphView::addSimulationObject(sofa::core::objectmodel::BaseObjec
 
 
 
-void GraphView::connectNodeData()
+void ShapeGraphView::connectNodeData()
 {
     std::vector <QtNodes::Node*> nodes = m_graphScene->allNodes();
 
     for (auto node : nodes)
     {
         // get connections
-        SofaComponentGraphModel* childNode = dynamic_cast<SofaComponentGraphModel*>(node->nodeDataModel());
+        ShapeGraphModel* childNode = dynamic_cast<ShapeGraphModel*>(node->nodeDataModel());
 
         if (childNode->getNbrConnections() == 0)
             continue;
@@ -517,7 +443,7 @@ void GraphView::connectNodeData()
                 if (pObjName.compare(connection.second.first) == 0)
                 {
                     parentFound = true;
-                    SofaComponentGraphModel* parentNode = dynamic_cast<SofaComponentGraphModel*>(pNode->nodeDataModel());
+                    ShapeGraphModel* parentNode = dynamic_cast<ShapeGraphModel*>(pNode->nodeDataModel());
                     QtNodes::PortIndex parentId = parentNode->getDataInputId(connection.second.second);
                     QtNodes::PortIndex childId = childNode->getDataInputId(connection.first);
 

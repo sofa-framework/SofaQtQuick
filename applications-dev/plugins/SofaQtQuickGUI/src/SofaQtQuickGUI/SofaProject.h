@@ -29,6 +29,9 @@ public:
 
     ProjectMonitor();
 
+public slots:
+    void update();
+
     void addDirectory(const QString& filepath);
     void addFile(const QString& filepath);
     void addPath(const QString& path);

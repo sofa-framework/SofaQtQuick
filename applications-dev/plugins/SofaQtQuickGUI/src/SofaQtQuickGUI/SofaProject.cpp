@@ -22,6 +22,7 @@ using sofapython3::PythonFactory;
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFileSystemWatcher>
+#include <QTimer>
 
 #include "Assets/DirectoryAsset.h"
 #include "Assets/AssetFactory.h"
@@ -47,6 +48,15 @@ ProjectMonitor::ProjectMonitor()
 {
     connect(&m_dirwatcher, &QFileSystemWatcher::directoryChanged,
             this, &ProjectMonitor::directoryChanged);
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    timer->start(200);
+}
+
+void ProjectMonitor::update()
+{
+    FileMonitor::updates(0);
 }
 
 void ProjectMonitor::addDirectory(const QString& filepath)
