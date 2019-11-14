@@ -26,14 +26,20 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofaqtquick
 {
 
+using bindings::SofaData;
+using ::sofa::defaulttype::AbstractTypeInfo;
+using ::sofa::core::objectmodel::BaseObject;
+
 Manipulator::Manipulator(QObject* parent)
     : QObject(parent),
       myVisible(true),
-      myPosition(),
-      myOrientation(),
-      myScale(1.0f, 1.0f, 1.0f)
+      myPosition(nullptr),
+      myOrientation(nullptr),
+      myScale(nullptr)
 {
-
+    connect(this, &Manipulator::positionChanged, this, &Manipulator::onValueChanged);
+    connect(this, &Manipulator::orientationChanged, this, &Manipulator::onValueChanged);
+    connect(this, &Manipulator::scaleChanged, this, &Manipulator::onValueChanged);
 }
 
 Manipulator::~Manipulator()
@@ -51,73 +57,174 @@ void Manipulator::setVisible(bool newVisible)
     visibleChanged(newVisible);
 }
 
+const QVector3D Manipulator::position() const {
+    if (!myPosition || !myPosition->rawData()) QVector3D();
+
+    const AbstractTypeInfo* typeinfo = myPosition->rawData()->getValueTypeInfo();
+    const void* valueptr = myPosition->rawData()->getValueVoidPtr();
+
+    return QVector3D(float(typeinfo->getScalarValue(valueptr, 0)),
+                     float(typeinfo->getScalarValue(valueptr, 1)),
+                     float(typeinfo->getScalarValue(valueptr, 2)));
+}
+
+sofaqtquick::bindings::SofaData* Manipulator::positionData()
+{
+    return myPosition;
+}
+
+
 void Manipulator::setPosition(const QVector3D& newPosition)
+{
+    if (!myPosition || !myPosition->rawData() || newPosition == position())
+        return;
+
+    const sofa::defaulttype::AbstractTypeInfo* typeinfo = myPosition->rawData()->getValueTypeInfo();
+    void* valueptr = typeinfo->getValuePtr(myPosition->rawData()->beginEditVoidPtr());
+    typeinfo->setScalarValue(valueptr, 0, double(newPosition.x()));
+    typeinfo->setScalarValue(valueptr, 1, double(newPosition.y()));
+    typeinfo->setScalarValue(valueptr, 2, double(newPosition.z()));
+    myPosition->rawData()->endEditVoidPtr();
+    emit positionChanged(position());
+}
+
+void Manipulator::setPositionData(SofaData* newPosition)
 {
     if(newPosition == myPosition)
         return;
 
     myPosition = newPosition;
-
-    positionChanged(newPosition);
+    emit positionChanged(position());
 }
 
-void Manipulator::setOrientation(const QQuaternion& newOrientation)
+const QQuaternion Manipulator::orientation() const {
+    if (!myOrientation || !myOrientation->rawData()) QQuaternion();
+
+    const sofa::defaulttype::AbstractTypeInfo* typeinfo = myOrientation->rawData()->getValueTypeInfo();
+    const void* valueptr = myOrientation->rawData()->getValueVoidPtr();
+
+    return QQuaternion(float(typeinfo->getScalarValue(valueptr, 0)),
+                     float(typeinfo->getScalarValue(valueptr, 1)),
+                     float(typeinfo->getScalarValue(valueptr, 2)),
+                     float(typeinfo->getScalarValue(valueptr, 3)));
+}
+
+const QVector3D Manipulator::eulerOrientation() const {
+    return orientation().toEulerAngles();
+}
+
+sofaqtquick::bindings::SofaData* Manipulator::orientationData()
+{
+    return myOrientation;
+}
+
+
+void Manipulator::setOrientation(const QVector3D &newOrientation)
+{
+    QQuaternion quat;
+    quat.fromEulerAngles(newOrientation);
+    setOrientation(quat);
+}
+
+void Manipulator::setOrientation(const QQuaternion &newOrientation)
+{
+    if (!myOrientation || !myOrientation->rawData() || newOrientation == orientation())
+        return;
+
+    const sofa::defaulttype::AbstractTypeInfo* typeinfo = myOrientation->rawData()->getValueTypeInfo();
+    void* valueptr = const_cast<void*>(typeinfo->getValuePtr(myOrientation->rawData()->beginEditVoidPtr()));
+    if (typeinfo->size() == 4) {
+        typeinfo->setScalarValue(valueptr, 0, double(newOrientation.x()));
+        typeinfo->setScalarValue(valueptr, 1, double(newOrientation.y()));
+        typeinfo->setScalarValue(valueptr, 2, double(newOrientation.z()));
+        typeinfo->setScalarValue(valueptr, 3, double(newOrientation.scalar()));
+    } else {
+        typeinfo->setScalarValue(valueptr, 0, double(newOrientation.toEulerAngles().x()));
+        typeinfo->setScalarValue(valueptr, 1, double(newOrientation.toEulerAngles().y()));
+        typeinfo->setScalarValue(valueptr, 2, double(newOrientation.toEulerAngles().z()));
+    }
+    myOrientation->rawData()->endEditVoidPtr();
+    emit orientationChanged(orientation());
+}
+
+
+void Manipulator::setOrientationData(SofaData* newOrientation)
 {
     if(newOrientation == myOrientation)
         return;
 
     myOrientation = newOrientation;
-
-    orientationChanged(newOrientation);
 }
 
-void Manipulator::setEulerOrientation(const QVector3D& newOrientation)
+
+const QVector3D Manipulator::scale() const {
+    if (!myScale || !myScale->rawData()) QVector3D();
+
+    const sofa::defaulttype::AbstractTypeInfo* typeinfo = myScale->rawData()->getValueTypeInfo();
+    const void* valueptr = myScale->rawData()->getValueVoidPtr();
+
+    return QVector3D(float(typeinfo->getScalarValue(valueptr, 0)),
+                     float(typeinfo->getScalarValue(valueptr, 1)),
+                     float(typeinfo->getScalarValue(valueptr, 2)));
+}
+
+sofaqtquick::bindings::SofaData* Manipulator::scaleData()
 {
-    QQuaternion quat;
-    quat.fromEulerAngles(newOrientation);
-    if (quat == myOrientation)
-        return;
-    myOrientation = quat;
-    orientationChanged(quat);
+    return myScale;
 }
-
 
 void Manipulator::setScale(const QVector3D& newScale)
+{
+    if (!myScale || !myScale->rawData() || newScale == scale())
+        return;
+
+    const sofa::defaulttype::AbstractTypeInfo* typeinfo = myScale->rawData()->getValueTypeInfo();
+    void* valueptr = const_cast<void*>(typeinfo->getValuePtr(myScale->rawData()->beginEditVoidPtr()));
+
+    typeinfo->setScalarValue(valueptr, 0, double(newScale.x()));
+    typeinfo->setScalarValue(valueptr, 1, double(newScale.y()));
+    typeinfo->setScalarValue(valueptr, 2, double(newScale.z()));
+    myScale->rawData()->endEditVoidPtr();
+    emit scaleChanged(scale());
+}
+
+
+void Manipulator::setScaleData(SofaData* newScale)
 {
     if(newScale == myScale)
         return;
 
     myScale = newScale;
 
-    scaleChanged(newScale);
+    scaleChanged(scale());
 }
 
 QVector3D Manipulator::right() const
 {
-    return myOrientation.rotatedVector(QVector3D(1.0f, 0.0f, 0.0f));
+    return orientation().rotatedVector(QVector3D(1.0f, 0.0f, 0.0f));
 }
 
 QVector3D Manipulator::up() const
 {
-    return myOrientation.rotatedVector(QVector3D(0.0f, 1.0f, 0.0f));
+    return orientation().rotatedVector(QVector3D(0.0f, 1.0f, 0.0f));
 }
 
 QVector3D Manipulator::dir() const
 {
-    return myOrientation.rotatedVector(QVector3D(0.0f, 0.0f, 1.0f));
+    return orientation().rotatedVector(QVector3D(0.0f, 0.0f, 1.0f));
 }
 
 QVector3D Manipulator::applyModelToPoint(const QVector3D& point) const
 {
-    QMatrix4x4 model(myOrientation.toRotationMatrix());
-    model.setColumn(3, QVector4D(myPosition, 1.0f));
+    QMatrix4x4 model(orientation().toRotationMatrix());
+    model.setColumn(3, QVector4D(position(), 1.0f));
 
     return model.map(point);
 }
 
 QVector3D Manipulator::applyModelToVector(const QVector3D& vector) const
 {
-    return QMatrix4x4(myOrientation.toRotationMatrix()).mapVector(vector);
+    return QMatrix4x4(orientation().toRotationMatrix()).mapVector(vector);
 }
 
 void Manipulator::draw(const SofaViewer& /*viewer*/) const
@@ -128,6 +235,18 @@ void Manipulator::draw(const SofaViewer& /*viewer*/) const
 void Manipulator::pick(const SofaViewer& viewer) const
 {
     draw(viewer);
+}
+
+void Manipulator::onValueChanged(const QVariant& /*newValue*/)
+{
+    std::cout << "value changed" << std::endl;
+    BaseObject* o = dynamic_cast<BaseObject*>(myPosition->rawData()->getOwner());
+    if (o)
+    {
+        o->init();
+        o->reinit();
+        o->bwdInit();
+    }
 }
 
 }  // namespace sofaqtquick

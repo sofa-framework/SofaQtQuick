@@ -58,61 +58,29 @@ ToolBar {
         ToolSeparator {
             anchors.verticalCenter: parent.verticalCenter
         }
-        Row {
-            id: interactorPositioner
+        IconComboBox {
+            id: iteractors
             anchors.verticalCenter: parent.verticalCenter
-            spacing: -1
-            Component {
-                id: interactorButtonComponent
-
-                ToolButton {
-                    id: interactorButton
-                    property string interactorName
-                    property Component interactorComponent
-
-                    height: root.height - 3
-                    width: implicitWidth + 10
-
-                    text: interactorName
-                    checkable: true
-                    checked: false
-                    onCheckedChanged: if(checked) SofaApplication.interactorComponent = interactorComponent
-                    onClicked: checked = true
-
-                    Connections {
-                        target: SofaApplication
-                        onInteractorNameChanged: interactorButton.update();
-                    }
-
-                    Component.onCompleted: update();
-                    function update() {
-                        if(interactorName === SofaApplication.interactorName)
-                            interactorButton.checked = true;
-                        else
-                        {
-                            interactorButton.checked = false;
-                        }
-                    }
+            model: ListModel {
+                id: listmodel
+                ListElement {
+                    name: "Camera Mode"
+                    image: "qrc:/icon/ICON_CAMERA_MODIFIER.png"
+                    interactor: "MoveCamera"
+                }
+                ListElement {
+                    name: "Object Mode"
+                    image: "qrc:/icon/ICON_OBJECT_MODE.png"
+                    interactor: "Selection"
+                }
+                ListElement {
+                    name: "Edit Mode"
+                    image: "qrc:/icon/ICON_EDIT_MODE.png"
+                    interactor: "SofaParticleInteractor"
                 }
             }
-
-            Connections {
-                target: SofaApplication
-                onInteractorComponentMapChanged: interactorPositioner.update();
-            }
-
-            function update() {
-                for(var i = 0; i < children.length; ++i)
-                    children[i].destroy();
-
-                var interactorComponentMap = SofaApplication.interactorComponentMap;
-                var tmpIncubator
-                for(var key in interactorComponentMap)
-                    if(interactorComponentMap.hasOwnProperty(key)) {
-                        var incubator = interactorButtonComponent.incubateObject(interactorPositioner, {interactorName: key, interactorComponent: interactorComponentMap[key]});
-                        tmpIncubator = incubator
-                        incubator.forceCompletion();
-                    }
+            onCurrentIndexChanged: {
+                SofaApplication.interactorComponent = SofaApplication.interactorComponentMap[listmodel.get(currentIndex).interactor]
             }
         }
 

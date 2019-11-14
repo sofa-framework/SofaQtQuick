@@ -346,7 +346,7 @@ Item //
 
     ////////////////////////////////////////////////// INTERACTOR
 
-    property string defaultInteractorName: "SofaParticleInteractor"
+    property string defaultInteractorName: "MoveCamera"
     readonly property string interactorName: {
         if(interactorComponent)
         for(var key in interactorComponentMap)
