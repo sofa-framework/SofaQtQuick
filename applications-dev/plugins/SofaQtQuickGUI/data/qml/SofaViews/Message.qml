@@ -21,13 +21,14 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
     - damien.marchal@univ-lille.fr
 ********************************************************************/
 
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import SofaBasics 1.0
 import SofaApplication 1.0
+import QtGraphicalEffects 1.12
 
 Column {
     property bool filterByComponent : false
@@ -220,14 +221,21 @@ Column {
                                     height: 16
                                     enabled: link !== "undefined"
 
-                                    iconSource:{
-                                        if(link !== "undefined")
-                                            return "qrc:/icon/leave.png"
-                                        return "qrc:/icon/leave_grayed.png"
+                                    iconSource: "qrc:/icon/ICON_LEAVE.png"
+                                    useHoverOpacity: false
+                                    ColorOverlay {
+                                        source: parent
+                                        anchors.fill: parent
+                                        color: {
+                                            if (messageicon.hovered)
+                                                return "orange"
+                                            else if (link !== "undefined")
+                                                return "#EEEEEE"
+                                            else
+                                                return "gray"
+                                        }
+
                                     }
-
-                                    opacity: link !== "undefined" ? 1.0: 0.5
-
 
                                     onClicked: {
                                         SofaApplication.openInEditor(link, line)
