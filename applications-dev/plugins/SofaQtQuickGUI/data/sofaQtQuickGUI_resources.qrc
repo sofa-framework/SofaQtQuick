@@ -97,5 +97,8 @@
         <file>icon/ICON_EDIT_MODE2.png</file>
         <file>icon/ICON_OBJECT_MODE.png</file>
         <file>icon/ICON_PYSCN_MONOCHROME.png</file>
+        <file>icon/ICON_LEAVE.png</file>
+        <file>icon/ICON_TO_CODELINE.png</file>
+        <file>icon/ICON_WARNING.png</file>
     </qresource>
 </RCC>

@@ -57,10 +57,19 @@ void Manipulator::setVisible(bool newVisible)
     visibleChanged(newVisible);
 }
 
+void Manipulator::setName(const QString& newName)
+{
+    if(newName == myName)
+        return;
+
+    myName = newName;
+
+    nameChanged(newName);
+}
+
 const QVector3D Manipulator::position() const {
     if (!myPosition || !myPosition->rawData()) QVector3D();
 
-    std::cout << myPosition->getName().toStdString() << std::endl;
     const AbstractTypeInfo* typeinfo = myPosition->rawData()->getValueTypeInfo();
     const void* valueptr = myPosition->rawData()->getValueVoidPtr();
 
@@ -105,9 +114,9 @@ const QQuaternion Manipulator::orientation() const {
     const void* valueptr = myOrientation->rawData()->getValueVoidPtr();
 
     return QQuaternion(float(typeinfo->getScalarValue(valueptr, 0)),
-                     float(typeinfo->getScalarValue(valueptr, 1)),
-                     float(typeinfo->getScalarValue(valueptr, 2)),
-                     float(typeinfo->getScalarValue(valueptr, 3)));
+                       float(typeinfo->getScalarValue(valueptr, 1)),
+                       float(typeinfo->getScalarValue(valueptr, 2)),
+                       float(typeinfo->getScalarValue(valueptr, 3)));
 }
 
 const QVector3D Manipulator::eulerOrientation() const {
@@ -240,14 +249,13 @@ void Manipulator::pick(const SofaViewer& viewer) const
 
 void Manipulator::onValueChanged(const QVariant& /*newValue*/)
 {
-    std::cout << "value changed" << std::endl;
-    BaseObject* o = dynamic_cast<BaseObject*>(myPosition->rawData()->getOwner());
-    if (o)
-    {
-        o->init();
-        o->reinit();
-        o->bwdInit();
-    }
+//    BaseObject* o = dynamic_cast<BaseObject*>(myPosition->rawData()->getOwner());
+//    if (o)
+//    {
+//        o->init();
+//        o->reinit();
+//        o->bwdInit();
+//    }
 }
 
 }  // namespace sofaqtquick

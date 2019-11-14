@@ -19,11 +19,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.0
 import Manipulator3D_InPlaneTranslation 1.0
+import SofaApplication 1.0
 
 Manipulator3D_InPlaneTranslation {
     id: root
 
-    property string name: "Manipulator3D_InPlaneTranslation"
+    name: "Manipulator3D_InPlaneTranslation"
 
     property var startVector: Qt.vector3d(0.0, 0.0, 0.0)
 
@@ -32,6 +33,15 @@ Manipulator3D_InPlaneTranslation {
     }
 
     function mouseMoved(mouse, sofaViewer) {
+        if (!SofaApplication.selectedComponent)
+        {
+            console.log("lost selected component.....")
+            return;
+        }
+        else {
+            console.log("selected component: " + SofaApplication.selectedComponent.getName())
+        }
+
         var newPosition = sofaViewer.projectOnPlane(Qt.point(mouse.x, mouse.y), root.position, sofaViewer.camera.direction());
         root.position = newPosition;
     }

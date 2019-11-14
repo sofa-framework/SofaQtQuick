@@ -503,15 +503,22 @@ Rectangle {
                 id:childError
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: componentState.left
-                height: 16
-                width: 16
+                height: 12
+                width: 12
                 enabled: hasMessage || (hasChildMessage && !styleData.isExpanded)
                 visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
-                iconSource:
-                {
-                    if(isNode)
-                        return !hasChildMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.png"
-                    return hasMessage ? "qrc:/icon/iconerror.png" : "qrc:/icon/iconmessage_base.png"
+                iconSource: "qrc:/icon/ICON_WARNING.png"
+                useHoverOpacity: false
+                ColorOverlay {
+                    id: childErrorColorOverlay
+                    anchors.fill: parent
+                    source: parent
+                    color: {
+                        if (isNode)
+                            return (hasChildMessage ?  "red" : "#DDDDDD")
+                        return (hasMessage ? "red" : "#DDDDDD")
+                    }
+                    opacity: childError.hovered ? 0.6 : 1.0
                 }
 
 
@@ -533,7 +540,6 @@ Rectangle {
                                                    "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
                 }
-                opacity: 0.75
                 z: 1
             }
 
@@ -544,11 +550,23 @@ Rectangle {
                 id: localError
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: childError.left
-                height: 16
-                width: 16
+                anchors.rightMargin: -6
+                height: 12
+                width: 12
                 visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
-                iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.png"
-                opacity: 0.75
+                iconSource: "qrc:/icon/ICON_WARNING.png"
+                useHoverOpacity: false
+                ColorOverlay {
+                    id: localErrorColorOverlay
+                    anchors.fill: parent
+                    source: parent
+                    color: !hasMessage ? "#DDDDDD" : "red"
+                    opacity: childError.hovered ? 0.6 : 1.0
+                }
+
+
+//                iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.png"
+//                opacity: 0.75
                 enabled: hasMessage
                 onClicked: {
                     var srcIndex = sceneModel.mapToSource(index)
@@ -558,7 +576,7 @@ Rectangle {
                                                    "sofaComponent": c});
 
                 }
-                z: 1
+                z: 0
             }
 
 

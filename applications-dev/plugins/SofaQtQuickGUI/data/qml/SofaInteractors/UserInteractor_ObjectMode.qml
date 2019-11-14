@@ -30,22 +30,28 @@ UserInteractor_CameraMode {
 
     function init() {
         moveCamera_init();
-
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             selectedManipulator = sofaScene.selectedManipulator;
-            selectedComponent = sofaScene.selectedComponent;
+            if (!SofaApplication.selectedComponent)
+            {
+                console.log("UserInteractor_CameraMode: lost selected component.....")
+            }
+            else {
+                console.log("UserInteractor_CameraMode: selected component: " + SofaApplication.selectedComponent.getName())
+            }
+
 
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
             if(selectable) {
                 if(selectable.manipulator) {
                     selectedManipulator = selectable.manipulator;
-                } else if(selectable.sofaComponent) {
-                    selectedComponent = selectable.sofaComponent;
+                } else if (selectable.sofaComponent) {
+                    SofaApplication.selectedComponent = selectable.sofaComponent;
                 }
             }
              else {
-                selectedManipulator = null;
-                selectedComponent = null;
+//                selectedManipulator = null;
+                SofaApplication.selectedComponent = null;
             }
 
             if(selectedManipulator) {
@@ -56,9 +62,10 @@ UserInteractor_CameraMode {
                     setMouseMovedMapping(selectedManipulator.mouseMoved);
 
             } else if(selectedComponent) {
-                if(!sofaScene.areSameComponent(sofaScene.selectedComponent, selectedComponent)) {
-                    SofaApplication.selectedComponent = selectedComponent;
-                }
+//                if(!sofaScene.areSameComponent(SofaApplication.selectedComponent, SofaApplication.selectedComponent)) {
+//                    console.log("Changing selected component to " + SofaApplication.selectedComponent.getName())
+//                    SofaApplication.selectedComponent = selectedComponent;
+//                }
             }
         });
 

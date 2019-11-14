@@ -44,6 +44,7 @@ public:
 
 public:
     Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQuaternion orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_PROPERTY(QVector3D scale READ scale WRITE setScale NOTIFY scaleChanged)
@@ -55,7 +56,9 @@ public:
 
 public:
     bool visible() const {return myVisible;}
+    QString name() const {return myName;}
     void setVisible(bool newVisible);
+    void setName(const QString& newName);
 
     const QVector3D position() const;
     void setPosition(const QVector3D& newPosition);
@@ -92,6 +95,7 @@ public slots:
 
 signals:
     void visibleChanged(bool newVisible);
+    void nameChanged(QString newName);
     void positionChanged(const QVector3D newPosition);
     void orientationChanged(const QQuaternion newOrientation);
     void scaleChanged(const QVector3D newScale);
@@ -102,6 +106,7 @@ signals:
 
 private:
     bool                             myVisible;
+    QString                          myName;
     sofaqtquick::bindings::SofaData* myPosition;
     sofaqtquick::bindings::SofaData* myOrientation;
     sofaqtquick::bindings::SofaData* myScale;    
