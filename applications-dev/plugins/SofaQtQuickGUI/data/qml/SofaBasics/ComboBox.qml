@@ -9,7 +9,6 @@ ComboBox {
     property alias cornerPositions: backgroundID.cornerPositions
     property bool sizeToContents: true
     property int modelWidth: 40
-
     id: control
     implicitHeight: 20
     width: 100

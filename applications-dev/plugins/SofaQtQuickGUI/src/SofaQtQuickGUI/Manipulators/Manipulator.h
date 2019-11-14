@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #define MANIPULATOR_H
 
 #include <SofaQtQuickGUI/config.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
 
 #include <QObject>
 #include <QQmlListProperty>
@@ -46,6 +47,9 @@ public:
     Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQuaternion orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_PROPERTY(QVector3D scale READ scale WRITE setScale NOTIFY scaleChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaData* positionData READ positionData WRITE setPositionData NOTIFY positionDataChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaData* orientationData READ orientationData WRITE setOrientationData NOTIFY orientationDataChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaData* scaleData READ scaleData WRITE setScaleData NOTIFY scaleDataChanged)
 
     Q_CLASSINFO("DefaultProperty", "manipulators")
 
@@ -53,16 +57,24 @@ public:
     bool visible() const {return myVisible;}
     void setVisible(bool newVisible);
 
-    const QVector3D& position() const {return myPosition;}
+    const QVector3D position() const;
     void setPosition(const QVector3D& newPosition);
+    void setPositionData(sofaqtquick::bindings::SofaData* newPosition);
+    sofaqtquick::bindings::SofaData* positionData();
 
-    const QQuaternion& orientation() const {return myOrientation;}
+    const QQuaternion orientation() const;
+    const QVector3D eulerOrientation() const;
     void setOrientation(const QQuaternion& newOrientation);
-    QVector3D eulerOrientation() const {return myOrientation.toEulerAngles();}
-    void setEulerOrientation(const QVector3D& newOrientation);
+    void setOrientationData(sofaqtquick::bindings::SofaData* newOrientation);
+    sofaqtquick::bindings::SofaData* orientationData();
 
-    const QVector3D& scale() const {return myScale;}
+    const QVector3D scale() const;
     void setScale(const QVector3D& newScale);
+    void setScaleData(sofaqtquick::bindings::SofaData* newScale);
+    sofaqtquick::bindings::SofaData* scaleData();
+
+
+    Q_INVOKABLE void setOrientation(const QVector3D& newOrientation);
 
     Q_INVOKABLE QVector3D right() const;
     Q_INVOKABLE QVector3D up() const;
@@ -76,18 +88,23 @@ public slots:
     virtual void draw(const SofaViewer& viewer) const;
     virtual void pick(const SofaViewer& viewer) const;
 
+    void onValueChanged(const QVariant& newValue);
+
 signals:
     void visibleChanged(bool newVisible);
-    void positionChanged(const QVector3D& newPosition);
-    void orientationChanged(const QQuaternion& newOrientation);
-    void scaleChanged(const QVector3D& newScale);
+    void positionChanged(const QVector3D newPosition);
+    void orientationChanged(const QQuaternion newOrientation);
+    void scaleChanged(const QVector3D newScale);
+
+    void positionDataChanged(const sofaqtquick::bindings::SofaData* newPosition);
+    void orientationDataChanged(const sofaqtquick::bindings::SofaData* newOrientation);
+    void scaleDataChanged(const sofaqtquick::bindings::SofaData* newScale);
 
 private:
-    bool                myVisible;
-    QVector3D           myPosition;
-    QQuaternion         myOrientation;
-    QVector3D           myScale;
-
+    bool                             myVisible;
+    sofaqtquick::bindings::SofaData* myPosition;
+    sofaqtquick::bindings::SofaData* myOrientation;
+    sofaqtquick::bindings::SofaData* myScale;    
 };
 
 }  // namespace sofaqtquick

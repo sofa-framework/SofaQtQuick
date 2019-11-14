@@ -1173,11 +1173,12 @@ EditView
         anchors.leftMargin: 20
         anchors.topMargin: 20
 
+        visible: SofaApplication.getInteractorName(SofaApplication.interactorComponent) !== "MoveCamera"
         property var selectedComponent: SofaApplication.selectedComponent
         onSelectedComponentChanged: {
+            camViewRect.selected = camViewRect.selected
             translateRect.selected = translateRect.selected
             rotateRect.selected = rotateRect.selected
-            camViewRect.selected = camViewRect.selected
         }
 
         function addManipulator(manipulatorString) {
@@ -1193,7 +1194,8 @@ EditView
             id: camViewRect
             property bool selected: true
             onSelectedChanged: {
-                sofaScene.selectedManipulator = null
+                if (selected)
+                    sofaScene.selectedManipulator = null
             }
 
             implicitHeight: 30
@@ -1260,11 +1262,7 @@ EditView
                     manipulator = manipulatorControls.addManipulator("Manipulator3D_InPlaneTranslation")
                 manipulator.visible = true
                 var t = SofaApplication.selectedComponent.getData("translation").value
-                manipulator.position = Qt.vector3d(t[0][0], t[0][1], t[0][2])
-                manipulator.positionChanged.connect(function(vec3d) {
-                    console.log("setting new position: " + [vec3d.x,vec3d.y,vec3d.z])
-                    SofaApplication.selectedComponent.getData("translation").value = [[vec3d.x,vec3d.y,vec3d.z]]
-                })
+                manipulator.positionData = SofaApplication.selectedComponent.getData("translation")
                 console.log("Manipulator3D_InPlaneTranslation " + manipulator.name)
                 sofaScene.selectedManipulator = manipulator
             }

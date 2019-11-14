@@ -93,5 +93,8 @@
         <file>icon/ICON_TRANLSATION_MODIFIER.png</file>
         <file>icon/ICON_CAMERA_MODIFIER.png</file>
         <file>icon/ICON_VIEWPOINT_MODIFIER.png</file>
+        <file>icon/ICON_EDIT_MODE.png</file>
+        <file>icon/ICON_EDIT_MODE2.png</file>
+        <file>icon/ICON_OBJECT_MODE.png</file>
     </qresource>
 </RCC>

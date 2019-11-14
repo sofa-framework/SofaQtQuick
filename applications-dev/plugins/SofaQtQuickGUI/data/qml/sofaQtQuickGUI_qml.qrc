@@ -147,5 +147,6 @@
         <file>SofaViews/CamView.qml</file>
         <file>SofaViews/PickCamView.qml</file>
         <file>SofaManipulators/Manipulator3D_InPlaneTranslation.qml</file>
+        <file>SofaBasics/IconComboBox.qml</file>
     </qresource>
 </RCC>
