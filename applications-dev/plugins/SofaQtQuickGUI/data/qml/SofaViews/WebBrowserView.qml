@@ -28,14 +28,14 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
 import SofaBasics 1.0
-import SofaApplication 1.0
+import SofaBaseApplicationSingleton 1.0
 import SofaInteractors 1.0
 import EditView 1.0
-import SofaScene 1.0
+import SofaBaseScene 1.0
 
 Item{
     id: root
-    property url url : "https://github.com/SofaDefrost/SPM/wiki/Sofa-Ressources"
+    property string url : "https://www.sofa-framework.org"
 
     ScrollView {
         id: scroll
@@ -59,14 +59,15 @@ Item{
 
             onUrlChanged:
             {
+                console.log("URL CHANGE... TO " + url)
                 if(url.toString().includes("?installSofaPlugin="))
                 {
                     var pluginname = url.toString().substring(url.toString().indexOf("?installSofaPlugin=")+19)
-                    var a = SofaApplication.executeProcessAsync("sofa-spm.py", ["upgrade"],
-                                                        SofaApplication.currentProject.rootDir)
+                    var a = SofaBaseApplicationSingleton.executeProcessAsync("sofa-spm.py", ["upgrade"],
+                                                        SofaBaseApplicationSingleton.currentProject.rootDir)
 
-                    a = SofaApplication.executeProcessAsync("sofa-spm.py", ["install", pluginname],
-                                                        SofaApplication.currentProject.rootDir)
+                    a = SofaBaseApplicationSingleton.executeProcessAsync("sofa-spm.py", ["install", pluginname],
+                                                        SofaBaseApplicationSingleton.currentProject.rootDir)
 
                 }
             }

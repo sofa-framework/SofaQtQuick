@@ -22,9 +22,8 @@
 #ifndef SOFA_WINDOWPROFILER_H
 #define SOFA_WINDOWPROFILER_H
 
-#include <ui_WindowProfiler.h>
-#include "PieWidget.h"
-#include "QVisitorControlPanel.h"
+//#include "PieWidget.h"
+//#include "QVisitorControlPanel.h"
 
 #include <QTreeWidgetItem>
 #include <QDrag>
@@ -45,14 +44,9 @@
 #include <sofa/helper/AdvancedTimer.h>
 #include <deque>
 
-namespace sofa
+namespace sofaqtquick::views
 {
 
-namespace gui
-{
-
-namespace qt
-{
 
 typedef sofa::helper::system::thread::ctime_t ctime_t;
 
@@ -107,11 +101,11 @@ protected:
  * - Showing information duration/step number
  * - Showing all substep of an animation step with their own duration in ms and the corresponding percentage over the whole step.
  */
-class SofaWindowProfiler: public QDialog, public Ui_WindowProfiler
+class ProfilerView: public QDialog
 {
     Q_OBJECT
 public:
-    SofaWindowProfiler(QWidget* parent);
+    ProfilerView(QWidget* parent);
 
     /// method called when window is shown to activate advanceTimer recording.
     void activateATimer(bool activate);
@@ -242,9 +236,6 @@ protected:
     std::string m_selectedParentStep;
 };
 
-} // namespace qt
-
-} // namespace gui
 
 } // namespace sofa
 

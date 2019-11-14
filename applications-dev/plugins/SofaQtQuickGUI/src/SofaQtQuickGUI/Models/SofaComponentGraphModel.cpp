@@ -25,6 +25,13 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <sofa/core/objectmodel/BaseObject.h>
 #include "SofaComponentGraphModel.h"
 
+namespace sofaqtquick::models
+{
+
+
+static const char* ignoredData[] = { "name", "printLog", "tags", "bbox", "listening", "componentState" };
+
+
 SofaComponentNodeData::SofaComponentNodeData()
     : m_bData(nullptr)
 {
@@ -59,7 +66,7 @@ SofaComponentGraphModel::SofaComponentGraphModel(std::string name)
     m_caption = m_uniqName;
 }
 
-SofaComponentGraphModel::SofaComponentGraphModel(sofa::core::objectmodel::BaseObject* _sofaObject, bool debugMode)
+SofaComponentGraphModel::SofaComponentGraphModel(sofa::core::objectmodel::Base* _sofaObject, bool debugMode)
     : NodeDataModel()
     , debugNodeGraph(debugMode)
     , m_SofaObject(_sofaObject)
@@ -235,3 +242,5 @@ void SofaComponentGraphModel::setInData(std::shared_ptr<NodeData> data, int port
         << childData->getOwner()->getName() << ", " << childData->getName() << "}";
 
 }
+
+} /// namespace sofaqtquick::models

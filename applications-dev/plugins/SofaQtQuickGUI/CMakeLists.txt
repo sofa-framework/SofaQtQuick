@@ -187,11 +187,13 @@ endif ()
 
 list(APPEND HEADER_FILES
     src/SofaQtQuickGUI/Windows/GraphView.h
+    src/SofaQtQuickGUI/Windows/ProfilerView.h
     src/SofaQtQuickGUI/Models/SofaComponentGraphModel.h
     )
 
 list(APPEND SOURCE_FILES
     src/SofaQtQuickGUI/Windows/GraphView.cpp
+    src/SofaQtQuickGUI/Windows/ProfilerView.cpp
     src/SofaQtQuickGUI/Models/SofaComponentGraphModel.cpp
     )
 
@@ -253,7 +255,7 @@ if(WIN32)
     endif()
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml WebEngine  REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml WebEngine  Charts REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
 
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -292,7 +294,7 @@ set(HEADER_FILES ${HEADER_FILES}
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaComponentBase SofaMeshCollision
-    Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine stdc++fs QmlUI)
+    Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine Qt5::Charts stdc++fs QmlUI)
 #target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")

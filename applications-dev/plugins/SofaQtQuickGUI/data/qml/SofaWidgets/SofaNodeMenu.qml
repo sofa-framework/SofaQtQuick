@@ -51,6 +51,27 @@ Menu {
     }
 
     MenuItem {
+        enabled: true
+        text: "Inspect connections.."
+        onTriggered:
+        {
+            GraphView.showConnectedComponents(model.getBaseFromIndex(currentModelIndex))
+            GraphView.open()
+        }
+    }
+
+    MenuItem {
+        enabled: true
+        text: "Show local connections.."
+        onTriggered:
+        {
+            GraphView.rootNode = model.getBaseFromIndex(currentModelIndex)
+            GraphView.open()
+        }
+    }
+
+
+    MenuItem {
         enabled: currentObject && currentObject.hasMessage()
         text: "Show messages..."
         onTriggered: {
@@ -66,15 +87,6 @@ Menu {
         text: "Infos (TODO)"
         onTriggered: {
             console.log("TODO")
-        }
-    }
-
-    MenuItem {
-        enabled: true
-        text: "Show connections.."
-        onTriggered:
-        {
-            GraphView.rootNode = model.getBaseFromIndex(currentModelIndex)
         }
     }
 

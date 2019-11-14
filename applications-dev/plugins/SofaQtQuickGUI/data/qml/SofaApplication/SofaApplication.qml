@@ -53,21 +53,31 @@ Item //
         value: selectedComponent
     }
 
+
+    PropertyAnimation
+    {
+        id: testAnim
+        target: GraphView
+        property: "viewPosition"
+        from: Qt.vector2d(0,0)
+        to: Qt.vector2d(100,100)
+        duration: 1
+    }
+
     Connections
     {
         target: sofaScene
         onStatusChanged: {
-            console.log("YO LLLLLLLLLLLLLLLLLLLLLLL")
-            if(sofaScene.status == SofaBaseScene.Ready)
+            if(sofaScene.status === SofaBaseScene.Ready)
             {
                 GraphView.rootNode = sofaScene.root()
+                testAnim.start()
             }
         }
     }
 
     onSelectedComponentChanged:{
         SofaBaseApplicationSingleton.selectedComponent = selectedComponent
-//        GraphView.open();
     }
 
     /// Connect to this signal to be notified when a component need to be emphasized.

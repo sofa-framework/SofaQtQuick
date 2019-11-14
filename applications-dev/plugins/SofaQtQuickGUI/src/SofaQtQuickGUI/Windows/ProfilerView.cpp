@@ -19,8 +19,6 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#include "SofaWindowProfiler.h"
-
 #include <QHeaderView>
 #include <QMenu>
 #include <QMessageBox>
@@ -28,14 +26,11 @@
 #include <QGridLayout>
 #include <QDebug>
 
-namespace sofa
+#include "ProfilerView.h"
+#include <QApplication>
+namespace sofaqtquick::views
 {
 
-namespace gui
-{
-
-namespace qt
-{
 using namespace sofa::helper;
 using namespace QtCharts;
 
@@ -99,7 +94,7 @@ SReal convertInMs(ctime_t t, int nbIter=1)
 
 ///////////////////////////////////////// AnimationSubStepData ///////////////////////////////////
 
-SofaWindowProfiler::AnimationSubStepData::AnimationSubStepData(int level, std::string name, ctime_t start)
+ProfilerView::AnimationSubStepData::AnimationSubStepData(int level, std::string name, ctime_t start)
     : m_level(level)
     , m_name(name)
     , m_nbrCall(1)
@@ -108,7 +103,7 @@ SofaWindowProfiler::AnimationSubStepData::AnimationSubStepData(int level, std::s
 
 }
 
-SofaWindowProfiler::AnimationSubStepData::~AnimationSubStepData()
+ProfilerView::AnimationSubStepData::~AnimationSubStepData()
 {
     for (unsigned int i=0; i<m_children.size(); ++i)
         delete m_children[i];
@@ -116,7 +111,7 @@ SofaWindowProfiler::AnimationSubStepData::~AnimationSubStepData()
     m_children.clear();
 }
 
-void SofaWindowProfiler::AnimationSubStepData::computeTimeAndPercentage(SReal invTotalMs)
+void ProfilerView::AnimationSubStepData::computeTimeAndPercentage(SReal invTotalMs)
 {
     if (!m_children.empty()) // compute from leaf to trunk
     {
@@ -149,7 +144,7 @@ void SofaWindowProfiler::AnimationSubStepData::computeTimeAndPercentage(SReal in
     }
 }
 
-SReal SofaWindowProfiler::AnimationSubStepData::getStepMs(const std::string& stepName, const std::string& parentName)
+SReal ProfilerView::AnimationSubStepData::getStepMs(const std::string& stepName, const std::string& parentName)
 {
     SReal result = 0.0;
     if (parentName == m_name)
@@ -177,7 +172,7 @@ SReal SofaWindowProfiler::AnimationSubStepData::getStepMs(const std::string& ste
 
 ///////////////////////////////////////// AnimationStepData ///////////////////////////////////
 
-SofaWindowProfiler::AnimationStepData::AnimationStepData(int step, const std::string& idString)
+ProfilerView::AnimationStepData::AnimationStepData(int step, const std::string& idString)
     : m_stepIteration(step)
     , m_totalMs(0.0)
 {
@@ -196,9 +191,9 @@ SofaWindowProfiler::AnimationStepData::AnimationStepData(int step, const std::st
 }
 
 
-bool SofaWindowProfiler::AnimationStepData::processData(const std::string& idString)
+bool ProfilerView::AnimationStepData::processData(const std::string& idString)
 {
-    helper::vector<Record> _records = sofa::helper::AdvancedTimer::getRecords(idString);
+    sofa::helper::vector<Record> _records = sofa::helper::AdvancedTimer::getRecords(idString);
 
     //AnimationSubStepData* currentSubStep = nullptr;
     std::stack<AnimationSubStepData*> processStack;
@@ -292,7 +287,7 @@ bool SofaWindowProfiler::AnimationStepData::processData(const std::string& idStr
 }
 
 
-SReal SofaWindowProfiler::AnimationStepData::getStepMs(const std::string& stepName, const std::string& parentName)
+SReal ProfilerView::AnimationStepData::getStepMs(const std::string& stepName, const std::string& parentName)
 {
     SReal result = 0.0;
     if (parentName == "")
@@ -317,7 +312,7 @@ SReal SofaWindowProfiler::AnimationStepData::getStepMs(const std::string& stepNa
 }
 
 
-SofaWindowProfiler::AnimationStepData::~AnimationStepData()
+ProfilerView::AnimationStepData::~AnimationStepData()
 {
     for (unsigned int i=0; i<m_subSteps.size(); ++i)
     {
@@ -331,7 +326,7 @@ SofaWindowProfiler::AnimationStepData::~AnimationStepData()
 
 ///////////////////////////////////////// SofaWindowProfiler ///////////////////////////////////
 
-SofaWindowProfiler::SofaWindowProfiler(QWidget *parent)
+ProfilerView::ProfilerView(QWidget *parent)
     : QDialog(parent)
     , m_step(0)
     , m_bufferSize(100)
@@ -340,12 +335,14 @@ SofaWindowProfiler::SofaWindowProfiler(QWidget *parent)
     , m_selectedStep("")
     , m_selectedParentStep("")
 {
-    setupUi(this);
+    //setupUi(this);
 
     // fill buffer with empty data.
     m_profilingData.resize(m_bufferSize);
     for (unsigned int i=0; i<m_bufferSize; ++i)
         m_profilingData[i] = new AnimationStepData();
+
+    resize(1000,800);
 
     // creating chart widget
     createChart();
@@ -354,18 +351,18 @@ SofaWindowProfiler::SofaWindowProfiler(QWidget *parent)
     createTreeView();
 
     // create and connect different widgets
-    step_scroller->setRange(0, m_bufferSize-1);
-    step_scroller->setMinimumWidth(200);
-    step_scroller->setMaximumWidth(200);
-    connect(step_scroller, SIGNAL(valueChanged(int)), this, SLOT(updateSummaryLabels(int)));
-    connect(step_scroller, SIGNAL(valueChanged(int)), this, SLOT(updateTree(int)));
+    //step_scroller->setRange(0, m_bufferSize-1);
+    //step_scroller->setMinimumWidth(200);
+    //step_scroller->setMaximumWidth(200);
+    //connect(step_scroller, SIGNAL(valueChanged(int)), this, SLOT(updateSummaryLabels(int)));
+    //connect(step_scroller, SIGNAL(valueChanged(int)), this, SLOT(updateTree(int)));
 
-    connect(step_scroller, SIGNAL(valueChanged(int)), m_chartView, SLOT(updateSelection(int)));
-    connect(m_chartView, SIGNAL(pointSelected(int)), this, SLOT(updateFromSelectedStep(int)));
+    //connect(step_scroller, SIGNAL(valueChanged(int)), m_chartView, SLOT(updateSelection(int)));
+    //connect(m_chartView, SIGNAL(pointSelected(int)), this, SLOT(updateFromSelectedStep(int)));
 }
 
 
-void SofaWindowProfiler::activateATimer(bool activate)
+void ProfilerView::activateATimer(bool activate)
 {
     sofa::helper::AdvancedTimer::setEnabled("Animate", activate);
     sofa::helper::AdvancedTimer::setInterval("Animate", 1);
@@ -373,7 +370,7 @@ void SofaWindowProfiler::activateATimer(bool activate)
 }
 
 
-void SofaWindowProfiler::pushStepData()
+void ProfilerView::pushStepData()
 {
     m_profilingData.pop_front();
     std::string idString = "Animate";
@@ -384,7 +381,7 @@ void SofaWindowProfiler::pushStepData()
 }
 
 
-void SofaWindowProfiler::resetGraph()
+void ProfilerView::resetGraph()
 {
     if (m_step == 0)
         return;
@@ -400,30 +397,30 @@ void SofaWindowProfiler::resetGraph()
         }
     }
 
-    step_scroller->setValue(1); // for rest by changing 2 times value
-    step_scroller->setValue(0);
+    //step_scroller->setValue(1); // for rest by changing 2 times value
+    //step_scroller->setValue(0);
     m_step = 0;
     m_selectedStep = "";
     m_selectedParentStep = "";
 }
 
 
-void SofaWindowProfiler::createTreeView()
+void ProfilerView::createTreeView()
 {
     // set column names
     QStringList columnNames;
     columnNames << "Hierarchy Step Name" << "Total (%)" << "Self (%)" << "Time (ms)" << "Self (ms)";
-    tree_steps->setHeaderLabels(columnNames);
+    //tree_steps->setHeaderLabels(columnNames);
 
     // set column properties
-    tree_steps->header()->setStretchLastSection(false);
-    tree_steps->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    //tree_steps->header()->setStretchLastSection(false);
+    //tree_steps->header()->setSectionResizeMode(0, QHeaderView::Stretch);
 
-    connect(tree_steps, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(onStepSelected(QTreeWidgetItem*,int)));
+    //connect(tree_steps, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(onStepSelected(QTreeWidgetItem*,int)));
 }
 
 
-void SofaWindowProfiler::createChart()
+void ProfilerView::createChart()
 {
     m_series = new QLineSeries();
     QPen pen = m_series->pen();
@@ -455,11 +452,11 @@ void SofaWindowProfiler::createChart()
     m_chartView = new ProfilerChartView(m_chart, this, m_bufferSize);
     m_chartView->setRenderHint(QPainter::Antialiasing);
 
-    Layout_graph->addWidget(m_chartView);
+    //Layout_graph->addWidget(m_chartView);
 }
 
 
-void SofaWindowProfiler::updateChart()
+void ProfilerView::updateChart()
 {
     bool updateAxis = false;
 
@@ -507,31 +504,31 @@ void SofaWindowProfiler::updateChart()
  //   m_chartView->update();
 
     // update all widgets from value sliced
-    updateSummaryLabels(step_scroller->value());
-    updateTree(step_scroller->value());
+    //updateSummaryLabels(step_scroller->value());
+    //updateTree(step_scroller->value());
 }
 
 
-void SofaWindowProfiler::updateFromSelectedStep(int step)
+void ProfilerView::updateFromSelectedStep(int step)
 {
     // only update scroller as all the connection are already made from the scroller value change.
-    step_scroller->setValue(step);
+    //step_scroller->setValue(step);
 }
 
 
-void SofaWindowProfiler::updateSummaryLabels(int step)
+void ProfilerView::updateSummaryLabels(int step)
 {
     const AnimationStepData* stepData = m_profilingData.at(step);
-    label_stepValue->setText(QString::number(stepData->m_stepIteration));
-    label_timeValue->setText(QString::number(stepData->m_totalMs));
+    //label_stepValue->setText(QString::number(stepData->m_stepIteration));
+    //label_timeValue->setText(QString::number(stepData->m_totalMs));
 }
 
-void SofaWindowProfiler::updateTree(int step)
+void ProfilerView::updateTree(int step)
 {
     const AnimationStepData* stepData = m_profilingData.at(step);
 
     //clear old values
-    tree_steps->clear();
+    //tree_steps->clear();
 
     // add new step items
     for (unsigned int i=0; i<stepData->m_subSteps.size(); i++)
@@ -540,14 +537,14 @@ void SofaWindowProfiler::updateTree(int step)
     }
 }
 
-void SofaWindowProfiler::addTreeItem(AnimationSubStepData* subStep, QTreeWidgetItem* parent)
+void ProfilerView::addTreeItem(AnimationSubStepData* subStep, QTreeWidgetItem* parent)
 {
     // add item to the tree
     QTreeWidgetItem* treeItem = nullptr;
-    if (parent == nullptr) // top item
-        treeItem = new QTreeWidgetItem(tree_steps);
-    else
-        treeItem = new QTreeWidgetItem(parent);
+    //if (parent == nullptr) // top item
+    //treeItem = new QTreeWidgetItem(tree_steps);
+    //else
+    //    treeItem = new QTreeWidgetItem(parent);
 
     treeItem->setText(0, QString::fromStdString(subStep->m_name));
     treeItem->setText(1, QString::number(subStep->m_totalPercent, 'g', 2));
@@ -571,7 +568,7 @@ void SofaWindowProfiler::addTreeItem(AnimationSubStepData* subStep, QTreeWidgetI
         addTreeItem(subStep->m_children[i], treeItem);
 }
 
-void SofaWindowProfiler::onStepSelected(QTreeWidgetItem *item, int /*column*/)
+void ProfilerView::onStepSelected(QTreeWidgetItem *item, int /*column*/)
 {
     if (item->parent())
         m_selectedParentStep = item->parent()->text(0).toStdString();
@@ -586,9 +583,5 @@ void SofaWindowProfiler::onStepSelected(QTreeWidgetItem *item, int /*column*/)
     }
 }
 
-
-} // namespace qt
-
-} // namespace gui
 
 } // namespace sofa
