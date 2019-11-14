@@ -457,6 +457,8 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
         scriptContent = readScriptTemplate("EmptyForceField", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyForceField.py"));
     else if (templateType == "Prefab")
         scriptContent = readScriptTemplate("EmptyPrefab", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyPrefab.py"));
+    else if (templateType == "Scene")
+        scriptContent = readScriptTemplate("EmptyScene", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyPrefab.py"));
 
     QString dir;
     QFileInfo f(directory);

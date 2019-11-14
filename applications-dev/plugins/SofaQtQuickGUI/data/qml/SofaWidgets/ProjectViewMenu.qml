@@ -90,6 +90,14 @@ Menu {
                 sofaApplication.openInEditor(file)
             }
         }
+        MenuItem {
+            text: "Scene"
+            icon.source: "qrc:/icon/ICON_PYSCN_MONOCHROME.png"
+            onTriggered: {
+                var file = sofaApplication.currentProject.createTemplateFile(filePath, "Scene")
+                sofaApplication.openInEditor(file)
+            }
+        }
     }
     
     MenuItem {

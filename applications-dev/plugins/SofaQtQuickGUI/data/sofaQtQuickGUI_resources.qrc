@@ -96,5 +96,6 @@
         <file>icon/ICON_EDIT_MODE.png</file>
         <file>icon/ICON_EDIT_MODE2.png</file>
         <file>icon/ICON_OBJECT_MODE.png</file>
+        <file>icon/ICON_PYSCN_MONOCHROME.png</file>
     </qresource>
 </RCC>

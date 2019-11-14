@@ -209,6 +209,7 @@ set(ASSET_TEMPLATES
     data/python/templates/emptyController.py
     data/python/templates/emptyDataEngine.py
     data/python/templates/emptyForceField.py
+    data/python/templates/emptyScene.py
     )
 
 
