@@ -89,31 +89,20 @@ void Manipulator3D_InPlaneTranslation::internalDraw(const SofaViewer& viewer, bo
     glEnable(GL_POLYGON_OFFSET_FILL);
     glEnable(GL_COLOR_MATERIAL);
 
-    QVector4D a, b, c, d, aa,bb,cc,dd;
+    QVector4D a, b, c, d;
     a = QVector4D(0.0,0.0,0.0,1.0);
     b = QVector4D(camera->up() * height, 1.0);
-    c = QVector4D(camera->up() * height + camera->right() * (height/4.0f), 1.0);
-    d = QVector4D(camera->right() * (height/4.0f), 1.0);
-
-    aa = QVector4D(0.0,0.0,0.0,1.0);
-    bb = QVector4D(camera->up() * (height / 4.0f), 1.0);
-    cc = QVector4D(camera->up() * (height/4.0f) + camera->right() * height, 1.0);
-    dd = QVector4D(camera->right() * height, 1.0);
+    c = QVector4D(camera->up() * height + camera->right() * height, 1.0);
+    d = QVector4D(camera->right() * height, 1.0);
 
     // draw arrows
     glBegin(GL_QUADS);
     {
-        glColor3f(1.0f,0.0f,0.0f);
+        glColor3f(1.0f,1.0f,0.0f);
         glVertex3f(a.x(), a.y(), a.z());
         glVertex3f(b.x(), b.y(), b.z());
         glVertex3f(c.x(), c.y(), c.z());
         glVertex3f(d.x(), d.y(), d.z());
-
-        glColor3f(0.0f,1.0f,0.0f);
-        glVertex3f(aa.x(), aa.y(), aa.z());
-        glVertex3f(bb.x(), bb.y(), bb.z());
-        glVertex3f(cc.x(), cc.y(), cc.z());
-        glVertex3f(dd.x(), dd.y(), dd.z());
     }
     glEnd();
 

@@ -1248,7 +1248,8 @@ EditView
             function setManipulator() {
                 if (!SofaApplication.selectedComponent) {
                     /// Somehow this scope fixes the issue of losing the
-                    /// selectedComponent when using manipulator...
+                    /// selectedComponent when using manipulator when using MechanicalObjects...
+                    /// But the problem persists with OglModels for instance. Why?
                     SofaApplication.sofaScene.selectedManipulator = null
                     return;
                 }
