@@ -501,6 +501,7 @@ Rectangle {
                 /// This is the error button that shows when there is an error message on
                 /// an object or a node
                 id:childError
+                hoverEnabled: true
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: componentState.left
                 height: 12
@@ -509,18 +510,27 @@ Rectangle {
                 visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
                 iconSource: "qrc:/icon/ICON_WARNING.png"
                 useHoverOpacity: false
-                ColorOverlay {
-                    id: childErrorColorOverlay
-                    anchors.fill: parent
-                    source: parent
-                    color: {
-                        if (isNode)
-                            return (hasChildMessage ?  "red" : "#DDDDDD")
-                        return (hasMessage ? "red" : "#DDDDDD")
-                    }
-                    opacity: childError.hovered ? 0.6 : 1.0
+                layer {
+                        enabled: true
+                        effect: ColorOverlay {
+                            color: {
+                                if (isNode) {
+                                    if (hasChildMessage)
+                                        return childError.hovered || localError.hovered ? "red" : "darkred"
+                                    else
+                                        return childError.hovered || localError.hovered ? "#DDDDDD" : "#BBBBBB"
+                                } else {
+                                    if (hasMessage)
+                                        return childError.hovered || localError.hovered ? "red" : "darkred"
+                                    else
+                                        return childError.hovered || localError.hovered ? "#DDDDDD" : "#BBBBBB"
+                                }
+                            }
+                            onColorChanged: {
+                                childError.iconSource = childError.iconSource
+                            }
+                        }
                 }
-
 
                 onClicked: {
                     if(isNode)
@@ -548,6 +558,7 @@ Rectangle {
                 /// is clicked
 
                 id: localError
+                hoverEnabled: true
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: childError.left
                 anchors.rightMargin: -6
@@ -556,17 +567,20 @@ Rectangle {
                 visible: (hasMessage || (hasChildMessage && !styleData.isExpanded)) && isNode
                 iconSource: "qrc:/icon/ICON_WARNING.png"
                 useHoverOpacity: false
-                ColorOverlay {
-                    id: localErrorColorOverlay
-                    anchors.fill: parent
-                    source: parent
-                    color: !hasMessage ? "#DDDDDD" : "red"
-                    opacity: childError.hovered ? 0.6 : 1.0
+                layer {
+                        enabled: true
+                        effect: ColorOverlay {
+                            color: {
+                                if (hasMessage)
+                                    return childError.hovered || localError.hovered ? "red" : "darkred"
+                                else
+                                    return childError.hovered || localError.hovered ? "#DDDDDD" : "#BBBBBB"
+                            }
+                            onColorChanged: {
+                                childError.iconSource = childError.iconSource
+                            }
+                        }
                 }
-
-
-//                iconSource: !hasMessage ? "qrc:/icon/iconmessage_base.png" : "qrc:/icon/iconerror.png"
-//                opacity: 0.75
                 enabled: hasMessage
                 onClicked: {
                     var srcIndex = sceneModel.mapToSource(index)
@@ -576,7 +590,7 @@ Rectangle {
                                                    "sofaComponent": c});
 
                 }
-                z: 0
+                z: 1
             }
 
 
