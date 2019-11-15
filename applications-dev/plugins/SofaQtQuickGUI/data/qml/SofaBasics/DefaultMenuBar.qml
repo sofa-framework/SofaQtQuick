@@ -180,6 +180,7 @@ MenuBar {
                     MenuItem {
                         text: model.index + " - " + model.title
                         onTriggered: {
+                            fileMenuID.close()
                             internal_params.sceneUrl = model.fileUrl
                         }
                     }
@@ -189,6 +190,7 @@ MenuBar {
                     enabled: sofaApplication.sceneSettings.sofaSceneRecents !== ""
                     text: "Clear Recents"
                     onTriggered: {
+                        fileMenuID.close()
                         sofaApplication.sceneSettings.sofaSceneRecents = ""
                     }
                 }
@@ -207,6 +209,7 @@ MenuBar {
                 onActivated: reloadMenuItem.reload()
             }
             onTriggered: {
+                fileMenuID.close()
                 reloadMenuItem.reload()
             }
         }

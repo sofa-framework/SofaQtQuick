@@ -148,5 +148,8 @@
         <file>SofaViews/PickCamView.qml</file>
         <file>SofaManipulators/Manipulator3D_InPlaneTranslation.qml</file>
         <file>SofaBasics/IconComboBox.qml</file>
+        <file>SofaWidgets/CameraModeManipulators.qml</file>
+        <file>SofaWidgets/EditModeManipulators.qml</file>
+        <file>SofaWidgets/ObjectModeManipulators.qml</file>
     </qresource>
 </RCC>
