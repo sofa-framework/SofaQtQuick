@@ -20,21 +20,28 @@ Column {
     property var selectedComponent: SofaApplication.selectedComponent
     onSelectedComponentChanged: {
         if (SofaApplication.selectedComponent === null)
-            SofaApplication.sofaScene.selectedManipulator = null
+            SofaApplication.selectedManipulator = getManipulator(camViewRect.manipulatorName)
+
     }
     
-    function addManipulator(manipulatorString) {
-        var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorString)
-        if (!manipulator) {
-            manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml").createObject()
-            SofaApplication.sofaScene.addManipulator(manipulator)
+    function getManipulator(manipulatorString) {
+        var manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
+        if (manipulator.status === Component.Ready)
+        {
+            console.log("Created Manipulator with name " + manipulatorString)
+            var m = manipulator.createObject()
+            console.log("Created Manipulator with name " + m.name)
+            return m
         }
-        return manipulator
+        console.log("Cant create Manipulator with name " + manipulatorString)
+        return null
     }
+
     
     Rectangle {
         id: camViewRect
-        property bool selected: SofaApplication.sofaScene.selectedManipulator === null
+        property string manipulatorName: "Manipulator3D_NOMANIP"
+        property bool selected: !SofaApplication.selectedManipulator || SofaApplication.selectedManipulator.name === manipulatorName
         
         implicitHeight: 30
         implicitWidth: 30
@@ -59,13 +66,13 @@ Column {
             acceptedButtons: Qt.LeftButton
             
             onClicked: {
-                SofaApplication.sofascene.selectedManipulator = null
+                SofaApplication.selectedManipulator = manipulatorControls.getManipulator(camViewRect.manipulatorName)
             }
             Shortcut {
                 context: Qt.ApplicationShortcut
                 sequence: "Shift+Space, Space";
                 onActivated: {
-                    SofaApplication.sofascene.selectedManipulator = null
+                    SofaApplication.selectedManipulator = manipulatorControls.getManipulator(camViewRect.manipulatorName)
                 }
             }
         }
@@ -80,26 +87,18 @@ Column {
     Rectangle {
         id: translateRect
         property string manipulatorName: "Manipulator3D_InPlaneTranslation"
-        Component.onCompleted: {
-            manipulatorControls.addManipulator(manipulatorName)
-        }
         
-        property bool selected: SofaApplication.sofaScene.selectedManipulator && SofaApplication.sofaScene.selectedManipulator.name === manipulatorName
+        property bool selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
         
         function setManipulator() {
             if (!SofaApplication.selectedComponent) {
-                /// Somehow this scope fixes the issue of losing the
-                /// selectedComponent when using manipulator when using MechanicalObjects...
-                /// But the problem persists with OglModels for instance. Why?
-                SofaApplication.sofaScene.selectedManipulator = null
+                SofaApplication.selectedManipulator = getManipulator(camViewRect.manipulatorName)
                 return;
             }
-            var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorName)
-            if (!manipulator)
-                manipulator = manipulatorControls.addManipulator(manipulatorName)
+            var manipulator = manipulatorControls.getManipulator(manipulatorName)
             manipulator.visible = true
             manipulator.sofaObject = SofaApplication.selectedComponent
-            SofaApplication.sofaScene.selectedManipulator = manipulator
+            SofaApplication.selectedManipulator = manipulator
         }
         
         implicitHeight: 30
@@ -146,26 +145,17 @@ Column {
     Rectangle {
         id: rotateRect
         property string manipulatorName: "Manipulator3D_Rotation"
-        Component.onCompleted: {
-            manipulatorControls.addManipulator(manipulatorName)
-        }
         
         property bool selected: sofaScene.selectedManipulator && sofaScene.selectedManipulator.name === manipulatorName
         
         function setManipulator() {
-            var manipulator = sofaScene.getManipulatorByName(manipulatorName)
-            if (!manipulator)
-                manipulator = manipulatorControls.addManipulator(manipulatorName)
-            manipulator.visible = true
-            if (!SofaApplication.selectedComponent.getData("translation")) {
-                sofaScene.selectedManipulator = null
+            if (!SofaApplication.selectedComponent) {
+                SofaApplication.selectedManipulator = getManipulator(camViewRect.manipulatorName)
                 return;
             }
-            var t = SofaApplication.selectedComponent.getData("translation").value
-            manipulator.positionData = SofaApplication.selectedComponent.getData("translation")
-            sofaScene.selectedManipulator = manipulator
-            var r = SofaApplication.selectedComponent.getData("orientation").value
-            manipulator.orientationData = SofaApplication.selectedComponent.getData("orientation")
+            var manipulator = getManipulator(manipulatorName)
+            manipulator.visible = true
+            manipulator.sofaObject = SofaApplication.selectedComponent
             sofaScene.selectedManipulator = manipulator
         }
         
@@ -192,13 +182,13 @@ Column {
             acceptedButtons: Qt.LeftButton
             
             onClicked: {
-                setManipulator()
+                rotateRect.setManipulator()
             }
             Shortcut {
                 context: Qt.ApplicationShortcut
                 sequence: "Shift+Space, R";
                 onActivated: {
-                    setManipulator()
+                    rotateRect.setManipulator()
                 }
             }
         }

@@ -97,6 +97,12 @@ public:
     Q_INVOKABLE bool hasParent() const ;
 
     Q_INVOKABLE int getCounter() const;
+    Q_INVOKABLE void _disconnect() {
+        disconnect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
+    }
+    Q_INVOKABLE void _connect() {
+        connect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
+    }
 
     [[deprecated("Remove, use directly the object")]]
     Q_INVOKABLE QVariantMap object();
@@ -115,12 +121,15 @@ signals:
     void linkPathChanged(const QString newValue);
     void propertiesChanged(const QVariantMap newValues);
     void parentChanged(const SofaData* newParent);
+
 private:
     BaseData* m_self {nullptr};
     QVariant m_previousValue;
     QmlDDGNode m_ddgnode;
 
     sofa::core::objectmodel::DataCallback m_forwardEventToQml;
+
+public:
 };
 }
 

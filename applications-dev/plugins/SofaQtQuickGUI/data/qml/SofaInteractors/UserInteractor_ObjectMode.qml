@@ -25,9 +25,6 @@ import SofaApplication 1.0
 UserInteractor_CameraMode {
     id: root
 
-//    property var selectedManipulator: null
-//    property var selectedComponent: null
-
     function init() {
         moveCamera_init();
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
@@ -36,7 +33,7 @@ UserInteractor_CameraMode {
                     SofaApplication.selectedComponent = selectable.sofaComponent;
             }
 
-            var selectedManipulator = SofaApplication.sofaScene.selectedManipulator
+            var selectedManipulator = SofaApplication.selectedManipulator
             if(selectedManipulator) {
                 if(selectedManipulator.mousePressed)
                     selectedManipulator.mousePressed(mouse, sofaViewer);
@@ -49,7 +46,7 @@ UserInteractor_CameraMode {
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
 
-            var selectedManipulator = SofaApplication.sofaScene.selectedManipulator
+            var selectedManipulator = SofaApplication.selectedManipulator
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, sofaViewer);

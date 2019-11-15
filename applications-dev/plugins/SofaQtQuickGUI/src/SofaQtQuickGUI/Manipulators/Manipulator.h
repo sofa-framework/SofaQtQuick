@@ -54,6 +54,9 @@ public:
     Q_PROPERTY(sofaqtquick::bindings::SofaData* scaleData READ scaleData WRITE setScaleData NOTIFY scaleDataChanged)
     Q_PROPERTY(sofaqtquick::bindings::SofaBase* sofaObject READ getSofaObject WRITE setSofaObject NOTIFY sofaObjectChanged)
 
+    Q_PROPERTY(int particleIndex READ particleIndex WRITE setParticleIndex NOTIFY particleIndexChanged)
+    Q_PROPERTY(QVector3D particlePosition READ particlePosition WRITE setParticlePosition NOTIFY particlePositionChanged)
+
     Q_CLASSINFO("DefaultProperty", "manipulators")
 
 public:
@@ -64,6 +67,12 @@ public:
 
     sofaqtquick::bindings::SofaBase* getSofaObject();
     void setSofaObject(sofaqtquick::bindings::SofaBase* sofaObject);
+
+    const QVector3D particlePosition();
+    void setParticlePosition(const QVector3D particlePosition);
+
+    int particleIndex();
+    void setParticleIndex(const int particleIndex);
 
     const QVector3D position() const;
     void setPosition(const QVector3D& newPosition);
@@ -104,6 +113,8 @@ signals:
     void positionChanged(const QVector3D newPosition);
     void orientationChanged(const QQuaternion newOrientation);
     void scaleChanged(const QVector3D newScale);
+    void particleIndexChanged(int newParticleIndex);
+    void particlePositionChanged(const QVector3D newParticlePosition);
 
     void sofaObjectChanged(sofaqtquick::bindings::SofaBase* newSofaObject);
     void positionDataChanged(const sofaqtquick::bindings::SofaData* newPosition);
@@ -116,6 +127,9 @@ private:
     sofaqtquick::bindings::SofaData* myPosition;
     sofaqtquick::bindings::SofaData* myOrientation;
     sofaqtquick::bindings::SofaData* myScale;    
+
+    QVector3D                        myParticlePosition;
+    int                              myParticleIndex;
 
     sofaqtquick::bindings::SofaBase* mySofaObject;
     sofa::defaulttype::Vec3d m_oldTranslation;

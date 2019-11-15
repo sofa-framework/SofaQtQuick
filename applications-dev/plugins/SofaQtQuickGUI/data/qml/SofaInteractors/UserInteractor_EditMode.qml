@@ -26,52 +26,32 @@ import SofaApplication 1.0
 UserInteractor_CameraMode {
     id: root
 
-    property var selectedManipulator: null
-    property var selectedComponent: null
-
-
-    // default SofaParticleInteractor
-    property var interactor : SofaParticleInteractor {
-        stiffness: 100
-        onInteractingChanged: SofaApplication.overrideCursorShape = interacting ? Qt.BlankCursor : 0
-    }
-
     function init() {
-
-        if( !sofaScene.sofaParticleInteractor || sofaScene.sofaParticleInteractor.objectName !== interactor.objectName )
-        {
-            sofaScene.sofaParticleInteractor = interactor;
-        }
-
-        //        console.log('SofaParticleInteractor init ' + sofaScene.sofaParticleInteractor.objectName)
-
         moveCamera_init();
 
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            selectedManipulator = sofaScene.selectedManipulator;
-            selectedComponent = sofaScene.selectedComponent;
-
-            var sofaComponentParticle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
-            if(sofaComponentParticle) {
-
-                sofaScene.sofaParticleInteractor.start(sofaComponentParticle.sofaComponent, sofaComponentParticle.particleIndex);
-
-                setMouseMovedMapping(function(mouse, sofaViewer) {
-                    var z = sofaViewer.computeDepth(sofaScene.sofaParticleInteractor.interactorPosition);
-                    var position = sofaViewer.mapToWorld(Qt.point(mouse.x, mouse.y), z);
-                    sofaScene.sofaParticleInteractor.update(position);
-                });
+            var particle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
+            if(particle) {
+                if (particle.sofaComponent)
+                    SofaApplication.selectedComponent = particle.sofaComponent
+                var manipulator = SofaApplication.selectedManipulator
+                if (manipulator)
+                {
+                    manipulator.particleIndex = particle.particleIndex
+                    if (manipulator.mousePressed)
+                        manipulator.mousePressed(mouse, sofaViewer)
+                    if(manipulator.mouseMoved)
+                        setMouseMovedMapping(manipulator.mouseMoved);
+                }
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            if(sofaScene.sofaParticleInteractor)
-                sofaScene.sofaParticleInteractor.release();
+            var manipulator = SofaApplication.selectedManipulator
+            if(manipulator && manipulator.mouseReleased)
+                manipulator.mouseReleased(mouse, sofaViewer);
 
-            if(selectedManipulator && selectedManipulator.mouseReleased)
-                selectedManipulator.mouseReleased(mouse, sofaViewer);
-
-            sofaScene.selectedManipulator = null;
+            SofaApplication.selectedManipulator = null;
 
             setMouseMovedMapping(null);
         });

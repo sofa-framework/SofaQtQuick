@@ -28,8 +28,9 @@ Column {
     function addManipulator(manipulatorString) {
         var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorString)
         if (!manipulator) {
-            manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml").createObject()
-            SofaApplication.sofaScene.addManipulator(manipulator)
+            manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
+            if (manipulator.status === Component.Ready)
+            SofaApplication.sofaScene.addManipulator(manipulator.createObject())
         }
         return manipulator
     }

@@ -224,6 +224,9 @@ EditView
     // interactor
     property alias interactor: interactorLoader.item
     property Component interactorComponent: SofaApplication.interactorComponent
+    onInteractorComponentChanged: {
+        console.log("interactor component changed")
+    }
 
     Loader {
         id: interactorLoader
@@ -1172,6 +1175,7 @@ EditView
     Loader {
         id: manipulatorLoader
         sourceComponent: {
+            console.log(SofaApplication.getInteractorName(interactorComponent))
             if (SofaApplication.getInteractorName(interactorComponent) === "CameraMode")
                 return cameramodeManipulators
             else if (SofaApplication.getInteractorName(interactorComponent) === "ObjectMode")
