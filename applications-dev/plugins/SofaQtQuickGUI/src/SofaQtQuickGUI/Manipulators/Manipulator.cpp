@@ -104,6 +104,37 @@ void Manipulator::setSofaObject(sofaqtquick::bindings::SofaBase* sofaObject)
     emit sofaObjectChanged(sofaObject);
 }
 
+const QVector3D Manipulator::particlePosition()
+{
+    return myParticlePosition;
+}
+
+void Manipulator::setParticlePosition(const QVector3D particlePosition)
+{
+    auto* typeinfo = mySofaObject->rawBase()->findData("position")->getValueTypeInfo();
+    void* valueptr = typeinfo->getValuePtr(mySofaObject->rawBase()->findData("position")->beginEditVoidPtr());
+    std::cout << "size() " << typeinfo->size() << std::endl;
+    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
+    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
+    std::cout << "particleIndex " << myParticleIndex << std::endl;
+    typeinfo->setScalarValue(valueptr, size_t(myParticleIndex) * typeinfo->BaseType()->size(), double(particlePosition.x()));
+    typeinfo->setScalarValue(valueptr, size_t(myParticleIndex) * typeinfo->BaseType()->size() + 1, double(particlePosition.y()));
+    typeinfo->setScalarValue(valueptr, size_t(myParticleIndex) * typeinfo->BaseType()->size() + 2, double(particlePosition.z()));
+    mySofaObject->rawBase()->findData("position")->endEditVoidPtr();
+    emit particlePositionChanged(particlePosition);
+}
+
+int Manipulator::particleIndex()
+{
+    return myParticleIndex;
+}
+
+void Manipulator::setParticleIndex(const int particleIndex)
+{
+    myParticleIndex = particleIndex;
+    emit particleIndexChanged(particleIndex);
+}
+
 
 const QVector3D Manipulator::position() const {
     if (!myPosition || !myPosition->rawData()) QVector3D();

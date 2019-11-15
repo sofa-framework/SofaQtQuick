@@ -13,3 +13,6 @@ ProjectViewMenu 1.0 ProjectViewMenu.qml
 MeshAssetInspector 1.0 MeshAssetInspector.qml
 PythonAssetInspector 1.0 PythonAssetInspector.qml
 DraggableAssetItem 1.0 DraggableAssetItem.qml
+ObjectModeManipulators 1.0 ObjectModeManipulators.qml
+EditModeManipulators 1.0 EditModeManipulators.qml
+CameraModeManipulators 1.0 CameraModeManipulators.qml

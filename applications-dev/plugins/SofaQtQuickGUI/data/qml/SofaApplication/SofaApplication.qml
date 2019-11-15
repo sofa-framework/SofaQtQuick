@@ -44,8 +44,12 @@ Item //
 
     property var style : MainStyle
 
+    property var selectedManipulator : sofaScene.selectedManipulator
+    onSelectedManipulatorChanged: {
+        sofaScene.selectedManipulator = selectedManipulator
+    }
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
-    onSelectedComponentChanged:{
+    onSelectedComponentChanged: {
         SofaBaseApplicationSingleton.selectedComponent = selectedComponent
     }
 

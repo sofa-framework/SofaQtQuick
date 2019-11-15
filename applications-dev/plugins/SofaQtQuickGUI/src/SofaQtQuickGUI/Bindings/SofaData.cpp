@@ -93,6 +93,7 @@ bool SofaData::setValue(const QVariant& value)
     //std::cout << "Trying to setValue: " << value.toString().toStdString() << " counter:" << rawData()->getCounter() << std::endl;
     if(value != m_previousValue)
     {
+        _disconnect();
         //std::cout << "Doin to setValue: " << value.toString().toStdString() << std::endl;
         if(sofaqtquick::helper::setDataValueFromQVariant(m_self, value))
         {
@@ -100,8 +101,10 @@ bool SofaData::setValue(const QVariant& value)
             m_previousValue = value;
             emit valueChanged(value);
             emit propertiesChanged(getProperties());
+            _connect();
             return true;
         }
+        _connect();
         return false;
     }
     return false;

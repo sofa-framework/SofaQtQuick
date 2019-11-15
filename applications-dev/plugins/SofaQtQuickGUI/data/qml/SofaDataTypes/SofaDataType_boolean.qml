@@ -53,7 +53,8 @@ ColumnLayout {
 
             onCheckedChanged:
             {
-                sofaData.value = checked;
+                if (sofaData.value !== checked)
+                    sofaData.value = checked;
             }
         }
     }

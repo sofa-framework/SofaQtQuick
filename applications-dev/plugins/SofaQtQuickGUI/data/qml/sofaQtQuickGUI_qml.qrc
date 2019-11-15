@@ -79,7 +79,7 @@
         <file>SofaManipulators/qmldir</file>
         <file>SofaManipulators/Manipulator.qml</file>
         <file>SofaManipulators/Manipulator2D_Translation.qml</file>
-        <file>SofaManipulators/Manipulator2D_Rotation.qml</file>
+        <file>SofaManipulators/Manipulator3D_NOMANIP.qml</file>
         <file>SofaManipulators/Manipulator3D_Translation.qml</file>
         <file>SofaManipulators/Manipulator3D_Rotation.qml</file>
         <file>SofaViews/qmldir</file>
@@ -148,5 +148,10 @@
         <file>SofaViews/PickCamView.qml</file>
         <file>SofaManipulators/Manipulator3D_InPlaneTranslation.qml</file>
         <file>SofaBasics/IconComboBox.qml</file>
+        <file>SofaWidgets/CameraModeManipulators.qml</file>
+        <file>SofaWidgets/EditModeManipulators.qml</file>
+        <file>SofaWidgets/ObjectModeManipulators.qml</file>
+        <file>SofaManipulators/Manipulator3D_InPlaneParticleTranslation.qml</file>
+        <file>SofaManipulators/Manipulator2D_Rotation_copy.qml</file>
     </qresource>
 </RCC>

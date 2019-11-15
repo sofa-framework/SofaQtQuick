@@ -80,6 +80,10 @@ ToolBar {
                 }
             }
             onCurrentIndexChanged: {
+                if (currentIndex < 0)
+                    return
+                if (SofaApplication.interactorComponentMap.length == 0)
+                    SofaApplication.interactorFolderListModel.update()
                 SofaApplication.interactorComponent = SofaApplication.interactorComponentMap[listmodel.get(currentIndex).interactor]
             }
         }
