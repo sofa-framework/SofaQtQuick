@@ -260,6 +260,7 @@ EditView
         acceptedButtons: Qt.AllButtons
         enabled: sofaScene && sofaScene.ready
         hoverEnabled: root.interactor ? root.interactor.hoverEnabled : false
+        preventStealing: true
 
         onClicked: {
             forceActiveFocus();
@@ -1178,21 +1179,21 @@ EditView
         onSelectedComponentChanged: {
             console.log("NYANYANYA")
             if (SofaApplication.selectedComponent === null)
-                sofaScene.selectedManipulator = null
+                SofaApplication.sofaScene.selectedManipulator = null
         }
 
         function addManipulator(manipulatorString) {
-            var manipulator = sofaScene.getManipulatorByName(manipulatorString)
+            var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorString)
             if (!manipulator) {
                 manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml").createObject()
-                sofaScene.addManipulator(manipulator)
+                SofaApplication.sofaScene.addManipulator(manipulator)
             }
             return manipulator
         }
 
         Rectangle {
             id: camViewRect
-            property bool selected: sofaScene.selectedManipulator === null
+            property bool selected: SofaApplication.sofaScene.selectedManipulator === null
 
             implicitHeight: 30
             implicitWidth: 30
@@ -1217,13 +1218,13 @@ EditView
                 acceptedButtons: Qt.LeftButton
 
                 onClicked: {
-                    sofascene.selectedManipulator = null
+                    SofaApplication.sofascene.selectedManipulator = null
                 }
                 Shortcut {
                     context: Qt.ApplicationShortcut
                     sequence: "Shift+Space, Space";
                     onActivated: {
-                        sofascene.selectedManipulator = null
+                        SofaApplication.sofascene.selectedManipulator = null
                     }
                 }
             }
@@ -1242,20 +1243,21 @@ EditView
                 manipulatorControls.addManipulator(manipulatorName)
             }
 
-            property bool selected: sofaScene.selectedManipulator && sofaScene.selectedManipulator.name === manipulatorName
+            property bool selected: SofaApplication.sofaScene.selectedManipulator && SofaApplication.sofaScene.selectedManipulator.name === manipulatorName
 
             function setManipulator() {
-                var manipulator = sofaScene.getManipulatorByName(manipulatorName)
+                if (!SofaApplication.selectedComponent) {
+                    /// Somehow this scope fixes the issue of losing the
+                    /// selectedComponent when using manipulator...
+                    SofaApplication.sofaScene.selectedManipulator = null
+                    return;
+                }
+                var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorName)
                 if (!manipulator)
                     manipulator = manipulatorControls.addManipulator(manipulatorName)
                 manipulator.visible = true
-                if (!SofaApplication.selectedComponent.getData("translation")) {
-                    sofaScene.selectedManipulator = null
-                    return;
-                }
-                var t = SofaApplication.selectedComponent.getData("translation").value
-                manipulator.positionData = SofaApplication.selectedComponent.getData("translation")
-                sofaScene.selectedManipulator = manipulator
+                manipulator.sofaObject = SofaApplication.selectedComponent
+                SofaApplication.sofaScene.selectedManipulator = manipulator
             }
 
             implicitHeight: 30
