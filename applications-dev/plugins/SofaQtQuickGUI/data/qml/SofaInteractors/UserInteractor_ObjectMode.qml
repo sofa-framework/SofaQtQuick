@@ -25,35 +25,18 @@ import SofaApplication 1.0
 UserInteractor_CameraMode {
     id: root
 
-    property var selectedManipulator: null
-    property var selectedComponent: null
+//    property var selectedManipulator: null
+//    property var selectedComponent: null
 
     function init() {
         moveCamera_init();
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            selectedManipulator = sofaScene.selectedManipulator;
-            if (!SofaApplication.selectedComponent)
-            {
-                console.log("UserInteractor_CameraMode: lost selected component.....")
-            }
-            else {
-                console.log("UserInteractor_CameraMode: selected component: " + SofaApplication.selectedComponent.getName())
-            }
-
-
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
-            if(selectable) {
-                if(selectable.manipulator) {
-                    selectedManipulator = selectable.manipulator;
-                } else if (selectable.sofaComponent) {
+            if(selectable && selectable.sofaComponent) {
                     SofaApplication.selectedComponent = selectable.sofaComponent;
-                }
-            }
-             else {
-//                selectedManipulator = null;
-                SofaApplication.selectedComponent = null;
             }
 
+            var selectedManipulator = SofaApplication.sofaScene.selectedManipulator
             if(selectedManipulator) {
                 if(selectedManipulator.mousePressed)
                     selectedManipulator.mousePressed(mouse, sofaViewer);
@@ -61,15 +44,12 @@ UserInteractor_CameraMode {
                 if(selectedManipulator.mouseMoved)
                     setMouseMovedMapping(selectedManipulator.mouseMoved);
 
-            } else if(selectedComponent) {
-//                if(!sofaScene.areSameComponent(SofaApplication.selectedComponent, SofaApplication.selectedComponent)) {
-//                    console.log("Changing selected component to " + SofaApplication.selectedComponent.getName())
-//                    SofaApplication.selectedComponent = selectedComponent;
-//                }
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
+
+            var selectedManipulator = SofaApplication.sofaScene.selectedManipulator
 
             if(selectedManipulator && selectedManipulator.mouseReleased)
                 selectedManipulator.mouseReleased(mouse, sofaViewer);

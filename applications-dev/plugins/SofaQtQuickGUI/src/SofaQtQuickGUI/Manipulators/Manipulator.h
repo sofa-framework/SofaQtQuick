@@ -22,6 +22,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
 
 #include <QObject>
 #include <QQmlListProperty>
@@ -51,6 +52,7 @@ public:
     Q_PROPERTY(sofaqtquick::bindings::SofaData* positionData READ positionData WRITE setPositionData NOTIFY positionDataChanged)
     Q_PROPERTY(sofaqtquick::bindings::SofaData* orientationData READ orientationData WRITE setOrientationData NOTIFY orientationDataChanged)
     Q_PROPERTY(sofaqtquick::bindings::SofaData* scaleData READ scaleData WRITE setScaleData NOTIFY scaleDataChanged)
+    Q_PROPERTY(sofaqtquick::bindings::SofaBase* sofaObject READ getSofaObject WRITE setSofaObject NOTIFY sofaObjectChanged)
 
     Q_CLASSINFO("DefaultProperty", "manipulators")
 
@@ -59,6 +61,9 @@ public:
     QString name() const {return myName;}
     void setVisible(bool newVisible);
     void setName(const QString& newName);
+
+    sofaqtquick::bindings::SofaBase* getSofaObject();
+    void setSofaObject(sofaqtquick::bindings::SofaBase* sofaObject);
 
     const QVector3D position() const;
     void setPosition(const QVector3D& newPosition);
@@ -100,6 +105,7 @@ signals:
     void orientationChanged(const QQuaternion newOrientation);
     void scaleChanged(const QVector3D newScale);
 
+    void sofaObjectChanged(sofaqtquick::bindings::SofaBase* newSofaObject);
     void positionDataChanged(const sofaqtquick::bindings::SofaData* newPosition);
     void orientationDataChanged(const sofaqtquick::bindings::SofaData* newOrientation);
     void scaleDataChanged(const sofaqtquick::bindings::SofaData* newScale);
@@ -110,6 +116,9 @@ private:
     sofaqtquick::bindings::SofaData* myPosition;
     sofaqtquick::bindings::SofaData* myOrientation;
     sofaqtquick::bindings::SofaData* myScale;    
+
+    sofaqtquick::bindings::SofaBase* mySofaObject;
+    sofa::defaulttype::Vec3d m_oldTranslation;
 };
 
 }  // namespace sofaqtquick

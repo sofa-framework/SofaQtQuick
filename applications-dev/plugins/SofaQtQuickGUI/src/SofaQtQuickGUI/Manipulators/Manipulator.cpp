@@ -19,6 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 #include <SofaQtQuickGUI/SofaViewer.h>
+#include <SofaOpenglVisual/OglModel.h>
 
 #include <QMatrix4x4>
 #include <QDebug>
@@ -66,6 +67,43 @@ void Manipulator::setName(const QString& newName)
 
     nameChanged(newName);
 }
+
+
+sofaqtquick::bindings::SofaBase* Manipulator::getSofaObject()
+{
+    return mySofaObject;
+}
+
+void Manipulator::setSofaObject(sofaqtquick::bindings::SofaBase* sofaObject)
+{
+    if (mySofaObject == sofaObject && mySofaObject->rawBase() == sofaObject->rawBase())
+        return;
+
+    mySofaObject = sofaObject;
+
+    if (mySofaObject->rawBase()->getClassName() == "DAGNode")
+    {
+        std::cout << "got a DAGNode" << std::endl;
+    }
+    if (mySofaObject->rawBase()->getClassName() == "TransformEngine")
+    {
+        std::cout << "got a TransformEngine" << std::endl;
+    }
+    if (mySofaObject->rawBase()->getClassName() == "MechanicalObject")
+    {
+        std::cout << "got a MechanicalObject" << std::endl;
+        setPositionData(qobject_cast<sofaqtquick::bindings::SofaData*>(sofaObject->getData("translation")));
+    }
+    if (mySofaObject->rawBase()->getClassName() == "OglModel")
+    {
+        std::cout << "got an OglModel" << std::endl;
+        setPositionData(qobject_cast<sofaqtquick::bindings::SofaData*>(sofaObject->getData("translation")));
+        m_oldTranslation = dynamic_cast<sofa::component::visualmodel::OglModel*>(sofaObject->rawBase())->m_translation.getValue();
+    }
+
+    emit sofaObjectChanged(sofaObject);
+}
+
 
 const QVector3D Manipulator::position() const {
     if (!myPosition || !myPosition->rawData()) QVector3D();
@@ -249,13 +287,39 @@ void Manipulator::pick(const SofaViewer& viewer) const
 
 void Manipulator::onValueChanged(const QVariant& /*newValue*/)
 {
-//    BaseObject* o = dynamic_cast<BaseObject*>(myPosition->rawData()->getOwner());
-//    if (o)
-//    {
-//        o->init();
-//        o->reinit();
-//        o->bwdInit();
-//    }
+    if (mySofaObject && mySofaObject->rawBase())
+    {
+        BaseObject* o = mySofaObject->rawBase()->toBaseObject();
+        if (o) {
+            if (o->getClassName() == "MechanicalObject") {
+                o->findData("position")->read(o->findData("reset_position")->getValueString());
+
+                o->init();
+                /// Yes... calling reinit / bwdInit after init() on a
+                /// MechanicalObject applies the translation twice. no duh...
+                //            o->reinit();
+                //            o->bwdInit();
+                std::cout << "position " << o->findData("position")->getValueString() << std::endl;
+                std::cout << "translation " << o->findData("translation")->getValueString() << std::endl;
+            }
+            if (o->getClassName() == "OglModel") {
+                auto vecData = dynamic_cast<sofa::Data<sofa::helper::vector<sofa::defaulttype::Vec3d>>*>(o->findData("position"));
+                if (vecData)
+                {
+                    auto& vec = *vecData->beginEdit();
+                    for (auto& v : vec)
+                        v -= m_oldTranslation;
+                    vecData->endEdit();
+                    std::cout << "translation " << o->findData("translation")->getValueString() << std::endl;
+                    o->init();
+                    o->reinit();
+                    o->bwdInit();
+                    std::cout << "position " << o->findData("position")->getValueString() << std::endl;
+                    std::cout << "translation " << o->findData("translation")->getValueString() << std::endl;
+                }
+            }
+        }
+    }
 }
 
 }  // namespace sofaqtquick
