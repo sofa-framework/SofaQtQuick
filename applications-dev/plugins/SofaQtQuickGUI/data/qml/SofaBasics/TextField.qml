@@ -29,6 +29,12 @@ TextField {
     onHoveredChanged: {
         if (backgroundID !== null) backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
     }
+    onEnabledChanged: {
+        if (backgroundID !== null) backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
+    }
+    onReadOnlyChanged: {
+        if (backgroundID !== null) backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
+    }
     Component.onCompleted: {
         if (backgroundID !== null) backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
     }

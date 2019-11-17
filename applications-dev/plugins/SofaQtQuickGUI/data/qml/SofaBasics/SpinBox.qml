@@ -32,7 +32,7 @@ import SofaBasics 1.0 as SB
 Rectangle {
     id: control
 
-    property bool readOnly: false // like in other QtQuick controls, enables / disables edition for this control
+    property bool readOnly: true // like in other QtQuick controls, enables / disables edition for this control
     property bool enabled: true  // like in other QtQuick controls, enables / disables the edition of this control & grays it out
     property bool showIndicators: true  // shows / hides the up / down indicators for this spinBox
 
