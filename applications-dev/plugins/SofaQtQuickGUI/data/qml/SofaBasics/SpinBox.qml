@@ -32,7 +32,7 @@ import SofaBasics 1.0 as SB
 Rectangle {
     id: control
 
-    property bool readOnly: true // like in other QtQuick controls, enables / disables edition for this control
+    property bool readOnly: false // like in other QtQuick controls, enables / disables edition for this control
     property bool enabled: true  // like in other QtQuick controls, enables / disables the edition of this control & grays it out
     property bool showIndicators: true  // shows / hides the up / down indicators for this spinBox
 
@@ -132,11 +132,7 @@ Rectangle {
 
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
-                if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                } else {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                }
+                backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
             }
             onClicked: {
                 control.incValue(control.value, control.step)
@@ -169,11 +165,7 @@ Rectangle {
 
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
-                if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                } else {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                }
+                backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
             }
 
 
@@ -222,11 +214,7 @@ Rectangle {
                         if (control.enabled && !control.readOnly) {
                             cursorShape = Qt.SizeHorCursor
                         }
-                        if (containsMouse) {
-                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                        } else {
-                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                        }
+                        backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                     }
 
                     onPressed:
