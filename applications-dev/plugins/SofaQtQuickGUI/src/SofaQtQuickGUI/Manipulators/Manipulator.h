@@ -128,7 +128,6 @@ private:
     sofaqtquick::bindings::SofaData* myOrientation;
     sofaqtquick::bindings::SofaData* myScale;    
 
-    QVector3D                        myParticlePosition;
     int                              myParticleIndex;
 
     sofaqtquick::bindings::SofaBase* mySofaObject;

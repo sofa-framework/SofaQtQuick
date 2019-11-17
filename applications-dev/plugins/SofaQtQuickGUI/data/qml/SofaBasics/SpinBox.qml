@@ -293,6 +293,9 @@ Rectangle {
     onEnabledChanged: {
         backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
     }
+    onReadOnlyChanged: {
+        backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
+    }
     Component.onCompleted: {
         backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
     }
