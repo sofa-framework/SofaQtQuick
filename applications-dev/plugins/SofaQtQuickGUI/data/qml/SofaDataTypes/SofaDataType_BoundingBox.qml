@@ -64,6 +64,7 @@ ColumnLayout {
             property int index: 0
 
             Layout.fillWidth: true
+            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
 
 
             showIndicators: false
@@ -91,6 +92,7 @@ ColumnLayout {
             property int index: 1
 
             Layout.fillWidth: true
+            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
 
 
             showIndicators: false
@@ -117,6 +119,7 @@ ColumnLayout {
             property int index: 2
 
             Layout.fillWidth: true
+            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
 
 
             showIndicators: false
@@ -147,7 +150,7 @@ ColumnLayout {
         Text {
             id: maxLabel
             text: "Max "
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
+            Layout.preferredWidth: Math.max(maxLabel.width, minLabel.width)
         }
 
         SpinBox {
@@ -155,6 +158,7 @@ ColumnLayout {
             property int index: 3
 
             Layout.fillWidth: true
+            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
 
             showIndicators: false
             readOnly: sofaData.properties.readOnly
@@ -181,6 +185,7 @@ ColumnLayout {
             property int index: 4
 
             Layout.fillWidth: true
+            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
 
 
             showIndicators: false
@@ -207,6 +212,7 @@ ColumnLayout {
             property int index: 5
 
             Layout.fillWidth: true
+            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
 
 
             showIndicators: false
