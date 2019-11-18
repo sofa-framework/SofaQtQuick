@@ -43,9 +43,9 @@ def collectMetaData(obj):
     if data["type"] == "Class" or data["type"] == "Function":
         return None
 
-    data["params"] = inspect.getfullargspec(obj.__wrapped__ if "__wrapped__" in dir(obj) else obj)
+    data["params"] = inspect.getfullargspec(obj.__original__ if "__original__" in dir(obj) else obj)
     data["sourcecode"] = inspect.getsource(obj.__original__ if "__original__" in dir(obj) else obj)
-    data["docstring"] = obj.__original__.__doc__ if "__original__" in dir(obj) else obj.__doc__
+    data["docstring"] = obj.__original__.__doc__ if "__original__" in dir(obj) else obj.__doc__ if obj.__doc__ != None else ""
     return data
 
 # returns a dictionary of all callable objects in the module, with their type as key
