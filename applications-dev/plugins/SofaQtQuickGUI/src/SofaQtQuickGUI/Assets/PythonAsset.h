@@ -64,7 +64,7 @@ public:
 
 protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
-    Q_INVOKABLE virtual QUrl getIconPath() override { return QUrl("qrc:/icon/ICON_PYTHON.png"); }
+    Q_INVOKABLE virtual QUrl getIconPath() override { return isScene() ? QUrl("qrc:/icon/ICON_PYSCN.png") : QUrl("qrc:/icon/ICON_PYTHON.png"); }
     Q_INVOKABLE virtual bool getIsSofaContent() override ;
 
     static const LoaderMap _loaders;

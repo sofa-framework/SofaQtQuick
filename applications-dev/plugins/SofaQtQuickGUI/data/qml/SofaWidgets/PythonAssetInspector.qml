@@ -30,11 +30,13 @@ Item {
                     width: root.parent.width
                     implicitHeight: rectId.height + (gbox.expanded ? 30 : 20)
                     title: modelData.name
-                    titleIcon: (modelData.type === "SofaScene" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
+                    titleIcon: {
+                        return (modelData.type === "SofaScene" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
                                                                                                      (modelData.type === "Class" ? "qrc:/icon/ICON_PYTHON.png" :
                                                                                                                                    (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
                                                                                                                                                                       (modelData.type === "Controller" ? "qrc:/icon/ICON_PYController.png" :
                                                                                                                                                                                                          (modelData.type === "DataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
+                    }
                     buttonIconSource: modelData.type !== "SofaScene" ? "qrc:/icon/ICON_GEAR.png" : undefined
                     buttonAction: modelData.type !== "SofaScene" ? modelData.openSettings : undefined
                     Rectangle {
