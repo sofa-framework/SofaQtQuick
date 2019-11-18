@@ -67,6 +67,8 @@ CameraView {
         {
             recreateCamera();
         }
+
+
     }
 
     Component.onDestruction: {
@@ -119,24 +121,34 @@ CameraView {
     property bool keepCamera: false
     property bool hideBusyIndicator: false
 
+    Timer
+    {
+        id: rescanForCameraTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            recreateCamera();
+        }
+    }
+
     function updateCameraFromIndex(index)
     {
         if(camera)
         {
             var listCameraInSofa = sofaScene.componentsByType("BaseCamera");
-            camera.sofaComponent = (sofaScene.componentsByType("BaseCamera").at(index));
             if(listCameraInSofa.size() === 0)
             {
-                console.log("No Camera in the scene")
+                rescanForCameraTimer.start()
+                return;
             }
             if(listCameraInSofa.size() < index)
             {
-                console.log("Error while trying to load camera number "+ index)
+                rescanForCameraTimer.start()
+                return;
             }
-            else
-            {
-                camera.sofaComponent = listCameraInSofa.at(index);
-            }
+            noCamera.visible = false
+
+            camera.sofaComponent = listCameraInSofa.at(index);
         }
     }
 
@@ -149,7 +161,7 @@ CameraView {
 
     function recreateCamera() {
         camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
-        camera.bindCameraFromScene(root.sofaScene, 0);
+        camera.bindCameraFromScene(root.sofaScene, 0)
 
         //Todo fetch index from somewhere
         var defaultIndex = 0;
@@ -252,12 +264,12 @@ CameraView {
                 root.sofaScene.mouseReleased(mouse, root);
         }
 
-//        onWheel: {
-//            if(root.sofaScene)
-//                root.sofaScene.mouseWheel(wheel, root);
+        //        onWheel: {
+        //            if(root.sofaScene)
+        //                root.sofaScene.mouseWheel(wheel, root);
 
-//            wheel.accepted = true;
-//        }
+        //            wheel.accepted = true;
+        //        }
 
         onPositionChanged: {
             if(root.sofaScene)
@@ -684,6 +696,29 @@ CameraView {
         }
     }
 
+    Item
+    {
+        anchors.fill: parent
+        id: noCamera
+        Image
+        {
+            anchors.centerIn: parent
+            height: 30
+            width: 30
+            z:0
+            source:  "qrc:/icon/screenshot.png"
+            opacity: 0.3
+        }
+        Image
+        {
+            anchors.centerIn: parent
+            height: 60
+            width: 60
+            z: 1
+            source:  "qrc:/icon/disabled.png"
+            opacity: 0.3
+        }
+    }
     QmlUIArea
     {
         id: uiArea
