@@ -483,6 +483,8 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
 
 bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     // Maybe not the most pertinent method name...
     QString scriptContent = "";
     if (name.endsWith("Controller"))

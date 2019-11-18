@@ -3,6 +3,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
+import QtGraphicalEffects 1.12
 import SofaBasics 1.0
 import SofaApplication 1.0
 import SofaSceneListModel 1.0
@@ -95,10 +96,23 @@ RowLayout {
             id: openSourceFile
             anchors.fill: parent
             anchors.margins: 2
-            iconSource: "qrc:/icon/leave.png"
+            iconSource: "qrc:/icon/ICON_LEAVE.png"
+            useHoverOpacity: false
+            ColorOverlay {
+                source: parent
+                anchors.fill: parent
+                color: {
+                    if (openSourceFile.hovered)
+                        return "orange"
+                    else if (sofaScene.source !== "undefined")
+                        return "#EEEEEE"
+                    else
+                        return "gray"
+                }
+            }
 
             onClicked: {
-                Qt.openUrlExternally(sofaScene.source);
+                SofaApplication.openInEditor(sofaScene.source, 0)
             }
         }
     }

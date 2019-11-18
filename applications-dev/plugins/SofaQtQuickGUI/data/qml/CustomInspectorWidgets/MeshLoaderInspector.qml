@@ -4,7 +4,7 @@ import CustomInspectorWidgets 1.0
 CustomInspector {
     dataDict: {
         "Loader": ["name", "filename","componentState"],
-        "Vectors": ["edges", "triangles", "quads"],
+        "Vectors": ["position", "edges", "triangles", "quads"],
         "Transformations": ["rotation", "scale3d", "translation", "transformation"],
     }
 }

@@ -7,6 +7,9 @@
 #include <sofa/simulation/DefaultAnimationLoop.h>
 #include <sofa/simulation/DefaultVisualManagerLoop.h>
 
+#include <sofa/simulation/VisualVisitor.h>
+using sofa::simulation::VisualInitVisitor;
+
 #include <SofaPython3/PythonEnvironment.h>
 #include <SofaPython3/PythonFactory.h>
 using sofapython3::PythonEnvironment;
@@ -67,10 +70,15 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(sofaqtquick::bindings::SofaNo
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
     py::module::import("Sofa.Core");
     py::module::import("SofaQtQuick").attr("loadMeshAsset")(b->getClassName(), m_path, sofapython3::PythonFactory::toPython(root->toBaseNode()));
-    root->setName("NEWNODE");
+
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
+
+    /// Initialize the object
     node->init(sofa::core::ExecParams::defaultInstance());
+
+    /// Initialize the object assets.
+    node->execute<VisualInitVisitor>(nullptr);
 
     parent->self()->addChild(node);
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));

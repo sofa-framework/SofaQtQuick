@@ -142,7 +142,11 @@ void Manipulator::setParticleIndex(const int particleIndex)
 
 
 const QVector3D Manipulator::position() const {
-    if (!myPosition || !myPosition->rawData()) QVector3D();
+    if (!myPosition)
+        return QVector3D();
+
+    if(!myPosition->rawData())
+        return QVector3D();
 
     const AbstractTypeInfo* typeinfo = myPosition->rawData()->getValueTypeInfo();
     const void* valueptr = myPosition->rawData()->getValueVoidPtr();

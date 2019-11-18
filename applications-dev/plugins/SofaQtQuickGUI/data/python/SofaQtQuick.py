@@ -230,8 +230,10 @@ def createPrefabFromNode(fileName, node, name, help):
 
 
 def loadMeshAsset(type, path, node):
+    basename = os.path.splitext(os.path.basename(path))[0]
     loader = node.addObject(type, name="loader", filename=path)
     vmodel = node.addObject("OglModel", name="vmodel", src=loader.getLinkPath())
+    node.setName(basename)
     return node
 
 def getPrefabMetaData(func, node):
