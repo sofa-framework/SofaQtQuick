@@ -9,6 +9,7 @@ import EditView 1.0
 import SofaColorScheme 1.0
 import SofaBasics 1.0
 import SofaManipulators 1.0
+import SofaWidgets 1.0
 
 Column {
     id: manipulatorControls

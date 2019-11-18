@@ -152,6 +152,5 @@
         <file>SofaWidgets/EditModeManipulators.qml</file>
         <file>SofaWidgets/ObjectModeManipulators.qml</file>
         <file>SofaManipulators/Manipulator3D_InPlaneParticleTranslation.qml</file>
-        <file>SofaManipulators/Manipulator2D_Rotation_copy.qml</file>
     </qresource>
 </RCC>

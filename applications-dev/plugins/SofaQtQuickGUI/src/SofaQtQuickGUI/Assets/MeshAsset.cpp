@@ -52,7 +52,9 @@ MeshAsset::MeshAsset(std::string path, std::string extension)
 
 sofaqtquick::bindings::SofaNode* MeshAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
 {
+
     SOFA_UNUSED(assetName);
+    sofapython3::PythonEnvironment::gil acquire;
     if (_loaders.find(m_extension) == _loaders.end() ||
             _loaders.find(m_extension)->second == nullptr)
     {
@@ -63,7 +65,6 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(sofaqtquick::bindings::SofaNo
     BaseObject::SPtr b = _loaders.find(m_extension)->second->New();
 
     sofa::simulation::Node::SPtr root = sofa::core::objectmodel::New<sofa::simulation::graph::DAGNode>();
-
     py::module::import("Sofa.Core");
     py::module::import("SofaQtQuick").attr("loadMeshAsset")(b->getClassName(), m_path, sofapython3::PythonFactory::toPython(root->toBaseNode()));
     root->setName("NEWNODE");
