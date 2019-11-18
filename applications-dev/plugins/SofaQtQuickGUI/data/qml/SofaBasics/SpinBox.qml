@@ -195,6 +195,7 @@ Rectangle {
                 verticalAlignment: Qt.AlignVCenter
 
                 text: textMetrics.elidedText
+
                 color: control.enabled ? (control.readOnly ? "#393939" : "black") : "#464646"
                 clip: true
                 selectByMouse: control.readOnly || control.enabled ? true : false

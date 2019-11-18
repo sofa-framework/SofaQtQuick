@@ -267,18 +267,30 @@ void SofaProject::scan(const QFileInfo& file)
     return;
 }
 
+QString readScriptTemplate(QString name, QString file) {
+    QFile f(file);
+    if (!f.open(QFile::ReadOnly | QFile::Text)) {
+        msg_error("SofaProject") << "file `" + file.toStdString()+"` does not exist";
+        return "";
+    }
+    QTextStream in(&f);
+    QString s = in.readAll();
+    f.close();
+    return s.replace("%ComponentName%", name);
+}
+
 QString SofaProject::createProject(const QUrl& dir)
 {
     msg_error_when(createProjectTree(dir), "SofaProject::createProject()")
             << "Could not create directory tree for the new project";
 
-    QString fileName = dir.path() + "/scenes/" + QFileInfo(dir.path()).baseName() + ".pyscn";
+    QString fileName = dir.path() + "/scenes/" + QFileInfo(dir.path()).baseName() + ".py";
+    QString scriptContent = readScriptTemplate(QFileInfo(dir.path()).baseName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyScene.py"));
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream stream(&file);
-        stream << "def createScene(root):" << endl
-               << "    return root" << endl;
+        stream << scriptContent;
 
         file.close();
     }
@@ -427,18 +439,6 @@ bool SofaProject::createPrefab(SofaBase* node)
     return false;
 }
 
-QString readScriptTemplate(QString name, QString file) {
-    QFile f(file);
-    if (!f.open(QFile::ReadOnly | QFile::Text)) {
-        msg_error("SofaProject") << "file `" + file.toStdString()+"` does not exist";
-        return "";
-    }
-    QTextStream in(&f);
-    QString s = in.readAll();
-    f.close();
-    return s.replace("%ComponentName%", name);
-}
-
 
 QString SofaProject::createTemplateFile(const QString& directory, const QString& templateType)
 {
@@ -458,7 +458,7 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     else if (templateType == "Prefab")
         scriptContent = readScriptTemplate("EmptyPrefab", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyPrefab.py"));
     else if (templateType == "Scene")
-        scriptContent = readScriptTemplate("EmptyScene", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyPrefab.py"));
+        scriptContent = readScriptTemplate("EmptyScene", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyScene.py"));
 
     QString dir;
     QFileInfo f(directory);
