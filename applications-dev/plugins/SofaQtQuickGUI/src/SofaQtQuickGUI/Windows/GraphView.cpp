@@ -315,7 +315,6 @@ void GraphView::setViewPosition(QVector2D viewPosition)
     m_viewPosition = viewPosition;
 
     m_graphView->translate(dx.x(), dx.y());
-    std::cout << "TP" << m_graphView->pos().x() << " => " << m_graphView->pos().y() << std::endl;
 
 
     emit viewPositionChanged();

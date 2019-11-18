@@ -47,6 +47,8 @@ PythonAsset::PythonAsset(std::string path, std::string extension)
 
 QList<QObject*> getPrefabParams(py::list args, py::tuple defaults, py::dict annotations)
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     QList<QObject*> params;
     size_t diff = args.size() - defaults.size();
     for (size_t i = 0 ; i < diff ; ++i)
@@ -71,6 +73,8 @@ QList<QObject*> getPrefabParams(py::list args, py::tuple defaults, py::dict anno
 
 sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
 {    
+    sofapython3::PythonEnvironment::gil acquire;
+
     if (_loaders.find(m_extension) == _loaders.end() ||
             _loaders.find(m_extension)->second == nullptr)
     {
@@ -133,6 +137,8 @@ QString py2qt(const py::handle s)
 
 void PythonAsset::getDetails()
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     /// Let's clear the old content.
     m_assetsContent.clear();
 

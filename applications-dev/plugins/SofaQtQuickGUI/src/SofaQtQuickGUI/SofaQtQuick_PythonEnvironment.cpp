@@ -1,4 +1,6 @@
+
 #include "SofaQtQuick_PythonEnvironment.h"
+#include <SofaPython3/PythonEnvironment.h>
 #include <QString>
 #include <sofa/helper/logging/Messaging.h>
 #include <sofa/core/objectmodel/Base.h>
@@ -11,6 +13,8 @@ py::dict PythonEnvironment::m_globals;
 
 void PythonEnvironment::Init()
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     static bool inited {false};
     if(inited)
         return;
@@ -25,6 +29,8 @@ void PythonEnvironment::Init()
 py::object PythonEnvironment::CallFunction(const QString& modulePath, const QString& functionName,
                                            py::list args, py::dict kwargs, sofa::core::objectmodel::Base* ctx)
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     try
     {
         py::dict locals = py::dict ("modulePath"_a=modulePath.toStdString(),
@@ -50,6 +56,8 @@ py::object PythonEnvironment::CallFunction(const QString& modulePath, const QStr
 
 QString PythonEnvironment::GetPythonModuleDocstring(const QString& modulePath)
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     try {
         py::dict locals = py::dict ("modulePath"_a=modulePath.toStdString());
         py::str res = py::eval("SofaQtQuick.getPythonModuleDocstring(modulePath)", m_globals, locals);
@@ -65,6 +73,8 @@ QString PythonEnvironment::GetPythonModuleDocstring(const QString& modulePath)
 
 py::dict PythonEnvironment::GetPythonModuleContent(const QString& moduleDir, const QString& moduleName)
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     try {
         py::dict locals = py::dict ("moduleDir"_a=moduleDir.toStdString(),
                                     "moduleName"_a=moduleName.toStdString());
@@ -81,6 +91,8 @@ py::dict PythonEnvironment::GetPythonModuleContent(const QString& moduleDir, con
 
 bool PythonEnvironment::IsASofaPythonModule(const QString &modulePath)
 {
+    sofapython3::PythonEnvironment::gil acquire;
+
     QString docstring = GetPythonModuleDocstring(modulePath);
     return docstring.contains("type: SofaContent");
 }
