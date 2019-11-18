@@ -32,11 +32,16 @@ UserInteractor_CameraMode {
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             var particle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
             if(particle) {
-                if (particle.sofaComponent)
-                    SofaApplication.selectedComponent = particle.sofaComponent
+//                if (particle.sofaComponent)
+//                    SofaApplication.selectedComponent = particle.sofaComponent
                 var manipulator = SofaApplication.selectedManipulator
                 if (manipulator)
                 {
+                    console.error("Got particle. index: " + particle.particleIndex)
+                    console.error("Current manipulator is: " + manipulator.name)
+
+                    manipulator.visible = true
+                    manipulator.sofaObject = particle.sofaComponent
                     manipulator.particleIndex = particle.particleIndex
                     if (manipulator.mousePressed)
                         manipulator.mousePressed(mouse, sofaViewer)

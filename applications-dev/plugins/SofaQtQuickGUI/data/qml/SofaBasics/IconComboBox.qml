@@ -6,10 +6,11 @@ import SofaBasics 1.0 as SB
 import SofaApplication 1.0
 
 ComboBox {
+    id: control
+
     property alias cornerPositions: backgroundID.cornerPositions
     property bool sizeToContents: true
     property int modelWidth: 40
-    id: control
     implicitHeight: 20
 
     implicitWidth: (sizeToContents) ? modelWidth + 20 + 70 + canvas.width : width
@@ -32,10 +33,11 @@ ComboBox {
     hoverEnabled: true
 
     activeFocusOnTab: true
-    onActiveFocusChanged: backgroundID.setControlState(enabled, activeFocus, down)
-    onDownChanged: backgroundID.setControlState(enabled, hovered, down)
-    onHoveredChanged: backgroundID.setControlState(enabled, hovered, down)
-    Component.onCompleted: backgroundID.setControlState(enabled, hovered, down)
+    onEnabledChanged: backgroundID.setControlState(control.enabled, control.activeFocus, control.down)
+    onActiveFocusChanged: backgroundID.setControlState(control.enabled, control.activeFocus, control.down)
+    onDownChanged: backgroundID.setControlState(control.enabled, control.hovered, control.down)
+    onHoveredChanged: backgroundID.setControlState(control.enabled, control.hovered, control.down)
+    Component.onCompleted: backgroundID.setControlState(control.enabled, control.hovered, control.down)
 
     delegate: ItemDelegate {
         id: itemDelegate

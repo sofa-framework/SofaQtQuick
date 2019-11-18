@@ -53,6 +53,9 @@ ToolButton {
     onDownChanged: {
         backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
     }
+    onEnabledChanged: {
+        backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
+    }
     onCheckedChanged: {
         backgroundID.setControlState(control.enabled, control.hovered, (checkable ? control.checked : control.down))
     }

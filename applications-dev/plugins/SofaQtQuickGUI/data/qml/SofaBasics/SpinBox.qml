@@ -132,11 +132,7 @@ Rectangle {
 
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
-                if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                } else {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                }
+                backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
             }
             onClicked: {
                 control.incValue(control.value, control.step)
@@ -169,11 +165,7 @@ Rectangle {
 
             onHoveredChanged: {
                 cursorShape = Qt.ArrowCursor
-                if (containsMouse) {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                } else {
-                    backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                }
+                backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
             }
 
 
@@ -222,11 +214,7 @@ Rectangle {
                         if (control.enabled && !control.readOnly) {
                             cursorShape = Qt.SizeHorCursor
                         }
-                        if (containsMouse) {
-                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                        } else {
-                            backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
-                        }
+                        backgroundID.setControlState(control.enabled, containsMouse || control.readOnly, upIndicator.focus)
                     }
 
                     onPressed:
@@ -303,6 +291,9 @@ Rectangle {
     }
 
     onEnabledChanged: {
+        backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
+    }
+    onReadOnlyChanged: {
         backgroundID.setControlState(control.enabled, control.readOnly ? true : false, control.focus)
     }
     Component.onCompleted: {

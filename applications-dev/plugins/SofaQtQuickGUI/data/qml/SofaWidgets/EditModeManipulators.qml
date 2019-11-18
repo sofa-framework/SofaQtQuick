@@ -24,17 +24,22 @@ Column {
             SofaApplication.sofaScene.selectedManipulator = null
     }
     
-    function addManipulator(manipulatorString) {
-        var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorString)
-        if (!manipulator) {
-            manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml").createObject()
-            SofaApplication.sofaScene.addManipulator(manipulator)
+    function getManipulator(manipulatorString) {
+        var manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
+        if (manipulator.status === Component.Ready)
+        {
+            console.log("Created Manipulator with name " + manipulatorString)
+            var m = manipulator.createObject()
+            console.log("Created Manipulator with name " + m.name)
+            return m
         }
-        return manipulator
+        console.log("Cant create Manipulator with name " + manipulatorString)
+        return null
     }
-    
+
     Rectangle {
         id: camViewRect
+        property string manipulatorName: "Manipulator3D_NOMANIP"
         property bool selected: SofaApplication.sofaScene.selectedManipulator === null
         
         implicitHeight: 30
@@ -60,13 +65,13 @@ Column {
             acceptedButtons: Qt.LeftButton
             
             onClicked: {
-                SofaApplication.sofascene.selectedManipulator = null
+                SofaApplication.sofascene.selectedManipulator = manipulatorControls.getManipulator(camViewRect.manipulatorName)
             }
             Shortcut {
                 context: Qt.ApplicationShortcut
                 sequence: "Shift+Space, Space";
                 onActivated: {
-                    SofaApplication.sofascene.selectedManipulator = null
+                    SofaApplication.sofascene.selectedManipulator = manipulatorControls.getManipulator(camViewRect.manipulatorName)
                 }
             }
         }
@@ -81,28 +86,20 @@ Column {
     Rectangle {
         id: translateRect
         property string manipulatorName: "Manipulator3D_InPlaneParticleTranslation"
-        Component.onCompleted: {
-            manipulatorControls.addManipulator(manipulatorName)
-        }
         
         property bool selected: SofaApplication.sofaScene.selectedManipulator && SofaApplication.sofaScene.selectedManipulator.name === manipulatorName
         
         function setManipulator() {
             if (!SofaApplication.selectedComponent) {
-                /// Somehow this scope fixes the issue of losing the
-                /// selectedComponent when using manipulator when using MechanicalObjects...
-                /// But the problem persists with OglModels for instance. Why?
-                SofaApplication.sofaScene.selectedManipulator = null
+                SofaApplication.selectedManipulator = getManipulator(camViewRect.manipulatorName)
                 return;
             }
-            var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorName)
-            if (!manipulator)
-                manipulator = manipulatorControls.addManipulator(manipulatorName)
+            var manipulator = manipulatorControls.getManipulator(manipulatorName)
             manipulator.visible = true
             manipulator.sofaObject = SofaApplication.selectedComponent
-            SofaApplication.sofaScene.selectedManipulator = manipulator
+            SofaApplication.selectedManipulator = manipulator
         }
-        
+
         implicitHeight: 30
         implicitWidth: 30
         color: "transparent"
