@@ -44,8 +44,8 @@ def collectMetaData(obj):
         return None
 
     data["params"] = inspect.getfullargspec(obj.__wrapped__ if "__wrapped__" in dir(obj) else obj)
-    data["sourcecode"] = inspect.getsource(obj)
-    data["docstring"] = obj.__doc__ if obj.__doc__ != None else ""
+    data["sourcecode"] = inspect.getsource(obj.__original__ if "__original__" in dir(obj) else obj)
+    data["docstring"] = obj.__original__.__doc__ if "__original__" in dir(obj) else obj.__doc__
     return data
 
 # returns a dictionary of all callable objects in the module, with their type as key
@@ -91,7 +91,7 @@ def getAbsPythonCallPath(node, rootNode):
         # rootNode.getPathName() = "/Snake/physics"
         # node.getPathName() = "/Snake/physics/visu/eye"
         # relPath = physics.visu.eye
-        return rootNode.name.value + "DD." + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
+        return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
 
 def buildDataParams(datas, indent, scn):
     s = ""

@@ -430,6 +430,7 @@ bool SofaProject::createPrefab(SofaBase* node)
     {
         std::string fileName = dialog.selectedFiles().first().toStdString();
         {
+            sofapython3::PythonEnvironment::gil acquire;
             py::module::import("Sofa.Core");
             py::object rootNode = sofapython3::PythonFactory::toPython(node->base()->toBaseNode());
             py::module m = py::module::import("SofaQtQuick");
