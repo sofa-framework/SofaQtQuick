@@ -39,6 +39,7 @@ using sofa::core::ExecParams;
 
 #include <SofaQtQuickGUI/DataHelper.h>
 #include <QMessageBox>
+#include <SofaPython3/Prefab.h>
 
 
 namespace sofaqtquick::bindings::_sofanode_
@@ -261,13 +262,21 @@ bool SofaNode::attemptToBreakPrefab()
     title += prefab->getName().c_str();
     if (QMessageBox::question(nullptr, title, tr("Are your sure that you want to proceed?")) == QMessageBox::StandardButton::Yes)
     {
-        prefab->removeData(prefab->findData("modulename"));
-        prefab->removeData(prefab->findData("prefabname"));
-        prefab->removeData(prefab->findData("modulepath"));
-        prefab->removeData(prefab->findData("lineno"));
-        prefab->removeData(prefab->findData("sourcecode"));
-        prefab->removeData(prefab->findData("docstring"));
-        prefab->removeData(prefab->findData("args"));
+        if (prefab->findData("modulename") != nullptr)
+            prefab->removeData(prefab->findData("modulename"));
+        if (prefab->findData("prefabname") != nullptr)
+            prefab->removeData(prefab->findData("prefabname"));
+        if (prefab->findData("modulepath") != nullptr)
+            prefab->removeData(prefab->findData("modulepath"));
+        if (prefab->findData("lineno") != nullptr)
+            prefab->removeData(prefab->findData("lineno"));
+        if (prefab->findData("sourcecode") != nullptr)
+            prefab->removeData(prefab->findData("sourcecode"));
+        if (prefab->findData("docstring") != nullptr)
+            prefab->removeData(prefab->findData("docstring"));
+        if (prefab->findData("args") != nullptr)
+            prefab->removeData(prefab->findData("args"));
+        dynamic_cast<sofapython3::Prefab*>(prefab)->breakPrefab();
         return true;
     }
     return false;
