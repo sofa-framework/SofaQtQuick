@@ -39,19 +39,20 @@ class QmlDDGNode : public QObject, public sofa::core::objectmodel::DDGNode
 {
     Q_OBJECT
 public:
-    virtual void notifyEndEdit(const sofa::core::ExecParams* params = 0);
+    virtual void notifyEndEdit(const sofa::core::ExecParams* params = nullptr) override;
 
     /// Update this value
     void update() override ;
     sofa::core::objectmodel::BaseData* getData() const override {return nullptr;}
     sofa::core::objectmodel::Base* getOwner() const override {return nullptr;}
 
-    const std::string& getName() const override  { return "";}
+    const std::string& getName() const override  { return name; }
 
 signals:
     void valueChanged(const QVariant& newValue);
 public:
     sofa::core::objectmodel::BaseData* self;
+    const std::string name {"QmlDDGNode"};
 };
 
 using sofa::core::objectmodel::BaseData;

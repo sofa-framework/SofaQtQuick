@@ -99,7 +99,7 @@ QString SofaBase::getTemplateName() const
     return QString::fromStdString(m_self->getTemplateName());
 }
 
-QObject* SofaBase::findData(const QString& name) const
+SofaData* SofaBase::findData(const QString& name) const
 {
     auto* data = m_self->findData(name.toStdString());
     if(!data)
@@ -109,7 +109,7 @@ QObject* SofaBase::findData(const QString& name) const
     return new SofaData(data);
 }
 
-QObject* SofaBase::getData(const QString& name) const
+SofaData* SofaBase::getData(const QString& name) const
 {
     auto* data = m_self->findData(name.toStdString());
     if(!data)
@@ -120,7 +120,22 @@ QObject* SofaBase::getData(const QString& name) const
     return new SofaData(data);
 }
 
-QObject* SofaBase::getLink(const QString& name) const
+QObject* SofaBase::get(const QString& s)
+{
+    if (SofaData* d = static_cast<SofaData*>(findData(s)))
+    {
+        return d;
+    }
+    if (SofaLink* l = static_cast<SofaLink*>(findLink(s)))
+    {
+        return l;
+    }
+    return nullptr;
+}
+
+
+
+SofaLink* SofaBase::findLink(const QString& name) const
 {
     auto* link = m_self->findLink(name.toStdString());
     if(!link)

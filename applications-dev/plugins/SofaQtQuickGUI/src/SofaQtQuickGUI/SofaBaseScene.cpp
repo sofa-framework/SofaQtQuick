@@ -1243,17 +1243,9 @@ SofaBase* SofaBaseScene::node(const QString& path)
 
 SofaBase* SofaBaseScene::component(const QString& path)
 {
-    for (auto& child : mySofaRootNode->child)
-        std::cout << child->getName() << std::endl;
-    Base::SPtr base;
-    mySofaRootNode->get<Base>(base, path.toStdString());
-    if (!base.get())
-    {
-        std::cout << "No component found for " << path.toStdString() << std::endl;
-        return nullptr;
-    }
+    QString p = path;
 
-    return new SofaBase(base.get());
+    return get(p.remove(0,1));
 }
 
 SofaBase* SofaBaseScene::get(const QString& path)

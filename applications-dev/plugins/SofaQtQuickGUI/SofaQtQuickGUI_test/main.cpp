@@ -5,6 +5,8 @@
 #include <QUrl>
 #include <QCoreApplication>
 
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
+
 #include <sofa/helper/Utils.h>
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/system/FileSystem.h>
@@ -17,12 +19,14 @@
 
 int main(int argc, char **argv)
 {
-    QCoreApplication application(argc, argv);
+    QApplication application(argc, argv);
 
     /// application specific settings
     application.setOrganizationName("Sofa Consortium");
     application.setApplicationName("SofaQtQuickGUI_test");
     application.setApplicationVersion("v1.0");
+
+    sofaqtquick::SofaBaseApplication sofaApplication = sofaqtquick::SofaBaseApplication();
 
     testing::InitGoogleTest(&argc, argv);
 

@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import Sofa.Core.SofaFactory 1.0
 import Sofa.Core.SofaNode 1.0
+import Sofa.Core.SofaData 1.0
 import QmlGTestCase 1.0
 
 QmlGTestCase
@@ -29,7 +30,7 @@ QmlGTestCase
     function tst_function_createChild()
     {
         tst_property_setValue()
-        var newNode = node.createChild("NEWNODE")
+        var newNode = node.addChild("NEWNODE")
         assert_eq(newNode.getData("name").value, "NEWNODE")
     }
     function tst_function_getChild()
@@ -49,8 +50,8 @@ QmlGTestCase
     function tst_function_getRoot()
     {
         node.getData("name").value = "root"
-        var n1 = node.createChild("Node1")
-        var n2 = n1.createChild("Node2")
+        var n1 = node.addChild("Node1")
+        var n2 = n1.addChild("Node2")
         assert_eq(n2.getRoot().getData("name").value, "root")
         assert_eq(n1.getRoot().getData("name").value, "root")
     }
@@ -58,8 +59,8 @@ QmlGTestCase
     function tst_function_addChild()
     {
         node.getData("name").value = "root"
-        var n1 = node.createChild("Node1")
-        var n2 = node.createChild("Node2")
+        var n1 = node.addChild("Node1")
+        var n2 = node.addChild("Node2")
         n1.addChild(n2)
         assert_eq(n1.getChild("Node2").getData("name").value, "Node2")
     }

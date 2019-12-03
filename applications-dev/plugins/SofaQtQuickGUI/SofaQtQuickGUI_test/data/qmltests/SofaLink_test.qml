@@ -9,17 +9,17 @@ QmlGTestCase
     {
         var node = SofaFactory.createNode()
 
-        var parent = node.createChild("Parent")
-        var dofs = parent.createObject("MechanicalObject",
+        var parent = node.addChild("Parent")
+        var dofs = parent.addObject("MechanicalObject",
                                      { name : "dofs" ,
                                        template : "Rigid3d"
                                      })
-        var child = parent.createChild("Visual")
-        var slavedofs = child.createObject("MechanicalObject",
+        var child = parent.addChild("Visual")
+        var slavedofs = child.addObject("MechanicalObject",
                                           {name : "slavedofs",
                                               template : "Rigid3d"
                                           })
-        var mapping = child.createObject("RigidRigidMapping",
+        var mapping = child.addObject("RigidRigidMapping",
                                         {name : "mapping",
                                          template : "Rigid3d,Rigid3d",
                                          input : "@../dofs",
@@ -36,8 +36,8 @@ QmlGTestCase
 
     function tst_getSize()
     {
-        rootNode.createChild("Child2");
-        assert_eq(rootNode.getChildren().size(),2)
+        rootNode.addChild("Child2");
+        assert_eq(rootNode.children().size(),2)
     }
 
     function tst_getLinkedData()
@@ -46,14 +46,14 @@ QmlGTestCase
 
     function tst_getLinkedBase()
     {
-        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("input").getLinkedBase().getPathName(), "/Parent/dofs")
-        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("output").getLinkedBase().getPathName(), "/Parent/Visual/slavedofs")
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").findLink("input").getLinkedBase().getPathName(), "/Parent/dofs")
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").findLink("output").getLinkedBase().getPathName(), "/Parent/Visual/slavedofs")
     }
 
     function tst_getLinkedPath()
     {
-        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("input").getLinkedPath(), "@../dofs")
-        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").getLink("output").getLinkedPath(), "@./slavedofs")
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").findLink("input").getLinkedPath(), "@../dofs")
+        assert_eq(rootNode.getChild("Parent").getChild("Visual").getObject("mapping").findLink("output").getLinkedPath(), "@./slavedofs")
     }
 
 

@@ -227,19 +227,33 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<SofaBaseScene*>("const SofaScene*");
     qRegisterMetaType<Asset*>("Asset*");
     qRegisterMetaType<QUrlList>("QUrlList");
-    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("sofaqtquick::bindings::SofaBaseObject*");
-    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("SofaBaseObject*");
-    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObjectList*>("SofaBaseObjectList*");
-
-    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("sofaqtquick::bindings::SofaBase*");
-    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("SofaBase*");
 
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaData*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::_sofadata_::SofaData*");
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaData*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("_sofadata_::SofaData*");
+
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaLink*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::_sofalink_::SofaLink*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaLink*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("_sofalink_::SofaLink*");
+
+    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("sofaqtquick::bindings::SofaBase*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("sofaqtquick::bindings::_sofabase_::SofaBase*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("SofaBase*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBase*>("_sofabase_::SofaBase*");
 
     qRegisterMetaType<sofaqtquick::bindings::SofaNode*>("sofaqtquick::bindings::SofaNode*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaNode*>("sofaqtquick::bindings::_sofanode_::SofaNode*");
     qRegisterMetaType<sofaqtquick::bindings::SofaNode*>("SofaNode*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaNode*>("_sofanode_::SofaNode*");
     qRegisterMetaType<sofaqtquick::bindings::SofaNodeList*>("SofaNodeList*");
+
+    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("sofaqtquick::bindings::SofaBaseObject*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("sofaqtquick::bindings::_sofaobject_::SofaBaseObject*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("SofaBaseObject*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("_sofaobject_::SofaBaseObject*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaBaseObjectList*>("SofaBaseObjectList*");
 
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
@@ -295,7 +309,6 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                                                  versionMajor, versionMinor,
                                                                  "SofaData",
                                                                  QString("It is not possible to create a Sofa.Core.SofaBaseData object"));
-
 
     qmlRegisterType<SofaNode> ("Sofa.Core.SofaNode",
                                versionMajor, versionMinor,

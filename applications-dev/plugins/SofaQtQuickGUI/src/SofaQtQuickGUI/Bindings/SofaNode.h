@@ -68,17 +68,27 @@ public:
     DAGNode* self() const { return dynamic_cast<DAGNode*>(m_self.get()); } ///< Hold are reference to the real sofa object.
     DAGNode::SPtr selfptr()const { return DAGNode::SPtr(dynamic_cast<DAGNode*>(m_self.get())); } ///< Hold are reference to the real sofa object.
 
+    [[deprecated("SofaComponent is now deprecated. Use either SofaBase, SofaNode or SofaBaseObject instead")]]
     Q_INVOKABLE sofa::qtquick::SofaComponent* toSofaComponent(sofaqtquick::SofaBaseScene* scene = nullptr); ///< legacy method to return a deprecated SofaComponent class
 
 
-    Q_INVOKABLE SofaNode* createChild(QString name);
+    Q_INVOKABLE void init() const;
+    Q_INVOKABLE void reinit() const;
 
-    Q_INVOKABLE SofaNode* getFirstParent();
-    Q_INVOKABLE SofaNode* getChild(QString name);
-    Q_INVOKABLE SofaNode* getNodeInGraph(QString name);
-    Q_INVOKABLE SofaNode* getRoot();
-    Q_INVOKABLE SofaBaseObjectList* getBaseObjects();
-    Q_INVOKABLE SofaNodeList* getChildren();
+    Q_INVOKABLE SofaBaseObject* addObject(const QString& type,
+                                             const QVariantMap& arguments);
+    Q_INVOKABLE SofaNode* addChild(QString name);
+
+    Q_INVOKABLE SofaNode* getChild(QString name) const;
+    Q_INVOKABLE void removeChild(SofaNode* node);
+    Q_INVOKABLE SofaNode* removeChildByName(const QString& name);
+
+    Q_INVOKABLE SofaNode* getRoot() const;
+    Q_INVOKABLE SofaNode* getFirstParent() const;
+    Q_INVOKABLE SofaNode* getNodeInGraph(QString name) const;
+    Q_INVOKABLE SofaNodeList* parents() const;
+    Q_INVOKABLE SofaBaseObjectList* objects() const;
+    Q_INVOKABLE SofaNodeList* children() const;
 
     /// Returns true if the underlying Base
     /// or any of its ancestors is a SofaPrefab.
@@ -94,19 +104,20 @@ public:
     Q_INVOKABLE void moveChild(SofaNode* node, SofaNode* prev_parent);
     Q_INVOKABLE void moveObject(SofaBaseObject* obj);
 
-    Q_INVOKABLE void removeChild(SofaNode* node);
     Q_INVOKABLE void removeObject(SofaBaseObject* obj);
 
-    Q_INVOKABLE SofaBaseObject* createObject(const QString& type,
-                                             const QVariantMap& arguments);
     Q_INVOKABLE SofaBaseObject* getObject(const QString& name) const;
-    Q_INVOKABLE QObject* get(const QString& path) const;
 
-    Q_INVOKABLE void init() const;
-    Q_INVOKABLE void reinit() const;
+    /// resolves a relative path from the current node, and returns whatever object matches (node, object, data, link...)
+    /// see Sofa.Core.Node.__getitem__
+    Q_INVOKABLE QObject* at(const QString& path) const;
 
-    Q_INVOKABLE QString getNextName(const QString& name);
-    Q_INVOKABLE QString getNextObjectName(const QString& name);
+    /// Returns the data structure in this SofaNode that matches this name
+    /// see Sofa.Core.Node.__getattr__
+    Q_INVOKABLE QObject* get(const QString& name) const;
+
+    Q_INVOKABLE QString getNextName(const QString& name) const;
+    Q_INVOKABLE QString getNextObjectName(const QString& name) const;
 
     static SofaNode* createFrom(sofa::core::objectmodel::Base* obj);
 
