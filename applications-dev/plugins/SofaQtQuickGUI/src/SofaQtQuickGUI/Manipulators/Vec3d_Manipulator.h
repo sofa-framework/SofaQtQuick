@@ -1,0 +1,59 @@
+#pragma once
+
+#include "Manipulator.h"
+#include <sofa/defaulttype/Vec.h>
+#include <sofa/core/visual/DrawToolGL.h>
+#include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Camera.h>
+
+namespace sofaqtquick
+{
+
+class Vec3d_Manipulator : public Manipulator
+{
+public:
+    Vec3d_Manipulator(QObject* parent = nullptr);
+
+    virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) override;
+    virtual void manipulate(const SofaViewer& viewer, QPointF mouse) const override;
+    virtual int getIndices() const override;
+    void drawXYPlane() const;
+    
+private:
+    void drawXArrow(const sofa::defaulttype::Vec3d& pos);
+    void drawYArrow(const sofa::defaulttype::Vec3d& pos);
+    void drawZArrow(const sofa::defaulttype::Vec3d& pos);
+    void drawXYPlane(const sofa::defaulttype::Vec3d& pos);
+    void drawYZPlane(const sofa::defaulttype::Vec3d& pos);
+    void drawZXPlane(const sofa::defaulttype::Vec3d& pos);
+    void drawCamPlane(const sofa::defaulttype::Vec3d& pos, bool isPicking);
+
+    float radius;
+    float lineThickness;
+    float crossSize;
+    double arrowLength;
+    double squareWidth;
+
+    sofa::core::visual::DrawToolGL drawtools;
+    bindings::SofaBase* obj;
+    sofa::Data<sofa::defaulttype::Vec3d>* data;
+    Camera* cam;
+
+    sofa::defaulttype::Vec4f highlightred;
+    sofa::defaulttype::Vec4f highlightgreen;
+    sofa::defaulttype::Vec4f highlightblue;
+    sofa::defaulttype::Vec4f highlightwhite;
+
+    sofa::defaulttype::Vec4f lightred;
+    sofa::defaulttype::Vec4f lightgreen;
+    sofa::defaulttype::Vec4f lightblue;
+
+    sofa::defaulttype::Vec4f red;
+    sofa::defaulttype::Vec4f green;
+    sofa::defaulttype::Vec4f blue;
+    sofa::defaulttype::Vec4f white;
+    sofa::defaulttype::Vec4f black;
+    sofa::defaulttype::Vec4f yellow;
+};
+
+}  // namespace sofaqtquick

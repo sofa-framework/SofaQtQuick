@@ -61,11 +61,12 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Helper/QGTest.cpp
     src/SofaQtQuickGUI/Helper/QMathExtensions.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
-    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.cpp
-    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.cpp
-    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.cpp
-    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.cpp
-    src/SofaQtQuickGUI/Manipulators/Manipulator3D_InPlaneTranslation.cpp
+    src/SofaQtQuickGUI/Manipulators/Vec3d_Manipulator.cpp
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Translation.cpp
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Rotation.cpp
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_Translation.cpp
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_Rotation.cpp
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_InPlaneTranslation.cpp
     src/SofaQtQuickGUI/Models/SofaDataListModel.cpp
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.cpp
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.cpp
@@ -144,11 +145,12 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h
     src/SofaQtQuickGUI/Manipulators/Manipulator.h
-    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h
-    src/SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h
-    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h
-    src/SofaQtQuickGUI/Manipulators/Manipulator3D_Rotation.h
-    src/SofaQtQuickGUI/Manipulators/Manipulator3D_InPlaneTranslation.h
+    src/SofaQtQuickGUI/Manipulators/Vec3d_Manipulator.h
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Translation.h
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Rotation.h
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_Translation.h
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_Rotation.h
+#    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_InPlaneTranslation.h
     src/SofaQtQuickGUI/Models/SofaDataListModel.h
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.h
