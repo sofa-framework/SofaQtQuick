@@ -20,6 +20,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
+#include <SofaQtQuickGUI/Manipulators/Vec3d_Manipulator.h>
 
 #include <sofa/simulation/Node.h>
 #include <sofa/core/visual/VisualParams.h>
@@ -609,6 +610,8 @@ sofa::core::visual::VisualParams* SofaViewer::setupVisualParams(sofa::core::visu
 
 void SofaViewer::drawManipulator(const SofaViewer& viewer) const
 {
+    static Vec3d_Manipulator manipulator;
+    mySofaScene->mySelectedManipulator = &manipulator;
     if(mySofaScene->mySelectedManipulator)
         mySofaScene->mySelectedManipulator->draw(viewer);
 }
@@ -660,7 +663,7 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
     if(doDrawSelected)
         drawSelectedComponents(this->getVisualParams()) ;
 
-    if(doDrawManipulators)
+//    if(doDrawManipulators)
         drawManipulator(*this) ;
 }
 
@@ -939,13 +942,16 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                 }
             }
 
-            if(drawManipulators() && (tags.isEmpty() || tags.contains("manipulator", Qt::CaseInsensitive)))
-                if(mySofaScene->mySelectedManipulator && mySofaScene->mySelectedManipulator->visible())
+            if (drawManipulators() && (tags.isEmpty() || tags.contains("manipulator", Qt::CaseInsensitive)))
+                if (mySofaScene->mySelectedManipulator)
                 {
-                    myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                    mySofaScene->mySelectedManipulator->pick(*this);
-
-                    index++;
+                    for (int i = 0 ; i < mySofaScene->mySelectedManipulator->getIndices() ; i++)
+                    {
+                        myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                        mySofaScene->mySelectedManipulator->pick(*this, i);
+                        std::cout << "drawing manipulator " << i << std::endl;
+                        index++;
+                    }
                 }
         }
         myPickingShaderProgram->release();
@@ -991,8 +997,11 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                         {
                             index -= forceFieldsModels.size();
 
-                            if(drawManipulators())
-                                selectable = new SelectableManipulator(*(mySofaScene->mySelectedManipulator));
+                            if(drawManipulators()) {
+                                std::cout << "PICKED manipulator" << index  << std::endl;
+
+                                selectable = new SelectableManipulator(*(mySofaScene->mySelectedManipulator), index);
+                            }
                         }
                     }
                 }

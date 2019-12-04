@@ -122,7 +122,7 @@ ColumnLayout {
                         Layout.fillHeight: true
                         readOnly: true
 
-                        text: component.getLink(modelData).getLinkedPath().trim()
+                        text: component.findLink(modelData).getLinkedPath().trim()
                     }
                     Rectangle {
                         color: "transparent"

@@ -30,21 +30,25 @@ UserInteractor_CameraMode {
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
             if(selectable && selectable.sofaComponent) {
-                    SofaApplication.selectedComponent = selectable.sofaComponent;
+                console.error("###############   A component has been picked")
+                SofaApplication.selectedComponent = selectable.sofaComponent;
             }
 
-            var selectedManipulator = SofaApplication.selectedManipulator
+            var selectedManipulator = selectable.manipulator
             if(selectedManipulator) {
+                console.error("###############   The manipulator has been picked")
                 if(selectedManipulator.mousePressed)
                     selectedManipulator.mousePressed(mouse, sofaViewer);
 
-                if(selectedManipulator.mouseMoved)
-                    setMouseMovedMapping(selectedManipulator.mouseMoved);
-
+//                if(selectedManipulator.mouseMoved)
+//                    console.error("###############   pouetpouet")
+//                    setMouseMovedMapping(selectedManipulator.mouseMoved);
+                setMouseMovedMapping(selectedManipulator.manipulate)
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
+            console.error("###############   The manipulator is released")
 
             var selectedManipulator = SofaApplication.selectedManipulator
 

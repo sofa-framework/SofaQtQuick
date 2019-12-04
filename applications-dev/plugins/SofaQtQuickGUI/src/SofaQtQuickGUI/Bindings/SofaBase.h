@@ -30,6 +30,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofaqtquick::bindings
 {
 
+namespace _sofalink_ { class SofaLink; }
+namespace _sofadata_ { class SofaData; }
+namespace _sofabase_ { class SofaBase; }
+namespace _sofanode_ { class SofaNode; }
+namespace _sofaobject_ { class SofaBaseObject; }
+
 namespace _sofabase_
 {
 
@@ -52,16 +58,24 @@ public:
     Q_INVOKABLE QString getTemplateName() const;
     Q_INVOKABLE QString getPathName() const;
 
-    /// find a data from its name, returns null if not found.
-    Q_INVOKABLE QObject* findData(const QString& name) const;
-
-    /// get a data from its name, throw an exception if not there.
-    Q_INVOKABLE QObject* getData(const QString& name) const;
     Q_INVOKABLE QStringList getDataFields() const;
 
     /// get a link from its name
-    Q_INVOKABLE QObject* getLink(const QString& name) const;
+    Q_INVOKABLE _sofalink_::SofaLink* findLink(const QString& name) const;
     Q_INVOKABLE QStringList getLinks() const;
+
+    /// Returns a data if one is found with the given name,
+    /// else a link is one is found with the given name,
+    /// else nullptr
+    /// (see python's Sofa.Core.Base.__getattr__ for more info)
+    Q_INVOKABLE QObject* get(const QString& s);
+
+    /// get a data from its name, throw an exception if not there.
+    Q_INVOKABLE _sofadata_::SofaData* getData(const QString& name) const;
+    /// find a data from its name, returns null if not found.
+    Q_INVOKABLE _sofadata_::SofaData* findData(const QString& name) const;
+
+
 
 
     /// Returns true if the underlying Base is a Node.

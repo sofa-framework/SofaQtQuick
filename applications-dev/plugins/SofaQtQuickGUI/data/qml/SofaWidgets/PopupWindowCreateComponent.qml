@@ -92,9 +92,9 @@ Popup {
             {
                 sofaNode.clearWarning()
                 if (templateName !== "")
-                    var p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text), "template" : templateName })
+                    var p=sofaNode.addObject(text, {"name" : sofaNode.getNextObjectName(text), "template" : templateName })
                 else
-                    p=sofaNode.createObject(text, {"name" : sofaNode.getNextObjectName(text) })
+                    p=sofaNode.addObject(text, {"name" : sofaNode.getNextObjectName(text) })
                 searchBar.close()
                 if(p!==null)
                 {

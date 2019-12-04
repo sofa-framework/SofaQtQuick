@@ -18,6 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "SofaSceneItemProxy.h"
+#include <QDebug>
 
 namespace sofaqtquick
 {

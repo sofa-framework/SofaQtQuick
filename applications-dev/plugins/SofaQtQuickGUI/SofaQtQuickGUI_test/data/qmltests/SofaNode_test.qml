@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import Sofa.Core.SofaFactory 1.0
 import Sofa.Core.SofaNode 1.0
+import Sofa.Core.SofaData 1.0
 import QmlGTestCase 1.0
 
 QmlGTestCase
@@ -23,22 +24,22 @@ QmlGTestCase
     function tst_createChild()
     {
         var n = SofaFactory.createNode()
-        var c = n.createChild("Child")
+        var c = n.addChild("Child")
         assert_eq(c.getData("name").value, "Child")
     }
 
     function tst_getChildren()
     {
         var n = SofaFactory.createNode()
-        var c1 = n.createChild("Child1")
-        var c2 = n.createChild("Child2")
-        assert_eq(n.getChildren().size(), 2)
+        var c1 = n.addChild("Child1")
+        var c2 = n.addChild("Child2")
+        assert_eq(n.children().size(), 2)
     }
 
     function tst_getObject()
     {
         var n = SofaFactory.createNode()
-        var o = n.createObject("MechanicalObject", {name:"test"})
+        var o = n.addObject("MechanicalObject", {name:"test"})
         assert_eq(n.getObject("test").getName(),"test")
     }
 
@@ -58,15 +59,15 @@ QmlGTestCase
     function tst_get()
     {
         var node = SofaFactory.createNode("root")
-        var node2 = node.createChild("child")
-        var o = node2.createObject("MechanicalObject", {name:"dofs"})
-        var data =  node2.get("/child/dofs.name")
+        var node2 = node.addChild("child")
+        var o = node2.addObject("MechanicalObject", {name:"dofs"})
+        var data =  node2.at("/child/dofs.name")
         assert_eq(data.getName(),"name")
         assert_eq(data.getValue(),"dofs")
-        var obj =  node2.get("/child/dofs")
+        var obj =  node2.at("/child/dofs")
         assert_eq(obj.getName(),"dofs")
         assert_eq(obj.getClassName(),"MechanicalObject")
-        var n =  node.get("/child")
+        var n =  node.get("child")
         assert_eq(n.getName(),"child")
         assert_eq(n.getClassName(),"DAGNode")
     }

@@ -48,10 +48,7 @@ namespace sofaqtquick::bindings::_sofanode_
 SofaNode* wrap(DAGNode::SPtr n)
 {
     if(n.get()==nullptr)
-    {
-        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Unable to get node.");
         return nullptr;
-    }
     return new SofaNode(n);
 }
 SofaNode* wrap(DAGNode* n)
@@ -111,7 +108,7 @@ sofa::qtquick::SofaComponent* SofaNode::toSofaComponent(sofaqtquick::SofaBaseSce
     return new sofa::qtquick::SofaComponent(scene, m_self.get());
 }
 
-SofaNode* SofaNode::createChild(QString name)
+SofaNode* SofaNode::addChild(QString name)
 {
     if (isPrefab() && !attemptToBreakPrefab())
         return nullptr;
@@ -119,27 +116,27 @@ SofaNode* SofaNode::createChild(QString name)
     return wrap(sofa::core::objectmodel::New<DAGNode>(name.toStdString(), self()));
 }
 
-SofaNode* SofaNode::getFirstParent()
+SofaNode* SofaNode::getFirstParent() const
 {
     return wrap(self()->getFirstParent());
 }
 
-SofaNode* SofaNode::getChild(QString name)
+SofaNode* SofaNode::getChild(QString name) const
 {
     return wrap(self()->getChild(name.toStdString()));
 }
 
-SofaNode* SofaNode::getNodeInGraph(QString name)
+SofaNode* SofaNode::getNodeInGraph(QString name) const
 {
     return wrap(self()->getNodeInGraph(name.toStdString()));
 }
 
-SofaNode* SofaNode::getRoot()
+SofaNode* SofaNode::getRoot() const
 {
     return wrap(self()->getRoot());
 }
 
-SofaBaseObject* SofaNode::createObject(const QString& type, const QVariantMap& arguments)
+SofaBaseObject* SofaNode::addObject(const QString& type, const QVariantMap& arguments)
 {
     if (isPrefab() && !attemptToBreakPrefab())
         return nullptr;
@@ -167,7 +164,7 @@ SofaBaseObject* SofaNode::getObject(const QString& path) const
     return new SofaBaseObject(sptr.get());
 }
 
-SofaNodeList* SofaNode::getChildren()
+SofaNodeList* SofaNode::children() const
 {
     SofaNodeList *list = new SofaNodeList();
 
@@ -179,7 +176,20 @@ SofaNodeList* SofaNode::getChildren()
     return list;
 }
 
-SofaBaseObjectList* SofaNode::getBaseObjects()
+
+SofaNodeList* SofaNode::parents() const
+{
+    SofaNodeList *list = new SofaNodeList();
+
+    for(auto& parent : self()->getParents())
+    {
+        list->addSofaNode(parent);
+    }
+
+    return list;
+}
+
+SofaBaseObjectList* SofaNode::objects() const
 {
     SofaBaseObjectList *list = new SofaBaseObjectList();
 
@@ -373,6 +383,12 @@ void SofaNode::removeChild(SofaNode* node)
 
     self()->removeChild(node->self());
 }
+SofaNode* SofaNode::removeChildByName(const QString& name)
+{
+    SofaNode* n = getChild(name);
+    removeChild(n);
+    return n;
+}
 
 void SofaNode::removeObject(SofaBaseObject* obj)
 {
@@ -431,7 +447,7 @@ SofaNode* SofaNodeFactory::createInstance(SofaBase* b)
     return wrap(b->base()->toBaseNode());
 }
 
-QString SofaNode::getNextName(const QString& name)
+QString SofaNode::getNextName(const QString& name) const
 {
     int i = 1;
     QString newname = name;
@@ -443,7 +459,7 @@ QString SofaNode::getNextName(const QString& name)
     return newname;
 }
 
-QString SofaNode::getNextObjectName(const QString& name)
+QString SofaNode::getNextObjectName(const QString& name) const
 {
     int i = 1;
     QString newname = name;
@@ -456,30 +472,125 @@ QString SofaNode::getNextObjectName(const QString& name)
     return newname;
 }
 
-QObject* SofaNode::get(const QString& path) const
+QObject* getItem(SofaBaseObject* self, const QString& name)
 {
-    /// Searching for a data if there is a "." separator.
-    if(path.contains("."))
+    if (name == "")
+        return self;
+
+    SofaData* data = self->findData(name);
+    if (data)
+        return data;
+    SofaLink* link = self->findLink(name);
+    if (link)
+        return link;
+    msg_error("Invalid Syntax");
+    return nullptr;
+}
+
+QObject* getItem(SofaNode* self, QStringList& path)
+{
+    if (path.empty())
+        return self;
+
+    if (path.size() > 2)
     {
-        /// search for the "name" data of the component (this data is always present if the component exist)
-        sofa::core::objectmodel::BaseData* data = sofaqtquick::helper::findData(self(), "@" + path);
-
-        if(!data)
+        SofaNode* child = self->getChild(path.front());
+        path.pop_front();
+        return getItem(child, path);
+    }
+    if (path.empty())
+        return self;
+    SofaNode* child = self->getChild(path.front());
+    SofaBaseObject* obj = self->getObject(path.front());
+    SofaData* data = self->findData(path.front());
+    if (child)
+    {
+        path.pop_front();
+        return getItem(child, path);
+    }
+    if (obj)
+    {
+        path.pop_front();
+        if (path.size() > 1)
+        {
+            msg_error("Invalid Syntax");
             return nullptr;
+        }
+        if (path.isEmpty())
+            return obj;
+        return getItem(obj, path.last());
+    }
+    if (data)
+        return data;
+    return nullptr; // should never get there
+}
 
-        return new SofaData(data);
+
+QObject* SofaNode::at(const QString& p) const
+{
+    QString path = p;
+    // Invalid path
+    if (path == "")
+    {
+        msg_error("Invalid path provided");
+        return nullptr;
     }
 
-    /// If this is not a data. We are searching for the data with .name. To retrive the owner.
-    sofa::core::objectmodel::BaseData* data = sofaqtquick::helper::findData(self(), "@" + path + ".name");
-    if(!data)
+    // for absolute paths, resolve relatively to root
+    if (path.startsWith("/"))
+    {
+        path.remove(0,1);
+        return this->getRoot()->at(path);
+    }
+    QStringList stringlist = path.split(".");
+    if (stringlist.empty() || stringlist.size() > 2)
+    {
+        msg_error("Invalid path provided");
         return nullptr;
+    }
+    // relative paths with a "."
+    if (stringlist.size() == 2)
+    {
+        if (stringlist.first() == "")
+        {
+            // special case node[".attr1"]
+            return getData(stringlist.last());
+        }
 
-    sofa::core::objectmodel::Base* base = data->getOwner();
-    if(!base)
+        QString s = stringlist.last();
+        stringlist = stringlist.first().split("/");
+        stringlist.push_back(s);
+    }
+    else
+    {
+        stringlist = stringlist.first().split("/");
+    }
+
+    // Guarantee there's no empty link in the path chain
+    for (const auto& string : stringlist)
+        if (string == "")
+        {
+            msg_error("Invalid path provided");
+            return nullptr;
+        }
+    // finally search for the object at the given path:
+    return getItem(new SofaNode(self()), stringlist);
+}
+
+QObject* SofaNode::get(const QString& name) const
+{
+    if (name == "")
         return nullptr;
-
-    return SofaCoreBindingFactory::wrap(base);
+    SofaNode* child = getChild(name);
+    SofaBaseObject* obj = getObject(name);
+    SofaData* data = findData(name);
+    if (child)
+        return child;
+    if (obj)
+        return obj;
+    if (data)
+        return data;
+    return nullptr; // should never get there
 }
 
 }  // namespace sofaqtquick::bindings::_sofanode_

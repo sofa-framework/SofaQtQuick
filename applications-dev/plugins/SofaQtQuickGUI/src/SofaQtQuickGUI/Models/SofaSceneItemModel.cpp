@@ -27,6 +27,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <functional>
 
 #include <QStack>
+#include <QDebug>
 #include <sofa/simulation/Visitor.h>
 #include "SofaSceneItemModel.h"
 #include "SofaSimulationGraph/DAGNode.h"

@@ -50,10 +50,11 @@ class SOFA_SOFAQTQUICKGUI_API SofaBaseApplication : public QObject
 {
     Q_OBJECT
 
-protected:
-    SofaBaseApplication(QObject* parent = nullptr);
+//protected:
+//    SofaBaseApplication(QObject* parent = nullptr);
 
 public:
+    SofaBaseApplication(QObject* parent = nullptr);
     ~SofaBaseApplication();
 
     static SofaBaseApplication* Instance();

@@ -34,6 +34,7 @@ Manipulator3D_InPlaneTranslation {
     }
 
     function mouseMoved(mouse, sofaViewer) {
+        console.log("in mouseMove!")
         if (!SofaApplication.selectedComponent)
         {
             console.log("lost selected component.....")

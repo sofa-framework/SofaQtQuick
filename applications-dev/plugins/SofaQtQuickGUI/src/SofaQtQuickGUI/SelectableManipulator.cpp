@@ -23,10 +23,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 namespace sofaqtquick
 {
 
-SelectableManipulator::SelectableManipulator(Manipulator& manipulator) : Selectable(),
+SelectableManipulator::SelectableManipulator(Manipulator& manipulator, int index) : Selectable(),
     myManipulator(&manipulator)
 {
-
+    myManipulator->setIndex(index);
 }
 
 SelectableManipulator::~SelectableManipulator()

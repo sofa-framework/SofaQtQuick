@@ -33,7 +33,7 @@ class SOFA_SOFAQTQUICKGUI_API SelectableManipulator : public Selectable
     Q_OBJECT
 
 public:
-    SelectableManipulator(Manipulator& manipulator);
+    SelectableManipulator(Manipulator& manipulator, int index);
     ~SelectableManipulator();
 
 public:
