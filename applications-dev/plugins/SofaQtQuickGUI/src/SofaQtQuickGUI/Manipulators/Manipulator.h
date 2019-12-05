@@ -23,7 +23,7 @@ public:
     void setName(const QString&);
 
     int getIndex();
-    void setIndex(int);
+    virtual void setIndex(int);
 signals:
     void nameChanged(const QString&);
     void indexChanged(int);

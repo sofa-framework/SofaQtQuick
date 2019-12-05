@@ -18,11 +18,13 @@ public:
     virtual void manipulate(const QPointF& mouse, SofaViewer* viewer) const override;
     virtual int getIndices() const override;
     
+    virtual void setIndex(int) override;
+
 private:
     void drawXAxis(const sofa::defaulttype::Vec3d& pos);
     void drawYAxis(const sofa::defaulttype::Vec3d& pos);
     void drawZAxis(const sofa::defaulttype::Vec3d& pos);
-    void drawCamAxis(const sofa::defaulttype::Vec3d& pos, bool isPicking);
+    void drawCamAxis(const sofa::defaulttype::Vec3d& pos);
 
     float radius;
     float lineThickness;
@@ -46,6 +48,7 @@ private:
     sofa::defaulttype::Vec4f green;
     sofa::defaulttype::Vec4f blue;
     sofa::defaulttype::Vec4f white;
+    sofa::defaulttype::Vec4f lightwhite;
     sofa::defaulttype::Vec4f black;
     sofa::defaulttype::Vec4f yellow;
 };

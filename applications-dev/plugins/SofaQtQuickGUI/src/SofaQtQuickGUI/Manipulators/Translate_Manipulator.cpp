@@ -221,7 +221,6 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
-
     glPopMatrix();
 }
 
