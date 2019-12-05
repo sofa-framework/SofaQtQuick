@@ -61,7 +61,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Helper/QGTest.cpp
     src/SofaQtQuickGUI/Helper/QMathExtensions.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
-    src/SofaQtQuickGUI/Manipulators/Vec3d_Manipulator.cpp
+    src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.cpp
 #    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Translation.cpp
 #    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Rotation.cpp
 #    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_Translation.cpp
@@ -145,7 +145,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h
     src/SofaQtQuickGUI/Manipulators/Manipulator.h
-    src/SofaQtQuickGUI/Manipulators/Vec3d_Manipulator.h
+    src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.h
 #    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Translation.h
 #    src/SofaQtQuickGUI/Manipulators/_Manipulator2D_Rotation.h
 #    src/SofaQtQuickGUI/Manipulators/_Manipulator3D_Translation.h

@@ -14,7 +14,7 @@ public:
     Manipulator(QObject* parent = nullptr);
 
 
-    /// The name of the manipulator (e.g. Vec3d_Manipulator)
+    /// The name of the manipulator (e.g. Translate_Manipulator)
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int index READ getIndex WRITE setIndex NOTIFY indexChanged)
 
@@ -33,7 +33,7 @@ public:
     void pick(const SofaViewer& viewer, int& pickIndex);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) = 0;
-    Q_INVOKABLE virtual void manipulate(const SofaViewer& viewer, QPointF mouse) const = 0;
+    Q_INVOKABLE virtual void manipulate(const QPointF& mouse, SofaViewer* viewer) const = 0;
     virtual int getIndices() const = 0;
 
 protected:

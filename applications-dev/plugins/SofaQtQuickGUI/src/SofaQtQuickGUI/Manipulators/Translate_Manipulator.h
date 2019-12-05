@@ -9,13 +9,13 @@
 namespace sofaqtquick
 {
 
-class Vec3d_Manipulator : public Manipulator
+class Translate_Manipulator : public Manipulator
 {
 public:
-    Vec3d_Manipulator(QObject* parent = nullptr);
+    Translate_Manipulator(QObject* parent = nullptr);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) override;
-    virtual void manipulate(const SofaViewer& viewer, QPointF mouse) const override;
+    virtual void manipulate(const QPointF& mouse, SofaViewer* viewer) const override;
     virtual int getIndices() const override;
     void drawXYPlane() const;
     

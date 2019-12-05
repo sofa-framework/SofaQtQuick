@@ -1,4 +1,4 @@
-#include "Vec3d_Manipulator.h"
+#include "Translate_Manipulator.h"
 
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
@@ -8,37 +8,56 @@ using namespace sofa::defaulttype;
 namespace sofaqtquick
 {
 
-Vec3d_Manipulator::Vec3d_Manipulator(QObject* parent)
+Translate_Manipulator::Translate_Manipulator(QObject* parent)
     : Manipulator(parent)
 {
-    m_name = "Vec3d_Manipulator";
+    m_name = "Translate_Manipulator";
+    m_index = -1;
 }
 
-void Vec3d_Manipulator::drawXArrow(const Vec3d& pos)
+void Translate_Manipulator::drawXArrow(const Vec3d& pos)
 {
     Vec3d p1 = pos + Vec3d(squareWidth, 0.0, 0.0);
     Vec3d p2 = p1 + Vec3d(arrowLength, 0.0, 0.0);
 
+    if (m_index == 0)
+    {
+        glLineWidth(1.0f);
+        drawtools.drawInfiniteLine(pos, Vec3d(1.0, 0.0, 0.0), black);
+        drawtools.drawInfiniteLine(pos, Vec3d(-1.0, 0.0, 0.0), black);
+    }
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 0 ? highlightred : red, 16);
 }
 
-void Vec3d_Manipulator::drawYArrow(const Vec3d& pos)
+void Translate_Manipulator::drawYArrow(const Vec3d& pos)
 {
     Vec3d p1 = pos + Vec3d(0.0, squareWidth, 0.0);
     Vec3d p2 = p1 + Vec3d(0.0, arrowLength, 0.0);
 
+    if (m_index == 1)
+    {
+        glLineWidth(1.0f);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 1.0, 0.0), black);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, -1.0, 0.0), black);
+    }
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 1 ? highlightgreen : green, 16);
 }
 
-void Vec3d_Manipulator::drawZArrow(const Vec3d& pos)
+void Translate_Manipulator::drawZArrow(const Vec3d& pos)
 {
     Vec3d p1 = pos + Vec3d(0.0, 0.0, squareWidth);
     Vec3d p2 = p1 + Vec3d(0.0, 0.0, arrowLength);
 
-        drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 2 ? highlightblue : blue, 16);
+    if (m_index == 2)
+    {
+        glLineWidth(1.0f);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, 1.0), black);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, -1.0), black);
+    }
+    drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 2 ? highlightblue : blue, 16);
 }
 
-void Vec3d_Manipulator::drawXYPlane(const Vec3d& pos)
+void Translate_Manipulator::drawXYPlane(const Vec3d& pos)
 {
     if (lightblue.w() != 1.0f)
     {
@@ -55,7 +74,7 @@ void Vec3d_Manipulator::drawXYPlane(const Vec3d& pos)
     drawtools.drawLineLoop({a,b,c,d}, lineThickness, blue);
 }
 
-void Vec3d_Manipulator::drawYZPlane(const Vec3d& pos)
+void Translate_Manipulator::drawYZPlane(const Vec3d& pos)
 {
     if (lightred.w() != 1.0f)
     {
@@ -73,7 +92,7 @@ void Vec3d_Manipulator::drawYZPlane(const Vec3d& pos)
     drawtools.drawLineLoop({a,b,c,d}, lineThickness, red);
 }
 
-void Vec3d_Manipulator::drawZXPlane(const Vec3d& pos)
+void Translate_Manipulator::drawZXPlane(const Vec3d& pos)
 {
     if (lightgreen.w() != 1.0f)
     {
@@ -91,7 +110,7 @@ void Vec3d_Manipulator::drawZXPlane(const Vec3d& pos)
     drawtools.drawLineLoop({a,b,c,d}, lineThickness, green);
 }
 
-void Vec3d_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
+void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
 {
     Vec3d up(double(cam->up().x()),
              double(cam->up().y()),
@@ -116,7 +135,7 @@ void Vec3d_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
     drawtools.drawSphere(pos, crossSize, yellow);
 }
 
-void Vec3d_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
+void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
     if (!obj || !obj->rawBase()) return;
@@ -134,7 +153,6 @@ void Vec3d_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bo
         }
     if (!data) return;
     Vec3d pos = data->getValue();
-//    Vec3d pos(1,1,0);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -207,10 +225,9 @@ void Vec3d_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bo
     glPopMatrix();
 }
 
-void Vec3d_Manipulator::manipulate(const SofaViewer& viewer, QPointF mouse) const
+void Translate_Manipulator::manipulate(const QPointF& mouse, SofaViewer* viewer) const
 {
-    std::cout << "Manipulating " << m_index << std::endl;
-    Camera* cam = viewer.camera();
+    Camera* cam = viewer->camera();
     if (!cam) return;
 
         bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
@@ -229,48 +246,47 @@ void Vec3d_Manipulator::manipulate(const SofaViewer& viewer, QPointF mouse) cons
             }
         if (!data) return;
         Vec3d pos = data->getValue();
-//    Vec3d pos(1,1,0);
     QVector3D translated;
     switch (m_index)
     {
     case 0: // only move along X axis
-        translated = viewer.projectOnLine(mouse, QVector3D(float(pos.x()),
+        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                            float(pos.y()),
                                                            float(pos.z())),
                                           QVector3D(1,0,0));
         break;
     case 1: // only move along Y axis
-        translated = viewer.projectOnLine(mouse, QVector3D(float(pos.x()),
+        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                            float(pos.y()),
                                                            float(pos.z())),
-                                          QVector3D(1,0,0));
+                                          QVector3D(0,1,0));
         break;
     case 2: // only move along Z axis
-        translated = viewer.projectOnLine(mouse, QVector3D(float(pos.x()),
+        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                            float(pos.y()),
                                                            float(pos.z())),
-                                          QVector3D(1,0,0));
+                                          QVector3D(0,0,1));
         break;
     case 3: // only move along XY plane
-        translated = viewer.projectOnPlane(mouse, QVector3D(float(pos.x()),
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            QVector3D(0,0,1));
         break;
     case 4: // only move along YZ plane
-        translated = viewer.projectOnPlane(mouse, QVector3D(float(pos.x()),
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            QVector3D(1,0,0));
         break;
     case 5: // only move along ZX plane
-        translated = viewer.projectOnPlane(mouse, QVector3D(float(pos.x()),
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            QVector3D(0,1,0));
         break;
     case 6: // only move along Camera plane
-        translated = viewer.projectOnPlane(mouse, QVector3D(float(pos.x()),
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            cam->direction());
@@ -279,7 +295,7 @@ void Vec3d_Manipulator::manipulate(const SofaViewer& viewer, QPointF mouse) cons
     data->setValue(Vec3d(double(translated.x()), double(translated.y()), double(translated.z())));
 }
 
-int Vec3d_Manipulator::getIndices() const
+int Translate_Manipulator::getIndices() const
 {
     return 7;
 }

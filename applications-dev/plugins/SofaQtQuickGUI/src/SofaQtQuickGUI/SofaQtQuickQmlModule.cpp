@@ -23,8 +23,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/Camera.h>
 #include <SofaQtQuickGUI/SofaParticleInteractor.h>
 //#include <SofaQtQuickGUI/SofaPythonInteractor.h>
-#include <SofaQtQuickGUI/Manipulators/Vec3d_Manipulator.h>
-using sofaqtquick::Vec3d_Manipulator;
+#include <SofaQtQuickGUI/Manipulators/Translate_Manipulator.h>
+using sofaqtquick::Translate_Manipulator;
 //#include <SofaQtQuickGUI/Manipulators/Manipulator2D_Translation.h>
 //#include <SofaQtQuickGUI/Manipulators/Manipulator2D_Rotation.h>
 //#include <SofaQtQuickGUI/Manipulators/Manipulator3D_Translation.h>
@@ -256,11 +256,13 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("_sofaobject_::SofaBaseObject*");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObjectList*>("SofaBaseObjectList*");
 
+    qRegisterMetaType<SofaViewer*>("SofaViewer*");
+
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     //    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
-    qmlRegisterType<Vec3d_Manipulator>                              ("Vec3d_Manipulator"                    , versionMajor, versionMinor, "Vec3d_Manipulator");
+    qmlRegisterType<Translate_Manipulator>                              ("Translate_Manipulator"                    , versionMajor, versionMinor, "Translate_Manipulator");
 //    qmlRegisterType<Manipulator2D_Translation>                      ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");
 //    qmlRegisterType<Manipulator2D_Rotation>                         ("Manipulator2D_Rotation"               , versionMajor, versionMinor, "Manipulator2D_Rotation");
 //    qmlRegisterType<Manipulator3D_Translation>                      ("Manipulator3D_Translation"            , versionMajor, versionMinor, "Manipulator3D_Translation");

@@ -39,6 +39,7 @@ SpinBox 1.0 SpinBox.qml
 DoubleSpinBox 1.0 DoubleSpinBox.qml
 CheckBox 1.0 CheckBox.qml
 Button 1.0 Button.qml
+IconComboBox 1.0 IconComboBox.qml
 ComboBox 1.0 ComboBox.qml
 GroupBox 1.0 GroupBox.qml
 ToolButton 1.0 ToolButton.qml
