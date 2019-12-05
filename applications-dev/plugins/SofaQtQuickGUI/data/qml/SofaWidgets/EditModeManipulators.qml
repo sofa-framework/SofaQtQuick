@@ -18,11 +18,6 @@ Column {
     anchors.topMargin: 20
     
     property var selectedComponent: SofaApplication.selectedComponent
-    onSelectedComponentChanged: {
-        console.log("NYANYANYA")
-        if (SofaApplication.selectedComponent === null)
-            SofaApplication.sofaScene.selectedManipulator = null
-    }
     
     function getManipulator(manipulatorString) {
         var manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")

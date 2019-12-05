@@ -292,6 +292,13 @@ void Translate_Manipulator::manipulate(const QPointF& mouse, SofaViewer* viewer)
                                            cam->direction());
         break;
     };
+
+    // It's easy to overflow when translating along axis that is almost
+    // parallel to camera direction....
+    for (int i = 0 ; i < 3 ; ++i)
+        if (isnan(translated[i]) || isinf(translated[i]))
+            translated[i] = pos[i];
+
     data->setValue(Vec3d(double(translated.x()), double(translated.y()), double(translated.z())));
 }
 

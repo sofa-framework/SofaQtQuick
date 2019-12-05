@@ -58,8 +58,10 @@ ColumnLayout {
                 componentSignaler.isActive = running
                 if(!running){
                     signallingAnimation.stop()
-                    if(componentSignaler.component)
+                    if(componentSignaler.component) {
+                        console.error("sofaSceneGraphView: " + componentSignaler.component)
                        sofaScene.selectedComponent = componentSignaler.component
+                    }
                 }
             }
         }
@@ -161,8 +163,10 @@ ColumnLayout {
                     return;
 
                 var sofaComponent = listModel.getComponentById(listView.currentIndex);
-                if(sofaComponent)
+                if(sofaComponent) {
+                    console.error("sofaSceneGraphView sofaCompoennt: " + sofaComponent)
                     sofaScene.selectedComponent = sofaComponent;
+                }
             }
 
             onCountChanged: {

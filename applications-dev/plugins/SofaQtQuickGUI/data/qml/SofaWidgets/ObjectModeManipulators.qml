@@ -16,21 +16,13 @@ Column {
     anchors.top: parent.top
     anchors.leftMargin: 20
     anchors.topMargin: 20
-    
-    property var selectedComponent: SofaApplication.selectedComponent
-    onSelectedComponentChanged: {
-        if (SofaApplication.selectedComponent === null)
-            SofaApplication.selectedManipulator = getManipulator(translateRect.manipulatorName)
-
-    }
-    
+        
     function getManipulator(manipulatorString) {
         var manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
         if (manipulator.status === Component.Ready)
         {
             console.log("Created Manipulator with name " + manipulatorString)
             var m = manipulator.createObject()
-            console.log("Created Manipulator with name " + m.name)
             return m
         }
         console.log("Cant create Manipulator with name " + manipulatorString)
@@ -45,8 +37,6 @@ Column {
         property bool selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
         
         function setManipulator() {
-            if (!SofaApplication.selectedComponent)
-                return;
             SofaApplication.selectedManipulator = manipulatorControls.getManipulator(manipulatorName)
         }
         

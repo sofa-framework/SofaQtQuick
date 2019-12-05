@@ -320,7 +320,9 @@ Item {
                                     }
                                     else {
                                         var rootNode = sofaApplication.sofaScene.root()
-                                        SofaApplication.selectedComponent = insertAsset(index, rootNode)
+                                        var insertedAsset = insertAsset(index, rootNode)
+                                        console.error("SelectedCompoennt insertAsset: " + insertedAsset)
+                                        SofaApplication.selectedComponent = insertedAsset
                                     }
                                 }
                             }
