@@ -79,4 +79,56 @@ Column {
             description: "Translates the selected item\n Shortcut: Shift+Space, G"
         }
     }
+
+
+
+    Rectangle {
+        id: rotateRect
+        property string manipulatorName: "Rotate_Manipulator"
+
+        property bool selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
+
+        function setManipulator() {
+            SofaApplication.selectedManipulator = manipulatorControls.getManipulator(manipulatorName)
+        }
+
+        implicitHeight: 30
+        implicitWidth: 30
+        color: "transparent"
+        Rectangle {
+            anchors.fill: parent
+            color: rotateRect.selected ? "#8888ff" : "white"
+            opacity: rotateRect.selected ? 0.7 : rotateMarea.containsMouse ? 0.2 : 0.1
+        }
+
+        Image {
+            anchors.centerIn: parent
+            source: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
+            scale: 1.2
+            opacity: 0.9
+        }
+
+        MouseArea {
+            id: rotateMarea
+            anchors.fill: parent
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton
+
+            onClicked: {
+                rotateRect.setManipulator()
+            }
+            Shortcut {
+                context: Qt.ApplicationShortcut
+                sequence: "Shift+Space, R";
+                onActivated: {
+                    rotateRect.setManipulator()
+                }
+            }
+        }
+        ToolTip {
+            visible: rotateMarea.containsMouse
+            text: "Rotate"
+            description: "Rotates the selected item\n Shortcut: Shift+Space, R"
+        }
+    }
 }

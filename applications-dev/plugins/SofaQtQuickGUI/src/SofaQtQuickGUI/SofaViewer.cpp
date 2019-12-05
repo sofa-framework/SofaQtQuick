@@ -610,8 +610,6 @@ sofa::core::visual::VisualParams* SofaViewer::setupVisualParams(sofa::core::visu
 
 void SofaViewer::drawManipulator(const SofaViewer& viewer) const
 {
-    static Translate_Manipulator manipulator;
-    mySofaScene->mySelectedManipulator = &manipulator;
     if(mySofaScene->mySelectedManipulator)
         mySofaScene->mySelectedManipulator->draw(viewer);
 }
