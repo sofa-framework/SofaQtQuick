@@ -135,22 +135,21 @@ void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
     drawtools.drawSphere(pos, crossSize, yellow);
 }
 
-void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
+sofa::Data<Vec3d>* Translate_Manipulator::getData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
-    if (!obj || !obj->rawBase()) return;
-
+    if (!obj || !obj->rawBase()) return nullptr;
     /// @bmarques TODO: We need a way to select a default data field to manipulate
     /// Then we'll also need a way to manually pick which datafield we want to manipulate
-    /// Currently, let's just go through all datafields of the object,
-    /// and select whichever Vec3d comes first...
-    sofa::Data<Vec3d>* data = nullptr;
     for (auto& d : obj->rawBase()->getDataFields())
-        if (d->getValueTypeString() == "Vec3d")
-        {
-            data = dynamic_cast<sofa::Data<Vec3d>*>(d);
-            break;
-        }
+        if (d->getValueTypeString() == "Vec3d" && (d->getName() == "translation" || d->getName() == "position"))
+            return dynamic_cast<sofa::Data<Vec3d>*>(d);
+    return nullptr;
+}
+
+void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
+{
+    data = getData();
     if (!data) return;
     Vec3d pos = data->getValue();
 
@@ -236,13 +235,7 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         /// Then we'll also need a way to manually pick which datafield we want to manipulate
         /// Currently, let's just go through all datafields of the object,
         /// and select whichever Vec3d comes first...
-        sofa::Data<Vec3d>* data = nullptr;
-        for (auto& d : obj->rawBase()->getDataFields())
-            if (d->getValueTypeString() == "Vec3d")
-            {
-                data = dynamic_cast<sofa::Data<Vec3d>*>(d);
-                break;
-            }
+        data = getData();
         if (!data) return;
         Vec3d pos = data->getValue();
     QVector3D translated;

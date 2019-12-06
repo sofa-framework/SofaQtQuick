@@ -149,7 +149,7 @@ UserInteractor {
             if(selectable && selectable.manipulator) {
                 var manipulator = SofaApplication.selectedManipulator = selectable.manipulator
                 if(manipulator.mousePressed)
-                    manipulator.mousePressed(mouse, sofaViewer);
+                    manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
                 if(manipulator.mouseMoved)
                     setMouseMovedMapping(manipulator.mouseMoved)
@@ -161,7 +161,7 @@ UserInteractor {
 
             if (manipulator) {
                 if(manipulator.mouseReleased)
-                    manipulator.mouseReleased(mouse, sofaViewer);
+                    manipulator.mouseReleased(Qt.point(mouse.x, mouse.y), sofaViewer);
                 manipulator.index = -1;
             }
             setMouseMovedMapping(null);
