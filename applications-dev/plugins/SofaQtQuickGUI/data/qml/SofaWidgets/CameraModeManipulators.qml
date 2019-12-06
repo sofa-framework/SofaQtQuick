@@ -17,14 +17,6 @@ Column {
     anchors.top: parent.top
     anchors.leftMargin: 20
     anchors.topMargin: 20
-    
-    visible: SofaApplication.getInteractorName(SofaApplication.interactorComponent) !== "CameraMode"
-    property var selectedComponent: SofaApplication.selectedComponent
-    onSelectedComponentChanged: {
-        console.log("NYANYANYA")
-        if (SofaApplication.selectedComponent === null)
-            SofaApplication.sofaScene.selectedManipulator = null
-    }
 
     function addManipulator(manipulatorString) {
         var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorString)

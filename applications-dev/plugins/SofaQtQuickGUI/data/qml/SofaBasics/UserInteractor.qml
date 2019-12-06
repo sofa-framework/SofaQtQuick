@@ -103,7 +103,7 @@ QtObject {
     function mouseMoved(mouse, sofaViewer) {
         var binding = mouseMovedMapping;
         if(binding)
-            binding(mouse, sofaViewer);
+            binding(Qt.point(Math.floor(mouse.x), Math.floor(mouse.y)), sofaViewer);
     }
 
     function keyPressed(event, sofaViewer) {

@@ -220,41 +220,23 @@ EditView
         onTriggered: root.viewAll()
     }
 
+//    Image {
+//        id: handIcon
+//        source: "qrc:/icon/hand.png"
+//        visible: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor.interacting : false
+//        antialiasing: true
 
-    // interactor
-    property alias interactor: interactorLoader.item
-    property Component interactorComponent: SofaApplication.interactorComponent
-    onInteractorComponentChanged: {
-        console.log("interactor component changed")
-    }
-
-    Loader {
-        id: interactorLoader
-        sourceComponent: root.interactorComponent
-        //            source: "qrc:/SofaInteractors/UserInteractor_MoveCamera.qml"
-        onLoaded: {
-            var interactor = item;
-            interactor.init();
-        }
-    }
-
-    Image {
-        id: handIcon
-        source: "qrc:/icon/hand.png"
-        visible: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor.interacting : false
-        antialiasing: true
-
-        Connections {
-            target: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor : null
-            onInteractorPositionChanged: {
-                var position = root.mapFromWorld(sofaScene.sofaParticleInteractor.interactorPosition)
-                if(position.z > 0.0 && position.z < 1.0) {
-                    handIcon.x = position.x - 6;
-                    handIcon.y = position.y - 2;
-                }
-            }
-        }
-    }
+//        Connections {
+//            target: sofaScene && sofaScene.sofaParticleInteractor ? sofaScene.sofaParticleInteractor : null
+//            onInteractorPositionChanged: {
+//                var position = root.mapFromWorld(sofaScene.sofaParticleInteractor.interactorPosition)
+//                if(position.z > 0.0 && position.z < 1.0) {
+//                    handIcon.x = position.x - 6;
+//                    handIcon.y = position.y - 2;
+//                }
+//            }
+//        }
+//    }
 
     // mouse interaction forwarding to the interactor
     property alias mouseArea: mouseArea
@@ -263,46 +245,40 @@ EditView
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
         enabled: sofaScene && sofaScene.ready
-        hoverEnabled: root.interactor ? root.interactor.hoverEnabled : false
+        hoverEnabled: SofaApplication.interactorComponent.hoverEnabled
         preventStealing: true
 
         onClicked: {
             forceActiveFocus();
 
-            if(root.interactor)
-                root.interactor.mouseClicked(mouse, root);
+            SofaApplication.interactorComponent.mouseClicked(mouse, root);
 
         }
 
         onDoubleClicked: {
             forceActiveFocus();
 
-            if(root.interactor)
-                root.interactor.mouseDoubleClicked(mouse, root);
+            SofaApplication.interactorComponent.mouseDoubleClicked(mouse, root);
         }
 
         onPressed: {
             forceActiveFocus();
 
-            if(root.interactor)
-                root.interactor.mousePressed(mouse, root);
+            SofaApplication.interactorComponent.mousePressed(mouse, root);
         }
 
         onReleased: {
-            if(root.interactor)
-                root.interactor.mouseReleased(mouse, root);
+            SofaApplication.interactorComponent.mouseReleased(mouse, root);
         }
 
         onWheel: {
-            if(root.interactor)
-                root.interactor.mouseWheel(wheel, root);
+            SofaApplication.interactorComponent.mouseWheel(wheel, root);
 
             wheel.accepted = true;
         }
 
         onPositionChanged: {
-            if(root.interactor)
-                root.interactor.mouseMoved(mouse, root);
+            SofaApplication.interactorComponent.mouseMoved(mouse, root);
         }
     }
 
@@ -313,8 +289,7 @@ EditView
             return;
         }
 
-        if(root.interactor)
-            root.interactor.keyPressed(event, root);
+        SofaApplication.interactorComponent.keyPressed(event, root);
 
         event.accepted = true;
     }
@@ -325,8 +300,7 @@ EditView
             return;
         }
 
-        if(root.interactor)
-            root.interactor.keyReleased(event, root);
+        SofaApplication.interactorComponent.keyReleased(event, root);
 
         event.accepted = true;
     }
@@ -1172,19 +1146,37 @@ EditView
         }
     }
 
+    IconComboBox {
+        id: modes
+        model: ListModel {
+            id: listmodel
+            ListElement {
+                name: "Object Mode"
+                image: "qrc:/icon/ICON_OBJECT_MODE.png"
+            }
+            ListElement {
+                name: "Edit Mode"
+                image: "qrc:/icon/ICON_EDIT_MODE.png"
+            }
+        }
+        onCurrentIndexChanged: {
+            switch (currentIndex) {
+            case 0:
+                manipulatorLoader.sourceComponent = objectmodeManipulators
+                break;
+            case 1:
+                manipulatorLoader.sourceComponent = editmodeManipulators
+                break;
+            default:
+                manipulatorLoader.sourceComponent = objectmodeManipulators
+            }
+
+        }
+    }
+
     Loader {
         id: manipulatorLoader
-        sourceComponent: {
-            console.log(SofaApplication.getInteractorName(interactorComponent))
-            if (SofaApplication.getInteractorName(interactorComponent) === "CameraMode")
-                return cameramodeManipulators
-            else if (SofaApplication.getInteractorName(interactorComponent) === "ObjectMode")
-                return objectmodeManipulators
-            else if (SofaApplication.getInteractorName(interactorComponent) === "EditMode")
-                return editmodeManipulators
-            else
-                return null
-        }
+        sourceComponent: objectmodeManipulators
     }
 
     Component {
@@ -1195,10 +1187,5 @@ EditView
     Component {
         id: editmodeManipulators
         EditModeManipulators {}
-    }
-
-    Component {
-        id: cameramodeManipulators
-        CameraModeManipulators {}
     }
 }

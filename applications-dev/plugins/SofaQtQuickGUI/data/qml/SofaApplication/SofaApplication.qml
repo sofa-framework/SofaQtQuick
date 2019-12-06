@@ -31,6 +31,8 @@ import SofaViewListModel 1.0
 import SofaProject 1.0
 import GraphView 1.0
 import SofaBaseScene 1.0
+import SofaInteractors 1.0
+import SofaBasics 1.0
 
 Item //
 {
@@ -46,7 +48,9 @@ Item //
 
     property var selectedManipulator : sofaScene.selectedManipulator
     onSelectedManipulatorChanged: {
-        sofaScene.selectedManipulator = selectedManipulator
+        if (selectedManipulator !== null) {
+            sofaScene.selectedManipulator = selectedManipulator
+        }
     }
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {
@@ -350,119 +354,9 @@ Item //
 
     ////////////////////////////////////////////////// INTERACTOR
 
-    property string defaultInteractorName: "CameraMode"
-    readonly property string interactorName: {
-        if(interactorComponent)
-        for(var key in interactorComponentMap)
-        if(interactorComponentMap.hasOwnProperty(key) && interactorComponent === interactorComponentMap[key])
-        return key;
-
-        return "";
-    }
-
-    property Component interactorComponent: null
-    property var interactorComponentMap: []
-
-    function getInteractorName(component) {
-        for(var key in interactorComponentMap)
-            if(interactorComponentMap.hasOwnProperty(key))
-                if(component === interactorComponentMap[key])
-                    return key;
-
-        return "";
-    }
-
-    function addInteractor(name, component) {
-        interactorComponentMap[name] = component;
-
-        interactorComponentMapChanged(interactorComponentMap);
-    }
-
-    function removeInteractor(component) {
-        for(var key in interactorComponentMap) {
-            if(interactorComponentMap.hasOwnProperty(key)) {
-                if(component === interactorComponentMap[key]) {
-                    delete interactorComponentMap[key];
-
-                    interactorComponentMapChanged(interactorComponentMap);
-
-                    return;
-                }
-            }
-        }
-    }
-
-    function removeInteractorByName(name) {
-        var component = interactorComponentMap[name];
-        if(!component)
-            return;
-
-        delete interactorComponentMap[name];
-
-        interactorComponentMapChanged(interactorComponentMap);
-    }
-
-    function clearInteractors() {
-        interactorComponentMap = [];
-    }
-
-    // init interactorComponentMap at startup
-    property var interactorFolderListModel: FolderListModel {
-        id: interactorFolderListModel
-        nameFilters: ["*.qml"]
-        showDirs: false
-        showFiles: false
-        sortField: FolderListModel.Name
-        folder: "qrc:/SofaInteractors"
-
-        property var delayedUpdateTimer: Timer {
-            interval: 1
-            repeat: false
-            running: true
-            onTriggered: interactorFolderListModel.showFiles = true;
-        }
-
-        onCountChanged: update();
-
-        property var sceneConnections: Connections {
-            target: root.sofaScene
-            onReadyChanged: if(root.sofaScene.ready) interactorFolderListModel.refresh();
-        }
-
-        function refresh() {
-            showFiles = false;
-            showFiles = true;
-        }
-
-        function update() {
-            root.clearInteractors();
-
-            var interactorComponentMap = [];
-            for(var i = 0; i < count; ++i)
-            {
-                var fileBaseName = get(i, "fileBaseName");
-                var filePath = get(i, "filePath").toString();
-                if(-1 !== folder.toString().indexOf("qrc:"))
-                    filePath = "qrc" + filePath;
-
-                var name = fileBaseName.slice(fileBaseName.indexOf("_") + 1);
-                var interactorComponent = Qt.createComponent(filePath);
-                interactorComponentMap[name] = interactorComponent;
-            }
-
-            if(null === root.interactorComponent)
-                if(interactorComponentMap.hasOwnProperty(root.defaultInteractorName))
-                    root.interactorComponent = interactorComponentMap[root.defaultInteractorName];
-
-            if(null === root.interactorComponent)
-                for(var key in interactorComponentMap)
-                    if(interactorComponentMap.hasOwnProperty(key)) {
-                        root.interactorComponent = interactorComponentMap[key];
-                        break;
-                    }
-
-            root.interactorComponentMap = interactorComponentMap;
-        }
+    property UserInteractor interactorComponent: UserInteractor_CameraMode {
+        id: interactor
+        Component.onCompleted: interactor.init()
     }
 
     ////////////////////////////////////////////////// SCREENSHOT

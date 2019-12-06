@@ -3,14 +3,21 @@ import SofaApplication 1.0
 import CustomInspectorWidgets 1.0
 
 CustomInspector {
-    component: SofaApplication.selectedComponent
+    property var component: SofaApplication.selectedComponent
     onComponentChanged: {
-        if (!component)
+        console.log("selectedcomponentchanged")
+        if (!SofaApplication.selectedComponent)
             return;
+        if (component !== SofaApplication.selectedComponent) {
+            component = SofaApplication.selectedComponent;
+            return;
+        }
+
         var dataMap = {}
-        for (var idx in component.getDataFields()) {
-            var dataName = component.getDataFields()[idx]
-            var data = component.getData(dataName)
+        console.error(SofaApplication.selectedComponent)
+        for (var idx in SofaApplication.selectedComponent.getDataFields()) {
+            var dataName = SofaApplication.selectedComponent.getDataFields()[idx]
+            var data = SofaApplication.selectedComponent.getData(dataName)
             if (data.properties.displayed || dataName === "gravity" || dataName === "bbox") {
                 if (data.properties.readOnly && showAll == false)
                     continue
@@ -30,8 +37,8 @@ CustomInspector {
         }
         dataDict = dataMap
 
-        for (idx in component.getLinks()) {
-            var linkName = component.getLinks()[idx]
+        for (idx in SofaApplication.selectedComponent.getLinks()) {
+            var linkName = SofaApplication.selectedComponent.getLinks()[idx]
             linkList.push(linkName)
         }
     }

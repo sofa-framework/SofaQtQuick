@@ -12,10 +12,9 @@ ColumnLayout {
     spacing: 10
 
     property var showAll: true
-    property var component: SofaApplication.selectedComponent
     property var dataDict: {"Base": ["name", "componentState", "printLog"]}
     property var linkList: []
-    property var infosDict: {"class":component.getClassName(), "name": component.getName()}
+    property var infosDict: {"class":SofaApplication.selectedComponent.getClassName(), "name": SofaApplication.selectedComponent.getName()}
     onDataDictChanged: {
         groupRepeater.model = Object.keys(dataDict).length
     }
@@ -37,7 +36,7 @@ ColumnLayout {
 
                     RowLayout {
                         id: sofaDataLayout
-                        property var sofaData: modelData ? component.getData(modelData) : null
+                        property var sofaData: modelData ? SofaApplication.selectedComponent.getData(modelData) : null
 
                         Label {
                             Layout.minimumWidth: root.labelWidth
@@ -122,7 +121,7 @@ ColumnLayout {
                         Layout.fillHeight: true
                         readOnly: true
 
-                        text: component.findLink(modelData).getLinkedPath().trim()
+                        text: SofaApplication.selectedComponent.findLink(modelData).getLinkedPath().trim()
                     }
                     Rectangle {
                         color: "transparent"

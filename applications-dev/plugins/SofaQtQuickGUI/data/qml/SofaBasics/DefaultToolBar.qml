@@ -58,35 +58,35 @@ ToolBar {
         ToolSeparator {
             anchors.verticalCenter: parent.verticalCenter
         }
-        IconComboBox {
-            id: iteractors
-            anchors.verticalCenter: parent.verticalCenter
-            model: ListModel {
-                id: listmodel
-                ListElement {
-                    name: "Camera Mode"
-                    image: "qrc:/icon/ICON_CAMERA_MODIFIER.png"
-                    interactor: "CameraMode"
-                }
-                ListElement {
-                    name: "Object Mode"
-                    image: "qrc:/icon/ICON_OBJECT_MODE.png"
-                    interactor: "ObjectMode"
-                }
-                ListElement {
-                    name: "Edit Mode"
-                    image: "qrc:/icon/ICON_EDIT_MODE.png"
-                    interactor: "EditMode"
-                }
-            }
-            onCurrentIndexChanged: {
-                if (currentIndex < 0)
-                    return
-                if (SofaApplication.interactorComponentMap.length == 0)
-                    SofaApplication.interactorFolderListModel.update()
-                SofaApplication.interactorComponent = SofaApplication.interactorComponentMap[listmodel.get(currentIndex).interactor]
-            }
-        }
+//        IconComboBox {
+//            id: iteractors
+//            anchors.verticalCenter: parent.verticalCenter
+//            model: ListModel {
+//                id: listmodel
+//                ListElement {
+//                    name: "Camera Mode"
+//                    image: "qrc:/icon/ICON_CAMERA_MODIFIER.png"
+//                    interactor: "CameraMode"
+//                }
+////                ListElement {
+////                    name: "Object Mode"
+////                    image: "qrc:/icon/ICON_OBJECT_MODE.png"
+////                    interactor: "ObjectMode"
+////                }
+////                ListElement {
+////                    name: "Edit Mode"
+////                    image: "qrc:/icon/ICON_EDIT_MODE.png"
+////                    interactor: "EditMode"
+////                }
+//            }
+//            onCurrentIndexChanged: {
+//                if (currentIndex < 0)
+//                    return
+//                if (SofaApplication.interactorComponentMap.length == 0)
+//                    SofaApplication.interactorFolderListModel.update()
+//                SofaApplication.interactorComponent = SofaApplication.interactorComponentMap[listmodel.get(currentIndex).interactor]
+//            }
+//        }
 
         Row {
             id: simulationControlTools

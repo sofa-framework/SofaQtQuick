@@ -215,6 +215,7 @@ Rectangle {
             {
                 var srcIndex = sceneModel.mapToSource(currentIndex)
                 var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                console.error("SelectedCompoennt theComponent: " + theComponent)
                 SofaApplication.selectedComponent = theComponent
                 SofaApplication.currentProject.selectedAsset = null
             }
@@ -538,6 +539,7 @@ Rectangle {
                         var c = getFirstChildWithMessage(index)
                         var idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(c))
                         treeView.expandAncestors(idx)
+                        console.error("SelectedCompoennt c: " + c)
                         SofaApplication.selectedComponent = c;
                         treeView.__listView.positionViewAtIndex(index, "EnsureVisible")
 
@@ -649,6 +651,7 @@ Rectangle {
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {
+                        console.error("SelectedCompoennt theComponent2: " + theComponent)
                         SofaApplication.selectedComponent = theComponent
                         SofaApplication.currentProject.selectedAsset = null
 

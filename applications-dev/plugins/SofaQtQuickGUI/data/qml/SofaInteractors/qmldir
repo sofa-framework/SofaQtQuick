@@ -1,3 +1,1 @@
-UserInteractor_MoveCamera 1.0 UserInteractor_MoveCamera.qml
-UserInteractor_Selection 1.0 UserInteractor_Selection.qml
-UserInteractor_SofaParticleInteractor 1.0 UserInteractor_SofaParticleInteractor.qml
+UserInteractor_CameraMode 1.0 UserInteractor_CameraMode.qml
