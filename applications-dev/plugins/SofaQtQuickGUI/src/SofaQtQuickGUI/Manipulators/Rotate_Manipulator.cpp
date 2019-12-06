@@ -20,31 +20,37 @@ Rotate_Manipulator::Rotate_Manipulator(QObject* parent)
 void Rotate_Manipulator::drawXAxis(const Vec3d& pos)
 {
     Quatd orientation(0, 1, 0, 90);
-    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     glTranslated(pos.x(), pos.y(), pos.z());
+    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     if (m_index == 0)
         drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightred : red);
+    glRotated(-orientation[3], orientation[0], orientation[1], orientation[2]);
+    glTranslated(-pos.x(), -pos.y(), -pos.z());
 }
 
 void Rotate_Manipulator::drawYAxis(const Vec3d& pos)
 {
-    Quatd orientation(1, 0, 0, 90);
-    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
+    Quatd orientation(1, 0, 0, -90);
     glTranslated(pos.x(), pos.y(), pos.z());
+    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     if (m_index == 1)
         drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightgreen : green);
+    glRotated(-orientation[3], orientation[0], orientation[1], orientation[2]);
+    glTranslated(-pos.x(), -pos.y(), -pos.z());
 }
 
 void Rotate_Manipulator::drawZAxis(const Vec3d& pos)
 {
     Quatd orientation(1, 0, 0, 0);
-    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     glTranslated(pos.x(), pos.y(), pos.z());
+    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     if (m_index == 2)
         drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightblue : blue);
+    glRotated(-orientation[3], orientation[0], orientation[1], orientation[2]);
+    glTranslated(-pos.x(), -pos.y(), -pos.z());
 }
 
 void Rotate_Manipulator::drawCamAxis(const Vec3d& pos)
@@ -52,7 +58,7 @@ void Rotate_Manipulator::drawCamAxis(const Vec3d& pos)
     QQuaternion o = cam->orientation();
     Quaternion orientation = Quaternion(o.x(), o.y(), o.z(), o.scalar()) * Quaternion(1,0,0, M_PI);
     glRotated(orientation[3] * 180.0 / M_PI, orientation[0], orientation[1], orientation[2]);
-    glTranslated(pos.x(), pos.y(), pos.z());
+//    glTranslated(pos.x(), pos.y(), pos.z());
     if (m_index == 3)
         drawtools.drawDisk(radius * 1.2f, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius * 1.2f, lineThickness, resolution, m_index == 3 ? highlightwhite : white);
@@ -94,6 +100,7 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     if (!posData) return;
 
     Vec3d pos = posData->getValue();
+    QVector3D center(pos.x(), pos.y(), pos.z());
 
     float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width(), viewer.height()),
                                                   QVector3D(float(pos.x()), float(pos.y()), float(pos.z())),
@@ -125,6 +132,10 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     /// Doing the actual drawing...:
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
 
@@ -133,45 +144,70 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
+    if (pickIndex == -1 || pickIndex == 3)
+    {
+        QVector4D position = cam->projection() * cam->view() * QVector4D(center, 1.0);
+        position = position / position.w();
+        QVector4D themouse = cam->projection() * cam->view() * QVector4D(mCam, 1.0);
+        themouse = themouse / themouse.w();
+        themouse = themouse - position;
+        glTranslatef(position.x(), position.y(), position.z());
+        glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
+        float camradius = 0.24f;
+        if (m_index == 3)
+            drawtools.drawDisk(camradius * 1.2f, _from, _to, resolution, lightwhite);
+        drawDottedLine(Vec3d(0,0,0),
+                       Vec3d(themouse.x(), themouse.y(), themouse.z()),
+                       3, 0xAAAA, lineThickness, white);
+
+        drawtools.drawCircle(camradius * 1.2f, lineThickness, resolution, m_index == 2 ? highlightwhite : white);
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+
     if (pickIndex == -1 || pickIndex == 0)
     {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
         drawXAxis(pos);
         drawDottedLine(pos, Vec3d(mX.x(), mX.y(), mX.z()), 3, 0xAAAA, lineThickness, white);
-        glPopMatrix();
     }
 
     if (pickIndex == -1 || pickIndex == 1)
     {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
         drawYAxis(pos);
         drawDottedLine(pos, Vec3d(mY.x(), mY.y(), mY.z()), 3, 0xAAAA, lineThickness, white);
-        glPopMatrix();
     }
 
     if (pickIndex == -1 || pickIndex == 2)
     {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
         drawZAxis(pos);
         drawDottedLine(pos, Vec3d(mZ.x(), mZ.y(), mZ.z()), 3, 0xAAAA, lineThickness, white);
-        glPopMatrix();
     }
 
-    if (pickIndex == -1 || pickIndex == 3)
-    {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        drawCamAxis(pos);
-        drawDottedLine(pos, Vec3d(mCam.x(), mCam.y(), mCam.z()), 3, 0xAAAA, lineThickness, white);
-        glPopMatrix();
+//    if (pickIndex == -1 || pickIndex == 3)
+//    {
+//        drawCamAxis(pos);
+//        drawDottedLine(pos, Vec3d(mCam.x(), mCam.y(), mCam.z()), 3, 0xAAAA, lineThickness, white);
+//    }
+
+    glDisable(GL_MULTISAMPLE_ARB);
+    if (!isPicking) {
+        glDisable(GL_BLEND);
     }
+
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_MULTISAMPLE_ARB);
     glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
 
