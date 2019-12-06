@@ -58,7 +58,6 @@ void Rotate_Manipulator::drawCamAxis(const Vec3d& pos)
     QQuaternion o = cam->orientation();
     Quaternion orientation = Quaternion(o.x(), o.y(), o.z(), o.scalar()) * Quaternion(1,0,0, M_PI);
     glRotated(orientation[3] * 180.0 / M_PI, orientation[0], orientation[1], orientation[2]);
-//    glTranslated(pos.x(), pos.y(), pos.z());
     if (m_index == 3)
         drawtools.drawDisk(radius * 1.2f, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius * 1.2f, lineThickness, resolution, m_index == 3 ? highlightwhite : white);
@@ -101,6 +100,8 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
 
     Vec3d pos = posData->getValue();
     QVector3D center(pos.x(), pos.y(), pos.z());
+    if (m_index == -1)
+        mX = mY = mZ = mCam = center;
 
     float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width(), viewer.height()),
                                                   QVector3D(float(pos.x()), float(pos.y()), float(pos.z())),

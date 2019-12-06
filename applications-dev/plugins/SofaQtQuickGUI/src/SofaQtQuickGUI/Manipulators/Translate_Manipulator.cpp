@@ -22,7 +22,7 @@ void Translate_Manipulator::drawXArrow(const Vec3d& pos)
 
     if (m_index == 0)
     {
-        glLineWidth(1.0f);
+        glLineWidth(0.2f);
         drawtools.drawInfiniteLine(pos, Vec3d(1.0, 0.0, 0.0), black);
         drawtools.drawInfiniteLine(pos, Vec3d(-1.0, 0.0, 0.0), black);
     }
@@ -36,7 +36,7 @@ void Translate_Manipulator::drawYArrow(const Vec3d& pos)
 
     if (m_index == 1)
     {
-        glLineWidth(1.0f);
+        glLineWidth(0.2f);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, 1.0, 0.0), black);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, -1.0, 0.0), black);
     }
@@ -50,7 +50,7 @@ void Translate_Manipulator::drawZArrow(const Vec3d& pos)
 
     if (m_index == 2)
     {
-        glLineWidth(1.0f);
+        glLineWidth(0.2f);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, 1.0), black);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, -1.0), black);
     }
@@ -159,8 +159,6 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     glPushMatrix();
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
-
-    glTranslated(pos.x(), pos.y(), pos.z());
 
     cam = viewer.camera();
     if (!cam) return;
