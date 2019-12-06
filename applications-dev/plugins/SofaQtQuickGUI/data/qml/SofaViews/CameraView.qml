@@ -127,7 +127,7 @@ CameraView {
         interval: 500
         repeat: false
         onTriggered: {
-            recreateCamera();
+            updateCameraFromIndex(0);
         }
     }
 

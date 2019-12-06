@@ -50,21 +50,34 @@ QColor toQ(const sofa::helper::types::RGBAColor& color)
 
 void CameraView::internalRender(int width, int height) const
 {
-    if(!myCamera)
+    if(!myCamera){
+        QColor color(128,128,244,255);
+        QSize size(width, height);
+        clearBuffers(size, color);
         return ;
+    }
 
     QSize size(width, height);
     if(size.isEmpty())
         return;
 
     SofaCamera* sofaCamera = dynamic_cast<SofaCamera*>(myCamera) ;
-    if(!sofaCamera)
+    if(!sofaCamera){
+        QColor color(128,128,244,255);
+        QSize size(width, height);
+        clearBuffers(size, color);
+
         return;
+    }
 
     BaseCamera* baseCamera = sofaCamera->getBaseCamera();
     if(!baseCamera)
+    {
+        QColor color(128,128,244,255);
+        QSize size(width, height);
+        clearBuffers(size, color);
         return;
-
+    }
     if(mySofaScene && mySofaScene->isReady())
     {
         BackgroundSetting* settings = sofaCamera->getBaseCamera()->l_background.get();
