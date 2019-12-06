@@ -53,16 +53,6 @@ void Rotate_Manipulator::drawZAxis(const Vec3d& pos)
     glTranslated(-pos.x(), -pos.y(), -pos.z());
 }
 
-void Rotate_Manipulator::drawCamAxis(const Vec3d& pos)
-{
-    QQuaternion o = cam->orientation();
-    Quaternion orientation = Quaternion(o.x(), o.y(), o.z(), o.scalar()) * Quaternion(1,0,0, M_PI);
-    glRotated(orientation[3] * 180.0 / M_PI, orientation[0], orientation[1], orientation[2]);
-    if (m_index == 3)
-        drawtools.drawDisk(radius * 1.2f, _from, _to, resolution, lightwhite);
-    drawtools.drawCircle(radius * 1.2f, lineThickness, resolution, m_index == 3 ? highlightwhite : white);
-}
-
 sofa::Data<Vec3d>* Rotate_Manipulator::getData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
@@ -192,12 +182,6 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
         drawDottedLine(pos, Vec3d(mZ.x(), mZ.y(), mZ.z()), 3, 0xAAAA, lineThickness, white);
     }
 
-//    if (pickIndex == -1 || pickIndex == 3)
-//    {
-//        drawCamAxis(pos);
-//        drawDottedLine(pos, Vec3d(mCam.x(), mCam.y(), mCam.z()), 3, 0xAAAA, lineThickness, white);
-//    }
-
     glDisable(GL_MULTISAMPLE_ARB);
     if (!isPicking) {
         glDisable(GL_BLEND);
@@ -218,7 +202,7 @@ double getAngle(const QVector3D& mouse, SofaViewer* viewer, const QVector3D& cen
 
     double angle = std::acos(QVector3D::dotProduct(up, dir));
     if(QVector3D::dotProduct(right, dir) < 0.0)
-        angle = -angle;
+        angle = M_PI + M_PI-angle;
     return angle;
 }
 
@@ -339,12 +323,6 @@ void Rotate_Manipulator::setMark(double from, double to)
 {
     _from = from;
     _to = to;
-
-    if(_from > _to)
-    {
-        _from = fmod(_from, 2.0 * M_PI);
-        _to = to + 2.0 * M_PI;
-    }
 
     drawMark = true;
 }
