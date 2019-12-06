@@ -151,17 +151,19 @@ UserInteractor {
                 if(manipulator.mousePressed)
                     manipulator.mousePressed(mouse, sofaViewer);
 
-                if(manipulator.manipulate)
-                    setMouseMovedMapping(manipulator.manipulate)
+                if(manipulator.mouseMoved)
+                    setMouseMovedMapping(manipulator.mouseMoved)
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             var manipulator = SofaApplication.selectedManipulator
 
-            if (manipulator)
+            if (manipulator) {
+                if(manipulator.mouseReleased)
+                    manipulator.mouseReleased(mouse, sofaViewer);
                 manipulator.index = -1;
-
+            }
             setMouseMovedMapping(null);
         });
 

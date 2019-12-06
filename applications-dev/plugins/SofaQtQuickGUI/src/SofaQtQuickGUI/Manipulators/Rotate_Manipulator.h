@@ -15,16 +15,19 @@ public:
     Rotate_Manipulator(QObject* parent = nullptr);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) override;
-    virtual void manipulate(const QPointF& mouse, SofaViewer* viewer) const override;
+    virtual void mouseMoved(const QPointF& mouse, SofaViewer* viewer) override;
+    virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) override;
+    virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override;
     virtual int getIndices() const override;
     
-    virtual void setIndex(int) override;
-
 private:
     void drawXAxis(const sofa::defaulttype::Vec3d& pos);
     void drawYAxis(const sofa::defaulttype::Vec3d& pos);
     void drawZAxis(const sofa::defaulttype::Vec3d& pos);
     void drawCamAxis(const sofa::defaulttype::Vec3d& pos);
+
+    void setMark(double from, double to);
+    void unsetMark();
 
     float radius;
     float lineThickness;
@@ -51,6 +54,10 @@ private:
     sofa::defaulttype::Vec4f lightwhite;
     sofa::defaulttype::Vec4f black;
     sofa::defaulttype::Vec4f yellow;
+
+    bool drawMark {false};
+    double _from, _to, _startAngle {0};
+    sofa::defaulttype::Quaternion startOrientation;
 };
 
 }  // namespace sofaqtquick

@@ -21,7 +21,8 @@ void Rotate_Manipulator::drawXAxis(const Vec3d& pos)
     Quatd orientation(0, 1, 0, 90);
     glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     glTranslated(pos.x(), pos.y(), pos.z());
-    drawtools.drawDisk(radius, resolution, lightwhite);
+    if (m_index == 0)
+        drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightred : red);
 }
 
@@ -30,7 +31,8 @@ void Rotate_Manipulator::drawYAxis(const Vec3d& pos)
     Quatd orientation(1, 0, 0, 90);
     glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     glTranslated(pos.x(), pos.y(), pos.z());
-    drawtools.drawDisk(radius, resolution, lightwhite);
+    if (m_index == 1)
+        drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightgreen : green);
 }
 
@@ -39,17 +41,19 @@ void Rotate_Manipulator::drawZAxis(const Vec3d& pos)
     Quatd orientation(1, 0, 0, 0);
     glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
     glTranslated(pos.x(), pos.y(), pos.z());
-    drawtools.drawDisk(radius, resolution, lightwhite);
+    if (m_index == 2)
+        drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightblue : blue);
 }
 
 void Rotate_Manipulator::drawCamAxis(const Vec3d& pos)
 {
     QQuaternion o = cam->orientation();
-    Quaternion orientation = Quaternion(o.x(), o.y(), -o.z(), -o.scalar() * 360.0);
-    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
+    Quaternion orientation = Quaternion(o.x(), o.y(), o.z(), o.scalar()) * Quaternion(1,0,0, M_PI);
+    glRotated(orientation[3] * 180.0 / M_PI, orientation[0], orientation[1], orientation[2]);
     glTranslated(pos.x(), pos.y(), pos.z());
-    drawtools.drawDisk(radius * 1.2f, resolution, lightwhite);
+    if (m_index == 3)
+        drawtools.drawDisk(radius * 1.2f, _from, _to, resolution, lightwhite);
     drawtools.drawCircle(radius * 1.2f, lineThickness, resolution, m_index == 3 ? highlightwhite : white);
 }
 
@@ -150,56 +154,123 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     glPopMatrix();
 }
 
-void Rotate_Manipulator::manipulate(const QPointF& mouse, SofaViewer* viewer) const
+double getAngle(const QVector3D& mouse, SofaViewer* viewer, const QVector3D& center, const QVector3D& right, const QVector3D& up)
 {
-    Camera* cam = viewer->camera();
+    QVector3D dir = (mouse - center).normalized();
+
+    double angle = std::acos(QVector3D::dotProduct(up, dir));
+    if(QVector3D::dotProduct(right, dir) < 0.0)
+        angle = -angle;
+    return angle;
+}
+
+void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
+{
+    cam = viewer->camera();
     if (!cam) return;
 
     sofa::Data<Vec3d>* data = getData();
     if (!data) return;
     Vec3d pos = data->getValue();
+    QVector3D center(pos.x(), pos.y(), pos.z());
 
-
-    QVector3D rotated;
+    QVector3D X(1,0,0);
+    QVector3D Y(0,1,0);
+    QVector3D Z(0,0,1);
+    QVector3D m;
     switch (m_index)
     {
-    case 0: // only move along X axis
-        rotated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(1,0,0));
+    case 0:
+        m = viewer->projectOnPlane(mouse, center, X);
+        setMark(_startAngle, getAngle(m, viewer, center, X, Y));
         break;
-    case 1: // only move along Y axis
-        rotated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(0,1,0));
+    case 1:
+        m = viewer->projectOnPlane(mouse, center, Y);
+        setMark(_startAngle, getAngle(m, viewer, center, Y, Z));
         break;
-    case 2: // only move along Z axis
-        rotated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(0,0,1));
+    case 2:
+        m = viewer->projectOnPlane(mouse, center, Z);
+        setMark(_startAngle, getAngle(m, viewer, center, Z, X));
         break;
-    case 3: // only move along XY plane
-        rotated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
-                                                            float(pos.y()),
-                                                            float(pos.z())),
-                                           QVector3D(0,0,1));
+    case 3:
+        cam = viewer->camera();
+        if (!cam) return;
+        double z = viewer->computeDepth(QVector3D(pos.x(), pos.y(), pos.z()));
+        m = viewer->mapToWorld(mouse, z);
+        setMark(_startAngle, getAngle(m, viewer, center, cam->right(), cam->up()));
         break;
     };
 
-    data->setValue(Vec3d(double(rotated.x()), double(rotated.y()), double(rotated.z())));
+    std::cout << _from << " -> " << _to << std::endl;
 }
+
+
+void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
+{
+    sofa::Data<Vec3d>* data = getData();
+    if (!data) return;
+    Vec3d pos = data->getValue();
+    QVector3D center(pos.x(), pos.y(), pos.z());
+
+    QVector3D X(1,0,0);
+    QVector3D Y(0,1,0);
+    QVector3D Z(0,0,1);
+    QVector3D m;
+    switch (m_index)
+    {
+    case 0:
+        m = viewer->projectOnPlane(mouse, center, X);
+        _startAngle = getAngle(m, viewer, center, X, Y);
+        break;
+    case 1:
+        m = viewer->projectOnPlane(mouse, center, Y);
+        _startAngle = getAngle(m, viewer, center, Y, Z);
+        break;
+    case 2:
+        m = viewer->projectOnPlane(mouse, center, Z);
+        _startAngle = getAngle(m, viewer, center, Z, X);
+        break;
+    case 3:
+        cam = viewer->camera();
+        if (!cam) return;
+        double z = viewer->computeDepth(QVector3D(pos.x(), pos.y(), pos.z()));
+        m = viewer->mapToWorld(mouse, z);
+        _startAngle = getAngle(m, viewer, center, cam->right(), cam->up());
+        break;
+    };
+}
+
+void Rotate_Manipulator::mouseReleased(const QPointF& mouse, SofaViewer* viewer)
+{
+
+}
+
 
 int Rotate_Manipulator::getIndices() const
 {
     return 4;
 }
 
-void Rotate_Manipulator::setIndex(int index)
+void Rotate_Manipulator::setMark(double from, double to)
 {
-    m_index = index;
+    _from = from;
+    _to = to;
+
+    if(_from > _to)
+    {
+        _from = fmod(_from, 2.0 * M_PI);
+        _to = to + 2.0 * M_PI;
+    }
+
+    drawMark = true;
+}
+
+void Rotate_Manipulator::unsetMark()
+{
+    drawMark = false;
+    _from = 0;
+    _to = 0;
+
 }
 
 }  // namespace sofaqtquick

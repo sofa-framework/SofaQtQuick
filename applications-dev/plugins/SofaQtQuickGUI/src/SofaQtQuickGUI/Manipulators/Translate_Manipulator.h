@@ -15,7 +15,10 @@ public:
     Translate_Manipulator(QObject* parent = nullptr);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) override;
-    virtual void manipulate(const QPointF& mouse, SofaViewer* viewer) const override;
+    virtual void mouseMoved(const QPointF& mouse, SofaViewer* viewer) override;
+    virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) override {}
+    virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override {}
+
     virtual int getIndices() const override;
     void drawXYPlane() const;
     

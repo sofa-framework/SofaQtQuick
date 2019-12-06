@@ -224,7 +224,7 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     glPopMatrix();
 }
 
-void Translate_Manipulator::manipulate(const QPointF& mouse, SofaViewer* viewer) const
+void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
 {
     Camera* cam = viewer->camera();
     if (!cam) return;

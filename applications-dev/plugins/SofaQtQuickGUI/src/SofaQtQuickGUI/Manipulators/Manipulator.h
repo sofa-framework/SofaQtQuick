@@ -22,8 +22,8 @@ public:
     const QString& getName();
     void setName(const QString&);
 
+    void setIndex(int);
     int getIndex();
-    virtual void setIndex(int);
 signals:
     void nameChanged(const QString&);
     void indexChanged(int);
@@ -33,7 +33,9 @@ public:
     void pick(const SofaViewer& viewer, int& pickIndex);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) = 0;
-    Q_INVOKABLE virtual void manipulate(const QPointF& mouse, SofaViewer* viewer) const = 0;
+    Q_INVOKABLE virtual void mouseMoved(const QPointF& mouse, SofaViewer* viewer) = 0;
+    Q_INVOKABLE virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) = 0;
+    Q_INVOKABLE virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) = 0;
     virtual int getIndices() const = 0;
 
 protected:
