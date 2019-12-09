@@ -22,7 +22,7 @@ public:
     virtual int getIndices() const override;
     void drawXYPlane() const;
 
-    static sofa::Data<sofa::defaulttype::Vec3d>* getData();
+    static sofa::core::objectmodel::BaseData* getData();
     
 private:
     void drawXArrow(const sofa::defaulttype::Vec3d& pos);

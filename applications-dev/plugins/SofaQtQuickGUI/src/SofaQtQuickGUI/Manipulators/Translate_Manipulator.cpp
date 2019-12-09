@@ -135,7 +135,7 @@ void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
     drawtools.drawSphere(pos, crossSize, yellow);
 }
 
-sofa::Data<Vec3d>* Translate_Manipulator::getData()
+sofa::core::objectmodel::BaseData* Translate_Manipulator::getData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
     if (!obj || !obj->rawBase()) return nullptr;
@@ -143,25 +143,29 @@ sofa::Data<Vec3d>* Translate_Manipulator::getData()
     /// Then we'll also need a way to manually pick which datafield we want to manipulate
     for (auto& d : obj->rawBase()->getDataFields())
         if (d->getValueTypeString() == "Vec3d" && (d->getName() == "translation" || d->getName() == "position"))
-            return dynamic_cast<sofa::Data<Vec3d>*>(d);
+            return d;
     return nullptr;
 }
 
 void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
 {
-    data = getData();
+    data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
     if (!data) return;
     Vec3d pos = data->getValue();
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glEnable(GL_MULTISAMPLE_ARB);
-    glDisable(GL_DEPTH_TEST);
-
     cam = viewer.camera();
     if (!cam) return;
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadMatrixf(cam->projection().constData());
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadMatrixf(cam->view().constData());
+
+    glEnable(GL_MULTISAMPLE_ARB);
+    glDisable(GL_DEPTH_TEST);
 
     float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width(), viewer.height()),
                                                   QVector3D(float(pos.x()), float(pos.y()), float(pos.z())),
@@ -233,7 +237,7 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         /// Then we'll also need a way to manually pick which datafield we want to manipulate
         /// Currently, let's just go through all datafields of the object,
         /// and select whichever Vec3d comes first...
-        data = getData();
+        data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
         if (!data) return;
         Vec3d pos = data->getValue();
     QVector3D translated;

@@ -53,15 +53,20 @@ void Rotate_Manipulator::drawZAxis(const Vec3d& pos)
     glTranslated(-pos.x(), -pos.y(), -pos.z());
 }
 
-sofa::Data<Vec3d>* Rotate_Manipulator::getData()
+sofa::core::objectmodel::BaseData* Rotate_Manipulator::getData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
     if (!obj || !obj->rawBase()) return nullptr;
     /// @bmarques TODO: We need a way to select a default data field to manipulate
     /// Then we'll also need a way to manually pick which datafield we want to manipulate
-    for (auto& d : obj->rawBase()->getDataFields())
-        if (d->getValueTypeString() == "Vec3d" && (d->getName() == "rotation" || d->getName() == "orientation"))
-            return dynamic_cast<sofa::Data<Vec3d>*>(d);
+    for (auto& d : obj->rawBase()->getDataFields()){
+        if (d->getValueTypeString() == "Vec3d" && (d->getName() == "rotation" || d->getName() == "orientation" || d->getName() == "direction"))
+            return d;
+        else if ((d->getValueTypeString() == "Quatf" || d->getValueTypeString() == "Quatd" ||
+                  d->getValueTypeString() == "Quat<double>" || d->getValueTypeString() == "Quat<float>")
+                  && (d->getName() == "rotation" || d->getName() == "orientation"))
+            return d;
+    }
     return nullptr;
 }
 
@@ -85,7 +90,7 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     cam = viewer.camera();
     if (!cam) return;
 
-    sofa::Data<Vec3d>* posData = Translate_Manipulator::getData();
+    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
     if (!posData) return;
 
     Vec3d pos = posData->getValue();
@@ -130,6 +135,7 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
 
+
     if (!isPicking) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -161,8 +167,11 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
+    glLoadMatrixf(cam->projection().constData());
+
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
+    glLoadMatrixf(cam->view().constData());
 
     if (pickIndex == -1 || pickIndex == 0)
     {
@@ -182,11 +191,9 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
         drawDottedLine(pos, Vec3d(mZ.x(), mZ.y(), mZ.z()), 3, 0xAAAA, lineThickness, white);
     }
 
-    glDisable(GL_MULTISAMPLE_ARB);
     if (!isPicking) {
         glDisable(GL_BLEND);
     }
-
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_MULTISAMPLE_ARB);
@@ -211,8 +218,20 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     cam = viewer->camera();
     if (!cam) return;
 
-    sofa::Data<Vec3d>* posData = Translate_Manipulator::getData();
+    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
     if (!posData) return;
+
+    sofa::core::objectmodel::BaseData* rotData = getData();
+    if (!posData) return;
+    Vec3d rot;
+    if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
+        rot = dynamic_cast<sofa::Data<Vec3d>*>(rotData)->getValue();
+    else {
+        rot = dynamic_cast<sofa::Data<Quaternion>*>(rotData)->getValue().toEulerVector();
+    }
+
+
+
     Vec3d pos = posData->getValue();
     QVector3D center(pos.x(), pos.y(), pos.z());
 
@@ -226,7 +245,6 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         setMark(_startAngle, getAngle(mX, viewer, center, X, Y));
         Quaternion q;
         Quaternion addedAngle(1, 0, 0, (_to - _from) / M_PI * 180.0);
-        Vec3d& rot = *Rotate_Manipulator::getData()->beginEdit();
         rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
         break;
     }
@@ -235,7 +253,6 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         setMark(_startAngle, getAngle(mY, viewer, center, Y, Z));
         Quaternion q;
         Quaternion addedAngle(0, 1, 0, (_to - _from) / M_PI * 180.0);
-        Vec3d& rot = *Rotate_Manipulator::getData()->beginEdit();
         rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
         break;
     }
@@ -244,7 +261,6 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         setMark(_startAngle, getAngle(mZ, viewer, center, Z, X));
         Quaternion q;
         Quaternion addedAngle(0, 0, 1, (_to - _from) / M_PI * 180.0);
-        Vec3d& rot = *Rotate_Manipulator::getData()->beginEdit();
         rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
         break;
     }
@@ -258,12 +274,22 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
                               cam->direction().y(),
                               cam->direction().z(),
                               (_to - _from) / M_PI * 180.0);
-        Vec3d& rot = *Rotate_Manipulator::getData()->beginEdit();
         rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
         break;
     }};
 
-    Rotate_Manipulator::getData()->endEdit();
+    if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
+    {
+        if (rotData->getName() == "direction")
+        {
+            dynamic_cast<sofa::Data<Vec3d>*>(rotData)->setValue(
+                        Quaternion::fromEuler(rot.x(), rot.y(), rot.z()).rotate(Vec3d(0,0,1)));
+        }
+        dynamic_cast<sofa::Data<Vec3d>*>(rotData)->setValue(rot);
+    }
+    else {
+        dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(Quaternion::fromEuler(rot.x(), rot.y(), rot.z()));
+    }
 
     std::cout << _from << " -> " << _to << std::endl;
 }
@@ -271,7 +297,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
 
 void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
 {
-    sofa::Data<Vec3d>* data = Translate_Manipulator::getData();
+    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
     if (!data) return;
     Vec3d pos = data->getValue();
     QVector3D center(pos.x(), pos.y(), pos.z());
@@ -304,7 +330,7 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
 
 void Rotate_Manipulator::mouseReleased(const QPointF& mouse, SofaViewer* viewer)
 {
-    sofa::Data<Vec3d>* data = Translate_Manipulator::getData();
+    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
     if (!data) return;
     Vec3d pos = data->getValue();
     QVector3D center(pos.x(), pos.y(), pos.z());

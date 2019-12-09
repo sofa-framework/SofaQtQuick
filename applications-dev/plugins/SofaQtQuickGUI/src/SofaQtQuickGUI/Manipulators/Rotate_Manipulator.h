@@ -20,7 +20,7 @@ public:
     virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override;
     virtual int getIndices() const override;
     
-    static sofa::Data<sofa::defaulttype::Vec3d>* getData();
+    static sofa::core::objectmodel::BaseData* getData();
 
 private:
     void drawXAxis(const sofa::defaulttype::Vec3d& pos);
