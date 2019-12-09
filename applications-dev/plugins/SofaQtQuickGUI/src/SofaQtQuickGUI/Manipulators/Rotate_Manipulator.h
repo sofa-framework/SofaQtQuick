@@ -34,6 +34,8 @@ private:
     float radius;
     float lineThickness;
     int resolution;
+    float width;
+    float height;
 
     sofa::core::visual::DrawToolGL drawtools;
     bindings::SofaBase* obj;

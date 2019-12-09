@@ -73,8 +73,8 @@ void drawDottedLine(const Vec3d& p1, const Vec3d& p2, int factor, ushort stipple
     glEnable(GL_LINE_STIPPLE);
     glBegin(GL_LINES);
     glColor4f(color[0], color[1], color[2], color[3]);
-    glVertex3f(p1[0], p1[1], p1[2]);
-    glVertex3f(p2[0], p2[1], p2[2]);
+    glVertex3d(p1[0], p1[1], p1[2]);
+    glVertex3d(p2[0], p2[1], p2[2]);
     glEnd();
 
     glPopAttrib();
@@ -93,7 +93,7 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     if (m_index == -1)
         mX = mY = mZ = mCam = center;
 
-    float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width(), viewer.height()),
+    float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width()/2, viewer.height()/2),
                                                   QVector3D(float(pos.x()), float(pos.y()), float(pos.z())),
                                                   cam->direction()).distanceToPoint(cam->eye());
 
@@ -143,15 +143,15 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
         themouse = themouse / themouse.w();
         themouse = themouse - position;
         glTranslatef(position.x(), position.y(), position.z());
-        glScalef(viewer.height() / viewer.width(), 1.0f, 1.0f);
-        float camradius = 0.24f;
+        glScaled(viewer.height() / viewer.width(), 1.0, 1.0);
+        float camradius = 0.25f;
         if (m_index == 3)
-            drawtools.drawDisk(camradius * 1.2f, _from, _to, resolution, lightwhite);
-        drawDottedLine(Vec3d(0,0,0),
+            drawtools.drawDisk(camradius, _from, _to, resolution, lightwhite);
+        drawDottedLine(Vec3d(0, 0, 0),
                        Vec3d(themouse.x(), themouse.y(), themouse.z()),
                        3, 0xAAAA, lineThickness, white);
 
-        drawtools.drawCircle(camradius * 1.2f, lineThickness, resolution, m_index == 2 ? highlightwhite : white);
+        drawtools.drawCircle(camradius, lineThickness, resolution, m_index == 2 ? highlightwhite : white);
     }
 
     glMatrixMode(GL_PROJECTION);
@@ -251,8 +251,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     case 3: {
         cam = viewer->camera();
         if (!cam) return;
-        double z = viewer->computeDepth(QVector3D(pos.x(), pos.y(), pos.z()));
-        mCam = viewer->mapToWorld(mouse, z);
+        mCam = viewer->projectOnPlane(mouse, center, cam->direction());
         setMark(_startAngle, getAngle(mCam, viewer, center, cam->right(), cam->up()));
         Quaternion q;
         Quaternion addedAngle(cam->direction().x(),
@@ -297,8 +296,7 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
     case 3:
         cam = viewer->camera();
         if (!cam) return;
-        double z = viewer->computeDepth(QVector3D(pos.x(), pos.y(), pos.z()));
-        mCam = viewer->mapToWorld(mouse, z);
+        mCam = viewer->projectOnPlane(mouse, center, cam->direction());
         _startAngle = getAngle(mCam, viewer, center, cam->right(), cam->up());
         break;
     };
