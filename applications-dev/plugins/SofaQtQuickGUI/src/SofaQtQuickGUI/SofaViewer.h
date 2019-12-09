@@ -46,6 +46,14 @@ class Manipulator;
 class PickUsingRasterizationWorker;
 class ScreenshotWorker;
 
+
+class NewViewerContext
+{
+public:
+    NewViewerContext();
+    ~NewViewerContext();
+};
+
 /// \class Display a Sofa Scene in a QQuickFramebufferObject
 /// \note Coordinate prefix meaning:
 /// ws  => world space

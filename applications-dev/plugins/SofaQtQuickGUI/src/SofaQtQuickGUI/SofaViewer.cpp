@@ -131,7 +131,7 @@ SofaViewer::~SofaViewer()
 
 QOpenGLFramebufferObject* SofaViewer::getFBO() const
 {
-	return myFBO;
+    return myFBO;
 }
 
 void SofaViewer::setSofaScene(SofaBaseScene* newSofaScene)
@@ -156,12 +156,12 @@ void SofaViewer::setCamera(Camera* newCamera)
 
 void SofaViewer::setAlwaysDraw(bool newChoiceAllwaysDraw)
 {
-	if (newChoiceAllwaysDraw == myAlwaysDraw)
-		return;
+    if (newChoiceAllwaysDraw == myAlwaysDraw)
+        return;
 
-	myAlwaysDraw = newChoiceAllwaysDraw;
+    myAlwaysDraw = newChoiceAllwaysDraw;
 
-	alwaysDrawChanged(newChoiceAllwaysDraw);
+    alwaysDrawChanged(newChoiceAllwaysDraw);
 }
 
 static void appendRoot(QQmlListProperty<sofaqtquick::bindings::SofaBase> *property, sofaqtquick::bindings::SofaBase* value)
@@ -467,15 +467,15 @@ void SofaViewer::checkAndInit()
         myHighlightShaderProgram = new QOpenGLShaderProgram();
 
         myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                                                                     "void main(void)\n"
-                                                                     "{\n"
-                                                                     "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-                                                                     "}");
+                                                          "void main(void)\n"
+                                                          "{\n"
+                                                          "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                                                          "}");
         myHighlightShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-                                                                     "void main(void)\n"
-                                                                     "{\n"
-                                                                     "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
-                                                                     "}");
+                                                          "void main(void)\n"
+                                                          "{\n"
+                                                          "   gl_FragColor = vec4(0.75, 0.5, 0.0, 1.0);\n"
+                                                          "}");
 
         myHighlightShaderProgram->link();
 
@@ -489,16 +489,16 @@ void SofaViewer::checkAndInit()
         myPickingShaderProgram = new QOpenGLShaderProgram();
         myPickingShaderProgram->create();
         myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
-                                                                   "void main(void)\n"
-                                                                   "{\n"
-                                                                   "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-                                                                   "}");
+                                                        "void main(void)\n"
+                                                        "{\n"
+                                                        "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                                                        "}");
         myPickingShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
-                                                                   "uniform highp vec4 index;\n"
-                                                                   "void main(void)\n"
-                                                                   "{\n"
-                                                                   "   gl_FragColor = index;\n"
-                                                                   "}");
+                                                        "uniform highp vec4 index;\n"
+                                                        "void main(void)\n"
+                                                        "{\n"
+                                                        "   gl_FragColor = index;\n"
+                                                        "}");
         myPickingShaderProgram->link();
 
         myPickingShaderProgram->moveToThread(thread());
@@ -671,8 +671,8 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
     if(doDrawSelected)
         drawSelectedComponents(this->getVisualParams()) ;
 
-//    if(doDrawManipulators)
-        drawManipulator(*this) ;
+    //    if(doDrawManipulators)
+    drawManipulator(*this) ;
 }
 
 
@@ -702,11 +702,9 @@ void SofaViewer::setupCamera(int width, int height, const SofaViewer& viewer) co
     camera->setPixelResolution(width, height);
 
     glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
     glLoadMatrixf(camera->projection().constData());
 
     glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
     glLoadMatrixf(camera->view().constData());
 
     glEnable(GL_DEPTH_TEST);
@@ -1091,10 +1089,10 @@ QPair<QVector3D, QVector3D> SofaViewer::boundingBox() const
 
 QPair<QVector3D, QVector3D> SofaViewer::rootsBoundingBox() const
 {
-	QVector3D min, max;
-	mySofaScene->computeBoundingBox(min, max, myRoots); /*attention, ne prend en compte que le dernier �l�ment mis dans la liste ?*/
+    QVector3D min, max;
+    mySofaScene->computeBoundingBox(min, max, myRoots); /*attention, ne prend en compte que le dernier �l�ment mis dans la liste ?*/
 
-	return QPair<QVector3D, QVector3D>(min, max);
+    return QPair<QVector3D, QVector3D>(min, max);
 }
 
 QVector3D SofaViewer::boundingBoxMin() const
@@ -1339,8 +1337,29 @@ QSGNode* SofaViewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* in
     return QQuickFramebufferObject::updatePaintNode(inOutNode, inOutData);
 }
 
+
+NewViewerContext::NewViewerContext()
+{
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+}
+
+NewViewerContext::~NewViewerContext()
+{
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+}
+
 void SofaViewer::internalRender(int width, int height) const
 {
+    NewViewerContext pushpop;
+
     QSize size(width, height);
     if(size.isEmpty())
         return;
@@ -1377,20 +1396,9 @@ void SofaViewer::internalRender(int width, int height) const
         glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
     }
 
-    bool isReady = false;
     if(mySofaScene && mySofaScene->isReady())
     {
-        isReady = true;
-        myCamera->setPixelResolution(width, height);
-        myCamera->setAspectRatio(width / (double) height);
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadMatrixf(myCamera->projection().constData());
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadMatrixf(myCamera->view().constData());
+        setupCamera(width, height, *this);
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_TEXTURE_2D);
@@ -1418,16 +1426,6 @@ void SofaViewer::internalRender(int width, int height) const
     preDraw();
     drawEditorView(roots(),true,true);
     postDraw();
-
-
-    if (isReady)
-    {
-        glMatrixMode(GL_PROJECTION);
-         glPopMatrix();
-
-         glMatrixMode(GL_MODELVIEW);
-         glPopMatrix();
-    }
 }
 
 void SofaViewer::renderFrame() const

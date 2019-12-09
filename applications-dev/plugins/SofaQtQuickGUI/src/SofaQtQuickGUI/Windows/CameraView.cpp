@@ -80,6 +80,8 @@ void CameraView::internalRender(int width, int height) const
     }
     if(mySofaScene && mySofaScene->isReady())
     {
+        NewViewerContext pushpop;
+
         BackgroundSetting* settings = sofaCamera->getBaseCamera()->l_background.get();
         QColor color(128,128,244,255);
         QImage image;
@@ -107,12 +109,6 @@ void CameraView::internalRender(int width, int height) const
         postDraw();
 
         m_visualParams->displayFlags() = oldFlags;
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
     }
 }
 
