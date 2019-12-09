@@ -20,6 +20,8 @@ public:
     virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override;
     virtual int getIndices() const override;
     
+    static sofa::Data<sofa::defaulttype::Vec3d>* getData();
+
 private:
     void drawXAxis(const sofa::defaulttype::Vec3d& pos);
     void drawYAxis(const sofa::defaulttype::Vec3d& pos);
@@ -58,6 +60,7 @@ private:
     bool drawMark {false};
     double _from, _to, _startAngle {0};
     sofa::defaulttype::Quaternion startOrientation;
+    QVector3D mX, mY, mZ, mCam;
 };
 
 }  // namespace sofaqtquick

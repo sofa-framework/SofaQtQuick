@@ -22,7 +22,7 @@ void Translate_Manipulator::drawXArrow(const Vec3d& pos)
 
     if (m_index == 0)
     {
-        glLineWidth(1.0f);
+        glLineWidth(0.2f);
         drawtools.drawInfiniteLine(pos, Vec3d(1.0, 0.0, 0.0), black);
         drawtools.drawInfiniteLine(pos, Vec3d(-1.0, 0.0, 0.0), black);
     }
@@ -36,7 +36,7 @@ void Translate_Manipulator::drawYArrow(const Vec3d& pos)
 
     if (m_index == 1)
     {
-        glLineWidth(1.0f);
+        glLineWidth(0.2f);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, 1.0, 0.0), black);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, -1.0, 0.0), black);
     }
@@ -50,7 +50,7 @@ void Translate_Manipulator::drawZArrow(const Vec3d& pos)
 
     if (m_index == 2)
     {
-        glLineWidth(1.0f);
+        glLineWidth(0.2f);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, 1.0), black);
         drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, -1.0), black);
     }
@@ -135,22 +135,21 @@ void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
     drawtools.drawSphere(pos, crossSize, yellow);
 }
 
-void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
+sofa::Data<Vec3d>* Translate_Manipulator::getData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
-    if (!obj || !obj->rawBase()) return;
-
+    if (!obj || !obj->rawBase()) return nullptr;
     /// @bmarques TODO: We need a way to select a default data field to manipulate
     /// Then we'll also need a way to manually pick which datafield we want to manipulate
-    /// Currently, let's just go through all datafields of the object,
-    /// and select whichever Vec3d comes first...
-    sofa::Data<Vec3d>* data = nullptr;
     for (auto& d : obj->rawBase()->getDataFields())
-        if (d->getValueTypeString() == "Vec3d")
-        {
-            data = dynamic_cast<sofa::Data<Vec3d>*>(d);
-            break;
-        }
+        if (d->getValueTypeString() == "Vec3d" && (d->getName() == "translation" || d->getName() == "position"))
+            return dynamic_cast<sofa::Data<Vec3d>*>(d);
+    return nullptr;
+}
+
+void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
+{
+    data = getData();
     if (!data) return;
     Vec3d pos = data->getValue();
 
@@ -160,8 +159,6 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     glPushMatrix();
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
-
-    glTranslated(pos.x(), pos.y(), pos.z());
 
     cam = viewer.camera();
     if (!cam) return;
@@ -236,13 +233,7 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         /// Then we'll also need a way to manually pick which datafield we want to manipulate
         /// Currently, let's just go through all datafields of the object,
         /// and select whichever Vec3d comes first...
-        sofa::Data<Vec3d>* data = nullptr;
-        for (auto& d : obj->rawBase()->getDataFields())
-            if (d->getValueTypeString() == "Vec3d")
-            {
-                data = dynamic_cast<sofa::Data<Vec3d>*>(d);
-                break;
-            }
+        data = getData();
         if (!data) return;
         Vec3d pos = data->getValue();
     QVector3D translated;
