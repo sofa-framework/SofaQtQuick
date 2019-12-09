@@ -1342,8 +1342,10 @@ void SofaViewer::internalRender(int width, int height) const
         glLightfv(GL_LIGHT1, GL_SPECULAR, lightSpecular);
     }
 
+    bool isReady = false;
     if(mySofaScene && mySofaScene->isReady())
     {
+        isReady = true;
         myCamera->setPixelResolution(width, height);
         myCamera->setAspectRatio(width / (double) height);
 
@@ -1383,11 +1385,14 @@ void SofaViewer::internalRender(int width, int height) const
     postDraw();
 
 
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
+    if (isReady)
+    {
+        glMatrixMode(GL_PROJECTION);
+         glPopMatrix();
 
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
+         glMatrixMode(GL_MODELVIEW);
+         glPopMatrix();
+    }
 }
 
 void SofaViewer::renderFrame() const

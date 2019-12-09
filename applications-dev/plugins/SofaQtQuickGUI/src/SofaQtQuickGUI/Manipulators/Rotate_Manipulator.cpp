@@ -167,11 +167,9 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadMatrixf(cam->projection().constData());
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadMatrixf(cam->view().constData());
 
     if (pickIndex == -1 || pickIndex == 0)
     {

@@ -158,11 +158,9 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadMatrixf(cam->projection().constData());
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadMatrixf(cam->view().constData());
 
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);

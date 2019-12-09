@@ -94,6 +94,12 @@ void CameraView::internalRender(int width, int height) const
         postDraw();
 
         m_visualParams->displayFlags() = oldFlags;
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
     }
 }
 
