@@ -134,6 +134,7 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     glLoadIdentity();
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
 
 
     if (!isPicking) {
@@ -206,8 +207,11 @@ double getAngle(const QVector3D& mouse, SofaViewer* viewer, const QVector3D& cen
     QVector3D dir = (mouse - center).normalized();
 
     double angle = std::acos(QVector3D::dotProduct(up, dir));
+    std::cout << angle << "rad" << std::endl;
     if(QVector3D::dotProduct(right, dir) < 0.0)
+    {
         angle = M_PI + M_PI-angle;
+    }
     return angle;
 }
 
@@ -289,7 +293,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(Quaternion::fromEuler(rot.x(), rot.y(), rot.z()));
     }
 
-    std::cout << _from << " -> " << _to << std::endl;
+    std::cout << (_from - _to) / M_PI * 180.0 << "°" << std::endl;
 }
 
 

@@ -164,6 +164,7 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
 
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
 
     float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width(), viewer.height()),
                                                   QVector3D(float(pos.x()), float(pos.y()), float(pos.z())),
