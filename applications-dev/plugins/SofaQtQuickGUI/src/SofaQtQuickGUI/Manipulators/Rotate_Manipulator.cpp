@@ -247,7 +247,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         setMark(_startAngle, getAngle(mX, center, Y, Z) - 90.0f);
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles((_to - _from), 0, 0);
-        rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
+        rot = (addedAngle * q.fromEulerAngles(rot)).toEulerAngles();
         break;
     }
     case 1: {
@@ -255,7 +255,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         setMark(_startAngle, getAngle(mY, center, Z, X) + 90.0f);
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, (_to - _from), 0);
-        rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
+        rot = (addedAngle * q.fromEulerAngles(rot)).toEulerAngles();
         break;
     }
     case 2: {
@@ -264,7 +264,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
 
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
-        rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
+        rot = (addedAngle * q.fromEulerAngles(rot)).toEulerAngles();
         break;
     }
     case 3: {
@@ -274,9 +274,8 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         setMark(_startAngle, getAngle(mCam, center, cam->right(), cam->up()));
 
         QQuaternion angle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
-        QQuaternion qCam = angle * cam->orientation();
-        qCam.normalize();
-        rot = (startOrientation * qCam).toEulerAngles();
+        QQuaternion addedAngle = angle * cam->orientation();
+        rot = (addedAngle * startOrientation).toEulerAngles();
         break;
     }};
 
