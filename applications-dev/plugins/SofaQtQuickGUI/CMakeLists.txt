@@ -60,6 +60,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.cpp
     src/SofaQtQuickGUI/Helper/QGTest.cpp
     src/SofaQtQuickGUI/Helper/QMathExtensions.cpp
+    src/SofaQtQuickGUI/Helper/sofaqtconversions.cpp
     src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Rotate_Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.cpp

@@ -3,6 +3,7 @@
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Helper/sofaqtconversions.h>
 
 using namespace sofa::defaulttype;
 namespace sofaqtquick
@@ -246,7 +247,7 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                            float(pos.y()),
                                                            float(pos.z())),
-                                          QVector3D(1,0,0));
+                                          QVector3D(1,0,0)) - shift;
         break;
     case 1: // only move along Y axis
         translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
@@ -258,31 +259,31 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                            float(pos.y()),
                                                            float(pos.z())),
-                                          QVector3D(0,0,1));
+                                          QVector3D(0,0,1)) - shift;
         break;
     case 3: // only move along XY plane
         translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
-                                           QVector3D(0,0,1));
+                                           QVector3D(0,0,1)) - shift;
         break;
     case 4: // only move along YZ plane
         translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
-                                           QVector3D(1,0,0));
+                                           QVector3D(1,0,0)) - shift;
         break;
     case 5: // only move along ZX plane
         translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
-                                           QVector3D(0,1,0));
+                                           QVector3D(0,1,0)) - shift;
         break;
     case 6: // only move along Camera plane
         translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
-                                           cam->direction());
+                                           cam->direction()) - shift;
         break;
     };
 
@@ -293,6 +294,44 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
             translated[i] = pos[i];
 
     data->setValue(Vec3d(double(translated.x()), double(translated.y()), double(translated.z())));
+    emit displayTextChanged(getDisplayText());
+}
+
+void Translate_Manipulator::mousePressed(const QPointF &mouse, SofaViewer *viewer)
+{
+    QVector3D pos = helper::toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(getData())->getValue());
+    switch (m_index)
+    {
+    case 0: // only move along X axis
+        shift = viewer->projectOnLine(mouse, pos, QVector3D(1,0,0)) - pos;
+        break;
+    case 1: // only move along Y axis
+        shift = viewer->projectOnLine(mouse, pos, QVector3D(0,1,0)) - pos;
+        break;
+    case 2: // only move along Z axis
+        shift = viewer->projectOnLine(mouse, pos, QVector3D(0,0,1)) - pos;
+        break;
+    case 3: // only move along XY plane
+        shift = viewer->projectOnPlane(mouse, pos, QVector3D(0,0,1)) - pos;
+        break;
+    case 4: // only move along YZ plane
+        shift = viewer->projectOnPlane(mouse, pos, QVector3D(1,0,0)) - pos;
+        break;
+    case 5: // only move along ZX plane
+        shift = viewer->projectOnPlane(mouse, pos, QVector3D(0,1,0)) - pos;
+        break;
+    case 6: // only move along Camera plane
+        shift = viewer->projectOnPlane(mouse, pos, cam->direction()) - pos;
+        break;
+    };
+
+    active = true;
+    emit displayTextChanged(getDisplayText());
+}
+
+void Translate_Manipulator::mouseReleased(const QPointF &/*mouse*/, SofaViewer */*viewer*/)
+{
+    active = false;
     emit displayTextChanged(getDisplayText());
 }
 
