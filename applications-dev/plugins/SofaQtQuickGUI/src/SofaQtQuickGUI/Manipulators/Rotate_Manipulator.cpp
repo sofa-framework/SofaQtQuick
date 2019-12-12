@@ -243,7 +243,8 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0: {
         mX = viewer->projectOnPlane(mouse, center, X);
-        setMark(_startAngle, getAngle(mX, center, Y+center, Z+center));
+
+        setMark(_startAngle, getAngle(mX, center, Y, Z) - 90.0f);
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles((_to - _from), 0, 0);
         rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
@@ -251,7 +252,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     }
     case 1: {
         mY = viewer->projectOnPlane(mouse, center, Y);
-        setMark(_startAngle, getAngle(mY, center, Z+center, X+center));
+        setMark(_startAngle, getAngle(mY, center, Z, X) + 90.0f);
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, (_to - _from), 0);
         rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
@@ -259,7 +260,8 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     }
     case 2: {
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        setMark(_startAngle, getAngle(mZ, center, X+center, Y+center));
+        setMark(_startAngle, getAngle(mZ, center, X, Y));
+
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
         rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
@@ -325,7 +327,6 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
     }
 
 
-
     QVector3D X(1,0,0);
     QVector3D Y(0,1,0);
     QVector3D Z(0,0,1);
@@ -333,15 +334,15 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0:
         mX = viewer->projectOnPlane(mouse, center, X);
-        _startAngle = getAngle(mX, center, Y+center, Z+center);
+        _startAngle = getAngle(mX, center, Y, Z) - 90.0f;
         break;
     case 1:
         mY = viewer->projectOnPlane(mouse, center, Y);
-        _startAngle = getAngle(mY, center, Z+center, X+center);
+        _startAngle = getAngle(mY, center, Z, X) + 90.0f;
         break;
     case 2:
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        _startAngle = getAngle(mZ, center, X+center, Y+center);
+        _startAngle = getAngle(mZ, center, X, Y);
         break;
     case 3:
         cam = viewer->camera();
@@ -351,6 +352,7 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
         break;
     };
     setMark(_startAngle, _startAngle);
+    std::cout << "START ANGLE: " << _startAngle << "°" << std::endl;
 
 }
 
