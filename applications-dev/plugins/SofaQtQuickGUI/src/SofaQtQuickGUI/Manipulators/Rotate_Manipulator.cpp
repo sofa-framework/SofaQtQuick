@@ -292,9 +292,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     else {
         dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(Quaternion::fromEuler(toRadians(double(rot.x())) , toRadians(double(rot.y())), toRadians(double(rot.z()))));
     }
-
-
-    std::cout << "from: " << _from << " to: " << _to << ": " << (_to - _from) << "°" << std::endl;
+    emit displayTextChanged(getDisplayText());
 }
 
 
@@ -351,8 +349,7 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
         break;
     };
     setMark(_startAngle, _startAngle);
-    std::cout << "START ANGLE: " << _startAngle << "°" << std::endl;
-
+    emit displayTextChanged(getDisplayText());
 }
 
 void Rotate_Manipulator::mouseReleased(const QPointF& /*mouse*/, SofaViewer* /*viewer*/)
@@ -363,6 +360,7 @@ void Rotate_Manipulator::mouseReleased(const QPointF& /*mouse*/, SofaViewer* /*v
     QVector3D center = toQVector3D(pos);
     mX = mY = mZ = mCam = center;
     unsetMark();
+    emit displayTextChanged(getDisplayText());
 }
 
 
@@ -382,6 +380,14 @@ void Rotate_Manipulator::setMark(float from, float to)
 void Rotate_Manipulator::unsetMark()
 {
     drawMark = false;
+}
+
+
+QString Rotate_Manipulator::getDisplayText() const
+{
+    if (drawMark)
+        return QString::fromStdString(std::to_string(int(_to - _from)) + "°");
+    return "";
 }
 
 }  // namespace sofaqtquick

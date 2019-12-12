@@ -293,12 +293,21 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
             translated[i] = pos[i];
 
     data->setValue(Vec3d(double(translated.x()), double(translated.y()), double(translated.z())));
+    emit displayTextChanged(getDisplayText());
 }
 
 int Translate_Manipulator::getIndices() const
 {
     return 7;
 }
+
+QString Translate_Manipulator::getDisplayText() const
+{
+    if (active)
+        return QString::fromStdString(getData()->getValueString()).replace(" ", " ; ");
+    return "";
+}
+
 
 
 }  // namespace sofaqtquick

@@ -18,8 +18,10 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
+import QtQuick.Controls 2.0
 import SofaBasics 1.0
 import SofaApplication 1.0
+
 
 UserInteractor {
     id: root
@@ -81,34 +83,34 @@ UserInteractor {
             sofaViewer.camera.alignCameraAxis();
         });
 
-//        addMousePressedMapping(Qt.MiddleButton, function(mouse, sofaViewer) {
-//            previousX = mouse.x;
-//            previousY = mouse.y;
+        addMousePressedMapping(Qt.MiddleButton, function(mouse, sofaViewer) {
+            previousX = mouse.x;
+            previousY = mouse.y;
 
-//            sofaViewer.crosshairGizmo.show();
-//            SofaApplication.overrideCursorShape = Qt.ClosedHandCursor;
+            sofaViewer.crosshairGizmo.show();
+            SofaApplication.overrideCursorShape = Qt.ClosedHandCursor;
 
-//            setMouseMovedMapping(function(mouse) {
-//                if(!sofaViewer.camera)
-//                    return;
+            setMouseMovedMapping(function(mouse) {
+                if(!sofaViewer.camera)
+                    return;
 
-//                var screenToScene = sofaViewer.camera.target.minus(sofaViewer.camera.eye()).length();
+                var screenToScene = sofaViewer.camera.target.minus(sofaViewer.camera.eye()).length();
 
-//                var moveX = (mouse.x - previousX) * screenToScene * moveSpeed;
-//                var moveY = (mouse.y - previousY) * screenToScene * moveSpeed;
-//                sofaViewer.camera.move(-moveX, moveY, 0.0);
+                var moveX = (mouse.x - previousX) * screenToScene * moveSpeed;
+                var moveY = (mouse.y - previousY) * screenToScene * moveSpeed;
+                sofaViewer.camera.move(-moveX, moveY, 0.0);
 
-//                previousX = mouse.x;
-//                previousY = mouse.y;
-//            });
-//        });
+                previousX = mouse.x;
+                previousY = mouse.y;
+            });
+        });
 
-//        addMouseReleasedMapping(Qt.MiddleButton, function(mouse, sofaViewer) {
-//            setMouseMovedMapping(null);
+        addMouseReleasedMapping(Qt.MiddleButton, function(mouse, sofaViewer) {
+            setMouseMovedMapping(null);
 
-//            SofaApplication.overrideCursorShape = 0;
-//            sofaViewer.crosshairGizmo.hide();
-//        });
+            SofaApplication.overrideCursorShape = 0;
+            sofaViewer.crosshairGizmo.hide();
+        });
 
         setMouseWheelMapping(function(wheel, sofaViewer) {
             
@@ -136,6 +138,7 @@ UserInteractor {
         
     }
 
+
     function init() {
         moveCamera_init();
 
@@ -150,6 +153,20 @@ UserInteractor {
                 var manipulator = SofaApplication.selectedManipulator = selectable.manipulator
                 if(manipulator.mousePressed)
                     manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
+
+                var obj = Qt.createQmlObject('import QtQuick.Controls 2.0;
+                                              Label {
+                                                 id: label
+                                                 text: "plop"
+                                                 color: "white"
+                                                 onTextChanged: {
+                                                     if (text === "")
+                                                         label.destroy();
+                                                 }
+                                              }', sofaViewer, 'label');
+                obj.text = Qt.binding(function(){ return manipulator.displayText });
+                obj.x = Qt.binding(function(){ return mouse.x + 10});
+                obj.y = Qt.binding(function(){ return mouse.y - 10});
 
                 if(manipulator.mouseMoved)
                     setMouseMovedMapping(manipulator.mouseMoved)

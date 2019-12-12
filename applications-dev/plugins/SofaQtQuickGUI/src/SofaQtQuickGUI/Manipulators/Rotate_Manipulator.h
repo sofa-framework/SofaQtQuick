@@ -19,7 +19,9 @@ public:
     virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) override;
     virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override;
     virtual int getIndices() const override;
-    
+
+    virtual QString getDisplayText() const override;
+
     static sofa::core::objectmodel::BaseData* getData();
 
 private:

@@ -16,8 +16,9 @@ public:
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) override;
     virtual void mouseMoved(const QPointF& mouse, SofaViewer* viewer) override;
-    virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) override {}
-    virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override {}
+    virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) override { active = true; emit displayTextChanged(getDisplayText()); }
+    virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override { active = false; emit displayTextChanged(getDisplayText()); }
+    virtual QString getDisplayText() const override;
 
     virtual int getIndices() const override;
     void drawXYPlane() const;
@@ -59,6 +60,8 @@ private:
     sofa::defaulttype::Vec4f white;
     sofa::defaulttype::Vec4f black;
     sofa::defaulttype::Vec4f yellow;
+
+    bool active {false};
 };
 
 }  // namespace sofaqtquick

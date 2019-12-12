@@ -17,6 +17,7 @@ public:
     /// The name of the manipulator (e.g. Translate_Manipulator)
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(int index READ getIndex WRITE setIndex NOTIFY indexChanged)
+    Q_PROPERTY(QString displayText READ getDisplayText NOTIFY displayTextChanged)
 
 
     const QString& getName();
@@ -27,6 +28,7 @@ public:
 signals:
     void nameChanged(const QString&);
     void indexChanged(int);
+    void displayTextChanged(const QString&);
 
 public:
     void draw(const SofaViewer& viewer);
@@ -37,6 +39,8 @@ public:
     Q_INVOKABLE virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) = 0;
     Q_INVOKABLE virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) = 0;
     virtual int getIndices() const = 0;
+
+    virtual QString getDisplayText() const = 0;
 
 protected:
     QString m_name;
