@@ -243,7 +243,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0: {
         mX = viewer->projectOnPlane(mouse, center, X);
-        setMark(_startAngle, getAngle(mX, center, X, Y));
+        setMark(_startAngle, getAngle(mX, center, Y+center, Z+center));
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles((_to - _from), 0, 0);
         rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
@@ -251,7 +251,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     }
     case 1: {
         mY = viewer->projectOnPlane(mouse, center, Y);
-        setMark(_startAngle, getAngle(mY, center, Y, Z));
+        setMark(_startAngle, getAngle(mY, center, Z+center, X+center));
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, (_to - _from), 0);
         rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
@@ -259,7 +259,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     }
     case 2: {
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        setMark(_startAngle, getAngle(mZ, center, Z, X));
+        setMark(_startAngle, getAngle(mZ, center, X+center, Y+center));
         QQuaternion q;
         QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
         rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
@@ -333,15 +333,15 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0:
         mX = viewer->projectOnPlane(mouse, center, X);
-        _startAngle = getAngle(mX, center, X, Y);
+        _startAngle = getAngle(mX, center, Y+center, Z+center);
         break;
     case 1:
         mY = viewer->projectOnPlane(mouse, center, Y);
-        _startAngle = getAngle(mY, center, Y, Z);
+        _startAngle = getAngle(mY, center, Z+center, X+center);
         break;
     case 2:
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        _startAngle = getAngle(mZ, center, Z, X);
+        _startAngle = getAngle(mZ, center, X+center, Y+center);
         break;
     case 3:
         cam = viewer->camera();
