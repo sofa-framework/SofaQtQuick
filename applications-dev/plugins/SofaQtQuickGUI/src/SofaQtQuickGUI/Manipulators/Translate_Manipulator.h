@@ -53,6 +53,7 @@ private:
     sofa::defaulttype::Vec4f lightred;
     sofa::defaulttype::Vec4f lightgreen;
     sofa::defaulttype::Vec4f lightblue;
+    sofa::defaulttype::Vec4f lightwhite;
 
     sofa::defaulttype::Vec4f red;
     sofa::defaulttype::Vec4f green;

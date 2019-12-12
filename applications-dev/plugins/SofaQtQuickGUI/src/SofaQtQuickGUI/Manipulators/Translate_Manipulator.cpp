@@ -23,9 +23,14 @@ void Translate_Manipulator::drawXArrow(const Vec3d& pos)
 
     if (m_index == 0)
     {
+        glPushAttrib(GL_ENABLE_BIT);
+        glLineStipple(2, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
         glLineWidth(0.2f);
-        drawtools.drawInfiniteLine(pos, Vec3d(1.0, 0.0, 0.0), black);
-        drawtools.drawInfiniteLine(pos, Vec3d(-1.0, 0.0, 0.0), black);
+        drawtools.drawInfiniteLine(pos, Vec3d(1.0, 0.0, 0.0), lightwhite);
+        drawtools.drawInfiniteLine(pos, Vec3d(-1.0, 0.0, 0.0), lightwhite);
+        glDisable(GL_LINE_STIPPLE);
+        glPopAttrib();
     }
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 0 ? highlightred : red, 16);
 }
@@ -37,9 +42,14 @@ void Translate_Manipulator::drawYArrow(const Vec3d& pos)
 
     if (m_index == 1)
     {
+        glPushAttrib(GL_ENABLE_BIT);
+        glLineStipple(2, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
         glLineWidth(0.2f);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 1.0, 0.0), black);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, -1.0, 0.0), black);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 1.0, 0.0), lightwhite);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, -1.0, 0.0), lightwhite);
+        glDisable(GL_LINE_STIPPLE);
+        glPopAttrib();
     }
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 1 ? highlightgreen : green, 16);
 }
@@ -51,9 +61,14 @@ void Translate_Manipulator::drawZArrow(const Vec3d& pos)
 
     if (m_index == 2)
     {
+        glPushAttrib(GL_ENABLE_BIT);
+        glLineStipple(2, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
         glLineWidth(0.2f);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, 1.0), black);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, -1.0), black);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, 1.0), lightwhite);
+        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, -1.0), lightwhite);
+        glDisable(GL_LINE_STIPPLE);
+        glPopAttrib();
     }
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 2 ? highlightblue : blue, 16);
 }
@@ -152,7 +167,7 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
 {
     data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
     if (!data) return;
-    Vec3d pos = data->getValue();
+    QVector3D pos = helper::toQVector3D(data->getValue());
 
     cam = viewer.camera();
     if (!cam) return;
@@ -168,8 +183,7 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     glDisable(GL_LIGHTING);
 
     float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width(), viewer.height()),
-                                                  QVector3D(float(pos.x()), float(pos.y()), float(pos.z())),
-                                                  cam->direction()).distanceToPoint(cam->eye());
+                                                  pos, cam->direction()).distanceToPoint(cam->eye());
 
     arrowLength = 0.07 * double(distanceToPoint);
     radius = 0.001f * distanceToPoint;
@@ -186,6 +200,7 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     lightred = Vec4f(0.86f, 0.27f, 0.33f, isPicking ? 1.0f : 0.2f);
     lightgreen = Vec4f(0.56f, 0.79f, 0.0f, isPicking ? 1.0f : 0.2f);
     lightblue = Vec4f(0.30f, 0.53f, 0.94f, isPicking ? 1.0f : 0.2f);
+    lightwhite = Vec4f(.4f, 0.4f, 0.4f, 0.01f);
 
     red = Vec4f(0.86f, 0.27f, 0.33f, 1.0f);
     green = Vec4f(0.56f, 0.79f, 0.0f, 1.0f);
@@ -195,27 +210,27 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     yellow = Vec4f(0.957f, 0.65f, 0.0f, 1.0f);
 
     if (pickIndex == -1 || pickIndex == 0)
-        drawXArrow(pos);
+        drawXArrow(helper::toVec3d(pos));
 
     if (pickIndex == -1 || pickIndex == 1)
-        drawYArrow(pos);
+        drawYArrow(helper::toVec3d(pos));
 
     if (pickIndex == -1 || pickIndex == 2)
-        drawZArrow(pos);
+        drawZArrow(helper::toVec3d(pos));
 
     if (pickIndex == -1 || pickIndex == 3)
-        drawXYPlane(pos);
+        drawXYPlane(helper::toVec3d(pos));
 
     if (pickIndex == -1 || pickIndex == 4)
-        drawYZPlane(pos);
+        drawYZPlane(helper::toVec3d(pos));
 
     if (pickIndex == -1 || pickIndex == 5)
-        drawZXPlane(pos);
+        drawZXPlane(helper::toVec3d(pos));
 
     glDisable(GL_BLEND);
 
     if (pickIndex == -1 || pickIndex == 6)
-        drawCamPlane(pos, isPicking);
+        drawCamPlane(helper::toVec3d(pos), isPicking);
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_MULTISAMPLE_ARB);
@@ -239,7 +254,7 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         /// and select whichever Vec3d comes first...
         data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
         if (!data) return;
-        Vec3d pos = data->getValue();
+        QVector3D pos = helper::toQVector3D(data->getValue());
     QVector3D translated;
     switch (m_index)
     {
