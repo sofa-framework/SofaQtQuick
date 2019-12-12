@@ -4,11 +4,13 @@
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Helper/sofaqtconversions.h>
 #include <qmath.h>
 
 using namespace sofa::defaulttype;
 namespace sofaqtquick
 {
+using namespace helper;
 
 Rotate_Manipulator::Rotate_Manipulator(QObject* parent)
     : Manipulator(parent)
@@ -17,40 +19,40 @@ Rotate_Manipulator::Rotate_Manipulator(QObject* parent)
     m_index = -1;
 }
 
-void Rotate_Manipulator::drawXAxis(const Vec3d& pos)
+void Rotate_Manipulator::drawXAxis(const QVector3D& pos)
 {
-    Quatd orientation(0, 1, 0, 90);
-    glTranslated(pos.x(), pos.y(), pos.z());
-    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
-    if (m_index == 0)
-        drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
+    QQuaternion orientation(90, 0, 1, 0);
+    glTranslatef(pos.x(), pos.y(), pos.z());
+    glRotatef(orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    if (m_index == 0 && drawMark)
+        drawtools.drawDisk(radius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightred : red);
-    glRotated(-orientation[3], orientation[0], orientation[1], orientation[2]);
-    glTranslated(-pos.x(), -pos.y(), -pos.z());
+    glRotatef(-orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
-void Rotate_Manipulator::drawYAxis(const Vec3d& pos)
+void Rotate_Manipulator::drawYAxis(const QVector3D& pos)
 {
-    Quatd orientation(1, 0, 0, -90);
-    glTranslated(pos.x(), pos.y(), pos.z());
-    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
-    if (m_index == 1)
-        drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
+    QQuaternion orientation(-90, 1, 0, 0);
+    glTranslatef(pos.x(), pos.y(), pos.z());
+    glRotatef(orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    if (m_index == 1 && drawMark)
+        drawtools.drawDisk(radius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightgreen : green);
-    glRotated(-orientation[3], orientation[0], orientation[1], orientation[2]);
-    glTranslated(-pos.x(), -pos.y(), -pos.z());
+    glRotatef(-orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
-void Rotate_Manipulator::drawZAxis(const Vec3d& pos)
+void Rotate_Manipulator::drawZAxis(const QVector3D& pos)
 {
-    Quatd orientation(1, 0, 0, 0);
-    glTranslated(pos.x(), pos.y(), pos.z());
-    glRotated(orientation[3], orientation[0], orientation[1], orientation[2]);
-    if (m_index == 2)
-        drawtools.drawDisk(radius, _from, _to, resolution, lightwhite);
+    QQuaternion orientation(0, 1, 0, 0);
+    glTranslatef(pos.x(), pos.y(), pos.z());
+    glRotatef(orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    if (m_index == 2 && drawMark)
+        drawtools.drawDisk(radius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightblue : blue);
-    glRotated(-orientation[3], orientation[0], orientation[1], orientation[2]);
-    glTranslated(-pos.x(), -pos.y(), -pos.z());
+    glRotatef(-orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
 sofa::core::objectmodel::BaseData* Rotate_Manipulator::getData()
@@ -74,6 +76,7 @@ void drawDottedLine(const Vec3d& p1, const Vec3d& p2, int factor, ushort stipple
 {
     glPushAttrib(GL_ENABLE_BIT);
 
+    glLineWidth(lineThickness);
     glLineStipple(factor, stipple);
     glEnable(GL_LINE_STIPPLE);
     glBegin(GL_LINES);
@@ -93,13 +96,12 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
     if (!posData) return;
 
-    Vec3d pos = posData->getValue();
-    QVector3D center(pos.x(), pos.y(), pos.z());
+    QVector3D center = toQVector3D(posData->getValue());
     if (m_index == -1)
         mX = mY = mZ = mCam = center;
 
     float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width()/2, viewer.height()/2),
-                                                  QVector3D(float(pos.x()), float(pos.y()), float(pos.z())),
+                                                  center,
                                                   cam->direction()).distanceToPoint(cam->eye());
 
     radius = 0.1f * distanceToPoint;
@@ -152,10 +154,10 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
         glTranslatef(position.x(), position.y(), position.z());
         glScaled(viewer.height() / viewer.width(), 1.0, 1.0);
         float camradius = 0.25f;
-        if (m_index == 3)
-            drawtools.drawDisk(camradius, _from, _to, resolution, lightwhite);
+        if (m_index == 3 && drawMark)
+            drawtools.drawDisk(camradius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
         drawDottedLine(Vec3d(0, 0, 0),
-                       Vec3d(themouse.x(), themouse.y(), themouse.z()),
+                       toVec3d(themouse.toVector3D()),
                        3, 0xAAAA, lineThickness, white);
 
         drawtools.drawCircle(camradius, lineThickness, resolution, m_index == 2 ? highlightwhite : white);
@@ -174,20 +176,38 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
 
     if (pickIndex == -1 || pickIndex == 0)
     {
-        drawXAxis(pos);
-        drawDottedLine(pos, Vec3d(mX.x(), mX.y(), mX.z()), 3, 0xAAAA, lineThickness, white);
+        drawXAxis(center);
+        drawDottedLine(toVec3d(center), toVec3d(mX), 3, 0xAAAA, lineThickness, white);
     }
 
     if (pickIndex == -1 || pickIndex == 1)
     {
-        drawYAxis(pos);
-        drawDottedLine(pos, Vec3d(mY.x(), mY.y(), mY.z()), 3, 0xAAAA, lineThickness, white);
+        drawYAxis(center);
+        drawDottedLine(toVec3d(center), toVec3d(mY), 3, 0xAAAA, lineThickness, white);
     }
 
     if (pickIndex == -1 || pickIndex == 2)
     {
-        drawZAxis(pos);
-        drawDottedLine(pos, Vec3d(mZ.x(), mZ.y(), mZ.z()), 3, 0xAAAA, lineThickness, white);
+        drawZAxis(center);
+        drawDottedLine(toVec3d(center), toVec3d(mZ), 3, 0xAAAA, lineThickness, white);
+    }
+
+    // VISUAL DEBUG: Drawing a frame
+    {
+        sofa::core::objectmodel::BaseData* rotData = getData();
+        QVector3D rot;
+        if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
+        {
+            rot = toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(rotData)->getValue());
+        }
+        else
+        {
+            rot = toQVector3D(dynamic_cast<sofa::Data<Quaternion>*>(rotData)->getValue().toEulerVector());
+            rot = QVector3D(toDegrees(rot.x()), toDegrees(rot.y()), toDegrees(rot.z()));
+        }
+        QQuaternion quat = QQuaternion::fromEulerAngles(rot);
+
+        drawtools.drawFrame(toVec3d(center), toQuaternion(quat), Vec3f(4.0f,4.0f,4.0f));
     }
 
     if (!isPicking) {
@@ -202,17 +222,16 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     glPopMatrix();
 }
 
-double getAngle(const QVector3D& mouse, SofaViewer* viewer, const QVector3D& center, const QVector3D& right, const QVector3D& up)
+
+/// Returns the angle mouse - center - up (in degrees)
+float getAngle(const QVector3D& mouse, const QVector3D& center, const QVector3D& right, const QVector3D& up)
 {
     QVector3D dir = (mouse - center).normalized();
 
-    double angle = std::acos(QVector3D::dotProduct(up, dir));
-    std::cout << angle << "rad" << std::endl;
-    if(QVector3D::dotProduct(right, dir) < 0.0)
-    {
-        angle = M_PI + M_PI-angle;
-    }
-    return angle;
+    float angle = std::acos(QVector3D::dotProduct(up, dir));
+    if(QVector3D::dotProduct(right, dir) < 0.0f)
+        angle = float(M_PI) + (float(M_PI) - angle);
+    return toDegrees(angle);
 }
 
 void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
@@ -224,18 +243,8 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     if (!posData) return;
 
     sofa::core::objectmodel::BaseData* rotData = getData();
-    if (!posData) return;
-    Vec3d rot;
-    if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
-        rot = dynamic_cast<sofa::Data<Vec3d>*>(rotData)->getValue();
-    else {
-        rot = dynamic_cast<sofa::Data<Quaternion>*>(rotData)->getValue().toEulerVector();
-    }
-
-
-
-    Vec3d pos = posData->getValue();
-    QVector3D center(pos.x(), pos.y(), pos.z());
+    QVector3D rot = startOrientation.toEulerAngles();
+    QVector3D center = toQVector3D(posData->getValue());
 
     QVector3D X(1,0,0);
     QVector3D Y(0,1,0);
@@ -244,39 +253,37 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0: {
         mX = viewer->projectOnPlane(mouse, center, X);
-        setMark(_startAngle, getAngle(mX, viewer, center, X, Y));
-        Quaternion q;
-        Quaternion addedAngle(1, 0, 0, (_to - _from) / M_PI * 180.0);
-        rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
+        setMark(_startAngle, getAngle(mX, center, X, Y));
+        QQuaternion q;
+        QQuaternion addedAngle = QQuaternion::fromEulerAngles((_to - _from), 0, 0);
+        rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
         break;
     }
     case 1: {
         mY = viewer->projectOnPlane(mouse, center, Y);
-        setMark(_startAngle, getAngle(mY, viewer, center, Y, Z));
-        Quaternion q;
-        Quaternion addedAngle(0, 1, 0, (_to - _from) / M_PI * 180.0);
-        rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
+        setMark(_startAngle, getAngle(mY, center, Y, Z));
+        QQuaternion q;
+        QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, (_to - _from), 0);
+        rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
         break;
     }
     case 2: {
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        setMark(_startAngle, getAngle(mZ, viewer, center, Z, X));
-        Quaternion q;
-        Quaternion addedAngle(0, 0, 1, (_to - _from) / M_PI * 180.0);
-        rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
+        setMark(_startAngle, getAngle(mZ, center, Z, X));
+        QQuaternion q;
+        QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
+        rot = (q.fromEulerAngles(rot) * addedAngle).toEulerAngles();
         break;
     }
     case 3: {
         cam = viewer->camera();
         if (!cam) return;
         mCam = viewer->projectOnPlane(mouse, center, cam->direction());
-        setMark(_startAngle, getAngle(mCam, viewer, center, cam->right(), cam->up()));
-        Quaternion q;
-        Quaternion addedAngle(cam->direction().x(),
-                              cam->direction().y(),
-                              cam->direction().z(),
-                              (_to - _from) / M_PI * 180.0);
-        rot = (q.fromEuler(rot.x(), rot.y(), rot.z()) * addedAngle).toEulerVector();
+        setMark(_startAngle, getAngle(mCam, center, cam->right(), cam->up()));
+        QQuaternion angle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
+        QQuaternion qCam = angle * cam->orientation();
+        qCam.normalize();
+        rot = (startOrientation * qCam).toEulerAngles();
         break;
     }};
 
@@ -284,16 +291,18 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     {
         if (rotData->getName() == "direction")
         {
+            QVector3D d = QQuaternion::fromEulerAngles(rot).rotatedVector(startDirection);
             dynamic_cast<sofa::Data<Vec3d>*>(rotData)->setValue(
-                        Quaternion::fromEuler(rot.x(), rot.y(), rot.z()).rotate(Vec3d(0,0,1)));
+                        toVec3d(d));
         }
-        dynamic_cast<sofa::Data<Vec3d>*>(rotData)->setValue(rot);
+        dynamic_cast<sofa::Data<Vec3d>*>(rotData)->setValue(toVec3d(rot));
     }
     else {
-        dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(Quaternion::fromEuler(rot.x(), rot.y(), rot.z()));
+        dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(Quaternion::fromEuler(toRadians(double(rot.x())) , toRadians(double(rot.y())), toRadians(double(rot.z()))));
     }
 
-    std::cout << (_from - _to) / M_PI * 180.0 << "°" << std::endl;
+
+    std::cout << (_to - _from) << "°" << std::endl;
 }
 
 
@@ -302,7 +311,29 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
     sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
     if (!data) return;
     Vec3d pos = data->getValue();
-    QVector3D center(pos.x(), pos.y(), pos.z());
+    QVector3D center = toQVector3D(pos);
+
+
+    sofa::core::objectmodel::BaseData* rotData = getData();
+    QVector3D rot;
+    if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
+    {
+        rot = toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(rotData)->getValue());
+        // convert rotation to radians then to Quaternion
+        startOrientation = QQuaternion::fromEulerAngles(rot);
+        if (rotData->getName() == "direction")
+        {
+            // if Vec3 is direction, we store the direction vector & initialize the rotation to 0,0,0
+            startDirection = rot;
+            startOrientation = QQuaternion::fromEulerAngles(0,0,0);
+        }
+    }
+    else
+    {
+        startOrientation = toQQuaternion(dynamic_cast<sofa::Data<Quaternion>*>(rotData)->getValue());
+    }
+
+
 
     QVector3D X(1,0,0);
     QVector3D Y(0,1,0);
@@ -311,32 +342,35 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0:
         mX = viewer->projectOnPlane(mouse, center, X);
-        _startAngle = getAngle(mX, viewer, center, X, Y);
+        _startAngle = getAngle(mX, center, X, Y);
         break;
     case 1:
         mY = viewer->projectOnPlane(mouse, center, Y);
-        _startAngle = getAngle(mY, viewer, center, Y, Z);
+        _startAngle = getAngle(mY, center, Y, Z);
         break;
     case 2:
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        _startAngle = getAngle(mZ, viewer, center, Z, X);
+        _startAngle = getAngle(mZ, center, Z, X);
         break;
     case 3:
         cam = viewer->camera();
         if (!cam) return;
         mCam = viewer->projectOnPlane(mouse, center, cam->direction());
-        _startAngle = getAngle(mCam, viewer, center, cam->right(), cam->up());
+        _startAngle = getAngle(mCam, center, cam->right(), cam->up());
         break;
     };
+    setMark(_startAngle, _startAngle);
+
 }
 
-void Rotate_Manipulator::mouseReleased(const QPointF& mouse, SofaViewer* viewer)
+void Rotate_Manipulator::mouseReleased(const QPointF& /*mouse*/, SofaViewer* /*viewer*/)
 {
     sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
     if (!data) return;
     Vec3d pos = data->getValue();
-    QVector3D center(pos.x(), pos.y(), pos.z());
+    QVector3D center = toQVector3D(pos);
     mX = mY = mZ = mCam = center;
+    unsetMark();
 }
 
 
@@ -345,7 +379,7 @@ int Rotate_Manipulator::getIndices() const
     return 4;
 }
 
-void Rotate_Manipulator::setMark(double from, double to)
+void Rotate_Manipulator::setMark(float from, float to)
 {
     _from = from;
     _to = to;
@@ -356,9 +390,6 @@ void Rotate_Manipulator::setMark(double from, double to)
 void Rotate_Manipulator::unsetMark()
 {
     drawMark = false;
-    _from = 0;
-    _to = 0;
-
 }
 
 }  // namespace sofaqtquick

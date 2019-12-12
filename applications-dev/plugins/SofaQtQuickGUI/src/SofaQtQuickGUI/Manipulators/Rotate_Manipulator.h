@@ -23,12 +23,12 @@ public:
     static sofa::core::objectmodel::BaseData* getData();
 
 private:
-    void drawXAxis(const sofa::defaulttype::Vec3d& pos);
-    void drawYAxis(const sofa::defaulttype::Vec3d& pos);
-    void drawZAxis(const sofa::defaulttype::Vec3d& pos);
-    void drawCamAxis(const sofa::defaulttype::Vec3d& pos);
+    void drawXAxis(const QVector3D& pos);
+    void drawYAxis(const QVector3D& pos);
+    void drawZAxis(const QVector3D& pos);
+    void drawCamAxis(const QVector3D& pos);
 
-    void setMark(double from, double to);
+    void setMark(float from, float to);
     void unsetMark();
 
     float radius;
@@ -60,8 +60,9 @@ private:
     sofa::defaulttype::Vec4f yellow;
 
     bool drawMark {false};
-    double _from, _to, _startAngle {0};
-    sofa::defaulttype::Quaternion startOrientation;
+    float _from, _to, _startAngle;
+    QQuaternion startOrientation;
+    QVector3D startDirection;
     QVector3D mX, mY, mZ, mCam;
 };
 

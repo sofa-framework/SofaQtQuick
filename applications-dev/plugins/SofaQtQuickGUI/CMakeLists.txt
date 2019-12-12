@@ -162,6 +162,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Helper/QMathExtensions.h
     src/SofaQtQuickGUI/Helper/QGTest.h
     src/SofaQtQuickGUI/Helper/QtStl/QtStl.h
+    src/SofaQtQuickGUI/Helper/sofaqtconversions.h
     src/SofaQtQuickGUI/LiveFileMonitor.h
     src/SofaQtQuickGUI/LiveQMLFileMonitor.h
     src/SofaQtQuickGUI/SofaProject.h
