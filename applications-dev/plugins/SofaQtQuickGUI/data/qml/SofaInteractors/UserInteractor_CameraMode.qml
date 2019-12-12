@@ -32,6 +32,7 @@ UserInteractor {
     property real moveSpeed: 0.00133
     property real turnSpeed: 20.0
     property real zoomSpeed: 1.0
+    property var label
 
     function moveCamera_init() {
 
@@ -154,7 +155,7 @@ UserInteractor {
                 if(manipulator.mousePressed)
                     manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
-                var obj = Qt.createQmlObject('import QtQuick.Controls 2.0;
+                label = Qt.createQmlObject('import QtQuick.Controls 2.0;
                                               Label {
                                                  id: label
                                                  text: "plop"
@@ -164,12 +165,16 @@ UserInteractor {
                                                          label.destroy();
                                                  }
                                               }', sofaViewer, 'label');
-                obj.text = Qt.binding(function(){ return manipulator.displayText });
-                obj.x = Qt.binding(function(){ return mouse.x + 10});
-                obj.y = Qt.binding(function(){ return mouse.y - 10});
+                label.text = Qt.binding(function(){ return manipulator.displayText });
+                label.x = Qt.binding(function(){ return mouse.x + 15});
+                label.y = Qt.binding(function(){ return mouse.y - 15});
 
                 if(manipulator.mouseMoved)
-                    setMouseMovedMapping(manipulator.mouseMoved)
+                    setMouseMovedMapping(function(mouse, sofaViewer){
+                        label.x = mouse.x + 15
+                        label.y = mouse.y - 15
+                        manipulator.mouseMoved(mouse, sofaViewer)
+                    })
             }
         });
 
