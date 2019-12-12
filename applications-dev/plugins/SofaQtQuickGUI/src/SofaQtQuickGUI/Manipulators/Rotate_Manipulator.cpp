@@ -21,37 +21,50 @@ Rotate_Manipulator::Rotate_Manipulator(QObject* parent)
 
 void Rotate_Manipulator::drawXAxis(const QVector3D& pos)
 {
-    QQuaternion orientation(90, 0, 1, 0);
+    QVector4D axisAngle(0, 1, 0, 90);
     glTranslatef(pos.x(), pos.y(), pos.z());
-    glRotatef(orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glRotatef(axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
     if (m_index == 0 && drawMark)
         drawtools.drawDisk(radius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightred : red);
-    glRotatef(-orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glRotatef(-axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
     glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
 void Rotate_Manipulator::drawYAxis(const QVector3D& pos)
 {
-    QQuaternion orientation(-90, 1, 0, 0);
+    QVector4D axisAngle(1, 0, 0, -90);
     glTranslatef(pos.x(), pos.y(), pos.z());
-    glRotatef(orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glRotatef(axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
     if (m_index == 1 && drawMark)
         drawtools.drawDisk(radius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightgreen : green);
-    glRotatef(-orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glRotatef(-axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
     glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
 void Rotate_Manipulator::drawZAxis(const QVector3D& pos)
 {
-    QQuaternion orientation(0, 1, 0, 0);
+    QVector4D axisAngle(1, 0, 0, 0);
     glTranslatef(pos.x(), pos.y(), pos.z());
-    glRotatef(orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glRotatef(axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
     if (m_index == 2 && drawMark)
         drawtools.drawDisk(radius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
     drawtools.drawCircle(radius, lineThickness, resolution, m_index == 2 ? highlightblue : blue);
-    glRotatef(-orientation.scalar(), orientation.x(), orientation.y(), orientation.z());
+    glRotatef(-axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
+    glTranslatef(-pos.x(), -pos.y(), -pos.z());
+}
+
+
+void Rotate_Manipulator::drawCamAxis(const QVector3D& pos)
+{
+    QVector4D axisAngle = toAxisAngle(cam->orientation());
+    glTranslatef(pos.x(), pos.y(), pos.z());
+    glRotatef(axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
+    if (m_index == 3 && drawMark)
+        drawtools.drawDisk(radius * 1.2f, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
+    drawtools.drawCircle(radius * 1.2f, lineThickness, resolution, m_index == 2 ? highlightwhite : white);
+    glRotatef(-axisAngle.w(), axisAngle.x(), axisAngle.y(), axisAngle.z());
     glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
@@ -130,49 +143,18 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     /// Doing the actual drawing...:
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadIdentity();
+
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadIdentity();
+
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
-
-
-    if (!isPicking) {
+    if (!isPicking)
+    {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
-
-    if (pickIndex == -1 || pickIndex == 3)
-    {
-        QVector4D position = cam->projection() * cam->view() * QVector4D(center, 1.0);
-        position = position / position.w();
-        QVector4D themouse = cam->projection() * cam->view() * QVector4D(mCam, 1.0);
-        themouse = themouse / themouse.w();
-        themouse = themouse - position;
-        glTranslatef(position.x(), position.y(), position.z());
-        glScaled(viewer.height() / viewer.width(), 1.0, 1.0);
-        float camradius = 0.25f;
-        if (m_index == 3 && drawMark)
-            drawtools.drawDisk(camradius, double(toRadians(_from)), double(toRadians(_to)), resolution, lightwhite);
-        drawDottedLine(Vec3d(0, 0, 0),
-                       toVec3d(themouse.toVector3D()),
-                       3, 0xAAAA, lineThickness, white);
-
-        drawtools.drawCircle(camradius, lineThickness, resolution, m_index == 2 ? highlightwhite : white);
-    }
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
 
     if (pickIndex == -1 || pickIndex == 0)
     {
@@ -191,6 +173,14 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
         drawZAxis(center);
         drawDottedLine(toVec3d(center), toVec3d(mZ), 3, 0xAAAA, lineThickness, white);
     }
+
+    if (pickIndex == -1 || pickIndex == 3)
+    {
+        drawCamAxis(center);
+        drawDottedLine(toVec3d(center), toVec3d(mCam), 3, 0xAAAA, lineThickness, white);
+    }
+
+
 
     // VISUAL DEBUG: Drawing a frame
     {
@@ -280,6 +270,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         if (!cam) return;
         mCam = viewer->projectOnPlane(mouse, center, cam->direction());
         setMark(_startAngle, getAngle(mCam, center, cam->right(), cam->up()));
+
         QQuaternion angle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
         QQuaternion qCam = angle * cam->orientation();
         qCam.normalize();
@@ -302,7 +293,7 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     }
 
 
-    std::cout << (_to - _from) << "°" << std::endl;
+    std::cout << "from: " << _from << " to: " << _to << ": " << (_to - _from) << "°" << std::endl;
 }
 
 

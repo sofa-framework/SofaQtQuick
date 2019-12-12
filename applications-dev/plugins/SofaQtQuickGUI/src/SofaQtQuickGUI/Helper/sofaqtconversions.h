@@ -58,5 +58,17 @@ double toDegrees(double radians)
     return radians * 180.0 / M_PI;
 }
 
+QVector4D toAxisAngle(const QQuaternion& q)
+{
+    float angle = 2 * std::acos(q.scalar());
+    float x = q.x() / std::sqrt(1-q.scalar()*q.scalar());
+    float y = q.y() / std::sqrt(1-q.scalar()*q.scalar());
+    float z = q.z() / std::sqrt(1-q.scalar()*q.scalar());
+    return QVector4D(toDegrees(x), toDegrees(y), toDegrees(z), toDegrees(angle));
+}
+
+
+
+
 }  // namespace sofaqtquick::helper
 
