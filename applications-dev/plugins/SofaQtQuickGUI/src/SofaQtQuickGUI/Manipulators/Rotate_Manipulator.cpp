@@ -75,11 +75,11 @@ sofa::core::objectmodel::BaseData* Rotate_Manipulator::getData()
     /// @bmarques TODO: We need a way to select a default data field to manipulate
     /// Then we'll also need a way to manually pick which datafield we want to manipulate
     for (auto& d : obj->rawBase()->getDataFields()){
-        if (d->getValueTypeString() == "Vec3d" && (d->getName() == "rotation" || d->getName() == "orientation" || d->getName() == "direction"))
+        if (d->getValueTypeString() == "Vec3d" && ( d->getName() == "rotation" || d->getName() == "direction"))
             return d;
         else if ((d->getValueTypeString() == "Quatf" || d->getValueTypeString() == "Quatd" ||
                   d->getValueTypeString() == "Quat<double>" || d->getValueTypeString() == "Quat<float>")
-                  && (d->getName() == "rotation" || d->getName() == "orientation"))
+                  && (d->getName() == "rotation" || d->getName() == "orientation" || d->getName() == "quaternion"))
             return d;
     }
     return nullptr;
@@ -181,25 +181,6 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     }
 
 
-
-    // VISUAL DEBUG: Drawing a frame
-    {
-        sofa::core::objectmodel::BaseData* rotData = getData();
-        QVector3D rot;
-        if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
-        {
-            rot = toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(rotData)->getValue());
-        }
-        else
-        {
-            rot = toQVector3D(dynamic_cast<sofa::Data<Quaternion>*>(rotData)->getValue().toEulerVector());
-            rot = QVector3D(toDegrees(rot.x()), toDegrees(rot.y()), toDegrees(rot.z()));
-        }
-        QQuaternion quat = QQuaternion::fromEulerAngles(rot);
-
-        drawtools.drawFrame(toVec3d(center), toQuaternion(quat), Vec3f(4.0f,4.0f,4.0f));
-    }
-
     if (!isPicking) {
         glDisable(GL_BLEND);
     }
@@ -212,10 +193,10 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     glPopMatrix();
 }
 
-
 /// Returns the angle mouse - center - up (in degrees)
 float getAngle(const QVector3D& mouse, const QVector3D& center, const QVector3D& right, const QVector3D& up)
 {
+
     QVector3D dir = (mouse - center).normalized();
 
     float angle = std::acos(QVector3D::dotProduct(up, dir));
@@ -233,8 +214,8 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     if (!posData) return;
 
     sofa::core::objectmodel::BaseData* rotData = getData();
-    QVector3D rot = startOrientation.toEulerAngles();
     QVector3D center = toQVector3D(posData->getValue());
+    QQuaternion quat;
 
     QVector3D X(1,0,0);
     QVector3D Y(0,1,0);
@@ -244,53 +225,53 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     case 0: {
         mX = viewer->projectOnPlane(mouse, center, X);
 
-        setMark(_startAngle, getAngle(mX, center, Y, Z) - 90.0f);
-        QQuaternion q;
-        QQuaternion addedAngle = QQuaternion::fromEulerAngles((_to - _from), 0, 0);
-        rot = (addedAngle * q.fromEulerAngles(rot)).toEulerAngles();
+        _to = getAngle(mX, center, Y, Z) - 90.0f;
+        quat = QQuaternion::fromAxisAndAngle(X, -(_to - _from)) * startOrientation;
+        Quaternion q = toQuaternion(quat);
+
         break;
     }
     case 1: {
         mY = viewer->projectOnPlane(mouse, center, Y);
-        setMark(_startAngle, getAngle(mY, center, Z, X) + 90.0f);
-        QQuaternion q;
-        QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, (_to - _from), 0);
-        rot = (addedAngle * q.fromEulerAngles(rot)).toEulerAngles();
+
+        _to = getAngle(mY, center, Z, X) + 90.0f;
+        quat = QQuaternion::fromAxisAndAngle(Y, -(_to - _from)) * startOrientation;
         break;
     }
     case 2: {
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        setMark(_startAngle, getAngle(mZ, center, X, Y));
 
-        QQuaternion q;
-        QQuaternion addedAngle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
-        rot = (addedAngle * q.fromEulerAngles(rot)).toEulerAngles();
+        _to = getAngle(mZ, center, X, Y);
+        quat = QQuaternion::fromAxisAndAngle(Z, -(_to - _from)) * startOrientation;
         break;
     }
     case 3: {
         cam = viewer->camera();
         if (!cam) return;
         mCam = viewer->projectOnPlane(mouse, center, cam->direction());
-        setMark(_startAngle, getAngle(mCam, center, cam->right(), cam->up()));
 
-        QQuaternion angle = QQuaternion::fromEulerAngles(0, 0, (_to - _from));
-        QQuaternion addedAngle = angle * cam->orientation();
-        rot = (addedAngle * startOrientation).toEulerAngles();
+        _to = getAngle(mCam, center, cam->right(), cam->up());
+        quat = QQuaternion::fromAxisAndAngle(cam->direction().normalized(), (_to - _from))  * startOrientation;
         break;
     }};
 
     if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
     {
+        sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(rotData);
+
         if (rotData->getName() == "direction")
         {
-            QVector3D d = QQuaternion::fromEulerAngles(rot).rotatedVector(startDirection);
-            dynamic_cast<sofa::Data<Vec3d>*>(rotData)->setValue(
-                        toVec3d(d));
+            data->setValue(toVec3d(quat.rotatedVector(startDirection)));
         }
-        dynamic_cast<sofa::Data<Vec3d>*>(rotData)->setValue(toVec3d(rot));
+        else
+        {
+            Vec3d e = toQuaternion(quat).toEulerVector();
+            data->setValue(Vec3d(toDegrees(e.x()), toDegrees(e.y()), toDegrees(e.z())));
+        }
     }
-    else {
-        dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(Quaternion::fromEuler(toRadians(double(rot.x())) , toRadians(double(rot.y())), toRadians(double(rot.z()))));
+    else
+    {
+        dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(toQuaternion(quat));
     }
     emit displayTextChanged(getDisplayText());
 }
@@ -331,24 +312,25 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0:
         mX = viewer->projectOnPlane(mouse, center, X);
-        _startAngle = getAngle(mX, center, Y, Z) - 90.0f;
+        _from = getAngle(mX, center, Y, Z) - 90.0f;
         break;
     case 1:
         mY = viewer->projectOnPlane(mouse, center, Y);
-        _startAngle = getAngle(mY, center, Z, X) + 90.0f;
+        _from = getAngle(mY, center, Z, X) + 90.0f;
         break;
     case 2:
         mZ = viewer->projectOnPlane(mouse, center, Z);
-        _startAngle = getAngle(mZ, center, X, Y);
+        _from = getAngle(mZ, center, X, Y);
         break;
     case 3:
         cam = viewer->camera();
         if (!cam) return;
         mCam = viewer->projectOnPlane(mouse, center, cam->direction());
-        _startAngle = getAngle(mCam, center, cam->right(), cam->up());
+        _from = getAngle(mCam, center, cam->right(), cam->up());
         break;
     };
-    setMark(_startAngle, _startAngle);
+    _to = _from;
+    drawMark = true;
     emit displayTextChanged(getDisplayText());
 }
 
@@ -359,7 +341,7 @@ void Rotate_Manipulator::mouseReleased(const QPointF& /*mouse*/, SofaViewer* /*v
     Vec3d pos = data->getValue();
     QVector3D center = toQVector3D(pos);
     mX = mY = mZ = mCam = center;
-    unsetMark();
+    drawMark = false;
     emit displayTextChanged(getDisplayText());
 }
 
@@ -367,19 +349,6 @@ void Rotate_Manipulator::mouseReleased(const QPointF& /*mouse*/, SofaViewer* /*v
 int Rotate_Manipulator::getIndices() const
 {
     return 4;
-}
-
-void Rotate_Manipulator::setMark(float from, float to)
-{
-    _from = from;
-    _to = to;
-
-    drawMark = true;
-}
-
-void Rotate_Manipulator::unsetMark()
-{
-    drawMark = false;
 }
 
 

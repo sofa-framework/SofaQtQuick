@@ -35,9 +35,16 @@ public:
     void pick(const SofaViewer& viewer, int& pickIndex);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) = 0;
-    Q_INVOKABLE virtual void mouseMoved(const QPointF& mouse, SofaViewer* viewer) = 0;
-    Q_INVOKABLE virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) = 0;
-    Q_INVOKABLE virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) = 0;
+
+
+    Q_INVOKABLE virtual void mouseMoved(const QPointF& mouse, SofaViewer* viewer) { SOFA_UNUSED(mouse);SOFA_UNUSED(viewer); }
+    Q_INVOKABLE virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) { SOFA_UNUSED(mouse);SOFA_UNUSED(viewer); }
+    Q_INVOKABLE virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) { SOFA_UNUSED(mouse);SOFA_UNUSED(viewer); }
+    Q_INVOKABLE virtual void mouseClicked(const QPointF& mouse, SofaViewer* viewer) { SOFA_UNUSED(mouse);SOFA_UNUSED(viewer); }
+
+    Q_INVOKABLE virtual void keyPressed(int key, int modifiers, const QString& text) { SOFA_UNUSED(key);SOFA_UNUSED(modifiers);SOFA_UNUSED(text); }
+    Q_INVOKABLE virtual void keyReleased(int key, int modifiers, const QString& text) { SOFA_UNUSED(key);SOFA_UNUSED(modifiers);SOFA_UNUSED(text); }
+
     virtual int getIndices() const = 0;
 
     virtual QString getDisplayText() const = 0;
