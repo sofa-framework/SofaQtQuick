@@ -268,7 +268,7 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                            float(pos.y()),
                                                            float(pos.z())),
-                                          QVector3D(0,1,0));
+                                          QVector3D(0,1,0)) - shift;
         break;
     case 2: // only move along Z axis
         translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
