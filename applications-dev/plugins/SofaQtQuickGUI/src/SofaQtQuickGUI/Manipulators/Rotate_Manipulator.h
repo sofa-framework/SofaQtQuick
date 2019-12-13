@@ -29,9 +29,7 @@ private:
     void drawYAxis(const QVector3D& pos);
     void drawZAxis(const QVector3D& pos);
     void drawCamAxis(const QVector3D& pos);
-
-    void setMark(float from, float to);
-    void unsetMark();
+    void drawTrackballAxis(const QVector3D& pos);
 
     float radius;
     float lineThickness;
@@ -61,11 +59,11 @@ private:
     sofa::defaulttype::Vec4f black;
     sofa::defaulttype::Vec4f yellow;
 
-    bool drawMark {false};
-    float _from, _to, _startAngle;
+    float _from, _to;
     QQuaternion startOrientation;
     QVector3D startDirection;
     QVector3D mX, mY, mZ, mCam;
+    bool drawMark {false};
 };
 
 }  // namespace sofaqtquick
