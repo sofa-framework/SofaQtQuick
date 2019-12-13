@@ -146,5 +146,6 @@
         <file>SofaManipulators/Translate_Manipulator.qml</file>
         <file>SofaManipulators/Rotate_Manipulator.qml</file>
         <file>SofaManipulators/TranslateParticle_Manipulator.qml</file>
+        <file>SofaManipulators/Scale_Manipulator.qml</file>
     </qresource>
 </RCC>
