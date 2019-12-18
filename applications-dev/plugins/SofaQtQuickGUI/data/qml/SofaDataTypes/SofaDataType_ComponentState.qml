@@ -35,6 +35,7 @@ Text {
     }
 
     enabled:true
+    text: sofaData.value + "(" + sofaData.getCounter() + ")"
 
     Connections
     {
