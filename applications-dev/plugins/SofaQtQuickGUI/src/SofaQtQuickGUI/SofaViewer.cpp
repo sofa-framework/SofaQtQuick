@@ -614,6 +614,8 @@ sofa::core::visual::VisualParams* SofaViewer::setupVisualParams(sofa::core::visu
     visualParams->sceneBBox() = mySofaScene->mySofaRootNode->f_bbox.getValue();
     visualParams->setProjectionMatrix(_projmatrix);
     visualParams->setModelViewMatrix(_mvmatrix);
+    visualParams->zFar() = myCamera->zFar();
+    visualParams->zNear() = myCamera->zNear();
 
     return visualParams ;
 }
@@ -679,6 +681,10 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
 
 void SofaViewer::clearBuffers(const QSize& size, const QColor& color, const QImage& image) const
 {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glClearDepth(1.0);
+
     // final image will be blended using premultiplied alpha
     glClearColor(color.redF() * color.alphaF(), color.greenF() * color.alphaF(), color.blueF() * color.alphaF(), color.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
