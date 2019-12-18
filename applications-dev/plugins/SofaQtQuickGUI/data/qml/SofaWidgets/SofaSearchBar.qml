@@ -121,7 +121,7 @@ RowLayout {
             }
 
             onClicked: {
-                SofaApplication.openInEditor(sofaScene.source, 0)
+                SofaApplication.openInEditorFromUrl(sofaScene.source, 0)
             }
         }
     }

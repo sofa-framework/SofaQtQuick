@@ -211,6 +211,18 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
     }
 }
 
+///
+/// \brief SofaBaseApplication::openInEditorFromUrl
+/// Opens the file pointed in the url with the editor specified in 'DefaultEditor'
+///
+/// \param fullpath substituted by ${path} in the DefaultEditorParams
+/// \param lineno substituted by ${lineno} in the DefaultEditorParams
+///
+void SofaBaseApplication::openInEditorFromUrl(const QUrl& fullpath, const int lineno) const
+{
+    openInEditor(fullpath.toLocalFile(), lineno);
+}
+
 QString SofaBaseApplication::createFolderIn(const QString& parent)
 {
     QString path = parent;

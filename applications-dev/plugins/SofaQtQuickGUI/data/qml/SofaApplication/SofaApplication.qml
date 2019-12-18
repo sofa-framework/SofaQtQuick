@@ -52,7 +52,6 @@ Item //
             SofaBaseApplicationSingleton.selectedComponent = selectedComponent
     }
 
-
     /// Connect to this signal to be notified when a component need to be emphasized.
     signal signalComponent(string objectpath)
 
@@ -64,6 +63,11 @@ Item //
     function openInEditor(fullpath, line)
     {
         SofaBaseApplicationSingleton.openInEditor(fullpath, line)
+    }
+
+    function openInEditorFromUrl(urlToPath, line)
+    {
+        SofaBaseApplicationSingleton.openInEditorFromUrl(urlToPath, line)
     }
 
     function openInExplorer(fullpath)
