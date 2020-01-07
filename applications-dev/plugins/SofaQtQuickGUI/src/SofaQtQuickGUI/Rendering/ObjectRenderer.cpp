@@ -39,8 +39,10 @@ namespace sofaqtquick
 namespace _objectrenderer_
 {
 
-void drawCamera(BaseCamera* camera, VisualParams* VisualParams, bool isSelected)
+void drawCamera(BaseCamera* camera, VisualParams* visualParams, bool isSelected)
 {
+    std::cout << "drawing camera " << std::endl;
+    camera->drawCamera(visualParams);
 }
 
 void drawLight(Light* light, VisualParams* visualParams, bool isSelected)
@@ -105,6 +107,10 @@ void drawBaseObject(BaseObject* object, Base* selected, VisualParams* visualPara
 
     if(selected != object)
         return;
+
+    BaseCamera* camera = dynamic_cast<BaseCamera*>(object) ;
+    if(camera)
+        return drawCamera(camera, visualParams, isSelected);
 
     VisualModel* visualModel = object->toVisualModel();
     if(visualModel)
