@@ -17,6 +17,10 @@ Rectangle {
     }
     signal optionSelected(var option)
     property bool selected
+    onSelectedChanged: {
+        mousemenu.isPressed = selected
+    }
+
     property alias containsMouse: mousemenu.containsMouse
     width: 30
     height: 30

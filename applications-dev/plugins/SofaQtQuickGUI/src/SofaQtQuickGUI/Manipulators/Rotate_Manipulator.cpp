@@ -241,8 +241,6 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
             quat = startOrientation * QQuaternion::fromAxisAndAngle(X, -(_to - _from));
         else
             quat = QQuaternion::fromAxisAndAngle(X, -(_to - _from)) * startOrientation;
-        Quaternion q = toQuaternion(quat);
-
         break;
     }
     case 2: {

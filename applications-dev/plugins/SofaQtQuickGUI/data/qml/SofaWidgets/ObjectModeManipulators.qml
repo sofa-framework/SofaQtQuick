@@ -33,7 +33,7 @@ Column {
     Rectangle {
         id: translateRect
         property string manipulatorName: "Translate_Manipulator"
-        
+
         property bool selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
         
         function setManipulator() {
