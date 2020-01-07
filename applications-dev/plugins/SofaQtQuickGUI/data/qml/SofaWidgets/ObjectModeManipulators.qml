@@ -80,55 +80,47 @@ Column {
         }
     }
 
+    ManipulatorMenu {
+        id: rotateMenu
 
-
-    Rectangle {
-        id: rotateRect
         property string manipulatorName: "Rotate_Manipulator"
 
-        property bool selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
+        selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
 
         function setManipulator() {
             SofaApplication.selectedManipulator = manipulatorControls.getManipulator(manipulatorName)
         }
 
-        implicitHeight: 30
-        implicitWidth: 30
-        color: "transparent"
-        Rectangle {
-            anchors.fill: parent
-            color: rotateRect.selected ? "#8888ff" : "white"
-            opacity: rotateRect.selected ? 0.7 : rotateMarea.containsMouse ? 0.2 : 0.1
-        }
-
-        Image {
-            anchors.centerIn: parent
-            source: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
-            scale: 1.2
-            opacity: 0.9
-        }
-
-        MouseArea {
-            id: rotateMarea
-            anchors.fill: parent
-            hoverEnabled: true
-            acceptedButtons: Qt.LeftButton
-
-            onClicked: {
-                rotateRect.setManipulator()
+        image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
+        menuItemModel: ListModel {
+            ListElement {
+                title: "Local"
+                option: true
             }
-            Shortcut {
-                context: Qt.ApplicationShortcut
-                sequence: "Shift+Space, R";
-                onActivated: {
-                    rotateRect.setManipulator()
-                }
+            ListElement {
+                title: "Global"
+                option: false
             }
         }
+        onOptionSelected: {
+            rotateMenu.setManipulator()
+            SofaApplication.selectedManipulator.local = option
+        }
+
+        Shortcut {
+            context: Qt.ApplicationShortcut
+            sequence: "Shift+Space, R";
+            onActivated: {
+                rotateMenu.setManipulator()
+                SofaApplication.selectedManipulator.local = true
+            }
+        }
+
         ToolTip {
-            visible: rotateMarea.containsMouse
+            visible: rotateMenu.containsMouse
             text: "Rotate"
-            description: "Rotates the selected item\n Shortcut: Shift+Space, R"
+            description: "Rotates the selected item (default: local reference frame)\n Shortcut: Shift+Space, R"
         }
+
     }
 }

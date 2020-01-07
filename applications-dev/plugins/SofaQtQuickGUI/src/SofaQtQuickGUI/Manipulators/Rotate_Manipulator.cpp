@@ -85,6 +85,17 @@ sofa::core::objectmodel::BaseData* Rotate_Manipulator::getData()
     return nullptr;
 }
 
+bool Rotate_Manipulator::getLocal() { return m_isLocal; }
+
+void Rotate_Manipulator::setLocal(bool isLocal)
+{
+    if (m_isLocal != isLocal)
+    {
+        m_isLocal = isLocal;
+        emit localChanged(isLocal);
+    }
+}
+
 void drawDottedLine(const Vec3d& p1, const Vec3d& p2, int factor, ushort stipple, float lineThickness, const Vec4f& color)
 {
     glPushAttrib(GL_ENABLE_BIT);
@@ -226,7 +237,10 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         mX = viewer->projectOnPlane(mouse, center, X);
 
         _to = getAngle(mX, center, Y, Z) - 90.0f;
-        quat = QQuaternion::fromAxisAndAngle(X, -(_to - _from)) * startOrientation;
+        if (m_isLocal)
+            quat = startOrientation * QQuaternion::fromAxisAndAngle(X, -(_to - _from));
+        else
+            quat = QQuaternion::fromAxisAndAngle(X, -(_to - _from)) * startOrientation;
         Quaternion q = toQuaternion(quat);
 
         break;
@@ -235,14 +249,20 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         mY = viewer->projectOnPlane(mouse, center, Y);
 
         _to = getAngle(mY, center, Z, X) + 90.0f;
-        quat = QQuaternion::fromAxisAndAngle(Y, -(_to - _from)) * startOrientation;
+        if (m_isLocal)
+            quat = startOrientation * QQuaternion::fromAxisAndAngle(Y, -(_to - _from));
+        else
+            quat = QQuaternion::fromAxisAndAngle(Y, -(_to - _from)) * startOrientation;
         break;
     }
     case 3: {
         mZ = viewer->projectOnPlane(mouse, center, Z);
 
         _to = getAngle(mZ, center, X, Y);
-        quat = QQuaternion::fromAxisAndAngle(Z, -(_to - _from)) * startOrientation;
+        if (m_isLocal)
+            quat = startOrientation * QQuaternion::fromAxisAndAngle(Z, -(_to - _from));
+        else
+            quat = QQuaternion::fromAxisAndAngle(Z, -(_to - _from)) * startOrientation;
         break;
     }
     case 4: {

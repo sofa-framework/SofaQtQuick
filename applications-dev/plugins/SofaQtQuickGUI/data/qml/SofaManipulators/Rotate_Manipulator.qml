@@ -3,4 +3,5 @@ import Rotate_Manipulator 1.0
 
 Rotate_Manipulator {
     id: root
+    local: true
 }

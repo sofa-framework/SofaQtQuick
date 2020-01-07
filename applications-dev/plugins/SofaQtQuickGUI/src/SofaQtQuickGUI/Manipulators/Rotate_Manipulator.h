@@ -11,7 +11,9 @@ namespace sofaqtquick
 
 class Rotate_Manipulator : public Manipulator
 {
+    Q_OBJECT
 public:
+
     Rotate_Manipulator(QObject* parent = nullptr);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) override;
@@ -24,6 +26,17 @@ public:
 
     static sofa::core::objectmodel::BaseData* getData();
 
+
+
+    Q_PROPERTY(bool local READ getLocal WRITE setLocal NOTIFY localChanged)
+signals:
+    void localChanged(bool);
+private:
+    bool getLocal();
+    void setLocal(bool isLocal);
+    bool m_isLocal;
+
+
 private:
     void drawXAxis(const QVector3D& pos);
     void drawYAxis(const QVector3D& pos);
@@ -31,11 +44,13 @@ private:
     void drawCamAxis(const QVector3D& pos);
     void drawTrackballAxis(const QVector3D& pos);
 
+
     float radius;
     float lineThickness;
     int resolution;
     float width;
     float height;
+
 
     sofa::core::visual::DrawToolGL drawtools;
     bindings::SofaBase* obj;

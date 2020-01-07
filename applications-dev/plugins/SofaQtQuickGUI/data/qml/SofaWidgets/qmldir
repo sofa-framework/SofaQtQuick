@@ -16,3 +16,4 @@ DraggableAssetItem 1.0 DraggableAssetItem.qml
 ObjectModeManipulators 1.0 ObjectModeManipulators.qml
 EditModeManipulators 1.0 EditModeManipulators.qml
 CameraModeManipulators 1.0 CameraModeManipulators.qml
+ManipulatorMenu 1.0 ManipulatorMenu.qml
