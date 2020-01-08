@@ -301,7 +301,6 @@ Item {
                                 console.error("newNode type: " + newNode)
                                 _parent.dump()
                                 //                                newNode.copyTo(_parent)
-                                console.error("bah shit")
                                 if (hasNodes) {
                                     var childsList = _parent.getChildren()
                                     if (childsList.size() !== 0) {

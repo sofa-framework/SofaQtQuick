@@ -17,9 +17,14 @@ void SofaDataContainerListModel::insertRow(QVariantList list)
 {
     beginInsertRows(QModelIndex(), nRows(), nRows());
     insertRow(0, QModelIndex());
+    endInsertRows();
     for (int i = 0 ; i < nCols() ; ++i)
         setData(createIndex(nRows() - 1, 0, nullptr), list.at(i), i+1);
-    endInsertRows();
+    if (!m_asGridViewModel) {
+        /// ugly hack to keep an accurate number of rows when displaying in a QtQuick.Controls 1.X TableView...
+        beginRemoveRows(QModelIndex(), nRows() -1, nRows() -1);
+        endRemoveRows();
+    }
 }
 
 void SofaDataContainerListModel::removeLastRow()
@@ -66,7 +71,8 @@ int	SofaDataContainerListModel::columnCount(const QModelIndex & parent) const
     int nbCols = int(typeinfo->BaseType()->size());
     if (nbCols == 1)
         nbCols = int(typeinfo->size());
-
+    if (!m_asGridViewModel)
+        nbCols++;
     return nbCols;
 }
 
@@ -107,6 +113,8 @@ QString	SofaDataContainerListModel::getCornerType(const QModelIndex& idx) const
 
 QVariant SofaDataContainerListModel::data(const QModelIndex& index, int role) const
 {
+    if (!index.isValid())
+        return QVariant();
     size_t row = 0;
     size_t col = 0;
     if (m_asGridViewModel)
@@ -128,22 +136,39 @@ QVariant SofaDataContainerListModel::data(const QModelIndex& index, int role) co
     }
     else {
         row = size_t(index.row());
+        if (role == 0)
+        {
+            std::cout << "idx.row " << index.row() << std::endl;
+            return QVariant::fromValue(index.row());
+        }
+
         col = size_t(role - 1);
     }
-
 
     const AbstractTypeInfo* typeinfo = m_sofaData->rawData()->getValueTypeInfo();
 
     if (typeinfo->Scalar())
+    {
+        std::cout << typeinfo->getScalarValue(
+                         m_sofaData->rawData()->getValueVoidPtr(),
+                         row * size_t(nCols()) + col) << std::endl;
         return QVariant::fromValue(typeinfo->getScalarValue(
                                        m_sofaData->rawData()->getValueVoidPtr(),
                                        row * size_t(nCols()) + col));
+    }
     else if (typeinfo->Integer())
+    {
+        std::cout << typeinfo->getIntegerValue(
+                         m_sofaData->rawData()->getValueVoidPtr(),
+                         row * size_t(nCols()) + col) << std::endl;
         return QVariant::fromValue(typeinfo->getIntegerValue(
                                        m_sofaData->rawData()->getValueVoidPtr(),
                                        row * size_t(nCols()) + col));
-    else
+    }
+    else {
+//        std::cout << "qvariant" << std::endl;
         return  QVariant();
+    }
 }
 
 QVariant SofaDataContainerListModel::headerData(int section, Qt::Orientation orientation, int /*role*/) const

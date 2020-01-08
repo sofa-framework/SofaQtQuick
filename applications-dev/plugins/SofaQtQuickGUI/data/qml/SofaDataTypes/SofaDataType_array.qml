@@ -115,7 +115,7 @@ ColumnLayout {
                         }
                     }
                     Component {
-                        id: columnComponent
+                        id: valuesColumn
                         QQC1.TableViewColumn {
                             movable: false
                             resizable: true
@@ -124,9 +124,8 @@ ColumnLayout {
                         }
                     }
 
-
                     Component {
-                        id: columnLines
+                        id: indicesColumn
                         QQC1.TableViewColumn {
                             movable: false
                             resizable: true
@@ -142,9 +141,9 @@ ColumnLayout {
                         property var sofaDataValue: root.sofaData.value
 
                         Component.onCompleted: {
-                            tableView.addColumn(columnLines.createObject(tableView, { "title": "", "role": "c0"}));
+                            tableView.addColumn(indicesColumn.createObject(tableView, { "title": "", "role": "c0"}));
                             for (var i = 0 ; i < sofaData.properties.cols ; i++)
-                                tableView.addColumn(columnComponent.createObject(tableView, { "id": ""+i, "title": headerData(i, Qt.Horizontal, ""), "role": "c"+i}));
+                                tableView.addColumn(valuesColumn.createObject(tableView, { "id": ""+i, "title": headerData(i, Qt.Horizontal, ""), "role": "c"+i}));
                         }
                         asGridViewModel: false
                     }
@@ -159,7 +158,8 @@ ColumnLayout {
                     itemDelegate: Loader {
                         anchors.fill: parent
                         id: itemDelegateLoader
-                        sourceComponent: { console.log(styleData.column === 0 && styleData.row === tableView.rowCount-1 );
+                        sourceComponent: {
+                            console.log("c: "+ styleData.column + " , r: " + styleData.row + "\t v:" + Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)) );
                             return styleData.column === 0 && styleData.row === tableView.rowCount -1 ?
                                         lastRowIdxComponent : cellComponent
                         }
@@ -206,39 +206,27 @@ ColumnLayout {
                             validator: DoubleValidator {}
                             function getText() {
                                 if (styleData.column === 0)
-                                    cell.text = styleData.row;
-                                else if(-1 !== styleData.row && styleData.column !== 0) {
-                                    cell.text = Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)).toPrecision(6);
+                                    var txt = parseInt(Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)).toPrecision(6)).toString();
+                                else if(-1 !== styleData.row) {
+                                    txt = Number(listModel.data(listModel.index(styleData.row, 0), styleData.column)).toPrecision(6);
                                 }
                                 else {
-                                    cell.text = "#REF!" // Hum... maybe a better "invalid cell" convention than ms excel....?
+                                    txt = "#REF!" // Hum... maybe a better "invalid cell" convention than ms excel....?
                                 }
-                                return cell.text
+                                return txt
                             }
                             text: getText()
-                            property int previousRow: -1
+                            property bool previousRow: false
                             position: cornerPositions['Middle']
 
-                            MouseArea {
-                                id: mouseArea
-                                anchors.fill: parent
-                                acceptedButtons: cell.readOnly ? Qt.NoButton : Qt.LeftButton
-                                onClicked: {
-                                    parent.forceActiveFocus()
-                                }
-                            }
                             activeFocusOnTab: styleData.column !== 0 ? true : false
                             onActiveFocusChanged: {
                                 if (!cell.readOnly) {
                                     if (activeFocus) {
-                                        text = listModel.data(listModel.index(styleData.row, 0), styleData.column)
-                                        mouseArea.cursorShape = Qt.IBeamCursor
                                         background.color = "#82878c"
                                         cell.selectAll()
                                     } else {
-                                        mouseArea.cursorShape = Qt.ArrowCursor
                                         background.color = "transparent"
-                                        text = getText()
                                     }
                                 }
                             }
@@ -248,11 +236,6 @@ ColumnLayout {
                                 if(-1 === styleData.row || sofaData.properties.readOnly || 0 === styleData.column)
                                     return;
 
-                                if(previousRow !== styleData.row) {
-                                    previousRow = styleData.row;
-                                    return;
-                                }
-
                                 if(styleData.column !== 0) {
                                     var oldValue = listModel.data(listModel.index(styleData.row, 0), styleData.column);
                                     var value = text;
@@ -260,7 +243,9 @@ ColumnLayout {
                                         listModel.setData(listModel.index(styleData.row, 0), text, styleData.column)
                                     }
                                 }
-                                text = getText()
+                                v = getText()
+                                if (v === value)
+                                    text = v
                             }
 
                             background: styleData.column === 0 ? idxBg : background

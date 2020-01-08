@@ -14,7 +14,7 @@ CustomInspector {
         }
 
         var dataMap = {}
-        console.error(SofaApplication.selectedComponent)
+//        console.error(SofaApplication.selectedComponent)
         for (var idx in SofaApplication.selectedComponent.getDataFields()) {
             var dataName = SofaApplication.selectedComponent.getDataFields()[idx]
             var data = SofaApplication.selectedComponent.getData(dataName)
@@ -32,7 +32,7 @@ CustomInspector {
             }
             else
             {
-                console.log(dataName)
+//                console.log(dataName)
             }
         }
         dataDict = dataMap

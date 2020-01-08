@@ -198,6 +198,7 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
     QStringList args = settings.value("DefaultEditorParams").toString().replace("${path}", path).replace("${lineno}", line).split(" ");
     QProcess process;
     int ret = process.startDetached(editor, args);
+    std::cout << editor.toStdString() << " " << args.join(" ").toStdString() << std::endl;
     if (ret < 0)
     {
         msg_warning("OpenInEditor") << "Failed to launch chosen editor. Check runSofa2.ini";

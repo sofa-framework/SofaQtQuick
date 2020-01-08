@@ -15,7 +15,7 @@ Menu {
     title: model.name
 
     onTitleChanged: {
-        console.log(model.name)
+//        console.log(model.name)
         if (title === "createScene")
             asset.isSceneFile = true
         else asset.isSceneFile = false
