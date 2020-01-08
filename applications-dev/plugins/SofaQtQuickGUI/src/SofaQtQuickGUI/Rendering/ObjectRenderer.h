@@ -28,7 +28,7 @@ using sofa::core::visual::VisualParams ;
 ///
 /// General design:
 ///  - Each editor's view has its own set of display flags
-///  - The display flags are used to controle the rendering of objects
+///  - The display flags are used to control the rendering of objects
 ///  - When a component/object is selected, the view is altered to represent
 ///    component specific information. This dedicated rendering is done
 ///    on in ObjectRenderer

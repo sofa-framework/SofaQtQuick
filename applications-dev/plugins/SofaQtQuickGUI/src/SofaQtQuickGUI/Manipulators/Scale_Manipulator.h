@@ -9,48 +9,36 @@
 namespace sofaqtquick
 {
 
-class Rotate_Manipulator : public Manipulator
+class Scale_Manipulator : public Manipulator
 {
-    Q_OBJECT
 public:
-
-    Rotate_Manipulator(QObject* parent = nullptr);
+    Scale_Manipulator(QObject* parent = nullptr);
 
     virtual void internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking = false) override;
     virtual void mouseMoved(const QPointF& mouse, SofaViewer* viewer) override;
     virtual void mousePressed(const QPointF& mouse, SofaViewer* viewer) override;
     virtual void mouseReleased(const QPointF& mouse, SofaViewer* viewer) override;
-    virtual int getIndices() const override;
-
     virtual QString getDisplayText() const override;
 
+    virtual int getIndices() const override;
+    void drawXYPlane() const;
+
     static sofa::core::objectmodel::BaseData* getData();
-
-
-
-    Q_PROPERTY(bool local READ getLocal WRITE setLocal NOTIFY localChanged)
-signals:
-    void localChanged(bool);
+    
 private:
-    bool getLocal();
-    void setLocal(bool isLocal);
-    bool m_isLocal;
-
-
-private:
-    void drawXAxis(const QVector3D& pos);
-    void drawYAxis(const QVector3D& pos);
-    void drawZAxis(const QVector3D& pos);
-    void drawCamAxis(const QVector3D& pos);
-    void drawTrackballAxis(const QVector3D& pos);
-
+    void drawXArrow(const sofa::defaulttype::Vec3d& pos);
+    void drawYArrow(const sofa::defaulttype::Vec3d& pos);
+    void drawZArrow(const sofa::defaulttype::Vec3d& pos);
+    void drawXYPlane(const sofa::defaulttype::Vec3d& pos);
+    void drawYZPlane(const sofa::defaulttype::Vec3d& pos);
+    void drawZXPlane(const sofa::defaulttype::Vec3d& pos);
+    void drawCamPlane(const sofa::defaulttype::Vec3d& pos, bool isPicking);
 
     float radius;
     float lineThickness;
-    int resolution;
-    float width;
-    float height;
-
+    float crossSize;
+    double arrowLength;
+    double squareWidth;
 
     sofa::core::visual::DrawToolGL drawtools;
     bindings::SofaBase* obj;
@@ -65,20 +53,17 @@ private:
     sofa::defaulttype::Vec4f lightred;
     sofa::defaulttype::Vec4f lightgreen;
     sofa::defaulttype::Vec4f lightblue;
+    sofa::defaulttype::Vec4f lightwhite;
 
     sofa::defaulttype::Vec4f red;
     sofa::defaulttype::Vec4f green;
     sofa::defaulttype::Vec4f blue;
     sofa::defaulttype::Vec4f white;
-    sofa::defaulttype::Vec4f lightwhite;
     sofa::defaulttype::Vec4f black;
     sofa::defaulttype::Vec4f yellow;
 
-    float _from, _to;
-    QQuaternion startOrientation;
-    QVector3D startDirection;
-    QVector3D mX, mY, mZ, mCam;
-    bool drawMark {false};
+    QVector3D shift;
+    bool active {false};
 };
 
 }  // namespace sofaqtquick
