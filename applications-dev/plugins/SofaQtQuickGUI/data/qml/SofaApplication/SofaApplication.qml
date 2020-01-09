@@ -42,16 +42,42 @@ Item //
     ////////////////////////////////////////////////// SOFASCENE
     property var sofaScene: null
 
+    function getManipulator(manipulatorString) {
+        var manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
+        if (manipulator.status === Component.Ready)
+        {
+            console.log("Created Manipulator with name " + manipulatorString)
+            var m = manipulator.createObject()
+            return m
+        }
+        console.log("Cant create Manipulator with name " + manipulatorString)
+        return null
+    }
+    onSofaSceneChanged: {
+        sofaScene.clearManipulators()
+        sofaScene.addManipulator(getManipulator("Viewpoint_Manipulator"))
+    }
+
     property QtObject sofaMessageList : SofaMessageList
 
     property var style : MainStyle
 
+
+    ////////////////////////////////////////////////// MANIPULATORS
+
+
+    // This manipulator is the currently selected interchangeable manipulator.
+    // An interchangeable manipulator is a manipulator whose activation depends on others being inactive.
+    // e.g. Rotate / scale cannot be active if the translate manipulator is active.
+    // Other manipulators are in SofaScene.manipulators
     property var selectedManipulator : sofaScene.selectedManipulator
     onSelectedManipulatorChanged: {
         if (selectedManipulator !== null) {
             sofaScene.selectedManipulator = selectedManipulator
         }
     }
+
+    ////////////////////////////////////////////////// SELECTED COMPONENT
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {
         SofaBaseApplicationSingleton.selectedComponent = selectedComponent

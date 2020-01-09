@@ -27,6 +27,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 using sofaqtquick::Translate_Manipulator;
 #include <SofaQtQuickGUI/Manipulators/Scale_Manipulator.h>
 using sofaqtquick::Scale_Manipulator;
+#include <SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h>
+using sofaqtquick::Viewpoint_Manipulator;
 #include <SofaQtQuickGUI/Manipulators/TranslateParticle_Manipulator.h>
 using sofaqtquick::TranslateParticle_Manipulator;
 #include <SofaQtQuickGUI/Manipulators/Rotate_Manipulator.h>
@@ -264,6 +266,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     //    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
     qmlRegisterType<Translate_Manipulator>                              ("Translate_Manipulator"                    , versionMajor, versionMinor, "Translate_Manipulator");
+    qmlRegisterType<Viewpoint_Manipulator>                              ("Viewpoint_Manipulator"                    , versionMajor, versionMinor, "Viewpoint_Manipulator");
     qmlRegisterType<TranslateParticle_Manipulator>                              ("TranslateParticle_Manipulator"                    , versionMajor, versionMinor, "TranslateParticle_Manipulator");
     qmlRegisterType<Rotate_Manipulator>                              ("Rotate_Manipulator"                    , versionMajor, versionMinor, "Rotate_Manipulator");
     qmlRegisterType<Scale_Manipulator>                              ("Scale_Manipulator"                    , versionMajor, versionMinor, "Scale_Manipulator");

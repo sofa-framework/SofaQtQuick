@@ -294,8 +294,7 @@ void SofaBaseScene::loadCppGraph()
     // reset properties
     setAnimate(false);
     SofaBaseApplication::SetSelectedComponent(nullptr);
-    setSelectedManipulator(nullptr);
-    myManipulators.clear();
+//    setSelectedManipulator(nullptr);
 
     if(mySofaRootNode)
     {
@@ -328,8 +327,7 @@ void SofaBaseScene::open()
     setAnimate(false);
 
     SofaBaseApplication::SetSelectedComponent(nullptr);
-    setSelectedManipulator(nullptr);
-    myManipulators.clear();
+//    setSelectedManipulator(nullptr);
 
     if(mySofaRootNode)
     {

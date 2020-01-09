@@ -12,19 +12,19 @@ import SofaManipulators 1.0
 import SofaWidgets 1.0
 
 Column {
-    id: manipulatorControls
-    anchors.left: parent.left
-    anchors.top: parent.top
-    anchors.leftMargin: 20
-    anchors.topMargin: 20
+//    id: manipulatorControls
+//    anchors.left: parent.left
+//    anchors.top: parent.top
+//    anchors.leftMargin: 20
+//    anchors.topMargin: 20
 
-    function addManipulator(manipulatorString) {
-        var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorString)
-        if (!manipulator) {
-            manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
-            if (manipulator.status === Component.Ready)
-            SofaApplication.sofaScene.addManipulator(manipulator.createObject())
-        }
-        return manipulator
-    }
+//    function addManipulator(manipulatorString) {
+//        var manipulator = SofaApplication.sofaScene.getManipulatorByName(manipulatorString)
+//        if (!manipulator) {
+//            manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
+//            if (manipulator.status === Component.Ready)
+//            SofaApplication.sofaScene.addManipulator(manipulator.createObject())
+//        }
+//        return manipulator
+//    }
 }

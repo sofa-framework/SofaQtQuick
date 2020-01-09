@@ -142,6 +142,18 @@ UserInteractor {
 
     function init() {
         moveCamera_init();
+        addMouseClickedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
+            var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
+            if(selectable && selectable.sofaComponent) {
+                console.error("SelectedCompoennt: " + selectable.sofaComponent)
+                SofaApplication.selectedComponent = selectable.sofaComponent;
+            }
+
+            if(selectable && selectable.manipulator) {
+                if(selectable.manipulator.mouseClicked)
+                    selectable.manipulator.mouseClicked(Qt.point(mouse.x, mouse.y), sofaViewer);
+            }
+        });
 
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
@@ -155,24 +167,29 @@ UserInteractor {
                 if(manipulator.mousePressed)
                     manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
-                label = Qt.createQmlObject('import QtQuick.Controls 2.0;
-                                              Label {
-                                                 id: label
-                                                 text: "plop"
-                                                 color: "white"
-                                                 onTextChanged: {
-                                                     if (text === "")
-                                                         label.destroy();
-                                                 }
-                                              }', sofaViewer, 'label');
-                label.text = Qt.binding(function(){ return manipulator.displayText });
-                label.x = Qt.binding(function(){ return mouse.x + 15});
-                label.y = Qt.binding(function(){ return mouse.y - 15});
-
+                var lblText = manipulator.displayText
+                if (lblText !== "")
+                {
+                    label = Qt.createQmlObject('import QtQuick.Controls 2.0;
+                                                Label {
+                                                   id: label
+                                                   text: "plop"
+                                                   color: "white"
+                                                   onTextChanged: {
+                                                       if (text === "")
+                                                           label.destroy();
+                                                   }
+                                                }', sofaViewer, 'label');
+                    label.text = Qt.binding(function(){ return lblText });
+                    label.x = Qt.binding(function(){ return mouse.x + 15});
+                    label.y = Qt.binding(function(){ return mouse.y - 15});
+                }
                 if(manipulator.mouseMoved)
                     setMouseMovedMapping(function(mouse, sofaViewer){
-                        label.x = mouse.x + 15
-                        label.y = mouse.y - 15
+                        if (lblText !== "") {
+                            label.x = mouse.x + 15
+                            label.y = mouse.y - 15
+                        }
                         manipulator.mouseMoved(mouse, sofaViewer)
                     })
             }
