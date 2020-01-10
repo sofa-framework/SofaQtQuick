@@ -320,7 +320,6 @@ Item {
                                     else {
                                         var rootNode = sofaApplication.sofaScene.root()
                                         var insertedAsset = insertAsset(index, rootNode)
-                                        console.error("SelectedCompoennt insertAsset: " + insertedAsset)
                                         SofaApplication.selectedComponent = insertedAsset
                                     }
                                 }
@@ -331,7 +330,6 @@ Item {
                                     var pos = sofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
                                     projectMenu.x = mouse.x + pos[0]
                                     projectMenu.y = mouse.y + pos[1]
-                                    console.error(projectMenu.x + " " + projectMenu.y)
                                     projectMenu.open()
                                 }
                                 else if (Qt.LeftButton === mouse.button)

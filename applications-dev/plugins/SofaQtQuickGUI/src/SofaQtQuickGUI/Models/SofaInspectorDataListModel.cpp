@@ -209,8 +209,6 @@ void SofaInspectorDataListModel::handleDataHasChanged()
 
 QModelIndex SofaInspectorDataListModel::parent ( const QModelIndex & index ) const
 {
-    std::cout << "parent" << std::endl;
-
     return index.parent() ;
 }
 

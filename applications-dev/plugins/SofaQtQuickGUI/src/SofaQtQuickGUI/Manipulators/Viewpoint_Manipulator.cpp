@@ -41,133 +41,179 @@ void Viewpoint_Manipulator::internalDraw(const SofaViewer &viewer, int pickIndex
 
     Vec3d p = helper::toVec3d(viewer.mapToWorld(QPointF(viewer.width() - 80,80), cam->zNear()));
 
+//    if (!isPicking || pickIndex == 0)
+//    {
+//        if (!isPicking)
+//        {
+//            // if we removed the alpha it's for picking
+//            glEnable(GL_BLEND);
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        }
+
+//        // Draw front plane
+//        a = p + Vec3d(-squareWidth/2, -squareWidth / 2, squareWidth / 2);
+//        b = a + Vec3d(squareWidth, 0.0, 0.0);
+//        c = b + Vec3d(0.0, squareWidth, 0.0);
+//        d = c + Vec3d(-squareWidth, 0.0, 0.0);
+//        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0f,1.0f,1.0f,1.0f) );
+//        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0f,1.0f,1.0f,1.0));
+////        glLineWidth(2.0);
+////        dt.drawLine(p, p - Vec3d(0,0, -squareWidth/2), Vec4f(.0f,.0f,1.0f,1.0f));
+////        glLineWidth(1.0);
+////        dt.drawSphere(p - Vec3d(0,0, -squareWidth/2), squareWidth / 7.0, Vec4f(.0f,.0f,1.0f,1.0f));
+//    }
+
+//    if (!isPicking || pickIndex == 1)
+//    {
+//        if (!isPicking)
+//        {
+//            // if we removed the alpha it's for picking
+//            glEnable(GL_BLEND);
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        }
+
+//        // Draw back plane
+//        a = p + Vec3d(-squareWidth / 2, -squareWidth / 2, -squareWidth / 2);
+//        b = a + Vec3d(squareWidth, 0.0, 0.0);
+//        c = b + Vec3d(0.0, squareWidth, 0.0);
+//        d = c + Vec3d(-squareWidth, 0.0, 0.0);
+//        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,1.0f) );
+//        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
+////        dt.drawSphere(p - Vec3d(0,0, squareWidth/2), squareWidth / 7.0, Vec4f(.3f,.3f,.8f,1.0f));
+//    }
+
+//    if (!isPicking || pickIndex == 2)
+//    {
+//        if (!isPicking)
+//        {
+//            // if we removed the alpha it's for picking
+//            glEnable(GL_BLEND);
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        }
+
+//        // Draw right plane
+//        a = p + Vec3d(squareWidth / 2, -squareWidth / 2.0, -squareWidth / 2);
+//        b = a + Vec3d(0.0, 0.0, squareWidth);
+//        c = b + Vec3d(0.0, squareWidth, 0.0);
+//        d = c + Vec3d(0.0, 0.0, -squareWidth);
+//        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,1.0f) );
+//        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
+////        glLineWidth(2.0);
+////        dt.drawLine(p, p - Vec3d(-squareWidth/2,0, 0), Vec4f(1.0f,.0f,.0f,1.0f));
+////        glLineWidth(1.0);
+////        dt.drawSphere(p - Vec3d(-squareWidth/2,0, 0), squareWidth / 7.0, Vec4f(1.0f,.0f,.0f,1.0f));
+//    }
+
+//    if (!isPicking || pickIndex == 3)
+//    {
+//        if (!isPicking)
+//        {
+//            // if we removed the alpha it's for picking
+//            glEnable(GL_BLEND);
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        }
+
+
+//        // Draw left plane
+//        a = p + Vec3d(-squareWidth / 2.0, -squareWidth / 2.0, -squareWidth /2);
+//        b = a + Vec3d(0.0, 0.0, squareWidth);
+//        c = b + Vec3d(0.0, squareWidth, 0.0);
+//        d = c + Vec3d(0.0, 0.0, -squareWidth);
+//        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,1.0f) );
+//        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
+////        dt.drawSphere(p - Vec3d(squareWidth/2,0, 0), squareWidth / 7.0, Vec4f(.8f,.3f,.3f,1.0f));
+//    }
+
+//    if (!isPicking || pickIndex == 4)
+//    {
+//        if (!isPicking)
+//        {
+//            // if we removed the alpha it's for picking
+//            glEnable(GL_BLEND);
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        }
+
+//        // Draw top plane
+//        a = p + Vec3d(-squareWidth / 2.0, squareWidth / 2, -squareWidth / 2);
+//        b = a + Vec3d(0.0, 0.0, squareWidth);
+//        c = b + Vec3d(squareWidth, 0.0, 0.0);
+//        d = c + Vec3d(0.0, 0.0, -squareWidth);
+//        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,1.0f) );
+//        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
+////        glLineWidth(2.0);
+////        dt.drawLine(p, p - Vec3d(0,-squareWidth/2, 0), Vec4f(0.0f,1.0f,.0f,1.0f));
+////        glLineWidth(1.0);
+////        dt.drawSphere(p - Vec3d(0,-squareWidth/2, 0), squareWidth / 7.0, Vec4f(0.0f,1.0f,.0f,1.0f));
+//    }
+
+//    if (!isPicking || pickIndex == 5)
+//    {
+//        if (!isPicking)
+//        {
+//            // if we removed the alpha it's for picking
+//            glEnable(GL_BLEND);
+//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        }
+
+//        // Draw bottom plane
+//        a = p + Vec3d(squareWidth / 2, -squareWidth / 2.0, -squareWidth / 2);
+//        b = a + Vec3d(0.0, 0.0, squareWidth);
+//        c = b + Vec3d(-squareWidth, 0.0, 0.0);
+//        d = c + Vec3d(0.0, 0.0, -squareWidth);
+//        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,1.0f) );
+//        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
+////        dt.drawSphere(p - Vec3d(0,squareWidth/2, 0), squareWidth / 7.0, Vec4f(.3f,.8f,.3f,1.0f));
+//    }
+
+//    glDisable(GL_DEPTH_TEST);
+
     if (!isPicking || pickIndex == 0)
     {
-        if (!isPicking)
-        {
-            // if we removed the alpha it's for picking
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        // Draw front plane
-        a = p + Vec3d(-squareWidth/2, -squareWidth / 2, squareWidth / 2);
-        b = a + Vec3d(squareWidth, 0.0, 0.0);
-        c = b + Vec3d(0.0, squareWidth, 0.0);
-        d = c + Vec3d(-squareWidth, 0.0, 0.0);
-        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0f,1.0f,1.0f,.10f) );
-        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0f,1.0f,1.0f,1.0));
-        dt.drawSphere(p - Vec3d(0,0, squareWidth/2), squareWidth / 5.0, Vec4f(.0f,.0f,1.0f,.8f));
+        glLineWidth(3.0);
+        dt.drawLine(p, p - Vec3d(0,0, -squareWidth/2), Vec4f(0.30f, 0.53f, 0.94f, 1.0f));
+        glLineWidth(1.0);
+        dt.drawSphere(p - Vec3d(0,0, -squareWidth/2), float(squareWidth / 7.0), Vec4f(0.30f, 0.53f, 0.94f, 1.0f));
     }
 
     if (!isPicking || pickIndex == 1)
     {
-        if (!isPicking)
-        {
-            // if we removed the alpha it's for picking
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        // Draw back plane
-        a = p + Vec3d(-squareWidth / 2, -squareWidth / 2, -squareWidth / 2);
-        b = a + Vec3d(squareWidth, 0.0, 0.0);
-        c = b + Vec3d(0.0, squareWidth, 0.0);
-        d = c + Vec3d(-squareWidth, 0.0, 0.0);
-        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,.10f) );
-        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
-        dt.drawSphere(p - Vec3d(0,0, -squareWidth/2), squareWidth / 5.0, Vec4f(.0f,.0f,1.0f,.8f));
+        dt.drawSphere(p - Vec3d(0,0, squareWidth/2), float(squareWidth / 7.0), Vec4f(0.00f, 0.33f, 0.64f, 1.0f));
     }
 
     if (!isPicking || pickIndex == 2)
     {
-        if (!isPicking)
-        {
-            // if we removed the alpha it's for picking
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-
-        // Draw left plane
-        a = p + Vec3d(-squareWidth / 2.0, -squareWidth / 2.0, -squareWidth /2);
-        b = a + Vec3d(0.0, 0.0, squareWidth);
-        c = b + Vec3d(0.0, squareWidth, 0.0);
-        d = c + Vec3d(0.0, 0.0, -squareWidth);
-        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,.1f) );
-        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
-        dt.drawSphere(p - Vec3d(-squareWidth/2,0, 0), squareWidth / 5.0, Vec4f(1.0f,.0f,.0f,.8f));
+        glLineWidth(3.0);
+        dt.drawLine(p, p - Vec3d(-squareWidth/2,0, 0), Vec4f(0.86f, 0.27f, 0.33f, 1.0f));
+        glLineWidth(1.0);
+        dt.drawSphere(p - Vec3d(-squareWidth/2,0, 0), float(squareWidth / 7.0), Vec4f(0.86f, 0.27f, 0.33f, 1.0f));
     }
 
     if (!isPicking || pickIndex == 3)
     {
-        if (!isPicking)
-        {
-            // if we removed the alpha it's for picking
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        // Draw right plane
-        a = p + Vec3d(squareWidth / 2, -squareWidth / 2.0, -squareWidth / 2);
-        b = a + Vec3d(0.0, 0.0, squareWidth);
-        c = b + Vec3d(0.0, squareWidth, 0.0);
-        d = c + Vec3d(0.0, 0.0, -squareWidth);
-        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,.1f) );
-        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
-        dt.drawSphere(p - Vec3d(squareWidth/2,0, 0), squareWidth / 5.0, Vec4f(1.0f,.0f,.0f,.8f));
+        dt.drawSphere(p - Vec3d(squareWidth/2,0, 0), float(squareWidth / 7.0), Vec4f(0.56f, 0.07f, 0.13f, 1.0f));
     }
 
     if (!isPicking || pickIndex == 4)
     {
-        if (!isPicking)
-        {
-            // if we removed the alpha it's for picking
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        // Draw top plane
-        a = p + Vec3d(-squareWidth / 2.0, squareWidth / 2, -squareWidth / 2);
-        b = a + Vec3d(0.0, 0.0, squareWidth);
-        c = b + Vec3d(squareWidth, 0.0, 0.0);
-        d = c + Vec3d(0.0, 0.0, -squareWidth);
-        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,.1f) );
-        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
-        dt.drawSphere(p - Vec3d(0,squareWidth/2, 0), squareWidth / 5.0, Vec4f(0.0f,1.0f,.0f,.8f));
+        glLineWidth(3.0);
+        dt.drawLine(p, p - Vec3d(0,-squareWidth/2, 0), Vec4f(0.56f, 0.79f, 0.0f, 1.0f));
+        glLineWidth(1.0);
+        dt.drawSphere(p - Vec3d(0,-squareWidth/2, 0), float(squareWidth / 7.0), Vec4f(0.56f, 0.79f, 0.0f, 1.0f));
     }
 
     if (!isPicking || pickIndex == 5)
     {
-        if (!isPicking)
-        {
-            // if we removed the alpha it's for picking
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        // Draw bottom plane
-        a = p + Vec3d(squareWidth / 2, -squareWidth / 2.0, -squareWidth / 2);
-        b = a + Vec3d(0.0, 0.0, squareWidth);
-        c = b + Vec3d(-squareWidth, 0.0, 0.0);
-        d = c + Vec3d(0.0, 0.0, -squareWidth);
-        dt.drawQuad(a,b,c,d, Vec3d(0,0,1), Vec4f(1.0,1.0,1.0,.10f) );
-        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
-        dt.drawSphere(p - Vec3d(0,-squareWidth/2, 0), squareWidth / 5.0, Vec4f(0.0f,1.0f,.0f,.8f));
+        dt.drawSphere(p - Vec3d(0,squareWidth/2, 0), float(squareWidth / 7.0), Vec4f(0.26f, 0.49f, 0.0f, 1.0f));
     }
-
 
     glDisable(GL_MULTISAMPLE_ARB);
     glEnable(GL_LIGHTING);
 
     cam->setOrthographic(false);
-
-
 }
 
-void Viewpoint_Manipulator::mouseClicked(const QPointF &mouse, SofaViewer *viewer)
+void Viewpoint_Manipulator::mouseClicked(const QPointF& /*mouse*/, SofaViewer *viewer)
 {
-    std::cout << "Clicked motherfucker! " << m_index << std::endl;
     Camera* cam = viewer->camera();
     switch (m_index)
     {
@@ -178,10 +224,10 @@ void Viewpoint_Manipulator::mouseClicked(const QPointF &mouse, SofaViewer *viewe
         cam->viewFromBack();
         break;
     case 2: // move to LEFT plane
-        cam->viewFromLeft();
+        cam->viewFromRight();
         break;
     case 3: // move to RIGHT plane
-        cam->viewFromRight();
+        cam->viewFromLeft();
         break;
     case 4: // move to TOP plane
         cam->viewFromTop();

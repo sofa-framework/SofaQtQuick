@@ -138,7 +138,6 @@ QVariant SofaDataContainerListModel::data(const QModelIndex& index, int role) co
         row = size_t(index.row());
         if (role == 0)
         {
-            std::cout << "idx.row " << index.row() << std::endl;
             return QVariant::fromValue(index.row());
         }
 
@@ -149,24 +148,17 @@ QVariant SofaDataContainerListModel::data(const QModelIndex& index, int role) co
 
     if (typeinfo->Scalar())
     {
-        std::cout << typeinfo->getScalarValue(
-                         m_sofaData->rawData()->getValueVoidPtr(),
-                         row * size_t(nCols()) + col) << std::endl;
         return QVariant::fromValue(typeinfo->getScalarValue(
                                        m_sofaData->rawData()->getValueVoidPtr(),
                                        row * size_t(nCols()) + col));
     }
     else if (typeinfo->Integer())
     {
-        std::cout << typeinfo->getIntegerValue(
-                         m_sofaData->rawData()->getValueVoidPtr(),
-                         row * size_t(nCols()) + col) << std::endl;
         return QVariant::fromValue(typeinfo->getIntegerValue(
                                        m_sofaData->rawData()->getValueVoidPtr(),
                                        row * size_t(nCols()) + col));
     }
     else {
-//        std::cout << "qvariant" << std::endl;
         return  QVariant();
     }
 }

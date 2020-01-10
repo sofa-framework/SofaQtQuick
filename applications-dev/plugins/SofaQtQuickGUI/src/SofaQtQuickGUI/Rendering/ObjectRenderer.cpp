@@ -41,7 +41,6 @@ namespace _objectrenderer_
 
 void drawCamera(BaseCamera* camera, VisualParams* visualParams, bool isSelected)
 {
-    std::cout << "drawing camera " << std::endl;
     camera->drawCamera(visualParams);
 }
 

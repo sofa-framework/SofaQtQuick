@@ -42,22 +42,6 @@ Item //
     ////////////////////////////////////////////////// SOFASCENE
     property var sofaScene: null
 
-    function getManipulator(manipulatorString) {
-        var manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
-        if (manipulator.status === Component.Ready)
-        {
-            console.log("Created Manipulator with name " + manipulatorString)
-            var m = manipulator.createObject()
-            return m
-        }
-        console.log("Cant create Manipulator with name " + manipulatorString)
-        return null
-    }
-    onSofaSceneChanged: {
-        sofaScene.clearManipulators()
-        sofaScene.addManipulator(getManipulator("Viewpoint_Manipulator"))
-    }
-
     property QtObject sofaMessageList : SofaMessageList
 
     property var style : MainStyle

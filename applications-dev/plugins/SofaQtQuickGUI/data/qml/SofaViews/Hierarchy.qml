@@ -215,7 +215,6 @@ Rectangle {
             {
                 var srcIndex = sceneModel.mapToSource(currentIndex)
                 var theComponent = basemodel.getBaseFromIndex(srcIndex)
-                console.error("SelectedCompoennt theComponent: " + theComponent)
                 SofaApplication.selectedComponent = theComponent
                 SofaApplication.currentProject.selectedAsset = null
             }
@@ -539,7 +538,6 @@ Rectangle {
                         var c = getFirstChildWithMessage(index)
                         var idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(c))
                         treeView.expandAncestors(idx)
-                        console.error("SelectedCompoennt c: " + c)
                         SofaApplication.selectedComponent = c;
                         treeView.__listView.positionViewAtIndex(index, "EnsureVisible")
 
@@ -651,7 +649,6 @@ Rectangle {
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {
-                        console.error("SelectedCompoennt theComponent2: " + theComponent)
                         SofaApplication.selectedComponent = theComponent
                         SofaApplication.currentProject.selectedAsset = null
 
@@ -669,7 +666,6 @@ Rectangle {
                             var pos = SofaApplication.getIdealPopupPos(nodeMenu, mouseArea)
                             nodeMenu.x = mouseArea.mouseX + pos[0]
                             nodeMenu.y = mouseArea.mouseY + pos[1]
-                            console.error(nodeMenu.x + " " + nodeMenu.y)
                             nodeMenu.open();
                         } else {
                             if(theComponent.hasLocations()===true)
