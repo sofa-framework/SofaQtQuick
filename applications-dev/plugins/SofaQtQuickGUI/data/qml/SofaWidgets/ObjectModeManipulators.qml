@@ -37,7 +37,9 @@ Column {
         property bool selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
         
         function setManipulator() {
-            SofaApplication.selectedManipulator = manipulatorControls.getManipulator(manipulatorName)
+            var m = manipulatorControls.getManipulator(manipulatorName)
+            if (m !== null)
+                SofaApplication.selectedManipulator = m
         }
         
         implicitHeight: 30
@@ -88,7 +90,9 @@ Column {
         selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
 
         function setManipulator() {
-            SofaApplication.selectedManipulator = manipulatorControls.getManipulator(manipulatorName)
+            var m = manipulatorControls.getManipulator(manipulatorName)
+            if (m !== null)
+                SofaApplication.selectedManipulator = m
         }
 
         image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"

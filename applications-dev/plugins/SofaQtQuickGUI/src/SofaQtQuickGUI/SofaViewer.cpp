@@ -610,6 +610,9 @@ sofa::core::visual::VisualParams* SofaViewer::setupVisualParams(sofa::core::visu
 
 void SofaViewer::drawManipulator(const SofaViewer& viewer) const
 {
+    for (auto m : mySofaScene->myManipulators)
+        m->draw(viewer);
+
     if(mySofaScene->mySelectedManipulator)
         mySofaScene->mySelectedManipulator->draw(viewer);
 }
@@ -941,6 +944,19 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
             }
 
             if (drawManipulators() && (tags.isEmpty() || tags.contains("manipulator", Qt::CaseInsensitive)))
+            {
+                if (!mySofaScene->myManipulators.empty())
+                {
+                    for (auto manipulator : mySofaScene->myManipulators)
+                    {
+                        for (int i = 0 ; i < manipulator->getIndices() ; i++)
+                        {
+                            myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                            manipulator->pick(*this, i);
+                            index++;
+                        }
+                    }
+                }
                 if (mySofaScene->mySelectedManipulator)
                 {
                     for (int i = 0 ; i < mySofaScene->mySelectedManipulator->getIndices() ; i++)
@@ -950,6 +966,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                         index++;
                     }
                 }
+            }
         }
         myPickingShaderProgram->release();
 
@@ -994,10 +1011,19 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                         {
                             index -= forceFieldsModels.size();
 
-                            if(drawManipulators()) {
-                                std::cout << "PICKED manipulator" << index  << std::endl;
-
-                                selectable = new SelectableManipulator(*(mySofaScene->mySelectedManipulator), index);
+                            if(drawManipulators())
+                            {
+                                for (auto manipulator : mySofaScene->myManipulators)
+                                {
+                                    if (index < manipulator->getIndices())
+                                    {
+                                        selectable = new SelectableManipulator(*(manipulator), index);
+                                    }
+                                }
+                                if (!selectable && index >= 0)
+                                {
+                                    selectable = new SelectableManipulator(*(mySofaScene->mySelectedManipulator), index);
+                                }
                             }
                         }
                     }

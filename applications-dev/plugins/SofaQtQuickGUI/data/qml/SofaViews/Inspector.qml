@@ -227,7 +227,7 @@ Item {
             source: root.selectedAsset ? root.selectedAsset.getAssetInspectorWidget() : ""
             onLoaded: {
                 if (item) {
-                    console.error(item)
+//                    console.error(item)
                     item.selectedAsset = Qt.binding(function() {
                         if (root.selectedAsset)
                             return root.selectedAsset

@@ -105,7 +105,7 @@ MenuBar {
                 nameFilters: ["Archives (*.zip)", "All files (*)"]
                 onAccepted: {
                     var extractedFolder = sofaApplication.currentProject.importProject(fileUrl);
-                    console.error(extractedFolder)
+//                    console.error(extractedFolder)
                     sofaApplication.projectSettings.addRecent("file://" + extractedFolder)
                 }
             }
@@ -319,7 +319,7 @@ MenuBar {
                                                              "width" : 800,
                                                              "height": 600,
                                                          });
-                    console.log(o.item)
+//                    console.log(o.item)
                     windowMenu.close()
                 }
                 ToolTip {

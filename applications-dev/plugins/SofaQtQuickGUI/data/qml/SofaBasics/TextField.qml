@@ -25,6 +25,7 @@ TextField {
 
     onActiveFocusChanged: {
         if (backgroundID !== null) backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
+        mouseArea.cursorShape = control.activeFocus ? Qt.IBeamCursor : Qt.ArrowCursor
     }
     onHoveredChanged: {
         if (backgroundID !== null) backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
@@ -39,7 +40,14 @@ TextField {
         if (backgroundID !== null) backgroundID.setControlState(control.enabled, control.hovered || control.readOnly, control.activeFocus)
     }
 
+    property alias cursorShape: mouseArea.cursorShape
 
+    MouseArea
+    {
+        id: mouseArea
+        anchors.fill: parent
+        onPressed: mouse.accepted = false
+    }
 //    DropShadow {
 //        z: -1
 //        anchors.fill: backgroundRect

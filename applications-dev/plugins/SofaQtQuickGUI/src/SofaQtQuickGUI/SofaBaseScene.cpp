@@ -103,6 +103,8 @@ using sofaqtquick::bindings::SofaCoreBindingFactory;
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 using sofaqtquick::SofaBaseApplication;
 
+#include "Manipulators/Viewpoint_Manipulator.h"
+
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -294,8 +296,7 @@ void SofaBaseScene::loadCppGraph()
     // reset properties
     setAnimate(false);
     SofaBaseApplication::SetSelectedComponent(nullptr);
-    setSelectedManipulator(nullptr);
-    myManipulators.clear();
+//    setSelectedManipulator(nullptr);
 
     if(mySofaRootNode)
     {
@@ -328,8 +329,7 @@ void SofaBaseScene::open()
     setAnimate(false);
 
     SofaBaseApplication::SetSelectedComponent(nullptr);
-    setSelectedManipulator(nullptr);
-    myManipulators.clear();
+//    setSelectedManipulator(nullptr);
 
     if(mySofaRootNode)
     {
@@ -422,6 +422,7 @@ void SofaBaseScene::open()
             setDt(mySofaRootNode->getDt());
         }
     }
+    myManipulators.append(new sofaqtquick::Viewpoint_Manipulator());
     emit rootNodeChanged();
 }
 

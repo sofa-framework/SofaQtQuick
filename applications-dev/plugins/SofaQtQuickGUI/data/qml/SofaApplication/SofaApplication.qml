@@ -46,12 +46,22 @@ Item //
 
     property var style : MainStyle
 
+
+    ////////////////////////////////////////////////// MANIPULATORS
+
+
+    // This manipulator is the currently selected interchangeable manipulator.
+    // An interchangeable manipulator is a manipulator whose activation depends on others being inactive.
+    // e.g. Rotate / scale cannot be active if the translate manipulator is active.
+    // Other manipulators are in SofaScene.manipulators
     property var selectedManipulator : sofaScene.selectedManipulator
     onSelectedManipulatorChanged: {
         if (selectedManipulator !== null) {
             sofaScene.selectedManipulator = selectedManipulator
         }
     }
+
+    ////////////////////////////////////////////////// SELECTED COMPONENT
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {
         SofaBaseApplicationSingleton.selectedComponent = selectedComponent
