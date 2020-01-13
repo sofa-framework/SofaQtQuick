@@ -13,6 +13,15 @@ ColumnLayout {
     id: root
     Layout.fillWidth: true
     property SofaData sofaData
+    property var value: 0
+    Connections
+    {
+        target: root.sofaData
+        onValueChanged: {
+            root.value=root.sofaData.value
+        }
+    }
+
 
     implicitHeight: tableLoader.implicitHeight + showTableLayoutId.implicitHeight
 
@@ -23,11 +32,11 @@ ColumnLayout {
         Layout.alignment: Qt.AlignTop
         spacing: -1
         Text {
-            id: nEntriesLbl
+            id: plop
             Layout.fillWidth: true
-//            text: {
-//                return root.sofaData.value.length + " Entries"
-//            }
+            text: {
+                return root.value.length + " Entries"
+            }
         }
 
         Button {
