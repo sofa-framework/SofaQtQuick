@@ -31,16 +31,16 @@ void Viewpoint_Manipulator::internalDraw(const SofaViewer &viewer, int pickIndex
     glDisable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
 
-    float distanceToPoint = viewer.projectOnPlane(QPointF(viewer.width()/2, viewer.height()/2),
-                                                  cam->target(), cam->direction()).distanceToPoint(cam->eye());
+    double distanceToPoint = double(viewer.projectOnPlane(QPointF(viewer.width()/2, viewer.height()/2),
+                                                  cam->target(), cam->direction()).distanceToPoint(cam->eye()));
 
-    double squareWidth = .08 * distanceToPoint;
+    double squareWidth = distanceToPoint / (viewer.height() / 50.0);
     Vec3d a,b,c,d;
 
 
 
-    Vec3d p = helper::toVec3d(viewer.mapToWorld(QPointF(viewer.width() - 80,80), cam->zNear()));
-
+    Vec3d p = helper::toVec3d(viewer.mapToWorld(QPointF(viewer.width() - 50,50), cam->zNear()));
+/*
 //    if (!isPicking || pickIndex == 0)
 //    {
 //        if (!isPicking)
@@ -164,8 +164,9 @@ void Viewpoint_Manipulator::internalDraw(const SofaViewer &viewer, int pickIndex
 //        dt.drawLineLoop({a,b,c,d}, 0.5f, Vec4f(.0,1.0,1.0,1.0));
 ////        dt.drawSphere(p - Vec3d(0,squareWidth/2, 0), squareWidth / 7.0, Vec4f(.3f,.8f,.3f,1.0f));
 //    }
-
+*/
 //    glDisable(GL_DEPTH_TEST);
+    dt.drawSphere(p, float(squareWidth * 0.8), Vec4f(1.0f, 1.0f, 1.0f, .03f));
 
     if (!isPicking || pickIndex == 0)
     {
