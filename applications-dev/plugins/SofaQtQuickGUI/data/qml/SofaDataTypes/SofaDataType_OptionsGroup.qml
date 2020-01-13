@@ -37,10 +37,7 @@ ComboBox {
 
     enabled: !sofaData.readOnly
 
-    model: {
-        return sofaData.properties.choices;
-    }
-
+    model: sofaData.properties.choices;
     onModelChanged: {
         var values = model.toString().split(',');
         for (var idx = 0 ; idx < values.length ; idx++)
@@ -49,6 +46,7 @@ ComboBox {
     }
 
     onCurrentTextChanged: {
-        sofaData.value = currentText;
+        if (sofaData.value !== currentText)
+            sofaData.value = currentText;
     }
 }

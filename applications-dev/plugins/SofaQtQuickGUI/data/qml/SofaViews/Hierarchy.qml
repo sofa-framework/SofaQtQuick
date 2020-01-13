@@ -265,7 +265,7 @@ Rectangle {
             model : basemodel
 
             onModelHasReset: {
-                console.error("Model reset")
+                console.log("Model reset")
                 treeView.restoreNodeState()
             }
 
@@ -310,7 +310,7 @@ Rectangle {
                     idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
                     treeView.expand(idx)
                     expandAncestors(idx);
-                    console.error("expanded " + key)
+                    console.log("expanded " + key)
                 }
             }
         }

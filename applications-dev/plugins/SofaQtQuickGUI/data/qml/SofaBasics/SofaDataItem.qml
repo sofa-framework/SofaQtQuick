@@ -92,12 +92,12 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignTop
-            Layout.minimumWidth: 100
+            spacing: 0
 
             RowLayout {
                 id: linkLayout
-                Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.fillWidth: true
                 visible: sofaData && 0 !== sofaData.name.length && (linkButton.checked || (null !== sofaData.getParent() && !self.showLinkButton))
                 spacing: 0
                 SofaLinkItem {
@@ -107,6 +107,7 @@ Item {
                     Component.onCompleted: self.implicitHeight = Qt.binding(function(){
                         return linkLayout.visible ? linkTextField.implicitHeight : datawidget.implicitHeight
                     })
+                    Layout.fillWidth: true
                 }
             }
         }

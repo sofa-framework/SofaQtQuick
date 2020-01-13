@@ -158,17 +158,18 @@ UserInteractor {
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
             if(selectable && selectable.sofaComponent) {
-                console.error("SelectedCompoennt: " + selectable.sofaComponent)
                 SofaApplication.selectedComponent = selectable.sofaComponent;
             }
 
             if(selectable && selectable.manipulator) {
                 var manipulator = SofaApplication.selectedManipulator = selectable.manipulator
+
+                console.error(manipulator.name)
+
                 if(manipulator.mousePressed)
                     manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
-                var lblText = manipulator.displayText
-                if (lblText !== "")
+                if (manipulator.displayText !== "")
                 {
                     label = Qt.createQmlObject('import QtQuick.Controls 2.0;
                                                 Label {
@@ -180,13 +181,13 @@ UserInteractor {
                                                            label.destroy();
                                                    }
                                                 }', sofaViewer, 'label');
-                    label.text = Qt.binding(function(){ return lblText });
+                    label.text = Qt.binding(function(){ return manipulator.displayText });
                     label.x = Qt.binding(function(){ return mouse.x + 15});
                     label.y = Qt.binding(function(){ return mouse.y - 15});
                 }
                 if(manipulator.mouseMoved)
                     setMouseMovedMapping(function(mouse, sofaViewer){
-                        if (lblText !== "") {
+                        if (manipulator.displayText !== "") {
                             label.x = mouse.x + 15
                             label.y = mouse.y - 15
                         }

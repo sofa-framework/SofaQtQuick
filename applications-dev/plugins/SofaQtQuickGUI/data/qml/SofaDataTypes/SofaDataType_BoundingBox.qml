@@ -24,17 +24,11 @@ import SofaBasics 1.0
 import SofaColorScheme 1.0
 import Sofa.Core.SofaData 1.0
 
-ColumnLayout {
+RowLayout {
     id: root
     spacing: -1
-
-    height: 40
-    implicitHeight: height
-    implicitWidth: parent.implicitWidth
-    Layout.fillWidth: true
     property SofaData sofaData: null
-
-
+    implicitWidth: parent.implicitWidth
     property var values: []
     onSofaDataChanged: {
         var valStrings = sofaData.value.split(' ')
@@ -48,25 +42,30 @@ ColumnLayout {
         spinBox4.value = values[4]
         spinBox5.value = values[5]
     }
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+
+
+    ColumnLayout {
         spacing: -1
-
-        Text {
-            id: minLabel
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
-            text: "Min "
+        Layout.fillWidth: true
+        Label {
+            Layout.preferredWidth: 30
+            color: "black"
+            text: "Min"
         }
-
+        Label {
+            Layout.preferredWidth: 30
+            color: "black"
+            text: "Max"
+        }
+    }
+    ColumnLayout {
+        spacing: -1
+        Layout.fillWidth: true
         SpinBox {
             id: spinBox0
             property int index: 0
 
             Layout.fillWidth: true
-            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
-
-
             showIndicators: false
             readOnly: sofaData.properties.readOnly
 
@@ -86,79 +85,11 @@ ColumnLayout {
 
             position: cornerPositions["TopLeft"]
         }
-
-        SpinBox {
-            id: spinBox1
-            property int index: 1
-
-            Layout.fillWidth: true
-            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
-
-
-            showIndicators: false
-            readOnly: sofaData.properties.readOnly
-
-            value: root.values[index]
-            onValueChanged: {
-                if(!sofaData.properties.readOnly) {
-                    root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
-                }
-            }
-
-            Binding {
-                target: spinBox1
-                property: "value"
-                value: root.values[spinBox1.index]
-            }
-            position: cornerPositions["Middle"]
-        }
-
-        SpinBox {
-            id: spinBox2
-            property int index: 2
-
-            Layout.fillWidth: true
-            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
-
-
-            showIndicators: false
-            readOnly: sofaData.properties.readOnly
-
-            value: root.values[index]
-            onValueChanged: {
-                if(!sofaData.properties.readOnly) {
-                    root.values[index] = value;
-                    sofaData.value = root.values.join(' ');
-                }
-            }
-
-            Binding {
-                target: spinBox2
-                property: "value"
-                value: root.values[spinBox2.index]
-            }
-            position: cornerPositions["TopRight"]
-        }
-    }
-
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        spacing: -1
-
-        Text {
-            id: maxLabel
-            text: "Max "
-            Layout.preferredWidth: Math.max(maxLabel.width, minLabel.width)
-        }
-
         SpinBox {
             id: spinBox3
             property int index: 3
 
             Layout.fillWidth: true
-            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
 
             showIndicators: false
             readOnly: sofaData.properties.readOnly
@@ -176,17 +107,45 @@ ColumnLayout {
                 property: "value"
                 value: root.values[spinBox3.index]
             }
+
             position: cornerPositions["BottomLeft"]
-
         }
+    }
 
+
+
+    ColumnLayout {
+        spacing: -1
+        Layout.fillWidth: true
+        SpinBox {
+            id: spinBox1
+            property int index: 1
+
+            Layout.fillWidth: true
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
+
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
+                }
+            }
+
+            Binding {
+                target: spinBox1
+                property: "value"
+                value: root.values[spinBox1.index]
+            }
+
+            position: cornerPositions["Middle"]
+        }
         SpinBox {
             id: spinBox4
             property int index: 4
 
             Layout.fillWidth: true
-            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
-
 
             showIndicators: false
             readOnly: sofaData.properties.readOnly
@@ -204,16 +163,45 @@ ColumnLayout {
                 property: "value"
                 value: root.values[spinBox4.index]
             }
+
             position: cornerPositions["Middle"]
         }
+    }
 
+
+    ColumnLayout {
+        spacing: -1
+        Layout.fillWidth: true
+        SpinBox {
+            id: spinBox2
+            property int index: 2
+
+            Layout.fillWidth: true
+
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
+
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
+                }
+            }
+
+            Binding {
+                target: spinBox2
+                property: "value"
+                value: root.values[spinBox2.index]
+            }
+
+            position: cornerPositions["TopRight"]
+        }
         SpinBox {
             id: spinBox5
             property int index: 5
 
             Layout.fillWidth: true
-            Layout.preferredWidth: Math.max(Math.max(Math.max(Math.max(Math.max(spinBox0.width, spinBox1.width), spinBox2.width),spinBox3.width),spinBox4.width),spinBox5.width)
-
 
             showIndicators: false
             readOnly: sofaData.properties.readOnly
@@ -231,6 +219,7 @@ ColumnLayout {
                 property: "value"
                 value: root.values[spinBox5.index]
             }
+
             position: cornerPositions["BottomRight"]
         }
     }

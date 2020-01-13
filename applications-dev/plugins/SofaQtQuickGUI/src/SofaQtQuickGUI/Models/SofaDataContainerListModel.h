@@ -65,6 +65,8 @@ private:
 
     /// Returns the number of columns (always considers the data as a 2D array)
     int nCols() const {
+        if (!m_sofaData) return 0;
+
         auto typeinfo = m_sofaData->rawData()->getValueTypeInfo();
         int nbCols = int(typeinfo->BaseType()->size());
         if (nbCols == 1)
@@ -74,6 +76,7 @@ private:
     /// Returns the number of rows (always considers the data as a 2D array)
     int nRows() const
     {
+        if (!m_sofaData) return 0;
         auto typeinfo = m_sofaData->rawData()->getValueTypeInfo();
         return int(typeinfo->size(m_sofaData->rawData()->getValueVoidPtr()) / size_t(nCols()));
     }

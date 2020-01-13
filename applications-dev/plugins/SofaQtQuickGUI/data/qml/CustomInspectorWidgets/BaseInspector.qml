@@ -5,7 +5,6 @@ import CustomInspectorWidgets 1.0
 CustomInspector {
     property var component: SofaApplication.selectedComponent
     onComponentChanged: {
-        console.log("selectedcomponentchanged")
         if (!SofaApplication.selectedComponent)
             return;
         if (component !== SofaApplication.selectedComponent) {

@@ -62,9 +62,12 @@ Item //
     }
 
     ////////////////////////////////////////////////// SELECTED COMPONENT
+//    function getSelectedComponent() { return SofaBaseApplicationSingleton.selectedComponent }
+//    function setSelectedComponent(selectedComponent) { SofaBaseApplicationSingleton.selectedComponent = selectedComponent}
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {
-        SofaBaseApplicationSingleton.selectedComponent = selectedComponent
+        if (SofaBaseApplicationSingleton.selectedComponent !== selectedComponent)
+            SofaBaseApplicationSingleton.selectedComponent = selectedComponent
     }
 
 //    /// Bind the graph view to the currently selected component
