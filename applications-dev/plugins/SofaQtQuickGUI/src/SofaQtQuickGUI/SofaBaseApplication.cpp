@@ -1019,20 +1019,9 @@ sofaqtquick::bindings::SofaBase* SofaBaseApplication::getSelectedComponent() con
 
 void SofaBaseApplication::setSelectedComponent(sofaqtquick::bindings::SofaBase* selectedComponent)
 {
-    std::cout << "SofaBaseApplication set selected component..." << std::endl;
     if(selectedComponent == nullptr)
     {
-        std::cout << "NULLLLLLLLL!!!!!" << std::endl;
-        if(m_selectedComponent == nullptr)
-            std::cout << "PREVIOUS VALUE WAS ALSO NULLLLLLLLL!!!!!" << std::endl;
-        else {
-            /// This is crazy!
-            /// Something at some point sets the selected component to null.
-            /// The previous value of selectedComponent is valid, yet when I try to prevent setting null,
-            /// the value in QML is still set to null! Even if I emit the signal with a valid SofaBase!
-            /// I don't get it.
-            /// Wierdest thing is: the bug does not seem to appear with anything else than oglModels...
-            std::cout << "PREVIOUS VALUE WAS " << m_selectedComponent->getName() << std::endl;
+        if(m_selectedComponent) {
             setSelectedComponent(new SofaBase(m_selectedComponent));
             return;
         }

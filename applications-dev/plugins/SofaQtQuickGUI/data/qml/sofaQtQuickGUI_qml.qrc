@@ -145,9 +145,11 @@
         <file>SofaWidgets/ObjectModeManipulators.qml</file>
         <file>SofaManipulators/Translate_Manipulator.qml</file>
         <file>SofaManipulators/Rotate_Manipulator.qml</file>
-        <file>SofaManipulators/TranslateParticle_Manipulator.qml</file>
         <file>SofaManipulators/Scale_Manipulator.qml</file>
         <file>SofaWidgets/ManipulatorMenu.qml</file>
         <file>SofaManipulators/Viewpoint_Manipulator.qml</file>
+        <file>SofaDataTypes/StaticContainerView.qml</file>
+        <file>SofaDataTypes/DynamicContainerView.qml</file>
+        <file>SofaDataTypes/DynamicTableView.qml</file>
     </qresource>
 </RCC>

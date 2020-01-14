@@ -10,7 +10,6 @@ ColumnLayout {
     Layout.fillWidth: true
     Layout.fillHeight: true
     spacing: 10
-
     property var showAll: true
     property var dataDict: {"Base": ["name", "componentState", "printLog"]}
     property var linkList: []
@@ -20,23 +19,24 @@ ColumnLayout {
     }
 
     property var labelWidth: 1
-
     Repeater {
         id: groupRepeater
         model: Object.keys(dataDict).length
 
         GroupBox {
             title: Object.keys(dataDict)[index]
+            Layout.fillWidth: true
             ColumnLayout {
                 spacing: 1
                 anchors.fill: parent
                 Repeater {
                     id: dataRepeater
                     model: dataDict[Object.keys(dataDict)[index]]
-
+                    Layout.fillWidth: true
                     RowLayout {
                         id: sofaDataLayout
                         property var sofaData: modelData ? SofaApplication.selectedComponent.getData(modelData) : null
+                        Layout.fillWidth: true
 
                         Label {
                             Layout.minimumWidth: root.labelWidth

@@ -22,9 +22,11 @@ void Viewpoint_Manipulator::internalDraw(const SofaViewer &viewer, int pickIndex
 
     cam->setOrthographic(true);
     glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
     glLoadMatrixf(cam->projection().constData());
 
     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
     glLoadMatrixf(cam->view().constData());
 
     glEnable(GL_MULTISAMPLE_ARB);
@@ -211,6 +213,12 @@ void Viewpoint_Manipulator::internalDraw(const SofaViewer &viewer, int pickIndex
     glEnable(GL_LIGHTING);
 
     cam->setOrthographic(false);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
 }
 
 void Viewpoint_Manipulator::mouseClicked(const QPointF& /*mouse*/, SofaViewer *viewer)

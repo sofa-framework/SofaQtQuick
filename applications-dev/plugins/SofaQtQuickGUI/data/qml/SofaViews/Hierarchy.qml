@@ -245,7 +245,6 @@ Rectangle {
                 var srcIndex = sceneModel.mapToSource(idx)
                 var theComponent = basemodel.getBaseFromIndex(srcIndex)
                 if (theComponent === null) break;
-                console.error("Just collapsed: " + theComponent.getPathName())
                 // On dépile récursivement les parents jusqu'à root
                 treeView.collapse(idx)
                 old_idx = idx
@@ -265,14 +264,12 @@ Rectangle {
             model : basemodel
 
             onModelHasReset: {
-                console.error("Model reset")
                 treeView.restoreNodeState()
             }
 
         }
 
         onModelChanged:  {
-            console.error("Model Changed")
             treeView.restoreNodeState()
         }
 
@@ -284,8 +281,6 @@ Rectangle {
 
         function getExpandedState()
         {
-            print("GET ExpANDED STATE")
-
             var nsArray = SofaApplication.nodeSettings.nodeState.split(';')
             for (var idx in nsArray)
             {
@@ -299,8 +294,6 @@ Rectangle {
         }
 
         function restoreNodeState() {
-            print("RESTORE NODE STATE")
-
             if (Object.keys(nodeSettings.nodeState).length === 0 && SofaApplication.nodeSettings.nodeState !== "")
                 getExpandedState()
             for (var key in nodeSettings.nodeState) {
@@ -310,14 +303,12 @@ Rectangle {
                     idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
                     treeView.expand(idx)
                     expandAncestors(idx);
-                    console.error("expanded " + key)
                 }
             }
         }
 
         function storeExpandedState(index)
         {
-            print("STORE EXPANDED STATE FOR " + index)
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getBaseFromIndex(srcIndex)
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
@@ -337,7 +328,6 @@ Rectangle {
         onCollapsed: {
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getBaseFromIndex(srcIndex)
-            console.error("Just collapsed: " + theComponent.getName())
             storeExpandedState(index)
         }
 
@@ -639,10 +629,6 @@ Rectangle {
                 hoverEnabled: true
 
                 drag.target: dragItem
-                drag.onActiveChanged: {
-                    console.log("ON ACTIVE CANGE." + drag.active)
-                    console.log("DD" + drag.target.item)
-                }
 
                 onClicked:
                 {

@@ -172,11 +172,6 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     cam = viewer.camera();
     if (!cam) return;
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
 
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
@@ -234,10 +229,6 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_MULTISAMPLE_ARB);
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
 }
 
 void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)

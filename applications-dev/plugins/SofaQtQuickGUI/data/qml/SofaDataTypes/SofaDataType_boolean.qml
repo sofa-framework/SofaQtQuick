@@ -39,28 +39,16 @@ ColumnLayout {
         control.checked = sofaData.value
     }
 
-    Item {
-        id: item
-        Layout.fillWidth: true
-        Layout.minimumWidth: control.implicitWidth
-        Layout.preferredHeight: control.implicitHeight + 2
+    CheckBox {
+        id: control
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+        enabled: !sofaData.properties.readOnly
+        checked: sofaData.value
 
-        CheckBox {
-            id: control
-            anchors.centerIn: parent
-            enabled: !sofaData.properties.readOnly
-            checked: sofaData.value
-
-            onCheckedChanged:
-            {
-                if (sofaData.value !== checked)
-                    sofaData.value = checked;
-            }
+        onCheckedChanged:
+        {
+            if (sofaData.value !== checked)
+                sofaData.value = checked;
         }
-    }
-
-    Item {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
     }
 }

@@ -1019,10 +1019,17 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                                     {
                                         selectable = new SelectableManipulator(*(manipulator), index);
                                     }
+                                    else
+                                    {
+                                        index -= manipulator->getIndices();
+                                    }
                                 }
                                 if (!selectable && index >= 0)
                                 {
                                     selectable = new SelectableManipulator(*(mySofaScene->mySelectedManipulator), index);
+                                }
+                                else {
+                                    index = -1;
                                 }
                             }
                         }

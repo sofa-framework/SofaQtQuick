@@ -59,9 +59,9 @@ Rectangle {
     property bool isEditing: false
     onIsEditingChanged: {
         if (isEditing) {
-            var w = modeLoader.item.implicitWidth
+            var w = modeLoader.item.width
             modeLoader.sourceComponent = textFieldMode
-            modeLoader.item.implicitWidth = w // readjust width after loading the textField
+            modeLoader.item.width = w // readjust width after loading the textField
         }
         else {
             modeLoader.sourceComponent = spinBoxMode
@@ -75,7 +75,7 @@ Rectangle {
         font.family: "Arial"
         elide: Text.ElideRight
         elideWidth: control.width - 10
-        text: "XXX"+formatText(control.value, control.prefix, control.suffix)
+        text: control && control.value ?  "XXX"+formatText(control.value, control.prefix, control.suffix) : ""
     }
 
 
@@ -181,7 +181,6 @@ Rectangle {
         anchors.right: isEditing || !showIndicators ? control.right: upIndicator.left
         anchors.verticalCenter: control.verticalCenter
         color: "transparent"
-        implicitWidth: modeLoader.item.implicitWidth
         implicitHeight: 20
 
 
