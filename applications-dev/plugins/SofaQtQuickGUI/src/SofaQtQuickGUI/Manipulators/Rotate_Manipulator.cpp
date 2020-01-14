@@ -68,7 +68,7 @@ void Rotate_Manipulator::drawCamAxis(const QVector3D& pos)
     glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
-sofa::core::objectmodel::BaseData* Rotate_Manipulator::getData()
+sofa::core::objectmodel::BaseData* Rotate_Manipulator::GetData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
     if (!obj || !obj->rawBase()) return nullptr;
@@ -117,7 +117,7 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     cam = viewer.camera();
     if (!cam) return;
 
-    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
+    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
     if (!posData) return;
 
     QVector3D center = toQVector3D(posData->getValue());
@@ -221,10 +221,10 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     cam = viewer->camera();
     if (!cam) return;
 
-    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
+    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
     if (!posData) return;
 
-    sofa::core::objectmodel::BaseData* rotData = getData();
+    sofa::core::objectmodel::BaseData* rotData = GetData();
     QVector3D center = toQVector3D(posData->getValue());
     QQuaternion quat;
 
@@ -297,13 +297,13 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
 
 void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
 {
-    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
+    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
     if (!data) return;
     Vec3d pos = data->getValue();
     QVector3D center = toQVector3D(pos);
 
 
-    sofa::core::objectmodel::BaseData* rotData = getData();
+    sofa::core::objectmodel::BaseData* rotData = GetData();
     QVector3D rot;
     if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
     {
@@ -354,7 +354,7 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
 
 void Rotate_Manipulator::mouseReleased(const QPointF& /*mouse*/, SofaViewer* /*viewer*/)
 {
-    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::getData());
+    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
     if (!data) return;
     Vec3d pos = data->getValue();
     QVector3D center = toQVector3D(pos);

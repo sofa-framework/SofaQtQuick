@@ -24,7 +24,7 @@ public:
 
     virtual QString getDisplayText() const override;
 
-    static sofa::core::objectmodel::BaseData* getData();
+    static sofa::core::objectmodel::BaseData* GetData();
 
 
 

@@ -332,10 +332,8 @@ Item //
 
     ////////////////////////////////////////////////// INTERACTOR
 
-    property UserInteractor interactorComponent: UserInteractor_CameraMode {
-        id: interactor
-        Component.onCompleted: interactor.init()
-    }
+    property UserInteractor interactorComponent
+
 
     ////////////////////////////////////////////////// SCREENSHOT
 
