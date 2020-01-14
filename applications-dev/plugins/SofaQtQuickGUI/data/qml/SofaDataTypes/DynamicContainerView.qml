@@ -35,7 +35,7 @@ ColumnLayout {
             id: plop
             Layout.fillWidth: true
             text: {
-                return root.value.length + " Entries"
+                return (root.value.length ? root.value.length : 0) + " Entries"
             }
         }
 
