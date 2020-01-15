@@ -164,8 +164,7 @@ UserInteractor {
             if(selectable && selectable.manipulator) {
                 var manipulator = SofaApplication.selectedManipulator = selectable.manipulator
 
-                if(manipulator.mousePressed)
-                    manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
+                manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
                 if (manipulator.displayText !== "")
                 {

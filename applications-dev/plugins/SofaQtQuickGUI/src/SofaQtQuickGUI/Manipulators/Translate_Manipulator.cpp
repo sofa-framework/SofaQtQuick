@@ -184,13 +184,12 @@ bool Translate_Manipulator::getValue(QVector3D& value) const
     if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position")) {
         return false;
     }
-    std::cout << "READ" << std::endl;
     auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
     const void* valueptr = obj->rawBase()->findData("position")->getValueVoidPtr();
-    std::cout << "size() " << typeinfo->size() << std::endl;
-    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
-    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
-    std::cout << "particleIndex " << m_particleIndex << std::endl;
+//    std::cout << "size() " << typeinfo->size() << std::endl;
+//    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
+//    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
+//    std::cout << "particleIndex " << m_particleIndex << std::endl;
     value.setX(float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size()    )));
     value.setY(float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 1)));
     value.setZ(float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 2)));
@@ -211,13 +210,12 @@ void Translate_Manipulator::setValue(const QVector3D& value)
     if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position"))
         return;
 
-    std::cout << "WRITE" << std::endl;
     auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
     void* valueptr = obj->rawBase()->findData("position")->beginEditVoidPtr();
-    std::cout << "size() " << typeinfo->size() << std::endl;
-    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
-    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
-    std::cout << "particleIndex " << m_particleIndex << std::endl;
+//    std::cout << "size() " << typeinfo->size() << std::endl;
+//    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
+//    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
+//    std::cout << "particleIndex " << m_particleIndex << std::endl;
     typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size()    , double(value.x()));
     typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 1, double(value.y()));
     typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 2, double(value.z()));
@@ -354,7 +352,6 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         if (isnan(translated[i]) || isinf(translated[i]))
             translated[i] = pos[i];
 
-    std::cout << "setting  translation to: " << translated.x() << " " << translated.y() << " " << translated.z() << std::endl;
     setValue(translated);
     emit displayTextChanged(getDisplayText());
 }
