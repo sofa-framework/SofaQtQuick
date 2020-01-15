@@ -525,6 +525,7 @@ bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
 
 void SofaProject::saveScene(const QString filepath, SofaNode* node)
 {
+    QFile::copy(filepath, filepath + ".backup");
     sofapython3::PythonEnvironment::executePython([this, filepath, node]()
     {
         std::string ppath = filepath.toStdString();
