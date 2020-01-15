@@ -225,12 +225,22 @@ MenuBar {
                                                          sofaApplication.sofaScene.root())
             }
 
+            MessageDialog {
+                id: saveDialog
+                title: "Overwrite?"
+                icon: StandardIcon.Question
+                text: sofaApplication.sofaScene.path + " already exists. Replace?"
+                detailedText: "The previous version of the file will be backed up in a separate file suffixed '.backup'"
+                standardButtons: StandardButton.Yes | StandardButton.Abort
+                onYes: saveItem.saveScene()
+            }
+
             Shortcut {
                 sequence: StandardKey.Save
                 context: Qt.ApplicationShortcut
-                onActivated: { saveItem.saveScene() }
+                onActivated: saveDialog.open()
             }
-            onTriggered:  { saveItem.saveScene() }
+            onTriggered:  { saveDialog.open() }
         }
         MenuItem {
             text: "Save as..."
