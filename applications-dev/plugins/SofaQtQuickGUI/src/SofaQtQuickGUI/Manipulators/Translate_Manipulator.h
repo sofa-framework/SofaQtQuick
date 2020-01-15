@@ -24,6 +24,7 @@ public:
     void drawXYPlane() const;
 
     static sofa::core::objectmodel::BaseData* GetData();
+    static bool GetValue(QVector3D& value, bool editMode, int pIndex);
     bool getValue(QVector3D&) const;
     void setValue(const QVector3D&);
 

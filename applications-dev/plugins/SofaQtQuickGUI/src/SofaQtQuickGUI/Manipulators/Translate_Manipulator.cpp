@@ -166,9 +166,9 @@ sofa::core::objectmodel::BaseData* Translate_Manipulator::GetData()
     return nullptr;
 }
 
-bool Translate_Manipulator::getValue(QVector3D& value) const
+bool Translate_Manipulator::GetValue(QVector3D& value, bool editMode, int pIndex)
 {
-    if (!m_isEditMode) {
+    if (!editMode) {
         auto v = dynamic_cast<sofa::Data<Vec3d>*>(GetData());
         if (!v) {
             return false;
@@ -176,7 +176,7 @@ bool Translate_Manipulator::getValue(QVector3D& value) const
         value = helper::toQVector3D(v->getValue());
         return true;
     }
-    if (m_particleIndex == -1) {
+    if (pIndex == -1) {
         return false;
     }
 
@@ -190,10 +190,15 @@ bool Translate_Manipulator::getValue(QVector3D& value) const
 //    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
 //    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
 //    std::cout << "particleIndex " << m_particleIndex << std::endl;
-    value.setX(float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size()    )));
-    value.setY(float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 1)));
-    value.setZ(float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 2)));
+    value.setX(float(typeinfo->getScalarValue(valueptr, size_t(pIndex) * typeinfo->BaseType()->size()    )));
+    value.setY(float(typeinfo->getScalarValue(valueptr, size_t(pIndex) * typeinfo->BaseType()->size() + 1)));
+    value.setZ(float(typeinfo->getScalarValue(valueptr, size_t(pIndex) * typeinfo->BaseType()->size() + 2)));
     return true;
+}
+
+bool Translate_Manipulator::getValue(QVector3D& value) const
+{
+    return GetValue(value, m_isEditMode, m_particleIndex);
 }
 
 void Translate_Manipulator::setValue(const QVector3D& value)

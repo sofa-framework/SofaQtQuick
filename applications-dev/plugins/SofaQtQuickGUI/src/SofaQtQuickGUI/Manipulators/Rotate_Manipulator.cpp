@@ -85,6 +85,103 @@ sofa::core::objectmodel::BaseData* Rotate_Manipulator::GetData()
     return nullptr;
 }
 
+
+bool Rotate_Manipulator::getValue(QVector3D& direction, QQuaternion& orientation) const
+{
+    if (!m_isEditMode) {
+
+        sofa::core::objectmodel::BaseData* rotData = GetData();
+        QVector3D rot;
+        if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
+        {
+            rot = toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(rotData)->getValue());
+            // convert rotation to radians then to Quaternion
+            orientation = QQuaternion::fromEulerAngles(rot);
+            if (rotData->getName() == "direction")
+            {
+                // if Vec3 is direction, we store the direction vector & initialize the rotation to 0,0,0
+                direction = rot;
+                orientation = QQuaternion::fromEulerAngles(0,0,0);
+            }
+        }
+        else
+        {
+            orientation = toQQuaternion(dynamic_cast<sofa::Data<Quaternion>*>(rotData)->getValue());
+        }
+        return true;
+    }
+    if (m_particleIndex == -1) {
+        return false;
+    }
+
+    bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
+    if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position")) {
+        return false;
+    }
+    auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
+    const void* valueptr = obj->rawBase()->findData("position")->getValueVoidPtr();
+//    std::cout << "size() " << typeinfo->size() << std::endl;
+//    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
+//    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
+//    std::cout << "particleIndex " << m_particleIndex << std::endl;
+    if (typeinfo->BaseType()->size() == 7) {
+        orientation.setX(     float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 3)));
+        orientation.setY(     float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 4)));
+        orientation.setZ(     float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 5)));
+        orientation.setScalar(float(typeinfo->getScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 6)));
+    }
+    orientation = QQuaternion(1,0,0,0);
+    return true;
+}
+
+void Rotate_Manipulator::setValue(const QQuaternion& value)
+{
+    if (!m_isEditMode) {
+        sofa::core::objectmodel::BaseData* rotData = GetData();
+
+        if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
+        {
+            sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(rotData);
+
+            if (rotData->getName() == "direction")
+            {
+                data->setValue(toVec3d(value.rotatedVector(startDirection)));
+            }
+            else
+            {
+                Vec3d e = toQuaternion(value).toEulerVector();
+                data->setValue(Vec3d(toDegrees(e.x()), toDegrees(e.y()), toDegrees(e.z())));
+            }
+        }
+        else
+        {
+            dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(toQuaternion(value));
+        }
+    }
+    if (m_particleIndex == -1)
+        return;
+
+    bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
+    if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position"))
+        return;
+
+    auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
+    if (typeinfo->BaseType()->size() == 7) {
+        void* valueptr = obj->rawBase()->findData("position")->beginEditVoidPtr();
+        //    std::cout << "size() " << typeinfo->size() << std::endl;
+        //    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
+        //    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
+        //    std::cout << "particleIndex " << m_particleIndex << std::endl;
+        typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 3    , double(value.x()));
+        typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 4, double(value.y()));
+        typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 5, double(value.z()));
+        typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 6, double(value.scalar()));
+        obj->rawBase()->findData("position")->endEditVoidPtr();
+    }
+}
+
+
+
 bool Rotate_Manipulator::getLocal() { return m_isLocal; }
 
 void Rotate_Manipulator::setLocal(bool isLocal)
@@ -117,10 +214,8 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     cam = viewer.camera();
     if (!cam) return;
 
-    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
-    if (!posData) return;
-
-    QVector3D center = toQVector3D(posData->getValue());
+    QVector3D center;
+    if (!Translate_Manipulator::GetValue(center, m_isEditMode, m_particleIndex)) return;
     if (m_index == -1)
         mX = mY = mZ = mCam = center;
 
@@ -221,11 +316,8 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     cam = viewer->camera();
     if (!cam) return;
 
-    sofa::Data<Vec3d>* posData = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
-    if (!posData) return;
-
-    sofa::core::objectmodel::BaseData* rotData = GetData();
-    QVector3D center = toQVector3D(posData->getValue());
+    QVector3D center;
+    if (!Translate_Manipulator::GetValue(center, m_isEditMode, m_particleIndex)) return;
     QQuaternion quat;
 
     QVector3D X(1,0,0);
@@ -273,55 +365,18 @@ void Rotate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         break;
     }};
 
-    if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
-    {
-        sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(rotData);
 
-        if (rotData->getName() == "direction")
-        {
-            data->setValue(toVec3d(quat.rotatedVector(startDirection)));
-        }
-        else
-        {
-            Vec3d e = toQuaternion(quat).toEulerVector();
-            data->setValue(Vec3d(toDegrees(e.x()), toDegrees(e.y()), toDegrees(e.z())));
-        }
-    }
-    else
-    {
-        dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(toQuaternion(quat));
-    }
+    setValue(quat);
+
     emit displayTextChanged(getDisplayText());
 }
 
 
 void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
 {
-    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
-    if (!data) return;
-    Vec3d pos = data->getValue();
-    QVector3D center = toQVector3D(pos);
-
-
-    sofa::core::objectmodel::BaseData* rotData = GetData();
-    QVector3D rot;
-    if (dynamic_cast<sofa::Data<Vec3d>*>(rotData))
-    {
-        rot = toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(rotData)->getValue());
-        // convert rotation to radians then to Quaternion
-        startOrientation = QQuaternion::fromEulerAngles(rot);
-        if (rotData->getName() == "direction")
-        {
-            // if Vec3 is direction, we store the direction vector & initialize the rotation to 0,0,0
-            startDirection = rot;
-            startOrientation = QQuaternion::fromEulerAngles(0,0,0);
-        }
-    }
-    else
-    {
-        startOrientation = toQQuaternion(dynamic_cast<sofa::Data<Quaternion>*>(rotData)->getValue());
-    }
-
+    QVector3D center;
+    if (!Translate_Manipulator::GetValue(center, m_isEditMode, m_particleIndex)) return;
+    if (!getValue(startDirection, startOrientation)) return;
 
     QVector3D X(1,0,0);
     QVector3D Y(0,1,0);
@@ -354,10 +409,8 @@ void Rotate_Manipulator::mousePressed(const QPointF& mouse, SofaViewer* viewer)
 
 void Rotate_Manipulator::mouseReleased(const QPointF& /*mouse*/, SofaViewer* /*viewer*/)
 {
-    sofa::Data<Vec3d>* data = dynamic_cast<sofa::Data<Vec3d>*>(Translate_Manipulator::GetData());
-    if (!data) return;
-    Vec3d pos = data->getValue();
-    QVector3D center = toQVector3D(pos);
+    QVector3D center;
+    if (!Translate_Manipulator::GetValue(center, m_isEditMode, m_particleIndex)) return;
     mX = mY = mZ = mCam = center;
     drawMark = false;
     emit displayTextChanged(getDisplayText());
