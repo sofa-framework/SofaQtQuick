@@ -181,9 +181,10 @@ bool Translate_Manipulator::getValue(QVector3D& value) const
     }
 
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
-    if (!obj || !obj->rawBase()) {
+    if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position")) {
         return false;
     }
+    std::cout << "READ" << std::endl;
     auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
     const void* valueptr = obj->rawBase()->findData("position")->getValueVoidPtr();
     std::cout << "size() " << typeinfo->size() << std::endl;
@@ -207,16 +208,17 @@ void Translate_Manipulator::setValue(const QVector3D& value)
         return;
 
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
-    if (!obj || !obj->rawBase() || obj->rawBase()->findData("position"))
+    if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position"))
         return;
 
+    std::cout << "WRITE" << std::endl;
     auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
-    void* valueptr = typeinfo->getValuePtr(obj->rawBase()->findData("position")->beginEditVoidPtr());
+    void* valueptr = obj->rawBase()->findData("position")->beginEditVoidPtr();
     std::cout << "size() " << typeinfo->size() << std::endl;
     std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
     std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
     std::cout << "particleIndex " << m_particleIndex << std::endl;
-    typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size(), double(value.x()));
+    typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size()    , double(value.x()));
     typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 1, double(value.y()));
     typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 2, double(value.z()));
     obj->rawBase()->findData("position")->endEditVoidPtr();
@@ -296,7 +298,9 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     if (!cam) return;
 
     QVector3D pos;
-    if (!getValue(pos)) return;;
+    if (!getValue(pos)) return;
+    std::cout << pos.x() << " " << pos.y()  << " " << pos.z() << std::endl;
+    std::cout << m_index << std::endl;
     QVector3D translated;
     switch (m_index)
     {
@@ -350,7 +354,8 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         if (isnan(translated[i]) || isinf(translated[i]))
             translated[i] = pos[i];
 
-    setValue(QVector3D(translated.x(), translated.y(), translated.z()));
+    std::cout << "setting  translation to: " << translated.x() << " " << translated.y() << " " << translated.z() << std::endl;
+    setValue(translated);
     emit displayTextChanged(getDisplayText());
 }
 
@@ -358,7 +363,6 @@ void Translate_Manipulator::mousePressed(const QPointF &mouse, SofaViewer *viewe
 {
     QVector3D pos;
     if (!getValue(pos)) return;
-    std::cout << "Mouse pressed" << std::endl;
 
     switch (m_index)
     {
