@@ -24,7 +24,9 @@ public:
 
     virtual QString getDisplayText() const override;
 
-    static sofa::core::objectmodel::BaseData* getData();
+    static sofa::core::objectmodel::BaseData* GetData();
+    bool getValue(QVector3D& direction, QQuaternion& orientation) const;
+    void setValue(const QQuaternion&);
 
 
 

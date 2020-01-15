@@ -23,8 +23,11 @@ public:
     virtual int getIndices() const override;
     void drawXYPlane() const;
 
-    static sofa::core::objectmodel::BaseData* getData();
-    
+    static sofa::core::objectmodel::BaseData* GetData();
+    static bool GetValue(QVector3D& value, bool editMode, int pIndex);
+    bool getValue(QVector3D&) const;
+    void setValue(const QVector3D&);
+
 private:
     void drawXArrow(const sofa::defaulttype::Vec3d& pos);
     void drawYArrow(const sofa::defaulttype::Vec3d& pos);
@@ -42,7 +45,6 @@ private:
 
     sofa::core::visual::DrawToolGL drawtools;
     bindings::SofaBase* obj;
-    sofa::Data<sofa::defaulttype::Vec3d>* data;
     Camera* cam;
 
     sofa::defaulttype::Vec4f highlightred;

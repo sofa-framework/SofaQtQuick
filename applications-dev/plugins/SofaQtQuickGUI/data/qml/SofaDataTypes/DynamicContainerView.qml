@@ -32,11 +32,8 @@ ColumnLayout {
         Layout.alignment: Qt.AlignTop
         spacing: -1
         Text {
-            id: plop
             Layout.fillWidth: true
-            text: {
-                return (root.value.length ? root.value.length : 0) + " Entries"
-            }
+            text: (root.value.length ? root.value.length : 0) + " Entries"
         }
 
         Button {

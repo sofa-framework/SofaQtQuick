@@ -29,6 +29,7 @@ import SofaColorScheme 1.0
 import SofaBasics 1.0
 import SofaWidgets 1.0
 import SofaManipulators 1.0
+import SofaInteractors 1.0
 
 EditView
 {
@@ -1159,18 +1160,30 @@ EditView
                 image: "qrc:/icon/ICON_EDIT_MODE.png"
             }
         }
+
+        UserInteractor_EditMode {
+            id:  editModeInteractor
+            Component.onCompleted: editModeInteractor.init()
+        }
+        UserInteractor_ObjectMode {
+            id: objectModeInteractor
+            Component.onCompleted: objectModeInteractor.init()
+        }
+
         onCurrentIndexChanged: {
             switch (currentIndex) {
             case 0:
                 manipulatorLoader.sourceComponent = objectmodeManipulators
+                SofaApplication.interactorComponent = objectModeInteractor
                 break;
             case 1:
                 manipulatorLoader.sourceComponent = editmodeManipulators
+                SofaApplication.interactorComponent = editModeInteractor
                 break;
             default:
                 manipulatorLoader.sourceComponent = objectmodeManipulators
+                SofaApplication.interactorComponent = objectModeInteractor
             }
-
         }
     }
 

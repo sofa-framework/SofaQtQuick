@@ -52,10 +52,10 @@ Item {
                 if (drag.source.origin === "Hierarchy") {
                     var droppedItem = drag.source.item 
                     /// Ecmascript6.0 'for..of' is valid, don't trust qtcreator there is an error
-                    for(var fname of droppedItem.getDataFields())
+                    for (var fname of droppedItem.getDataFields())
                     {
                         var data = SofaApplication.selectedComponent.findData(fname);
-                        if( data !== null && data.isAutoLink())
+                        if (data !== null && data.isAutoLink())
                         {
                             data.setParent(droppedItem.getData(fname))
                         }
@@ -71,6 +71,7 @@ Item {
                 z: 3
                 id: header
                 Layout.fillWidth: true
+                Layout.rightMargin: 10
                 Layout.preferredHeight: 20
 
                 Text {
@@ -93,7 +94,7 @@ Item {
                 }
             }
 
-            ScrollView {
+            Flickable {
                 id: scrollview
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -105,12 +106,9 @@ Item {
 
                 ScrollBar.vertical: ScrollBar {
                     id: scrollbar
-                    policy: scrollview.height > scrollview.contentHeight ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
-                    parent: scrollview
-                    height: parent.height
+                    policy: scrollview.height > content.height ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
+                    height: scrollview.height - 10
                     width: 12
-                    size: 0.1
-                    active: true
                     contentItem: GBRect {
                         implicitWidth: 12
                         implicitHeight: 100
@@ -146,7 +144,7 @@ Item {
                         border.color: "#3f3f3f"
                         radius: 6
                         implicitWidth: 12
-                        implicitHeight: scrollview.height
+                        implicitHeight: parent.height
                         LinearGradient {
                             cached: true
                             source: parent
@@ -173,9 +171,10 @@ Item {
                     }
                 }
 
-
+                contentWidth: content.width; contentHeight: content.height
                 ColumnLayout {
-                    width: scrollview.width - 12
+                    id: content
+                    width: scrollbar.policy === ScrollBar.AlwaysOn ? scrollview.width - 20 : scrollview.width - 12
                     x: 12
                     Loader {
                         Layout.fillWidth: true

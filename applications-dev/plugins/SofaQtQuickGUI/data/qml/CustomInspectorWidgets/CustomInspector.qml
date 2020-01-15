@@ -6,9 +6,6 @@ import SofaBasics 1.0
 
 ColumnLayout {
     id: root
-    anchors.fill: parent
-    Layout.fillWidth: true
-    Layout.fillHeight: true
     spacing: 10
     property var showAll: true
     property var dataDict: {"Base": ["name", "componentState", "printLog"]}

@@ -135,6 +135,7 @@ using namespace sofa::component::visualmodel;
 using namespace sofa::simulation;
 
 typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Vec3Types> MechanicalObject3;
+typedef sofa::component::container::MechanicalObject<sofa::defaulttype::Rigid3Types> MechanicalObject7;
 
 SofaBaseScene::SofaBaseScene(QObject *parent) : QObject(parent),
     myStatus(Status::Null),
@@ -1593,10 +1594,15 @@ SelectableSofaParticle* SofaBaseScene::pickParticle(const QVector3D& origin, con
             pickVisitor.getClosestParticle( mstate, indexCollisionElement, point, rayLength );
 
             MechanicalObject3* mechanicalObject = dynamic_cast<MechanicalObject3*>(mstate);
-
             if(mechanicalObject)
             {
                 selectableSofaParticle = new SelectableSofaParticle(new sofaqtquick::bindings::SofaBaseObject(mechanicalObject), indexCollisionElement);
+                break;
+            }
+            MechanicalObject7* rigidObject = dynamic_cast<MechanicalObject7*>(mstate);
+            if(rigidObject)
+            {
+                selectableSofaParticle = new SelectableSofaParticle(new sofaqtquick::bindings::SofaBaseObject(rigidObject), indexCollisionElement);
                 break;
             }
         }

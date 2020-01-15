@@ -151,23 +151,87 @@ void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
     drawtools.drawSphere(pos, crossSize, yellow);
 }
 
-sofa::core::objectmodel::BaseData* Translate_Manipulator::getData()
+sofa::core::objectmodel::BaseData* Translate_Manipulator::GetData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
     if (!obj || !obj->rawBase()) return nullptr;
+
+
     /// @bmarques TODO: We need a way to select a default data field to manipulate
     /// Then we'll also need a way to manually pick which datafield we want to manipulate
     for (auto& d : obj->rawBase()->getDataFields())
         if (d->getValueTypeString() == "Vec3d" && (d->getName() == "translation" || d->getName() == "position"))
             return d;
+
     return nullptr;
 }
 
+bool Translate_Manipulator::GetValue(QVector3D& value, bool editMode, int pIndex)
+{
+    if (!editMode) {
+        auto v = dynamic_cast<sofa::Data<Vec3d>*>(GetData());
+        if (!v) {
+            return false;
+        }
+        value = helper::toQVector3D(v->getValue());
+        return true;
+    }
+    if (pIndex == -1) {
+        return false;
+    }
+
+    bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
+    if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position")) {
+        return false;
+    }
+    auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
+    const void* valueptr = obj->rawBase()->findData("position")->getValueVoidPtr();
+//    std::cout << "size() " << typeinfo->size() << std::endl;
+//    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
+//    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
+//    std::cout << "particleIndex " << m_particleIndex << std::endl;
+    value.setX(float(typeinfo->getScalarValue(valueptr, size_t(pIndex) * typeinfo->BaseType()->size()    )));
+    value.setY(float(typeinfo->getScalarValue(valueptr, size_t(pIndex) * typeinfo->BaseType()->size() + 1)));
+    value.setZ(float(typeinfo->getScalarValue(valueptr, size_t(pIndex) * typeinfo->BaseType()->size() + 2)));
+    return true;
+}
+
+bool Translate_Manipulator::getValue(QVector3D& value) const
+{
+    return GetValue(value, m_isEditMode, m_particleIndex);
+}
+
+void Translate_Manipulator::setValue(const QVector3D& value)
+{
+    if (!m_isEditMode) {
+        auto v = dynamic_cast<sofa::Data<Vec3d>*>(GetData());
+        if (!v) return;
+        v->setValue(helper::toVec3d(value));
+    }
+    if (m_particleIndex == -1)
+        return;
+
+    bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
+    if (!obj || !obj->rawBase() || !obj->rawBase()->findData("position"))
+        return;
+
+    auto* typeinfo = obj->rawBase()->findData("position")->getValueTypeInfo();
+    void* valueptr = obj->rawBase()->findData("position")->beginEditVoidPtr();
+//    std::cout << "size() " << typeinfo->size() << std::endl;
+//    std::cout << "size(ptr) " << typeinfo->size(valueptr) << std::endl;
+//    std::cout << "BaseType()->size() " << typeinfo->BaseType()->size() << std::endl;
+//    std::cout << "particleIndex " << m_particleIndex << std::endl;
+    typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size()    , double(value.x()));
+    typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 1, double(value.y()));
+    typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 2, double(value.z()));
+    obj->rawBase()->findData("position")->endEditVoidPtr();
+}
+
+
 void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
 {
-    data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
-    if (!data) return;
-    QVector3D pos = helper::toQVector3D(data->getValue());
+    QVector3D pos;
+    if (!getValue(pos)) return;
 
     cam = viewer.camera();
     if (!cam) return;
@@ -236,16 +300,10 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     Camera* cam = viewer->camera();
     if (!cam) return;
 
-        bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
-        if (!obj || !obj->rawBase()) return;
-
-        /// @bmarques TODO: We need a way to select a default data field to manipulate
-        /// Then we'll also need a way to manually pick which datafield we want to manipulate
-        /// Currently, let's just go through all datafields of the object,
-        /// and select whichever Vec3d comes first...
-        data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
-        if (!data) return;
-        QVector3D pos = helper::toQVector3D(data->getValue());
+    QVector3D pos;
+    if (!getValue(pos)) return;
+    std::cout << pos.x() << " " << pos.y()  << " " << pos.z() << std::endl;
+    std::cout << m_index << std::endl;
     QVector3D translated;
     switch (m_index)
     {
@@ -299,13 +357,15 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         if (isnan(translated[i]) || isinf(translated[i]))
             translated[i] = pos[i];
 
-    data->setValue(Vec3d(double(translated.x()), double(translated.y()), double(translated.z())));
+    setValue(translated);
     emit displayTextChanged(getDisplayText());
 }
 
 void Translate_Manipulator::mousePressed(const QPointF &mouse, SofaViewer *viewer)
 {
-    QVector3D pos = helper::toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(getData())->getValue());
+    QVector3D pos;
+    if (!getValue(pos)) return;
+
     switch (m_index)
     {
     case 0: // only move along X axis
@@ -348,9 +408,10 @@ int Translate_Manipulator::getIndices() const
 
 QString Translate_Manipulator::getDisplayText() const
 {
-    if (active)
-        return QString::fromStdString(getData()->getValueString()).replace(" ", " ; ");
-    return "";
+    QVector3D pos;
+    if (!active || !this->getValue(pos)) return "";
+
+    return QString::number(double(pos.x())) + " " + QString::number(double(pos.y())) + " " + QString::number(double(pos.z()));
 }
 
 

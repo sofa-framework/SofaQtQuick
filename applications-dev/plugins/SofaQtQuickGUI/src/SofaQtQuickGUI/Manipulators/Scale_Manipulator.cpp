@@ -151,7 +151,7 @@ void Scale_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
     drawtools.drawSphere(pos, crossSize, yellow);
 }
 
-sofa::core::objectmodel::BaseData* Scale_Manipulator::getData()
+sofa::core::objectmodel::BaseData* Scale_Manipulator::GetData()
 {
     bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
     if (!obj || !obj->rawBase()) return nullptr;
@@ -165,7 +165,7 @@ sofa::core::objectmodel::BaseData* Scale_Manipulator::getData()
 
 void Scale_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
 {
-    data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
+    data = dynamic_cast<sofa::Data<Vec3d>*>(GetData());
     if (!data) return;
     QVector3D pos = helper::toQVector3D(data->getValue());
 
@@ -252,7 +252,7 @@ void Scale_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
         /// Then we'll also need a way to manually pick which datafield we want to manipulate
         /// Currently, let's just go through all datafields of the object,
         /// and select whichever Vec3d comes first...
-        data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
+        data = dynamic_cast<sofa::Data<Vec3d>*>(GetData());
         if (!data) return;
         QVector3D pos = helper::toQVector3D(data->getValue());
     QVector3D translated;
@@ -314,7 +314,7 @@ void Scale_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
 
 void Scale_Manipulator::mousePressed(const QPointF &mouse, SofaViewer *viewer)
 {
-    QVector3D pos = helper::toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(getData())->getValue());
+    QVector3D pos = helper::toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(GetData())->getValue());
     switch (m_index)
     {
     case 0: // only move along X axis
@@ -358,7 +358,7 @@ int Scale_Manipulator::getIndices() const
 QString Scale_Manipulator::getDisplayText() const
 {
     if (active)
-        return QString::fromStdString(getData()->getValueString()).replace(" ", " ; ");
+        return QString::fromStdString(GetData()->getValueString()).replace(" ", " ; ");
     return "";
 }
 

@@ -1,1 +1,2 @@
-UserInteractor_CameraMode 1.0 UserInteractor_CameraMode.qml
+UserInteractor_ObjectMode 1.0 UserInteractor_ObjectMode.qml
+UserInteractor_EditMode 1.0 UserInteractor_EditMode.qml

@@ -38,7 +38,6 @@ Item //
 {
     id: root
 
-
     ////////////////////////////////////////////////// SOFASCENE
     property var sofaScene: null
 
@@ -48,8 +47,6 @@ Item //
 
 
     ////////////////////////////////////////////////// MANIPULATORS
-
-
     // This manipulator is the currently selected interchangeable manipulator.
     // An interchangeable manipulator is a manipulator whose activation depends on others being inactive.
     // e.g. Rotate / scale cannot be active if the translate manipulator is active.
@@ -62,43 +59,11 @@ Item //
     }
 
     ////////////////////////////////////////////////// SELECTED COMPONENT
-//    function getSelectedComponent() { return SofaBaseApplicationSingleton.selectedComponent }
-//    function setSelectedComponent(selectedComponent) { SofaBaseApplicationSingleton.selectedComponent = selectedComponent}
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {
         if (SofaBaseApplicationSingleton.selectedComponent !== selectedComponent)
             SofaBaseApplicationSingleton.selectedComponent = selectedComponent
     }
-
-//    /// Bind the graph view to the currently selected component
-//    Binding{
-//        target: GraphView
-//        property: "selectedComponent"
-//        value: selectedComponent
-//    }
-
-
-//    PropertyAnimation
-//    {
-//        id: testAnim
-//        target: GraphView
-//        property: "viewPosition"
-//        from: Qt.vector2d(0,0)
-//        to: Qt.vector2d(100,100)
-//        duration: 1
-//    }
-
-//    Connections
-//    {
-//        target: sofaScene
-//        onStatusChanged: {
-//            if(sofaScene.status === SofaBaseScene.Ready)
-//            {
-//                GraphView.rootNode = sofaScene.root()
-//                testAnim.start()
-//            }
-//        }
-//    }
 
 
     /// Connect to this signal to be notified when a component need to be emphasized.
@@ -367,10 +332,8 @@ Item //
 
     ////////////////////////////////////////////////// INTERACTOR
 
-    property UserInteractor interactorComponent: UserInteractor_CameraMode {
-        id: interactor
-        Component.onCompleted: interactor.init()
-    }
+    property UserInteractor interactorComponent
+
 
     ////////////////////////////////////////////////// SCREENSHOT
 

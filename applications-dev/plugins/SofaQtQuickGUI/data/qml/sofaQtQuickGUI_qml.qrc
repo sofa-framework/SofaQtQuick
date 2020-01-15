@@ -73,7 +73,7 @@
         <file>SofaDataTypes/SofaDataType_Material.qml</file>
         <file>SofaDataTypes/SofaDataType_OptionsGroup.qml</file>
         <file>SofaInteractors/qmldir</file>
-        <file>SofaInteractors/UserInteractor_CameraMode.qml</file>
+        <file>SofaInteractors/UserInteractor_ObjectMode.qml</file>
         <file>SofaManipulators/qmldir</file>
         <file>SofaViews/qmldir</file>
         <file>SofaViews/CameraView.qml</file>
@@ -151,5 +151,6 @@
         <file>SofaDataTypes/StaticContainerView.qml</file>
         <file>SofaDataTypes/DynamicContainerView.qml</file>
         <file>SofaDataTypes/DynamicTableView.qml</file>
+        <file>SofaInteractors/UserInteractor_EditMode.qml</file>
     </qresource>
 </RCC>
