@@ -14,10 +14,16 @@ ColumnLayout {
     Layout.fillWidth: true
     property SofaData sofaData
     property var value: 0
+
+    Component.onCompleted: {
+        value = sofaData.value
+    }
+
     Connections
     {
         target: root.sofaData
         onValueChanged: {
+            console.log("updating value for "+ root.sofaData.getName() + ": " + root.sofaData.value)
             root.value=root.sofaData.value
         }
     }

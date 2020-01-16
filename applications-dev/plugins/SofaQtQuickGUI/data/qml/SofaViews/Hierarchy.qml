@@ -583,9 +583,6 @@ Rectangle {
                 z: 1
             }
 
-
-            //Drag.active: mouseArea.drag.active
-            //Drag.dragType: Drag.Automatic
             SofaNodeMenu
             {
                 id: nodeMenu

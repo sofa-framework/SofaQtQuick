@@ -1,4 +1,4 @@
-import QtQuick 2.5
+import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import SofaApplication 1.0
@@ -7,10 +7,12 @@ import SofaBasics 1.0
 ColumnLayout {
     id: root
     spacing: 10
+    property var component: SofaApplication.selectedComponent
+
     property var showAll: true
     property var dataDict: {"Base": ["name", "componentState", "printLog"]}
     property var linkList: []
-    property var infosDict: {"class":SofaApplication.selectedComponent.getClassName(), "name": SofaApplication.selectedComponent.getName()}
+    property var infosDict: {"class":component.getClassName(), "name": component.getName()}
     onDataDictChanged: {
         groupRepeater.model = Object.keys(dataDict).length
     }
@@ -32,23 +34,42 @@ ColumnLayout {
                     Layout.fillWidth: true
                     RowLayout {
                         id: sofaDataLayout
-                        property var sofaData: modelData ? SofaApplication.selectedComponent.getData(modelData) : null
+                        property var sofaData: modelData ? component.getData(modelData) : null
+                        onSofaDataChanged: {
+                            console.log(sofaData.getName() + " CHANGED")
+                        }
                         Layout.fillWidth: true
 
                         Label {
                             Layout.minimumWidth: root.labelWidth
 
                             text:  modelData
-                            color: "black"
+                            color: sofaDataLayout.sofaData.properties.required ? "red" : "black"
                             ToolTip {
                                 text: sofaDataLayout.sofaData.getName()
                                 description: sofaDataLayout.sofaData.getHelp()
                                 visible: marea.containsMouse
                             }
+
                             MouseArea {
                                 id: marea
                                 anchors.fill: parent
                                 hoverEnabled: true
+                                DropArea {
+                                    id: dropArea
+                                    keys: ["text/plain"]
+                                    anchors.fill: parent
+                                    onEntered: {
+                                        console.error("plop")
+                                    }
+                                    onDropped: {
+                                        var data = drag.source.item.getData(sofaData.getName())
+                                        if (data !== null) {
+                                            sofaData.setParent(data)
+                                            sofaData.value = data.value
+                                        }
+                                    }
+                                }
                             }
                             Component.onCompleted: {
                                 if (width > root.labelWidth)
@@ -63,8 +84,27 @@ ColumnLayout {
                                     ? "qrc:/SofaBasics/SofaLinkItem.qml"
                                     : "qrc:/SofaDataTypes/SofaDataType_" + sofaDataLayout.sofaData.properties.type + ".qml"
                             onLoaded: {
-                                item.sofaData = sofaDataLayout.sofaData
+                                item.sofaData = Qt.binding(function(){return sofaDataLayout.sofaData})
                             }
+                            DropArea {
+                                id: dropArea2
+                                anchors.fill: parent
+
+                                onEntered: {
+                                    console.error("plop")
+                                }
+                                onDropped: {
+                                    console.log("dropped")
+                                    data = drag.source.item.findData(sofaData.getName())
+                                    if (data !== null) {
+                                        console.log("found data with name " + sofaData.getName() + ". Linking...")
+                                        sofaData.parent = data
+                                        var v = sofaData.value
+                                    }
+                                }
+                            }
+
+
                         }
                         Button {
                             id: linkButton
@@ -72,7 +112,7 @@ ColumnLayout {
                             Layout.preferredHeight: 14
                             anchors.margins: 3
                             checkable: true
-                            checked: sofaData ? null !== sofaData.getParent() : false
+                            checked: sofaDataLayout.sofaData ? null !== sofaDataLayout.sofaData.getParent() : false
                             onCheckedChanged: {
                                 if (dataItemLoader.item)
                                     dataItemLoader.item.forceActiveFocus()
@@ -118,7 +158,7 @@ ColumnLayout {
                         Layout.fillHeight: true
                         readOnly: true
 
-                        text: SofaApplication.selectedComponent.findLink(modelData).getLinkedPath().trim()
+                        text: component.findLink(modelData).getLinkedPath().trim()
                     }
                     Rectangle {
                         color: "transparent"
