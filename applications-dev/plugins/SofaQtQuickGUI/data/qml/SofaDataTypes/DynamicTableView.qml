@@ -195,7 +195,6 @@ ColumnLayout {
                 Layout.fillWidth: true
                 value: 0
                 position: cornerPositions[index == 0 ? 'Left' : 'Middle']
-
             }
         }
         Button {

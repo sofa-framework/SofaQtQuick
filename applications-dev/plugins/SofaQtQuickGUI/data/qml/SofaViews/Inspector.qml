@@ -43,26 +43,6 @@ Item {
         color: SofaApplication.style.contentBackgroundColor
         anchors.fill: parent
         visible: selectedAsset === null
-        DropArea {
-            id: dropArea
-            anchors.fill: parent
-            onDropped: {
-                /// Drop of a SofaBase form the hierachy. This indicate that we want
-                /// to automatically connect all the data fields with similar names.
-                if (drag.source.origin === "Hierarchy") {
-                    var droppedItem = drag.source.item 
-                    /// Ecmascript6.0 'for..of' is valid, don't trust qtcreator there is an error
-                    for (var fname of droppedItem.getDataFields())
-                    {
-                        var data = SofaApplication.selectedComponent.findData(fname);
-                        if (data !== null && data.isAutoLink())
-                        {
-                            data.setParent(droppedItem.getData(fname))
-                        }
-                    }
-                }
-            }
-        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -73,6 +53,30 @@ Item {
                 Layout.fillWidth: true
                 Layout.rightMargin: 10
                 Layout.preferredHeight: 20
+
+                DropArea {
+                    id: dropArea
+                    anchors.fill: parent
+                    onDropped: {
+                        console.log("DROPPPED YAY")
+                        /// Drop of a SofaBase form the hierachy. This indicate that we want
+                        /// to automatically connect all the data fields with similar names.
+                        if (drag.source.origin === "Hierarchy") {
+                            var droppedItem = drag.source.item
+                            /// Ecmascript6.0 'for..of' is valid, don't trust qtcreator there is an error
+                            for (var fname of droppedItem.getDataFields())
+                            {
+                                var data = SofaApplication.selectedComponent.findData(fname);
+                                if (data !== null && data.isAutoLink())
+                                {
+                                    console.log("DROPPPED")
+                                    data.setValue(droppedItem.getData(fname).getValue())
+                                    data.setParent(droppedItem.getData(fname))
+                                }
+                            }
+                        }
+                    }
+                }
 
                 Text {
                     id: detailsArea
@@ -100,6 +104,8 @@ Item {
                 Layout.fillWidth: true
                 Layout.leftMargin: 5
                 clip: true
+                flickableDirection: Flickable.VerticalFlick
+                boundsMovement: Flickable.StopAtBounds
                 ScrollBar.horizontal: ScrollBar {
                     policy: ScrollBar.AlwaysOff
                 }
