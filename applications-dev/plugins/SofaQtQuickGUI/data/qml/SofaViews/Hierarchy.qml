@@ -770,4 +770,3 @@ Rectangle {
         }
     }
 }
-git
