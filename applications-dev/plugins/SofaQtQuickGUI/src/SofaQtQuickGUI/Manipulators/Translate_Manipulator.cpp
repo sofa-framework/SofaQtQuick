@@ -133,8 +133,8 @@ void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking, sofa:
              double(cam->up().y()),
              double(cam->up().z()));
     Vec3d right(double(cam->right().x()),
-             double(cam->right().y()),
-             double(cam->right().z()));
+                double(cam->right().y()),
+                double(cam->right().z()));
 
     Vec3d fwd(double(cam->direction().x()),
               double(cam->direction().y()),
@@ -312,47 +312,49 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     {
     case 0: // only move along X axis
         translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(1,0,0)) - shift;
-        break;
-    case 1: // only move along Y axis
-        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(0,1,0)) - shift;
-        break;
-    case 2: // only move along Z axis
-        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(0,0,1)) - shift;
-        break;
-    case 3: // only move along XY plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
-                                                            float(pos.y()),
-                                                            float(pos.z())),
-                                           QVector3D(0,0,1)) - shift;
-        break;
-    case 4: // only move along YZ plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            QVector3D(1,0,0)) - shift;
         break;
-    case 5: // only move along ZX plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+    case 1: // only move along Y axis
+        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            QVector3D(0,1,0)) - shift;
         break;
-    case 6: // only move along Camera plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+    case 2: // only move along Z axis
+        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
-                                           cam->direction()) - shift;
+                                           QVector3D(0,0,1)) - shift;
+        break;
+    case 3: // only move along XY plane
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+                                                             float(pos.y()),
+                                                             float(pos.z())),
+                                            QVector3D(0,0,1)) - shift;
+        break;
+    case 4: // only move along YZ plane
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+                                                             float(pos.y()),
+                                                             float(pos.z())),
+                                            QVector3D(1,0,0)) - shift;
+        break;
+    case 5: // only move along ZX plane
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+                                                             float(pos.y()),
+                                                             float(pos.z())),
+                                            QVector3D(0,1,0)) - shift;
+        break;
+    case 6: // only move along Camera plane
+        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+                                                             float(pos.y()),
+                                                             float(pos.z())),
+                                            cam->direction()) - shift;
         break;
     };
+
+    std::cout << "YO LO" << translated.x() << std::endl;
 
     // It's easy to overflow when translating along axis that is almost
     // parallel to camera direction....

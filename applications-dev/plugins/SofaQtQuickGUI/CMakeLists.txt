@@ -66,7 +66,6 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Scale_Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.cpp
-    src/SofaQtQuickGUI/Manipulators/TranslateParticle_Manipulator.cpp
     src/SofaQtQuickGUI/Models/SofaDataListModel.cpp
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.cpp
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.cpp
@@ -77,7 +76,6 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Models/SofaViewListModel.cpp
     src/SofaQtQuickGUI/Models/SofaDataContainerListModel.cpp
     src/SofaQtQuickGUI/Models/SofaLinkCompletionModel.cpp
-    #    src/SofaQtQuickGUI/Models/CustomInspectorModel.cpp
     src/SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.cpp
     src/SofaQtQuickGUI/QMLUI/QMLUI.cpp
     src/SofaQtQuickGUI/QMLUI/View.cpp
@@ -149,7 +147,6 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.h
     src/SofaQtQuickGUI/Manipulators/Scale_Manipulator.h
     src/SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h
-    src/SofaQtQuickGUI/Manipulators/TranslateParticle_Manipulator.h
     src/SofaQtQuickGUI/Models/SofaDataListModel.h
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.h

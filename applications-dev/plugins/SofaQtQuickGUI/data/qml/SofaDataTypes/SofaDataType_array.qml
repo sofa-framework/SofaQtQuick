@@ -32,7 +32,21 @@ ColumnLayout {
     spacing: 0
     Layout.fillWidth: true
 
+    function updateText()
+    {
+        return sofaData.value.length + (sofaData.value.length === 1 ? " Entry" : " Entries")
+    }
+
     property SofaData sofaData
+    property string numEntries : updateText()
+
+    Connections
+    {
+        target: sofaData
+        onValueChanged: {
+            numEntries=updateText()
+        }
+    }
 
     property int refreshCounter: 0
 

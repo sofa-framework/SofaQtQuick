@@ -230,7 +230,7 @@ Rectangle {
                 var srcIndex = sceneModel.mapToSource(idx)
                 var theComponent = basemodel.getBaseFromIndex(srcIndex)
                 if (theComponent === null) break;
-                console.error("Just expanded: " + theComponent.getPathName())
+                //console.error("Just expanded: " + theComponent.getPathName())
                 // On dépile récursivement les parents jusqu'à root
                 treeView.expand(idx)
                 old_idx = idx
@@ -770,3 +770,4 @@ Rectangle {
         }
     }
 }
+git

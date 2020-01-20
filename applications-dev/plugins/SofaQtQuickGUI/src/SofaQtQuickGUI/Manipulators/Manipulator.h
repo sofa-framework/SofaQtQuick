@@ -73,11 +73,11 @@ public:
 
 protected:
     QString m_name;
-    int m_index;
-    int m_particleIndex;
-    bool m_isEditMode;
-    bool m_persistent;
-    bool m_enabled;
+    int m_index {0};
+    int m_particleIndex {0};
+    bool m_isEditMode {false};
+    bool m_persistent {false};
+    bool m_enabled {false};
 };
 
 }  // namespace sofaqtquick

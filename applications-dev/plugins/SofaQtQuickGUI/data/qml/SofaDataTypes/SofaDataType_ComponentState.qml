@@ -29,20 +29,20 @@ import Sofa.Core.SofaData 1.0
   *************************************************************************************************/
 Text {
     id: root
-    property SofaData sofaData: null
-    onSofaDataChanged: {
-        root.text = sofaData.value
-    }
-
     enabled:true
     text: sofaData.value + "(" + sofaData.getCounter() + ")"
+
+    property SofaData sofaData: null
+
+    onSofaDataChanged: {
+        root.text = sofaData.value + "(" + sofaData.getCounter() + ")"
+    }
 
     Connections
     {
         target: sofaData
         onValueChanged: {
-            root.text = sofaData.value
+            root.text=sofaData.value + "(" + sofaData.getCounter() + ")"
         }
     }
-
 }

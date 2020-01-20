@@ -809,6 +809,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
         sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
         if (!visualParams->drawTool())
             visualParams->drawTool() = new sofa::core::visual::DrawToolGL();
+        visualParams->pass() = sofa::core::visual::VisualParams::Transparent;
         QVector<VisualModel*> visualModels;
         QVector<TriangleModel*> triangleModels;
         QVector<MechanicalObject*> mechanicalModels;
@@ -843,7 +844,6 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                     {
                         myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
                         visualModel->drawVisual(visualParams);
-
                         visualModels.append(visualModel);
                         index++;
                     }
