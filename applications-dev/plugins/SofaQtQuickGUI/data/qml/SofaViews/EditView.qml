@@ -1190,6 +1190,9 @@ EditView
     Loader {
         id: manipulatorLoader
         sourceComponent: objectmodeManipulators
+        onLoaded: {
+            SofaApplication.selectedManipulator = null
+        }
     }
 
     Component {
@@ -1201,4 +1204,5 @@ EditView
         id: editmodeManipulators
         EditModeManipulators {}
     }
+
 }

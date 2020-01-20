@@ -187,7 +187,7 @@ UserInteractor {
                 }
             }
             var manip = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
-            if (manip.sofaComponent)
+            if (manip && manip.sofaComponent)
                 console.log("object found")
             if (manip && manip.manipulator) {
                 console.log("it's a manipulator")

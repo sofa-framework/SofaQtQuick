@@ -683,7 +683,8 @@ Rectangle {
                         var oldIndex = src.index
                         oldIndex = sceneModel.mapToSource(oldIndex)
                         var theComponent = basemodel.getBaseFromIndex(oldIndex)
-
+                        if (!theComponent)
+                            return
                         var newIndex = styleData.index
                         newIndex = sceneModel.mapToSource(newIndex)
                         var parentNode = basemodel.getBaseFromIndex(newIndex)

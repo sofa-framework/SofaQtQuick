@@ -47,29 +47,28 @@ Item {
         ColumnLayout {
             anchors.fill: parent
             spacing: 10
-            RowLayout {
-                z: 3
-                id: header
-                Layout.fillWidth: true
-                Layout.rightMargin: 10
+            Rectangle {
                 Layout.preferredHeight: 20
-
+                Layout.fillWidth: true
+                color: "transparent"
                 DropArea {
                     id: dropArea
                     anchors.fill: parent
                     onDropped: {
-                        console.log("DROPPPED YAY")
                         /// Drop of a SofaBase form the hierachy. This indicate that we want
                         /// to automatically connect all the data fields with similar names.
                         if (drag.source.origin === "Hierarchy") {
                             var droppedItem = drag.source.item
                             /// Ecmascript6.0 'for..of' is valid, don't trust qtcreator there is an error
+                            if (droppedItem.getPathName() === SofaApplication.selectedComponent.getPathName()) {
+                                console.error("Cannot link datafields to themselves")
+                                return;
+                            }
                             for (var fname of droppedItem.getDataFields())
                             {
                                 var data = SofaApplication.selectedComponent.findData(fname);
                                 if (data !== null && data.isAutoLink())
                                 {
-                                    console.log("DROPPPED")
                                     data.setValue(droppedItem.getData(fname).getValue())
                                     data.setParent(droppedItem.getData(fname))
                                 }
@@ -77,26 +76,29 @@ Item {
                         }
                     }
                 }
+                RowLayout {
+                    z: 3
+                    id: header
+                    anchors.fill: parent
+                    anchors.rightMargin: 10
 
-                Text {
-                    id: detailsArea
-                    Layout.fillWidth: true
-                    text : "Details " + ((SofaApplication.selectedComponent===null)? "" : "("+ SofaApplication.selectedComponent.getClassName() + ")")
-                    color: "black"
-                }
-                Label {
-                    id: showAllLabel
-//                    anchors.right: isDebug.left
-//                    anchors.verticalCenter: header1.verticalCenter
-                    text: "Show all: "
-                    color: "black"
-                }
-                CheckBox {
-                    id : showAll
-//                    anchors.right: header1.right
-//                    anchors.verticalCenter: header1.verticalCenter
+                    Text {
+                        id: detailsArea
+                        Layout.fillWidth: true
+                        text : "Details " + ((SofaApplication.selectedComponent===null)? "" : "("+ SofaApplication.selectedComponent.getClassName() + ")")
+                        color: "black"
+                    }
+                    Label {
+                        id: showAllLabel
+                        text: "Show all: "
+                        color: "black"
+                    }
+                    CheckBox {
+                        id : showAll
+                    }
                 }
             }
+
 
             Flickable {
                 id: scrollview

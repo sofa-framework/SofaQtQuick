@@ -29,13 +29,15 @@ Column {
         console.log("Cant create Manipulator with name " + manipulatorString)
         return null
     }
-
-
-    Rectangle {
-        id: translateRect
+    ManipulatorMenu {
+        id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
 
-        property bool selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
+        selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
+        onOptionChanged: {
+            translateMenu.setManipulator()
+        }
+
 
         function setManipulator() {
             var m = manipulatorControls.getManipulator(manipulatorName)
@@ -43,41 +45,17 @@ Column {
                 SofaApplication.selectedManipulator = m
         }
 
-        implicitHeight: 30
-        implicitWidth: 30
-        color: "transparent"
-        Rectangle {
-            anchors.fill: parent
-            color: translateRect.selected ? "#8888ff" : "white"
-            opacity: translateRect.selected ? 0.7 : translateMarea.containsMouse ? 0.2 : 0.1
-        }
-
-        Image {
-            anchors.centerIn: parent
-            source: "qrc:/icon/ICON_TRANLSATION_MODIFIER.png"
-            scale: 1.2
-            opacity: 0.9
-        }
-
-        MouseArea {
-            id: translateMarea
-            anchors.fill: parent
-            hoverEnabled: true
-            acceptedButtons: Qt.LeftButton
-
-            onClicked: {
-                translateRect.setManipulator()
-            }
-            Shortcut {
-                context: Qt.ApplicationShortcut
-                sequence: "Shift+Space, G";
-                onActivated: {
-                    translateRect.setManipulator()
-                }
+        model: null
+        image: "qrc:/icon/ICON_TRANLSATION_MODIFIER.png"
+        Shortcut {
+            context: Qt.ApplicationShortcut
+            sequence: "Shift+Space, G";
+            onActivated: {
+                translateMenu.setManipulator()
             }
         }
         ToolTip {
-            visible: translateMarea.containsMouse
+            visible: translateMenu.containsMouse
             text: "Move"
             description: "Translates the selected item\n Shortcut: Shift+Space, G"
         }
@@ -97,7 +75,7 @@ Column {
         }
 
         image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
-        menuItemModel: ListModel {
+        model: ListModel {
             ListElement {
                 title: "Local"
                 option: true
@@ -107,7 +85,7 @@ Column {
                 option: false
             }
         }
-        onOptionSelected: {
+        onOptionChanged: {
             rotateMenu.setManipulator()
             SofaApplication.selectedManipulator.local = option
         }
@@ -126,6 +104,5 @@ Column {
             text: "Rotate"
             description: "Rotates the selected item (default: local reference frame)\n Shortcut: Shift+Space, R"
         }
-
     }
-}
+    }

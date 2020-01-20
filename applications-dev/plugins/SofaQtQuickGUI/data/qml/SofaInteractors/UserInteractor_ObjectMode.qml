@@ -142,6 +142,7 @@ UserInteractor {
 
     function init() {
         moveCamera_init();
+        SofaApplication.selectedManipulator = null
         addMouseClickedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
             if(selectable && selectable.sofaComponent) {
