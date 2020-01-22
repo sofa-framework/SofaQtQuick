@@ -217,9 +217,6 @@ UserInteractor {
                     label.visible = false
                 }
                 setMouseMovedMapping(function(m, sofaViewer) {
-                    console.log("BBB")
-                    console.log(m.button)
-                    console.log(m.buttons)
                     if (manip.displayText !== "") {
                         label.x = m.x + 15
                         label.y = m.y - 15

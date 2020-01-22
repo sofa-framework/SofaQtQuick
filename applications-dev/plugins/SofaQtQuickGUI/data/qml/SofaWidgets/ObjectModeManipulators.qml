@@ -17,17 +17,6 @@ Column {
     anchors.leftMargin: 20
     anchors.topMargin: 20
         
-    function getManipulator(manipulatorString) {
-        var manipulator = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
-        if (manipulator.status === Component.Ready)
-        {
-            console.log("Created Manipulator with name " + manipulatorString)
-            var m = manipulator.createObject()
-            return m
-        }
-        console.log("Cant create Manipulator with name " + manipulatorString)
-        return null
-    }
     ManipulatorMenu {
         id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
@@ -39,7 +28,7 @@ Column {
 
 
         function setManipulator() {
-            var m = manipulatorControls.getManipulator(manipulatorName)
+            var m = SofaApplication.createManipulator(manipulatorName)
             if (m !== null)
                 SofaApplication.selectedManipulator = m
         }
@@ -68,7 +57,7 @@ Column {
         selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
 
         function setManipulator() {
-            var m = manipulatorControls.getManipulator(manipulatorName)
+            var m = SofaApplication.createManipulator(manipulatorName)
             if (m !== null)
                 SofaApplication.selectedManipulator = m
         }

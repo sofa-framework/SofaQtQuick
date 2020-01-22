@@ -58,6 +58,26 @@ Item //
         }
     }
 
+    property var createdManipulators: []
+    function createManipulator(manipulatorString) {
+        print(createdManipulators)
+        var m = createdManipulators[manipulatorString]
+        if (m) {
+            print("already exising")
+            return m;
+        }
+        var component = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
+        if (component.status === Component.Ready)
+        {
+            console.log("Creating Manipulator with name " + manipulatorString)
+            createdManipulators[manipulatorString] = component.createObject()
+            print("NEW")
+            return createdManipulators[manipulatorString];
+        }
+        console.error("Could not create  Manipulator with name " + manipulatorString)
+        return null
+    }
+
     ////////////////////////////////////////////////// SELECTED COMPONENT
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {
