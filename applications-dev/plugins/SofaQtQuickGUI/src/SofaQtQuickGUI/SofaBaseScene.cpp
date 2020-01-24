@@ -103,8 +103,6 @@ using sofaqtquick::bindings::SofaCoreBindingFactory;
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 using sofaqtquick::SofaBaseApplication;
 
-#include "Manipulators/Viewpoint_Manipulator.h"
-
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -152,7 +150,6 @@ SofaBaseScene::SofaBaseScene(QObject *parent) : QObject(parent),
     mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
     myManipulators(),
-    mySelectedManipulator(nullptr),
     mySelectedComponent(nullptr)
 {
     std::cout << "SCENE CREATED ..... " << std::endl;
@@ -423,7 +420,6 @@ void SofaBaseScene::open()
             setDt(mySofaRootNode->getDt());
         }
     }
-    myManipulators.append(new sofaqtquick::Viewpoint_Manipulator());
     emit rootNodeChanged();
 }
 
@@ -563,17 +559,6 @@ void SofaBaseScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
     myPyQtForceSynchronous = newPyQtForceSynchronous;
 
     pyQtForceSynchronousChanged(newPyQtForceSynchronous);
-}
-
-
-void SofaBaseScene::setSelectedManipulator(sofaqtquick::Manipulator* newSelectedManipulator)
-{
-    if(newSelectedManipulator == mySelectedManipulator)
-        return;
-
-    mySelectedManipulator = newSelectedManipulator;
-
-    selectedManipulatorChanged(newSelectedManipulator);
 }
 
 static void appendManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property, sofaqtquick::Manipulator *value)

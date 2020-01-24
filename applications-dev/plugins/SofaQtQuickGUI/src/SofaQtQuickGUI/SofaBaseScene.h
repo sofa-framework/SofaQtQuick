@@ -111,7 +111,6 @@ public:
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
-    Q_PROPERTY(sofaqtquick::Manipulator* selectedManipulator READ selectedManipulator WRITE setSelectedManipulator NOTIFY selectedManipulatorChanged)
     Q_PROPERTY(QQmlListProperty<sofaqtquick::Manipulator> manipulators READ manipulators)
 
     Q_ENUMS(Status)
@@ -173,9 +172,6 @@ public:
     bool pyQtSynchronous() const                                {return myPyQtForceSynchronous;}
     void setPyQtForceSynchronous(bool newPyQtSynchronous);
 
-    sofaqtquick::Manipulator* selectedManipulator() const     {return mySelectedManipulator;}
-    void setSelectedManipulator(sofaqtquick::Manipulator* newSelectedManipulator);
-
     QQmlListProperty<sofaqtquick::Manipulator> manipulators();
 
 signals:
@@ -196,7 +192,6 @@ signals:
     void defaultAnimateChanged(bool newDefaultAnimate);
     void asynchronousChanged(bool newAsynchronous);
     void pyQtForceSynchronousChanged(bool newPyQtSynchronous);
-    void selectedManipulatorChanged(sofaqtquick::Manipulator* newSelectedManipulator);
 
 public:
     /// Returns an object, a node or a data according to its scene path.
@@ -330,7 +325,6 @@ private:
     QTimer*                                     myStepTimer;
 
     QList<Manipulator*>                         myManipulators;
-    Manipulator*                                mySelectedManipulator;
     SofaBase*                                   mySelectedComponent {nullptr};
 
     SofaBase*                                   myCppGraph;

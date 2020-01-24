@@ -45,36 +45,30 @@ Item //
 
     property var style : MainStyle
 
+    property var manipulators: sofaScene.manipulators
 
-    ////////////////////////////////////////////////// MANIPULATORS
-    // This manipulator is the currently selected interchangeable manipulator.
-    // An interchangeable manipulator is a manipulator whose activation depends on others being inactive.
-    // e.g. Rotate / scale cannot be active if the translate manipulator is active.
-    // Other manipulators are in SofaScene.manipulators
-    property var selectedManipulator : sofaScene.selectedManipulator
-    onSelectedManipulatorChanged: {
-        if (selectedManipulator !== null) {
-            sofaScene.selectedManipulator = selectedManipulator
-        }
+    function getManipulatorByName(name) {
+        for (var m in root.manipulators)
+            if (m.name === name)
+                return m
+        return null
     }
 
-    property var createdManipulators: []
-    function createManipulator(manipulatorString) {
-        print(createdManipulators)
-        var m = createdManipulators[manipulatorString]
+    function createManipulator(name) {
+        var m = getManipulatorByName(name)
         if (m) {
-            print("already exising")
+            console.error(m + " already exists")
             return m;
         }
-        var component = Qt.createComponent("qrc:/SofaManipulators/" + manipulatorString + ".qml")
+        var component = Qt.createComponent("qrc:/SofaManipulators/" + name + ".qml")
         if (component.status === Component.Ready)
         {
-            console.log("Creating Manipulator with name " + manipulatorString)
-            createdManipulators[manipulatorString] = component.createObject()
-            print("NEW")
-            return createdManipulators[manipulatorString];
+            m = component.createObject()
+            root.manipulators.push(m)
+            console.error("New manip: " + m)
+            return m;
         }
-        console.error("Could not create  Manipulator with name " + manipulatorString)
+        console.error("Could not create  Manipulator with name " + name)
         return null
     }
 

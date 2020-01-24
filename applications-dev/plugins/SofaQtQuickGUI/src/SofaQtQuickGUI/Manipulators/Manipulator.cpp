@@ -6,7 +6,9 @@ namespace sofaqtquick
 Manipulator::Manipulator(QObject* parent)
     : QObject(parent),
       m_particleIndex(-1),
-      m_isEditMode(false)
+      m_isEditMode(false),
+      m_persistent(false),
+      m_enabled(false)
 {
 
 }
@@ -55,12 +57,15 @@ void Manipulator::toggleEditMode(bool val)
 void Manipulator::draw(const SofaViewer& viewer)
 {
     int idx = -1;
-    internalDraw(viewer, idx);
+    if (m_enabled) {
+        internalDraw(viewer, idx);
+    }
 }
 
 void Manipulator::pick(const SofaViewer& viewer, int& pickIndex)
 {
-    internalDraw(viewer, pickIndex, true);
+    if (m_enabled)
+        internalDraw(viewer, pickIndex, true);
 }
 
 }  // namespace sofaqtquick

@@ -612,9 +612,6 @@ void SofaViewer::drawManipulator(const SofaViewer& viewer) const
 {
     for (auto m : mySofaScene->myManipulators)
         m->draw(viewer);
-
-    if(mySofaScene->mySelectedManipulator)
-        mySofaScene->mySelectedManipulator->draw(viewer);
 }
 
 void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  roots,
@@ -656,7 +653,6 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
     {
         if(!node)
             continue;
-
 
         mySofaScene->mySofaSimulation->draw(this->getVisualParams(), node);
     }
@@ -949,23 +945,18 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                 {
                     for (auto manipulator : mySofaScene->myManipulators)
                     {
-                        for (int i = 0 ; i < manipulator->getIndices() ; i++)
+                        if (manipulator->enabled())
                         {
-                            myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                            manipulator->pick(*this, i);
-                            index++;
+                            for (int i = 0 ; i < manipulator->getIndices() ; i++)
+                            {
+                                myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
+                                manipulator->pick(*this, i);
+                                index++;
+                            }
                         }
                     }
                 }
-                if (mySofaScene->mySelectedManipulator)
-                {
-                    for (int i = 0 ; i < mySofaScene->mySelectedManipulator->getIndices() ; i++)
-                    {
-                        myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
-                        mySofaScene->mySelectedManipulator->pick(*this, i);
-                        index++;
-                    }
-                }
+
             }
         }
         myPickingShaderProgram->release();
@@ -1024,14 +1015,9 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                                         index -= manipulator->getIndices();
                                     }
                                 }
-                                if (!selectable && index >= 0)
-                                {
-                                    selectable = new SelectableManipulator(*(mySofaScene->mySelectedManipulator), index);
-                                }
-                                else {
-                                    index = -1;
-                                }
                             }
+                            if (!selectable && index != -1)
+                                index = -1;
                         }
                     }
                 }

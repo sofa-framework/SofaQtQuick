@@ -17,21 +17,42 @@ Column {
     anchors.leftMargin: 20
     anchors.topMargin: 20
 
+    function setManipulator(manipulatorName) {
+        var m = SofaApplication.createManipulator(manipulatorName)
+        if (m !== null)
+        {
+            for (var manip in SofaApplication.manipulators)
+                if (!manip.persistent)
+                    manip.enabled = false
+            m.enabled = true
+            return m
+        }
+        return null
+    }
+
+    Component.onCompleted: {
+        var m = setManipulator("Viewpoint_Manipulator")
+        m.persistent = true
+        m.enabled = true
+    }
+
+
     ManipulatorMenu {
         id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
 
-        selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
+        selected: {
+            for (var m in SofaApplication.manipulators)
+                if (m.name === manipulatorName)
+                    return m.enabled
+            return false
+        }
+
         onOptionChanged: {
-            translateMenu.setManipulator()
+            setManipulator(manipulatorName)
+            selected = true
         }
 
-
-        function setManipulator() {
-            var m = SofaApplication.createManipulator(manipulatorName)
-            if (m !== null)
-                SofaApplication.selectedManipulator = m
-        }
 
         model: null
         image: "qrc:/icon/ICON_TRANLSATION_MODIFIER.png"
@@ -39,7 +60,8 @@ Column {
             context: Qt.ApplicationShortcut
             sequence: "Shift+Space, G";
             onActivated: {
-                translateMenu.setManipulator()
+                setManipulator(translateMenu.manipulatorName)
+                selected = true
             }
         }
         ToolTip {
@@ -54,14 +76,6 @@ Column {
 
         property string manipulatorName: "Rotate_Manipulator"
 
-        selected: SofaApplication.selectedManipulator && SofaApplication.selectedManipulator.name === manipulatorName
-
-        function setManipulator() {
-            var m = SofaApplication.createManipulator(manipulatorName)
-            if (m !== null)
-                SofaApplication.selectedManipulator = m
-        }
-
         image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
         model: ListModel {
             ListElement {
@@ -73,17 +87,27 @@ Column {
                 option: false
             }
         }
+
+        selected: {
+            for (var m in SofaApplication.manipulators)
+                if (m.name === manipulatorName)
+                    return m.enabled
+            return false
+        }
+
         onOptionChanged: {
-            rotateMenu.setManipulator()
-            SofaApplication.selectedManipulator.local = option
+            var m = setManipulator(manipulatorName)
+            m.local = option
+            selected = true
         }
 
         Shortcut {
             context: Qt.ApplicationShortcut
             sequence: "Shift+Space, R";
             onActivated: {
-                rotateMenu.setManipulator()
-                SofaApplication.selectedManipulator.local = true
+                var m = setManipulator()
+                m.local = true
+                selected = true
             }
         }
 
@@ -93,4 +117,4 @@ Column {
             description: "Rotates the selected item (default: local reference frame)\n Shortcut: Shift+Space, R"
         }
     }
-    }
+}
