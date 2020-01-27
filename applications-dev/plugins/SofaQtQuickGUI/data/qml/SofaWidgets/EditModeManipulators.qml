@@ -41,19 +41,6 @@ Column {
         id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
 
-        selected: {
-            for (var m in SofaApplication.manipulators)
-                if (m.name === manipulatorName)
-                    return m.enabled
-            return false
-        }
-
-        onOptionChanged: {
-            setManipulator(manipulatorName)
-            selected = true
-        }
-
-
         model: null
         image: "qrc:/icon/ICON_TRANLSATION_MODIFIER.png"
         Shortcut {
@@ -61,7 +48,6 @@ Column {
             sequence: "Shift+Space, G";
             onActivated: {
                 setManipulator(translateMenu.manipulatorName)
-                selected = true
             }
         }
         ToolTip {
@@ -88,26 +74,12 @@ Column {
             }
         }
 
-        selected: {
-            for (var m in SofaApplication.manipulators)
-                if (m.name === manipulatorName)
-                    return m.enabled
-            return false
-        }
-
-        onOptionChanged: {
-            var m = setManipulator(manipulatorName)
-            m.local = option
-            selected = true
-        }
-
         Shortcut {
             context: Qt.ApplicationShortcut
             sequence: "Shift+Space, R";
             onActivated: {
                 var m = setManipulator()
                 m.local = true
-                selected = true
             }
         }
 

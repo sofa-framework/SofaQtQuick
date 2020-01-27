@@ -35,10 +35,10 @@ public:
     void toggleEditMode(bool);
 
     bool enabled() { return m_enabled; }
-    void setEnabled(bool enabled) { m_enabled = enabled; }
+    void setEnabled(bool enabled) { m_enabled = enabled; emit enabledChanged(m_enabled); }
 
     bool persistent() { return m_persistent; }
-    void setPersistent(bool persistent) { m_persistent = persistent; }
+    void setPersistent(bool persistent) { m_persistent = persistent; emit persistentChanged(m_persistent); }
 
  signals:
     void nameChanged(const QString&);

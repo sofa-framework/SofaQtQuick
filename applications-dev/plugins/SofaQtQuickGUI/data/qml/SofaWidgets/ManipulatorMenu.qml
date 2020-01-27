@@ -4,9 +4,18 @@ import SofaBasics 1.0
 
 Rectangle {
     id: root
+    property var manipulator
+
+    Connections {
+        target: manipulator
+        onEnabledChanged: {
+            print('color for manipulator with enabled == ' + manipulator.enabled)
+            color = manipulator.enabled ? "#5680c2" : marea.containsMouse ? "#686868" : "#525252"
+        }
+    }
+
     property var option
     property var image: ""
-    property bool selected
     property alias containsMouse: marea.containsMouse
     property var model: ListModel {
         id: menuItemModel
@@ -23,7 +32,10 @@ Rectangle {
     width: 30
     height: 30
     opacity: 1.0
-    color: selected ? "#5680c2" : marea.containsMouse ? "#686868" : "#525252"
+    color: {
+        print('color for manipulator with enabled == ' + manipulator.enabled)
+        return manipulator.enabled ? "#5680c2" : marea.containsMouse ? "#686868" : "#525252"
+    }
     Image {
         anchors.centerIn: parent
         source: image

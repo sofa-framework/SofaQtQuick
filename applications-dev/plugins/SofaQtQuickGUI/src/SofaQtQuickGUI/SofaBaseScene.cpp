@@ -103,6 +103,13 @@ using sofaqtquick::bindings::SofaCoreBindingFactory;
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 using sofaqtquick::SofaBaseApplication;
 
+#include <SofaQtQuickGUI/Manipulators/Translate_Manipulator.h>
+using sofaqtquick::Translate_Manipulator;
+#include <SofaQtQuickGUI/Manipulators/Rotate_Manipulator.h>
+using sofaqtquick::Rotate_Manipulator;
+#include <SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h>
+using sofaqtquick::Viewpoint_Manipulator;
+
 #include <array>
 #include <sstream>
 #include <qqml.h>
@@ -844,6 +851,23 @@ void SofaBaseScene::sendGUIEvent(const QString& controlID, const QString& valueN
 
     sofa::core::objectmodel::GUIEvent event(controlID.toUtf8().constData(), valueName.toUtf8().constData(), value.toUtf8().constData());
     mySofaRootNode->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
+}
+
+Manipulator* SofaBaseScene::getManipulator(const QString &name)
+{
+    for (auto m : myManipulators)
+        if (m->getName() == name)
+            return m;
+    Manipulator* m = nullptr;
+    if (name == "Translate_Manipulator")
+        m = new Translate_Manipulator(this);
+    else if (name == "Rotate_Manipulator")
+        m = new Rotate_Manipulator(this);
+    else if (name == "Viewpoint_Manipulator")
+        m = new Viewpoint_Manipulator(this);
+    if (m != nullptr)
+        myManipulators.push_back(m);
+    return m;
 }
 
 QVariant SofaBaseScene::linkValue(const sofa::core::objectmodel::BaseLink* link)

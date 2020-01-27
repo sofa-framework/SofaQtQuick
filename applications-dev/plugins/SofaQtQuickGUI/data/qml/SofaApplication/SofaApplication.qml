@@ -45,31 +45,10 @@ Item //
 
     property var style : MainStyle
 
-    property var manipulators: sofaScene.manipulators
+    function getManipulators() { return sofaScene.manipulators; }
 
-    function getManipulatorByName(name) {
-        for (var m in root.manipulators)
-            if (m.name === name)
-                return m
-        return null
-    }
-
-    function createManipulator(name) {
-        var m = getManipulatorByName(name)
-        if (m) {
-            console.error(m + " already exists")
-            return m;
-        }
-        var component = Qt.createComponent("qrc:/SofaManipulators/" + name + ".qml")
-        if (component.status === Component.Ready)
-        {
-            m = component.createObject()
-            root.manipulators.push(m)
-            console.error("New manip: " + m)
-            return m;
-        }
-        console.error("Could not create  Manipulator with name " + name)
-        return null
+    function getManipulator(name) {
+        return sofaScene ? sofaScene.getManipulator(name) : null
     }
 
     ////////////////////////////////////////////////// SELECTED COMPONENT

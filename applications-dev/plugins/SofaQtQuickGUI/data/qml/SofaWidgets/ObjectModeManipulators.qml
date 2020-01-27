@@ -18,43 +18,31 @@ Column {
     anchors.topMargin: 20
 
     function setManipulator(manipulatorName) {
-        var m = SofaApplication.createManipulator(manipulatorName)
-        if (m !== null)
-        {
-            for (var manip in SofaApplication.manipulators)
-                if (!manip.persistent)
-                    manip.enabled = false
-            m.enabled = true
-            return m
+        var m = SofaApplication.getManipulator(manipulatorName)
+        if (!SofaApplication.getManipulators()) return m
+        for (var i = 0 ; i < SofaApplication.getManipulators().length ; ++i) {
+            if (!SofaApplication.getManipulators()[i].persistent &&
+                    (m && m.name !== SofaApplication.getManipulators()[i].name)) {
+                SofaApplication.getManipulators()[i].enabled = false
+                print("disabling " + SofaApplication.getManipulators()[i].name)
+            }
         }
-        return null
-    }
-
-    Component.onCompleted: {
-        var m = setManipulator("Viewpoint_Manipulator")
-        m.persistent = true
         m.enabled = true
+        return m
     }
-
 
     ManipulatorMenu {
         id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
-
-        function setSelected() {
-            for (var m in SofaApplication.manipulators)
-                if (m.name === manipulatorName)
-                    translateMenu.selected = m.enabled
-            translateMenu.selected = false
-        }
-
-        Component.onCompleted: {
-            SofaApplication.manipulatorsChanged.connect(setSelected)
+        manipulator: SofaApplication.getManipulator(manipulatorName)
+        property var lol: manipulator.enabled
+        onLolChanged: {
+            print(manipulator.name + " Lol Changed: " + manipulator.enabled)
         }
 
         onOptionChanged: {
-            setManipulator(manipulatorName)
-            selected = true
+            print ("OPTION")
+            manipulator = setManipulator(manipulatorName)
         }
 
         model: null
@@ -63,8 +51,7 @@ Column {
             context: Qt.ApplicationShortcut
             sequence: "Shift+Space, G";
             onActivated: {
-                setManipulator(translateMenu.manipulatorName)
-                selected = true
+                manipulator = setManipulator(translateMenu.manipulatorName)
             }
         }
         ToolTip {
@@ -78,6 +65,11 @@ Column {
         id: rotateMenu
 
         property string manipulatorName: "Rotate_Manipulator"
+        manipulator: SofaApplication.getManipulator(manipulatorName)
+        property var lol: manipulator.enabled
+        onLolChanged: {
+            print(manipulator.name + " Lol Changed: " + manipulator.enabled)
+        }
 
         image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
         model: ListModel {
@@ -91,31 +83,18 @@ Column {
             }
         }
 
-        function setSelected() {
-            for (var m in SofaApplication.manipulators)
-                if (m.name === manipulatorName)
-                    translateMenu.selected = m.enabled
-            translateMenu.selected = false
-        }
-
-        Component.onCompleted: {
-            SofaApplication.manipulatorsChanged.connect(setSelected)
-        }
-
-
         onOptionChanged: {
-            var m = setManipulator(manipulatorName)
-            m.local = option
-            selected = true
+            manipulator = setManipulator(manipulatorName)
+            manipulator.local = option
+            print(option)
         }
 
         Shortcut {
             context: Qt.ApplicationShortcut
             sequence: "Shift+Space, R";
             onActivated: {
-                var m = manipulatorControls.setManipulator(manipulatorName)
-                m.local = true
-                selected = true
+                manipulator = manipulatorControls.setManipulator(manipulatorName)
+                manipulator.local = true
             }
         }
 

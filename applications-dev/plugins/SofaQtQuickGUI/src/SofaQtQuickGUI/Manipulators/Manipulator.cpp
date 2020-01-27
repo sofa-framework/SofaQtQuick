@@ -21,6 +21,7 @@ const QString& Manipulator::getName()
 void Manipulator::setName(const QString& name)
 {
     m_name = name;
+    emit nameChanged(m_name);
 }
 
 int Manipulator::getIndex()
@@ -31,11 +32,13 @@ int Manipulator::getIndex()
 void Manipulator::setIndex(int index)
 {
     m_index = index;
+    emit indexChanged(m_index);
 }
 
 void Manipulator::setParticleIndex(int idx)
 {
     m_particleIndex = idx;
+    emit particleIndexChanged(m_particleIndex);
 }
 
 int Manipulator::getParticleIndex()
@@ -51,6 +54,7 @@ bool Manipulator::isEditMode()
 void Manipulator::toggleEditMode(bool val)
 {
     m_isEditMode = val;
+    emit isEditModeChanged(m_isEditMode);
 }
 
 
