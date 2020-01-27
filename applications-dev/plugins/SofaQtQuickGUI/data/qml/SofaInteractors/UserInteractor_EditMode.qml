@@ -153,11 +153,19 @@ UserInteractor {
                     console.error("SelectedComponent: " + particle.sofaComponent)
                     SofaApplication.selectedComponent = particle.sofaComponent;
                 }
-                if(particle.manipulator) {
+                currentManipulator = null
+                for (var i = 0 ; i < SofaApplication.getManipulators().length ; ++i) {
+                    SofaApplication.getManipulators()[i].isEditMode = true
+                    SofaApplication.getManipulators()[i].particleIndex = particle.particleIndex
+                    if (SofaApplication.getManipulators()[i].enabled) {
+                        currentManipulator = SofaApplication.getManipulators()[i];
+                    }
+                }
+                if(particle.manipulator || currentManipulator) {
                     console.log("selected manipulator: " + particle.manipulator.name)
                     currentManipulator = particle.manipulator
-                    manipulator.particleIndex = particle.particleIndex
-                    manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
+                    SofaApplication.getManipulators()[i].particleIndex = particle.particleIndex
+                    SofaApplication.getManipulators()[i].mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
                     if (currentManipulator.displayText !== "")
                     {
                         label = Qt.createQmlObject('import QtQuick.Controls 2.0;

@@ -6,7 +6,6 @@ CustomInspector {
 
     function refresh() {
         var dataMap = {}
-//        console.error(SofaApplication.selectedComponent)
         for (var idx in component.getDataFields()) {
             var dataName = component.getDataFields()[idx]
             var data = component.getData(dataName)
@@ -21,10 +20,6 @@ CustomInspector {
                 if (dataMap[group] === undefined)
                     dataMap[group] = []
                 dataMap[group].push(dataName)
-            }
-            else
-            {
-//                console.log(dataName)
             }
         }
         dataDict = dataMap
