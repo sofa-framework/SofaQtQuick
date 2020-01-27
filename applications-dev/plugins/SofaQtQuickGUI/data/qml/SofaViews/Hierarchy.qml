@@ -331,7 +331,7 @@ Rectangle {
             storeExpandedState(index)
         }
 
-        itemDelegate: Item {
+        itemDelegate: Rectangle {
             id: itemDelegateID
             property string origin: "Hierarchy"
             property bool multiparent : false
@@ -348,7 +348,7 @@ Rectangle {
             property string statusString: model && model.statusString
             property var index: styleData.index
             property var tmpParent
-
+            color: "transparent"
             function getIconFromStatus(s)
             {
                 if(s === "Undefined")
@@ -490,7 +490,7 @@ Rectangle {
             IconButton {
                 /// This is the error button that shows when there is an error message on
                 /// an object or a node
-                id:childError
+                id: childError
                 hoverEnabled: true
                 anchors.verticalCenter: rowText.verticalCenter
                 anchors.right: componentState.left
@@ -683,7 +683,8 @@ Rectangle {
                         var oldIndex = src.index
                         oldIndex = sceneModel.mapToSource(oldIndex)
                         var theComponent = basemodel.getBaseFromIndex(oldIndex)
-
+                        if (!theComponent)
+                            return
                         var newIndex = styleData.index
                         newIndex = sceneModel.mapToSource(newIndex)
                         var parentNode = basemodel.getBaseFromIndex(newIndex)

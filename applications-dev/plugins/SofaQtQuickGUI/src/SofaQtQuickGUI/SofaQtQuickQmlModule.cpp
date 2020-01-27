@@ -259,6 +259,8 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("_sofaobject_::SofaBaseObject*");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObjectList*>("SofaBaseObjectList*");
 
+    qRegisterMetaType<sofaqtquick::Manipulator*>("Manipulator*");
+
     qRegisterMetaType<SofaViewer*>("SofaViewer*");
 
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");

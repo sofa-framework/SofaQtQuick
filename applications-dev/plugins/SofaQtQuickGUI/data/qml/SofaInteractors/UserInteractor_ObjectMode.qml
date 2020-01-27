@@ -139,6 +139,7 @@ UserInteractor {
         
     }
 
+    property var currentManipulator
 
     function init() {
         moveCamera_init();
@@ -162,11 +163,10 @@ UserInteractor {
             }
 
             if(selectable && selectable.manipulator) {
-                var manipulator = SofaApplication.selectedManipulator = selectable.manipulator
+                currentManipulator = selectable.manipulator
+                currentManipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
-                manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
-
-                if (manipulator.displayText !== "")
+                if (currentManipulator.displayText !== "")
                 {
                     label = Qt.createQmlObject('import QtQuick.Controls 2.0;
                                                 Label {
@@ -178,28 +178,26 @@ UserInteractor {
                                                            label.destroy();
                                                    }
                                                 }', sofaViewer, 'label');
-                    label.text = Qt.binding(function(){ return manipulator.displayText });
+                    label.text = Qt.binding(function(){ return currentManipulator.displayText });
                     label.x = Qt.binding(function(){ return mouse.x + 15});
                     label.y = Qt.binding(function(){ return mouse.y - 15});
                 }
-                if(manipulator.mouseMoved)
+                if(currentManipulator.mouseMoved)
                     setMouseMovedMapping(function(mouse, sofaViewer){
-                        if (manipulator.displayText !== "") {
+                        if (currentManipulator.displayText !== "") {
                             label.x = mouse.x + 15
                             label.y = mouse.y - 15
                         }
-                        manipulator.mouseMoved(mouse, sofaViewer)
+                        currentManipulator.mouseMoved(mouse, sofaViewer)
                     })
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            var manipulator = SofaApplication.selectedManipulator
-
-            if (manipulator) {
-                if(manipulator.mouseReleased)
-                    manipulator.mouseReleased(Qt.point(mouse.x, mouse.y), sofaViewer);
-                manipulator.index = -1;
+            if (currentManipulator) {
+                currentManipulator.mouseReleased(Qt.point(mouse.x, mouse.y), sofaViewer);
+                currentManipulator.index = -1;
+                currentManipulator = null
             }
             setMouseMovedMapping(null);
         });

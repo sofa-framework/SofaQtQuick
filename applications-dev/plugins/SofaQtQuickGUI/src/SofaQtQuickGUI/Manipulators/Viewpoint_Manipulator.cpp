@@ -12,6 +12,8 @@ Viewpoint_Manipulator::Viewpoint_Manipulator(QObject* parent)
 {
     m_name = "Viewpoint_Manipulator";
     m_index = -1;
+    m_enabled = true;
+    m_persistent = true;
 }
 
 void Viewpoint_Manipulator::internalDraw(const SofaViewer &viewer, int pickIndex, bool isPicking)

@@ -35,9 +35,6 @@ ColumnLayout {
                     RowLayout {
                         id: sofaDataLayout
                         property var sofaData: modelData ? component.getData(modelData) : null
-                        onSofaDataChanged: {
-                            console.log(sofaData.getName() + " CHANGED")
-                        }
                         Layout.fillWidth: true
 
                         Label {
@@ -59,10 +56,11 @@ ColumnLayout {
                                     id: dropArea
                                     keys: ["text/plain"]
                                     anchors.fill: parent
-                                    onEntered: {
-                                        console.error("plop")
-                                    }
                                     onDropped: {
+                                        if (drag.source.item.getPathName() === SofaApplication.selectedComponent.getPathName()) {
+                                            console.error("Cannot link datafields to themselves")
+                                            return;
+                                        }
                                         var data = drag.source.item.getData(sofaData.getName())
                                         if (data !== null) {
                                             sofaData.setParent(data)
@@ -90,14 +88,14 @@ ColumnLayout {
                                 id: dropArea2
                                 anchors.fill: parent
 
-                                onEntered: {
-                                    console.error("plop")
-                                }
                                 onDropped: {
-                                    console.log("dropped")
                                     data = drag.source.item.findData(sofaData.getName())
+                                    if (drag.source.item.getPathName() === SofaApplication.selectedComponent.getPathName()) {
+                                        console.error("Cannot link datafields to themselves")
+                                        return;
+                                    }
+
                                     if (data !== null) {
-                                        console.log("found data with name " + sofaData.getName() + ". Linking...")
                                         sofaData.parent = data
                                         var v = sofaData.value
                                     }

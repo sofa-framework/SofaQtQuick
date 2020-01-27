@@ -1163,11 +1163,27 @@ EditView
 
         UserInteractor_EditMode {
             id:  editModeInteractor
-            Component.onCompleted: editModeInteractor.init()
+            Component.onCompleted: {
+                editModeInteractor.init()
+
+                var m = SofaApplication.getManipulator("Viewpoint_Manipulator")
+                if (m !== null) {
+                    m.persistent = true
+                    m.enabled = true
+                }
+            }
         }
         UserInteractor_ObjectMode {
             id: objectModeInteractor
-            Component.onCompleted: objectModeInteractor.init()
+            Component.onCompleted: {
+                objectModeInteractor.init()
+
+                var m = SofaApplication.getManipulator("Viewpoint_Manipulator")
+                if (m !== null) {
+                    m.persistent = true
+                    m.enabled = true
+                }
+            }
         }
 
         onCurrentIndexChanged: {
@@ -1190,6 +1206,9 @@ EditView
     Loader {
         id: manipulatorLoader
         sourceComponent: objectmodeManipulators
+        onLoaded: {
+            SofaApplication.selectedManipulator = null
+        }
     }
 
     Component {
@@ -1201,4 +1220,5 @@ EditView
         id: editmodeManipulators
         EditModeManipulators {}
     }
+
 }

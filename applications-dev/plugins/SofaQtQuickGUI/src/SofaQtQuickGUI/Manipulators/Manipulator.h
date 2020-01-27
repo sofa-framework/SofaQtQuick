@@ -20,6 +20,8 @@ public:
     Q_PROPERTY(int particleIndex READ getParticleIndex WRITE setParticleIndex NOTIFY particleIndexChanged)
     Q_PROPERTY(QString displayText READ getDisplayText NOTIFY displayTextChanged)
     Q_PROPERTY(bool isEditMode READ isEditMode WRITE toggleEditMode NOTIFY isEditModeChanged)
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(bool persistent READ persistent WRITE setPersistent NOTIFY persistentChanged)
 
 
     const QString& getName();
@@ -32,12 +34,21 @@ public:
     bool isEditMode();
     void toggleEditMode(bool);
 
+    bool enabled() { return m_enabled; }
+    void setEnabled(bool enabled) { m_enabled = enabled; emit enabledChanged(m_enabled); }
+
+    bool persistent() { return m_persistent; }
+    void setPersistent(bool persistent) { m_persistent = persistent; emit persistentChanged(m_persistent); }
+
  signals:
     void nameChanged(const QString&);
     void indexChanged(int);
     void particleIndexChanged(int);
     void displayTextChanged(const QString&);
     void isEditModeChanged(bool);
+    void enabledChanged(bool);
+    void persistentChanged(bool);
+
 
 public:
     void draw(const SofaViewer& viewer);
@@ -63,6 +74,8 @@ protected:
     int m_index;
     int m_particleIndex;
     bool m_isEditMode;
+    bool m_persistent;
+    bool m_enabled;
 };
 
 }  // namespace sofaqtquick

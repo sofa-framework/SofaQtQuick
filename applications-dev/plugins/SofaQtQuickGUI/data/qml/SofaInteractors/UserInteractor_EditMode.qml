@@ -140,9 +140,10 @@ UserInteractor {
     }
 
 
+    property var currentManipulator: null
+
     function init() {
         moveCamera_init();
-        SofaApplication.selectedManipulator = null
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             console.log("Mouse pressed")
             var particle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
@@ -152,11 +153,12 @@ UserInteractor {
                     console.error("SelectedComponent: " + particle.sofaComponent)
                     SofaApplication.selectedComponent = particle.sofaComponent;
                 }
-                var manipulator = SofaApplication.selectedManipulator
-                if(manipulator) {
+                if(particle.manipulator) {
+                    console.log("selected manipulator: " + particle.manipulator.name)
+                    currentManipulator = particle.manipulator
                     manipulator.particleIndex = particle.particleIndex
                     manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
-                    if (manipulator.displayText !== "")
+                    if (currentManipulator.displayText !== "")
                     {
                         label = Qt.createQmlObject('import QtQuick.Controls 2.0;
                                                     Label {
@@ -168,38 +170,36 @@ UserInteractor {
                                                              label.destroy();
                                                        }
                                                     }', sofaViewer, 'label');
-                        label.text = Qt.binding(function(){ return manipulator.displayText });
+                        label.text = Qt.binding(function(){ return currentManipulator.displayText });
                         label.x = Qt.binding(function(){ return mouse.x + 15});
                         label.y = Qt.binding(function(){ return mouse.y - 15});
                         label.visible = false;
                     }
                     setMouseMovedMapping(function(m, sofaViewer){
-                        console.log("AAA")
-                        console.log(m.button)
-                        console.log(m.buttons)
-                        if (manipulator.displayText !== "") {
+                        if (currentManipulator.displayText !== "") {
                             label.x = m.x + 15
                             label.y = m.y - 15
-                            label.visible = true;
                         }
-                        manipulator.mouseMoved(m, sofaViewer)
+                        currentManipulator.mouseMoved(m, sofaViewer)
                     })
                 }
+                return
             }
-            var manip = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
-            if (manip.sofaComponent)
+            currentManipulator = null
+            var object = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
+            if (object && object.sofaComponent)
                 console.log("object found")
-            if (manip && manip.manipulator) {
+            if (object && object.manipulator) {
                 console.log("it's a manipulator")
-                if (manip.sofaComponent) {
-                    SofaApplication.selectedComponent = manip.sofaComponent;
+                if (object.sofaComponent) {
+                    SofaApplication.selectedComponent = object.sofaComponent;
                 }
 
-                manip = manip.manipulator
-                if(manip.mousePressed)
-                    manip.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
+                currentManipulator = object.manipulator
+                if(currentManipulator.mousePressed)
+                    currentManipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
-                if (manip.displayText !== "")
+                if (currentManipulator.displayText !== "")
                 {
                     label = Qt.createQmlObject('import QtQuick.Controls 2.0;
                                                 Label {
@@ -211,35 +211,27 @@ UserInteractor {
                                                            label.destroy();
                                                    }
                                                 }', sofaViewer, 'label');
-                    label.text = Qt.binding(function(){ return manip.displayText });
+                    label.text = Qt.binding(function(){ return currentManipulator ? currentManipulator.displayText : "" });
                     label.x = Qt.binding(function(){ return mouse.x + 15});
                     label.y = Qt.binding(function(){ return mouse.y - 15});
-                    label.visible = false
                 }
                 setMouseMovedMapping(function(m, sofaViewer) {
-                    console.log("BBB")
-                    console.log(m.button)
-                    console.log(m.buttons)
-                    if (manip.displayText !== "") {
+                    if (currentManipulator.displayText !== "") {
                         label.x = m.x + 15
                         label.y = m.y - 15
-                        label.visible = true
                     }
-                    manip.mouseMoved(m, sofaViewer)
+                    currentManipulator.mouseMoved(m, sofaViewer)
                 })
             }
         });
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            var manipulator = SofaApplication.selectedManipulator
-
-            if (manipulator) {
-                manipulator.mouseReleased(Qt.point(mouse.x, mouse.y), sofaViewer);
-                manipulator.index = -1;
+            if (currentManipulator) {
+                currentManipulator.mouseReleased(Qt.point(mouse.x, mouse.y), sofaViewer);
+                currentManipulator.index = -1;
+                currentManipulator = null
             }
             setMouseMovedMapping(null);
-            print("mouseReleased")
-
         });
 
     }

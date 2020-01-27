@@ -23,7 +23,6 @@ ColumnLayout {
     {
         target: root.sofaData
         onValueChanged: {
-            console.log("updating value for "+ root.sofaData.getName() + ": " + root.sofaData.value)
             root.value=root.sofaData.value
         }
     }
