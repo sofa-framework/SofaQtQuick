@@ -948,6 +948,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                     {
                         if (manipulator->enabled())
                         {
+                            std::cout << "MANIPULATOR " << manipulator->getName().toStdString() << " is enabled" << std::endl;
                             for (int i = 0 ; i < manipulator->getIndices() ; i++)
                             {
                                 myPickingShaderProgram->setUniformValue(indexLocation, packPickingIndex(index));
@@ -1007,13 +1008,16 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
                             {
                                 for (auto manipulator : mySofaScene->myManipulators)
                                 {
-                                    if (index < manipulator->getIndices())
+                                    if (manipulator->enabled())
                                     {
-                                        selectable = new SelectableManipulator(*(manipulator), index);
-                                    }
-                                    else
-                                    {
-                                        index -= manipulator->getIndices();
+                                        if (index < manipulator->getIndices())
+                                        {
+                                            selectable = new SelectableManipulator(*(manipulator), index);
+                                        }
+                                        else
+                                        {
+                                            index -= manipulator->getIndices();
+                                        }
                                     }
                                 }
                             }

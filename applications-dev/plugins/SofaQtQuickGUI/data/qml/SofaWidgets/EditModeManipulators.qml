@@ -17,29 +17,30 @@ Column {
     anchors.leftMargin: 20
     anchors.topMargin: 20
 
+
     function setManipulator(manipulatorName) {
-        var m = SofaApplication.createManipulator(manipulatorName)
-        if (m !== null)
-        {
-            for (var manip in SofaApplication.manipulators)
-                if (!manip.persistent)
-                    manip.enabled = false
-            m.enabled = true
-            return m
+        var m = SofaApplication.getManipulator(manipulatorName)
+        if (!SofaApplication.getManipulators()) return m
+        for (var i = 0 ; i < SofaApplication.getManipulators().length ; ++i) {
+            if (!SofaApplication.getManipulators()[i].persistent &&
+                    (m && m.name !== SofaApplication.getManipulators()[i].name)) {
+                SofaApplication.getManipulators()[i].enabled = false
+                print("disabling " + SofaApplication.getManipulators()[i].name)
+            }
         }
-        return null
-    }
-
-    Component.onCompleted: {
-        var m = setManipulator("Viewpoint_Manipulator")
-        m.persistent = true
         m.enabled = true
+        return m
     }
-
 
     ManipulatorMenu {
         id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
+        manipulator: SofaApplication.getManipulator(manipulatorName)
+
+        onOptionChanged: {
+            print ("OPTION")
+            manipulator = setManipulator(manipulatorName)
+        }
 
         model: null
         image: "qrc:/icon/ICON_TRANLSATION_MODIFIER.png"
@@ -61,6 +62,7 @@ Column {
         id: rotateMenu
 
         property string manipulatorName: "Rotate_Manipulator"
+        manipulator: SofaApplication.getManipulator(manipulatorName)
 
         image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
         model: ListModel {
@@ -74,12 +76,18 @@ Column {
             }
         }
 
+        onOptionChanged: {
+            manipulator = setManipulator(manipulatorName)
+            manipulator.local = option
+            print(option)
+        }
+
         Shortcut {
             context: Qt.ApplicationShortcut
             sequence: "Shift+Space, R";
             onActivated: {
-                var m = setManipulator()
-                m.local = true
+                manipulator = manipulatorControls.setManipulator(manipulatorName)
+                manipulator.local = true
             }
         }
 

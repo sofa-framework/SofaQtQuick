@@ -139,7 +139,6 @@ UserInteractor {
         
     }
 
-
     property var currentManipulator
 
     function init() {
@@ -165,7 +164,6 @@ UserInteractor {
 
             if(selectable && selectable.manipulator) {
                 currentManipulator = selectable.manipulator
-
                 currentManipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
                 if (currentManipulator.displayText !== "")
@@ -197,9 +195,9 @@ UserInteractor {
 
         addMouseReleasedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             if (currentManipulator) {
-                if(currentManipulator.mouseReleased)
-                    currentManipulator.mouseReleased(Qt.point(mouse.x, mouse.y), sofaViewer);
+                currentManipulator.mouseReleased(Qt.point(mouse.x, mouse.y), sofaViewer);
                 currentManipulator.index = -1;
+                currentManipulator = null
             }
             setMouseMovedMapping(null);
         });

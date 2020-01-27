@@ -153,12 +153,12 @@ UserInteractor {
                     console.error("SelectedComponent: " + particle.sofaComponent)
                     SofaApplication.selectedComponent = particle.sofaComponent;
                 }
-                var manipulator = particle.manipulator
-                if(manipulator) {
-                    currentManipulator = manipulator
+                if(particle.manipulator) {
+                    console.log("selected manipulator: " + particle.manipulator.name)
+                    currentManipulator = particle.manipulator
                     manipulator.particleIndex = particle.particleIndex
                     manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
-                    if (manipulator.displayText !== "")
+                    if (currentManipulator.displayText !== "")
                     {
                         label = Qt.createQmlObject('import QtQuick.Controls 2.0;
                                                     Label {
@@ -170,21 +170,17 @@ UserInteractor {
                                                              label.destroy();
                                                        }
                                                     }', sofaViewer, 'label');
-                        label.text = Qt.binding(function(){ return manipulator.displayText });
+                        label.text = Qt.binding(function(){ return currentManipulator.displayText });
                         label.x = Qt.binding(function(){ return mouse.x + 15});
                         label.y = Qt.binding(function(){ return mouse.y - 15});
                         label.visible = false;
                     }
                     setMouseMovedMapping(function(m, sofaViewer){
-                        console.log("AAA")
-                        console.log(m.button)
-                        console.log(m.buttons)
-                        if (manipulator.displayText !== "") {
+                        if (currentManipulator.displayText !== "") {
                             label.x = m.x + 15
                             label.y = m.y - 15
-                            label.visible = true;
                         }
-                        manipulator.mouseMoved(m, sofaViewer)
+                        currentManipulator.mouseMoved(m, sofaViewer)
                     })
                 }
                 return
@@ -199,12 +195,11 @@ UserInteractor {
                     SofaApplication.selectedComponent = object.sofaComponent;
                 }
 
-                manipulator = object.manipulator
                 currentManipulator = object.manipulator
-                if(manipulator.mousePressed)
-                    manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
+                if(currentManipulator.mousePressed)
+                    currentManipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
 
-                if (manipulator.displayText !== "")
+                if (currentManipulator.displayText !== "")
                 {
                     label = Qt.createQmlObject('import QtQuick.Controls 2.0;
                                                 Label {
@@ -216,18 +211,16 @@ UserInteractor {
                                                            label.destroy();
                                                    }
                                                 }', sofaViewer, 'label');
-                    label.text = Qt.binding(function(){ return manipulator.displayText });
+                    label.text = Qt.binding(function(){ return currentManipulator ? currentManipulator.displayText : "" });
                     label.x = Qt.binding(function(){ return mouse.x + 15});
                     label.y = Qt.binding(function(){ return mouse.y - 15});
-                    label.visible = false
                 }
                 setMouseMovedMapping(function(m, sofaViewer) {
-                    if (manipulator.displayText !== "") {
+                    if (currentManipulator.displayText !== "") {
                         label.x = m.x + 15
                         label.y = m.y - 15
-                        label.visible = true
                     }
-                    manipulator.mouseMoved(m, sofaViewer)
+                    currentManipulator.mouseMoved(m, sofaViewer)
                 })
             }
         });
@@ -239,7 +232,6 @@ UserInteractor {
                 currentManipulator = null
             }
             setMouseMovedMapping(null);
-            print("mouseReleased")
         });
 
     }

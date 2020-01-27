@@ -60,8 +60,8 @@ void Manipulator::toggleEditMode(bool val)
 
 void Manipulator::draw(const SofaViewer& viewer)
 {
-    int idx = -1;
     if (m_enabled) {
+        int idx = -1;
         internalDraw(viewer, idx);
     }
 }

@@ -35,10 +35,6 @@ Column {
         id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
         manipulator: SofaApplication.getManipulator(manipulatorName)
-        property var lol: manipulator.enabled
-        onLolChanged: {
-            print(manipulator.name + " Lol Changed: " + manipulator.enabled)
-        }
 
         onOptionChanged: {
             print ("OPTION")
@@ -66,10 +62,6 @@ Column {
 
         property string manipulatorName: "Rotate_Manipulator"
         manipulator: SofaApplication.getManipulator(manipulatorName)
-        property var lol: manipulator.enabled
-        onLolChanged: {
-            print(manipulator.name + " Lol Changed: " + manipulator.enabled)
-        }
 
         image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
         model: ListModel {
