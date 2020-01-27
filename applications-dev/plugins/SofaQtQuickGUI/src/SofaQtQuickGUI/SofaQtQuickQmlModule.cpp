@@ -271,12 +271,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
     //    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
     qmlRegisterType<Translate_Manipulator>                              ("Translate_Manipulator"                    , versionMajor, versionMinor, "Translate_Manipulator");
-<<<<<<< HEAD
     qmlRegisterType<Viewpoint_Manipulator>                              ("Viewpoint_Manipulator"                    , versionMajor, versionMinor, "Viewpoint_Manipulator");
-    qmlRegisterType<TranslateParticle_Manipulator>                              ("TranslateParticle_Manipulator"                    , versionMajor, versionMinor, "TranslateParticle_Manipulator");
-=======
-    //qmlRegisterType<TranslateParticle_Manipulator>                              ("TranslateParticle_Manipulator"                    , versionMajor, versionMinor, "TranslateParticle_Manipulator");
->>>>>>> [SofaQtQuick] Bunch of Fixes.
     qmlRegisterType<Rotate_Manipulator>                              ("Rotate_Manipulator"                    , versionMajor, versionMinor, "Rotate_Manipulator");
     qmlRegisterType<Scale_Manipulator>                              ("Scale_Manipulator"                    , versionMajor, versionMinor, "Scale_Manipulator");
 //    qmlRegisterType<Manipulator2D_Translation>                      ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");
