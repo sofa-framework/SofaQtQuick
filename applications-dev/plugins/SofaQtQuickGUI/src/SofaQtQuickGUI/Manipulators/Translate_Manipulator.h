@@ -29,13 +29,13 @@ public:
     void setValue(const QVector3D&);
 
 private:
-    void drawXArrow(const sofa::defaulttype::Vec3d& pos);
-    void drawYArrow(const sofa::defaulttype::Vec3d& pos);
-    void drawZArrow(const sofa::defaulttype::Vec3d& pos);
-    void drawXYPlane(const sofa::defaulttype::Vec3d& pos);
-    void drawYZPlane(const sofa::defaulttype::Vec3d& pos);
-    void drawZXPlane(const sofa::defaulttype::Vec3d& pos);
-    void drawCamPlane(const sofa::defaulttype::Vec3d& pos, bool isPicking);
+    void drawXArrow(const sofa::defaulttype::Vec3d& pos, sofa::core::visual::DrawToolGL&);
+    void drawYArrow(const sofa::defaulttype::Vec3d& pos, sofa::core::visual::DrawToolGL&);
+    void drawZArrow(const sofa::defaulttype::Vec3d& pos, sofa::core::visual::DrawToolGL&);
+    void drawXYPlane(const sofa::defaulttype::Vec3d& pos, sofa::core::visual::DrawToolGL&);
+    void drawYZPlane(const sofa::defaulttype::Vec3d& pos, sofa::core::visual::DrawToolGL&);
+    void drawZXPlane(const sofa::defaulttype::Vec3d& pos, sofa::core::visual::DrawToolGL&);
+    void drawCamPlane(const sofa::defaulttype::Vec3d& pos, bool isPicking, sofa::core::visual::DrawToolGL&);
 
     float radius;
     float lineThickness;
@@ -43,7 +43,6 @@ private:
     double arrowLength;
     double squareWidth;
 
-    sofa::core::visual::DrawToolGL drawtools;
     bindings::SofaBase* obj;
     Camera* cam;
 

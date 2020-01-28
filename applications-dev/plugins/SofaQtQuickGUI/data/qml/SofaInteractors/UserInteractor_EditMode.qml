@@ -153,11 +153,19 @@ UserInteractor {
                     console.error("SelectedComponent: " + particle.sofaComponent)
                     SofaApplication.selectedComponent = particle.sofaComponent;
                 }
-                if(particle.manipulator) {
-                    console.log("selected manipulator: " + particle.manipulator.name)
-                    currentManipulator = particle.manipulator
-                    manipulator.particleIndex = particle.particleIndex
-                    manipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
+                currentManipulator = null
+                for (var i = 0 ; i < SofaApplication.getManipulators().length ; ++i) {
+                    SofaApplication.getManipulators()[i].isEditMode = true
+                    SofaApplication.getManipulators()[i].particleIndex = particle.particleIndex
+                    if (SofaApplication.getManipulators()[i].enabled) {
+                        currentManipulator = SofaApplication.getManipulators()[i];
+                    }
+                }
+                if(currentManipulator) {
+                    console.log("selected manipulator: " + currentManipulator.name)
+//                    currentManipulator = particle.manipulator
+//                    SofaApplication.getManipulators()[i].particleIndex = particle.particleIndex
+                    currentManipulator.mousePressed(Qt.point(mouse.x, mouse.y), sofaViewer);
                     if (currentManipulator.displayText !== "")
                     {
                         label = Qt.createQmlObject('import QtQuick.Controls 2.0;
@@ -183,9 +191,9 @@ UserInteractor {
                         currentManipulator.mouseMoved(m, sofaViewer)
                     })
                 }
-                return
+//                return
             }
-            currentManipulator = null
+//            currentManipulator = null
             var object = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
             if (object && object.sofaComponent)
                 console.log("object found")

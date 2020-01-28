@@ -190,6 +190,7 @@ SofaBaseScene::SofaBaseScene(QObject *parent) : QObject(parent),
 
     sofa::helper::system::PluginManager::getInstance().init();
 
+    myManipulators.push_back(new Viewpoint_Manipulator(this));
     // connections
     connect(this, &SofaBaseScene::sourceChanged, this, &SofaBaseScene::open);
     connect(this, &SofaBaseScene::animateChanged, myStepTimer, [&](bool newAnimate) {newAnimate ? myStepTimer->start() : myStepTimer->stop();});
