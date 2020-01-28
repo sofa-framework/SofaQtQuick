@@ -178,7 +178,7 @@ UserInteractor {
                                                            label.destroy();
                                                    }
                                                 }', sofaViewer, 'label');
-                    label.text = Qt.binding(function(){ return currentManipulator.displayText });
+                    label.text = Qt.binding(function(){ return currentManipulator ? currentManipulator.displayText : "" });
                     label.x = Qt.binding(function(){ return mouse.x + 15});
                     label.y = Qt.binding(function(){ return mouse.y - 15});
                 }

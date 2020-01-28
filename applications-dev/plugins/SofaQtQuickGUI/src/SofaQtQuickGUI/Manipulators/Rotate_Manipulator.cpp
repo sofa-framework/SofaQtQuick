@@ -5,6 +5,7 @@
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
 #include <SofaQtQuickGUI/Helper/sofaqtconversions.h>
+#include <sofa/core/visual/VisualParams.h>
 #include <qmath.h>
 
 using namespace sofa::defaulttype;
@@ -19,7 +20,7 @@ Rotate_Manipulator::Rotate_Manipulator(QObject* parent)
     m_index = -1;
 }
 
-void Rotate_Manipulator::drawXAxis(const QVector3D& pos)
+void Rotate_Manipulator::drawXAxis(const QVector3D& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     QVector4D axisAngle(0, 1, 0, 90);
     glTranslatef(pos.x(), pos.y(), pos.z());
@@ -31,7 +32,7 @@ void Rotate_Manipulator::drawXAxis(const QVector3D& pos)
     glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
-void Rotate_Manipulator::drawYAxis(const QVector3D& pos)
+void Rotate_Manipulator::drawYAxis(const QVector3D& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     QVector4D axisAngle(1, 0, 0, -90);
     glTranslatef(pos.x(), pos.y(), pos.z());
@@ -43,7 +44,7 @@ void Rotate_Manipulator::drawYAxis(const QVector3D& pos)
     glTranslatef(-pos.x(), -pos.y(), -pos.z());
 }
 
-void Rotate_Manipulator::drawZAxis(const QVector3D& pos)
+void Rotate_Manipulator::drawZAxis(const QVector3D& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     QVector4D axisAngle(1, 0, 0, 0);
     glTranslatef(pos.x(), pos.y(), pos.z());
@@ -56,7 +57,7 @@ void Rotate_Manipulator::drawZAxis(const QVector3D& pos)
 }
 
 
-void Rotate_Manipulator::drawCamAxis(const QVector3D& pos)
+void Rotate_Manipulator::drawCamAxis(const QVector3D& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     QVector4D axisAngle = toAxisAngle(cam->orientation());
     glTranslatef(pos.x(), pos.y(), pos.z());
@@ -214,6 +215,10 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
     cam = viewer.camera();
     if (!cam) return;
 
+    sofa::core::visual::DrawToolGL& dt = *dynamic_cast<sofa::core::visual::DrawToolGL*>(
+                viewer.getVisualParams()->drawTool());
+
+
     QVector3D center;
     if (!Translate_Manipulator::GetValue(center, m_isEditMode, m_particleIndex)) return;
     if (m_index == -1)
@@ -264,25 +269,25 @@ void Rotate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, b
 
     if (pickIndex == -1 || pickIndex == 1)
     {
-        drawXAxis(center);
+        drawXAxis(center, dt);
         drawDottedLine(toVec3d(center), toVec3d(mX), 3, 0xAAAA, lineThickness, white);
     }
 
     if (pickIndex == -1 || pickIndex == 2)
     {
-        drawYAxis(center);
+        drawYAxis(center, dt);
         drawDottedLine(toVec3d(center), toVec3d(mY), 3, 0xAAAA, lineThickness, white);
     }
 
     if (pickIndex == -1 || pickIndex == 3)
     {
-        drawZAxis(center);
+        drawZAxis(center, dt);
         drawDottedLine(toVec3d(center), toVec3d(mZ), 3, 0xAAAA, lineThickness, white);
     }
 
     if (pickIndex == -1 || pickIndex == 4)
     {
-        drawCamAxis(center);
+        drawCamAxis(center, dt);
         drawDottedLine(toVec3d(center), toVec3d(mCam), 3, 0xAAAA, lineThickness, white);
     }
 

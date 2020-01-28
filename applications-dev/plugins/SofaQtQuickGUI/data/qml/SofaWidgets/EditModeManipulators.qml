@@ -38,7 +38,6 @@ Column {
         manipulator: SofaApplication.getManipulator(manipulatorName)
 
         onOptionChanged: {
-            print ("OPTION")
             manipulator = setManipulator(manipulatorName)
         }
 

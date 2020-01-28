@@ -24,7 +24,6 @@ Column {
             if (!SofaApplication.getManipulators()[i].persistent &&
                     (m && m.name !== SofaApplication.getManipulators()[i].name)) {
                 SofaApplication.getManipulators()[i].enabled = false
-                print("disabling " + SofaApplication.getManipulators()[i].name)
             }
         }
         m.enabled = true
@@ -37,7 +36,6 @@ Column {
         manipulator: SofaApplication.getManipulator(manipulatorName)
 
         onOptionChanged: {
-            print ("OPTION")
             manipulator = setManipulator(manipulatorName)
         }
 

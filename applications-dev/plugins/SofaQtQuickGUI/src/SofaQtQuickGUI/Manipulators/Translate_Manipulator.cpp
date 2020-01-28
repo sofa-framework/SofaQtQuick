@@ -4,6 +4,7 @@
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
 #include <SofaQtQuickGUI/Helper/sofaqtconversions.h>
+#include <sofa/core/visual/VisualParams.h>
 
 using namespace sofa::defaulttype;
 namespace sofaqtquick
@@ -16,7 +17,7 @@ Translate_Manipulator::Translate_Manipulator(QObject* parent)
     m_index = -1;
 }
 
-void Translate_Manipulator::drawXArrow(const Vec3d& pos)
+void Translate_Manipulator::drawXArrow(const Vec3d& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     Vec3d p1 = pos + Vec3d(squareWidth, 0.0, 0.0);
     Vec3d p2 = p1 + Vec3d(arrowLength, 0.0, 0.0);
@@ -35,7 +36,7 @@ void Translate_Manipulator::drawXArrow(const Vec3d& pos)
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 0 ? highlightred : red, 16);
 }
 
-void Translate_Manipulator::drawYArrow(const Vec3d& pos)
+void Translate_Manipulator::drawYArrow(const Vec3d& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     Vec3d p1 = pos + Vec3d(0.0, squareWidth, 0.0);
     Vec3d p2 = p1 + Vec3d(0.0, arrowLength, 0.0);
@@ -54,7 +55,7 @@ void Translate_Manipulator::drawYArrow(const Vec3d& pos)
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 1 ? highlightgreen : green, 16);
 }
 
-void Translate_Manipulator::drawZArrow(const Vec3d& pos)
+void Translate_Manipulator::drawZArrow(const Vec3d& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     Vec3d p1 = pos + Vec3d(0.0, 0.0, squareWidth);
     Vec3d p2 = p1 + Vec3d(0.0, 0.0, arrowLength);
@@ -73,7 +74,7 @@ void Translate_Manipulator::drawZArrow(const Vec3d& pos)
     drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 2 ? highlightblue : blue, 16);
 }
 
-void Translate_Manipulator::drawXYPlane(const Vec3d& pos)
+void Translate_Manipulator::drawXYPlane(const Vec3d& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     if (lightblue.w() != 1.0f)
     {
@@ -90,7 +91,7 @@ void Translate_Manipulator::drawXYPlane(const Vec3d& pos)
     drawtools.drawLineLoop({a,b,c,d}, lineThickness, blue);
 }
 
-void Translate_Manipulator::drawYZPlane(const Vec3d& pos)
+void Translate_Manipulator::drawYZPlane(const Vec3d& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     if (lightred.w() != 1.0f)
     {
@@ -108,7 +109,7 @@ void Translate_Manipulator::drawYZPlane(const Vec3d& pos)
     drawtools.drawLineLoop({a,b,c,d}, lineThickness, red);
 }
 
-void Translate_Manipulator::drawZXPlane(const Vec3d& pos)
+void Translate_Manipulator::drawZXPlane(const Vec3d& pos, sofa::core::visual::DrawToolGL& drawtools)
 {
     if (lightgreen.w() != 1.0f)
     {
@@ -126,7 +127,7 @@ void Translate_Manipulator::drawZXPlane(const Vec3d& pos)
     drawtools.drawLineLoop({a,b,c,d}, lineThickness, green);
 }
 
-void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
+void Translate_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking, sofa::core::visual::DrawToolGL& drawtools)
 {
     Vec3d up(double(cam->up().x()),
              double(cam->up().y()),
@@ -236,6 +237,9 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     cam = viewer.camera();
     if (!cam) return;
 
+    sofa::core::visual::DrawToolGL& dt = *dynamic_cast<sofa::core::visual::DrawToolGL*>(
+                viewer.getVisualParams()->drawTool());
+
 
     glEnable(GL_MULTISAMPLE_ARB);
     glDisable(GL_DEPTH_TEST);
@@ -269,27 +273,27 @@ void Translate_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex
     yellow = Vec4f(0.957f, 0.65f, 0.0f, 1.0f);
 
     if (pickIndex == -1 || pickIndex == 0)
-        drawXArrow(helper::toVec3d(pos));
+        drawXArrow(helper::toVec3d(pos), dt);
 
     if (pickIndex == -1 || pickIndex == 1)
-        drawYArrow(helper::toVec3d(pos));
+        drawYArrow(helper::toVec3d(pos), dt);
 
     if (pickIndex == -1 || pickIndex == 2)
-        drawZArrow(helper::toVec3d(pos));
+        drawZArrow(helper::toVec3d(pos), dt);
 
     if (pickIndex == -1 || pickIndex == 3)
-        drawXYPlane(helper::toVec3d(pos));
+        drawXYPlane(helper::toVec3d(pos), dt);
 
     if (pickIndex == -1 || pickIndex == 4)
-        drawYZPlane(helper::toVec3d(pos));
+        drawYZPlane(helper::toVec3d(pos), dt);
 
     if (pickIndex == -1 || pickIndex == 5)
-        drawZXPlane(helper::toVec3d(pos));
+        drawZXPlane(helper::toVec3d(pos), dt);
 
     glDisable(GL_BLEND);
 
     if (pickIndex == -1 || pickIndex == 6)
-        drawCamPlane(helper::toVec3d(pos), isPicking);
+        drawCamPlane(helper::toVec3d(pos), isPicking, dt);
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_MULTISAMPLE_ARB);
@@ -302,8 +306,7 @@ void Translate_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
 
     QVector3D pos;
     if (!getValue(pos)) return;
-    std::cout << pos.x() << " " << pos.y()  << " " << pos.z() << std::endl;
-    std::cout << m_index << std::endl;
+
     QVector3D translated;
     switch (m_index)
     {
