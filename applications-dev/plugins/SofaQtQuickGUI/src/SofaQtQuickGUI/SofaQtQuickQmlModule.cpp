@@ -114,6 +114,7 @@ using sofaqtquick::views::ProfilerView;
 
 #include <QQmlPropertyMap>
 #include <QQmlContext>
+#include <QFileDialog>
 
 using sofa::qtquick::SofaComponent;
 
@@ -263,6 +264,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
 
     qRegisterMetaType<SofaViewer*>("SofaViewer*");
 
+    qmlRegisterType<QFileDialog>("QFileDialog", versionMajor, versionMinor, "QFileDialog");
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");

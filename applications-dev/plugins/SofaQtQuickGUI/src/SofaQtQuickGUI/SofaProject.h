@@ -78,6 +78,7 @@ public:
     Q_INVOKABLE QString createTemplateFile(const QString& directory, const QString& templateType);
     Q_INVOKABLE bool createPrefab(SofaBase* node);
     Q_INVOKABLE bool createPythonPrefab(QString name, SofaBase* node);
+    Q_INVOKABLE QUrl chooseProjectDir();
     Q_INVOKABLE QString createProject(const QUrl& dir);
     Q_INVOKABLE bool createProjectTree(const QUrl& dir);
     Q_INVOKABLE QString importProject(const QUrl& archive);

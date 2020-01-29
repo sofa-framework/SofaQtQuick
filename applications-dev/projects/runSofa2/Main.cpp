@@ -91,7 +91,6 @@ int main(int argc, char **argv)
     QtWebView::initialize();
     QQmlApplicationEngine applicationEngine;
     QQuickStyle::setStyle("Imagine");
-
     /// application specific settings
     app.setOrganizationName("Sofa Consortium");
     app.setApplicationName("runSofa2");

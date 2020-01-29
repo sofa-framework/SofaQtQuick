@@ -1,7 +1,7 @@
 
 import QtQuick 2.12
 import QtQuick.Controls 2.5
-import QtQuick.Dialogs 1.2
+import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
 import SofaBasics 1.0
@@ -38,24 +38,32 @@ MenuBar {
                 detailedText: qsTr("New project folders must be empty")
             }
 
-            FileDialog {
-                id: newProjectDialog
-                selectFolder: true
-                selectExisting: false
-                modality: Qt.WindowModal
-                onAccepted: {
-                    if (Qt.resolvedUrl(fileUrl)) {
-                        var scene = sofaApplication.currentProject.createProject(fileUrl)
-                        sofaApplication.projectSettings.addRecent(fileUrl)
-                        sofaApplication.sofaScene.source = scene
-                    }
-                    else
-                        newProjectErrorDialog.open()
-                }
-            }
+//            FileDialog {
+//                id: newProjectDialog
+//                selectFolder: true
+//                selectExisting: false
+//                modality: Qt.WindowModal
+//                settings: FileDialog.DontUseNativeDialog
+//                onAccepted: {
+//                    if (Qt.resolvedUrl(fileUrl)) {
+//                        var scene = sofaApplication.currentProject.createProject(fileUrl)
+//                        sofaApplication.projectSettings.addRecent(fileUrl)
+//                        sofaApplication.sofaScene.source = scene
+//                    }
+//                    else
+//                        newProjectErrorDialog.open()
+//                }
+//            }
 
             function openDialog() {
-                newProjectDialog.open()
+                var fileUrl = sofaApplication.currentProject.newProject()
+                if (Qt.resolvedUrl(fileUrl)) {
+                    var scene = sofaApplication.currentProject.createProject(fileUrl)
+                    sofaApplication.projectSettings.addRecent(fileUrl)
+                    sofaApplication.sofaScene.source = scene
+                } else {
+                    newProjectErrorDialog.open()
+                }
             }
             Shortcut {
                 sequence: StandardKey.Open
@@ -69,19 +77,20 @@ MenuBar {
         MenuItem {
             id: openProject
             text: qsTr("Open Project...")
-            FileDialog {
-                id: openProjectDialog
-                title: "Please choose a project directory"
-                folder: shortcuts.home
-                selectFolder: true
-                sidebarVisible: true
-                onAccepted: {
-                    sofaApplication.projectSettings.addRecent(fileUrl)
-                }
-            }
+//            FileDialog {
+//                id: openProjectDialog
+//                title: "Please choose a project directory"
+//                folder: shortcuts.home
+//                selectFolder: true
+//                sidebarVisible: true
+//                onAccepted: {
+//                    sofaApplication.projectSettings.addRecent(fileUrl)
+//                }
+//            }
 
             function openDialog() {
-                openProjectDialog.open()
+                var url = sofaApplication.currentProject.chooseProjectDir()
+                sofaApplication.projectSettings.addRecent(url);
             }
             Shortcut {
                 sequence: StandardKey.Open

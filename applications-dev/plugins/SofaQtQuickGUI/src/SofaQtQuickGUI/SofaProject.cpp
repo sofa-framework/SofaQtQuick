@@ -279,6 +279,38 @@ QString readScriptTemplate(QString name, QString file) {
     return s.replace("%ComponentName%", name);
 }
 
+QUrl SofaProject::chooseProjectDir()
+{
+//    QFileDialog dialog(nullptr, tr("Choose Project Location"), "~/Documents");
+//    dialog.setFileMode(QFileDialog::Directory);
+    auto opt = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog;
+//    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    return QFileDialog::getExistingDirectoryUrl(nullptr, tr("Choose project location"), QUrl("~/Documents"), opt);
+//    if (dialog.exec())
+//    {
+//        QList<QUrl> folders = dialog.selectedUrls();
+//        if (folders.empty())
+//            return false;
+//        QString dest = folders.first().path();
+//        QProcess process;
+
+//        QApplication::setOverrideCursor(Qt::WaitCursor);
+//        QApplication::processEvents();
+//        QString filePath = QFileInfo(src).filePath();
+//        QString baseName = QFileInfo(src).baseName();
+//        QString fileName = QFileInfo(src).fileName();
+//        process.start("/bin/ln", QStringList() << "-s" << filePath << fileName);
+//        process.waitForFinished(-1);
+//        process.start("/usr/bin/zip", QStringList() << "-r" << QString(dest + "/" + baseName + ".zip") << fileName);
+//        process.waitForFinished(-1);
+//        process.start("/bin/rm", QStringList() << fileName);
+//        process.waitForFinished(-1);
+//        QApplication::restoreOverrideCursor();
+//        return true;
+//    }
+//    return false;
+}
+
 QString SofaProject::createProject(const QUrl& dir)
 {
     msg_error_when(createProjectTree(dir), "SofaProject::createProject()")
@@ -320,6 +352,7 @@ QString SofaProject::importProject(const QUrl& srcUrl)
         QFileDialog dialog(nullptr, tr("Choose Project Destination"), "~/Documents", tr("All folders (*)"));
         dialog.setFileMode(QFileDialog::Directory);
         dialog.setOption(QFileDialog::ShowDirsOnly);
+        dialog.setOption(QFileDialog::DontUseNativeDialog);
         if (dialog.exec())
         {
             QList<QUrl> folders = dialog.selectedUrls();
@@ -346,6 +379,7 @@ bool SofaProject::exportProject(const QUrl& srcUrl)
     QFileDialog dialog(nullptr, tr("Choose Project Destination"), "~/Documents");
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOption(QFileDialog::ShowDirsOnly);
+    dialog.setOption(QFileDialog::DontUseNativeDialog);
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     if (dialog.exec())
     {
@@ -418,6 +452,7 @@ bool SofaProject::createPrefab(SofaBase* node)
 {
     QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toString(), tr("All files (*)"));
     dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setOption(QFileDialog::DontUseNativeDialog);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     bool ret;
     QString name = QInputDialog::getText(nullptr, "Prefab Name:", "Name: ", QLineEdit::Normal, node->getName(), &ret);
@@ -465,6 +500,7 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     QFileInfo f(directory);
     dir = (f.isDir()) ? directory : f.dir().path();
     QFileDialog dialog;
+    dialog.setOption(QFileDialog::DontUseNativeDialog);
     dialog.setFileMode(QFileDialog::AnyFile);
     QString strfile = dialog.getSaveFileName(nullptr, "Create New File", dir, "QtQuick UI (*."+extension+")");
     QFile file(strfile);
