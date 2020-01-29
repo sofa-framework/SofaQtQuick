@@ -5,5 +5,6 @@ FileDialog {
     property alias sofaSceneFileUrl: control.fileUrl
 
     id: control
+    modality: Qt.WindowModal
     nameFilters: ["SofaScene files (*.xml *.scn *.pyscn *.py *.simu *)"]
 }

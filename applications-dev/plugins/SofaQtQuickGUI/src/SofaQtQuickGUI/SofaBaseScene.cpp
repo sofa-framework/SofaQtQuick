@@ -854,6 +854,37 @@ void SofaBaseScene::sendGUIEvent(const QString& controlID, const QString& valueN
     mySofaRootNode->propagateEvent(sofa::core::ExecParams::defaultInstance(), &event);
 }
 
+void SofaBaseScene::newScene()
+{
+    unloadAllCanvas();
+    setPathQML("");
+    setSourceQML(QUrl());
+
+    // return now if a scene is already loading
+    if(Status::Loading == myStatus)
+        return;
+
+    // reset properties
+    setAnimate(false);
+    SofaBaseApplication::SetSelectedComponent(nullptr);
+//    setSelectedManipulator(nullptr);
+
+    if(mySofaRootNode)
+    {
+        setStatus(Status::Unloading);
+        aboutToUnload();
+        mySofaSimulation->unload(mySofaRootNode);
+    }
+
+    sofa::simulation::graph::init();
+    mySofaSimulation = sofa::simulation::graph::getSimulation();
+    mySofaRootNode = mySofaSimulation->createNewNode("root");
+    myCppGraph = new SofaBase(mySofaRootNode);
+    setDt(mySofaRootNode->getDt());
+    setStatus(Status::Ready);
+    emit rootNodeChanged();
+}
+
 Manipulator* SofaBaseScene::getManipulator(const QString &name)
 {
     for (auto m : myManipulators)

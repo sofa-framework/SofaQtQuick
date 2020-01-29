@@ -61,22 +61,23 @@ Column {
         property string manipulatorName: "Rotate_Manipulator"
         manipulator: SofaApplication.getManipulator(manipulatorName)
 
-        image: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
+        image: manipulator.local ? "qrc:/icon/ICON_ROTATION_MODIFIER.png" : "qrc:/icon/ICON_ROTATION_WORLD_MODIFIER.png"
         model: ListModel {
             ListElement {
                 title: "Local"
                 option: true
+                iconSource: "qrc:/icon/ICON_ROTATION_MODIFIER.png"
             }
             ListElement {
                 title: "Global"
                 option: false
+                iconSource: "qrc:/icon/ICON_ROTATION_WORLD_MODIFIER.png"
             }
         }
 
         onOptionChanged: {
             manipulator = setManipulator(manipulatorName)
             manipulator.local = option
-            print(option)
         }
 
         Shortcut {
@@ -94,4 +95,4 @@ Column {
             description: "Rotates the selected item (default: local reference frame)\n Shortcut: Shift+Space, R"
         }
     }
-    }
+}

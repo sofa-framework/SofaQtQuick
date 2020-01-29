@@ -101,5 +101,6 @@
         <file>icon/ICON_TO_CODELINE.png</file>
         <file>icon/ICON_WARNING.png</file>
         <file>icon/ManipulatorMenuCorner.png</file>
+        <file>icon/ICON_ROTATION_WORLD_MODIFIER.png</file>
     </qresource>
 </RCC>
