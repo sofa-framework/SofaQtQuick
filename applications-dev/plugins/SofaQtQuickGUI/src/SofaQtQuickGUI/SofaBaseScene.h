@@ -217,6 +217,7 @@ public:
     Q_INVOKABLE bool areSameComponent(SofaBase* SofaBaseA, SofaBase* SofaBaseB);
     Q_INVOKABLE bool areInSameBranch(SofaBase* SofaBaseA, SofaBase* SofaBaseB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
+    Q_INVOKABLE void newScene();
 
     Q_INVOKABLE Manipulator* getManipulator(const QString& name);
 public:

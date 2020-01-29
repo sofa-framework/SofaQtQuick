@@ -42,6 +42,7 @@ MenuBar {
                 id: newProjectDialog
                 selectFolder: true
                 selectExisting: false
+                modality: Qt.WindowModal
                 onAccepted: {
                     if (Qt.resolvedUrl(fileUrl)) {
                         var scene = sofaApplication.currentProject.createProject(fileUrl)
@@ -264,6 +265,16 @@ MenuBar {
             onTriggered: fileDialog.open()
         }
         MenuItem { text: "Export as...(TODO)"; enabled : false }
+
+
+        MenuItem {
+            id: newScene
+            text: "&New Scene..."
+            enabled: true
+            onTriggered: {
+                sofaApplication.sofaScene.newScene()
+            }
+        }
         MenuSeparator {}
 
         MenuItem {

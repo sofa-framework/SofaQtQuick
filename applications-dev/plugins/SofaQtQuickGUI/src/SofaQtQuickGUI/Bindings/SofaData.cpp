@@ -76,7 +76,9 @@ SofaData* SofaData::getParent() const
 
 void SofaData::setParent(SofaData* data)
 {
-    m_self->setParent(data->m_self, data->getLinkPath().toStdString());
+    if (data)
+        m_self->setParent(data->m_self, data->getLinkPath().toStdString());
+    else m_self->setParent(nullptr);
     emit parentChanged(data);
 }
 

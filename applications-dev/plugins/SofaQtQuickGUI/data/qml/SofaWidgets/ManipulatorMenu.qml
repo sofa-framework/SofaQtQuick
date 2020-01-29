@@ -14,10 +14,12 @@ Rectangle {
         ListElement {
             title: "Local"
             option: true
+            iconSource: ""
         }
         ListElement {
             title: "Global"
             option: false
+            iconSource: ""
         }
     }
 
@@ -48,7 +50,7 @@ Rectangle {
         Menu {
             id: manipulatorMenu
             x: 30
-            implicitWidth: 60
+            implicitWidth: 80
             title: "plop"
             style: "overlay"
             Repeater {
@@ -58,6 +60,7 @@ Rectangle {
                 MenuItem {
                     text: title
                     style: "overlay"
+                    icon.source: iconSource
                     onTriggered: {
                         root.option = option
                     }
