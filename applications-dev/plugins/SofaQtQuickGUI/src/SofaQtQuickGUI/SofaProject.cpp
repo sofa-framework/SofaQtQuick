@@ -279,37 +279,24 @@ QString readScriptTemplate(QString name, QString file) {
     return s.replace("%ComponentName%", name);
 }
 
-QUrl SofaProject::chooseProjectDir()
+QUrl SofaProject::chooseProjectDir(QString windowTitle, QString baseDir, int opts)
 {
-//    QFileDialog dialog(nullptr, tr("Choose Project Location"), "~/Documents");
-//    dialog.setFileMode(QFileDialog::Directory);
-    auto opt = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog;
-//    dialog.setAcceptMode(QFileDialog::AcceptOpen);
-    return QFileDialog::getExistingDirectoryUrl(nullptr, tr("Choose project location"), QUrl("~/Documents"), opt);
-//    if (dialog.exec())
-//    {
-//        QList<QUrl> folders = dialog.selectedUrls();
-//        if (folders.empty())
-//            return false;
-//        QString dest = folders.first().path();
-//        QProcess process;
-
-//        QApplication::setOverrideCursor(Qt::WaitCursor);
-//        QApplication::processEvents();
-//        QString filePath = QFileInfo(src).filePath();
-//        QString baseName = QFileInfo(src).baseName();
-//        QString fileName = QFileInfo(src).fileName();
-//        process.start("/bin/ln", QStringList() << "-s" << filePath << fileName);
-//        process.waitForFinished(-1);
-//        process.start("/usr/bin/zip", QStringList() << "-r" << QString(dest + "/" + baseName + ".zip") << fileName);
-//        process.waitForFinished(-1);
-//        process.start("/bin/rm", QStringList() << fileName);
-//        process.waitForFinished(-1);
-//        QApplication::restoreOverrideCursor();
-//        return true;
-//    }
-//    return false;
+    auto opt = QFileDialog::Options(opts) | QFileDialog::DontUseNativeDialog;
+    return QFileDialog::getExistingDirectoryUrl(nullptr, windowTitle, QUrl(baseDir), opt);
 }
+
+QUrl SofaProject::getOpenFile(QString windowTitle, QString baseDir, int opts, QString nameFilters)
+{
+    auto opt = QFileDialog::Options(opts) | QFileDialog::DontUseNativeDialog;
+    return QFileDialog::getOpenFileUrl(nullptr, windowTitle, baseDir, nameFilters, nullptr, opt);
+}
+
+QUrl SofaProject::getSaveFile(QString windowTitle, QString baseDir, int opts, QString nameFilters)
+{
+    auto opt = QFileDialog::Options(opts) | QFileDialog::DontUseNativeDialog;
+    return QFileDialog::getSaveFileUrl(nullptr, windowTitle, baseDir, nameFilters, nullptr, opt);
+}
+
 
 QString SofaProject::createProject(const QUrl& dir)
 {

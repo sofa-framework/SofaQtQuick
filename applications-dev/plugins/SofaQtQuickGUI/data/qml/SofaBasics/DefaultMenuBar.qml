@@ -8,6 +8,7 @@ import SofaBasics 1.0
 import SofaViewListModel 1.0
 import GraphView 1.0
 import ProfilerView 1.0
+import QFileDialog 1.0
 
 MenuBar {
     id: menuBar
@@ -38,25 +39,8 @@ MenuBar {
                 detailedText: qsTr("New project folders must be empty")
             }
 
-//            FileDialog {
-//                id: newProjectDialog
-//                selectFolder: true
-//                selectExisting: false
-//                modality: Qt.WindowModal
-//                settings: FileDialog.DontUseNativeDialog
-//                onAccepted: {
-//                    if (Qt.resolvedUrl(fileUrl)) {
-//                        var scene = sofaApplication.currentProject.createProject(fileUrl)
-//                        sofaApplication.projectSettings.addRecent(fileUrl)
-//                        sofaApplication.sofaScene.source = scene
-//                    }
-//                    else
-//                        newProjectErrorDialog.open()
-//                }
-//            }
-
             function openDialog() {
-                var fileUrl = sofaApplication.currentProject.newProject()
+                var fileUrl = sofaApplication.currentProject.chooseProjectDir()
                 if (Qt.resolvedUrl(fileUrl)) {
                     var scene = sofaApplication.currentProject.createProject(fileUrl)
                     sofaApplication.projectSettings.addRecent(fileUrl)
@@ -77,16 +61,6 @@ MenuBar {
         MenuItem {
             id: openProject
             text: qsTr("Open Project...")
-//            FileDialog {
-//                id: openProjectDialog
-//                title: "Please choose a project directory"
-//                folder: shortcuts.home
-//                selectFolder: true
-//                sidebarVisible: true
-//                onAccepted: {
-//                    sofaApplication.projectSettings.addRecent(fileUrl)
-//                }
-//            }
 
             function openDialog() {
                 var url = sofaApplication.currentProject.chooseProjectDir()
@@ -105,23 +79,12 @@ MenuBar {
         MenuItem {
             id: importProject
             text: qsTr("Import Project...")
-            FileDialog {
-                id: importProjectDialog
-                title: "Please choose a project directory"
-                folder: shortcuts.home
-                selectFolder: false
-                selectExisting: false
-                sidebarVisible: true
-                nameFilters: ["Archives (*.zip)", "All files (*)"]
-                onAccepted: {
-                    var extractedFolder = sofaApplication.currentProject.importProject(fileUrl);
-//                    console.error(extractedFolder)
-                    sofaApplication.projectSettings.addRecent("file://" + extractedFolder)
-                }
-            }
 
             onTriggered: {
-                importProjectDialog.open()
+                var fileUrl = sofaApplication.currentProject.chooseProjectDir()
+                var extractedFolder = sofaApplication.currentProject.importProject(fileUrl);
+                sofaApplication.projectSettings.addRecent("file://" + extractedFolder)
+
             }
         }
 
@@ -148,19 +111,18 @@ MenuBar {
             text: "&Open..."
 
             function openDialog() {
-                openSofaSceneDialog.open()
+                var file = sofaApplication.currentProject.getOpenFile("Choose scene file to open", "~/Documents", 0, "SofaScene files (*.xml *.scn *.pyscn *.py *.simu *)")
+                internal_params.sceneUrl = file
             }
 
-//            Shortcut {
-//                sequence: StandardKey.Open
-//                context: Qt.ApplicationShortcut
-//                onActivated: openMenuItem.openDialog()
-//            }
+            Shortcut {
+                sequence: StandardKey.Open
+                context: Qt.ApplicationShortcut
+                onActivated: openMenuItem.openDialog()
+            }
             onTriggered: {
                 openMenuItem.openDialog()
             }
-
-            SofaSceneFileDialog { id: openSofaSceneDialog }
 
         }
 
@@ -253,25 +215,22 @@ MenuBar {
             onTriggered:  { saveDialog.open() }
         }
         MenuItem {
+            id: saveAs
             text: "Save as..."
 
-            FileDialog
-            {
-                id: fileDialog;
-                visible: false
-                selectExisting: false ///< indicate that the file dialog can be used to create new files.
-                folder: sofaApplication.currentProject.rootDir.toString()
-                onSelectionAccepted: {
-                    sofaApplication.currentProject.saveScene(fileUrl.toString().replace('file://', ""), sofaApplication.sofaScene.root())
-                }
+
+            function saveAs() {
+                var url = sofaApplication.currentProject.getSaveFile("Select saving destination", sofaApplication.currentProject.rootDir.toString(), 0, "SofaScene files (*.pyscn *.py)")
+                sofaApplication.currentProject.saveScene(url.toString().replace('file://', ""), sofaApplication.sofaScene.root())
+
             }
 
             Shortcut {
                 sequence: StandardKey.SaveAs
                 context: Qt.ApplicationShortcut
-                onActivated: fileDialog.open()
+                onActivated: saveAs.saveAs()
             }
-            onTriggered: fileDialog.open()
+            onTriggered: saveAs.saveAs()
         }
         MenuItem { text: "Export as...(TODO)"; enabled : false }
 
