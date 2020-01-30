@@ -78,6 +78,11 @@ public:
     Q_INVOKABLE QString createTemplateFile(const QString& directory, const QString& templateType);
     Q_INVOKABLE bool createPrefab(SofaBase* node);
     Q_INVOKABLE bool createPythonPrefab(QString name, SofaBase* node);
+    Q_INVOKABLE QUrl chooseProjectDir(QString windowTitle = tr("Choose Project Location"), QString baseDir = "~/Documents", int opts = 0);
+    Q_INVOKABLE QUrl getOpenFile(QString windowTitle = tr("Choose a file"), QString baseDir = "~/Documents",
+                                 int opts = 0, QString nameFilters = "");
+    Q_INVOKABLE QUrl getSaveFile(QString windowTitle = tr("Choose a file"), QString baseDir = "~/Documents",
+                                 int opts = 0, QString nameFilters = "");
     Q_INVOKABLE QString createProject(const QUrl& dir);
     Q_INVOKABLE bool createProjectTree(const QUrl& dir);
     Q_INVOKABLE QString importProject(const QUrl& archive);
