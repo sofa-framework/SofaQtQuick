@@ -154,11 +154,11 @@ UserInteractor {
                     SofaApplication.selectedComponent = particle.sofaComponent;
                 }
                 currentManipulator = null
-                for (var i = 0 ; i < SofaApplication.getManipulators().length ; ++i) {
-                    SofaApplication.getManipulators()[i].isEditMode = true
-                    SofaApplication.getManipulators()[i].particleIndex = particle.particleIndex
-                    if (SofaApplication.getManipulators()[i].enabled) {
-                        currentManipulator = SofaApplication.getManipulators()[i];
+                for (var i = 0 ; i < sofaViewer.manipulators.length ; ++i) {
+                    sofaViewer.manipulators[i].isEditMode = true
+                    sofaViewer.manipulators[i].particleIndex = particle.particleIndex
+                    if (sofaViewer.manipulators[i].enabled) {
+                        currentManipulator = sofaViewer.manipulators[i];
                     }
                 }
                 if(currentManipulator) {

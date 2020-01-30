@@ -23,6 +23,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Camera.h>
 #include <SofaQtQuickGUI/SelectableSofaParticle.h>
+#include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 
 #include <GL/glew.h>
 #include <QOpenGLShaderProgram>
@@ -78,6 +79,7 @@ public:
     Q_PROPERTY(bool drawSelected READ drawSelected WRITE setDrawSelected NOTIFY drawSelectedChanged)
     Q_PROPERTY(bool alwaysDraw READ alwaysDraw WRITE setAlwaysDraw NOTIFY alwaysDrawChanged) /// \brief always draw the scene in the fbo
     Q_PROPERTY(bool autoPaint READ autoPaint WRITE setAutoPaint NOTIFY autoPaintChanged) /// \brief paint the fbo on the screen every frame, if false: you must call update() to request a paint
+    Q_PROPERTY(QQmlListProperty<sofaqtquick::Manipulator> manipulators READ manipulators)
 
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
@@ -167,6 +169,10 @@ public:
 
 	QOpenGLFramebufferObject* getFBO() const;
     
+
+    QQmlListProperty<sofaqtquick::Manipulator> manipulators();
+    Q_INVOKABLE Manipulator* getManipulator(const QString& name);
+
 signals:
     void sofaSceneChanged(sofaqtquick::SofaBaseScene* newScene);
     void rootsChanged(QList<sofaqtquick::bindings::SofaBase> newRoots);
@@ -252,6 +258,9 @@ protected:
     bool                        myDrawSelected;
 	bool						myAlwaysDraw;
     bool                        myAutoPaint;
+
+    QList<Manipulator*>                         m_manipulators;
+
 
 };
 

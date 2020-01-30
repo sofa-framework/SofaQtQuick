@@ -1,4 +1,5 @@
 #include "Viewpoint_Manipulator.h"
+#include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/Helper/sofaqtconversions.h>
 #include <sofa/core/visual/VisualParams.h>
 #include <qmath.h>

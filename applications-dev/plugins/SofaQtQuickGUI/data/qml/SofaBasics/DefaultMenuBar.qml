@@ -14,16 +14,6 @@ MenuBar {
     id: menuBar
     property var sofaApplication: null
 
-    Item {
-        id: internal_params
-
-        property string sceneUrl: openSofaSceneDialog.sofaSceneFileUrl
-        onSceneUrlChanged: {
-            if (sofaApplication.sofaScene)
-                sofaApplication.sofaScene.source = sceneUrl
-        }
-    }
-
     Menu {
         id: fileMenuID
         title: qsTr("&File")
@@ -112,7 +102,7 @@ MenuBar {
 
             function openDialog() {
                 var file = sofaApplication.currentProject.getOpenFile("Choose scene file to open", "~/Documents", 0, "SofaScene files (*.xml *.scn *.pyscn *.py *.simu *)")
-                internal_params.sceneUrl = file
+                sofaApplication.sofaScene.source = file
             }
 
             Shortcut {
@@ -153,7 +143,7 @@ MenuBar {
                         text: model.index + " - " + model.title
                         onTriggered: {
                             fileMenuID.close()
-                            internal_params.sceneUrl = model.fileUrl
+                           sofaApplication.sofaScene.source = model.fileUrl
                         }
                     }
                 }

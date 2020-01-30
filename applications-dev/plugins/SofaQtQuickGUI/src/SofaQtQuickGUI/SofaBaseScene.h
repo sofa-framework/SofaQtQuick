@@ -26,7 +26,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/SofaComponentList.h>
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>
-#include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 #include <SofaQtQuickGUI/SelectableSofaParticle.h>
 
 #include <sofa/simulation/Simulation.h>
@@ -111,7 +110,6 @@ public:
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
-    Q_PROPERTY(QQmlListProperty<sofaqtquick::Manipulator> manipulators READ manipulators)
 
     Q_ENUMS(Status)
     enum Status {
@@ -172,7 +170,6 @@ public:
     bool pyQtSynchronous() const                                {return myPyQtForceSynchronous;}
     void setPyQtForceSynchronous(bool newPyQtSynchronous);
 
-    QQmlListProperty<sofaqtquick::Manipulator> manipulators();
 
 signals:
     void notifyCanvasChanged();
@@ -219,7 +216,6 @@ public:
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
     Q_INVOKABLE void newScene();
 
-    Q_INVOKABLE Manipulator* getManipulator(const QString& name);
 public:
     static QVariant linkValue(const sofa::core::objectmodel::BaseLink* link);
 
@@ -326,7 +322,6 @@ private:
     sofa::simulation::Node::SPtr                mySofaRootNode;
     QTimer*                                     myStepTimer;
 
-    QList<Manipulator*>                         myManipulators;
     SofaBase*                                   mySelectedComponent {nullptr};
 
     SofaBase*                                   myCppGraph;

@@ -45,12 +45,6 @@ Item //
 
     property var style : MainStyle
 
-    function getManipulators() { return sofaScene.manipulators; }
-
-    function getManipulator(name) {
-        return sofaScene ? sofaScene.getManipulator(name) : null
-    }
-
     ////////////////////////////////////////////////// SELECTED COMPONENT
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {

@@ -19,7 +19,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaBaseScene.h>
 #include <SofaQtQuickGUI/SofaViewer.h>
-#include <SofaQtQuickGUI/SelectableManipulator.h>
 
 #include <sofa/helper/OptionsGroup.h>
 using sofa::helper::OptionsGroup ;
@@ -103,12 +102,6 @@ using sofaqtquick::bindings::SofaCoreBindingFactory;
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 using sofaqtquick::SofaBaseApplication;
 
-#include <SofaQtQuickGUI/Manipulators/Translate_Manipulator.h>
-using sofaqtquick::Translate_Manipulator;
-#include <SofaQtQuickGUI/Manipulators/Rotate_Manipulator.h>
-using sofaqtquick::Rotate_Manipulator;
-#include <SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h>
-using sofaqtquick::Viewpoint_Manipulator;
 
 #include <array>
 #include <sstream>
@@ -156,7 +149,6 @@ SofaBaseScene::SofaBaseScene(QObject *parent) : QObject(parent),
     myPyQtForceSynchronous(true),
     mySofaSimulation(nullptr),
     myStepTimer(new QTimer(this)),
-    myManipulators(),
     mySelectedComponent(nullptr)
 {
     std::cout << "SCENE CREATED ..... " << std::endl;
@@ -190,7 +182,6 @@ SofaBaseScene::SofaBaseScene(QObject *parent) : QObject(parent),
 
     sofa::helper::system::PluginManager::getInstance().init();
 
-    myManipulators.push_back(new Viewpoint_Manipulator(this));
     // connections
     connect(this, &SofaBaseScene::sourceChanged, this, &SofaBaseScene::open);
     connect(this, &SofaBaseScene::animateChanged, myStepTimer, [&](bool newAnimate) {newAnimate ? myStepTimer->start() : myStepTimer->stop();});
@@ -569,30 +560,6 @@ void SofaBaseScene::setPyQtForceSynchronous(bool newPyQtForceSynchronous)
     pyQtForceSynchronousChanged(newPyQtForceSynchronous);
 }
 
-static void appendManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property, sofaqtquick::Manipulator *value)
-{
-    static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->append(value);
-}
-
-static sofaqtquick::Manipulator* atManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property, int index)
-{
-    return static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->at(index);
-}
-
-static void clearManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property)
-{
-    static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->clear();
-}
-
-static int countManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property)
-{
-    return static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->size();
-}
-
-QQmlListProperty<sofaqtquick::Manipulator> SofaBaseScene::manipulators()
-{
-    return QQmlListProperty<sofaqtquick::Manipulator>(this, &myManipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
-}
 
 double SofaBaseScene::radius() const
 {
@@ -883,23 +850,6 @@ void SofaBaseScene::newScene()
     setDt(mySofaRootNode->getDt());
     setStatus(Status::Ready);
     emit rootNodeChanged();
-}
-
-Manipulator* SofaBaseScene::getManipulator(const QString &name)
-{
-    for (auto m : myManipulators)
-        if (m->getName() == name)
-            return m;
-    Manipulator* m = nullptr;
-    if (name == "Translate_Manipulator")
-        m = new Translate_Manipulator(this);
-    else if (name == "Rotate_Manipulator")
-        m = new Rotate_Manipulator(this);
-    else if (name == "Viewpoint_Manipulator")
-        m = new Viewpoint_Manipulator(this);
-    if (m != nullptr)
-        myManipulators.push_back(m);
-    return m;
 }
 
 QVariant SofaBaseScene::linkValue(const sofa::core::objectmodel::BaseLink* link)

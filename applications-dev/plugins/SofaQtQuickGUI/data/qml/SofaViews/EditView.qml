@@ -1166,7 +1166,7 @@ EditView
             Component.onCompleted: {
                 editModeInteractor.init()
 
-                var m = SofaApplication.getManipulator("Viewpoint_Manipulator")
+                var m = getManipulator("Viewpoint_Manipulator")
                 if (m !== null) {
                     m.persistent = true
                     m.enabled = true
@@ -1178,7 +1178,7 @@ EditView
             Component.onCompleted: {
                 objectModeInteractor.init()
 
-                var m = SofaApplication.getManipulator("Viewpoint_Manipulator")
+                var m = getManipulator("Viewpoint_Manipulator")
                 if (m !== null) {
                     m.persistent = true
                     m.enabled = true
@@ -1213,12 +1213,16 @@ EditView
 
     Component {
         id: objectmodeManipulators
-        ObjectModeManipulators {}
+        ObjectModeManipulators {
+            sofaViewer: root
+        }
     }
 
     Component {
         id: editmodeManipulators
-        EditModeManipulators {}
+        EditModeManipulators {
+            sofaViewer: root
+        }
     }
 
 }
