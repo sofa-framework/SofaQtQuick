@@ -120,6 +120,20 @@ public:
         Error
     };
 
+
+
+
+public:
+    /// Scene-related File Menu methods:
+    Q_INVOKABLE void newScene();
+    Q_INVOKABLE void openScene(QUrl projectDir);
+    Q_INVOKABLE void reloadScene();
+    Q_INVOKABLE void saveScene(QString sceneFile = "");
+    Q_INVOKABLE void saveSceneAs(QUrl projectDir);
+    Q_INVOKABLE void exportSceneAs(QUrl projectDir);
+
+
+
 public:
     sofaqtquick::SofaBaseScene::Status status()	const               {return myStatus;}
     void setStatus(sofaqtquick::SofaBaseScene::Status newStatus);
@@ -214,7 +228,6 @@ public:
     Q_INVOKABLE bool areSameComponent(SofaBase* SofaBaseA, SofaBase* SofaBaseB);
     Q_INVOKABLE bool areInSameBranch(SofaBase* SofaBaseA, SofaBase* SofaBaseB);
     Q_INVOKABLE void sendGUIEvent(const QString& controlID, const QString& valueName, const QString& value);
-    Q_INVOKABLE void newScene();
 
 public:
     static QVariant linkValue(const sofa::core::objectmodel::BaseLink* link);

@@ -143,6 +143,7 @@ Item //
     property var currentProject : SofaProject {
         property var selectedAsset: null
         rootDir: projectSettings.currentProject()
+        scene: sofaScene
     }
 
     property var projectSettings: Settings {
