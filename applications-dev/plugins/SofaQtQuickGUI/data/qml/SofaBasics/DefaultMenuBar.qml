@@ -49,7 +49,8 @@ MenuBar {
 
             function openDialog() {
                 sofaApplication.currentProject.openProject()
-                sofaApplication.projectSettings.addRecent(sofaApplication.sofaScene.source);
+                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
+                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
             }
             Shortcut {
                 sequence: StandardKey.Open
@@ -67,7 +68,8 @@ MenuBar {
 
             onTriggered: {
                 sofaApplication.currentProject.importProject();
-                sofaApplication.projectSettings.addRecent(sofaApplication.sofaScene.source);
+                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
+                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
 
             }
         }
