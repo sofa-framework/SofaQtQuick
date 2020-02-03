@@ -229,6 +229,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<size_t>("const size_t");
     qRegisterMetaType<QVariantMap*>("QVariantMap*");
     qRegisterMetaType<SofaBaseScene*>("const SofaBaseScene*");
+    qRegisterMetaType<SofaBaseScene*>("SofaBaseScene*");
     qRegisterMetaType<SofaBaseScene*>("const SofaScene*");
     qRegisterMetaType<Asset*>("Asset*");
     qRegisterMetaType<QUrlList>("QUrlList");

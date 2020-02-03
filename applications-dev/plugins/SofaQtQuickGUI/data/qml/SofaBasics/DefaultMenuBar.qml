@@ -31,7 +31,8 @@ MenuBar {
 
             function openDialog() {
                 sofaApplication.currentProject.newProject()
-                sofaApplication.projectSettings.addRecent(sofaApplication.sofaScene.source)
+                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
+                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
             }
             Shortcut {
                 sequence: StandardKey.New
