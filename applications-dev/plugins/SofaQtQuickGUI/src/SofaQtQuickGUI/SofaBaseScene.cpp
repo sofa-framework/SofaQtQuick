@@ -1502,6 +1502,7 @@ void SofaBaseScene::onSetDataValueByComponent(SofaBase* SofaBase, const QString&
 void SofaBaseScene::reload()
 {
     open();
+    emit rootNodeChanged();
 }
 
 void SofaBaseScene::step()

@@ -157,11 +157,11 @@ MenuBar {
             Shortcut {
                 sequence: StandardKey.Refresh
                 context: Qt.ApplicationShortcut
-                onActivated: sofaApplication.sofaScene.reloadScene
+                onActivated: sofaApplication.sofaScene.reloadScene()
             }
             onTriggered: {
                 fileMenuID.close()
-                sofaApplication.sofaScene.reloadScene
+                sofaApplication.sofaScene.reloadScene()
             }
         }
 
