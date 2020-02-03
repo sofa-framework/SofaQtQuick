@@ -109,7 +109,10 @@ void SofaProject::setRootDir(const QUrl& rootDir)
 {
     if(rootDir.isEmpty())
         return;
-    m_rootDir = rootDir;
+    if (rootDir.url().startsWith("qrc:"))
+        m_rootDir.setUrl(rootDir.url().replace("qrc:", "file://"));
+    else
+        m_rootDir = rootDir;
     m_assets.clear();
     m_directories.clear();
 

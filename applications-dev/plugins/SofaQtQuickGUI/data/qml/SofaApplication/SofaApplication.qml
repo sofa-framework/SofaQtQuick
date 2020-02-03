@@ -76,6 +76,11 @@ Item //
         SofaBaseApplicationSingleton.openInTerminal(fullpath)
     }
 
+    function copyFile(src, dest)
+    {
+        SofaBaseApplicationSingleton.copyFile(src, dest)
+    }
+
     /// Returns the absolute position of the mouse in a mouseArea
     /// Takes a MouseArea as argument
     function getAbsolutePosition(node) {

@@ -19,7 +19,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 import QtQuick 2.2
 import QtQuick.Controls 2.4
-import QtQuick.Dialogs 1.0
+import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
 import Sofa.Core.SofaData 1.0
@@ -46,6 +46,7 @@ Row {
         readOnly: sofaData.properties.readOnly
         width: root.width - openButton.width - root.spacing
         text: sofaData.value.toString()
+        selectByMouse: true
 
         onAccepted: {
             /// Get the URL from the file chooser and convert it to a string.
@@ -81,6 +82,60 @@ Row {
             fillMode: Image.PreserveAspectFit
 
         }
+
+        Dialog {
+            id: importAssetDialog
+            standardButtons: StandardButton.Yes | StandardButton.No
+            title: qsTr("Import asset?")
+            width: 400
+            height: 150
+            contentItem: Rectangle  {
+                anchors.fill: parent
+                color: SofaApplication.style.contentBackgroundColor
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    TextArea {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        text: qsTr("The file you selected is located outside of the project.\nThis will break its packageability.\nWould you rather copy the asset to your project directory?")
+                    }
+                    TextField {
+                        id: path
+                        Layout.fillWidth: true
+                        text: SofaApplication.currentProject.rootDir.toString().replace("file://", "") + "/assets/resources/"
+                    }
+                    RowLayout {
+                        Label {
+                            Layout.fillWidth: true
+                            text: ""
+                        }
+                        Button {
+                            id: yes
+                            text: "Yes"
+                            onClicked: {
+                                var filename = textField.text.split("/")
+                                filename = filename[filename.length-1]
+                                print(textField.text + "    " + path.text + filename)
+                                SofaApplication.copyFile(textField.text, path.text + filename)
+                                sofaData.value = path.text + filename
+                                textField.text = path.text + filename
+                                print("copied!")
+                                importAssetDialog.close()
+                            }
+                        }
+                        Button {
+                            id: no
+                            text: "No"
+                            onClicked: {
+                                sofaData.value = textField.text
+                                importAssetDialog.close()
+                            }
+                        }
+                    }
+                }
+            }
+        }
         onClicked: {
             /// Open the FileDialog at the specified location.
             var url = "";
@@ -89,9 +144,17 @@ Row {
             }else{
                 url = SofaApplication.currentProject.rootDir
             }
+            var fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url)
+            if (fileUrl.toString() === "") return
+            if (fileUrl.toString().startsWith(SofaApplication.currentProject.rootDir)) {
+                sofaData.value = fileUrl.toString().replace("file://","");
+                textField.text = sofaData.value.toString();
+            } else {
+                textField.text = fileUrl.toString().replace("file://","")
+                importAssetDialog.open()
+            }
 
-            fileDialog.folder = url
-            fileDialog.open()
+
         }
         position: cornerPositions["Right"]
     }
