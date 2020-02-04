@@ -110,6 +110,7 @@ void SofaSceneItemModel::onTimeOutModelRefresh()
 
 QModelIndex SofaSceneItemModel::index(int row, int column, const QModelIndex &parent) const
 {
+    if (!m_scene) return QModelIndex();
     Base* currentBase ;
     if (!parent.isValid())
     {
@@ -507,12 +508,13 @@ SofaBaseScene* SofaSceneItemModel::sofaScene() const
 void SofaSceneItemModel::setSofaScene(SofaBaseScene* newScene)
 {    
     m_scene = newScene;
+    emit sofaSceneChanged();
+    emit handleRootNodeChange();
+    if (!m_scene) return;
 
     /// The scene passed to this model is tracked to monitor if its status has changed.
     /// If this is the case then the model needs to be reseted.
     connect(m_scene, &SofaBaseScene::rootNodeChanged, this, &SofaSceneItemModel::handleRootNodeChange);
-    emit sofaSceneChanged();
-    emit handleRootNodeChange();
 }
 
 void SofaSceneItemModel::handleRootNodeChange()

@@ -258,9 +258,13 @@ void SofaBaseScene::reloadScene()
 
 void SofaBaseScene::saveScene(QString sceneFile)
 {
-    QString file = source().toLocalFile();
-    if (sceneFile != "")
+    QString file = source().isLocalFile() ? source().toLocalFile() : source().path();
+    msg_warning("runSofa2") << "file: "  << file.toStdString();
+    msg_warning("runSofa2") << "path: "  << source().path().toStdString();
+    if (sceneFile != "") {
+        msg_warning("runSofa2") << "sceneFile: "  << sceneFile.toStdString();
         file = sceneFile;
+    }
     SofaNode* root = new sofaqtquick::SofaNode(DAGNode::SPtr(static_cast<DAGNode*>(mySofaRootNode->toBaseNode())));
     QFile::copy(file, file + ".backup");
     sofapython3::PythonEnvironment::executePython([file, root]()
@@ -272,9 +276,10 @@ void SofaBaseScene::saveScene(QString sceneFile)
         py::object rootNode = PythonFactory::toPython(root->self());
 
         py::str file(ppath);
+        msg_warning("runSofa2") << "Saving to..: "  << ppath;
         bool ret =  py::cast<bool>(SofaQtQuick.attr("saveAsPythonScene")(file, rootNode));
         if (ret) {
-            msg_info("runSofa2") << "File saved to "  << ppath;
+            msg_warning("runSofa2") << "File saved to "  << ppath;
         } else {
             msg_error("runSofa2") << "Could not save to file "  << ppath;
         }

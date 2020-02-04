@@ -54,8 +54,11 @@ void SofaSceneListModel::handleSceneChange(SofaBaseScene*)
     clear();
     if(mySofaScene)
     {
+        std::cout << "we have a scene" << std::endl;
         if(mySofaScene->isReady())
         {
+            std::cout << "scene is ready" << std::endl;
+            mySofaScene->sofaRootNode()->addListener(this);
             onBeginAddChild(nullptr, mySofaScene->sofaRootNode().get());
             onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());
         }
@@ -65,12 +68,15 @@ void SofaSceneListModel::handleSceneChange(SofaBaseScene*)
 
             if(SofaBaseScene::Ready == mySofaScene->status())
             {
+                std::cout << "scene is ready" << std::endl;
+                mySofaScene->sofaRootNode()->addListener(this);
                 onBeginAddChild(nullptr, mySofaScene->sofaRootNode().get());
                 onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());
             }
         });
     }
 }
+
 
 void SofaSceneListModel::clear()
 {
@@ -132,7 +138,6 @@ void SofaSceneListModel::setSofaScene(SofaBaseScene* newSofaScene)
     mySofaScene = newSofaScene;
 
     handleSceneChange(mySofaScene);
-
     sofaSceneChanged(newSofaScene);
 }
 
@@ -313,11 +318,13 @@ QList<int> SofaSceneListModel::computeFilteredRows(const QString& filter) const
 {
     QList<int> filteredRows;
 
+    std::cout << "filter: " << filter.toStdString() << std::endl;
+    std::cout << "items size : " << myItems.size() << std::endl;
     if(!filter.isEmpty())
         for(int i = 0; i < myItems.size(); ++i)
         {
             const Item& item = myItems[i];
-
+            std::cout << item.base->getName() << std::endl;
             QString name = QString::fromStdString(item.base->getName());
             if(-1 != name.indexOf(filter, 0, Qt::CaseInsensitive))
                 filteredRows.append(computeModelRow(i));
@@ -363,7 +370,28 @@ void SofaSceneListModel::onBeginAddChild(Node* parent, Node* child)
         beginInsertRows(QModelIndex(), 0, 0);
         myItems.append(buildNodeItem(0, child));
         endInsertRows();
-        return ;
+        for (auto o : child->object)
+        {
+            onBeginAddObject(child, o.get());
+            onEndAddObject(child, o.get());
+        }
+        for (auto c : child->getChildren())
+        {
+            onBeginAddChild(child, static_cast<Node*>(c));
+            onEndAddChild(child, static_cast<Node*>(c));
+        }
+        return;
+    }
+
+    for (auto o : child->object)
+    {
+        onBeginAddObject(child, o.get());
+        onEndAddObject(child, o.get());
+    }
+    for (auto c : child->getChildren())
+    {
+        onBeginAddChild(child, static_cast<Node*>(c));
+        onEndAddChild(child, static_cast<Node*>(c));
     }
 
     auto parentItemIt = std::find_if(myItems.begin(), myItems.end(), [parent](const Item& a){ return parent == a.base; });

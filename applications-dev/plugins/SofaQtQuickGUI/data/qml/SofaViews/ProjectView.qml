@@ -36,7 +36,7 @@ Item {
     }
 
     ColumnLayout {
-        anchors.fill: root.parent
+        anchors.fill: parent
         Rectangle {
             id: headerID
             Layout.fillWidth: true
