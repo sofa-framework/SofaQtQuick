@@ -80,6 +80,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+        sofaScene: sofaScene
     }
 
     TreeView {
@@ -606,6 +607,10 @@ Rectangle {
                     dragItem.item = theComponent
                 }
                 Drag.active: mouseArea.drag.active
+                Drag.onActiveChanged: {
+                    print("Dragging " + item.getName())
+                }
+
                 Drag.dragType: Drag.Automatic
                 Drag.supportedActions: Qt.CopyAction
                 Drag.mimeData: {

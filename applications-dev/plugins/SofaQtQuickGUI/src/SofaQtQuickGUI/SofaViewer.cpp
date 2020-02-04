@@ -19,8 +19,15 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaViewer.h>
 #include <SofaQtQuickGUI/SofaBaseScene.h>
+
+#include <SofaQtQuickGUI/SelectableManipulator.h>
 #include <SofaQtQuickGUI/Manipulators/Manipulator.h>
 #include <SofaQtQuickGUI/Manipulators/Translate_Manipulator.h>
+using sofaqtquick::Translate_Manipulator;
+#include <SofaQtQuickGUI/Manipulators/Rotate_Manipulator.h>
+using sofaqtquick::Rotate_Manipulator;
+#include <SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h>
+using sofaqtquick::Viewpoint_Manipulator;
 
 #include <sofa/simulation/Node.h>
 #include <sofa/core/visual/VisualParams.h>
@@ -95,7 +102,8 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     myDrawManipulators(true),
     myDrawSelected(true),
     myAlwaysDraw(false),
-    myAutoPaint(true)
+    myAutoPaint(true),
+    m_manipulators()
 {
     QQuickFramebufferObject::setMirrorVertically(true);
 
@@ -109,6 +117,8 @@ SofaViewer::SofaViewer(QQuickItem* parent) : QQuickFramebufferObject(parent),
     m_visualParams->setSupported(sofa::core::visual::API_OpenGL);
 
     sofaqtquick::SofaBaseApplication::InitOpenGL();
+
+    m_manipulators.push_back(new Viewpoint_Manipulator(this));
 }
 
 SofaViewer::~SofaViewer()
@@ -610,7 +620,7 @@ sofa::core::visual::VisualParams* SofaViewer::setupVisualParams(sofa::core::visu
 
 void SofaViewer::drawManipulator(const SofaViewer& viewer) const
 {
-    for (auto m : mySofaScene->myManipulators) {
+    for (auto m : m_manipulators) {
         m->draw(viewer);
     }
 }
@@ -942,9 +952,9 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
 
             if (drawManipulators() && (tags.isEmpty() || tags.contains("manipulator", Qt::CaseInsensitive)))
             {
-                if (!mySofaScene->myManipulators.empty())
+                if (!m_manipulators.empty())
                 {
-                    for (auto manipulator : mySofaScene->myManipulators)
+                    for (auto manipulator : m_manipulators)
                     {
                         if (manipulator->enabled())
                         {
@@ -1005,7 +1015,7 @@ Selectable* SofaViewer::pickObject(const QPointF& ssPoint, const QStringList& ta
 
                             if(drawManipulators())
                             {
-                                for (auto manipulator : mySofaScene->myManipulators)
+                                for (auto manipulator : m_manipulators)
                                 {
                                     if (manipulator->enabled())
                                     {
@@ -1481,6 +1491,50 @@ void SofaViewer::SofaRenderer::render()
 
     myViewer->checkAndInit();
     myViewer->internalRender(myViewer->width(), myViewer->height());
+}
+
+
+static void appendManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property, sofaqtquick::Manipulator *value)
+{
+    static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->append(value);
+}
+
+static sofaqtquick::Manipulator* atManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property, int index)
+{
+    return static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->at(index);
+}
+
+static void clearManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property)
+{
+    static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->clear();
+}
+
+static int countManipulator(QQmlListProperty<sofaqtquick::Manipulator> *property)
+{
+    return static_cast<QList<sofaqtquick::Manipulator*>*>(property->data)->size();
+}
+
+QQmlListProperty<sofaqtquick::Manipulator> SofaViewer::manipulators()
+{
+    return QQmlListProperty<sofaqtquick::Manipulator>(this, &m_manipulators, appendManipulator, countManipulator, atManipulator, clearManipulator);
+}
+
+
+Manipulator* SofaViewer::getManipulator(const QString &name)
+{
+    for (auto m : m_manipulators)
+        if (m->getName() == name)
+            return m;
+    Manipulator* m = nullptr;
+    if (name == "Translate_Manipulator")
+        m = new Translate_Manipulator(this);
+    else if (name == "Rotate_Manipulator")
+        m = new Rotate_Manipulator(this);
+    else if (name == "Viewpoint_Manipulator")
+        m = new Viewpoint_Manipulator(this);
+    if (m != nullptr)
+        m_manipulators.push_back(m);
+    return m;
 }
 
 }  // namespace sofaqtquick

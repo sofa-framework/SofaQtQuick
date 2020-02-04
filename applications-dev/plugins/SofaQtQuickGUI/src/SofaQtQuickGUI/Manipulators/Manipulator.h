@@ -2,10 +2,12 @@
 
 #include <QObject>
 #include <QPointF>
-#include <SofaQtQuickGUI/SofaViewer.h>
+#include <sofa/helper/system/config.h>
 
 namespace sofaqtquick
 {
+
+class SofaViewer;
 
 class Manipulator : public QObject
 {

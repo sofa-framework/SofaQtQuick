@@ -114,7 +114,7 @@ SofaData* SofaBase::getData(const QString& name) const
     auto* data = m_self->findData(name.toStdString());
     if(!data)
     {
-        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no data with name '"+name+"'");
+        SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no data with name '"+name+" in " + m_self->getName().c_str() + "'");
         return nullptr;
     }
     return new SofaData(data);

@@ -45,12 +45,6 @@ Item //
 
     property var style : MainStyle
 
-    function getManipulators() { return sofaScene.manipulators; }
-
-    function getManipulator(name) {
-        return sofaScene ? sofaScene.getManipulator(name) : null
-    }
-
     ////////////////////////////////////////////////// SELECTED COMPONENT
     property var selectedComponent : SofaBaseApplicationSingleton.selectedComponent
     onSelectedComponentChanged: {
@@ -80,6 +74,11 @@ Item //
     function openInTerminal(fullpath)
     {
         SofaBaseApplicationSingleton.openInTerminal(fullpath)
+    }
+
+    function copyFile(src, dest)
+    {
+        SofaBaseApplicationSingleton.copyFile(src, dest)
     }
 
     /// Returns the absolute position of the mouse in a mouseArea
@@ -149,6 +148,7 @@ Item //
     property var currentProject : SofaProject {
         property var selectedAsset: null
         rootDir: projectSettings.currentProject()
+        scene: sofaScene
     }
 
     property var projectSettings: Settings {

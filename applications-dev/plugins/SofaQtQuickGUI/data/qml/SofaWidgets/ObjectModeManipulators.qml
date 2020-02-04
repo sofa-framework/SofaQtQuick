@@ -12,18 +12,20 @@ import SofaManipulators 1.0
 
 Column {
     id: manipulatorControls
+
+    property var sofaViewer
     anchors.left: parent.left
     anchors.top: parent.top
     anchors.leftMargin: 20
     anchors.topMargin: 20
 
     function setManipulator(manipulatorName) {
-        var m = SofaApplication.getManipulator(manipulatorName)
-        if (!SofaApplication.getManipulators()) return m
-        for (var i = 0 ; i < SofaApplication.getManipulators().length ; ++i) {
-            if (!SofaApplication.getManipulators()[i].persistent &&
-                    (m && m.name !== SofaApplication.getManipulators()[i].name)) {
-                SofaApplication.getManipulators()[i].enabled = false
+        var m = sofaViewer.getManipulator(manipulatorName)
+        if (!sofaViewer.manipulators) return m
+        for (var i = 0 ; i < sofaViewer.manipulators.length ; ++i) {
+            if (!sofaViewer.manipulators[i].persistent &&
+                    (m && m.name !== sofaViewer.manipulators[i].name)) {
+                sofaViewer.manipulators[i].enabled = false
             }
         }
         m.enabled = true
@@ -33,7 +35,7 @@ Column {
     ManipulatorMenu {
         id: translateMenu
         property string manipulatorName: "Translate_Manipulator"
-        manipulator: SofaApplication.getManipulator(manipulatorName)
+        manipulator: sofaViewer.getManipulator(manipulatorName)
 
         onOptionChanged: {
             manipulator = setManipulator(manipulatorName)
@@ -59,7 +61,7 @@ Column {
         id: rotateMenu
 
         property string manipulatorName: "Rotate_Manipulator"
-        manipulator: SofaApplication.getManipulator(manipulatorName)
+        manipulator: sofaViewer.getManipulator(manipulatorName)
 
         image: manipulator.local ? "qrc:/icon/ICON_ROTATION_MODIFIER.png" : "qrc:/icon/ICON_ROTATION_WORLD_MODIFIER.png"
         model: ListModel {

@@ -1,4 +1,5 @@
 #include "Manipulator.h"
+#include <SofaQtQuickGUI/SofaViewer.h>
 
 namespace sofaqtquick
 {

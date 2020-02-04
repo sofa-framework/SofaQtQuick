@@ -14,16 +14,6 @@ MenuBar {
     id: menuBar
     property var sofaApplication: null
 
-    Item {
-        id: internal_params
-
-        property string sceneUrl: openSofaSceneDialog.sofaSceneFileUrl
-        onSceneUrlChanged: {
-            if (sofaApplication.sofaScene)
-                sofaApplication.sofaScene.source = sceneUrl
-        }
-    }
-
     Menu {
         id: fileMenuID
         title: qsTr("&File")
@@ -40,17 +30,12 @@ MenuBar {
             }
 
             function openDialog() {
-                var fileUrl = sofaApplication.currentProject.chooseProjectDir()
-                if (Qt.resolvedUrl(fileUrl)) {
-                    var scene = sofaApplication.currentProject.createProject(fileUrl)
-                    sofaApplication.projectSettings.addRecent(fileUrl)
-                    sofaApplication.sofaScene.source = scene
-                } else {
-                    newProjectErrorDialog.open()
-                }
+                sofaApplication.currentProject.newProject()
+                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
+                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
             }
             Shortcut {
-                sequence: StandardKey.Open
+                sequence: StandardKey.New
                 context: Qt.ApplicationShortcut
                 onActivated: newProject.openDialog()
             }
@@ -63,8 +48,9 @@ MenuBar {
             text: qsTr("Open Project...")
 
             function openDialog() {
-                var url = sofaApplication.currentProject.chooseProjectDir()
-                sofaApplication.projectSettings.addRecent(url);
+                sofaApplication.currentProject.openProject()
+                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
+                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
             }
             Shortcut {
                 sequence: StandardKey.Open
@@ -81,9 +67,9 @@ MenuBar {
             text: qsTr("Import Project...")
 
             onTriggered: {
-                var fileUrl = sofaApplication.currentProject.chooseProjectDir()
-                var extractedFolder = sofaApplication.currentProject.importProject(fileUrl);
-                sofaApplication.projectSettings.addRecent("file://" + extractedFolder)
+                sofaApplication.currentProject.importProject();
+                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
+                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
 
             }
         }
@@ -92,7 +78,7 @@ MenuBar {
             id: exportProject
             text: qsTr("Export Current Project")
             onTriggered: {
-                sofaApplication.currentProject.exportProject(sofaApplication.projectSettings.currentProject())
+                sofaApplication.currentProject.exportProject()
             }
         }
 
@@ -110,18 +96,14 @@ MenuBar {
             id: openMenuItem
             text: "&Open..."
 
-            function openDialog() {
-                var file = sofaApplication.currentProject.getOpenFile("Choose scene file to open", "~/Documents", 0, "SofaScene files (*.xml *.scn *.pyscn *.py *.simu *)")
-                internal_params.sceneUrl = file
-            }
-
             Shortcut {
                 sequence: StandardKey.Open
                 context: Qt.ApplicationShortcut
-                onActivated: openMenuItem.openDialog()
+                onActivated: sofaApplication.sofaScene.openScene(sofaApplication.currentProject.rootDir);
+
             }
             onTriggered: {
-                openMenuItem.openDialog()
+                sofaApplication.sofaScene.openScene(sofaApplication.currentProject.rootDir);
             }
 
         }
@@ -153,7 +135,7 @@ MenuBar {
                         text: model.index + " - " + model.title
                         onTriggered: {
                             fileMenuID.close()
-                            internal_params.sceneUrl = model.fileUrl
+                           sofaApplication.sofaScene.source = model.fileUrl
                         }
                     }
                 }
@@ -172,30 +154,20 @@ MenuBar {
             id: reloadMenuItem
             text: "&Reload"
 
-            function reload() {
-                sofaApplication.sofaScene.reload()
-            }
             Shortcut {
                 sequence: StandardKey.Refresh
                 context: Qt.ApplicationShortcut
-                onActivated: reloadMenuItem.reload()
+                onActivated: sofaApplication.sofaScene.reloadScene()
             }
             onTriggered: {
                 fileMenuID.close()
-                reloadMenuItem.reload()
+                sofaApplication.sofaScene.reloadScene()
             }
         }
 
         MenuItem {
             text: "Save";
             id: saveItem
-
-            function saveScene()
-            {
-                var filePath = sofaApplication.sofaScene.path;
-                sofaApplication.currentProject.saveScene(filePath.replace('file://', ''),
-                                                         sofaApplication.sofaScene.root())
-            }
 
             MessageDialog {
                 id: saveDialog
@@ -204,7 +176,7 @@ MenuBar {
                 text: sofaApplication.sofaScene.path + " already exists. Replace?"
                 detailedText: "The previous version of the file will be backed up in a separate file suffixed '.backup'"
                 standardButtons: StandardButton.Yes | StandardButton.Abort
-                onYes: saveItem.saveScene()
+                onYes: sofaApplication.sofaScene.saveScene()
             }
 
             Shortcut {
@@ -219,20 +191,19 @@ MenuBar {
             text: "Save as..."
 
 
-            function saveAs() {
-                var url = sofaApplication.currentProject.getSaveFile("Select saving destination", sofaApplication.currentProject.rootDir.toString(), 0, "SofaScene files (*.pyscn *.py)")
-                sofaApplication.currentProject.saveScene(url.toString().replace('file://', ""), sofaApplication.sofaScene.root())
-
-            }
 
             Shortcut {
                 sequence: StandardKey.SaveAs
                 context: Qt.ApplicationShortcut
-                onActivated: saveAs.saveAs()
+                onActivated: sofaApplication.sofaScene.saveAs(sofaApplication.currentProject.rootDir)
             }
-            onTriggered: saveAs.saveAs()
+            onTriggered: sofaApplication.sofaScene.saveAs(sofaApplication.currentProject.rootDir)
         }
-        MenuItem { text: "Export as...(TODO)"; enabled : false }
+        MenuItem {
+            text: "Export as...(TODO)"
+            enabled : false
+            onTriggered: sofaApplication.sofaScene.exportSceneAs(sofaApplication.currentProject.rootDir)
+        }
 
 
         MenuItem {

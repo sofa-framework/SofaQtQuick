@@ -10,6 +10,7 @@ import SofaSceneListModel 1.0
 
 RowLayout {
     id: searchBar
+    property var sofaScene
     Layout.fillWidth: true
     Layout.rightMargin: 12
 
