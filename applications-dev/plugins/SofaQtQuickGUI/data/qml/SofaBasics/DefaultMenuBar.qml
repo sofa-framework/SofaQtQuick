@@ -8,7 +8,6 @@ import SofaBasics 1.0
 import SofaViewListModel 1.0
 import GraphView 1.0
 import ProfilerView 1.0
-import QFileDialog 1.0
 
 MenuBar {
     id: menuBar
