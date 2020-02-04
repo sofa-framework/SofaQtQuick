@@ -107,7 +107,8 @@ def buildDataParams(datas, indent, scn):
                 if " " not in data.getName() and data.getName() != "Help":
                     if data.getName() != "modulepath":
                         if data.getName() != "depend":
-                            s += ", " + data.getName() + "=" + ( "["+repr(data.value).split("[")[1].split("]")[0]+"]" if "array" in repr(data.value) else repr(data.value))
+                            v = repr(data.value)
+                            s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
     return s
 
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):

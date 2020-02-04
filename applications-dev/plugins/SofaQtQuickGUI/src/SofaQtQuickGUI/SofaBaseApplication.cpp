@@ -191,7 +191,12 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
     if(!settings.contains("DefaultEditorParams"))
         settings.setValue("DefaultEditorParams", "-client ${path}:${lineno}"); // ex. for qtcreator: "-client ${path}:${lineno}"
 
-    QString path = QFileInfo(fullpath).absoluteFilePath();
+
+    QString path = fullpath;
+    if (path.startsWith("file://"))
+        path.replace("file://", "");
+    else
+        path = QFileInfo(fullpath).absoluteFilePath();
     QString line = std::to_string(lineno).c_str();
 
     QString editor = settings.value("DefaultEditor").toString();
@@ -505,7 +510,7 @@ ProcessState* SofaBaseApplication::executeProcessAsync(const QString& command, c
     QUrl url = QUrl::fromUserInput(workingDirectory);
     if(workingDirectory.size()!=0)
     {
-        process->setWorkingDirectory(url.toLocalFile());
+        process->setWorkingDirectory(url.isLocalFile() ? url.toLocalFile() : url.path());
     }
 
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
@@ -513,7 +518,7 @@ ProcessState* SofaBaseApplication::executeProcessAsync(const QString& command, c
 
     ProcessState* processState = new ProcessState(process);
 
-    process->startDetached(command, arguments, url.toLocalFile());
+    process->startDetached(command, arguments, url.isLocalFile() ? url.toLocalFile() : url.path());
     process->waitForFinished();
 
     QByteArray result = process->readAll();
@@ -706,7 +711,7 @@ int SofaBaseApplication::objectDepthFromRoot(QObject* object)
 
 QString SofaBaseApplication::toLocalFile(const QUrl& url)
 {
-    return url.toLocalFile();
+    return url.isLocalFile() ? url.toLocalFile() : url.path();
 }
 
 void SofaBaseApplication::SetOpenGLDebugContext()

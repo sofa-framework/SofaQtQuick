@@ -294,7 +294,7 @@ void SofaBaseScene::saveSceneAs(QUrl projectDir)
     QString title = "Save scene as";
     QString filters = "SofaScene files (*.xml, *.scn, *.py, *.pyscn";
     QUrl sceneUrl = QFileDialog::getSaveFileUrl(nullptr, title, projectDir, filters, nullptr, options);
-    saveScene(sceneUrl.toLocalFile());
+    saveScene(sceneUrl.isLocalFile() ? sceneUrl.toLocalFile() : sceneUrl.path());
 }
 
 void SofaBaseScene::exportSceneAs(QUrl /*projectDir*/)
@@ -1363,7 +1363,6 @@ public:
     virtual Result processNodeTopDown(Node* node)
     {
         Node::ObjectIterator objectIt;
-        std::cout << "running visitor on " << node->getName() << std::endl;
         for (objectIt = node->object.begin(); objectIt != node->object.end(); ++objectIt){
             BaseObject::SPtr obj = *objectIt;
             if (isInstanceOf(obj->getClass(), myTypeName.toStdString()))
@@ -1550,7 +1549,7 @@ void SofaBaseScene::reset()
 void SofaBaseScene::addCanvas(const QUrl& canvas)
 {
     Canvas::SPtr newCanvas = sofa::core::objectmodel::New<Canvas>();
-    newCanvas->d_qmlFile.setValue(canvas.toLocalFile().toStdString());
+    newCanvas->d_qmlFile.setValue(canvas.isLocalFile() ? canvas.toLocalFile().toStdString() : canvas.path().toStdString());
     sofaqtquick::bindings::SofaBaseObject* bo = new sofaqtquick::bindings::SofaBaseObject(newCanvas);
     m_canvas.push_back(bo);
     mySofaRootNode->addObject(newCanvas);

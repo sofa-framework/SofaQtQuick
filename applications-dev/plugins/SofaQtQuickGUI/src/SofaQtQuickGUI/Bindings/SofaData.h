@@ -68,6 +68,7 @@ class SofaData : public QObject
     Q_PROPERTY(QString ownerClass READ getOwnerClass)
     Q_PROPERTY(QVariantMap properties READ getProperties NOTIFY propertiesChanged)
     Q_PROPERTY(bool isReadOnly READ isReadOnly NOTIFY readOnlyChanged)
+    Q_PROPERTY(bool persistent READ isPersistent WRITE setPersistent NOTIFY persistentChanged)
 
     Q_PROPERTY(QString linkPath READ getLinkPath NOTIFY linkPathChanged)
     Q_PROPERTY(SofaData* parent READ getParent WRITE setParent NOTIFY parentChanged)
@@ -85,10 +86,12 @@ public:
     Q_INVOKABLE QString getHelp() const;
     Q_INVOKABLE bool isSet() const;
     Q_INVOKABLE bool isReadOnly() const;
+    Q_INVOKABLE bool isPersistent() const;
     Q_INVOKABLE bool isAutoLink() const;
     Q_INVOKABLE QString getGroup() const;
     Q_INVOKABLE QString getOwnerClass() const;
 
+    Q_INVOKABLE void setPersistent(bool);
     Q_INVOKABLE bool setValue(const QVariant& getValue);
     Q_INVOKABLE bool setLink(const QString& path);
     Q_INVOKABLE QString getLinkPath()const;
@@ -116,6 +119,7 @@ public:
 signals:
     void valueChanged(const QVariant& newValue);
     void readOnlyChanged(const bool);
+    void persistentChanged(const bool);
     void valueTypeChanged(const QString newValue);
     void helpChanged(const QString newValue);
     void nameChanged(const QString newValue);
