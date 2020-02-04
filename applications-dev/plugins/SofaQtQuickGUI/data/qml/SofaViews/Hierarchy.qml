@@ -601,13 +601,12 @@ Rectangle {
             Item {
                 id: dragItem
                 property string origin: "Hierarchy"
-                property SofaBase item: {
-                    var srcIndex = sceneModel.mapToSource(styleData.index)
-                    var theComponent = basemodel.getBaseFromIndex(srcIndex)
-                    dragItem.item = theComponent
-                }
+                property SofaBase item
                 Drag.active: mouseArea.drag.active
                 Drag.onActiveChanged: {
+                    var srcIndex = sceneModel.mapToSource(index)
+                    var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                    item = theComponent
                     print("Dragging " + item.getName())
                 }
 
