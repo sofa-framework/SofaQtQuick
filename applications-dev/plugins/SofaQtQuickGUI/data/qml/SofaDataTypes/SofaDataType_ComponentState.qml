@@ -30,16 +30,18 @@ import Sofa.Core.SofaData 1.0
 Text {
     id: root
     property SofaData sofaData: null
+    onSofaDataChanged: {
+        root.text = sofaData.value
+    }
+
     enabled:true
 
-    text: sofaData.value
-
-//    Connections
-//    {
-//        target: sofaData
-//        onValueChanged: function(newValue){
-//            console.log("MINce MINCE " + newValue)
-//        }
-//    }
+    Connections
+    {
+        target: sofaData
+        onValueChanged: {
+            root.text = sofaData.value
+        }
+    }
 
 }
