@@ -508,7 +508,7 @@ QStringList SofaProject::getSupportedTypes() const
 
 bool SofaProject::createPrefab(SofaBase* node)
 {
-    QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toString(), tr("All files (*)"));
+    QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toLocalFile(), tr("All files (*)"));
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setOption(QFileDialog::DontUseNativeDialog);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
