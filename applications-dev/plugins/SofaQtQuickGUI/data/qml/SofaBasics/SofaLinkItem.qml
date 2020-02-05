@@ -8,7 +8,6 @@ import SofaLinkCompletionModel 1.0
 ColumnLayout {
     id: control
     property alias text: txtField.text
-    property var linkImage
     property var sofaData
     property string parentLinkPath : sofaData.parent !== null ? sofaData.getParent().linkPath : ""
 
@@ -21,26 +20,10 @@ ColumnLayout {
     }
     RowLayout {
         spacing: -1
-        Button {
-            id: breakLinkButton
-            visible: parentLinkPath.length !== 0
-            onClicked: {
-                // Break link
-                sofaData.setParent(null)
-            }
-            Image {
-                width: 10
-                height: 10
-                source: "qrc:/icon/invalid.png"
-                anchors.centerIn: parent
-                fillMode: Image.PreserveAspectFit
-            }
-            position: cornerPositions["Left"]
-        }
 
         TextField {
             id: txtField
-            position: breakLinkButton.visible ? cornerPositions["Right"] : cornerPositions["Single"]
+            position: breakLinkButton.visible ? cornerPositions["Left"] : cornerPositions["Single"]
             Layout.fillWidth: true
             Layout.preferredHeight: 20
             placeholderText: sofaData ? "Link: @./path/component." + sofaData.name : ""
@@ -55,13 +38,11 @@ ColumnLayout {
 
             onEditingFinished: {
                 txtField.text = listView.currentItem.text
-                if (setLinkIfValid(listView.currentItem.text))
-                    linkImage.source = "qrc:/icon/linkValid.png"
-                else
-                    linkImage.source = "qrc:/icon/linkInvalid.png"
+                setLinkIfValid(listView.currentItem.text)
 
                 txtField.borderColor = "#393939"
                 focus = false
+                sofaData.parentChanged(sofaData.parent)
             }
             onTextEdited: {
                 isLinkValid(text)
@@ -184,5 +165,25 @@ ColumnLayout {
 
             }
         }
+        Button {
+            id: breakLinkButton
+            visible: parentLinkPath.length !== 0
+            onClicked: {
+                // Break link
+                sofaData.setParent(null)
+            }
+            Image {
+                width: 11
+                height: 11
+                source: "qrc:/icon/breakLink.png"
+                anchors.centerIn: parent
+                fillMode: Image.PreserveAspectFit
+            }
+            position: cornerPositions["Right"]
+            ToolTip {
+                text: "break link"
+            }
+        }
+
     }
 }
