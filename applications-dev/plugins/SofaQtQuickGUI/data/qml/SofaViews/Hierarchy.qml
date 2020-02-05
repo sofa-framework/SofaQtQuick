@@ -47,9 +47,9 @@ Rectangle {
     id: root
     anchors.fill : parent
     color: SofaApplication.style.contentBackgroundColor
-    enabled: sofaScene ? sofaScene.ready : false
+    enabled: SofaApplication.sofaScene ? SofaApplication.sofaScene.ready : false
 
-    property var sofaScene: SofaApplication.sofaScene
+//    property var sofaScene: SofaApplication.sofaScene
 
     readonly property var searchBar: searchBar
 
@@ -60,7 +60,7 @@ Rectangle {
         Connections {
             target: SofaApplication
             onSignalComponent: function(objectpath){
-                var c = sofaScene.get(objectpath)
+                var c = SofaApplication.sofaScene.get(objectpath)
                 if(c)
                 {
                     var baseIndex = basemodel.getIndexFromBase(c)
@@ -80,7 +80,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        sofaScene: sofaScene
+        sofaScene: SofaApplication.sofaScene
     }
 
     TreeView {
@@ -256,7 +256,7 @@ Rectangle {
         SofaSceneItemModel
         {
             id: basemodel
-            sofaScene: root.sofaScene;
+            sofaScene: SofaApplication.sofaScene;
         }
 
         model:  SofaSceneItemProxy
@@ -301,7 +301,7 @@ Rectangle {
                 if (nodeSettings.nodeState[key] === "1")
                 {
                     var idx = null
-                    idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(sofaScene.node(key)))
+                    idx = sceneModel.mapFromSource(basemodel.getIndexFromBase(SofaApplication.sofaScene.node(key)))
                     treeView.expand(idx)
                     expandAncestors(idx);
                 }

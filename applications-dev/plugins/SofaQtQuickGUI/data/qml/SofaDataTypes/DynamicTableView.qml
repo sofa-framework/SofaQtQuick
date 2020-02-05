@@ -161,9 +161,10 @@ ColumnLayout {
                             var value = text;
                             if(value !== oldValue) {
                                 listModel.setData(listModel.index(styleData.row, 0), text, styleData.column)
+                                sofaData.persistent = true;
                             }
                         }
-                        v = getText()
+                        var v = getText()
                         if (v === value)
                             text = v
                     }

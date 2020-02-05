@@ -214,6 +214,17 @@ bool SofaData::isReadOnly() const
     return rawData()->isReadOnly();
 }
 
+bool SofaData::isPersistent() const
+{
+    return rawData()->isPersistent();
+}
+
+
+void SofaData::setPersistent(bool persistent)
+{
+    m_self->setPersistent(persistent);
+}
+
 bool SofaData::isAutoLink() const
 {
     return rawData()->isAutoLink();

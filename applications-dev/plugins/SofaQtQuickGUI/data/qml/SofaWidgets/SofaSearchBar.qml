@@ -11,13 +11,21 @@ import SofaSceneListModel 1.0
 RowLayout {
     id: searchBar
     property var sofaScene
+
     Layout.fillWidth: true
     Layout.rightMargin: 12
 
+    property var model: SofaSceneListModel {
+        sofaScene: searchBar.sofaScene
+        onSofaSceneChanged: {
+            print("plop")
+        }
+    }
     property var filteredRows: []
 
     function updateFilteredRows() {
-        searchBar.filteredRows = listModel.computeFilteredRows(searchBarTextField.text);
+        searchBar.filteredRows = model.computeFilteredRows(searchBarTextField.text);
+        print(filteredRows)
     }
 
     function previousFilteredRow() {

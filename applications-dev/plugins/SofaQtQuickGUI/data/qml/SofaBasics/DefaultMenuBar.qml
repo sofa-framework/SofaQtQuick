@@ -194,9 +194,9 @@ MenuBar {
             Shortcut {
                 sequence: StandardKey.SaveAs
                 context: Qt.ApplicationShortcut
-                onActivated: sofaApplication.sofaScene.saveAs(sofaApplication.currentProject.rootDir)
+                onActivated: sofaApplication.sofaScene.saveSceneAs(sofaApplication.currentProject.rootDir)
             }
-            onTriggered: sofaApplication.sofaScene.saveAs(sofaApplication.currentProject.rootDir)
+            onTriggered: sofaApplication.sofaScene.saveSceneAs(sofaApplication.currentProject.rootDir)
         }
         MenuItem {
             text: "Export as...(TODO)"
