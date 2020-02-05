@@ -61,7 +61,19 @@ Item {
 
                 Label {
                     leftPadding: 10
-                    text: folderModel.folder.toString().split("/")[folderModel.folder.toString().split("/").length -1]
+                    text: {
+                        var path = folderModel.folder.toString().replace("file://", "");
+                        if (path.split("/")[path.split("/").length -1] === ".")
+                            return path.slice(0, path.lastIndexOf("/"))
+                        else if (path.split("/")[path.split("/").length -1] === "..") {
+                            var arr = path.split("/")
+                            arr.pop();
+                            arr.pop();
+                            return arr.join("/")
+                        }
+                        else
+                            return path;
+                    }
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }
@@ -180,7 +192,6 @@ Item {
 
                     property var projectDir: sofaApplication.projectSettings.recentProjects.split(";")[0]
                     onProjectDirChanged: {
-
                         self.project.rootDir = projectDir
                         folderModel.rootFolder = self.project.rootDir
                         folderModel.folder = self.project.rootDir
@@ -193,7 +204,6 @@ Item {
                     caseSensitive: true
                     folder: ""
                     nameFilters: self.project.getSupportedTypes()
-
                 }
 
                 property var selectedItem: null

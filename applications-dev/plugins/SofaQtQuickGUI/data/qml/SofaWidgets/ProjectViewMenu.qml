@@ -96,6 +96,7 @@ Menu {
             onTriggered: {
                 var file = sofaApplication.currentProject.createTemplateFile(filePath, "Scene")
                 sofaApplication.openInEditor(file)
+                sofaApplication.currentProject.scan(file)
             }
         }
     }

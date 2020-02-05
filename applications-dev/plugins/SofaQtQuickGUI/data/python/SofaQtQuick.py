@@ -203,11 +203,12 @@ def callFunction(file, function, *args, **kwargs):
 
 
 def createPrefabFromNode(fileName, node, name, help):
-        print('Saving prefab')
+        print('Saving prefab in ' + fileName)
         fd = open(fileName, "w+")
         fd.write('"""type: SofaContent"""\n')
         fd.write("import sys\n")
         fd.write("import os\n")
+        fd.write("import Sofa\n")
         fd.write("import Sofa.Core\n")
 
         modules = []

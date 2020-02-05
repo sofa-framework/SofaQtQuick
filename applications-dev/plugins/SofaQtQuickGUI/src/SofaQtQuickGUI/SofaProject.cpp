@@ -156,7 +156,6 @@ void SofaProject::newProject()
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog;
     auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().toLocalFile(), options);
     QDir dir(folder);
-    std::cout << folder.toStdString() << " " << dir.exists() << " " << dir.count() << std::endl;
     if (dir.exists() && dir.count() <= 2) // "." and ".." are counted here...
     {
         auto scn = createProject(folder);
@@ -559,20 +558,18 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     QFileInfo f(directory);
     dir = (f.isDir()) ? directory : f.dir().path();
     QFileDialog dialog;
-    dialog.setOption(QFileDialog::DontUseNativeDialog);
-    dialog.setFileMode(QFileDialog::AnyFile);
-    QString strfile = dialog.getSaveFileName(nullptr, "Create New File", dir, "QtQuick UI (*."+extension+")");
-    QFile file(strfile);
+    QString strfile = "new" + templateType + "." + extension;
+    QFile file(dir + "/" + strfile);
     if (file.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&file);
         stream << scriptContent << endl;
 
         file.close();
-        return strfile;
+        return file.fileName();
     }
     else {
-        msg_error("SofaProject") << "Could not open file " << strfile.toStdString();
+        msg_error("SofaProject") << "Could not open file " << file.fileName().toStdString();
     }
     return QString();
 }
