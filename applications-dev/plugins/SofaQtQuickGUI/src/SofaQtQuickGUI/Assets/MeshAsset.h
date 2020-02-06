@@ -24,6 +24,7 @@ class MeshAsset : public Asset
     virtual sofaqtquick::bindings::SofaNode* create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName = "") override;
     virtual void getDetails() override;
     virtual QUrl getAssetInspectorWidget() override;
+    virtual void openThirdParty(); // Opens a 3rd party program to edit / visualize the asset
 
     Q_PROPERTY(int vertices READ vertices NOTIFY verticesChanged)
     Q_PROPERTY(int faces READ faces NOTIFY facesChanged)

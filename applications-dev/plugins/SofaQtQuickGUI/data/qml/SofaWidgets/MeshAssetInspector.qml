@@ -16,6 +16,10 @@ Item {
     GroupBox {
         width: root.parent.width
         title: "Mesh properties"
+        buttonIconSource: "qrc:/icon/edit.png"
+        onButtonClicked: {
+            selectedAsset.openThirdParty()
+        }
         Column {
             spacing: 2
             Row {

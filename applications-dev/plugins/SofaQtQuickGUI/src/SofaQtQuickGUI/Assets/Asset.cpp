@@ -1,4 +1,5 @@
 #include "Asset.h"
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
 
 
 namespace sofaqtquick
@@ -20,5 +21,10 @@ Asset::~Asset()
 QUrl Asset::getAssetInspectorWidget() {
     return QUrl("qrc:/SofaBasics/DynamicContent_Error.qml");
 }
+
+void Asset::openThirdParty() {
+    SofaBaseApplication::Instance()->openInEditor(path());
+}
+
 
 } // namespace sofaqtquick

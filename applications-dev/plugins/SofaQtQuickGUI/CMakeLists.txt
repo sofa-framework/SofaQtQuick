@@ -213,6 +213,8 @@ set(ASSET_TEMPLATES
     data/python/templates/emptyForceField.py
     data/python/templates/emptyPrefab.py
     data/python/templates/emptyScene.py
+    data/python/templates/openstlInBlender.py
+    data/python/templates/openobjInBlender.py
     )
 
 
