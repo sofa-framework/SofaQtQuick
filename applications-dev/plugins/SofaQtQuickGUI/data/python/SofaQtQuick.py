@@ -84,8 +84,8 @@ def getPythonModuleDocstring(mpath):
 def getAbsPythonCallPath(node, rootNode):
     if rootNode.getPathName() == "/":
         if node.getPathName() == "/":
-            return "root"
-        return "root" + node.getPathName().replace("/", ".")
+            return rootNode.name.value
+        return rootNode.name.value + node.getPathName().replace("/", ".")
     else:
         # example:
         # rootNode.getPathName() = "/Snake/physics"
@@ -186,7 +186,7 @@ def saveAsPythonScene(fileName, node):
         for m in list(dict.fromkeys(modules)):
             fd.write("from " + m + " import *\n")
 
-        fd.write("\n\ndef createScene(root):\n")
+        fd.write("\n\ndef createScene("+ node.getName() +"):\n")
         fd.write(scn[0])
         return True
 
@@ -214,7 +214,14 @@ def createPrefabFromNode(fileName, node, name, help):
         modules = []
         modulepaths = []
         scn = [""]
-        saveRec(node, "    ", modules, modulepaths, scn, node)
+        nodeName = node.getName()
+        print(node.name)
+        node.setName("self")
+        print(nodeName)
+        saveRec(node, "        ", modules, modulepaths, scn, node)
+        print("saved rec")
+        node.setName(nodeName)
+        print(node.name)
 
         fd.write("# all Paths\n")
         for p in list(dict.fromkeys(modulepaths)):
@@ -224,9 +231,10 @@ def createPrefabFromNode(fileName, node, name, help):
         for m in list(dict.fromkeys(modules)):
             fd.write("from " + m + " import *\n")
 
-        fd.write("\n\n@Sofa.PrefabBuilder\n")
-        fd.write("def " + name + "("+node.name.value+"):\n")
+        fd.write("class " + name + "(Sofa.Prefab):\n")
         fd.write("    \"\"\" " + help + " \"\"\"\n")
+        fd.write("    def __init__(self, *args, **kwargs):\n")
+        fd.write("        Sofa.Prefab.__init__(self, *args, **kwargs)\n")
         fd.write(scn[0])
         return True
 

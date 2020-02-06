@@ -33,7 +33,6 @@ Item {
             content: scrollview.contentItem
         }
 
-        contentWidth: columnID.width;
         contentHeight: columnID.height
 
         ColumnLayout {
