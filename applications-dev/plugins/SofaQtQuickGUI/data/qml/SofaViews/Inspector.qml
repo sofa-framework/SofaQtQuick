@@ -168,11 +168,16 @@ Item {
         visible: selectedAsset !== null
 
         Loader {
+            anchors.fill: parent
             id: assetLoaderId
             source: root.selectedAsset ? root.selectedAsset.getAssetInspectorWidget() : ""
             onLoaded: {
                 if (item) {
-//                    console.error(item)
+                    if (item.objectName == "DynamicContent_Error")
+                    {
+                        console.log('ERROR')
+                        item.errorMessage = "No inspector widget for this asset type"
+                    }
                     item.selectedAsset = Qt.binding(function() {
                         if (root.selectedAsset)
                             return root.selectedAsset

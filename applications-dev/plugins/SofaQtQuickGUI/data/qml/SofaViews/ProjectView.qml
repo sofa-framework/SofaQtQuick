@@ -13,6 +13,7 @@ import PythonAsset 1.0
 import TextureAsset 1.0
 import MeshAsset 1.0
 import QtGraphicalEffects 1.12
+import SofaApplication 1.0
 
 Item {
     property var sofaApplication: null

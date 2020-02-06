@@ -1,14 +1,5 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Controls.impl 2.12
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Layouts 1.0
-import QtQuick.Dialogs 1.2
-import QtQuick.Window 2.2
-import SofaBasics 1.0
-import Asset 1.0
-import PythonAsset 1.0
-import HighlightComponent 1.0
 import QtGraphicalEffects 1.0
 import SofaColorScheme 1.0
 
