@@ -557,9 +557,8 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     QString dir;
     QFileInfo f(directory);
     dir = (f.isDir()) ? directory : f.dir().path();
-    QFileDialog dialog;
-    QString strfile = "new" + templateType + "." + extension;
-    QFile file(dir + "/" + strfile);
+
+    QFile file(getSaveFile("New " + templateType, "file://" + directory, 0, "Asset file (*." + extension + ")").toLocalFile());
     if (file.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&file);

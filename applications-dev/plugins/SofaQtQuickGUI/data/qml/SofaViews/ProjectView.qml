@@ -12,6 +12,7 @@ import Asset 1.0
 import PythonAsset 1.0
 import TextureAsset 1.0
 import MeshAsset 1.0
+import QtGraphicalEffects 1.12
 
 Item {
     property var sofaApplication: null
@@ -80,11 +81,12 @@ Item {
         }
 
 
-        ScrollView {
+        Flickable {
             id: scrollview
 
-            width: root.parent.width
-            height: root.parent.height - 42
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
             ProjectViewMenu {
                 id: generalProjectMenu
                 filePath: folderModel.folder.toString().replace("file://", "")
@@ -107,6 +109,15 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
+                flickableDirection: Flickable.VerticalFlick
+                boundsMovement: Flickable.StopAtBounds
+                ScrollBar.horizontal: ScrollBar {
+                    policy: ScrollBar.AlwaysOff
+                }
+
+                ScrollBar.vertical: VerticalScrollbar {
+                    content: folderView.contentItem
+                }
 
                 header: RowLayout{
                     implicitWidth: folderView.width
