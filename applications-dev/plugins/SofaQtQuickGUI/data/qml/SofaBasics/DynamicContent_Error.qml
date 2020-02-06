@@ -27,7 +27,6 @@
     Rectangle {
         color: "transparent"
         anchors.fill: parent
-        property string objectName: "DynamicContent_Error"
         property string errorMessage : ""
 
         Label {

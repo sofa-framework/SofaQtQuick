@@ -15,7 +15,7 @@ GroupBox {
     property int expandedHeight: 0
     property url titleIcon
     property string buttonIconSource: ""
-    property var buttonAction
+    signal buttonClicked
 
     onExpandedChanged: {
         contentItem.visible = expanded
@@ -81,16 +81,31 @@ GroupBox {
             anchors.left: titleIconId.right
             anchors.leftMargin: 5
         }
-        SB.IconButton {
+        Button {
             id: extraButton
+            hoverEnabled: true
+            property string iconSource: buttonIconSource
+            property bool useHoverOpacity: true
+            ColorImage {
+                id: image
+                width: 13
+                height: 13
+                anchors.centerIn: parent
+                source: extraButton.iconSource
+                fillMode: Image.PreserveAspectFit
+                color: extraButton.hovered ? "darkgrey" : "#393939"
+
+            }
+            background: Rectangle {
+                color: "transparent"
+            }
             anchors.left: label.right
             anchors.leftMargin: 5
             anchors.verticalCenter: label.verticalCenter
             implicitWidth: 20
             implicitHeight: 20
             visible: buttonIconSource !== ""
-            iconSource: buttonIconSource
-            onClicked: buttonAction()
+            onClicked: buttonClicked()
         }
     }
     background: Rectangle {

@@ -172,7 +172,8 @@ void PythonAsset::getDetails()
         m_assetsContent[py2qt(pair.first)] = { {{"name", py2qt(pair.first)},
                                                {"type", py2qt(data["type"])},
                                                {"docstring", py2qt(data["docstring"])},
-                                               {"sourcecode", py2qt(data["sourcecode"])}}
+                                               {"sourcecode", py2qt(data["sourcecode"])},
+                                               {"lineno", py2qt(data["lineno"])}}
                                               };
     }
 }

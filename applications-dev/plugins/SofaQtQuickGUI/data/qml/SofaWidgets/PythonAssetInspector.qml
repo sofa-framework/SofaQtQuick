@@ -9,6 +9,7 @@ import QtGraphicalEffects 1.0
 import SofaColorScheme 1.0
 import HighlightComponent 1.0
 import SofaBasics 1.0
+import SofaApplication 1.0
 import Asset 1.0
 
 Item {
@@ -60,8 +61,11 @@ Item {
                         else
                             return "qrc:/icon/ICON_PYTHON.png"
                     }
-                    buttonIconSource: modelData.type !== "SofaScene" ? "qrc:/icon/ICON_GEAR.png" : undefined
-                    buttonAction: modelData.type !== "SofaScene" ? modelData.openSettings : undefined
+                    buttonIconSource: "qrc:/icon/edit.png"
+                    onButtonClicked: {
+                        SofaApplication.openInEditor(selectedAsset.path, Number(modelData.lineno)+1)
+                    }
+
                     Rectangle {
                         id: rectId
                         color: "transparent"

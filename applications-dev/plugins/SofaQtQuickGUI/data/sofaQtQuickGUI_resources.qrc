@@ -105,5 +105,6 @@
         <file>icon/validLink.png</file>
         <file>icon/invalidLink.png</file>
         <file>icon/breakLink.png</file>
+        <file>icon/edit.png</file>
     </qresource>
 </RCC>

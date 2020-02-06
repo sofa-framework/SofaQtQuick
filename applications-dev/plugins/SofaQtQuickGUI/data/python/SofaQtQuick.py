@@ -48,6 +48,7 @@ def collectMetaData(obj):
     data["params"] = inspect.getfullargspec(obj.__original__ if "__original__" in dir(obj) else obj)
     data["sourcecode"] = inspect.getsource(obj.__original__ if "__original__" in dir(obj) else obj)
     data["docstring"] = obj.__original__.__doc__ if "__original__" in dir(obj) else obj.__doc__ if obj.__doc__ != None else ""
+    data["lineno"] = str(inspect.findsource(obj.__original__ if "__original__" in dir(obj) else obj)[1])
     return data
 
 # returns a dictionary of all callable objects in the module, with their type as key

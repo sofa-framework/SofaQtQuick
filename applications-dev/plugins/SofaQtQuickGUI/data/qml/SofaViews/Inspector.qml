@@ -173,11 +173,8 @@ Item {
             source: root.selectedAsset ? root.selectedAsset.getAssetInspectorWidget() : ""
             onLoaded: {
                 if (item) {
-                    if (item.objectName == "DynamicContent_Error")
-                    {
-                        console.log('ERROR')
+                    if (item instanceof DynamicContent_Error)
                         item.errorMessage = "No inspector widget for this asset type"
-                    }
                     item.selectedAsset = Qt.binding(function() {
                         if (root.selectedAsset)
                             return root.selectedAsset
