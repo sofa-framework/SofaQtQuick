@@ -35,9 +35,12 @@ namespace sofaqtquick::bindings
 
 namespace _sofadata_
 {
-class QmlDDGNode : public QObject, public sofa::core::objectmodel::DDGNode
+
+using sofa::core::objectmodel::BaseData;
+
+class SofaData;
+class QmlDDGNode : public sofa::core::objectmodel::DDGNode
 {
-    Q_OBJECT
 public:
     virtual void notifyEndEdit(const sofa::core::ExecParams* params = nullptr) override;
 
@@ -45,17 +48,13 @@ public:
     void update() override ;
     sofa::core::objectmodel::BaseData* getData() const override {return nullptr;}
     sofa::core::objectmodel::Base* getOwner() const override {return nullptr;}
-
     const std::string& getName() const override  { return name; }
 
-signals:
-    void valueChanged(const QVariant& newValue);
 public:
-    sofa::core::objectmodel::BaseData* self;
+    sofa::core::objectmodel::BaseData* m_basedata;
+    SofaData* m_sofadata;
     const std::string name {"QmlDDGNode"};
 };
-
-using sofa::core::objectmodel::BaseData;
 
 class SofaData : public QObject
 {
@@ -102,10 +101,10 @@ public:
 
     Q_INVOKABLE int getCounter() const;
     Q_INVOKABLE void _disconnect() {
-        disconnect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
+        //disconnect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
     }
     Q_INVOKABLE void _connect() {
-        connect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
+        //    connect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
     }
 
     [[deprecated("Remove, use directly the object")]]

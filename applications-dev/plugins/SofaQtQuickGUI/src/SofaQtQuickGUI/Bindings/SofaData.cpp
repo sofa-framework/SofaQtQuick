@@ -35,31 +35,36 @@ using sofa::defaulttype::AbstractTypeInfo;
 #include "../DataHelper.h"
 using sofaqtquick::helper::convertDataInfoToProperties;
 
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
+using sofaqtquick::SofaBaseApplication;
+
 namespace sofaqtquick::bindings::_sofadata_
 {
 
 void QmlDDGNode::notifyEndEdit(const sofa::core::ExecParams *params)
 {
     DDGNode::notifyEndEdit(params);
-    emit valueChanged(QVariant(0));
+    SofaBaseApplication::requestDataViewUpdate(this);
 }
 
 void QmlDDGNode::update(){}
 
 SofaData::SofaData(BaseData* self)
 {
-    m_self = self;
-    m_ddgnode.self=self;
-
     /// Connect a dedicated node as output
+    ///    if(m_self->getOwner()!=nullptr)
+    ///        std::cout << " ADDING TO THE OUTPUT OF: " << m_self->getOwner()->getPathName() << "." << m_self->getName() << std::endl;
+    m_self = self;
+    m_ddgnode.m_sofadata = this;
+    m_ddgnode.m_basedata = self;
     m_self->addOutput(&m_ddgnode);
-    connect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
 }
 
 SofaData::~SofaData()
 {
+    /// Register a new data view
     m_self->delOutput(&m_ddgnode);
-    disconnect(&m_ddgnode, &QmlDDGNode::valueChanged, this, &SofaData::valueChanged);
+    SofaBaseApplication::removePendingDataViewUpdate(&m_ddgnode);
 }
 
 bool SofaData::hasParent() const

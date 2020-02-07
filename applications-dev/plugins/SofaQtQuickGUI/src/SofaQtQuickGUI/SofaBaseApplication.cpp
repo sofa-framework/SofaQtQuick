@@ -79,6 +79,8 @@ using sofaqtquick::SofaQtQuickQmlModule;
 #include <QQmlDebuggingEnabler>
 QQmlDebuggingEnabler enabler;
 
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
+
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <signal.h>
 #endif
@@ -115,7 +117,10 @@ SofaBaseApplication::SofaBaseApplication(QObject* parent) : QObject(parent),
             break;
         }
 
-
+    connect(&m_viewUpdater, &QTimer::timeout, [](){
+        SofaBaseApplication::updateAllDataView();
+    });
+    m_viewUpdater.start(70);
 
     /// Initialize the general python3 environment.
     sofapython3::PythonEnvironment::Init();
@@ -1000,7 +1005,31 @@ void SofaBaseApplication::InitOpenGL()
     GLenum err = glewInit();
     if(0 != err)
         msg_error("SofaQtQuickGUI") << "GLEW Initialization failed with error code:" << err;
+}
 
+void SofaBaseApplication::removePendingDataViewUpdate(QmlDDGNode *request)
+{
+    //auto t = ;
+    auto it = Instance()->m_pendingUpdates.find(request);
+    if(it != Instance()->m_pendingUpdates.end())
+    {
+        Instance()->m_pendingUpdates.erase(it);
+    }
+}
+
+void SofaBaseApplication::requestDataViewUpdate(QmlDDGNode *request)
+{
+    Instance()->m_pendingUpdates[request] = request->m_basedata->getCounter();
+}
+
+void SofaBaseApplication::updateAllDataView()
+{
+    auto& d = Instance()->m_pendingUpdates;
+    for(auto& kv : d)
+    {
+        kv.first->m_sofadata->valueChanged(QVariant());
+    }
+    Instance()->m_pendingUpdates.clear();
 }
 
 void SofaBaseApplication::Instanciate(QQmlApplicationEngine& applicationEngine)

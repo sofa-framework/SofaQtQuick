@@ -28,6 +28,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <QQuaternion>
 #include <QProcess>
 #include <QImage>
+#include <QMap>
+#include <QTimer>
 class QApplication;
 class QQmlApplicationEngine;
 class QOpenGLDebugLogger;
@@ -37,10 +39,17 @@ class QSettings;
 
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <SofaPython3/PythonEnvironment.h>
+#include <sofa/core/DataTracker.h>
 
 namespace sofaqtquick
 {
+
+using sofa::core::DataTracker;
+using sofa::core::objectmodel::BaseData;
+using sofaqtquick::bindings::SofaData;
+using sofaqtquick::bindings::QmlDDGNode;
 
 
 class ProcessState;
@@ -167,6 +176,13 @@ private:
     QString                 myDataDirectory;
 
     sofa::core::objectmodel::Base::SPtr m_selectedComponent;
+
+    QTimer m_viewUpdater;
+    std::map<QmlDDGNode*, int> m_pendingUpdates;
+public:
+    static void updateAllDataView();
+    static void requestDataViewUpdate(QmlDDGNode*);
+    static void removePendingDataViewUpdate(QmlDDGNode*);
 };
 
 }
