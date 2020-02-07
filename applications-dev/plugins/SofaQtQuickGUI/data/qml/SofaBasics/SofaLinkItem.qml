@@ -84,7 +84,6 @@ ColumnLayout {
             implicitHeight: contentHeight
             contentWidth: txtField.width - padding
             contentHeight: listView.implicitHeight < 20 ? 20 : listView.implicitHeight
-            x: 19
             y: 20
 
             ListView {
