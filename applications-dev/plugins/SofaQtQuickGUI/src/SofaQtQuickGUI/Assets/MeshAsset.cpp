@@ -1,8 +1,10 @@
 #include "MeshAsset.h"
 
+#include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaOpenglVisual/OglModel.h>
 #include <SofaBaseVisual/InteractiveCamera.h>
 #include <sofa/helper/cast.h>
+#include <sofa/helper/Utils.h>
 #include <sofa/simulation/InitVisitor.h>
 #include <sofa/simulation/DefaultAnimationLoop.h>
 #include <sofa/simulation/DefaultVisualManagerLoop.h>
@@ -119,5 +121,15 @@ QUrl MeshAsset::getAssetInspectorWidget() {
     return QUrl("qrc:/SofaWidgets/MeshAssetInspector.qml");
 }
 
+void MeshAsset::openThirdParty()
+{
+    QProcess p;
+
+    if (m_extension == "vtk" || m_extension == "vtu")
+        p.start("/usr/bin/paraview", QStringList() << path());
+    else
+        p.start("/snap/bin/blender", QStringList() << "--python" << QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/open" + m_extension + "InBlender.py") << "--" << path());
+    p.waitForFinished(-1);
+}
 
 } // namespace sofaqtquick

@@ -116,13 +116,20 @@ UserInteractor {
         setMouseWheelMapping(function(wheel, sofaViewer) {
             
             if(!sofaViewer.camera)
+            {
+                print("no camera")
                 return;
+            }
 
             if(0 === wheel.angleDelta.y)
+            {
+                print("wheel angle delta y is 0")
                 return;
+            }
 
             var boundary = 2.0;
             var factor = Math.max(-boundary, Math.min(wheel.angleDelta.y / 120.0, boundary)) / boundary;
+            print(factor)
             if(factor < 0.0) {
                 factor = 1.0 + 0.5 * factor;
                 factor /= zoomSpeed;
@@ -133,6 +140,7 @@ UserInteractor {
             }
 
             sofaViewer.camera.zoom(factor);
+            print("Zoom factor is: " + factor)
 
             wheel.accepted = true;
         });

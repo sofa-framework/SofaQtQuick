@@ -90,29 +90,32 @@ ToolBar {
 
         Row {
             id: simulationControlTools
-            spacing: -1
+            spacing: 0
             anchors.verticalCenter: parent.verticalCenter
 
             ToolButton {
                 id: animateButton
                 width: 22
-                iconSource: animateButton.checked ? "qrc:/icon/pause.png" : "qrc:/icon/play.png"
+                iconSource: animateButton.playing ? "qrc:/icon/pause.png" : "qrc:/icon/play.png"
+                iconScale: 1.05
                 ToolTip {
-                    text: animateButton.checked ? "Stop" : "Animate"
+                    text: animateButton.playing ? "Stop" : "Animate"
                     description: "Starts / Stop the animation loop"
 
                 }
-                checkable: true
-                checked: false
-                onCheckedChanged: if(sofaScene) sofaScene.animate = animateButton.checked
-
-                Connections {
-                    target: sofaScene
-                    ignoreUnknownSignals: true
-                    onAnimateChanged: {
-                        animateButton.checked = sofaScene.animate;
-                    }
+                checkable: false
+                property bool playing: sofaScene.animate
+                onClicked: {
+                    if(sofaScene) sofaScene.animate = !sofaScene.animate
                 }
+
+//                Connections {
+//                    target: sofaScene
+//                    ignoreUnknownSignals: true
+//                    onAnimateChanged: {
+//                        animateButton.checked = sofaScene.animate;
+//                    }
+//                }
             }
 
             ToolButton {
@@ -120,6 +123,7 @@ ToolBar {
                 width: 22
                 checkable: false
                 iconSource: "qrc:/icon/step.png"
+                iconScale: 1.4
                 ToolTip {
                     text: "Step"
                     description: "Performs a single simulation step"
@@ -131,22 +135,6 @@ ToolBar {
                 }
             }
 
-            ToolButton {
-                id: resetButton
-                width: 22
-                checkable: false
-
-                iconSource: "qrc:/icon/replay.png"
-                ToolTip {
-                    text: "Reset"
-                    description: "Reloads the simulation from the scene files"
-                }
-
-                onClicked: {
-                    if(sofaScene)
-                        sofaScene.reload();
-                }
-            }
             ToolSeparator {
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -183,6 +171,7 @@ ToolBar {
             ToolButton {
                 id: screenshotButton
                 iconSource: "qrc:/icon/screenshot.png"
+                iconScale: 0.2
                 height: root.height - 5
                 width: 22
 
@@ -211,6 +200,7 @@ ToolBar {
             ToolButton {
                 id: movieButton
                 iconSource: "qrc:/icon/movieRecording.png"
+                iconScale: 0.2
                 width: 22
 
                 checked: false

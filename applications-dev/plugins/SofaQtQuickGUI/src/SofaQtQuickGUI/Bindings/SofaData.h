@@ -125,7 +125,7 @@ signals:
     void nameChanged(const QString newValue);
     void linkPathChanged(const QString newValue);
     void propertiesChanged(const QVariantMap newValues);
-    void parentChanged(const SofaData* newParent);
+    void parentChanged(SofaData* newParent);
 
 private:
     BaseData* m_self {nullptr};

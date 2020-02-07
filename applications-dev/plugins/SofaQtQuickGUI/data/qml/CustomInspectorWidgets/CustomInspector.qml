@@ -63,7 +63,7 @@ ColumnLayout {
                                         }
                                         var data = drag.source.item.getData(sofaData.getName())
                                         if (data !== null) {
-                                            sofaData.setParent(data)
+                                            sofaData.parent = (data)
                                             sofaData.value = data.value
                                         }
                                     }
@@ -110,7 +110,7 @@ ColumnLayout {
                             Layout.preferredHeight: 14
                             anchors.margins: 3
                             checkable: true
-                            checked: sofaDataLayout.sofaData ? null !== sofaDataLayout.sofaData.getParent() : false
+                            checked: sofaDataLayout.sofaData ? null !== sofaDataLayout.sofaData.parent : false
                             onCheckedChanged: {
                                 if (dataItemLoader.item)
                                     dataItemLoader.item.forceActiveFocus()
@@ -118,13 +118,13 @@ ColumnLayout {
 
                             activeFocusOnTab: false
                             ToolTip {
-                                text: "Link the data to another one."
+                                text: "Show / Hide link to parent"
                             }
 
                             Image {
                                 id: linkButtonImage
                                 anchors.fill: parent
-                                source: linkButton.checked && sofaDataLayout.sofaData.getParent() ? "qrc:/icon/linkValid.png" : "qrc:/icon/link.png"
+                                source: sofaDataLayout.sofaData.parent ? "qrc:/icon/validLink.png" : "qrc:/icon/invalidLink.png"
                             }
                         }
                     }

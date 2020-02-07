@@ -5,44 +5,71 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
-import SofaBasics 1.0
-import Asset 1.0
-import PythonAsset 1.0
+import QtGraphicalEffects 1.0
+import SofaColorScheme 1.0
 import HighlightComponent 1.0
+import SofaBasics 1.0
+import SofaApplication 1.0
+import Asset 1.0
 
 Item {
     id: root
     property Asset selectedAsset
+    anchors.fill: parent
+    anchors.topMargin: 10
+    Flickable {
+        id: scrollview
+        anchors.fill: parent
+        clip: true
 
-    ScrollView {
-        anchors.top: root.top
-        width: root.parent.width
-        height: root.parent.height
+        flickableDirection: Flickable.VerticalFlick
+        boundsMovement: Flickable.StopAtBounds
+        ScrollBar.horizontal: ScrollBar {
+            policy: ScrollBar.AlwaysOff
+        }
 
+        ScrollBar.vertical: VerticalScrollbar {
+            id: scrollbar
+            content: scrollview.contentItem
+        }
 
-        Column {
+        contentHeight: columnID.height
+
+        ColumnLayout {
             id: columnID
+            width: parent.width - 10
             spacing: 10
             Repeater {
+                Layout.fillWidth: true
                 model: selectedAsset.scriptContent
                 GroupBox {
                     id: gbox
-                    width: root.parent.width
+                    Layout.fillWidth: true
                     implicitHeight: rectId.height + (gbox.expanded ? 30 : 20)
                     title: modelData.name
                     titleIcon: {
-                        return (modelData.type === "SofaScene" && modelData.name === "createScene" ? "qrc:/icon/ICON_PYSCN.png" :
-                                                                                                     (modelData.type === "Class" ? "qrc:/icon/ICON_PYTHON.png" :
-                                                                                                                                   (modelData.type === "SofaPrefab" ? "qrc:/icon/ICON_PREFAB.png" :
-                                                                                                                                                                      (modelData.type === "Controller" ? "qrc:/icon/ICON_PYController.png" :
-                                                                                                                                                                                                         (modelData.type === "DataEngine" ? "qrc:/icon/ICON_PYEngine.png" : "qrc:/icon/ICON_PYTHON.png")))))
+                        if (modelData.type === "SofaScene" && modelData.name === "createScene")
+                            return "qrc:/icon/ICON_PYSCN.png"
+                        else if (modelData.type === "Class")
+                            return "qrc:/icon/ICON_PYTHON.png"
+                        else if (modelData.type === "SofaPrefab")
+                            return "qrc:/icon/ICON_PREFAB.png"
+                        else if (modelData.type === "Controller")
+                            return "qrc:/icon/ICON_PYController.png"
+                        else if (modelData.type === "DataEngine")
+                            return "qrc:/icon/ICON_PYEngine.png"
+                        else
+                            return "qrc:/icon/ICON_PYTHON.png"
                     }
-                    buttonIconSource: modelData.type !== "SofaScene" ? "qrc:/icon/ICON_GEAR.png" : undefined
-                    buttonAction: modelData.type !== "SofaScene" ? modelData.openSettings : undefined
+                    buttonIconSource: "qrc:/icon/edit.png"
+                    onButtonClicked: {
+                        SofaApplication.openInEditor(selectedAsset.path, Number(modelData.lineno)+1)
+                    }
+
                     Rectangle {
                         id: rectId
-                        color: 'transparent'
-                        width: root.parent.width / 4 * 3
+                        color: "transparent"
+                        implicitWidth: parent.width
                         implicitHeight: gbox.expanded ? codeArea.implicitHeight : 0
                         TextArea {
                             id: codeArea

@@ -12,6 +12,8 @@ import Asset 1.0
 import PythonAsset 1.0
 import TextureAsset 1.0
 import MeshAsset 1.0
+import QtGraphicalEffects 1.12
+import SofaApplication 1.0
 
 Item {
     property var sofaApplication: null
@@ -61,18 +63,31 @@ Item {
 
                 Label {
                     leftPadding: 10
-                    text: folderModel.folder.toString().split("/")[folderModel.folder.toString().split("/").length -1]
+                    text: {
+                        var path = folderModel.folder.toString().replace("file://", "");
+                        if (path.split("/")[path.split("/").length -1] === ".")
+                            return path.slice(0, path.lastIndexOf("/"))
+                        else if (path.split("/")[path.split("/").length -1] === "..") {
+                            var arr = path.split("/")
+                            arr.pop();
+                            arr.pop();
+                            return arr.join("/")
+                        }
+                        else
+                            return path;
+                    }
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }
         }
 
 
-        ScrollView {
+        Flickable {
             id: scrollview
 
-            width: root.parent.width
-            height: root.parent.height - 42
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
             ProjectViewMenu {
                 id: generalProjectMenu
                 filePath: folderModel.folder.toString().replace("file://", "")
@@ -95,6 +110,15 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
                 clip: true
+                flickableDirection: Flickable.VerticalFlick
+                boundsMovement: Flickable.StopAtBounds
+                ScrollBar.horizontal: ScrollBar {
+                    policy: ScrollBar.AlwaysOff
+                }
+
+                ScrollBar.vertical: VerticalScrollbar {
+                    content: folderView.contentItem
+                }
 
                 header: RowLayout{
                     implicitWidth: folderView.width
@@ -180,7 +204,6 @@ Item {
 
                     property var projectDir: sofaApplication.projectSettings.recentProjects.split(";")[0]
                     onProjectDirChanged: {
-
                         self.project.rootDir = projectDir
                         folderModel.rootFolder = self.project.rootDir
                         folderModel.folder = self.project.rootDir
@@ -193,7 +216,6 @@ Item {
                     caseSensitive: true
                     folder: ""
                     nameFilters: self.project.getSupportedTypes()
-
                 }
 
                 property var selectedItem: null

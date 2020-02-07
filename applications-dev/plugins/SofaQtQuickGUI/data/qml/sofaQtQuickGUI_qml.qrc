@@ -152,5 +152,6 @@
         <file>SofaDataTypes/DynamicContainerView.qml</file>
         <file>SofaDataTypes/DynamicTableView.qml</file>
         <file>SofaInteractors/UserInteractor_EditMode.qml</file>
+        <file>SofaBasics/VerticalScrollbar.qml</file>
     </qresource>
 </RCC>

@@ -102,5 +102,9 @@
         <file>icon/ICON_WARNING.png</file>
         <file>icon/ManipulatorMenuCorner.png</file>
         <file>icon/ICON_ROTATION_WORLD_MODIFIER.png</file>
+        <file>icon/validLink.png</file>
+        <file>icon/invalidLink.png</file>
+        <file>icon/breakLink.png</file>
+        <file>icon/edit.png</file>
     </qresource>
 </RCC>

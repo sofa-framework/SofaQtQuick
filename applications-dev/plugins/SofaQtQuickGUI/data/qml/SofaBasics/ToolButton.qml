@@ -7,6 +7,7 @@ ToolButton {
     enabled: true
     hoverEnabled: true
     property string iconSource: ""
+    property var iconScale: 1
 
     anchors.verticalCenter: parent.verticalCenter
     implicitHeight: 20
@@ -35,9 +36,9 @@ ToolButton {
         color: "transparent"
         Image {
             id: image
-            anchors.fill: parent
+            anchors.centerIn: parent
             source: iconSource
-            fillMode: Image.PreserveAspectFit
+            scale: control.iconScale
         }
     }
 

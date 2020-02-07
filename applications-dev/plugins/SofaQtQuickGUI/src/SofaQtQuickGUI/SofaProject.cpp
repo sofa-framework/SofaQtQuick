@@ -156,7 +156,6 @@ void SofaProject::newProject()
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog;
     auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().toLocalFile(), options);
     QDir dir(folder);
-    std::cout << folder.toStdString() << " " << dir.exists() << " " << dir.count() << std::endl;
     if (dir.exists() && dir.count() <= 2) // "." and ".." are counted here...
     {
         auto scn = createProject(folder);
@@ -509,7 +508,7 @@ QStringList SofaProject::getSupportedTypes() const
 
 bool SofaProject::createPrefab(SofaBase* node)
 {
-    QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toString(), tr("All files (*)"));
+    QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toLocalFile(), tr("All files (*)"));
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setOption(QFileDialog::DontUseNativeDialog);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -537,42 +536,41 @@ bool SofaProject::createPrefab(SofaBase* node)
 
 QString SofaProject::createTemplateFile(const QString& directory, const QString& templateType)
 {
-    QString scriptContent = "";
-    QString extension = "py";
-    if (templateType == "Canvas")
-    {
-        extension ="qml";
-        scriptContent = readScriptTemplate("EmptyCanvas", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyCanvas.qml"));
-    }
-    else if (templateType == "Controller")
-        scriptContent = readScriptTemplate("EmptyController", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyController.py"));
-    else if (templateType == "DataEngine")
-        scriptContent = readScriptTemplate("EmptyDataEngine", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyDataEngine.py"));
-    else if (templateType == "ForceField")
-        scriptContent = readScriptTemplate("EmptyForceField", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyForceField.py"));
-    else if (templateType == "Prefab")
-        scriptContent = readScriptTemplate("EmptyPrefab", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyPrefab.py"));
-    else if (templateType == "Scene")
-        scriptContent = readScriptTemplate("EmptyScene", QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyScene.py"));
-
     QString dir;
     QFileInfo f(directory);
     dir = (f.isDir()) ? directory : f.dir().path();
-    QFileDialog dialog;
-    dialog.setOption(QFileDialog::DontUseNativeDialog);
-    dialog.setFileMode(QFileDialog::AnyFile);
-    QString strfile = dialog.getSaveFileName(nullptr, "Create New File", dir, "QtQuick UI (*."+extension+")");
-    QFile file(strfile);
+
+    QString extension = "py";
+    if (templateType == "Canvas")
+        extension ="qml";
+
+    QFile file(getSaveFile("New " + templateType, "file://" + directory, 0, "Asset file (*." + extension + ")").toLocalFile());
     if (file.open(QIODevice::WriteOnly))
     {
+
+        QString scriptContent = "";
+        if (templateType == "Canvas")
+            scriptContent = readScriptTemplate(file.fileName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyCanvas.qml"));
+        else if (templateType == "Controller")
+            scriptContent = readScriptTemplate(file.fileName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyController.py"));
+        else if (templateType == "DataEngine")
+            scriptContent = readScriptTemplate(file.fileName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyDataEngine.py"));
+        else if (templateType == "ForceField")
+            scriptContent = readScriptTemplate(file.fileName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyForceField.py"));
+        else if (templateType == "Prefab")
+            scriptContent = readScriptTemplate(file.fileName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyPrefab.py"));
+        else if (templateType == "Scene")
+            scriptContent = readScriptTemplate(file.fileName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyScene.py"));
+
+
         QTextStream stream(&file);
         stream << scriptContent << endl;
 
         file.close();
-        return strfile;
+        return file.fileName();
     }
     else {
-        msg_error("SofaProject") << "Could not open file " << strfile.toStdString();
+        msg_error("SofaProject") << "Could not open file " << file.fileName().toStdString();
     }
     return QString();
 }
