@@ -246,7 +246,7 @@ void SofaBaseScene::openScene(QUrl projectDir)
     QFileDialog::Options options;
     options = QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
     QString title = "Choose scene file to open";
-    QString filters = "SofaScene files (*.xml, *.scn, *.py, *.pyscn";
+    QString filters = "SofaScene files (*.xml *.scn *.py *.pyscn)";
     QUrl sceneUrl = QFileDialog::getOpenFileUrl(nullptr, title, projectDir, filters, nullptr, options);
     this->setSource(sceneUrl);
 }
@@ -292,7 +292,7 @@ void SofaBaseScene::saveSceneAs(QUrl projectDir)
     QFileDialog::Options options;
     options = QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
     QString title = "Save scene as";
-    QString filters = "SofaScene files (*.xml, *.scn, *.py, *.pyscn";
+    QString filters = "SofaScene files (*.xml *.scn *.py *.pyscn";
     QUrl sceneUrl = QFileDialog::getSaveFileUrl(nullptr, title, projectDir, filters, nullptr, options);
     saveScene(sceneUrl.isLocalFile() ? sceneUrl.toLocalFile() : sceneUrl.path());
 }
