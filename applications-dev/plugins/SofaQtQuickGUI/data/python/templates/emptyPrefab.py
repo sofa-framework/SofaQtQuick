@@ -13,6 +13,6 @@ class %ComponentName%(Sofa.Prefab):
     def doReInit(self, *args, **kwargs):
         # ## This function will be called everytime a prefab param changes. The prefab node's content will be erased & whatever is done in this function will be applied again:
         # for i in range(self.nSpheres.value):
-        #     self.addObject("OglModel", name="sphere_"+str(i), filename="mesh/sphere.obj", translation=i * self.spacing.value)
+        #   self.addObject("OglModel", name="sphere_"+str(i), filename="mesh/sphere.obj", translation=i * self.spacing.value)
         pass
 
