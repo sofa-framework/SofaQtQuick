@@ -172,6 +172,8 @@ void SofaProject::openProject()
 {
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
     auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().toLocalFile(), options);
+    if (folder == "")
+        return;
     setRootDir(folder);
     QDir dir(folder);
     QUrl url("file://" + folder + "/scenes/" + dir.dirName() + ".py");
@@ -184,6 +186,8 @@ void SofaProject::importProject()
     auto options = QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
     QString filters("Zip archive (*.zip)");
     auto file = QFileDialog::getOpenFileUrl(nullptr, tr("Choose project archive:"), getRootDir().toLocalFile(), filters, nullptr,  options);
+    if (!file.isValid())
+        return;
     auto projectDir = importProject(file);
     setRootDir(projectDir);
     QDir dir(projectDir);
