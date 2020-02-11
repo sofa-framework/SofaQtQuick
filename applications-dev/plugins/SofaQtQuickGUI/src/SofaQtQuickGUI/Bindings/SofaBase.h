@@ -71,9 +71,9 @@ public:
     Q_INVOKABLE QObject* get(const QString& s);
 
     /// get a data from its name, throw an exception if not there.
-    Q_INVOKABLE QObject* getData(const QString& name) const;
+    Q_INVOKABLE _sofadata_::SofaData* getData(const QString& name) const;
     /// find a data from its name, returns null if not found.
-    Q_INVOKABLE QObject* findData(const QString& name) const;
+    Q_INVOKABLE _sofadata_::SofaData* findData(const QString& name) const;
 
 
 
