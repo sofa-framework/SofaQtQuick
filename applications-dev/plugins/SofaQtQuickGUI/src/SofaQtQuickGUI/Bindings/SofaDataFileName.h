@@ -25,6 +25,22 @@ public:
     {
         return dynamic_cast<DataFileName*>(rawData())->isDirectory();
     }
+    Q_INVOKABLE QString getRelativePath()
+    {
+        return QString::fromStdString(dynamic_cast<DataFileName*>(rawData())->getRelativePath());
+    }
+    Q_INVOKABLE QString getFullPath()
+    {
+        return QString::fromStdString(dynamic_cast<DataFileName*>(rawData())->getFullPath());
+    }
+    Q_INVOKABLE QString getAbsolutePath()
+    {
+        return QString::fromStdString(dynamic_cast<DataFileName*>(rawData())->getAbsolutePath());
+    }
+    Q_INVOKABLE QString getExtension()
+    {
+        return QString::fromStdString(dynamic_cast<DataFileName*>(rawData())->getExtension());
+    }
 };
 
 }  // namespace _sofadatafilename_
