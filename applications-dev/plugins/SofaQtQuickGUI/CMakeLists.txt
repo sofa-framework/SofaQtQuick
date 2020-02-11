@@ -55,6 +55,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Bindings/SofaBaseObject.cpp
     src/SofaQtQuickGUI/Bindings/SofaNode.cpp
     src/SofaQtQuickGUI/Bindings/SofaData.cpp
+    src/SofaQtQuickGUI/Bindings/SofaDataFileName.cpp
     src/SofaQtQuickGUI/Bindings/SofaLink.cpp
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.cpp
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.cpp
@@ -139,6 +140,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Bindings/SofaBaseObject.h
     src/SofaQtQuickGUI/Bindings/SofaNode.h
     src/SofaQtQuickGUI/Bindings/SofaData.h
+    src/SofaQtQuickGUI/Bindings/SofaDataFileName.h
     src/SofaQtQuickGUI/Bindings/SofaLink.h
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h

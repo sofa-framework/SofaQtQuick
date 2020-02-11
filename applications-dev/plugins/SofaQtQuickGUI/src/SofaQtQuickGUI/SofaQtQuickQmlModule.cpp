@@ -239,6 +239,11 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaData*");
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("_sofadata_::SofaData*");
 
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaDataFileName*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::_sofadatafilename_::SofaDataFileName*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaDataFileName*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("_sofadatafilename_::SofaDataFileName*");
+
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaLink*");
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::_sofalink_::SofaLink*");
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaLink*");

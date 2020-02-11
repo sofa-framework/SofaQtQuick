@@ -144,7 +144,12 @@ Row {
             }else{
                 url = SofaApplication.currentProject.rootDir
             }
-            var fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url)
+            if (sofaData.isDirectory()) {
+                print("isDirectory: " + sofaData.isDirectory())
+                var fileUrl = SofaApplication.currentProject.chooseProjectDir("Please Choose a file:", url)
+            }
+            else
+                fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url)
             if (fileUrl.toString() === "") return
             if (fileUrl.toString().startsWith(SofaApplication.currentProject.rootDir)) {
                 sofaData.value = fileUrl.toString().replace("file://","");

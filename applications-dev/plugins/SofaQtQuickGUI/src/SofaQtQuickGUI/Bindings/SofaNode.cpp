@@ -477,7 +477,7 @@ QObject* getItem(SofaBaseObject* self, const QString& name)
     if (name == "")
         return self;
 
-    SofaData* data = self->findData(name);
+    QObject* data = self->findData(name);
     if (data)
         return data;
     SofaLink* link = self->findLink(name);
@@ -502,7 +502,7 @@ QObject* getItem(SofaNode* self, QStringList& path)
         return self;
     SofaNode* child = self->getChild(path.front());
     SofaBaseObject* obj = self->getObject(path.front());
-    SofaData* data = self->findData(path.front());
+    QObject* data = self->findData(path.front());
     if (child)
     {
         path.pop_front();
@@ -583,7 +583,7 @@ QObject* SofaNode::get(const QString& name) const
         return nullptr;
     SofaNode* child = getChild(name);
     SofaBaseObject* obj = getObject(name);
-    SofaData* data = findData(name);
+    QObject* data = findData(name);
     if (child)
         return child;
     if (obj)
