@@ -118,6 +118,7 @@ void SofaProject::setRootDir(const QUrl& rootDir)
 
     msg_info() << "Setting root directory to '" << rootDir.toString().toStdString()<<"'";
     QFileInfo root = QFileInfo(m_rootDir.path());
+    emit rootDirChanged(m_rootDir);
     scan(root);
 }
 

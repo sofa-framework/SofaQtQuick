@@ -151,18 +151,13 @@ Row {
             else
                 fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url)
             if (fileUrl.toString() === "") return
+            sofaData.value = fileUrl.toString().replace("file://","");
             if (fileUrl.toString().startsWith(SofaApplication.currentProject.rootDir)) {
-                sofaData.value = fileUrl.toString().replace("file://","");
-                print(sofaData.value)
-                print(sofaData.getRelativePath())
-                if (sofaData.getRelativePath() !== "")
-                    sofaData.value = sofaData.getRelativePath()
-                textField.text = sofaData.value.toString();
+                textField.text = fileUrl.toString().replace("file://","").replace(SofaApplication.currentProject.rootDir, "")
             } else {
                 textField.text = fileUrl.toString().replace("file://","")
                 importAssetDialog.open()
             }
-
         }
         position: cornerPositions["Right"]
     }

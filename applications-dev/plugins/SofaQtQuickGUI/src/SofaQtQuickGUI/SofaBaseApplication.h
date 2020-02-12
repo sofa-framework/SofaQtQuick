@@ -53,6 +53,7 @@ using sofaqtquick::bindings::QmlDDGNode;
 
 
 class ProcessState;
+class SofaProject;
 
 /// \class Useful tool when creating applications
 class SOFA_SOFAQTQUICKGUI_API SofaBaseApplication : public QObject
@@ -71,17 +72,23 @@ public:
 public:
     Q_PROPERTY(sofaqtquick::bindings::SofaBase* selectedComponent READ getSelectedComponent WRITE setSelectedComponent NOTIFY selectedComponentChanged)
     Q_PROPERTY(int overrideCursorShape READ overrideCursorShape WRITE setOverrideCursorShape NOTIFY overrideCursorShapeChanged)
+    Q_PROPERTY(sofaqtquick::SofaProject* currentProject READ getCurrentProject WRITE setCurrentProject NOTIFY currentProjectChanged)
 
 public:
     int overrideCursorShape() const;
     void setOverrideCursorShape(int newCursorShape);
 
+    sofaqtquick::SofaProject* getCurrentProject();
+    void setCurrentProject(sofaqtquick::SofaProject* newProject);
+
 signals:
     void overrideCursorShapeChanged();
     void signalComponent(QString path) ;
     void selectedComponentChanged(sofaqtquick::bindings::SofaBase* newSelectedComponent);
+    void currentProjectChanged(sofaqtquick::SofaProject* newProject);
 
 public:
+    void setProjectDirectory(const std::string& dir);
     Q_SLOT void copyToClipboard(const QString& text);
     Q_SLOT void openInExplorer(const QString& folder) const;
     Q_SLOT void openInTerminal(const QString& folder) const;
@@ -172,7 +179,9 @@ public:
 private:
     static SofaBaseApplication* OurInstance;
 
-	QString					myPythonDirectory;
+    SofaProject*            m_currentProject;
+
+    QString					myPythonDirectory;
     QString                 myDataDirectory;
 
     sofa::core::objectmodel::Base::SPtr m_selectedComponent;

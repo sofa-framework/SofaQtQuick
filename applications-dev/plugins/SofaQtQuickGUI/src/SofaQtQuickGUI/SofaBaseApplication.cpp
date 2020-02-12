@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/SofaBaseScene.h>
+#include <SofaQtQuickGUI/SofaProject.h>
 #include <SofaQtQuickGUI/ProcessState.h>
 
 #include <sofa/helper/system/FileSystem.h>
@@ -127,6 +128,8 @@ SofaBaseApplication::SofaBaseApplication(QObject* parent) : QObject(parent),
 
     /// Initialize the layer specific to sofaqtquick environment.
     sofaqtquick::PythonEnvironment::Init();
+
+    m_currentProject = new SofaProject();
 }
 
 SofaBaseApplication::~SofaBaseApplication()
@@ -652,6 +655,34 @@ int SofaBaseApplication::overrideCursorShape() const
 {
     return QApplication::overrideCursor() ? QApplication::overrideCursor()->shape() : Qt::ArrowCursor;
 }
+
+
+sofaqtquick::SofaProject* SofaBaseApplication::getCurrentProject()
+{
+    return m_currentProject;
+}
+
+void SofaBaseApplication::setCurrentProject(sofaqtquick::SofaProject* newProject)
+{
+    if (m_currentProject)
+        delete m_currentProject;
+    m_currentProject = newProject;
+}
+
+#include <sofa/helper/system/FileRepository.h>
+
+void SofaBaseApplication::setProjectDirectory(const std::string& dir)
+{
+    if (m_currentProject)
+    {
+        std::string directory = sofa::helper::system::DataRepository.getFile(dir);
+        m_currentProject->setRootDir(QUrl(directory.c_str()));
+    }
+    else {
+        msg_error("SofaQtQuickGUI") << "Cannot open project directory: SofaProject not instantiated";
+    }
+}
+
 
 void SofaBaseApplication::setOverrideCursorShape(int newCursorShape)
 {
