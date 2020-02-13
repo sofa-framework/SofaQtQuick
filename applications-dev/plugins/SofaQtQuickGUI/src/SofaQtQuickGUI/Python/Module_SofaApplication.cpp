@@ -17,7 +17,7 @@ namespace py = pybind11;
 namespace sofapython3
 {
 
-PYBIND11_MODULE(SofaQtQuick, m) {
+PYBIND11_MODULE(SofaApplication, m) {
     m.doc() = R"doc(
               Binding for the SofaQtQuick GUI
               -----------------------------------
@@ -28,8 +28,8 @@ PYBIND11_MODULE(SofaQtQuick, m) {
 
               .. code-block:: python
 
-                import SofaQtQuick
-                SofaQtQuick.SofaApplication.setProjectDiretory(\"../\")
+                import SofaApplication
+                SofaApplication.setProjectDiretory(\"../\")
 
               .. autosummary::
                   :toctree: _autosummary/_autosummary

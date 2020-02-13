@@ -17,6 +17,9 @@ void moduleAddSofaApplication(py::module& m)
     m.def("setProjectDirectory", [](const std::string& path){
         sofaqtquick::SofaBaseApplication::Instance()->setProjectDirectory(path);
     });
+    m.def("getProjectDirectory", [](){
+        return sofaqtquick::SofaBaseApplication::Instance()->getProjectDirectory();
+    });
 }
 
 }  // namespace sofapython3

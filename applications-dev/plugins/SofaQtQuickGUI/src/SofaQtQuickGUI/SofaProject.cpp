@@ -30,6 +30,7 @@ using sofapython3::PythonFactory;
 using sofaqtquick::AssetFactory;
 
 #include <fstream>
+#include <unistd.h>
 
 /// This is needed to implement filtering of msg_info.
 namespace sofa::helper::logging
@@ -109,14 +110,13 @@ void SofaProject::setRootDir(const QUrl& rootDir)
 {
     if(rootDir.isEmpty())
         return;
-    if (rootDir.url().startsWith("qrc:"))
-        m_rootDir.setUrl(rootDir.url().replace("qrc:", ""));
-    else
-        m_rootDir = rootDir;
+
+    m_rootDir = rootDir;
     m_assets.clear();
     m_directories.clear();
 
-    msg_info() << "Setting root directory to '" << rootDir.toString().toStdString()<<"'";
+    chdir(m_rootDir.path().toStdString().c_str());
+    msg_warning() << "Setting root directory to '" << m_rootDir.path().toStdString()<<"'";
     QFileInfo root = QFileInfo(m_rootDir.path());
     emit rootDirChanged(m_rootDir);
     scan(root);
@@ -155,7 +155,7 @@ void SofaProject::setDebug(bool state) {
 void SofaProject::newProject()
 {
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog;
-    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().toLocalFile(), options);
+    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().path(), options);
     QDir dir(folder);
     if (dir.exists() && dir.count() <= 2) // "." and ".." are counted here...
     {
@@ -172,7 +172,7 @@ void SofaProject::newProject()
 void SofaProject::openProject()
 {
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
-    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().toLocalFile(), options);
+    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().path(), options);
     if (folder == "")
         return;
     setRootDir(folder);
@@ -230,14 +230,14 @@ QString SofaProject::importProject(const QUrl& srcUrl)
 void SofaProject::exportProject()
 {
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
-    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project destination:"), getRootDir().toLocalFile(), options);
+    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project destination:"), getRootDir().path(), options);
     setRootDir(folder);
     QDir dir(folder);
     QProcess process;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::processEvents();
 
-    QFileInfo finfo(getRootDir().toLocalFile());
+    QFileInfo finfo(getRootDir().path());
     QString filePath = finfo.filePath();
     QString baseName = finfo.baseName();
     QString fileName = finfo.fileName();
@@ -513,7 +513,7 @@ QStringList SofaProject::getSupportedTypes() const
 
 bool SofaProject::createPrefab(SofaBase* node)
 {
-    QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().toLocalFile(), tr("All files (*)"));
+    QFileDialog dialog(nullptr, tr("Save as Prefab"), this->getRootDir().path(), tr("All files (*)"));
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setOption(QFileDialog::DontUseNativeDialog);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -549,7 +549,7 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     if (templateType == "Canvas")
         extension ="qml";
 
-    QFile file(getSaveFile("New " + templateType, "file://" + directory, 0, "Asset file (*." + extension + ")").toLocalFile());
+    QFile file(getSaveFile("New " + templateType, directory, 0, "Asset file (*." + extension + ")").path());
     if (file.open(QIODevice::WriteOnly))
     {
 
@@ -597,7 +597,7 @@ bool SofaProject::createPythonPrefab(QString name, SofaBase* node)
 
     if (scriptContent == "")
         return false;
-    QString filepath = getRootDir().toLocalFile() + "/assets/scripts/" + name.toLower() + ".py";
+    QString filepath = getRootDir().path() + "/assets/scripts/" + name.toLower() + ".py";
     QFile f(filepath);
     if (f.open(QIODevice::WriteOnly))
     {

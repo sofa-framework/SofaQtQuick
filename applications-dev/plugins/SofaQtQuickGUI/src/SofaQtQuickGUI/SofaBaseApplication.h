@@ -89,6 +89,7 @@ signals:
 
 public:
     void setProjectDirectory(const std::string& dir);
+    std::string getProjectDirectory();
     Q_SLOT void copyToClipboard(const QString& text);
     Q_SLOT void openInExplorer(const QString& folder) const;
     Q_SLOT void openInTerminal(const QString& folder) const;

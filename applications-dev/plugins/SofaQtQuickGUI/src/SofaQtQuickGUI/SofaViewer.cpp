@@ -1121,11 +1121,7 @@ void SofaViewer::handleBackgroundImageSourceChanged(QUrl newBackgroundImageSourc
 {
     QString path = newBackgroundImageSource.toEncoded();
     if(path.isEmpty())
-        path = newBackgroundImageSource.toLocalFile();
-
-    // WTF?
-    path = path.replace("file://", "");
-    path = path.replace("qrc:", ":");
+        path = newBackgroundImageSource.path();
 
     myBackgroundImage = QImage(path);
 
@@ -1202,8 +1198,6 @@ void SofaViewer::saveCameraToFile(int uiId) const
 {
     QUrl source = mySofaScene->source();
     QString finalFilename = source.path();
-    if (source.isLocalFile())
-        finalFilename = source.toLocalFile();
     QString viewBasename = source.fileName() + ".qtquickview";
     QString viewPath = source.path();
     QString viewFilename = viewPath + ".qtquickview";
@@ -1232,8 +1226,6 @@ void SofaViewer::loadCameraFromFile(int uiId)
 {
     QUrl source = mySofaScene->source();
     QString finalFilename = source.path();
-    if (source.isLocalFile())
-        finalFilename = source.toLocalFile();
     QString viewBasename = source.fileName() + ".qtquickview";
     QString viewPath = source.path();
     QString viewFilename = viewPath + ".qtquickview";

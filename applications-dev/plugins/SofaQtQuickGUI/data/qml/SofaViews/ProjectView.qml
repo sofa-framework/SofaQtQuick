@@ -335,10 +335,10 @@ Item {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
                                     if (self.project.getAsset(folderModel.get(index, "filePath")).isScene) {
-                                        sofaApplication.sofaScene.source = folderModel.get(index, "filePath")
+                                        SofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                     else {
-                                        var rootNode = sofaApplication.sofaScene.root()
+                                        var rootNode = SofaApplication.sofaScene.root()
                                         var insertedAsset = insertAsset(index, rootNode)
                                         SofaApplication.selectedComponent = insertedAsset
                                     }
@@ -347,7 +347,7 @@ Item {
                             onClicked: {
                                 if (Qt.RightButton === mouse.button)
                                 {
-                                    var pos = sofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
+                                    var pos = SofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
                                     projectMenu.x = mouse.x + pos[0]
                                     projectMenu.y = mouse.y + pos[1]
                                     projectMenu.open()
@@ -356,7 +356,7 @@ Item {
                                 {
                                     folderView.selectedItem = wrapper
                                     wrapper.asset = self.project.getAsset(folderModel.get(index, "filePath"))
-                                    sofaApplication.currentProject.selectedAsset = wrapper.asset;
+                                    SofaApplication.currentProject.selectedAsset = wrapper.asset;
                                 }
                             }
 

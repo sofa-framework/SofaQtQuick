@@ -34,7 +34,7 @@ Menu {
         text: "Open Terminal Here"
         onTriggered: {
             projectMenu.visible = false
-            sofaApplication.openInTerminal(filePath)
+            SofaApplication.openInTerminal(filePath)
         }
     }
     

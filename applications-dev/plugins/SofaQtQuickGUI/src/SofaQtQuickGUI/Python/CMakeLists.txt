@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(SofaPython3_SofaQtQuick)
+project(SofaPython3_SofaApplication)
 
 find_package(SofaPython3 REQUIRED)
 unset(PYTHON_EXECUTABLE)
@@ -21,14 +21,14 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Binding_SofaApplication.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Module_SofaQtQuick.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Module_SofaApplication.cpp
 )
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(MODULE_NAME SofaQtQuick)
+set(MODULE_NAME SofaApplication)
 set(PACKAGE_DIRECTORY  ${SP3_PYTHON_PACKAGES_DIRECTORY})
 
 SP3_add_python_package(

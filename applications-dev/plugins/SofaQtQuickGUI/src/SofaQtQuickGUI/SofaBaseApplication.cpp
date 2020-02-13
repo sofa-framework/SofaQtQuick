@@ -200,11 +200,7 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
         settings.setValue("DefaultEditorParams", "-client ${path}:${lineno}"); // ex. for qtcreator: "-client ${path}:${lineno}"
 
 
-    QString path = fullpath;
-    if (path.startsWith("file://"))
-        path.replace("file://", "");
-    else
-        path = QFileInfo(fullpath).absoluteFilePath();
+    QString path = QFileInfo(fullpath).absoluteFilePath();
     QString line = std::to_string(lineno).c_str();
 
     QString editor = settings.value("DefaultEditor").toString();
@@ -530,7 +526,7 @@ ProcessState* SofaBaseApplication::executeProcessAsync(const QString& command, c
     QUrl url = QUrl::fromUserInput(workingDirectory);
     if(workingDirectory.size()!=0)
     {
-        process->setWorkingDirectory(url.isLocalFile() ? url.toLocalFile() : url.path());
+        process->setWorkingDirectory(url.toLocalFile());
     }
 
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
@@ -538,7 +534,7 @@ ProcessState* SofaBaseApplication::executeProcessAsync(const QString& command, c
 
     ProcessState* processState = new ProcessState(process);
 
-    process->startDetached(command, arguments, url.isLocalFile() ? url.toLocalFile() : url.path());
+    process->startDetached(command, arguments, url.path());
     process->waitForFinished();
 
     QByteArray result = process->readAll();
@@ -676,11 +672,18 @@ void SofaBaseApplication::setProjectDirectory(const std::string& dir)
     if (m_currentProject)
     {
         std::string directory = sofa::helper::system::DataRepository.getFile(dir);
+        sofa::helper::system::DataRepository.addFirstPath(directory);
+        std::cout << "added Project directory: " << directory << " in path." << std::endl;
+        std::cout << "added Project directory: " << directory << " in path." << std::endl;
         m_currentProject->setRootDir(QUrl(directory.c_str()));
     }
     else {
         msg_error("SofaQtQuickGUI") << "Cannot open project directory: SofaProject not instantiated";
     }
+}
+std::string SofaBaseApplication::getProjectDirectory()
+{
+    return m_currentProject->getRootDir().path().toStdString();
 }
 
 
