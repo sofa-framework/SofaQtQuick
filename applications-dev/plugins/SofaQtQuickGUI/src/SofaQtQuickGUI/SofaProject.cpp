@@ -203,26 +203,18 @@ QString SofaProject::importProject(const QUrl& srcUrl)
     QFileInfo finfo(src);
     if (finfo.exists() && finfo.suffix() == "zip")
     {
-        QFileDialog dialog(nullptr, tr("Choose Project Destination"), getRootDir().toLocalFile(), tr("All folders (*)"));
-        dialog.setFileMode(QFileDialog::Directory);
-        dialog.setOption(QFileDialog::ShowDirsOnly);
-        dialog.setOption(QFileDialog::DontUseNativeDialog);
-        if (dialog.exec())
-        {
-            QList<QUrl> folders = dialog.selectedUrls();
-            if (folders.empty())
-                return "Error: no destination picked";
-            QApplication::setOverrideCursor(Qt::WaitCursor);
-            QApplication::processEvents();
-            QString dest = folders.first().path();
-            QProcess process;
-            process.start("/usr/bin/unzip", QStringList() << src << "-d" << dest);
-            process.waitForFinished(-1);
-            QApplication::restoreOverrideCursor();
+        auto folder = chooseProjectDir(tr("Choose Project Destination"), getRootDir().toLocalFile());
 
-            return dest + "/" + finfo.baseName();
-        }
-        return "Error: could not open Dialog";
+        if (folder.path() == "")
+            return "Error: no destination picked";
+
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        QApplication::processEvents();
+        QProcess process;
+        process.start("/usr/bin/unzip", QStringList() << src << "-d" << folder.path());
+        process.waitForFinished(-1);
+        QApplication::restoreOverrideCursor();
+        return folder.path();
     }
     return "Error: does not exist or isn't zip file";
 }
@@ -230,24 +222,18 @@ QString SofaProject::importProject(const QUrl& srcUrl)
 void SofaProject::exportProject()
 {
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
-    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project destination:"), getRootDir().path(), options);
-    setRootDir(folder);
-    QDir dir(folder);
+    auto file = getSaveFile(tr("Export Project:"), getRootDir().toLocalFile(), int(options), "Zip Archive (.zip)");
     QProcess process;
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::processEvents();
 
-    QFileInfo finfo(getRootDir().path());
-    QString filePath = finfo.filePath();
-    QString baseName = finfo.baseName();
-    QString fileName = finfo.fileName();
+    // Guarantee we chdir'ed in the project directory (SetDirectory fetches the parent dir, so we need to append a dummy filename to the path.... -_-
+    sofa::helper::system::SetDirectory dir(getRootDir().path().toStdString() + "/DummyFile");
+    // retrieve the relative path to the zip archive from the root dir:
+    QString relpath = QDir(getRootDir().toLocalFile()).relativeFilePath(file.path());
 
-
-    process.start("/bin/ln", QStringList() << "-s" << filePath << fileName);
-    process.waitForFinished(-1);
-    process.start("/usr/bin/zip", QStringList() << "-r" << QString(folder + "/" + baseName + ".zip") << fileName);
-    process.waitForFinished(-1);
-    process.start("/bin/rm", QStringList() << fileName);
+    // Zip the current dir into the given file archive
+    process.start("/usr/bin/zip", QStringList() << "-r" << relpath << ".");
     process.waitForFinished(-1);
     QApplication::restoreOverrideCursor();
 }
