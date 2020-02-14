@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/SofaBaseScene.h>
+#include <SofaQtQuickGUI/SofaProject.h>
 #include <SofaQtQuickGUI/ProcessState.h>
 
 #include <sofa/helper/system/FileSystem.h>
@@ -127,6 +128,8 @@ SofaBaseApplication::SofaBaseApplication(QObject* parent) : QObject(parent),
 
     /// Initialize the layer specific to sofaqtquick environment.
     sofaqtquick::PythonEnvironment::Init();
+
+    m_currentProject = new SofaProject();
 }
 
 SofaBaseApplication::~SofaBaseApplication()
@@ -197,18 +200,13 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
         settings.setValue("DefaultEditorParams", "-client ${path}:${lineno}"); // ex. for qtcreator: "-client ${path}:${lineno}"
 
 
-    QString path = fullpath;
-    if (path.startsWith("file://"))
-        path.replace("file://", "");
-    else
-        path = QFileInfo(fullpath).absoluteFilePath();
+    QString path = QFileInfo(fullpath).absoluteFilePath();
     QString line = std::to_string(lineno).c_str();
 
     QString editor = settings.value("DefaultEditor").toString();
     QStringList args = settings.value("DefaultEditorParams").toString().replace("${path}", path).replace("${lineno}", line).split(" ");
     QProcess process;
     int ret = process.startDetached(editor, args);
-    std::cout << editor.toStdString() << " " << args.join(" ").toStdString() << std::endl;
     if (ret < 0)
     {
         msg_warning("OpenInEditor") << "Failed to launch chosen editor. Check runSofa2.ini";
@@ -527,7 +525,7 @@ ProcessState* SofaBaseApplication::executeProcessAsync(const QString& command, c
     QUrl url = QUrl::fromUserInput(workingDirectory);
     if(workingDirectory.size()!=0)
     {
-        process->setWorkingDirectory(url.isLocalFile() ? url.toLocalFile() : url.path());
+        process->setWorkingDirectory(url.toLocalFile());
     }
 
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
@@ -535,7 +533,7 @@ ProcessState* SofaBaseApplication::executeProcessAsync(const QString& command, c
 
     ProcessState* processState = new ProcessState(process);
 
-    process->startDetached(command, arguments, url.isLocalFile() ? url.toLocalFile() : url.path());
+    process->startDetached(command, arguments, url.path());
     process->waitForFinished();
 
     QByteArray result = process->readAll();
@@ -652,6 +650,40 @@ int SofaBaseApplication::overrideCursorShape() const
 {
     return QApplication::overrideCursor() ? QApplication::overrideCursor()->shape() : Qt::ArrowCursor;
 }
+
+
+sofaqtquick::SofaProject* SofaBaseApplication::getCurrentProject()
+{
+    return m_currentProject;
+}
+
+void SofaBaseApplication::setCurrentProject(sofaqtquick::SofaProject* newProject)
+{
+    if (m_currentProject)
+        delete m_currentProject;
+    m_currentProject = newProject;
+}
+
+#include <sofa/helper/system/FileRepository.h>
+
+void SofaBaseApplication::setProjectDirectory(const std::string& dir)
+{
+    if (m_currentProject)
+    {
+        std::string directory = sofa::helper::system::DataRepository.getFile(dir);
+        QDir dir(directory.c_str());
+        sofa::helper::system::DataRepository.addFirstPath(dir.absolutePath().toStdString());
+        m_currentProject->setRootDir(QUrl(dir.absolutePath()));
+    }
+    else {
+        msg_error("SofaQtQuickGUI") << "Cannot open project directory: SofaProject not instantiated";
+    }
+}
+std::string SofaBaseApplication::getProjectDirectory()
+{
+    return m_currentProject->getRootDir().path().toStdString();
+}
+
 
 void SofaBaseApplication::setOverrideCursorShape(int newCursorShape)
 {

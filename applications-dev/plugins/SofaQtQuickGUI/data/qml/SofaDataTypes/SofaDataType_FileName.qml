@@ -40,12 +40,24 @@ Row {
 
     property SofaData sofaData
 
+    function cleanDisplayPath(fileUrl) {
+        if (fileUrl === SofaApplication.currentProject.rootDir + "/")
+            var path = "./"
+        else {
+            path = fileUrl.replace(SofaApplication.currentProject.rootDir, "")
+            if (path[0] === "/") {
+                path = path.substring(1, path.length)
+            }
+        }
+        return path
+    }
+
     TextField {
         id: textField
         enabled: true
         readOnly: sofaData.properties.readOnly
         width: root.width - openButton.width - root.spacing
-        text: sofaData.value.toString()
+        text: cleanDisplayPath(sofaData.value.toString())
         selectByMouse: true
 
         onAccepted: {
@@ -64,7 +76,7 @@ Row {
             onDropped: {
                 if(drag.source.url && !textField.readOnly)
                 {
-                    textField.text = drag.source.localPath
+                    textField.text = cleanDisplayPath(drag.source.localPath)
                 }
             }
         }
@@ -103,7 +115,7 @@ Row {
                     TextField {
                         id: path
                         Layout.fillWidth: true
-                        text: SofaApplication.currentProject.rootDir.toString().replace("file://", "") + "/assets/resources/"
+                        text: textField.text
                     }
                     RowLayout {
                         Label {
@@ -116,7 +128,6 @@ Row {
                             onClicked: {
                                 var filename = textField.text.split("/")
                                 filename = filename[filename.length-1]
-                                print(textField.text + "    " + path.text + filename)
                                 SofaApplication.copyFile(textField.text, path.text + filename)
                                 sofaData.value = path.text + filename
                                 textField.text = path.text + filename
@@ -144,31 +155,21 @@ Row {
             }else{
                 url = SofaApplication.currentProject.rootDir
             }
-            var fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url)
-            if (fileUrl.toString() === "") return
-            if (fileUrl.toString().startsWith(SofaApplication.currentProject.rootDir)) {
-                sofaData.value = fileUrl.toString().replace("file://","");
-                textField.text = sofaData.value.toString();
+            if (sofaData.isDirectory()) {
+                var fileUrl = SofaApplication.currentProject.chooseProjectDir("Please Choose a directory:", url).toString().replace("file://", "")
+                if (fileUrl !== "") fileUrl += "/"
+            }
+            else
+                fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url).toString().replace("file://", "")
+            if (fileUrl === "") return
+            sofaData.value = fileUrl;
+            if (fileUrl.startsWith(SofaApplication.currentProject.rootDir)) {
+                textField.text = cleanDisplayPath(fileUrl)
             } else {
-                textField.text = fileUrl.toString().replace("file://","")
+                textField.text = fileUrl
                 importAssetDialog.open()
             }
-
-
         }
         position: cornerPositions["Right"]
     }
-
-
-    FileDialog {
-        id: fileDialog
-        title: "Please choose a file"
-        folder: "file://"+sofaData.properties.folderurl
-        onAccepted: {
-            /// Get the URL from the file chooser and convert it to a string.
-            sofaData.value = fileDialog.fileUrl.toString().replace("file://","") ;
-            textField.text = sofaData.value.toString();
-        }
-    }
-
 }

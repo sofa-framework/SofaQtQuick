@@ -153,6 +153,9 @@ Item //
         property var selectedAsset: null
         rootDir: projectSettings.currentProject()
         scene: sofaScene
+        Component.onCompleted: {
+            SofaBaseApplicationSingleton.currentProject = currentProject;
+        }
     }
 
     property var projectSettings: Settings {

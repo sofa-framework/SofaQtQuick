@@ -55,6 +55,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Bindings/SofaBaseObject.cpp
     src/SofaQtQuickGUI/Bindings/SofaNode.cpp
     src/SofaQtQuickGUI/Bindings/SofaData.cpp
+    src/SofaQtQuickGUI/Bindings/SofaDataFileName.cpp
     src/SofaQtQuickGUI/Bindings/SofaLink.cpp
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.cpp
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.cpp
@@ -139,6 +140,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Bindings/SofaBaseObject.h
     src/SofaQtQuickGUI/Bindings/SofaNode.h
     src/SofaQtQuickGUI/Bindings/SofaData.h
+    src/SofaQtQuickGUI/Bindings/SofaDataFileName.h
     src/SofaQtQuickGUI/Bindings/SofaLink.h
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h
     src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h
@@ -341,6 +343,13 @@ endif()
 set(SOFAQTQUICKGUI_VERSION 1.0)
 ## Install rules for the library; CMake package configurations files
 sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_INSTALL_DIR ${PROJECT_NAME} INCLUDE_SOURCE_DIR "src/${PROJECT_NAME}")
+
+
+
+if( SofaPython3_FOUND )
+  add_subdirectory(src/SofaQtQuickGUI/Python)
+endif()
+
 
 if(SOFA_BUILD_TESTS)
     find_package(SofaTest QUIET)

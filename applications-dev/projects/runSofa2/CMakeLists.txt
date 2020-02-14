@@ -51,6 +51,10 @@ add_definitions(${Qt5Quick_DEFINITIONS})
 add_definitions(${Qt5WebView_DEFINITIONS})
 
 find_package(SofaQtQuickGUI REQUIRED)
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    # Sized deallocaion is not enabled by default under clang after c++14
+    set(CMAKE_CXX_FLAGS "-fsized-deallocation")
+endif ()
 
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})

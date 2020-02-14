@@ -132,8 +132,6 @@ private:
     QmlDDGNode m_ddgnode;
 
     sofa::core::objectmodel::DataCallback m_forwardEventToQml;
-
-public:
 };
 }
 

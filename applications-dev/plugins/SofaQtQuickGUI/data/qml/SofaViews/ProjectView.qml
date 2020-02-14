@@ -16,7 +16,6 @@ import QtGraphicalEffects 1.12
 import SofaApplication 1.0
 
 Item {
-    property var sofaApplication: null
     property bool isDebugPrintEnabled: self.project.isDebugPrintEnabled
 
     onIsDebugPrintEnabledChanged: {
@@ -28,13 +27,13 @@ Item {
 
     Item {
         id: self
-        property var project: sofaApplication.currentProject
+        property var project: SofaApplication.currentProject
     }
 
     Rectangle {
         id: background
         anchors.fill : parent
-        color: sofaApplication.style.contentBackgroundColor
+        color: SofaApplication.style.contentBackgroundColor
     }
 
     ColumnLayout {
@@ -45,7 +44,7 @@ Item {
 
 
             implicitHeight: 25
-            color: sofaApplication.style.contentBackgroundColor
+            color: SofaApplication.style.contentBackgroundColor
             border.color: "#3c3c3c"
 
             GBRect {
@@ -98,7 +97,7 @@ Item {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
-                    var pos = sofaApplication.getIdealPopupPos(generalProjectMenu, projectViewMouseArea)
+                    var pos = SofaApplication.getIdealPopupPos(generalProjectMenu, projectViewMouseArea)
                     generalProjectMenu.x = mouse.x + pos[0]
                     generalProjectMenu.y = mouse.y + pos[1]
                     generalProjectMenu.open()
@@ -124,7 +123,7 @@ Item {
                     implicitWidth: folderView.width
 
                     Rectangle {
-                        color: sofaApplication.style.contentBackgroundColor
+                        color: SofaApplication.style.contentBackgroundColor
                         Layout.fillWidth: true
                         implicitHeight: 20
                         implicitWidth: folderView.width / 3
@@ -149,7 +148,7 @@ Item {
                     }
 
                     Rectangle {
-                        color: sofaApplication.style.contentBackgroundColor
+                        color: SofaApplication.style.contentBackgroundColor
                         Layout.fillWidth: true
                         implicitHeight: 20
                         implicitWidth: folderView.width / 3
@@ -174,7 +173,7 @@ Item {
                     }
 
                     Rectangle {
-                        color: sofaApplication.style.contentBackgroundColor
+                        color: SofaApplication.style.contentBackgroundColor
                         Layout.fillWidth: true
                         implicitHeight: 20
                         implicitWidth: folderView.width / 3
@@ -202,9 +201,8 @@ Item {
                 FolderListModel {
                     id: folderModel
 
-                    property var projectDir: sofaApplication.projectSettings.recentProjects.split(";")[0]
+                    property var projectDir: self.project.rootDir
                     onProjectDirChanged: {
-                        self.project.rootDir = projectDir
                         folderModel.rootFolder = self.project.rootDir
                         folderModel.folder = self.project.rootDir
                     }
@@ -337,10 +335,10 @@ Item {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
                                     if (self.project.getAsset(folderModel.get(index, "filePath")).isScene) {
-                                        sofaApplication.sofaScene.source = folderModel.get(index, "filePath")
+                                        SofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                     else {
-                                        var rootNode = sofaApplication.sofaScene.root()
+                                        var rootNode = SofaApplication.sofaScene.root()
                                         var insertedAsset = insertAsset(index, rootNode)
                                         SofaApplication.selectedComponent = insertedAsset
                                     }
@@ -349,7 +347,7 @@ Item {
                             onClicked: {
                                 if (Qt.RightButton === mouse.button)
                                 {
-                                    var pos = sofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
+                                    var pos = SofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
                                     projectMenu.x = mouse.x + pos[0]
                                     projectMenu.y = mouse.y + pos[1]
                                     projectMenu.open()
@@ -358,7 +356,7 @@ Item {
                                 {
                                     folderView.selectedItem = wrapper
                                     wrapper.asset = self.project.getAsset(folderModel.get(index, "filePath"))
-                                    sofaApplication.currentProject.selectedAsset = wrapper.asset;
+                                    SofaApplication.currentProject.selectedAsset = wrapper.asset;
                                 }
                             }
 

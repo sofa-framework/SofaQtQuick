@@ -41,6 +41,11 @@ using sofaqtquick::bindings::SofaCoreBindingContext;
 #include <sofa/simulation/Node.h>
 #include <SofaSimulationGraph/SimpleApi.h>
 
+#include <sofa/core/objectmodel/DataFileName.h>
+using sofa::core::objectmodel::DataFileName;
+#include <SofaQtQuickGUI/Bindings/SofaDataFileName.h>
+using sofaqtquick::bindings::SofaDataFileName;
+
 #include <QQmlContext>
 
 namespace sofaqtquick::bindings::_sofabase_
@@ -117,6 +122,8 @@ SofaData* SofaBase::getData(const QString& name) const
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "There is no data with name '"+name+" in " + m_self->getName().c_str() + "'");
         return nullptr;
     }
+    if (dynamic_cast<DataFileName*>(data))
+        return new SofaDataFileName(dynamic_cast<DataFileName*>(data));
     return new SofaData(data);
 }
 

@@ -9,6 +9,7 @@ import code
 import Sofa
 import Sofa.Core
 import Sofa.Helper
+import SofaApplication
 
 ######################################################################
 #################### INTROSPECTING HELPER METHODS ####################
@@ -111,7 +112,10 @@ def buildDataParams(datas, indent, scn):
                     if data.getName() != "modulepath":
                         if data.getName() != "depend":
                             v = repr(data.value)
-                            s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
+                            if SofaApplication.getProjectDirectory() in v:
+                                s += ", " + data.getName() + "=" + v.replace(SofaApplication.getProjectDirectory(), "")
+                            else:
+                                s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
     return s
 
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
@@ -173,6 +177,10 @@ def saveAsPythonScene(fileName, node):
     fd.write('""" type: SofaContent """\n')
     fd.write("import sys\n")
     fd.write("import os\n")
+    fd.write("try:\n")
+    fd.write("    import SofaApplication\n")
+    fd.write("except ImportError:\n")
+    fd.write("    pass\n")
 
     modules = []
     modulepaths = []
@@ -190,6 +198,13 @@ def saveAsPythonScene(fileName, node):
         fd.write("from " + m + " import *\n")
 
     fd.write("\n\ndef createScene("+ node.getName() +"):\n")
+    fd.write("    try:\n")
+    projectDir = SofaApplication.getProjectDirectory()
+    sceneDir = os.path.dirname(fileName)
+
+    fd.write("        SofaApplication.setProjectDirectory(os.path.abspath(\"" + os.path.relpath(projectDir, sceneDir) + "\"))\n")
+    fd.write("    except ImportError:\n")
+    fd.write("        pass\n")
     fd.write(scn[0])
     return True
 
@@ -213,6 +228,15 @@ def createPrefabFromNode(fileName, node, name, help):
     fd.write("import os\n")
     fd.write("import Sofa\n")
     fd.write("import Sofa.Core\n")
+    fd.write("try:\n")
+    fd.write("    import SofaApplication\n")
+    projectDir = SofaApplication.getProjectDirectory()
+    sceneDir = os.path.dirname(fileName)
+
+    fd.write("    SofaApplication.setProjectDirectory(\"" + os.path.relpath(projectDir, sceneDir) + "\")\n")
+    fd.write("except ImportError:\n")
+    fd.write("    pass\n")
+
 
     modules = []
     modulepaths = []

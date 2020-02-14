@@ -258,8 +258,7 @@ void SofaBaseScene::reloadScene()
 
 void SofaBaseScene::saveScene(QString sceneFile)
 {
-    QString file = source().isLocalFile() ? source().toLocalFile() : source().path();
-    msg_warning("runSofa2") << "file: "  << file.toStdString();
+    QString file = source().path();
     msg_warning("runSofa2") << "path: "  << source().path().toStdString();
     if (sceneFile != "") {
         msg_warning("runSofa2") << "sceneFile: "  << sceneFile.toStdString();
@@ -294,7 +293,7 @@ void SofaBaseScene::saveSceneAs(QUrl projectDir)
     QString title = "Save scene as";
     QString filters = "SofaScene files (*.xml *.scn *.py *.pyscn";
     QUrl sceneUrl = QFileDialog::getSaveFileUrl(nullptr, title, projectDir, filters, nullptr, options);
-    saveScene(sceneUrl.isLocalFile() ? sceneUrl.toLocalFile() : sceneUrl.path());
+    saveScene(sceneUrl.path());
 }
 
 void SofaBaseScene::exportSceneAs(QUrl /*projectDir*/)
@@ -320,8 +319,6 @@ bool LoaderProcess(SofaBaseScene* sofaScene)
 {
     if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
-
-    std::cout << sofaScene->path().toLatin1().toStdString() << std::endl;
 
     Node::SPtr n = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().toStdString());
     sofaScene->setSofaRootNode(n);
@@ -457,8 +454,6 @@ void SofaBaseScene::open()
     }
 
     QString finalFilename = mySource.path();
-    if(mySource.isLocalFile())
-        finalFilename = mySource.toLocalFile();
 
     if(finalFilename.isEmpty())
     {
@@ -1549,7 +1544,7 @@ void SofaBaseScene::reset()
 void SofaBaseScene::addCanvas(const QUrl& canvas)
 {
     Canvas::SPtr newCanvas = sofa::core::objectmodel::New<Canvas>();
-    newCanvas->d_qmlFile.setValue(canvas.isLocalFile() ? canvas.toLocalFile().toStdString() : canvas.path().toStdString());
+    newCanvas->d_qmlFile.setValue(canvas.path().toStdString());
     sofaqtquick::bindings::SofaBaseObject* bo = new sofaqtquick::bindings::SofaBaseObject(newCanvas);
     m_canvas.push_back(bo);
     mySofaRootNode->addObject(newCanvas);

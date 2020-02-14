@@ -51,9 +51,6 @@ void QmlDDGNode::update(){}
 
 SofaData::SofaData(BaseData* self)
 {
-    /// Connect a dedicated node as output
-    ///    if(m_self->getOwner()!=nullptr)
-    ///        std::cout << " ADDING TO THE OUTPUT OF: " << m_self->getOwner()->getPathName() << "." << m_self->getName() << std::endl;
     m_self = self;
     m_ddgnode.m_sofadata = this;
     m_ddgnode.m_basedata = self;
@@ -89,15 +86,12 @@ void SofaData::setParent(SofaData* data)
 
 QVariant SofaData::getValue()
 {
-    //std::cout << "SofaData::getValue: " << rawData()->getName()
-    //          << " counter:" << rawData()->getCounter() << std::endl;
     m_previousValue = sofaqtquick::helper::createQVariantFromData(m_self);
     return m_previousValue;
 }
 
 bool SofaData::setValue(const QVariant& value)
 {
-    //std::cout << "Trying to setValue: " << value.toString().toStdString() << " counter:" << rawData()->getCounter() << std::endl;
     if(value != m_previousValue)
     {
         _disconnect();
