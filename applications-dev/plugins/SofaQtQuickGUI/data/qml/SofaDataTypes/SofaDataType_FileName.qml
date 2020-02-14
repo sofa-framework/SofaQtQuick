@@ -49,6 +49,9 @@ Row {
                 path = path.substring(1, path.length)
             }
         }
+        print("fileUrl " + fileUrl)
+        print("rootDir" + SofaApplication.currentProject.rootDir)
+        print("path " + path)
         return path
     }
 
@@ -76,7 +79,7 @@ Row {
             onDropped: {
                 if(drag.source.url && !textField.readOnly)
                 {
-                    textField.text = drag.source.localPath
+                    textField.text = cleanDisplayPath(drag.source.localPath)
                 }
             }
         }

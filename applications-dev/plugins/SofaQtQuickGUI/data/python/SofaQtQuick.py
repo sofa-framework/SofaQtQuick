@@ -180,10 +180,6 @@ def saveAsPythonScene(fileName, node):
     fd.write("import os\n")
     fd.write("try:\n")
     fd.write("    import SofaApplication\n")
-    projectDir = SofaApplication.getProjectDirectory()
-    sceneDir = os.path.dirname(fileName)
-
-    fd.write("    SofaApplication.setProjectDirectory(\"" + os.path.relpath(projectDir, sceneDir) + "\")\n")
     fd.write("except ImportError:\n")
     fd.write("    pass\n")
 
@@ -203,6 +199,13 @@ def saveAsPythonScene(fileName, node):
         fd.write("from " + m + " import *\n")
 
     fd.write("\n\ndef createScene("+ node.getName() +"):\n")
+    fd.write("    try:\n")
+    projectDir = SofaApplication.getProjectDirectory()
+    sceneDir = os.path.dirname(fileName)
+
+    fd.write("        SofaApplication.setProjectDirectory(os.path.abspath(\"" + os.path.relpath(projectDir, sceneDir) + "\"))\n")
+    fd.write("    except ImportError:\n")
+    fd.write("        pass\n")
     fd.write(scn[0])
     return True
 

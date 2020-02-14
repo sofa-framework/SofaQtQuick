@@ -672,10 +672,10 @@ void SofaBaseApplication::setProjectDirectory(const std::string& dir)
     if (m_currentProject)
     {
         std::string directory = sofa::helper::system::DataRepository.getFile(dir);
-        sofa::helper::system::DataRepository.addFirstPath(directory);
-        std::cout << "added Project directory: " << directory << " in path." << std::endl;
-        std::cout << "added Project directory: " << directory << " in path." << std::endl;
-        m_currentProject->setRootDir(QUrl(directory.c_str()));
+        QDir dir(directory.c_str());
+        sofa::helper::system::DataRepository.addFirstPath(dir.absolutePath().toStdString());
+        std::cout << "added Project directory: " << dir.absolutePath().toStdString() << " in path." << std::endl;
+        m_currentProject->setRootDir(QUrl(dir.absolutePath()));
     }
     else {
         msg_error("SofaQtQuickGUI") << "Cannot open project directory: SofaProject not instantiated";
