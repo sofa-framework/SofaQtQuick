@@ -320,8 +320,6 @@ bool LoaderProcess(SofaBaseScene* sofaScene)
     if(!sofaScene || !sofaScene->sofaSimulation() || sofaScene->path().isEmpty())
         return false;
 
-    std::cout << sofaScene->path().toLatin1().toStdString() << std::endl;
-
     Node::SPtr n = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().toStdString());
     sofaScene->setSofaRootNode(n);
     if( sofaScene->sofaRootNode().get() )

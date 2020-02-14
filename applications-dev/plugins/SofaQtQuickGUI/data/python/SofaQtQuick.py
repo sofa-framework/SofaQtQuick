@@ -79,7 +79,6 @@ def getPythonModuleDocstring(mpath):
         docstring = co.co_consts[0]
     else:
         docstring = ""
-    print(docstring)
     return str(docstring)
 
 

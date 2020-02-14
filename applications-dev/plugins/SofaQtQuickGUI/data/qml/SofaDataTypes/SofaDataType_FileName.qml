@@ -49,9 +49,6 @@ Row {
                 path = path.substring(1, path.length)
             }
         }
-        print("fileUrl " + fileUrl)
-        print("rootDir" + SofaApplication.currentProject.rootDir)
-        print("path " + path)
         return path
     }
 
@@ -131,7 +128,6 @@ Row {
                             onClicked: {
                                 var filename = textField.text.split("/")
                                 filename = filename[filename.length-1]
-                                print(textField.text + "    " + path.text + filename)
                                 SofaApplication.copyFile(textField.text, path.text + filename)
                                 sofaData.value = path.text + filename
                                 textField.text = path.text + filename
@@ -160,19 +156,16 @@ Row {
                 url = SofaApplication.currentProject.rootDir
             }
             if (sofaData.isDirectory()) {
-                print("isDirectory: " + sofaData.isDirectory())
-                var fileUrl = SofaApplication.currentProject.chooseProjectDir("Please Choose a directory:", url).toString().replace("file://", "") + "/"
+                var fileUrl = SofaApplication.currentProject.chooseProjectDir("Please Choose a directory:", url).toString().replace("file://", "")
+                if (fileUrl !== "") fileUrl += "/"
             }
             else
                 fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url).toString().replace("file://", "")
             if (fileUrl === "") return
             sofaData.value = fileUrl;
-            print(fileUrl + "   vs   " + SofaApplication.currentProject.rootDir)
             if (fileUrl.startsWith(SofaApplication.currentProject.rootDir)) {
-                print(fileUrl + "   vs   " + SofaApplication.currentProject.rootDir + "  : Starts with")
                 textField.text = cleanDisplayPath(fileUrl)
             } else {
-                print(fileUrl + "   vs   " + SofaApplication.currentProject.rootDir + "  : NOT Starting with")
                 textField.text = fileUrl
                 importAssetDialog.open()
             }

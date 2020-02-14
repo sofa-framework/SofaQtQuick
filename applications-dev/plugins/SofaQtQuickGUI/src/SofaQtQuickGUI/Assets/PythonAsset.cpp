@@ -169,7 +169,6 @@ void PythonAsset::getDetails()
             continue;
 
         py::dict data = py::cast<py::dict>(pair.second);
-//        std::cout << py2qt(pair.first) << std::endl;
         m_assetsContent[py2qt(pair.first)] = { {{"name", py2qt(pair.first)},
                                                {"type", py2qt(data["type"])},
                                                {"docstring", py2qt(data["docstring"])},

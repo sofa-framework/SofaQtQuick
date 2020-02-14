@@ -207,7 +207,6 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
     QStringList args = settings.value("DefaultEditorParams").toString().replace("${path}", path).replace("${lineno}", line).split(" ");
     QProcess process;
     int ret = process.startDetached(editor, args);
-    std::cout << editor.toStdString() << " " << args.join(" ").toStdString() << std::endl;
     if (ret < 0)
     {
         msg_warning("OpenInEditor") << "Failed to launch chosen editor. Check runSofa2.ini";
@@ -674,7 +673,6 @@ void SofaBaseApplication::setProjectDirectory(const std::string& dir)
         std::string directory = sofa::helper::system::DataRepository.getFile(dir);
         QDir dir(directory.c_str());
         sofa::helper::system::DataRepository.addFirstPath(dir.absolutePath().toStdString());
-        std::cout << "added Project directory: " << dir.absolutePath().toStdString() << " in path." << std::endl;
         m_currentProject->setRootDir(QUrl(dir.absolutePath()));
     }
     else {
