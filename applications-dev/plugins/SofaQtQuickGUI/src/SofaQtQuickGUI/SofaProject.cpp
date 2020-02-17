@@ -118,8 +118,9 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     chdir(m_rootDir.path().toStdString().c_str());
     msg_warning() << "Setting root directory to '" << m_rootDir.path().toStdString()<<"'";
     QFileInfo root = QFileInfo(m_rootDir.path());
-    emit rootDirChanged(m_rootDir);
     scan(root);
+    emit rootDirChanged(m_rootDir);
+    emit rootDirPathChanged(getRootDirPath());
 }
 
 const QUrl& SofaProject::getRootDir() { return m_rootDir;  }
@@ -301,6 +302,9 @@ void SofaProject::updateDirectory(const QFileInfo& finfo)
             scan(nfinfo);
         }
     }
+
+    if (!m_directories[filePath].get())
+        return;
 
     removeDirEntries(*m_directories[filePath].get());
 

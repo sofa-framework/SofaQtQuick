@@ -664,8 +664,6 @@ void SofaBaseApplication::setCurrentProject(sofaqtquick::SofaProject* newProject
     m_currentProject = newProject;
 }
 
-#include <sofa/helper/system/FileRepository.h>
-
 void SofaBaseApplication::setProjectDirectory(const std::string& dir)
 {
     if (m_currentProject)

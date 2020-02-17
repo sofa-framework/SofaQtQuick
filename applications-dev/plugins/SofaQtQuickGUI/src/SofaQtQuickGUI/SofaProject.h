@@ -54,6 +54,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaProject : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QUrl rootDir READ getRootDir WRITE setRootDir NOTIFY rootDirChanged)
+    Q_PROPERTY(QString rootDirPath READ getRootDirPath NOTIFY rootDirPathChanged)
     Q_PROPERTY(bool isDebugPrintEnabled READ getDebug WRITE setDebug NOTIFY debugChanged)
     Q_PROPERTY(SofaBaseScene* scene READ getScene WRITE setScene NOTIFY sceneChanged)
 
@@ -63,6 +64,10 @@ public:
 
     const QUrl& getRootDir();
     void setRootDir(const QUrl& rootDir);
+
+    QString getRootDirPath() {
+        return getRootDir().path();
+    }
 
     Q_INVOKABLE bool getDebug() const;
     Q_INVOKABLE void setDebug(bool state);
@@ -108,6 +113,7 @@ signals:
     void sceneChanged(SofaBaseScene*);
     void filesChanged();
     void rootDirChanged(QUrl& rootDir);
+    void rootDirPathChanged(QString rootDir);
     void debugChanged(bool value);
 
 private:

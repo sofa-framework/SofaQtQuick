@@ -16,19 +16,14 @@ import QtGraphicalEffects 1.12
 import SofaApplication 1.0
 
 Item {
-    property bool isDebugPrintEnabled: self.project.isDebugPrintEnabled
+    property bool isDebugPrintEnabled: SofaApplication.currentProject.isDebugPrintEnabled
 
     onIsDebugPrintEnabledChanged: {
-        self.project.isDebugPrintEnabled = isDebugPrintEnabled
+        SofaApplication.currentProject.isDebugPrintEnabled = isDebugPrintEnabled
     }
 
     id: root
     anchors.fill : parent
-
-    Item {
-        id: self
-        property var project: SofaApplication.currentProject
-    }
 
     Rectangle {
         id: background
@@ -63,7 +58,7 @@ Item {
                 Label {
                     leftPadding: 10
                     text: {
-                        var path = folderModel.folder.toString().replace("file://", "");
+                        var path = folderModel.folder.toString().replace("file://", "").replace("qrc:", "");
                         if (path.split("/")[path.split("/").length -1] === ".")
                             return path.slice(0, path.lastIndexOf("/"))
                         else if (path.split("/")[path.split("/").length -1] === "..") {
@@ -89,7 +84,7 @@ Item {
 
             ProjectViewMenu {
                 id: generalProjectMenu
-                filePath: folderModel.folder.toString().replace("file://", "")
+                filePath: folderModel.folder.toString().replace("file://", "").replace("qrc:", "")
                 visible: false
             }
             MouseArea {
@@ -201,10 +196,10 @@ Item {
                 FolderListModel {
                     id: folderModel
 
-                    property var projectDir: self.project.rootDir
+                    property var projectDir: SofaApplication.currentProject.rootDirPath
                     onProjectDirChanged: {
-                        folderModel.rootFolder = self.project.rootDir
-                        folderModel.folder = self.project.rootDir
+                        folderModel.rootFolder = Qt.binding(function(){ return SofaApplication.currentProject.rootDirPath; })
+                        folderModel.folder = SofaApplication.currentProject.rootDirPath
                     }
 
                     showDirs: true
@@ -212,8 +207,8 @@ Item {
                     showDirsFirst: true
                     showFiles: true
                     caseSensitive: true
-                    folder: ""
-                    nameFilters: self.project.getSupportedTypes()
+                    rootFolder: SofaApplication.currentProject.rootDirPath
+                    nameFilters: SofaApplication.currentProject.getSupportedTypes()
                 }
 
                 property var selectedItem: null
@@ -222,7 +217,6 @@ Item {
 
                     Rectangle {
                         id: wrapper
-                        property var asset: self.project.getAsset(filePath)
 
                         width: root.width
                         height: 20
@@ -242,7 +236,7 @@ Item {
                                         width: 15
                                         height: 15
                                         fillMode: Image.PreserveAspectFit
-                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : wrapper.asset.iconPath
+                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : SofaApplication.currentProject.getAsset(filePath).iconPath
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
@@ -252,7 +246,7 @@ Item {
                                         text: fileName
                                         clip: true
                                         elide: Text.ElideRight
-                                        color: fileIsDir || wrapper.asset.isSofaContent ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
                                         anchors.left: iconId.right
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -262,8 +256,8 @@ Item {
                                     Text {
                                         width: parent.width
                                         leftPadding: 10
-                                        text: fileIsDir ? "Folder" : asset.typeString
-                                        color: fileIsDir || wrapper.asset.isSofaContent ? "#efefef" : "darkgrey"
+                                        text: fileIsDir ? "Folder" : SofaApplication.currentProject.getAsset(filePath).typeString
+                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
 
                                         clip: true
                                         elide: Text.ElideRight
@@ -275,12 +269,12 @@ Item {
                                     Text {
                                         width: parent.width
                                         leftPadding: 10
-                                        text: fileIsDir ? self.project.getFileCount(fileURL) :
+                                        text: fileIsDir ? SofaApplication.currentProject.getFileCount(fileURL) :
                                                           (fileSize > 1e9) ? (fileSize / 1e9).toFixed(1) + " G" :
                                                                              (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
                                                                                                 (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
                                                                                                                    fileSize + " bytes"
-                                        color: fileIsDir || wrapper.asset.isSofaContent ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -295,7 +289,7 @@ Item {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
                             fileIsDir: index !== -1 ? folderModel.get(index, "fileIsDir") : ""
-                            model: folderModel.get(index, "fileIsDir") ? null : self.project.getAsset(filePath)
+                            model: folderModel.get(index, "fileIsDir") ? null : SofaApplication.currentProject.getAsset(filePath)
                         }
 
                         MouseArea {
@@ -315,7 +309,7 @@ Item {
                                 if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
                                 if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
 
-                                var newNode = self.project.getAsset(folderModel.get(index, "filePath")).create(_parent)
+                                var newNode = SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath")).create(_parent)
                                 var hasNodes = newNode.getChildren().size()
                                 console.error("ParentNode type: " + _parent)
                                 console.error("newNode type: " + newNode)
@@ -334,7 +328,7 @@ Item {
                                 if (folderModel.isFolder(index)) {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
-                                    if (self.project.getAsset(folderModel.get(index, "filePath")).isScene) {
+                                    if (SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath")).isScene) {
                                         SofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                     else {
@@ -355,15 +349,14 @@ Item {
                                 else if (Qt.LeftButton === mouse.button)
                                 {
                                     folderView.selectedItem = wrapper
-                                    wrapper.asset = self.project.getAsset(folderModel.get(index, "filePath"))
-                                    SofaApplication.currentProject.selectedAsset = wrapper.asset;
+                                    SofaApplication.currentProject.selectedAsset = SofaApplication.currentProject.getAsset(filePath);
                                 }
                             }
 
                             drag.target: draggedData
                             drag.onActiveChanged: {
                                 if (drag.active)
-                                    draggedData.asset = wrapper.asset
+                                    draggedData.asset = SofaApplication.currentProject.getAsset(filePath)
                             }
 
                             DraggableAssetItem {
