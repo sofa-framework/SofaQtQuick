@@ -152,6 +152,7 @@ Item //
     property var currentProject : SofaProject {
         property var selectedAsset: null
         rootDir: projectSettings.currentProject()
+
         scene: sofaScene
         Component.onCompleted: {
             SofaBaseApplicationSingleton.currentProject = currentProject;
@@ -164,6 +165,7 @@ Item //
         property string recentProjects
 
         function addRecent(path) {
+            path = path.toString().replace("file://", "").replace("qrc:", "")
             recentProjects = path + ";" + recentProjects.replace(path + ";", "");
         }
         function currentProject() {
@@ -181,6 +183,7 @@ Item //
         property string sofaSceneRecents      // recently opened sofa scenes
 
         function addRecent(path) {
+            path = path.toString().replace("file://", "").replace("qrc:", "")
             sofaSceneRecents = path + ";" + sofaSceneRecents.replace(path + ";", "");
         }
 

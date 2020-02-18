@@ -160,8 +160,8 @@ Menu {
 
             onTriggered: {
                 projectMenu.visible = false
-                SofaApplication.projectSettings.addRecent(filePath)
                 SofaApplication.currentProject.rootDir = filePath
+                SofaApplication.projectSettings.addRecent(SofaApplication.currentProject.rootDirPath)
             }
         }
     }

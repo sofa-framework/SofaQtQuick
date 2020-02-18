@@ -664,8 +664,6 @@ void SofaBaseApplication::setCurrentProject(sofaqtquick::SofaProject* newProject
     m_currentProject = newProject;
 }
 
-#include <sofa/helper/system/FileRepository.h>
-
 void SofaBaseApplication::setProjectDirectory(const std::string& dir)
 {
     if (m_currentProject)
@@ -1168,6 +1166,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
     // compute command line arguments
     QCommandLineParser parser;
     QCommandLineOption sceneOption(QStringList() << "s" << "scene", "Load with this scene", "file");
+    QCommandLineOption projectOption(QStringList() << "p" << "project", "Load with this project", "directory");
     QCommandLineOption guiConfigOption(QStringList() << "gc" << "guiconfig", "Load with this GUI configuration (absolute path to an ini file OR a config name)", "guiconfig");
     QCommandLineOption animateOption(QStringList() << "a" << "animate", "Start in animate mode");
     QCommandLineOption fullscreenOption(QStringList() << "f" << "fullscreen", "Fullscreen mode");
@@ -1176,6 +1175,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
     QCommandLineOption logTimeOption(QStringList() << "log", "Log time during simulation");
     
     parser.addOption(sceneOption);
+    parser.addOption(projectOption);
     parser.addOption(guiConfigOption);
     parser.addOption(animateOption);
     parser.addOption(fullscreenOption);
@@ -1268,6 +1268,8 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
         if(!window)
             continue;
 
+        if (parser.isSet(projectOption))
+            OurInstance->getCurrentProject()->setRootDir(parser.value(projectOption));
         if(parser.isSet(animateOption) || parser.isSet(sceneOption))
         {
             SofaBaseScene* sofaScene = object->findChild<SofaBaseScene*>();

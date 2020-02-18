@@ -8,10 +8,10 @@ import SofaBasics 1.0
 import SofaViewListModel 1.0
 import GraphView 1.0
 import ProfilerView 1.0
+import SofaApplication 1.0
 
 MenuBar {
     id: menuBar
-    property var sofaApplication: null
 
     Menu {
         id: fileMenuID
@@ -29,9 +29,9 @@ MenuBar {
             }
 
             function openDialog() {
-                sofaApplication.currentProject.newProject()
-                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
-                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
+                SofaApplication.currentProject.newProject()
+                SofaApplication.sceneSettings.addRecent(SofaApplication.sofaScene.source)
+                SofaApplication.projectSettings.addRecent(SofaApplication.currentProject.rootDirPath)
             }
             Shortcut {
                 sequence: StandardKey.New
@@ -47,9 +47,9 @@ MenuBar {
             text: qsTr("Open Project...")
 
             function openDialog() {
-                sofaApplication.currentProject.openProject()
-                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
-                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
+                SofaApplication.currentProject.openProject()
+                SofaApplication.sceneSettings.addRecent(SofaApplication.sofaScene.source)
+                SofaApplication.projectSettings.addRecent(SofaApplication.currentProject.rootDirPath)
             }
             Shortcut {
                 sequence: StandardKey.Open
@@ -66,9 +66,8 @@ MenuBar {
             text: qsTr("Import Project...")
 
             onTriggered: {
-                sofaApplication.currentProject.importProject();
-                sofaApplication.sceneSettings.addRecent(sofaApplication.sofaScene.source)
-                sofaApplication.projectSettings.addRecent(sofaApplication.currentProject.rootDir)
+                SofaApplication.currentProject.importProject();
+                SofaApplication.sceneSettings.addRecent(SofaApplication.sofaScene.source)
 
             }
         }
@@ -77,7 +76,7 @@ MenuBar {
             id: exportProject
             text: qsTr("Export Current Project")
             onTriggered: {
-                sofaApplication.currentProject.exportProject()
+                SofaApplication.currentProject.exportProject()
             }
         }
 
@@ -98,11 +97,11 @@ MenuBar {
             Shortcut {
                 sequence: StandardKey.Open
                 context: Qt.ApplicationShortcut
-                onActivated: sofaApplication.sofaScene.openScene(sofaApplication.currentProject.rootDir);
+                onActivated: SofaApplication.sofaScene.openScene(SofaApplication.currentProject.rootDir);
 
             }
             onTriggered: {
-                sofaApplication.sofaScene.openScene(sofaApplication.currentProject.rootDir);
+                SofaApplication.sofaScene.openScene(SofaApplication.currentProject.rootDir);
             }
 
         }
@@ -111,11 +110,11 @@ MenuBar {
         Menu {
             id: recentMenu
             title: "Open recent"
-            enabled: sofaApplication.sceneSettings.sofaSceneRecents !== ""
+            enabled: SofaApplication.sceneSettings.sofaSceneRecents !== ""
 
             implicitHeight: contentHeight
             ListModel { id: scenesModel }
-            property var modelList: sofaApplication.sceneSettings.sofaSceneRecents
+            property var modelList: SofaApplication.sceneSettings.sofaSceneRecents
             onModelListChanged: {
                 scenesModel.clear()
                 var mlist = modelList.split(";")
@@ -134,17 +133,17 @@ MenuBar {
                         text: model.index + " - " + model.title
                         onTriggered: {
                             fileMenuID.close()
-                           sofaApplication.sofaScene.source = model.fileUrl
+                           SofaApplication.sofaScene.source = model.fileUrl
                         }
                     }
                 }
-                MenuSeparator { visible: sofaApplication.sceneSettings.sofaSceneRecents !== "" }
+                MenuSeparator { visible: SofaApplication.sceneSettings.sofaSceneRecents !== "" }
                 MenuItem {
-                    enabled: sofaApplication.sceneSettings.sofaSceneRecents !== ""
+                    enabled: SofaApplication.sceneSettings.sofaSceneRecents !== ""
                     text: "Clear Recents"
                     onTriggered: {
                         fileMenuID.close()
-                        sofaApplication.sceneSettings.sofaSceneRecents = ""
+                        SofaApplication.sceneSettings.sofaSceneRecents = ""
                     }
                 }
             }
@@ -156,11 +155,11 @@ MenuBar {
             Shortcut {
                 sequence: StandardKey.Refresh
                 context: Qt.ApplicationShortcut
-                onActivated: sofaApplication.sofaScene.reloadScene()
+                onActivated: SofaApplication.sofaScene.reloadScene()
             }
             onTriggered: {
                 fileMenuID.close()
-                sofaApplication.sofaScene.reloadScene()
+                SofaApplication.sofaScene.reloadScene()
             }
         }
 
@@ -172,10 +171,10 @@ MenuBar {
                 id: saveDialog
                 title: "Overwrite?"
                 icon: StandardIcon.Question
-                text: sofaApplication.sofaScene.path + " already exists. Replace?"
+                text: SofaApplication.sofaScene.path + " already exists. Replace?"
                 detailedText: "The previous version of the file will be backed up in a separate file suffixed '.backup'"
                 standardButtons: StandardButton.Yes | StandardButton.Abort
-                onYes: sofaApplication.sofaScene.saveScene()
+                onYes: SofaApplication.sofaScene.saveScene()
             }
 
             Shortcut {
@@ -194,14 +193,14 @@ MenuBar {
             Shortcut {
                 sequence: StandardKey.SaveAs
                 context: Qt.ApplicationShortcut
-                onActivated: sofaApplication.sofaScene.saveSceneAs(sofaApplication.currentProject.rootDir)
+                onActivated: SofaApplication.sofaScene.saveSceneAs(SofaApplication.currentProject.rootDir)
             }
-            onTriggered: sofaApplication.sofaScene.saveSceneAs(sofaApplication.currentProject.rootDir)
+            onTriggered: SofaApplication.sofaScene.saveSceneAs(SofaApplication.currentProject.rootDir)
         }
         MenuItem {
             text: "Export as...(TODO)"
             enabled : false
-            onTriggered: sofaApplication.sofaScene.exportSceneAs(sofaApplication.currentProject.rootDir)
+            onTriggered: SofaApplication.sofaScene.exportSceneAs(SofaApplication.currentProject.rootDir)
         }
 
 
@@ -210,7 +209,7 @@ MenuBar {
             text: "&New Scene..."
             enabled: true
             onTriggered: {
-                sofaApplication.sofaScene.newScene()
+                SofaApplication.sofaScene.newScene()
             }
         }
         MenuSeparator {}
@@ -290,7 +289,7 @@ MenuBar {
             MenuSeparator {}
 
             Repeater {
-                model: sofaApplication.sofaViewListModel
+                model: SofaApplication.sofaViewListModel
                 MenuItem {
                     text: model.name
                     onTriggered: {
@@ -354,7 +353,7 @@ MenuBar {
                 modality: Qt.NonModal
                 flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                 visible: true
-                color: sofaApplication.style.contentBackgroundColor
+                color: SofaApplication.style.contentBackgroundColor
 
                 Loader {
                     id: loader
@@ -377,7 +376,7 @@ MenuBar {
                 modality: Qt.NonModal
                 flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                 visible: true
-                color: sofaApplication.style.contentBackgroundColor
+                color: SofaApplication.style.contentBackgroundColor
 
                 Loader {
                     id: loader

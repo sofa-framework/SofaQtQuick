@@ -65,7 +65,6 @@ ApplicationWindow {
 
     menuBar: DefaultMenuBar {
         id: menuBar
-        sofaApplication: SofaApplication
     }
 
     header: DefaultToolBar {
