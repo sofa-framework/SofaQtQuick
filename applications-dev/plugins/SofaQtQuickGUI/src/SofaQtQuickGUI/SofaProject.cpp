@@ -24,6 +24,7 @@ using sofapython3::PythonFactory;
 #include <QMessageBox>
 #include <QFileSystemWatcher>
 #include <QTimer>
+#include <QSettings>
 
 #include "Assets/DirectoryAsset.h"
 #include "Assets/AssetFactory.h"
@@ -111,6 +112,13 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     if(rootDir.isEmpty())
         return;
 
+    if (m_projectSettings != nullptr)
+    {
+        m_projectSettings->sync();
+        delete m_projectSettings;
+    }
+    m_projectSettings = new QSettings(rootDir.path()+"/"+QFileInfo(rootDir.path()).baseName()+".ini", QSettings::IniFormat);
+
     m_rootDir = rootDir;
     m_assets.clear();
     m_directories.clear();
@@ -121,6 +129,17 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     scan(root);
     emit rootDirChanged(m_rootDir);
     emit rootDirPathChanged(getRootDirPath());
+
+    QDir dir(m_rootDir.path());
+    QUrl url("file://" + m_rootDir.path() + "/scenes/" + dir.dirName() + ".py");
+    auto lastOpened = m_projectSettings->value("lastOpened", "").toString();
+    if (lastOpened != "" && QFileInfo(lastOpened).exists())
+        url = lastOpened;
+    else if (QFileInfo(url.path()).exists())
+        m_projectSettings->setValue("lastOpened", url.path());
+    if (m_currentScene)
+        m_currentScene->setSource(url);
+
 }
 
 const QUrl& SofaProject::getRootDir() { return m_rootDir;  }
@@ -173,14 +192,11 @@ void SofaProject::newProject()
 void SofaProject::openProject()
 {
     auto options = QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
-    auto folder = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().path(), options);
-    if (folder == "")
+    auto projectDir = QFileDialog::getExistingDirectory(nullptr, tr("Choose project location:"), getRootDir().path(), options);
+    if (projectDir == "")
         return;
-    setRootDir(folder);
-    QDir dir(folder);
-    QUrl url("file://" + folder + "/scenes/" + dir.dirName() + ".py");
 
-    m_currentScene->setSource(url);
+    setRootDir(projectDir);
 }
 
 void SofaProject::importProject()
@@ -191,11 +207,8 @@ void SofaProject::importProject()
     if (!file.isValid())
         return;
     auto projectDir = importProject(file);
-    setRootDir(projectDir);
-    QDir dir(projectDir);
-    QUrl url("file://" + projectDir + "/scenes/" + dir.dirName() + ".py");
 
-    m_currentScene->setSource(url);
+    setRootDir(projectDir);
 }
 
 QString SofaProject::importProject(const QUrl& srcUrl)
@@ -336,8 +349,17 @@ void SofaProject::removeDirEntries(DirectoryAsset& folder)
             if(wasFile)
             {
                 msg_info() << "removing: " << cfinfo.absoluteFilePath().toStdString();
+                auto t = m_assets[cfinfo.absoluteFilePath()]->getTypeString().replace(" ", "_");
+                if (m_projectSettings)
+                {
+                    m_projectSettings->beginGroup("assets");
+                    m_projectSettings->setValue(t, m_projectSettings->value(t,"").toString().replace(";"+cfinfo.absoluteFilePath(), ""));
+                    m_projectSettings->setValue("scenes", m_projectSettings->value("scenes","").toString().replace(";"+cfinfo.absoluteFilePath(), ""));
+                    m_projectSettings->endGroup();
+                }
                 m_assets.remove(cfinfo.absoluteFilePath());
-            }else
+            }
+            else
             {
                 msg_info() << "removing: " << cfinfo.absoluteFilePath().toStdString();
                 removeDirEntries(*m_directories[cfinfo.absoluteFilePath()].get());
@@ -349,7 +371,11 @@ void SofaProject::removeDirEntries(DirectoryAsset& folder)
 
 bool SofaProject::isFileExcluded(const QFileInfo &finfo)
 {
-    return finfo.fileName() == "." || finfo.fileName() == ".." || finfo.fileName() == "__pycache__";
+    return finfo.fileName() == "." || finfo.fileName() == ".."  // . and ..
+            || finfo.fileName() == "__pycache__"  // cached python folder
+            || finfo.fileName().endsWith(".pyc")  // precompiled python scripts
+            || (finfo.fileName().startsWith("#") && finfo.fileName().endsWith("#")) // autosaved emacs files
+            || finfo.fileName().endsWith("~");  // backup emacs files
 }
 
 void SofaProject::scan(const QUrl& folder)
@@ -369,14 +395,21 @@ void SofaProject::scan(const QFileInfo& file)
     if (m_directories.contains(filePath))
         return;
 
-    msg_info() << "starting monitoring: " << file.absoluteFilePath().toStdString() ;
+    msg_info() << "starting monitoring: " << file.absoluteFilePath().toStdString();
     m_watcher->addPath(file.absoluteFilePath());
 
     /// The file needs to be added
     if(file.isFile())
     {
-        msg_info() << "register asset: " << file.absoluteFilePath().toStdString() ;
+        msg_info() << "register asset: " << file.absoluteFilePath().toStdString();
         m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
+        auto t = m_assets[filePath]->isScene() ? "scenes" : m_assets[filePath]->getTypeString().replace(" ", "_");
+        if (m_projectSettings)
+        {
+            m_projectSettings->beginGroup("assets");
+            m_projectSettings->setValue(t, m_projectSettings->value(t,"").toString().replace(";"+filePath, "")+";"+filePath);
+            m_projectSettings->endGroup();
+        }
         return;
     }
 
@@ -431,6 +464,13 @@ QString SofaProject::createProject(const QUrl& dir)
 {
     msg_error_when(createProjectTree(dir), "SofaProject::createProject()")
             << "Could not create directory tree for the new project";
+
+    if (m_projectSettings != nullptr)
+    {
+        m_projectSettings->sync();
+        delete m_projectSettings;
+    }
+    m_projectSettings = new QSettings(dir.path()+"/"+QFileInfo(dir.path()).baseName()+".ini", QSettings::IniFormat);
 
     QString fileName = dir.path() + "/scenes/" + QFileInfo(dir.path()).baseName() + ".py";
     QString scriptContent = readScriptTemplate(QFileInfo(dir.path()).baseName(), QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/emptyScene.py"));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QSettings>
 #include <QDir>
 #include <QMap>
 #include <QUrl>
@@ -126,6 +127,7 @@ private:
 
     QMap<QString, std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
     QMap<QString, std::shared_ptr<DirectoryAsset> > m_directories;
+    QSettings* m_projectSettings {nullptr};
 
     ProjectMonitor* m_watcher {nullptr};
     bool m_debug {false};

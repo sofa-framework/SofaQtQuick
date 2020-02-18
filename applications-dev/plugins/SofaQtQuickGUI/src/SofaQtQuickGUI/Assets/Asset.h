@@ -44,13 +44,14 @@ class Asset : public QObject
 
     QDateTime getLastModified() { return m_lastModified; }
     void setLastModified(const QDateTime& t) { m_lastModified = t; }
-  protected:
+
+    virtual bool isScene() { return false; }
     Q_INVOKABLE virtual QString getTypeString() { return "Unknown file format"; }
     Q_INVOKABLE virtual QUrl getIconPath() { return QUrl("qrc:/icon/ICON_FILE_BLANK"); }
     Q_INVOKABLE virtual bool getIsSofaContent() { return false; }
-
     Q_INVOKABLE QString path() { return QString(m_path.c_str()); }
-    virtual bool isScene() { return false; }
+
+protected:
 
     Q_SIGNAL void typeStringChanged(const QUrl& type);
     Q_SIGNAL void iconPathChanged(const QUrl& path);
