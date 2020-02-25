@@ -22,7 +22,12 @@ void SofaDataContainerListModel::insertRow(QVariantList list)
     insertRow(0, QModelIndex());
     endInsertRows();
     for (int i = 0 ; i < nCols() ; ++i)
-        setData(createIndex(nRows() - 1, 0, nullptr), list.at(i), i+1);
+        if (i > list.size())
+            setData(createIndex(nRows() - 1, 0, nullptr), 0, i+1);
+        else {
+            setData(createIndex(nRows() - 1, 0, nullptr), list.at(i), i+1);
+            std::cout << list.at(i).toString().toStdString() << std::endl;
+        }
     if (!m_asGridViewModel) {
         /// ugly hack to keep an accurate number of rows when displaying in a QtQuick.Controls 1.X TableView...
         beginRemoveRows(QModelIndex(), nRows() -1, nRows() -1);

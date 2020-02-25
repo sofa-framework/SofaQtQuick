@@ -79,10 +79,11 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(sofaqtquick::bindings::SofaNo
     /// Initialize the object
     node->init(sofa::core::ExecParams::defaultInstance());
 
-    /// Initialize the object assets.
-    node->execute<VisualInitVisitor>(nullptr);
-
     parent->self()->addChild(node);
+
+    /// Initialize the object assets.
+
+    node->execute<VisualInitVisitor>(nullptr);
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 
