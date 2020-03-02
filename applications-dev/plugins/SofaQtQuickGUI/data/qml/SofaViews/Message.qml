@@ -61,15 +61,17 @@ Column {
         }
         IconButton {
             id: buttonClearHistory
+            width: 14
+            height: 14
             anchors.left: hname.right
-            anchors.top: header.top
-            anchors.bottom: header.bottom
-            iconSource: "qrc:/icon/invalid.png"
+            anchors.verticalCenter: parent.verticalCenter
+            iconSource: "qrc:/icon/clear.png"
             onClicked: SofaApplication.sofaMessageList.clear();
         }
 
         ComboBox {
             anchors.left: buttonClearHistory.right
+            anchors.leftMargin: 4
             anchors.top: header.top
             anchors.bottom: header.bottom
             width: 150
@@ -79,6 +81,15 @@ Column {
                 filterByComponent = index!==0
             }
         }
+        CheckBox {
+            id: buttonShowEmittingLocation
+            anchors.right: header.right
+            anchors.top: header.top
+            anchors.bottom: header.bottom
+            anchors.leftMargin: 6
+            anchors.rightMargin: 6
+            checked: false
+        }
         Text {
             id: checkBoxLabel
             text : "Show details:"
@@ -87,14 +98,6 @@ Column {
             anchors.bottom: header.bottom
             anchors.leftMargin: 6
             anchors.rightMargin: 6
-        }
-        CheckBox {
-            id: buttonShowEmittingLocation
-            anchors.right: header.right
-            anchors.top: header.top
-            anchors.leftMargin: 6
-            anchors.rightMargin: 6
-            checked: false
         }
     }
 
@@ -220,7 +223,7 @@ Column {
                                     width: 16
                                     height: 16
                                     enabled: link !== "undefined"
-
+                                    anchors.verticalCenter: parent.verticalCenter
                                     iconSource: "qrc:/icon/ICON_LEAVE.png"
                                     useHoverOpacity: false
                                     ColorOverlay {
