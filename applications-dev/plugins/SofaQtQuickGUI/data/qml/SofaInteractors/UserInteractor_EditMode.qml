@@ -21,7 +21,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 import SofaBasics 1.0
 import SofaApplication 1.0
-
+import SofaDataContainerListModel 1.0
 
 UserInteractor {
     id: root
@@ -149,11 +149,32 @@ UserInteractor {
 
 
     property var currentManipulator: null
+    property var model: SofaDataContainerListModel {
+        asGridViewModel: false
+    }
+    property var ctrlPressed: false
 
     function init() {
         moveCamera_init();
+
+        addKeyPressedMapping(Qt.Key_Control, function(key, sofaViewer) {
+            ctrlPressed = true
+        })
+        addKeyReleasedMapping(Qt.Key_Control, function(key, sofaViewer) {
+            ctrlPressed = false
+        })
+
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            console.log("Mouse pressed")
+        })
+        addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
+            if (ctrlPressed) {
+                var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
+                if(selectable && selectable.sofaComponent) {
+                    model.sofaData = SofaApplication.selectedComponent.findData("position")
+                    var p = selectable.position
+                    model.insertRow([p.x, p.y, p.z])
+                }
+            }
             var particle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));
             if(particle) {
                 console.log("particle found")

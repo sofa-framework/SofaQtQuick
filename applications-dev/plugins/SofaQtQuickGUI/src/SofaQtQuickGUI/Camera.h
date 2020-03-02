@@ -36,7 +36,7 @@ class SOFA_SOFAQTQUICKGUI_API Camera : public QObject
 
 public:
     explicit Camera(QObject* parent = nullptr);
-	~Camera();
+    ~Camera();
 
     Q_PROPERTY(double zNear READ zNear WRITE setZNear NOTIFY zNearChanged)
     Q_PROPERTY(double zFar READ zFar WRITE setZFar NOTIFY zFarChanged)
@@ -128,16 +128,16 @@ protected:
     double              myOrthoTop;
     double				myPerspectiveFovY;
     double				myAspectRatio;
-	double				myZNear;
-	double				myZFar;
+    double				myZNear;
+    double				myZFar;
 
-	mutable QMatrix4x4	myProjection;
+    mutable QMatrix4x4	myProjection;
     mutable QMatrix4x4	myView;
     mutable QMatrix4x4  myModel;
 
     QVector3D           myTarget;
 
-	mutable bool		myProjectionDirty;
+    mutable bool		myProjectionDirty;
     mutable bool		myViewDirty;
 
 private:
@@ -211,8 +211,8 @@ inline void Camera::setOrthographic(bool newOrthographic)
 
         if(0.0 == myZNear && 0.0 == myZFar)
         {
-            setZNear(0.1);
-            setZFar(1000.0);
+            setZNear(0.0001);
+            setZFar(1000000.0);
         }
         else if(0.0 == myZNear)
             setZNear(myZFar * 0.0001);
