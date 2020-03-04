@@ -78,6 +78,8 @@ public:
     Q_INVOKABLE SofaBaseObject* addObject(const QString& type,
                                              const QVariantMap& arguments);
     Q_INVOKABLE SofaNode* addChild(QString name);
+    Q_INVOKABLE bool addChild(BaseNode* node);
+
 
     Q_INVOKABLE SofaNode* getChild(QString name) const;
     Q_INVOKABLE void removeChild(SofaNode* node);
@@ -97,9 +99,9 @@ public:
     Q_INVOKABLE bool hasMessageInChild() const;
     Q_INVOKABLE SofaBase* getFirstChildWithMessage() const;
 
-    Q_INVOKABLE void addChild(SofaNode* child);
+    Q_INVOKABLE bool addChild(SofaNode* child);
     Q_INVOKABLE void copyTo(SofaNode* child);
-    Q_INVOKABLE void addObject(SofaBaseObject* obj);
+    Q_INVOKABLE bool addObject(SofaBaseObject* obj);
 
     Q_INVOKABLE void moveChild(SofaNode* node, SofaNode* prev_parent);
     Q_INVOKABLE void moveObject(SofaBaseObject* obj);

@@ -39,6 +39,7 @@ using sofa::core::ExecParams;
 
 #include <SofaQtQuickGUI/DataHelper.h>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <SofaPython3/Prefab.h>
 
 
@@ -114,6 +115,28 @@ SofaNode* SofaNode::addChild(QString name)
         return nullptr;
 
     return wrap(sofa::core::objectmodel::New<DAGNode>(name.toStdString(), self()));
+}
+
+bool SofaNode::addChild(BaseNode* node)
+{
+    if (isInAPrefab() && !attemptToBreakPrefab())
+        return false;
+
+    if (self()->getChild(node->getName()) != nullptr)
+    {
+        bool ok;
+        const QString name = QInputDialog::getText(nullptr,
+                                                      tr("A sibling with the same name exists"),
+                                                      tr("Please rename: "),
+                                                      QLineEdit::Normal,
+                                                      "New Name", &ok);
+        if (ok && name.toStdString() != node->getName())
+            node->setName(name.toStdString());
+        else
+            return false;
+    }
+    self()->addChild(node);
+    return true;
 }
 
 SofaNode* SofaNode::getFirstParent() const
@@ -293,28 +316,42 @@ bool SofaNode::attemptToBreakPrefab()
 }
 
 
-void SofaNode::addChild(SofaNode* child)
+bool SofaNode::addChild(SofaNode* child)
 {
-    if (isInAPrefab() && !attemptToBreakPrefab())
-        return;
     if(child==nullptr)
     {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaNode");
-        return;
+        return false;
     }
-    self()->addChild(child->selfptr());
+    return this->addChild(child->self());
 }
 
-void SofaNode::addObject(SofaBaseObject* obj)
+bool SofaNode::addObject(SofaBaseObject* obj)
 {
     if (isInAPrefab() && !attemptToBreakPrefab())
-        return;
+        return false;
     if(obj==nullptr)
     {
         SofaCoreBindingContext::getQQmlEngine()->throwError(QJSValue::GenericError, "Cannot add a null SofaBaseObject.");
-        return;
+        return false;
     }
+
+    if (dynamic_cast<sofa::simulation::Node*>(self())->getObject(obj->getName().toStdString()) != nullptr)
+    {
+        bool ok;
+        const QString name = QInputDialog::getText(nullptr,
+                                                      tr("A sibling with the same name exists"),
+                                                      tr("Please rename: "),
+                                                      QLineEdit::Normal,
+                                                      "New Name", &ok);
+        if (ok && name != obj->getName())
+            obj->setName(name);
+        else
+            return false;
+    }
+
     self()->addObject(obj->selfptr());
+    return true;
 }
 
 void SofaNode::copyTo(SofaNode* node)
