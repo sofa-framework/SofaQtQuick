@@ -62,7 +62,10 @@ Item {
                 }
             }
         }
-        Loader { id: loader }
+        Loader {
+            id: loader
+            anchors.fill: parent
+        }
     }
     ControlsBackground {
         id: controlSwitch

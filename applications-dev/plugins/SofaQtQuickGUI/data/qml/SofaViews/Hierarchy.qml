@@ -332,6 +332,7 @@ Rectangle {
             storeExpandedState(index)
         }
 
+
         itemDelegate: Rectangle {
             id: itemDelegateID
             property string origin: "Hierarchy"
@@ -532,6 +533,7 @@ Rectangle {
                         SofaApplication.selectedComponent = c;
                         treeView.__listView.positionViewAtIndex(index, "EnsureVisible")
 
+                        forceActiveFocus()
                         return
                     }
 
@@ -541,8 +543,22 @@ Rectangle {
                                                    "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
                 }
+                onActiveFocusChanged: {
+                    print("Active Focus changed")
+                }
+                Keys.onPressed: {
+                    print("DELETING List")
+                    var idx = sceneModel.mapToSource(styleData.index)
+                    var parent = basemodel.getBaseFromIndex(idx);
+                    var item = basemodel.getBaseFromIndex(idx);
+                    parent.removeObject(item);
+                }
                 z: 1
             }
+
+
+
+
 
             IconButton {
                 /// Window that contains the object message. The windows is only created when the menu item

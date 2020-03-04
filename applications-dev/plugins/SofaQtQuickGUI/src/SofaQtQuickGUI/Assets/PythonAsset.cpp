@@ -116,7 +116,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
 
         if(isContextFree)
         {
-            parent->addChild( new SofaNode(sofa::simulation::graph::DAGNode::SPtr(resnode)) );
+            parent->addChild(resnode);
         }
         resnode->init(sofa::core::ExecParams::defaultInstance());
         return new sofaqtquick::bindings::SofaNode(resnode, dynamic_cast<QObject*>(this));

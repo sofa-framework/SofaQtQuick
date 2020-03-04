@@ -418,20 +418,28 @@ EditView
     // toolpanel
     SidePanel {
         id: toolPanel
-
-        control: ScrollView {
-            anchors.fill: parent
-            id: scrollview
-            contentHeight: toolPanel.implicitHeight
-            implicitWidth: toolPanel.implicitWidth
-            Flickable {
+        control: Flickable {
                 id: flick
-                implicitWidth: toolPanel.implicitWidth
-                contentHeight: toolPanel.implicitHeight
+                clip: true
+                flickableDirection: Flickable.VerticalFlick
+                boundsMovement: Flickable.StopAtBounds
+                contentHeight: panelColumn.height + 50
+                contentWidth: panelColumn.implicitWidth
 
+                ScrollBar.horizontal: ScrollBar {
+                    policy: ScrollBar.AlwaysOff
+                }
+
+                ScrollBar.vertical: VerticalScrollbar {
+                    id: scrollbar
+                    content: panelColumn
+                }
+                anchors.fill: parent
+                anchors.leftMargin: 5
+                anchors.topMargin: 5
                 Column {
                     id: panelColumn
-                    width: toolPanel.implicitWidth
+                    implicitWidth: scrollbar.visible ? flick.implicitWidth - 12 : flick.implicitWidth - 5
                     spacing: 5
 
                     GroupBox {
@@ -1145,7 +1153,6 @@ EditView
                 }
             }
         }
-    }
 
     IconComboBox {
         id: modes
