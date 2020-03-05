@@ -75,10 +75,6 @@ CameraView {
         SofaApplication.removeSofaViewer(root);
     }
 
-    onActiveFocusChanged: {
-        if(activeFocus)
-            SofaApplication.setFocusedSofaViewer(root);
-    }
 
     Connections {
         target: SofaApplication
@@ -278,6 +274,13 @@ CameraView {
             if(root.sofaScene)
                 root.sofaScene.mouseMove(mouse, root);
         }
+
+
+        onActiveFocusChanged: {
+            if(activeFocus) {
+                SofaApplication.setFocusedSofaViewer(root);
+            }
+        }
     }
 
     // keyboard interaction forwarded to the sofaScene.
@@ -357,7 +360,8 @@ CameraView {
         }
     }
 
-    property bool highlightIfFocused: SofaApplication.sofaViewers.length > 1
+    property bool highlightIfFocused: SofaApplication.sofaViewers.length >= 1
+
     Rectangle {
         id: borderHighlighting
         anchors.fill: parent
@@ -369,9 +373,13 @@ CameraView {
         enabled: root.highlightIfFocused && root === SofaApplication.focusedSofaViewer
         onEnabledChanged: {
             if(enabled)
+            {
                 visible = true;
+            }
             else
+            {
                 visible = false;
+            }
         }
 
         onVisibleChanged: if(!visible) opacity = 0.0

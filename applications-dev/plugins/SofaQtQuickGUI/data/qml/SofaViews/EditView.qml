@@ -79,10 +79,6 @@ EditView
         SofaApplication.removeSofaViewer(root);
     }
 
-    onActiveFocusChanged: {
-        if(activeFocus)
-            SofaApplication.setFocusedSofaViewer(root);
-    }
 
     Connections {
         target: SofaApplication
@@ -281,6 +277,12 @@ EditView
         onPositionChanged: {
             SofaApplication.interactorComponent.mouseMoved(mouse, root);
         }
+
+        onActiveFocusChanged: {
+            if(activeFocus) {
+                SofaApplication.setFocusedSofaViewer(root);
+            }
+        }
     }
 
     // keyboard interaction
@@ -356,7 +358,8 @@ EditView
         }
     }
 
-    property bool highlightIfFocused: SofaApplication.SofaViewers ? SofaApplication.SofaViewers.length > 1 : false
+    property bool highlightIfFocused: SofaApplication.sofaViewers.length >= 1
+
     Rectangle {
         id: borderHighlighting
         anchors.fill: parent
@@ -439,7 +442,7 @@ EditView
                 anchors.topMargin: 5
                 Column {
                     id: panelColumn
-                    implicitWidth: scrollbar.visible ? flick.implicitWidth - 12 : flick.implicitWidth - 5
+                    width: scrollbar.visible ? flick.implicitWidth - 12 : flick.implicitWidth - 5
                     spacing: 5
 
                     GroupBox {
