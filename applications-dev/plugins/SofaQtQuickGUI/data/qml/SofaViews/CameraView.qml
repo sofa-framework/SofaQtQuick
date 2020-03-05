@@ -75,6 +75,14 @@ CameraView {
         SofaApplication.removeSofaViewer(root);
     }
 
+    Connections {
+        target: sofaScene
+        onAnimateChanged: {
+            if (sofaScene.animate) {
+                animateBorder.running = true
+            }
+        }
+    }
 
     Connections {
         target: SofaApplication
@@ -370,35 +378,51 @@ CameraView {
         border.width: 2
         border.color: "red"
 
-        enabled: root.highlightIfFocused && root === SofaApplication.focusedSofaViewer
-        onEnabledChanged: {
-            if(enabled)
-            {
-                visible = true;
-            }
-            else
-            {
-                visible = false;
+        enabled: {
+            if (root.highlightIfFocused) {
+                if (root === SofaApplication.focusedSofaViewer)
+                    return true;
+                if (SofaApplication.focusedSofaViewer === null && indexCameraComboBox.currentIndex == 0)
+                    return true;
+                return false
             }
         }
+        visible: enabled
 
         onVisibleChanged: if(!visible) opacity = 0.0
+        opacity: 0
 
         SequentialAnimation {
-            running: borderHighlighting.visible
+            id: animateBorder
+            running: sofaScene.animate
 
             NumberAnimation {
                 target: borderHighlighting
                 property: "opacity"
-                to: 1.0
+                from: 1.0
+                to: 0.2
                 duration: 200
             }
             NumberAnimation {
                 target: borderHighlighting
                 property: "opacity"
                 from: 1.0
-                to: 0.5
-                duration: 800
+                to: 0.2
+                duration: 200
+            }
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 200
+            }
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 200
             }
         }
     }

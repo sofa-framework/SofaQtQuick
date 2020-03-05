@@ -31,12 +31,12 @@ Item {
         color: SofaApplication.style.contentBackgroundColor
     }
 
+
     ColumnLayout {
         anchors.fill: parent
         Rectangle {
             id: headerID
             Layout.fillWidth: true
-
 
             implicitHeight: 25
             color: SofaApplication.style.contentBackgroundColor
@@ -92,6 +92,7 @@ Item {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
+                    forceActiveFocus()
                     var pos = SofaApplication.getIdealPopupPos(generalProjectMenu, projectViewMouseArea)
                     generalProjectMenu.x = mouse.x + pos[0]
                     generalProjectMenu.y = mouse.y + pos[1]
@@ -100,6 +101,8 @@ Item {
             }
             ListView {
                 id: folderView
+                interactive: true
+                focus: true
                 anchors.fill: parent
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
@@ -297,6 +300,11 @@ Item {
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
                             anchors.fill: parent
                             hoverEnabled: true
+
+                            onActiveFocusChanged: {
+                                print("ACTIVE FOCUS!")
+                            }
+
                             onHoveredChanged: {
                                 if (containsMouse) {
                                     folderView.currentIndex = index;
@@ -325,6 +333,7 @@ Item {
                             }
 
                             onDoubleClicked: {
+                                forceActiveFocus()
                                 if (folderModel.isFolder(index)) {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
@@ -339,6 +348,7 @@ Item {
                                 }
                             }
                             onClicked: {
+                                forceActiveFocus()
                                 if (Qt.RightButton === mouse.button)
                                 {
                                     var pos = SofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
@@ -371,7 +381,6 @@ Item {
 
                 model: folderModel
                 highlight: Rectangle { color: "#82878c"; radius: 5 }
-                focus: true
             }
         }
     }

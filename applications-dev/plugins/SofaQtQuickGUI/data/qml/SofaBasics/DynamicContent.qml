@@ -118,20 +118,53 @@ Item {
         // The toolbar containing a dropdown menu and some
         // button and checkbox.
         /////////////////////////////////////////////////////////
-        GBRect {
+        ToolBar {
             id: toolBar
-            color: "#757575"
-            border.color: "black"
+//            color: "#757575"
+//            border.color: "black"
 
-            borderWidth: 1
-            borderGradient: Gradient {
-                GradientStop { position: 0.0; color: "#7a7a7a" }
-                GradientStop { position: 1.0; color: "#5c5c5c" }
-            }
+//            borderWidth: 1
+//            borderGradient: Gradient {
+//                GradientStop { position: 0.0; color: "#7a7a7a" }
+//                GradientStop { position: 1.0; color: "#5c5c5c" }
+//            }
             height: 24
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
+
+            function anyDescendantHasActiveFocus(ancestor) {
+                let item = ancestor.Window.activeFocusItem;
+                while (item) {
+                    if (item === ancestor)
+                        return true;
+                    item = item.parent;
+                }
+                return false;
+            }
+
+            background: Rectangle {
+                id: background
+                color: toolBar.hovered || activeFocus|| toolBar.anyDescendantHasActiveFocus(loaderLocation) ? "#959595" : "#686868"
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: background.forceActiveFocus()
+                }
+
+
+                GBRect {
+                    anchors.top: parent.top
+                    anchors.topMargin: 1
+                    implicitHeight: parent.implicitHeight - 1
+                    implicitWidth: parent.implicitWidth + 2
+                    borderWidth: 1
+                    borderGradient: Gradient {
+                        GradientStop { position: 0.0; color: "#7a7a7a" }
+                        GradientStop { position: 1.0; color: "#5c5c5c" }
+                    }
+                    color: "transparent"
+                }
+            }
 
             RowLayout {
                 id: toolBarLayout
@@ -256,6 +289,7 @@ Item {
             anchors.right : parent.right
             anchors.bottom : parent.bottom
             visible: contentItem
+
             Rectangle {
                 anchors.fill: parent
                 color: SofaApplication.style.contentBackgroundColor

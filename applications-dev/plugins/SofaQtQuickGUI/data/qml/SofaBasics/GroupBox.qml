@@ -58,6 +58,7 @@ GroupBox {
                 anchors.fill: parent
                 onClicked: {
                     control.expanded = !control.expanded
+                    forceActiveFocus()
                 }
             }
             anchors.verticalCenter: label.verticalCenter
@@ -80,6 +81,11 @@ GroupBox {
             elide: Text.ElideRight
             anchors.left: titleIconId.right
             anchors.leftMargin: 5
+            MouseArea {
+                anchors.fill: parent
+                onPressed: forceActiveFocus()
+            }
+
         }
         Button {
             id: extraButton

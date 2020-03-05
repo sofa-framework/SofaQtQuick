@@ -423,6 +423,7 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
+                            forceActiveFocus()
                             sceneModel.flipComponentVisibility(styleData.index)
                         }
                     }
@@ -590,6 +591,7 @@ Rectangle {
                 }
                 enabled: hasMessage
                 onClicked: {
+                    forceActiveFocus()
                     var srcIndex = sceneModel.mapToSource(index)
                     var c = basemodel.getBaseFromIndex(srcIndex)
                     var w = windowMessage.createObject(nodeMenu.parent,{
@@ -649,6 +651,7 @@ Rectangle {
 
                 onClicked:
                 {
+                    forceActiveFocus()
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
                     if(mouse.button === Qt.LeftButton) {

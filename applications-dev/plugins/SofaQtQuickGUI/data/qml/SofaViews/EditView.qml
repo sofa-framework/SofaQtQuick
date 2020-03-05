@@ -358,45 +358,6 @@ EditView
         }
     }
 
-    property bool highlightIfFocused: SofaApplication.sofaViewers.length >= 1
-
-    Rectangle {
-        id: borderHighlighting
-        anchors.fill: parent
-
-        color: "transparent"
-        border.width: 2
-        border.color: "red"
-
-        enabled: root.highlightIfFocused && root === SofaApplication.focusedSofaViewer
-        onEnabledChanged: {
-            if(enabled)
-                visible = true;
-            else
-                visible = false;
-        }
-
-        onVisibleChanged: if(!visible) opacity = 0.0
-
-        SequentialAnimation {
-            running: borderHighlighting.visible
-
-            NumberAnimation {
-                target: borderHighlighting
-                property: "opacity"
-                to: 1.0
-                duration: 200
-            }
-            NumberAnimation {
-                target: borderHighlighting
-                property: "opacity"
-                from: 1.0
-                to: 0.5
-                duration: 800
-            }
-        }
-    }
-
     /*Item {
         id: circleGizmo
         anchors.centerIn: parent

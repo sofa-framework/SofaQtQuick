@@ -4,6 +4,9 @@ import QtQuick.Layouts 1.3
 import SofaApplication 1.0
 import SofaBasics 1.0
 
+
+
+
 ColumnLayout {
     id: root
     spacing: 10
@@ -11,13 +14,13 @@ ColumnLayout {
 
     property var showAll: true
     property var dataDict: {"Base": ["name", "componentState", "printLog"]}
-    property var linkList: []
-    property var infosDict: {"class":component.getClassName(), "name": component.getName()}
     onDataDictChanged: {
         groupRepeater.model = Object.keys(dataDict).length
     }
-
+    property var linkList: []
+    property var infosDict: {"class":component.getClassName(), "name": component.getName()}
     property var labelWidth: 1
+
     Repeater {
         id: groupRepeater
         model: Object.keys(dataDict).length
@@ -52,6 +55,7 @@ ColumnLayout {
                                 id: marea
                                 anchors.fill: parent
                                 hoverEnabled: true
+                                onPressed: forceActiveFocus()
                                 DropArea {
                                     id: dropArea
                                     keys: ["text/plain"]
@@ -150,6 +154,10 @@ ColumnLayout {
                                 root.labelWidth = width
                         }
                         color: "black"
+                        MouseArea {
+                            anchors.fill: parent
+                            onPressed: forceActiveFocus()
+                        }
                     }
                     TextField {
                         Layout.fillWidth: true
@@ -161,10 +169,15 @@ ColumnLayout {
                     Rectangle {
                         color: "transparent"
                         width: 14
+                        MouseArea {
+                            anchors.fill: parent
+                            onPressed: forceActiveFocus()
+                        }
                     }
                 }
             }
         }
+
     }
     GroupBox {
         title: "Infos"
@@ -185,15 +198,24 @@ ColumnLayout {
                             if (width > infosLayout.labelWidth)
                                 infosLayout.labelWidth = width
                         }
+                        MouseArea {
+                            anchors.fill: parent
+                            onPressed: forceActiveFocus()
+                        }
                     }
                     Label {
                         text: infosDict[Object.keys(infosDict)[index]]
                         color: "#333333"
                         elide: Qt.ElideRight
                         clip: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onPressed: forceActiveFocus()
+                        }
                     }
                 }
             }
         }
+
     }
 }
