@@ -34,6 +34,7 @@ TextField {
     readOnly: sofaData.properties.type !== "string" ? true : sofaData.properties.readOnly
     implicitWidth: parent.width
     Layout.fillWidth: true
+    selectByMouse: true
 
     text: sofaData.value.toString()
     Connections
