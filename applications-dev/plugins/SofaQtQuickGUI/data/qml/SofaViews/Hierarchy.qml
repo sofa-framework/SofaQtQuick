@@ -664,6 +664,18 @@ Rectangle {
 
                 drag.target: dragItem
 
+                Keys.onDeletePressed: {
+
+                    var srcIndex = sceneModel.mapToSource(styleData.index)
+                    var parent = basemodel.getBaseFromIndex(srcIndex.parent);
+                    var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                    if (theComponent.isNode())
+                        parent.removeChild(theComponent);
+                    else
+                        parent.removeObject(theComponent);
+
+                }
+
                 onClicked:
                 {
                     forceActiveFocus()
