@@ -80,6 +80,7 @@ CameraView {
         onAnimateChanged: {
             if (sofaScene.animate) {
                 animateBorder.running = true
+                root.forceActiveFocus()
             }
         }
     }
@@ -386,6 +387,7 @@ CameraView {
                     return true;
                 return false
             }
+            return false
         }
         visible: enabled
 

@@ -79,7 +79,6 @@ EditView
         SofaApplication.removeSofaViewer(root);
     }
 
-
     Connections {
         target: SofaApplication
         onFocusedSofaViewerChanged: {

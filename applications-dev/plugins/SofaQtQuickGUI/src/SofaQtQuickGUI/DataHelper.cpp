@@ -62,6 +62,9 @@ QVariant createQVariantFromData(const BaseData* data)
     if(!data)
         return value;
 
+    if (dynamic_cast<const DataFileName*>(data))
+        return QVariant::fromValue(QString::fromStdString(dynamic_cast<const DataFileName*>(data)->getAbsolutePath()));
+
     const AbstractTypeInfo* typeinfo = data->getValueTypeInfo();
     const void* valueVoidPtr = data->getValueVoidPtr();
 

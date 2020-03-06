@@ -37,6 +37,12 @@ Item {
         Rectangle {
             id: headerID
             Layout.fillWidth: true
+            MouseArea {
+                anchors.fill: parent
+                onPressed: {
+                    root.forceActiveFocus()
+                }
+            }
 
             implicitHeight: 25
             color: SofaApplication.style.contentBackgroundColor
@@ -117,85 +123,94 @@ Item {
                     content: folderView.contentItem
                 }
 
-                header: RowLayout{
+                header: Rectangle {
+                    height: 18
                     implicitWidth: folderView.width
-
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator1
-                            width: 2
-                            height: 20
-                            color: "#393939"
+                    color: "transparent"
+                    MouseArea {
+                        width: childrenRect.width
+                        height: childrenRect.height
+                        onPressed: {
+                            root.forceActiveFocus()
+                        }
+                        RowLayout {
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator1
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator1.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Name"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator1.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Name"
-                        }
-                    }
 
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator2
-                            width: 2
-                            height: 20
-                            color: "#393939"
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator2
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator2.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Type"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator2.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Type"
-                        }
-                    }
 
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator3
-                            width: 2
-                            height: 20
-                            color: "#393939"
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator3
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator3.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Size"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator3.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Size"
                         }
                     }
                 }
-
                 FolderListModel {
                     id: folderModel
 

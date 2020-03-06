@@ -86,6 +86,7 @@ Rectangle {
     TreeView {
         id : treeView
 
+
         anchors.top: searchBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -95,6 +96,20 @@ Rectangle {
 
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
+        }
+
+        headerDelegate: Rectangle {
+            x: 5
+            y: 2
+            height: 18
+            color: SofaApplication.style.contentBackgroundColor
+            property var pressed: styleData.pressed
+            onPressedChanged: forceActiveFocus()
+            Label {
+                color: "black"
+                text: styleData.value
+            }
+
         }
 
         style: QQCS1.TreeViewStyle {
@@ -335,6 +350,8 @@ Rectangle {
 
         itemDelegate: Rectangle {
             id: itemDelegateID
+
+
             property string origin: "Hierarchy"
             property bool multiparent : false
             property bool isDisabled : false
@@ -423,7 +440,6 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            forceActiveFocus()
                             sceneModel.flipComponentVisibility(styleData.index)
                         }
                     }
@@ -591,7 +607,6 @@ Rectangle {
                 }
                 enabled: hasMessage
                 onClicked: {
-                    forceActiveFocus()
                     var srcIndex = sceneModel.mapToSource(index)
                     var c = basemodel.getBaseFromIndex(srcIndex)
                     var w = windowMessage.createObject(nodeMenu.parent,{
@@ -766,7 +781,7 @@ Rectangle {
         }
 
         QQC1.TableViewColumn {
-            title: "Hierarchy"
+            title: (String(SofaApplication.sofaScene.source).slice(String(SofaApplication.sofaScene.source).lastIndexOf("/")+1))
             role: "name"
         }
     }
@@ -781,8 +796,8 @@ Rectangle {
         id: nodesCheckBox
         anchors.top: treeView.anchors.top
         anchors.topMargin: 1
-        anchors.right: treeView.anchors.right
-        anchors.rightMargin: +30
+        anchors.right: root.right
+        anchors.rightMargin: 5
         checked: false
         onCheckedChanged: {
             sceneModel.showOnlyNodes(checked)
