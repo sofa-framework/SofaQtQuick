@@ -44,14 +44,15 @@ Menu {
         }
     }
 
-    MenuSeparator {}
+//    MenuSeparator {}
     Repeater {
         id: menuRepeater
 
         delegate : MenuItem {
-            text: modelData["name"]
-            icon.source: getIconSource(modelData["type"])
+            text: modelData["type"] === "SofaScene" ? modelData["name"] + " (add)" : modelData["name"]
+            font.bold: modelData["name"] === menuRepeater.model[0]["name"]
 
+            icon.source: getIconSource(modelData["type"])
             function getIconSource(type)
             {
                 if(type  === "SofaScene")
@@ -67,11 +68,16 @@ Menu {
                 return "qrc:/icon/ICON_PYTHON.png";
             }
 
+            ToolTip {
+                enabled: modelData["type"] === "SofaScene"
+                text: "add scene as new node in the current scene graph"
+                description: "to load as new scene, double click on the scene script in the Project View"
+            }
 
             function doCreate() {
-                var p = asset.create(parentNode, text)
+                var p = asset.create(parentNode, modelData["name"])
                 if (!p){
-                    console.log("Unable to create and asset for: ", text)
+                    console.log("Unable to create and asset for: ", modelData["name"])
                     return
                 }
 

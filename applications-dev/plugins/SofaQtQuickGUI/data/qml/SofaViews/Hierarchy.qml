@@ -226,6 +226,7 @@ Rectangle {
         }
 
         selection: ItemSelectionModel {
+            id: selectionModel
             model: treeView.model
             onSelectionChanged:
             {
@@ -327,6 +328,7 @@ Rectangle {
         {
             var srcIndex = sceneModel.mapToSource(index)
             var theComponent = basemodel.getBaseFromIndex(srcIndex)
+            if (theComponent === null) return;
             nodeSettings.nodeState[theComponent.getPathName() !== "" ? theComponent.getPathName() : "/"] = treeView.isExpanded(index)
             var i = 0;
             SofaApplication.nodeSettings.nodeState = ""
@@ -339,14 +341,13 @@ Rectangle {
         }
 
         onExpanded: {
-            storeExpandedState(index)
+            storeExpandedState(currentIndex)
         }
         onCollapsed: {
-            var srcIndex = sceneModel.mapToSource(index)
+            var srcIndex = sceneModel.mapToSource(currentIndex)
             var theComponent = basemodel.getBaseFromIndex(srcIndex)
-            storeExpandedState(index)
+            storeExpandedState(currentIndex)
         }
-
 
         itemDelegate: Rectangle {
             id: itemDelegateID
@@ -355,7 +356,7 @@ Rectangle {
             property string origin: "Hierarchy"
             property bool multiparent : false
             property bool isDisabled : false
-            property bool isSelected: false
+            property var renaming: false
             property string name : model && model.name ? model.name : ""
             property string typename : model && model.typename ? model.typename : ""
             property string shortname : model && model.shortname ? model.shortname : ""
@@ -367,6 +368,20 @@ Rectangle {
             property string statusString: model && model.statusString
             property var index: styleData.index
             property var tmpParent
+
+            Connections {
+                target: treeView
+                onCurrentIndexChanged: {
+                    var srcIndex = sceneModel.mapToSource(treeView.currentIndex)
+                    var treeViewComponent = basemodel.getBaseFromIndex(srcIndex)
+                    srcIndex = sceneModel.mapToSource(styleData.index)
+                    var component = basemodel.getBaseFromIndex(srcIndex)
+
+                    if (treeViewComponent.getPathName() === component.getPathName())
+                        mouseArea.forceActiveFocus()
+                }
+            }
+
             color: "transparent"
             function getIconFromStatus(s)
             {
@@ -474,28 +489,65 @@ Rectangle {
                 }
             }
 
-            Text {
-                id: rowText
-                anchors.left: icon.right
-                anchors.right: parent.right
-                anchors.rightMargin: 40
-                color: styleData.textColor
-                font.italic: hasMultiParent
-                elide: Text.ElideRight
-                clip: true
-                text: {
-                    if (isNode || typename == name)
-                        return name
-                    else if (name == shortname)
-                        return name
-                    else
-                        return typename+" ("+name+")"
+            Component {
+                id: textComponent
+                Text {
+                    id: rowText
+                    color: styleData.textColor
+                    font.italic: hasMultiParent
+                    elide: Text.ElideRight
+                    clip: true
+                    text: {
+                        if (isNode || typename == name)
+                            return name
+                        else if (name == shortname)
+                            return name
+                        else
+                            return typename+" ("+name+")"
+                    }
                 }
             }
 
+            Component {
+                id: renamingTextComponent
+                TextField {
+                    id: renamingText
+                    text: name
+                    enabled: true
+                    selectByMouse: true
+                    function forceFocus() {
+                        selectAll()
+                        forceActiveFocus()
+                    }
+                    Component.onCompleted: {
+                        forceFocus()
+                    }
+                    onEditingFinished: {
+                        var srcIndex = sceneModel.mapToSource(index)
+                        var c = basemodel.getBaseFromIndex(srcIndex)
+                        if (c.rename(text))
+                            renaming = false
+                        else
+                            forceFocus()
+                    }
+                }
+            }
+            Loader {
+                id: textLoader
+              // Explicitly set the size of the
+              // Loader to the parent item's size
+                anchors.left: icon.right
+                anchors.right: parent.right
+                anchors.rightMargin: 40
+                sourceComponent: {
+                    return renaming ? renamingTextComponent : textComponent
+                }
+            }
+
+
             Image {
                 id: componentState
-                anchors.verticalCenter: rowText.verticalCenter
+                anchors.verticalCenter: textLoader.verticalCenter
                 anchors.right: parent.right
                 height: 12
                 width: 12
@@ -511,7 +563,7 @@ Rectangle {
                 /// an object or a node
                 id: childError
                 hoverEnabled: true
-                anchors.verticalCenter: rowText.verticalCenter
+                anchors.verticalCenter: textLoader.verticalCenter
                 anchors.right: componentState.left
                 height: 12
                 width: 12
@@ -560,16 +612,6 @@ Rectangle {
                                                    "parent" : nodeMenu.parent,
                                                    "sofaComponent": c});
                 }
-                onActiveFocusChanged: {
-                    print("Active Focus changed")
-                }
-                Keys.onPressed: {
-                    print("DELETING List")
-                    var idx = sceneModel.mapToSource(styleData.index)
-                    var parent = basemodel.getBaseFromIndex(idx);
-                    var item = basemodel.getBaseFromIndex(idx);
-                    parent.removeObject(item);
-                }
                 z: 1
             }
 
@@ -583,7 +625,7 @@ Rectangle {
 
                 id: localError
                 hoverEnabled: true
-                anchors.verticalCenter: rowText.verticalCenter
+                anchors.verticalCenter: textLoader.verticalCenter
                 anchors.right: childError.left
                 anchors.rightMargin: -6
                 height: 12
@@ -662,10 +704,10 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
 
+
                 drag.target: dragItem
 
                 Keys.onDeletePressed: {
-
                     var srcIndex = sceneModel.mapToSource(styleData.index)
                     var parent = basemodel.getBaseFromIndex(srcIndex.parent);
                     var theComponent = basemodel.getBaseFromIndex(srcIndex)
@@ -673,7 +715,13 @@ Rectangle {
                         parent.removeChild(theComponent);
                     else
                         parent.removeObject(theComponent);
-
+                }
+                Keys.onPressed: {
+                    if (event.key === Qt.Key_F2)
+                    {
+                        print("renaming....")
+                        renaming = true
+                    }
                 }
 
                 onClicked:
@@ -776,7 +824,8 @@ Rectangle {
                             treeView.collapseAncestors(index)
                             treeView.expandAncestors(index)
                             treeView.expand(index)
-                            treeView.selection.setCurrentIndex(index, selection)
+                            treeView.__listView.currentIndex = index.row
+                            treeView.selection.setCurrentIndex(index, selectionModel.Select)
                         }
                     }
 

@@ -56,6 +56,8 @@ public:
     Q_INVOKABLE void cleanup();
 
     Q_INVOKABLE SofaNode* getFirstParent();
+
+    Q_INVOKABLE bool rename(const QString& name) override;
 };
 
 class SofaBaseObjectList : public QObject

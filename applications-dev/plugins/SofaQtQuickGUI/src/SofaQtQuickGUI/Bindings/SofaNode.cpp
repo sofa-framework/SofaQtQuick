@@ -239,7 +239,6 @@ BaseNode* SofaNode::getPrefabAncestor(BaseNode* n) const
     return nullptr;
 }
 
-
 bool SofaNode::isPrefab() const
 {
     BaseNode* n = rawBase()->toBaseNode();
@@ -508,6 +507,22 @@ QString SofaNode::getNextObjectName(const QString& name) const
     }
     return newname;
 }
+
+bool SofaNode::rename(const QString& name)
+{
+    for(auto p : dynamic_cast<sofa::core::objectmodel::BaseNode*>(m_self.get())->getParents())
+    {
+        auto obj = dynamic_cast<sofa::simulation::Node*>(p)->getObject(name.toStdString());
+        if (obj != nullptr && obj->getPathName() != m_self->getPathName())
+            return false;
+        for (auto c : p->getChildren())
+            if (c->getName() == name.toStdString() && c->getPathName() != m_self->getPathName())
+                return false;
+    }
+    m_self->setName(name.toStdString());
+    return true;
+}
+
 
 QObject* getItem(SofaBaseObject* self, const QString& name)
 {

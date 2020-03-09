@@ -122,7 +122,7 @@ Menu {
                 modality: Qt.NonModal
                 flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                 visible: true
-                color: sofaApplication.style.contentBackgroundColor
+                color: SofaApplication.style.contentBackgroundColor
 
                 Loader {
                     id: loader

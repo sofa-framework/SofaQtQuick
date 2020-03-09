@@ -383,7 +383,7 @@ CameraView {
             if (root.highlightIfFocused) {
                 if (root === SofaApplication.focusedSofaViewer)
                     return true;
-                if (SofaApplication.focusedSofaViewer === null && indexCameraComboBox.currentIndex == 0)
+                if (SofaApplication.focusedSofaViewer === null)
                     return true;
                 return false
             }
@@ -439,7 +439,7 @@ CameraView {
             flickableDirection: Flickable.VerticalFlick
             boundsMovement: Flickable.StopAtBounds
             contentHeight: panelColumn.height + 50
-            contentWidth: panelColumn.width
+            contentWidth: flick.width
 
             ScrollBar.horizontal: ScrollBar {
                 policy: ScrollBar.AlwaysOff

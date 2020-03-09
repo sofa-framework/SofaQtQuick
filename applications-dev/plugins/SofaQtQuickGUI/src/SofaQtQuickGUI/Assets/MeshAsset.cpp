@@ -86,6 +86,8 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(sofaqtquick::bindings::SofaNo
     /// Initialize the object assets.
 
     node->init(sofa::core::ExecParams::defaultInstance());
+    SReal min[3], max[3];
+    sofa::simulation::getSimulation()->computeTotalBBox(static_cast<sofa::simulation::Node*>(node->getRoot()), min, max);
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 

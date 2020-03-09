@@ -100,7 +100,9 @@ Item {
                                 draggedData.assetName = modelData.name
                             }
                         }
-                        onClicked: parent.clicked()
+                        onClicked: {
+                            forceActiveFocus()
+                        }
                     }
 
                     DraggableAssetItem {
@@ -110,6 +112,12 @@ Item {
                     }
                 }
             }
+        }
+    }
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            forceActiveFocus()
         }
     }
 }

@@ -316,10 +316,6 @@ Item {
                             anchors.fill: parent
                             hoverEnabled: true
 
-                            onActiveFocusChanged: {
-                                print("ACTIVE FOCUS!")
-                            }
-
                             onHoveredChanged: {
                                 if (containsMouse) {
                                     folderView.currentIndex = index;
@@ -333,18 +329,18 @@ Item {
                                 if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
 
                                 var newNode = SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath")).create(_parent)
-                                var hasNodes = newNode.getChildren().size()
+                                var hasNodes = newNode.children().size()
                                 console.error("ParentNode type: " + _parent)
                                 console.error("newNode type: " + newNode)
                                 _parent.dump()
                                 //                                newNode.copyTo(_parent)
                                 if (hasNodes) {
-                                    var childsList = _parent.getChildren()
+                                    var childsList = _parent.children()
                                     if (childsList.size() !== 0) {
                                         return childsList.last()
                                     }
                                 }
-                                return parent
+                                return _parent
                             }
 
                             onDoubleClicked: {
