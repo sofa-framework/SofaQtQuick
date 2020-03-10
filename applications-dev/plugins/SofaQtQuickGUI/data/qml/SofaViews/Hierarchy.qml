@@ -376,7 +376,7 @@ Rectangle {
                     var treeViewComponent = basemodel.getBaseFromIndex(srcIndex)
                     srcIndex = sceneModel.mapToSource(styleData.index)
                     var component = basemodel.getBaseFromIndex(srcIndex)
-
+                    if (!component || !treeViewComponent) return;
                     if (treeViewComponent.getPathName() === component.getPathName())
                         mouseArea.forceActiveFocus()
                 }
@@ -826,6 +826,7 @@ Rectangle {
                             treeView.expand(index)
                             treeView.__listView.currentIndex = index.row
                             treeView.selection.setCurrentIndex(index, selectionModel.Select)
+                            SofaApplication.selectedComponent = assetNode
                         }
                     }
 

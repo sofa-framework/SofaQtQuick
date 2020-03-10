@@ -34,6 +34,7 @@ using sofaqtquick::Viewpoint_Manipulator;
 #include <sofa/core/visual/DrawToolGL.h>
 #include <SofaOpenglVisual/OglModel.h>
 #include <sofa/helper/cast.h>
+#include <sofa/simulation/UpdateBoundingBoxVisitor.h>
 
 #include <QtQuick/qquickwindow.h>
 #include <QQmlEngine>
@@ -1316,6 +1317,17 @@ void SofaViewer::viewAll(float radiusFactor)
     myCamera->fit(min, max, 1.5f * radiusFactor);
 }
 
+void SofaViewer::recomputeBBox(float radiusFactor) const
+{
+    if(!myCamera || !mySofaScene || !mySofaScene->isReady())
+        return;
+
+    QVector3D min, max;
+    mySofaScene->computeBoundingBox(min, max, myRoots);
+
+    myCamera->adjustZRange(min, max, 1.5f * radiusFactor);
+}
+
 QSGNode* SofaViewer::updatePaintNode(QSGNode* inOutNode, UpdatePaintNodeData* inOutData)
 {
     if(!inOutNode)
@@ -1410,6 +1422,9 @@ void SofaViewer::internalRender(int width, int height) const
         glGetIntegerv (GL_VIEWPORT, _viewport);
         glGetDoublev  (GL_MODELVIEW_MATRIX, _mvmatrix);
         glGetDoublev  (GL_PROJECTION_MATRIX, _projmatrix);
+
+        mySofaScene->sofaRootNode()->execute<sofa::simulation::UpdateBoundingBoxVisitor>(sofa::core::ExecParams::defaultInstance());
+        recomputeBBox();
 
         m_visualParams->viewport() = sofa::helper::fixed_array<int, 4>(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
         m_visualParams->sceneBBox() = mySofaScene->sofaRootNode()->f_bbox.getValue();

@@ -40,7 +40,8 @@ SofaViewer {
     sofaScene: SofaApplication.sofaScene
     property bool configurable: true
 
-    property bool transparentBackground: false
+
+   property bool transparentBackground: false
     Image {
         anchors.fill: parent
         z: -1
@@ -85,7 +86,9 @@ SofaViewer {
 
 	Action{
 		shortcut: "F5"
-		onTriggered: root.viewAll()
+        onTriggered: {
+            root.viewAll()
+        }
     }
 
 
