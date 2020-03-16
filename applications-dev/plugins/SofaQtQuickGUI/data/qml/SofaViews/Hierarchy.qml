@@ -67,8 +67,6 @@ Rectangle {
                     var sceneIndex = sceneModel.mapFromSource(baseIndex)
                     treeView.expandAncestors(sceneIndex)
                     treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
-                    //treeView.__listView.positionViewAtIndex(sceneIndex, ListView.Contains)
-                    //_ _list  positionViewAtIndex(1,ListView.Beginning)
                 }
             }
         }
@@ -84,6 +82,7 @@ Rectangle {
         onSelectedItemChanged: {
             var baseIndex = basemodel.getIndexFromBase(selectedItem)
             var sceneIndex = sceneModel.mapFromSource(baseIndex)
+            treeView.expandAncestors(sceneIndex)
             treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
         }
     }
