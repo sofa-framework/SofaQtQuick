@@ -81,18 +81,23 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         sofaScene: SofaApplication.sofaScene
+        onSelectionIndexChanged: {
+            treeView.__listView.currentIndex = selectionIndex
+            treeView.__currentRow = selectionIndex
+            treeView.selection.setCurrentIndex(selectionIndex, selectionModel.Select)
+            treeView.selection.select(selectionIndex, selectionModel.Select)
+        }
     }
 
     TreeView {
         id : treeView
-
-
         anchors.top: searchBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
         alternatingRowColors: true
+
 
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor

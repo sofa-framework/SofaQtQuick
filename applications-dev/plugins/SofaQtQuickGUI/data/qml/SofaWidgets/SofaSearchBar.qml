@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
@@ -11,21 +11,24 @@ import SofaSceneListModel 1.0
 RowLayout {
     id: searchBar
     property var sofaScene
+    property var selectionIndex
 
     Layout.fillWidth: true
     Layout.rightMargin: 12
 
     property var model: SofaSceneListModel {
         sofaScene: searchBar.sofaScene
-        onSofaSceneChanged: {
-            print("plop")
-        }
     }
     property var filteredRows: []
 
     function updateFilteredRows() {
         searchBar.filteredRows = model.computeFilteredRows(searchBarTextField.text);
-        print(filteredRows)
+        listmodel.clear()
+        for (var i = 0 ; i < filteredRows.length ; ++i) {
+            var item = searchBar.model.getBaseById(filteredRows[i])
+            listmodel.append({"index": filteredRows[i], "name": item.getName(), "path": "@"+item.getPathName()})
+        }
+
     }
 
     function previousFilteredRow() {
@@ -41,35 +44,62 @@ RowLayout {
             }
 
         // wrap
-        if(-1 == i)
+        if(-1 === i)
             listView.updateCurrentIndex(filteredRows[filteredRows.length - 1]);
     }
 
-    function nextFilteredRow() {
-        updateFilteredRows();
-        if(0 === filteredRows.length)
-            return;
+    //    function nextFilteredRow() {
+    //        updateFilteredRows();
+    //        if(0 === filteredRows.length)
+    //            return;
 
-        var i = 0;
-        for(; i < filteredRows.length; ++i)
-            if(listView.currentIndex < filteredRows[i]) {
-                listView.updateCurrentIndex(filteredRows[i]);
-                break;
-            }
+    //        var i = 0;
+    //        for(; i < filteredRows.length; ++i)
+    //            if(listView.currentIndex < filteredRows[i]) {
+    //                listView.updateCurrentIndex(filteredRows[i]);
+    //                break;
+    //            }
 
-        // wrap
-        if(filteredRows.length === i)
-            listView.updateCurrentIndex(filteredRows[0]);
-    }
+    //        // wrap
+    //        if(filteredRows.length === i)
+    //            listView.updateCurrentIndex(filteredRows[0]);
+    //    }
 
     TextField {
         id: searchBarTextField
         Layout.fillWidth: true
 
         placeholderText: "Search component by name"
+        Keys.forwardTo: [listView.currentItem, listView]
         onTextChanged: searchBar.updateFilteredRows()
 
-        onAccepted: searchBar.nextFilteredRow();
+        onActiveFocusChanged: {
+            if (!popup.opened)
+                popup.open()
+        }
+
+        //        onAccepted: searchBar.nextFilteredRow();
+        onAccepted: {
+            print("Accepted: ")
+            print(listView.currentIndex)
+            print(listmodel.get(listView.currentIndex))
+            print(listmodel.get(listView.currentIndex).index)
+            var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
+            searchBarTextField.text = item.getName()
+            selectionIndex = listmodel.get(listView.currentIndex).index
+            popup.close()
+        }
+
+        onEditingFinished: {
+            print("Editing finished: ")
+            print(listView.currentIndex)
+            print(listmodel.get(listView.currentIndex))
+            print(listmodel.get(listView.currentIndex).index)
+            var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
+            searchBarTextField.text = item.getName()
+            selectionIndex = listmodel.get(listView.currentIndex).index
+            popup.close()
+        }
     }
     Item {
         Layout.preferredWidth: Layout.preferredHeight
@@ -125,5 +155,102 @@ RowLayout {
             }
         }
     }
+    Popup {
+        id: popup
+        closePolicy: Popup.CloseOnEscape
+        visible: searchBarTextField.activeFocus
+        padding: 0
+        margins: 0
+        implicitWidth: searchBarTextField.width
+        implicitHeight: contentHeight
+        contentWidth: searchBarTextField.width - padding
+        contentHeight: listView.implicitHeight < 20 ? 20 : listView.implicitHeight
+        y: 20
 
+        ListView {
+            id: listView
+            visible: searchBarTextField.activeFocus
+            anchors.fill: parent
+            currentIndex: 0
+            keyNavigationEnabled: true
+            implicitHeight: contentHeight
+            model: ListModel {
+                id: listmodel
+            }
+
+            Keys.onTabPressed: {
+                print("Editing finished: ")
+                print(listView.currentIndex)
+                print(listmodel.get(listView.currentIndex))
+                print(listmodel.get(listView.currentIndex).index)
+                var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
+                searchBarTextField.text = item.getName()
+                selectionIndex = listmodel.get(listView.currentIndex).index
+                popup.close()
+            }
+            Keys.onEnterPressed: {
+                print("Editing finished: ")
+                print(listView.currentIndex)
+                print(listmodel.get(listView.currentIndex))
+                print(listmodel.get(listView.currentIndex).index)
+                var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
+                searchBarTextField.text = item.getName()
+                selectionIndex = listmodel.get(listView.currentIndex).index
+                popup.close()
+            }
+
+            Keys.onDownPressed: {
+                currentIndex++
+                if (currentIndex >= listView.rowCount)
+                    currentIndex = listView.rowCount - 1
+            }
+
+            delegate: Component {
+                Rectangle {
+                    id: delegateId
+                    property Gradient highlightcolor: Gradient {
+                        GradientStop { position: 0.0; color: "#7aa3e5" }
+                        GradientStop { position: 1.0; color: "#5680c1" }
+                    }
+                    property Gradient nocolor: Gradient {
+                        GradientStop { position: 0.0; color: "transparent" }
+                        GradientStop { position: 1.0; color: "transparent" }
+                    }
+                    property var view: listView
+                    property alias text: entryText.text
+                    width: popup.contentWidth
+                    height: 20
+
+                    gradient: view.currentIndex === index ? highlightcolor : nocolor
+                    Text {
+                        id: entryText
+                        color: view.currentIndex === index ? "black" : itemMouseArea.containsMouse ? "lightgrey" : "white"
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: popup.contentWidth - x * 2
+                        x: 10
+                        text: name
+                        elide: Qt.ElideLeft
+                        clip: true
+                    }
+                    ToolTip {
+                        text: name
+                        description: path
+                        visible: itemMouseArea.containsMouse
+                        timeout: 2000
+                    }
+                    MouseArea {
+                        id: itemMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            view.currentIndex = index
+                            searchBarTextField.forceActiveFocus()
+                            searchBarTextField.text = entryText.text
+                            popup.close()
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
