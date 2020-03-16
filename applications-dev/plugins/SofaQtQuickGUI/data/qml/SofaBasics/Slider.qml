@@ -8,6 +8,7 @@ Slider {
     value: 0.5
     property string displayText: value
     implicitHeight: 20
+    implicitWidth: 100
     background: ControlsBackground {
         x: control.leftPadding
         y: control.topPadding + control.availableHeight / 2 - height / 2

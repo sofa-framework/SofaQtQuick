@@ -120,6 +120,7 @@ public:
 
     Q_INVOKABLE QString getNextName(const QString& name) const;
     Q_INVOKABLE QString getNextObjectName(const QString& name) const;
+    Q_INVOKABLE bool rename(const QString& name) override;
 
     static SofaNode* createFrom(sofa::core::objectmodel::Base* obj);
 

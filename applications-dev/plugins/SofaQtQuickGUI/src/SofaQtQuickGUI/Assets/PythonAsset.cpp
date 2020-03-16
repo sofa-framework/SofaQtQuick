@@ -14,7 +14,6 @@ namespace py = pybind11;
 #include "AssetFactory.h"
 #include "AssetFactory.inl"
 
-
 namespace fs = std::experimental::filesystem;
 
 namespace sofaqtquick

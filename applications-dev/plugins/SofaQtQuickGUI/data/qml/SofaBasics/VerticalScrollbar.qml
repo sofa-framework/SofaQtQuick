@@ -8,7 +8,7 @@ ScrollBar {
     property var content: parent.contentItem
     policy: parent.height > content.height ? ScrollBar.AlwaysOff : ScrollBar.AlwaysOn
     height: parent.height - 10
-    width: 12
+    implicitWidth: 12
     contentItem: GBRect {
         implicitWidth: 12
         implicitHeight: 100

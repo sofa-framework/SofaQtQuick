@@ -75,9 +75,14 @@ CameraView {
         SofaApplication.removeSofaViewer(root);
     }
 
-    onActiveFocusChanged: {
-        if(activeFocus)
-            SofaApplication.setFocusedSofaViewer(root);
+    Connections {
+        target: sofaScene
+        onAnimateChanged: {
+            if (sofaScene.animate) {
+                animateBorder.running = true
+                root.forceActiveFocus()
+            }
+        }
     }
 
     Connections {
@@ -278,6 +283,13 @@ CameraView {
             if(root.sofaScene)
                 root.sofaScene.mouseMove(mouse, root);
         }
+
+
+        onActiveFocusChanged: {
+            if(activeFocus) {
+                SofaApplication.setFocusedSofaViewer(root);
+            }
+        }
     }
 
     // keyboard interaction forwarded to the sofaScene.
@@ -357,7 +369,8 @@ CameraView {
         }
     }
 
-    property bool highlightIfFocused: SofaApplication.sofaViewers.length > 1
+    property bool highlightIfFocused: SofaApplication.sofaViewers.length >= 1
+
     Rectangle {
         id: borderHighlighting
         anchors.fill: parent
@@ -366,31 +379,52 @@ CameraView {
         border.width: 2
         border.color: "red"
 
-        enabled: root.highlightIfFocused && root === SofaApplication.focusedSofaViewer
-        onEnabledChanged: {
-            if(enabled)
-                visible = true;
-            else
-                visible = false;
+        enabled: {
+            if (root.highlightIfFocused) {
+                if (root === SofaApplication.focusedSofaViewer)
+                    return true;
+                if (SofaApplication.focusedSofaViewer === null)
+                    return true;
+                return false
+            }
+            return false
         }
+        visible: enabled
 
         onVisibleChanged: if(!visible) opacity = 0.0
+        opacity: 0
 
         SequentialAnimation {
-            running: borderHighlighting.visible
+            id: animateBorder
+            running: sofaScene.animate
 
             NumberAnimation {
                 target: borderHighlighting
                 property: "opacity"
-                to: 1.0
+                from: 1.0
+                to: 0.2
                 duration: 200
             }
             NumberAnimation {
                 target: borderHighlighting
                 property: "opacity"
                 from: 1.0
-                to: 0.5
-                duration: 800
+                to: 0.2
+                duration: 200
+            }
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 200
+            }
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 200
             }
         }
     }
@@ -405,7 +439,7 @@ CameraView {
             flickableDirection: Flickable.VerticalFlick
             boundsMovement: Flickable.StopAtBounds
             contentHeight: panelColumn.height + 50
-            contentWidth: panelColumn.width
+            contentWidth: flick.width
 
             ScrollBar.horizontal: ScrollBar {
                 policy: ScrollBar.AlwaysOff

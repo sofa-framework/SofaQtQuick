@@ -134,9 +134,9 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     QUrl url("file://" + m_rootDir.path() + "/scenes/" + dir.dirName() + ".py");
     auto lastOpened = m_projectSettings->value("lastOpened", "").toString();
     if (lastOpened != "" && QFileInfo(lastOpened).exists())
-        url = lastOpened;
+        url = dir.absoluteFilePath(lastOpened);
     else if (QFileInfo(url.path()).exists())
-        m_projectSettings->setValue("lastOpened", url.path());
+        m_projectSettings->setValue("lastOpened", QVariant::fromValue(dir.relativeFilePath(url.path())));
     if (m_currentScene)
         m_currentScene->setSource(url);
 
@@ -349,14 +349,6 @@ void SofaProject::removeDirEntries(DirectoryAsset& folder)
             if(wasFile)
             {
                 msg_info() << "removing: " << cfinfo.absoluteFilePath().toStdString();
-                auto t = m_assets[cfinfo.absoluteFilePath()]->getTypeString().replace(" ", "_");
-                if (m_projectSettings)
-                {
-                    m_projectSettings->beginGroup("assets");
-                    m_projectSettings->setValue(t, m_projectSettings->value(t,"").toString().replace(";"+cfinfo.absoluteFilePath(), ""));
-                    m_projectSettings->setValue("scenes", m_projectSettings->value("scenes","").toString().replace(";"+cfinfo.absoluteFilePath(), ""));
-                    m_projectSettings->endGroup();
-                }
                 m_assets.remove(cfinfo.absoluteFilePath());
             }
             else
@@ -404,12 +396,6 @@ void SofaProject::scan(const QFileInfo& file)
         msg_info() << "register asset: " << file.absoluteFilePath().toStdString();
         m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
         auto t = m_assets[filePath]->isScene() ? "scenes" : m_assets[filePath]->getTypeString().replace(" ", "_");
-        if (m_projectSettings)
-        {
-            m_projectSettings->beginGroup("assets");
-            m_projectSettings->setValue(t, m_projectSettings->value(t,"").toString().replace(";"+filePath, "")+";"+filePath);
-            m_projectSettings->endGroup();
-        }
         return;
     }
 
@@ -579,7 +565,7 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     if (templateType == "Canvas")
         extension ="qml";
 
-    QFile file(getSaveFile("New " + templateType, directory, 0, "Asset file (*." + extension + ")").path());
+    QFile file(getSaveFile("New " + templateType, "file://"+dir, 0, "Asset file (*." + extension + ")").path());
     if (file.open(QIODevice::WriteOnly))
     {
 

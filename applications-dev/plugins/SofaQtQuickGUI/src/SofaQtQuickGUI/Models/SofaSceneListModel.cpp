@@ -54,10 +54,8 @@ void SofaSceneListModel::handleSceneChange(SofaBaseScene*)
     clear();
     if(mySofaScene)
     {
-        std::cout << "we have a scene" << std::endl;
         if(mySofaScene->isReady())
         {
-            std::cout << "scene is ready" << std::endl;
             mySofaScene->sofaRootNode()->addListener(this);
             onBeginAddChild(nullptr, mySofaScene->sofaRootNode().get());
             onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());
@@ -68,7 +66,6 @@ void SofaSceneListModel::handleSceneChange(SofaBaseScene*)
 
             if(SofaBaseScene::Ready == mySofaScene->status())
             {
-                std::cout << "scene is ready" << std::endl;
                 mySofaScene->sofaRootNode()->addListener(this);
                 onBeginAddChild(nullptr, mySofaScene->sofaRootNode().get());
                 onEndAddChild(nullptr, mySofaScene->sofaRootNode().get());

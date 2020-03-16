@@ -22,6 +22,67 @@ Menu {
 
     visible: false
 
+    Component {
+        id: fileSpecificEntries
+        MenuItem {
+            id: openInEditor
+            text: "Open In Editor"
+            onTriggered: {
+                projectMenu.visible = false
+                SofaApplication.openInEditor(filePath)
+            }
+        }
+    }
+
+
+    Component {
+        id: folderSpecificEntries
+        MenuItem {
+            id: openAsProject
+            text: "Open Folder As Project"
+
+            onTriggered: {
+                projectMenu.visible = false
+                SofaApplication.currentProject.rootDir = filePath
+                SofaApplication.projectSettings.addRecent(SofaApplication.currentProject.rootDirPath)
+            }
+        }
+    }
+
+    Component {
+        id: sceneSpecificEntries
+        MenuItem {
+            id: projectFromScene
+            text: "Load Scene"
+            onTriggered: {
+                projectMenu.visible = false
+                SofaApplication.sofaScene.source = filePath
+            }
+        }
+    }
+
+    Loader {
+        id: sceneEntriesLoader
+        sourceComponent: (model && model.isScene) ? sceneSpecificEntries : null
+    }
+
+    SofaAssetMenu {
+        id: assetsList
+        asset: model
+        sofaScene: SofaApplication.sofaScene
+        parentNode: SofaApplication.selectedComponent
+        enabled: !fileIsDir
+    }
+
+    MenuSeparator {}
+
+    Loader {
+        sourceComponent: fileIsDir ? folderSpecificEntries: fileSpecificEntries
+    }
+
+
+    MenuSeparator {}
+
     MenuItem {
         text: "Show Containing Folder"
         onTriggered: {
@@ -139,61 +200,4 @@ Menu {
         }
     }
     
-    Component {
-        id: fileSpecificEntries
-        MenuItem {
-            id: openInEditor
-            text: "Open In Editor"
-            onTriggered: {
-                projectMenu.visible = false
-                SofaApplication.openInEditor(filePath)
-            }
-        }
-    }
-
-
-    Component {
-        id: folderSpecificEntries
-        MenuItem {
-            id: openAsProject
-            text: "Open Folder As Project"
-
-            onTriggered: {
-                projectMenu.visible = false
-                SofaApplication.currentProject.rootDir = filePath
-                SofaApplication.projectSettings.addRecent(SofaApplication.currentProject.rootDirPath)
-            }
-        }
-    }
-    
-    Component {
-        id: sceneSpecificEntries
-        MenuItem {
-            id: projectFromScene
-            text: "Load Scene"
-            onTriggered: {
-                projectMenu.visible = false
-                SofaApplication.sofaScene.source = filePath
-            }
-        }
-    }
-
-    Loader {
-        sourceComponent: fileIsDir ? folderSpecificEntries: fileSpecificEntries
-    }
-    Loader {
-        id: sceneEntriesLoader
-        sourceComponent: (model && model.isScene) ? sceneSpecificEntries : null
-    }
-
-    MenuSeparator {}
-
-    SofaAssetMenu {
-        id: assetsList
-        asset: model
-        sofaScene: SofaApplication.sofaScene
-        parentNode: SofaApplication.selectedComponent
-        enabled: !fileIsDir
-    }
-
 }

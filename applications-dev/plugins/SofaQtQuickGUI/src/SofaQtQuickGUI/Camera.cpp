@@ -21,6 +21,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 #include <qqml.h>
 #include <qmath.h>
+#include <iostream>
 
 namespace sofaqtquick
 {
@@ -355,7 +356,7 @@ void Camera::fit(QVector3D min, QVector3D max, float radiusFactor)
     setZNear(qMax(0.01, distance - radius * 100));
     setZFar(distance + radius * 100);
 
-    if(!(myTarget == myTarget))
+    if(!(myTarget == myTarget)) // wtf?
         myTarget = QVector3D(0.0f, 0.0f, 0.0f);
 
     QVector3D direction = Camera::direction();
@@ -376,6 +377,31 @@ void Camera::fit(QVector3D min, QVector3D max, float radiusFactor)
 
     if(orthographic())
         computeOrthographic();
+}
+
+
+void Camera::adjustZRange(QVector3D min, QVector3D max, float radiusFactor)
+{
+    if(min == max)
+    {
+        min -= QVector3D(0.5f, 0.5f, 0.5f);
+        max += QVector3D(0.5f, 0.5f, 0.5f);
+    }
+    else if(min.x() > max.x() || min.y() > max.y() || min.z() > max.z())
+    {
+        min = QVector3D(-0.5f, -0.5f, -0.5f);
+        max = QVector3D( 0.5f,  0.5f,  0.5f);
+    }
+
+    QVector3D diagonal = max - min;
+    double radius = diagonal.length();
+
+    double distance = radiusFactor * radius / qTan(myPerspectiveFovY * M_PI / 180.0);
+    if(distance < 0.0001 || !(distance == distance)) // return if incorrect value, i.e < epsilon or nan
+        return;
+
+    setZNear(qMax(0.01, distance - radius * 100));
+    setZFar(distance + radius * 100);
 }
 
 float Camera::distanceFromTarget() const

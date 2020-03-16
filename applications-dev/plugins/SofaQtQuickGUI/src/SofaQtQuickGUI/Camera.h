@@ -76,6 +76,7 @@ public:
 
     Q_SLOT void lookAt(const QVector3D& eye, const QVector3D& target, const QVector3D& up);
     Q_SLOT void fit(QVector3D min, QVector3D max, float radiusFactor=1.5);
+    Q_SLOT void adjustZRange(QVector3D min, QVector3D max, float radiusFactor=1.5);
 
     Q_INVOKABLE float distanceFromTarget() const;
     Q_SLOT void setDistanceFromTarget(double distance); /// \note distance must be > 0.0
@@ -98,7 +99,7 @@ public:
 
     void setPerspectiveFovY(double fovY);
     void setAspectRatio(double aspectRatio);
-    virtual void setPixelResolution(double width, double height) {}
+    virtual void setPixelResolution(double /*width*/, double /*height*/) {}
     double zNear() const;
     void setZNear(double newZNear);
 

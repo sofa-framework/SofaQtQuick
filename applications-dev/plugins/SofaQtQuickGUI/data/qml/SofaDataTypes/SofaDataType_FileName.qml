@@ -153,7 +153,7 @@ Row {
             if( sofaData.properties.folderurl !== ""){
                 url = "file://"+sofaData.properties.folderurl
             }else{
-                url = SofaApplication.currentProject.rootDir
+                url = "file://"+SofaApplication.currentProject.rootDir
             }
             if (sofaData.isDirectory()) {
                 var fileUrl = SofaApplication.currentProject.chooseProjectDir("Please Choose a directory:", url).toString().replace("file://", "")

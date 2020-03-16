@@ -31,7 +31,14 @@ GroupBox {
     topPadding: 30 + (implicitLabelWidth > 0 ? implicitLabelHeight + spacing : 0)
     bottomPadding: 0
 
-    label: Item {
+    label: Rectangle {
+        anchors.fill: parent
+        color: "transparent"
+        MouseArea {
+            anchors.fill: parent
+            onPressed: forceActiveFocus()
+        }
+
         Rectangle {
             y: 0
             x: 10
@@ -56,9 +63,7 @@ GroupBox {
             color: "#393939"
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
-                    control.expanded = !control.expanded
-                }
+                onClicked: control.expanded = !control.expanded
             }
             anchors.verticalCenter: label.verticalCenter
         }
@@ -109,11 +114,16 @@ GroupBox {
         }
     }
     background: Rectangle {
-        visible: control.expanded
-        y: control.topPadding - control.bottomPadding
-        width: parent.width
-        height: parent.height - control.topPadding + control.bottomPadding
+        anchors.fill: parent
 
         color: "transparent"
+        MouseArea {
+            anchors.fill: parent
+            onPressed: {
+                print( "Mouse area pressed in a rectangle.")
+                forceActiveFocus()
+            }
+        }
+
     }  
 }

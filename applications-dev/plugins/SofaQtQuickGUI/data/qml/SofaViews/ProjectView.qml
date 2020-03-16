@@ -31,12 +31,18 @@ Item {
         color: SofaApplication.style.contentBackgroundColor
     }
 
+
     ColumnLayout {
         anchors.fill: parent
         Rectangle {
             id: headerID
             Layout.fillWidth: true
-
+            MouseArea {
+                anchors.fill: parent
+                onPressed: {
+                    root.forceActiveFocus()
+                }
+            }
 
             implicitHeight: 25
             color: SofaApplication.style.contentBackgroundColor
@@ -92,6 +98,7 @@ Item {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
+                    forceActiveFocus()
                     var pos = SofaApplication.getIdealPopupPos(generalProjectMenu, projectViewMouseArea)
                     generalProjectMenu.x = mouse.x + pos[0]
                     generalProjectMenu.y = mouse.y + pos[1]
@@ -100,6 +107,8 @@ Item {
             }
             ListView {
                 id: folderView
+                interactive: true
+                focus: true
                 anchors.fill: parent
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
@@ -114,85 +123,94 @@ Item {
                     content: folderView.contentItem
                 }
 
-                header: RowLayout{
+                header: Rectangle {
+                    height: 18
                     implicitWidth: folderView.width
-
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator1
-                            width: 2
-                            height: 20
-                            color: "#393939"
+                    color: "transparent"
+                    MouseArea {
+                        width: childrenRect.width
+                        height: childrenRect.height
+                        onPressed: {
+                            root.forceActiveFocus()
+                        }
+                        RowLayout {
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator1
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator1.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Name"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator1.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Name"
-                        }
-                    }
 
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator2
-                            width: 2
-                            height: 20
-                            color: "#393939"
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator2
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator2.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Type"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator2.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Type"
-                        }
-                    }
 
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator3
-                            width: 2
-                            height: 20
-                            color: "#393939"
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator3
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator3.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Size"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator3.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Size"
                         }
                     }
                 }
-
                 FolderListModel {
                     id: folderModel
 
@@ -297,6 +315,7 @@ Item {
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
                             anchors.fill: parent
                             hoverEnabled: true
+
                             onHoveredChanged: {
                                 if (containsMouse) {
                                     folderView.currentIndex = index;
@@ -310,21 +329,22 @@ Item {
                                 if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
 
                                 var newNode = SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath")).create(_parent)
-                                var hasNodes = newNode.getChildren().size()
+                                var hasNodes = newNode.children().size()
                                 console.error("ParentNode type: " + _parent)
                                 console.error("newNode type: " + newNode)
                                 _parent.dump()
                                 //                                newNode.copyTo(_parent)
                                 if (hasNodes) {
-                                    var childsList = _parent.getChildren()
+                                    var childsList = _parent.children()
                                     if (childsList.size() !== 0) {
                                         return childsList.last()
                                     }
                                 }
-                                return parent
+                                return _parent
                             }
 
                             onDoubleClicked: {
+                                forceActiveFocus()
                                 if (folderModel.isFolder(index)) {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
@@ -339,6 +359,7 @@ Item {
                                 }
                             }
                             onClicked: {
+                                forceActiveFocus()
                                 if (Qt.RightButton === mouse.button)
                                 {
                                     var pos = SofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
@@ -371,7 +392,6 @@ Item {
 
                 model: folderModel
                 highlight: Rectangle { color: "#82878c"; radius: 5 }
-                focus: true
             }
         }
     }
