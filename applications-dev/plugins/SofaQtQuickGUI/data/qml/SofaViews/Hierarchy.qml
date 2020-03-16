@@ -81,11 +81,10 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         sofaScene: SofaApplication.sofaScene
-        onSelectionIndexChanged: {
-            treeView.__listView.currentIndex = selectionIndex
-            treeView.__currentRow = selectionIndex
-            treeView.selection.setCurrentIndex(selectionIndex, selectionModel.Select)
-            treeView.selection.select(selectionIndex, selectionModel.Select)
+        onSelectedItemChanged: {
+            var baseIndex = basemodel.getIndexFromBase(selectedItem)
+            var sceneIndex = sceneModel.mapFromSource(baseIndex)
+            treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
         }
     }
 

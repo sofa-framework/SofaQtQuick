@@ -11,7 +11,7 @@ import SofaSceneListModel 1.0
 RowLayout {
     id: searchBar
     property var sofaScene
-    property var selectionIndex
+    property var selectedItem
 
     Layout.fillWidth: true
     Layout.rightMargin: 12
@@ -21,49 +21,13 @@ RowLayout {
     }
     property var filteredRows: []
 
-    function updateFilteredRows() {
-        searchBar.filteredRows = model.computeFilteredRows(searchBarTextField.text);
+    onFilteredRowsChanged: {
         listmodel.clear()
         for (var i = 0 ; i < filteredRows.length ; ++i) {
             var item = searchBar.model.getBaseById(filteredRows[i])
-            listmodel.append({"index": filteredRows[i], "name": item.getName(), "path": "@"+item.getPathName()})
+            listmodel.append({"index": filteredRows[i], "name": item.getName(), "path": "@"+item.getPathName(), "component": item})
         }
-
     }
-
-    function previousFilteredRow() {
-        updateFilteredRows();
-        if(0 === filteredRows.length)
-            return;
-
-        var i = filteredRows.length - 1;
-        for(; i >= 0; --i)
-            if(listView.currentIndex > filteredRows[i]) {
-                listView.updateCurrentIndex(filteredRows[i]);
-                break;
-            }
-
-        // wrap
-        if(-1 === i)
-            listView.updateCurrentIndex(filteredRows[filteredRows.length - 1]);
-    }
-
-    //    function nextFilteredRow() {
-    //        updateFilteredRows();
-    //        if(0 === filteredRows.length)
-    //            return;
-
-    //        var i = 0;
-    //        for(; i < filteredRows.length; ++i)
-    //            if(listView.currentIndex < filteredRows[i]) {
-    //                listView.updateCurrentIndex(filteredRows[i]);
-    //                break;
-    //            }
-
-    //        // wrap
-    //        if(filteredRows.length === i)
-    //            listView.updateCurrentIndex(filteredRows[0]);
-    //    }
 
     TextField {
         id: searchBarTextField
@@ -71,60 +35,42 @@ RowLayout {
 
         placeholderText: "Search component by name"
         Keys.forwardTo: [listView.currentItem, listView]
-        onTextChanged: searchBar.updateFilteredRows()
+        onTextEdited: {
+            if (popup.opened) {
+                searchBar.filteredRows = searchBar.model.computeFilteredRows(text)
+            }
+            else popup.open()
+        }
+        onTextChanged: {
+            if (popup.opened) {
+                searchBar.filteredRows = searchBar.model.computeFilteredRows(text)
+            }
+            else popup.open()
+        }
 
         onActiveFocusChanged: {
             if (!popup.opened)
                 popup.open()
         }
 
-        //        onAccepted: searchBar.nextFilteredRow();
         onAccepted: {
-            print("Accepted: ")
-            print(listView.currentIndex)
-            print(listmodel.get(listView.currentIndex))
-            print(listmodel.get(listView.currentIndex).index)
-            var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
-            searchBarTextField.text = item.getName()
-            selectionIndex = listmodel.get(listView.currentIndex).index
+            if (!popup.opened)
+                return
+            var selectionIndex = listmodel.get(listView.currentIndex).index
+            selectedItem = listmodel.get(listView.currentIndex).component
             popup.close()
+            var item = searchBar.model.getBaseById(selectionIndex)
+            searchBarTextField.text = item.getName()
         }
 
         onEditingFinished: {
-            print("Editing finished: ")
-            print(listView.currentIndex)
-            print(listmodel.get(listView.currentIndex))
-            print(listmodel.get(listView.currentIndex).index)
-            var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
-            searchBarTextField.text = item.getName()
-            selectionIndex = listmodel.get(listView.currentIndex).index
+            if (!popup.opened)
+                return
+            var selectionIndex = listmodel.get(listView.currentIndex).index
+            selectedItem = listmodel.get(listView.currentIndex).component
             popup.close()
-        }
-    }
-    Item {
-        Layout.preferredWidth: Layout.preferredHeight
-        Layout.preferredHeight: searchBarTextField.implicitHeight
-
-        IconButton {
-            id: previousSearchButton
-            anchors.fill: parent
-            anchors.margins: 2
-            iconSource: "qrc:/icon/previous.png"
-
-            onClicked: searchBar.previousFilteredRow();
-        }
-    }
-    Item {
-        Layout.preferredWidth: Layout.preferredHeight
-        Layout.preferredHeight: searchBarTextField.implicitHeight
-
-        IconButton {
-            id: nextSearchButton
-            anchors.fill: parent
-            anchors.margins: 2
-            iconSource: "qrc:/icon/next.png"
-
-            onClicked: searchBar.nextFilteredRow();
+            var item = searchBar.model.getBaseById(selectionIndex)
+            searchBarTextField.text = item.getName()
         }
     }
     Item {
@@ -172,40 +118,20 @@ RowLayout {
             visible: searchBarTextField.activeFocus
             anchors.fill: parent
             currentIndex: 0
-            keyNavigationEnabled: true
             implicitHeight: contentHeight
             model: ListModel {
                 id: listmodel
             }
 
-            Keys.onTabPressed: {
-                print("Editing finished: ")
-                print(listView.currentIndex)
-                print(listmodel.get(listView.currentIndex))
-                print(listmodel.get(listView.currentIndex).index)
-                var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
-                searchBarTextField.text = item.getName()
-                selectionIndex = listmodel.get(listView.currentIndex).index
-                popup.close()
-            }
-            Keys.onEnterPressed: {
-                print("Editing finished: ")
-                print(listView.currentIndex)
-                print(listmodel.get(listView.currentIndex))
-                print(listmodel.get(listView.currentIndex).index)
-                var item = searchBar.model.getBaseById(listmodel.get(listView.currentIndex).index)
-                searchBarTextField.text = item.getName()
-                selectionIndex = listmodel.get(listView.currentIndex).index
-                popup.close()
-            }
-
             Keys.onDownPressed: {
-                currentIndex++
-                if (currentIndex >= listView.rowCount)
-                    currentIndex = listView.rowCount - 1
+                listView.incrementCurrentIndex()
+            }
+            Keys.onUpPressed: {
+                listView.decrementCurrentIndex()
             }
 
-            delegate: Component {
+            Component {
+                id: listViewDelegateID
                 Rectangle {
                     id: delegateId
                     property Gradient highlightcolor: Gradient {
@@ -221,10 +147,10 @@ RowLayout {
                     width: popup.contentWidth
                     height: 20
 
-                    gradient: view.currentIndex === index ? highlightcolor : nocolor
+                    gradient: delegateId.ListView.isCurrentItem ? highlightcolor : nocolor
                     Text {
                         id: entryText
-                        color: view.currentIndex === index ? "black" : itemMouseArea.containsMouse ? "lightgrey" : "white"
+                        color: delegateId.ListView.isCurrentItem ? "black" : itemMouseArea.containsMouse ? "lightgrey" : "white"
                         anchors.verticalCenter: parent.verticalCenter
                         width: popup.contentWidth - x * 2
                         x: 10
@@ -243,14 +169,14 @@ RowLayout {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: {
-                            view.currentIndex = index
-                            searchBarTextField.forceActiveFocus()
                             searchBarTextField.text = entryText.text
-                            popup.close()
+                            searchBarTextField.editingFinished()
                         }
                     }
                 }
             }
+
+            delegate: listViewDelegateID
         }
     }
 }
