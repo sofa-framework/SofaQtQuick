@@ -124,7 +124,7 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     m_directories.clear();
 
     chdir(m_rootDir.path().toStdString().c_str());
-    msg_warning() << "Setting root directory to '" << m_rootDir.path().toStdString()<<"'";
+    msg_info() << "Setting root directory to '" << m_rootDir.path().toStdString()<<"'";
     QFileInfo root = QFileInfo(m_rootDir.path());
     scan(root);
     emit rootDirChanged(m_rootDir);
@@ -478,7 +478,6 @@ bool SofaProject::createProjectTree(const QUrl& dir)
         d.mkpath(".");
 
     bool ret = d.mkdir("assets");
-    ret = ret & d.mkdir("assets");
     ret = ret & d.mkdir("scenes");
     ret = ret & d.mkdir("assets/resources");
     ret = ret & d.mkdir("assets/scripts");
@@ -510,15 +509,12 @@ const QString SofaProject::getFileCount(const QUrl& url)
 
 Asset* SofaProject::getAsset(const QString& filePath)
 {
-    const auto& it = m_assets.find(filePath);
-    if (it != m_assets.end())
+    auto val = m_assets.value(filePath);
+    if (val != nullptr)
     {
-        msg_info() << "getAsset for: " << filePath.toStdString() << " => " << it.value();
-        if(it.value() != nullptr)
-            return it.value().get();
+        msg_info() << "getAsset for: " << filePath.toStdString();
+        return val.get();
     }
-    msg_info() << "getAsset not asset for: " << filePath.toStdString() ;
-
     return nullptr;
 }
 

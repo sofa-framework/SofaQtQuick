@@ -8,6 +8,7 @@ TextField {
     property alias position: backgroundID.position
     property var borderColor: undefined
 
+    selectByMouse: true
     id: control
     placeholderText: qsTr("None")
     color: control.enabled ? (readOnly ? "#393939" : "black") : "#464646"

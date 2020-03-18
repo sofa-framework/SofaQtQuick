@@ -322,7 +322,7 @@ Item {
                                 }
                             }
 
-                            function insertAsset(index, rootNode)
+                            function insertAsset(index)
                             {
                                 var _parent = SofaApplication.selectedComponent
                                 if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
@@ -352,8 +352,7 @@ Item {
                                         SofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                     else {
-                                        var rootNode = SofaApplication.sofaScene.root()
-                                        var insertedAsset = insertAsset(index, rootNode)
+                                        var insertedAsset = insertAsset(index)
                                         SofaApplication.selectedComponent = insertedAsset
                                     }
                                 }

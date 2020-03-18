@@ -303,7 +303,7 @@ public:
     const sofa::simulation::Node::SPtr& sofaRootNode() const { return mySofaRootNode; }
     sofa::simulation::Node::SPtr& sofaRootNode() { return mySofaRootNode; }
     void setSofaRootNode(sofa::simulation::Node::SPtr node) {
-        mySofaRootNode = node.get();
+        mySofaRootNode = node;
         markVisualDirty();
         myTextureAreDirty = true;
     }

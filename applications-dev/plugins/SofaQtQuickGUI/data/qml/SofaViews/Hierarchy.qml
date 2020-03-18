@@ -67,8 +67,6 @@ Rectangle {
                     var sceneIndex = sceneModel.mapFromSource(baseIndex)
                     treeView.expandAncestors(sceneIndex)
                     treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
-                    //treeView.__listView.positionViewAtIndex(sceneIndex, ListView.Contains)
-                    //_ _list  positionViewAtIndex(1,ListView.Beginning)
                 }
             }
         }
@@ -81,18 +79,23 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         sofaScene: SofaApplication.sofaScene
+        onSelectedItemChanged: {
+            var baseIndex = basemodel.getIndexFromBase(selectedItem)
+            var sceneIndex = sceneModel.mapFromSource(baseIndex)
+            treeView.expandAncestors(sceneIndex)
+            treeView.selection.setCurrentIndex(sceneIndex, ItemSelectionModel.ClearAndSelect);
+        }
     }
 
     TreeView {
         id : treeView
-
-
         anchors.top: searchBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
         alternatingRowColors: true
+
 
         rowDelegate: Rectangle {
             color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
@@ -805,22 +808,25 @@ Rectangle {
                     }
 
                     function dropFromProjectView(src) {
-                        var menuComponent = Qt.createComponent("qrc:/SofaWidgets/SofaAssetMenu.qml")
                         if (src.asset.typeString === "Python prefab" && src.assetName === "") {
+                            var menuComponent = Qt.createComponent("qrc:/SofaWidgets/SofaAssetMenu.qml")
                             var assetMenu = menuComponent.createObject(dropArea, {
                                                                            "asset": src.asset,
                                                                            "parentNode": node,
                                                                            "basemodel": basemodel,
                                                                            "sceneModel": sceneModel,
                                                                            "treeView": treeView,
-                                                                           "selection": ItemSelectionModel.ClearAndSelect
+                                                                           "selection": ItemSelectionModel.ClearAndSelect,
+                                                                           "showLoadScene": true
                                                                        });
                             assetMenu.open()
                         }
                         else {
                             var assetNode = src.asset.create(node, src.assetName)
+                            if (!assetNode)
+                                return
                             var srcIndex = basemodel.getIndexFromBase(assetNode)
-                            var index = sceneModel.mapFromSource(srcIndex);
+                            var index = sceneModel.mapFromSource(srcIndex)
                             treeView.collapseAncestors(index)
                             treeView.expandAncestors(index)
                             treeView.expand(index)
