@@ -808,22 +808,25 @@ Rectangle {
                     }
 
                     function dropFromProjectView(src) {
-                        var menuComponent = Qt.createComponent("qrc:/SofaWidgets/SofaAssetMenu.qml")
                         if (src.asset.typeString === "Python prefab" && src.assetName === "") {
+                            var menuComponent = Qt.createComponent("qrc:/SofaWidgets/SofaAssetMenu.qml")
                             var assetMenu = menuComponent.createObject(dropArea, {
                                                                            "asset": src.asset,
                                                                            "parentNode": node,
                                                                            "basemodel": basemodel,
                                                                            "sceneModel": sceneModel,
                                                                            "treeView": treeView,
-                                                                           "selection": ItemSelectionModel.ClearAndSelect
+                                                                           "selection": ItemSelectionModel.ClearAndSelect,
+                                                                           "showLoadScene": true
                                                                        });
                             assetMenu.open()
                         }
                         else {
                             var assetNode = src.asset.create(node, src.assetName)
+                            if (!assetNode)
+                                return
                             var srcIndex = basemodel.getIndexFromBase(assetNode)
-                            var index = sceneModel.mapFromSource(srcIndex);
+                            var index = sceneModel.mapFromSource(srcIndex)
                             treeView.collapseAncestors(index)
                             treeView.expandAncestors(index)
                             treeView.expand(index)

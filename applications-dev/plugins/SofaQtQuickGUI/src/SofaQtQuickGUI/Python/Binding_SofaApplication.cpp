@@ -22,10 +22,16 @@ void moduleAddSofaApplication(py::module& m)
         return sofaqtquick::SofaBaseApplication::Instance()->getProjectDirectory();
     });
 
-    m.def("getSceneSource", [](){
+    m.def("getScene", [](){
         return sofaqtquick::SofaBaseApplication::Instance()->getCurrentProject()->getScene()->source().path().toStdString();
     });
 
+    m.def("setScene", [](const std::string& path) {
+        return sofaqtquick::SofaBaseApplication::Instance()->getCurrentProject()->getScene()->setSource(QUrl(QString::fromStdString(path)));
+    });
+    m.def("setSelectedComponent", [](Base::SPtr& component) {
+        return sofaqtquick::SofaBaseApplication::Instance()->setSelectedComponent(new SofaBase(component));
+    });
 }
 
 }  // namespace sofapython3

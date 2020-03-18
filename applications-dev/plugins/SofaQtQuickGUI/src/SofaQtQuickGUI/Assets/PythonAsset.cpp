@@ -92,8 +92,11 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     /// There must have a "root/parent" argument.
     sofa::simulation::Node::SPtr root = parent->self();
 
+    QString asset_name = assetName;
+    if (asset_name == "" && m_assetsContent.size() > 0)
+        asset_name = m_assetsContent.first()["name"].toString();
     /// An asset needs a context.
-    bool isContextFree { m_assetsContent[assetName]["type"] == "SofaPrefab" };
+    bool isContextFree { m_assetsContent[asset_name]["type"] == "SofaPrefab" };
 
     /// Some python asset can be created in a root less manner. This is the case for
     /// the SofaPrefab.
@@ -101,7 +104,7 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
         args.append(sofapython3::PythonFactory::toPython(root.get()));
 
     /// call the function
-    py::object res = RSPythonEnvironment::CallFunction(filePath, assetName, args, py::dict(), root.get());
+    py::object res = RSPythonEnvironment::CallFunction(filePath, asset_name, args, py::dict(), root.get());
 
     if(res.is_none())
     {
@@ -173,7 +176,7 @@ void PythonAsset::getDetails()
                                                {"docstring", py2qt(data["docstring"])},
                                                {"sourcecode", py2qt(data["sourcecode"])},
                                                {"lineno", py2qt(data["lineno"])}}
-                                              };
+                                             };
     }
 }
 
@@ -209,14 +212,28 @@ bool PythonAsset::getIsSofaContent()
     return RSPythonEnvironment::IsASofaPythonModule(outFile);
 }
 
-QVariantList PythonAsset::scriptContent()
+QVariantList PythonAsset::scriptActions()
 {
     getDetails();
     QVariantList list;
     for (const auto& item : m_assetsContent)
     {
+        if (item["type"] == "SofaScene") {
+            QVariantMap v = QMap(item);
+            v["type"] = QVariant::fromValue(QString("SofaScene (load)"));
+            list.append(v);
+        }
         list.append( item );
     }
+    return list;
+}
+
+QVariantList PythonAsset::scriptContent()
+{
+    getDetails();
+    QVariantList list;
+    for (const auto& item : m_assetsContent)
+        list.append( item );
     return list;
 }
 

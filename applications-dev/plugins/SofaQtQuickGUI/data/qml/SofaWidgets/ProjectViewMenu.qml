@@ -68,10 +68,10 @@ Menu {
 
     SofaAssetMenu {
         id: assetsList
+        enabled: model && model.scriptContent.length > 1
         asset: model
-        sofaScene: SofaApplication.sofaScene
         parentNode: SofaApplication.selectedComponent
-        enabled: !fileIsDir
+        modal: true
     }
 
     MenuSeparator {}
@@ -105,7 +105,7 @@ Menu {
         
         onTriggered: {
             projectMenu.visible = false
-            SofaApplication.createFolderIn(filePath)
+            SofaApplication.createFolderIn(filePath.toString())
         }
     }
     Menu {

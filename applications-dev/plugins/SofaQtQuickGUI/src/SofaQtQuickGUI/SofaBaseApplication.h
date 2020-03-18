@@ -95,7 +95,7 @@ public:
     Q_SLOT void openInTerminal(const QString& folder) const;
     Q_SLOT void openInEditor(const QString& fullpath, const int line = 0) const;
     Q_SLOT void openInEditorFromUrl(const QUrl& fullpath, const int line = 0) const;
-    Q_SLOT QString createFolderIn(const QString& parent);
+    Q_INVOKABLE QString createFolderIn(const QString& parent);
 
     Q_SLOT bool createFolder(const QString& destination);
     Q_SLOT bool removeFolder(const QString& destination);

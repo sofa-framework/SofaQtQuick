@@ -61,6 +61,7 @@ public:
     virtual QUrl getAssetInspectorWidget() override;
 
     Q_PROPERTY(QVariantList scriptContent READ scriptContent NOTIFY scriptContentChanged)
+    Q_PROPERTY(QVariantList scriptActions READ scriptActions NOTIFY scriptActionsChanged)
 
 protected:
     Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
@@ -79,7 +80,9 @@ private:
 
     virtual bool isScene() override;
     QVariantList scriptContent();
+    QVariantList scriptActions();
     Q_SIGNAL void scriptContentChanged(QVariantList);
+    Q_SIGNAL void scriptActionsChanged(QVariantList);
     QMap<QString, QVariantMap> m_assetsContent;
 };
 

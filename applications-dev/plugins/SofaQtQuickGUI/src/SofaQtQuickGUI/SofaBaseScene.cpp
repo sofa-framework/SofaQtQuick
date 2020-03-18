@@ -323,7 +323,7 @@ bool LoaderProcess(SofaBaseScene* sofaScene)
 
     Node::SPtr n = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().toStdString());
     sofaScene->setSofaRootNode(n);
-    if( sofaScene->sofaRootNode().get() )
+    if ( sofaScene->sofaRootNode().get() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
 
@@ -1610,14 +1610,18 @@ private:
 
 void SofaBaseScene::checkForCanvases()
 {
-    GetCanvasVisitor visitor;
-    mySofaRootNode->executeVisitor(&visitor);
-    QList<QObject*> newCanvases = visitor.getCanvases();
-    if (newCanvases.size() != m_canvas.size() || visitor.needsRefresh)
-    {
-        m_canvas = newCanvases;
-        emit notifyCanvasChanged();
+    if (!mySofaRootNode.get()) {
+        m_canvas.clear();
+    } else {
+        GetCanvasVisitor visitor;
+        mySofaRootNode->executeVisitor(&visitor);
+        QList<QObject*> newCanvases = visitor.getCanvases();
+        if (newCanvases.size() != m_canvas.size() || visitor.needsRefresh)
+        {
+            m_canvas = newCanvases;
+        }
     }
+    emit notifyCanvasChanged();
 }
 
 SelectableSofaParticle* SofaBaseScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaBase*>& roots)
