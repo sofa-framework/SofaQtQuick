@@ -289,10 +289,6 @@ Rectangle {
 
         }
 
-        onModelChanged:  {
-            treeView.restoreNodeState()
-        }
-
         Settings {
             id: nodeSettings
             category: "Hierarchy"
@@ -314,8 +310,10 @@ Rectangle {
         }
 
         function restoreNodeState() {
-            if (Object.keys(nodeSettings.nodeState).length === 0 && SofaApplication.nodeSettings.nodeState !== "")
+            treeView.selection.select(treeView.selection.currentIndex, selectionModel.Deselect)
+            if (Object.keys(nodeSettings.nodeState).length === 0 && SofaApplication.nodeSettings.nodeState !== "") {
                 getExpandedState()
+            }
             for (var key in nodeSettings.nodeState) {
                 if (nodeSettings.nodeState[key] === "1")
                 {
@@ -570,8 +568,8 @@ Rectangle {
                 anchors.right: componentState.left
                 height: 12
                 width: 12
-                enabled: hasMessage || (hasChildMessage && !styleData.isExpanded)
-                visible: hasMessage || (hasChildMessage && !styleData.isExpanded)
+                enabled: hasMessage || (hasChildMessage && !styleData.isExpanded) || !root.enabled
+                visible: hasMessage || (hasChildMessage && !styleData.isExpanded) || !root.enabled
                 iconSource: "qrc:/icon/ICON_WARNING.png"
                 useHoverOpacity: false
                 layer {
@@ -579,7 +577,7 @@ Rectangle {
                         effect: ColorOverlay {
                             color: {
                                 if (isNode) {
-                                    if (hasChildMessage)
+                                    if (hasChildMessage || !root.enabled)
                                         return childError.hovered || localError.hovered ? "red" : "darkred"
                                     else
                                         return childError.hovered || localError.hovered ? "#DDDDDD" : "#BBBBBB"
