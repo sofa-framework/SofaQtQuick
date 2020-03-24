@@ -29,6 +29,8 @@ using sofa::helper::logging::MessageHandler ;
 
 #include <sofa/helper/logging/Message.h>
 using sofa::helper::logging::Message ;
+#include <sofa/helper/logging/ComponentInfo.h>
+using sofa::helper::logging::ComponentInfo;
 
 #include <sofa/core/objectmodel/Base.h>
 using sofa::helper::logging::SofaComponentInfo ;
@@ -64,6 +66,22 @@ void Console::process(Message &m)
 {
     beginInsertRows(QModelIndex(), m_messages.size(), m_messages.size());
     m_messages.push_back(m) ;
+    switch (m.type())
+    {
+    case Message::Type::Fatal:
+        m_fatals.push_back(&m);
+        break;
+    case Message::Type::Error:
+        m_errors.push_back(&m);
+        break;
+    case Message::Type::Warning:
+        m_warnings.push_back(&m);
+        break;
+    case Message::Type::Deprecated:
+        m_deprecated.push_back(&m);
+        break;
+    default: break;
+    }
     endInsertRows();
 
     //if(m_messages.size() > 50){
@@ -77,18 +95,23 @@ void Console::clear()
 {
     beginResetModel();
     m_messages.clear() ;
+    m_fatals.clear() ;
+    m_errors.clear() ;
+    m_warnings.clear() ;
+    m_deprecated.clear() ;
     endResetModel();
     emit messageCountChanged();
 }
 
+
 int Console::rowCount(const QModelIndex & /*parent*/) const
 {
-    return m_messages.size();
+    return getMessageCount();
 }
 
 int Console::getMessageCount() const
 {
-    return m_messages.size();
+    return int(m_messages.size());
 }
 
 QVariant Console::data(const QModelIndex& index, int role) const

@@ -346,6 +346,7 @@ bool LoaderProcess(SofaBaseScene* sofaScene)
     else
     {
         sofaScene->setStatus(SofaBaseScene::Status::Error);
+        sofaScene->setSofaRootNode(sofa::simulation::Node::create("root"));
         return false;
     }
 }

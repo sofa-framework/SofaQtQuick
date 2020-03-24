@@ -247,13 +247,6 @@ def createPrefabFromNode(fileName, node, name, help):
     return True
 
 
-def loadMeshAsset(type, path, node):
-    basename = os.path.splitext(os.path.basename(path))[0]
-    loader = node.addObject(type, name="loader", filename=path)
-    vmodel = node.addObject("OglModel", name="vmodel", src=loader.getLinkPath())
-    node.setName(basename)
-    return node
-
 def getPrefabMetaData(func, node):
     """ Retreives all meta data from a python function and stores it as datafields in the given node """
     inspect = importlib.import_module("inspect")

@@ -29,7 +29,7 @@ Menu {
             text: "Open In Editor"
             onTriggered: {
                 projectMenu.visible = false
-                SofaApplication.openInEditor(filePath)
+                model.openThirdParty()
             }
         }
     }

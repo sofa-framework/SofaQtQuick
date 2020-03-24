@@ -87,10 +87,13 @@ using sofaqtquick::Asset;
 #include <SofaQtQuickGUI/Assets/PythonAsset.h>
 using sofaqtquick::PythonAsset;
 
-#include <SofaQtQuickGUI/Assets/MeshAsset.h>
-using sofaqtquick::MeshAsset;
+//#include <SofaQtQuickGUI/Assets/MeshAsset.h>
+//using sofaqtquick::MeshAsset;
 #include <SofaQtQuickGUI/Assets/TextureAsset.h>
 using sofaqtquick::TextureAsset;
+
+#include <SofaQtQuickGUI/Assets/TemplateAsset.h>
+using sofaqtquick::TemplateAsset;
 
 #include <SofaQtQuickGUI/Bindings/SofaFactory.h>
 using sofaqtquick::bindings::SofaFactory;
@@ -311,7 +314,8 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterUncreatableType<Asset>                               ("Asset"                                , versionMajor, versionMinor, "Asset", QString("It is not possible to create an Asset"));
     qmlRegisterType<PythonAsset>                                    ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset");
     qmlRegisterType<HighlightComponent>                             ("HighlightComponent"                   , versionMajor, versionMinor, "HighlightComponent");
-    qmlRegisterUncreatableType<MeshAsset>                           ("MeshAsset"                            , versionMajor, versionMinor, "MeshAsset", QString("It is not possible to create a MeshAsset"));
+    qmlRegisterUncreatableType<TemplateAsset>                       ("TemplateAsset"                        , versionMajor, versionMinor, "TemplateAsset", QString("It is not possible to create a TemplateAsset from QML"));
+//    qmlRegisterUncreatableType<MeshAsset>                           ("MeshAsset"                            , versionMajor, versionMinor, "MeshAsset", QString("It is not possible to create a MeshAsset"));
     qmlRegisterUncreatableType<TextureAsset>                        ("TextureAsset"                         , versionMajor, versionMinor, "TextureAsset", QString("It is not possible to create a TextureAsset"));
 
     qmlRegisterUncreatableType<sofaqtquick::bindings::SofaLink> ("Sofa.Core.SofaLink",
