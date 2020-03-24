@@ -190,11 +190,13 @@ Item {
                 if (item) {
                     if (item instanceof DynamicContent_Error)
                         item.errorMessage = "No inspector widget for this asset type"
-                    item.selectedAsset = Qt.binding(function() {
-                        if (root.selectedAsset)
-                            return root.selectedAsset
-                        else return null
-                    })
+                    else {
+                        item.selectedAsset = Qt.binding(function() {
+                            if (root.selectedAsset)
+                                return root.selectedAsset
+                            else return null
+                        })
+                    }
                     item.parent = assetArea
                 }
             }

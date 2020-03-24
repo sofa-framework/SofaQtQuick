@@ -49,8 +49,6 @@ Rectangle {
     color: SofaApplication.style.contentBackgroundColor
     enabled: SofaApplication.sofaScene ? SofaApplication.sofaScene.ready : false
 
-//    property var sofaScene: SofaApplication.sofaScene
-
     readonly property var searchBar: searchBar
 
     Item {

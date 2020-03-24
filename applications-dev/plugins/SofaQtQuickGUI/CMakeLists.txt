@@ -87,11 +87,10 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SofaProject.cpp
     src/SofaQtQuickGUI/Assets/Asset.cpp
     src/SofaQtQuickGUI/Assets/DirectoryAsset.cpp
-    src/SofaQtQuickGUI/Assets/FileAsset.cpp
-    src/SofaQtQuickGUI/Assets/MeshAsset.cpp
     src/SofaQtQuickGUI/Assets/PythonAsset.cpp
     src/SofaQtQuickGUI/Assets/SceneAsset.cpp
     src/SofaQtQuickGUI/Assets/TextureAsset.cpp
+    src/SofaQtQuickGUI/Assets/TemplateAsset.cpp
     src/SofaQtQuickGUI/Assets/CanvasAsset.cpp
     src/SofaQtQuickGUI/Assets/AssetFactory.cpp
     )
@@ -174,10 +173,9 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/SofaProject.h
     src/SofaQtQuickGUI/Assets/Asset.h
     src/SofaQtQuickGUI/Assets/DirectoryAsset.h
-    src/SofaQtQuickGUI/Assets/FileAsset.h
-    src/SofaQtQuickGUI/Assets/MeshAsset.h
     src/SofaQtQuickGUI/Assets/PythonAsset.h
     src/SofaQtQuickGUI/Assets/TextureAsset.h
+    src/SofaQtQuickGUI/Assets/TemplateAsset.h
     src/SofaQtQuickGUI/Assets/SceneAsset.h
     src/SofaQtQuickGUI/Assets/CanvasAsset.h
     src/SofaQtQuickGUI/Assets/AssetFactory.h
@@ -212,8 +210,9 @@ set(ASSET_TEMPLATES
     data/python/templates/emptyForceField.py
     data/python/templates/emptyPrefab.py
     data/python/templates/emptyScene.py
-    data/python/templates/openstlInBlender.py
-    data/python/templates/openobjInBlender.py
+    data/python/templates/openInBlender.py
+    data/python/templates/stlAsset.py
+    data/python/templates/stlAsset.qml
     )
 
 

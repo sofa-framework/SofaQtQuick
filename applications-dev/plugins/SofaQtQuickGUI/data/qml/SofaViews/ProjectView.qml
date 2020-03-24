@@ -9,9 +9,6 @@ import SofaWidgets 1.0
 import QtQml 2.12
 import QtQuick.Window 2.12
 import Asset 1.0
-import PythonAsset 1.0
-import TextureAsset 1.0
-import MeshAsset 1.0
 import QtGraphicalEffects 1.12
 import SofaApplication 1.0
 
@@ -226,7 +223,7 @@ Item {
                     showFiles: true
                     caseSensitive: true
                     rootFolder: SofaApplication.currentProject.rootDirPath
-                    nameFilters: SofaApplication.currentProject.getSupportedTypes()
+//                    nameFilters: SofaApplication.currentProject.getSupportedTypes()
                 }
 
                 property var selectedItem: null
@@ -235,11 +232,11 @@ Item {
 
                     Rectangle {
                         id: wrapper
-
                         width: root.width
                         height: 20
                         color: index % 2 ? "#4c4c4c" : "#454545"
                         property string highlightColor: ListView.isCurrentItem || folderView.selectedItem === wrapper ? "#82878c" : "transparent"
+                        property var asset: SofaApplication.currentProject.getAsset(filePath)
                         Rectangle {
                             anchors.fill: parent
                             color: wrapper.highlightColor
@@ -254,7 +251,7 @@ Item {
                                         width: 15
                                         height: 15
                                         fillMode: Image.PreserveAspectFit
-                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : SofaApplication.currentProject.getAsset(filePath).iconPath
+                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : asset ? asset.iconPath : "qrc:/icon/ICON_FILE_BLANK.png"
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
@@ -264,7 +261,7 @@ Item {
                                         text: fileName
                                         clip: true
                                         elide: Text.ElideRight
-                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || (asset ? asset.isSofaContent :false) ? "#efefef" : "darkgrey"
                                         anchors.left: iconId.right
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -274,8 +271,8 @@ Item {
                                     Text {
                                         width: parent.width
                                         leftPadding: 10
-                                        text: fileIsDir ? "Folder" : SofaApplication.currentProject.getAsset(filePath).typeString
-                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
+                                        text: fileIsDir ? "Folder" : asset ? asset.typeString : "Unknown file type"
+                                        color: fileIsDir || (asset ? asset.isSofaContent : false) ? "#efefef" : "darkgrey"
 
                                         clip: true
                                         elide: Text.ElideRight
@@ -292,7 +289,7 @@ Item {
                                                                              (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
                                                                                                 (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
                                                                                                                    fileSize + " bytes"
-                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || (asset ? asset.isSofaContent : false) ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -307,7 +304,7 @@ Item {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
                             fileIsDir: index !== -1 ? folderModel.get(index, "fileIsDir") : ""
-                            model: folderModel.get(index, "fileIsDir") ? null : SofaApplication.currentProject.getAsset(filePath)
+                            model: folderModel.get(index, "fileIsDir") ? null : asset
                         }
 
                         MouseArea {

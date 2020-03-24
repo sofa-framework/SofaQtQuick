@@ -8,7 +8,8 @@
 namespace sofaqtquick
 {
 
-bool __qml = sofaqtquick::AssetFactory::registerAsset("qml", new sofaqtquick::AssetCreator<CanvasAsset>());
+
+static bool __qml = sofaqtquick::AssetFactory::registerAsset("qml", new sofaqtquick::AssetCreator<CanvasAsset>());
 
 const CanvasAsset::LoaderMap CanvasAsset::_loaders = CanvasAsset::createLoaders();
 

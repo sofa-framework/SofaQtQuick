@@ -1,8 +1,9 @@
 #include "AssetFactory.h"
 
 #include "FileAsset.h"
-#include "MeshAsset.h"
+//#include "MeshAsset.h"
 #include "TextureAsset.h"
+#include "TemplateAsset.h"
 #include "PythonAsset.h"
 
 namespace sofaqtquick
@@ -34,7 +35,7 @@ AssetFactory::createInstance(const QString& path,
 {
     const auto& creator = getFactoryCreators().find(extension.toStdString());
     if (creator == getFactoryCreators().end())
-        return std::shared_ptr<FileAsset>{new FileAsset(path.toStdString(),
+        return std::shared_ptr<TemplateAsset>{new TemplateAsset(path.toStdString(),
                                           extension.toStdString())};
     return creator->second->createInstance(path.toStdString(),
                                           extension.toStdString());

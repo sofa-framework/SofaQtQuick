@@ -9,9 +9,6 @@ import SofaWidgets 1.0
 import QtQml 2.12
 import QtQuick.Window 2.12
 import Asset 1.0
-import PythonAsset 1.0
-import TextureAsset 1.0
-import MeshAsset 1.0
 
 Item {
     id: draggedData
