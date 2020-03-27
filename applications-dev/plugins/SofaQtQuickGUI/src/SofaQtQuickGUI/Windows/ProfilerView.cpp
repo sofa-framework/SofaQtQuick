@@ -46,7 +46,10 @@ ProfilerChartView::ProfilerChartView(QChart *chart, QWidget *parent, int bufferS
     , m_pointSelected(-1)
     , m_maxY(1000)
 {
-
+    setMinimumWidth(parent->size().width());
+    setMinimumHeight(parent->size().height() / 2);
+    chart->setMinimumWidth(parent->size().width());
+    chart->setMinimumHeight(parent->size().height() / 2);
 }
 
 void ProfilerChartView::mousePressEvent(QMouseEvent *event)
@@ -178,6 +181,7 @@ ProfilerView::AnimationStepData::AnimationStepData(int step, const std::string& 
 {
     m_subSteps.clear();
     
+    std::cout << "AnimationStepData" << std::endl;
     bool res = processData(idString);
     if (!res) // error clear data
     {
@@ -194,7 +198,7 @@ ProfilerView::AnimationStepData::AnimationStepData(int step, const std::string& 
 bool ProfilerView::AnimationStepData::processData(const std::string& idString)
 {
     sofa::helper::vector<Record> _records = sofa::helper::AdvancedTimer::getRecords(idString);
-
+    std::cout << _records.size() << std::endl;
     //AnimationSubStepData* currentSubStep = nullptr;
     std::stack<AnimationSubStepData*> processStack;
     int level = 0;
@@ -339,10 +343,12 @@ ProfilerView::ProfilerView(QWidget *parent)
 
     // fill buffer with empty data.
     m_profilingData.resize(m_bufferSize);
-    for (unsigned int i=0; i<m_bufferSize; ++i)
+    for (unsigned int i=0; i<m_bufferSize; ++i) {
+        std::cout << "New AnimationStepData " << i << std::endl;
         m_profilingData[i] = new AnimationStepData();
+    }
 
-    resize(1000,800);
+    resize(1000,800 / 2);
 
     // creating chart widget
     createChart();
@@ -439,6 +445,7 @@ void ProfilerView::createChart()
     }
 
     m_chart = new QChart();
+    m_chart->setMinimumSize(this->size());
     m_chart->addSeries(m_series);
     m_chart->addSeries(m_selectionSeries);
     m_axisY = new QValueAxis();
@@ -451,13 +458,12 @@ void ProfilerView::createChart()
 
     m_chartView = new ProfilerChartView(m_chart, this, m_bufferSize);
     m_chartView->setRenderHint(QPainter::Antialiasing);
-
-    //Layout_graph->addWidget(m_chartView);
 }
 
 
 void ProfilerView::updateChart()
 {
+    std::cout << "updateChart()" << std::endl;
     bool updateAxis = false;
 
     // Need to slide all the serie. Sure this could be optimised with deeper knowledge in QLineSeries/QChart

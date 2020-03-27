@@ -949,6 +949,40 @@ QVariantMap SofaBaseScene::dataObject(const sofa::core::objectmodel::BaseData* d
     dmsg_deprecated("SofaScene::dataObject") << "is a deprecated method. Please use the one in helper";
 }
 
+
+void SofaBaseScene::activateATimer(bool activate, const QString& idString)
+{
+    sofa::helper::AdvancedTimer::setEnabled(idString.toStdString(), activate);
+    sofa::helper::AdvancedTimer::setInterval(idString.toStdString(), 1);
+    sofa::helper::AdvancedTimer::setOutputType(idString.toStdString(), "gui");
+}
+
+#include <sofa/helper/system/thread/CTime.h>
+
+using namespace sofa::helper::system::thread;
+using sofa::helper::Record;
+
+SReal convertInMs(ctime_t t, int nbIter=1)
+{
+    static SReal timer_freqd = SReal(CTime::getTicksPerSec());
+    return 1000.0 * SReal(t) / SReal (timer_freqd * nbIter);
+}
+
+QVariant SofaBaseScene::getStepDuration(int step, const QString& idString)
+{
+    sofa::helper::vector<Record> _records = sofa::helper::AdvancedTimer::getRecords(idString.toStdString());
+    //AnimationSubStepData* currentSubStep = nullptr;
+    int level = 0;
+    ctime_t t0 = 0;
+    ctime_t tEnd = CTime::getTime();
+    ctime_t tCurr;
+
+
+    t0 = _records.front().time;
+    tCurr = tEnd - t0;
+    return QVariant::fromValue(convertInMs(tCurr));
+}
+
 QVariant SofaBaseScene::dataValue(const BaseData* data)
 {
     QVariant value;
