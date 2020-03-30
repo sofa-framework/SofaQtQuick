@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
 import QtQuick.Controls.impl 2.12
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4 as QQCS1
@@ -9,12 +10,13 @@ import QtCharts 2.3
 import SofaApplication 1.0
 import SofaBasics 1.0
 import SofaColorScheme 1.0
+import ProfilerTreeViewModel 1.0
 
 Window {
+    id: profiler
     onVisibleChanged: {
-        sofaScene.activateATimer(true)
+        profilerModel.activateTimer(true)
     }
-
 
     property var rootNode : SofaApplication.sofaScene.rootNode
     onRootNodeChanged: {
@@ -26,7 +28,7 @@ Window {
         property var stepNumber: 0
         onValueChanged: {
             stepNumber++
-            stepsDuration.updateChart(stepNumber, SofaApplication.sofaScene.getStepDuration(stepNumber))
+            stepsDuration.updateChart(stepNumber, profilerModel.recordStep(stepNumber))
         }
     }
 
@@ -127,6 +129,7 @@ Window {
         }
 
         Rectangle {
+            id: treeViewParent
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: stepsDuration.bottom
@@ -135,142 +138,20 @@ Window {
             anchors.topMargin: 0
             color: SofaApplication.style.contentBackgroundColor
             radius: 5
+
             TreeView {
-                anchors.fill: parent
-                anchors.margins: 5
-                verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
-                alternatingRowColors: true
-
-
-                rowDelegate: Rectangle {
-                    color: styleData.selected ? "#82878c" : styleData.alternate ? SofaApplication.style.alternateBackgroundColor : SofaApplication.style.contentBackgroundColor
+                id: treeView
+                model: ProfilerTreeViewModel {
+                    id: profilerModel
+                    bufferSize: 100
                 }
 
-                headerDelegate: Rectangle {
-                    x: 5
-                    y: 2
-                    height: 18
-                    color: SofaApplication.style.contentBackgroundColor
-                    property var pressed: styleData.pressed
-                    onPressedChanged: forceActiveFocus()
-                    Label {
-                        color: "black"
-                        text: styleData.value
-                    }
-                }
-
-                style: QQCS1.TreeViewStyle {
-                    headerDelegate: GBRect {
-                        color: "#757575"
-                        border.color: "black"
-                        borderWidth: 1
-                        borderGradient: Gradient {
-                            GradientStop { position: 0.0; color: "#7a7a7a" }
-                            GradientStop { position: 1.0; color: "#5c5c5c" }
-                        }
-                        height: 20
-                        width: textItem.implicitWidth
-                        anchors.margins: 10
-                        radius: 5
-                        Text {
-                            id: textItem
-                            anchors.fill: parent
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: styleData.textAlignment
-                            anchors.leftMargin: 12
-                            text: styleData.value
-                            elide: Text.ElideRight
-                            color: textColor
-                            renderType: Text.NativeRendering
-                        }
-                    }
-
-                    branchDelegate: ColorImage {
-                        id: groupBoxArrow
-                        y: 1
-                        source: styleData.isExpanded ? "qrc:/icon/downArrow.png" : "qrc:/icon/rightArrow.png"
-                        width: 14
-                        height: 14
-                        color: "#393939"
-                    }
-                    backgroundColor: SofaApplication.style.contentBackgroundColor
-
-                    scrollBarBackground: GBRect {
-                        border.color: "#3f3f3f"
-                        radius: 5
-                        implicitWidth: 12
-                        implicitHeight: 12
-                        LinearGradient {
-                            cached: true
-                            source: parent
-                            anchors.left: parent.left
-                            anchors.leftMargin: 1
-                            anchors.right: parent.right
-                            anchors.rightMargin: 1
-                            anchors.top: parent.top
-                            anchors.topMargin: 0
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 0
-                            start: Qt.point(0, 0)
-                            end: Qt.point(12, 0)
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "#565656" }
-                                GradientStop { position: 1.0; color: "#5d5d5d" }
-                            }
-                        }
-                        isHorizontal: true
-                        borderGradient: Gradient {
-                            GradientStop { position: 0.0; color: "#444444" }
-                            GradientStop { position: 1.0; color: "#515151" }
-                        }
-                    }
-
-                    corner: null
-                    scrollToClickedPosition: true
-                    transientScrollBars: false
-                    frame: Rectangle {
-                        color: "transparent"
-                    }
-
-                    handle: Item {
-                        implicitWidth: 12
-                        implicitHeight: 12
-                        GBRect {
-                            radius: 6
-                            anchors.fill: parent
-                            border.color: "#3f3f3f"
-                            LinearGradient {
-                                cached: true
-                                source: parent
-                                anchors.left: parent.left
-                                anchors.leftMargin: 1
-                                anchors.right: parent.right
-                                anchors.rightMargin: 1
-                                anchors.top: parent.top
-                                anchors.topMargin: 0
-                                anchors.bottom: parent.bottom
-                                anchors.bottomMargin: 0
-
-                                start: Qt.point(0, 0)
-                                end: Qt.point(12, 0)
-                                gradient: Gradient {
-                                    GradientStop { position: 0.0; color: "#979797" }
-                                    GradientStop { position: 1.0; color: "#7b7b7b" }
-                                }
-                            }
-                            isHorizontal: true
-                            borderGradient: Gradient {
-                                GradientStop { position: 0.0; color: "#444444" }
-                                GradientStop { position: 1.0; color: "#515151" }
-                            }
-
-                        }
-                    }
-                    incrementControl: Rectangle {
-                        visible: false
-                    }
-                    decrementControl: Rectangle {
-                        visible: false
+                itemDelegate: Rectangle {
+                    id: delegate
+                    height: 20
+                    Text {
+                        anchors.fill: parent
+                        text: label
                     }
                 }
             }

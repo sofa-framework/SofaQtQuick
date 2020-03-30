@@ -110,8 +110,8 @@ using sofaqtquick::views::ShapeGraphView;
 #include <SofaQtQuickGUI/Windows/GraphView.h>
 using sofaqtquick::views::GraphView;
 
-#include <SofaQtQuickGUI/Windows/ProfilerView.h>
-using sofaqtquick::views::ProfilerView;
+#include <SofaQtQuickGUI/ProfilerTreeViewModel.h>
+using sofaqtquick::ProfilerTreeViewModel;
 
 #include <sofa/helper/system/PluginManager.h>
 
@@ -181,48 +181,48 @@ static QObject* createSofaBaseApplication(QQmlEngine *engine,
     return SofaBaseApplication::Instance();
 }
 
-// Following the doc on creating a singleton component
-// we need to have function that return the singleton instance.
-// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
-static QObject* createShapeGraphView(QQmlEngine *engine,
-                                     QJSEngine *scriptEngine){
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-    auto g= new ShapeGraphView(nullptr);
-    //g->show();
-    //g->raise();
-    //g->activateWindow();
-    return g;
-}
+//// Following the doc on creating a singleton component
+//// we need to have function that return the singleton instance.
+//// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+//static QObject* createShapeGraphView(QQmlEngine *engine,
+//                                     QJSEngine *scriptEngine){
+//    Q_UNUSED(engine)
+//    Q_UNUSED(scriptEngine)
+//    auto g= new ShapeGraphView(nullptr);
+//    //g->show();
+//    //g->raise();
+//    //g->activateWindow();
+//    return g;
+//}
 
 
-// Following the doc on creating a singleton component
-// we need to have function that return the singleton instance.
-// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
-static QObject* createGraphView(QQmlEngine *engine,
-                                QJSEngine *scriptEngine){
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-    auto g= new GraphView(nullptr);
-    //g->show();
-    //g->raise();
-    //g->activateWindow();
-    return g;
-}
+//// Following the doc on creating a singleton component
+//// we need to have function that return the singleton instance.
+//// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+//static QObject* createGraphView(QQmlEngine *engine,
+//                                QJSEngine *scriptEngine){
+//    Q_UNUSED(engine)
+//    Q_UNUSED(scriptEngine)
+//    auto g= new GraphView(nullptr);
+//    //g->show();
+//    //g->raise();
+//    //g->activateWindow();
+//    return g;
+//}
 
-// Following the doc on creating a singleton component
-// we need to have function that return the singleton instance.
-// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
-static QObject* createProfilerView(QQmlEngine *engine,
-                                   QJSEngine *scriptEngine){
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-    auto p= new ProfilerView(nullptr);
-    //p->show();
-    //p->raise();
-    //p->activateWindow();
-    return p;
-}
+//// Following the doc on creating a singleton component
+//// we need to have function that return the singleton instance.
+//// see: http://doc.qt.io/qt-5/qqmlengine.html#qmlRegisterSingletonType
+//static QObject* createProfilerView(QQmlEngine *engine,
+//                                   QJSEngine *scriptEngine){
+//    Q_UNUSED(engine)
+//    Q_UNUSED(scriptEngine)
+//    auto p= new ProfilerTreeView(nullptr);
+//    //p->show();
+//    //p->raise();
+//    //p->activateWindow();
+//    return p;
+//}
 
 
 
@@ -269,6 +269,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObject*>("_sofaobject_::SofaBaseObject*");
     qRegisterMetaType<sofaqtquick::bindings::SofaBaseObjectList*>("SofaBaseObjectList*");
 
+    qmlRegisterType<sofaqtquick::ProfilerTreeViewModel>                          ("ProfilerTreeViewModel"                , versionMajor, versionMinor, "ProfilerTreeViewModel");
     qRegisterMetaType<sofaqtquick::Manipulator*>("Manipulator*");
 
     qRegisterMetaType<SofaViewer*>("SofaViewer*");
@@ -371,23 +372,23 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                                  createAnInstanceOfLiveFileMonitor // the function used to create the singleton instance
                                                  );
 
-    qmlRegisterSingletonType<GraphView>("GraphView",            // char* uri
-                                        versionMajor, versionMinor,   // minor/major version number
-                                        "GraphView",       // exported name
-                                        createGraphView // the function used to create the singleton instance
-                                        );
+//    qmlRegisterSingletonType<GraphView>("GraphView",            // char* uri
+//                                        versionMajor, versionMinor,   // minor/major version number
+//                                        "GraphView",       // exported name
+//                                        createGraphView // the function used to create the singleton instance
+//                                        );
 
-    qmlRegisterSingletonType<GraphView>("ShapeGraphView",            // char* uri
-                                        versionMajor, versionMinor,   // minor/major version number
-                                        "ShapeGraphView",       // exported name
-                                        createGraphView // the function used to create the singleton instance
-                                        );
+//    qmlRegisterSingletonType<GraphView>("ShapeGraphView",            // char* uri
+//                                        versionMajor, versionMinor,   // minor/major version number
+//                                        "ShapeGraphView",       // exported name
+//                                        createGraphView // the function used to create the singleton instance
+//                                        );
 
-    qmlRegisterSingletonType<GraphView>("ProfilerView",            // char* uri
-                                        versionMajor, versionMinor,   // minor/major version number
-                                        "ProfilerView",       // exported name
-                                        createProfilerView // the function used to create the singleton instance
-                                        );
+//    qmlRegisterSingletonType<GraphView>("ProfilerTreeView",            // char* uri
+//                                        versionMajor, versionMinor,   // minor/major version number
+//                                        "ProfilerTreeView",       // exported name
+//                                        createProfilerView // the function used to create the singleton instance
+//                                        );
 
     SofaCoreBindingFactory::registerType("DAGNode", [](sofa::core::objectmodel::Base* obj)
     {

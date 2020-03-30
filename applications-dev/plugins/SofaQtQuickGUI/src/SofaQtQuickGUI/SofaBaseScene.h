@@ -242,8 +242,6 @@ public:
 
     [[deprecated("Replaced by sofaqtuick::helper::getDataObjectProperties")]]
     QVariantMap dataObject(const sofa::core::objectmodel::BaseData* data);
-    Q_INVOKABLE QVariant getStepDuration(int step, const QString& idString = "Animate");
-    Q_INVOKABLE void activateATimer(bool activate, const QString& idString = "Animate");
 
     QVariant dataValue(const QString& path) const;
     QVariant dataValue(const SofaBase* SofaBase, const QString& name) const;
