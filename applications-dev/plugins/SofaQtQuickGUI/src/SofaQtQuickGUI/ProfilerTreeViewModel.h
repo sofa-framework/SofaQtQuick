@@ -8,7 +8,7 @@
 
 #include <QAbstractItemModel>
 
-#include <queue>
+#include <deque>
 
 namespace sofaqtquick {
 namespace _profilertreeviewmodel_ {
@@ -24,6 +24,7 @@ public:
 
     Q_PROPERTY(int bufferSize READ getBufferSize WRITE setBufferSize NOTIFY bufferSizeChanged)
 
+    Q_INVOKABLE void setProfilerTo(int stepNumber);
     Q_INVOKABLE QVariant recordStep(int step, const QString& idString = "Animate");
     Q_INVOKABLE void activateTimer(bool activate, const QString& idString = "Animate");
 
@@ -35,8 +36,8 @@ signals:
 
 private:
     size_t m_bufferSize;
-    std::queue<AnimationStepData*> m_steps;
-
+    std::deque<AnimationStepData*> m_steps;
+    int m_stepNumber;
     ///////////////////////////// AbstractItemModel ///////////////////////////////////
 public:
     QModelIndex index(AnimationStepData* stepData);
@@ -61,7 +62,6 @@ public:
         SelfMs
     };
     ///////////////////////////////////////////////////////////////////////////////////
-
 };
 
 } /// namespace _profilertreeviewmodel_

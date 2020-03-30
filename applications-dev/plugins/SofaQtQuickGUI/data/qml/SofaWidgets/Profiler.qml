@@ -117,6 +117,9 @@ Window {
                     verticalCursorBar.clear()
                     verticalCursorBar.append(fullAnimationStep.at(value.x - axisX.min).x, axisY.min)
                     verticalCursorBar.append(fullAnimationStep.at(value.x - axisX.min).x, axisY.max)
+                    var a = Number(fullAnimationStep.at(value.x - axisX.min).x)
+                    var b = Number(axisX.min)
+                    profilerModel.setProfilerTo(Number(a - b))
                 }
             }
             LineSeries {

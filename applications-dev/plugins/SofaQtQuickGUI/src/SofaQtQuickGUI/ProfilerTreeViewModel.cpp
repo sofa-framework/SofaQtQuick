@@ -14,7 +14,7 @@ ProfilerTreeViewModel::ProfilerTreeViewModel(QObject* parent)
 
 ProfilerTreeViewModel::~ProfilerTreeViewModel() {
     delete m_steps.front();
-    m_steps.pop();
+    m_steps.pop_front();
 }
 
 void ProfilerTreeViewModel::activateTimer(bool activate, const QString& idString)
@@ -24,14 +24,19 @@ void ProfilerTreeViewModel::activateTimer(bool activate, const QString& idString
     sofa::helper::AdvancedTimer::setOutputType(idString.toStdString(), "gui");
 }
 
-QVariant ProfilerTreeViewModel::recordStep(int step, const QString& idString)
+void ProfilerTreeViewModel::setProfilerTo(int stepNumber)
 {
-    m_steps.push(new AnimationStepData(step, idString.toStdString()));
-    beginInsertRows(index(m_steps.back()), 0, 0);
-    if (m_steps.size() > m_bufferSize)
-        m_steps.pop();
+    m_stepNumber = stepNumber;
     beginResetModel();
     endResetModel();
+
+}
+
+QVariant ProfilerTreeViewModel::recordStep(int step, const QString& idString)
+{
+    m_steps.push_back(new AnimationStepData(step, idString.toStdString()));
+    if (m_steps.size() > m_bufferSize)
+        m_steps.pop_front();
     return QVariant::fromValue(m_steps.back()->m_totalMs);
 }
 
@@ -73,7 +78,7 @@ QModelIndex ProfilerTreeViewModel::index(int row, int column, const QModelIndex 
     if (!parent.isValid())
     {
         if (!row && !column)
-            return createIndex(0,0, m_steps.front());
+            return createIndex(0,0, m_steps[size_t(m_stepNumber)]);
         else return QModelIndex();
     }
     AnimationStepData* stepData = static_cast<AnimationStepData*>(parent.internalPointer());
