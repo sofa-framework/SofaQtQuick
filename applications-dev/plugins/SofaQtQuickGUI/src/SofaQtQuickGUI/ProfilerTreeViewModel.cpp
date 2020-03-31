@@ -26,9 +26,9 @@ void ProfilerTreeViewModel::activateTimer(bool activate, const QString& idString
 
 void ProfilerTreeViewModel::seek(int stepNumber)
 {
-    m_stepNumber = stepNumber;
     std::cout << ("reseting model") << std::endl;
     beginResetModel();
+    m_stepNumber = stepNumber;
     endResetModel();
 }
 
@@ -72,8 +72,6 @@ QModelIndex ProfilerTreeViewModel::index(AnimationStepData* stepData)
 // Row will indicate the index of the idString within its parent, parent is the parent step, column is unused
 QModelIndex ProfilerTreeViewModel::index(int row, int column, const QModelIndex &parent) const
 {
-    std::cout << "index()" << std::endl;
-    std::cout << "index r: " << row <<" c: " << column << " p: " << parent.internalPointer() << std::endl;
     if (m_steps.empty()) return QModelIndex();
 
     AnimationStepData* stepData;
@@ -92,7 +90,6 @@ QModelIndex ProfilerTreeViewModel::index(int row, int column, const QModelIndex 
 QModelIndex ProfilerTreeViewModel::parent(const QModelIndex &index) const
 {
     if(!index.isValid()) {
-        std::cout << "[OUPS] invalid index" << std::endl;
         return QModelIndex();
     }
 
@@ -104,32 +101,26 @@ QModelIndex ProfilerTreeViewModel::parent(const QModelIndex &index) const
     auto gdParent = parent->m_parent;
     size_t row = size_t(std::distance(gdParent->m_substeps.begin(),
                                     std::find(gdParent->m_substeps.begin(), gdParent->m_substeps.end(), parent)));
-    std::cout << "found index of parent. returning" << std::endl;
     return createIndex(int(row), 0, parent);
 }
 
 // Whether or not this step has substeps
 bool ProfilerTreeViewModel::hasChildren(const QModelIndex &index) const
 {
-    std::cout << "index  has children ? [" << index.row() << ";" << index.column() << " : " << index.internalPointer() << "]: " << (rowCount(index) > 0) << std::endl;
     return rowCount(index) > 0;
 }
 
 // Number of substeps within a step
 int ProfilerTreeViewModel::rowCount(const QModelIndex &index) const
 {
-    std::cout << "rowCount of index [" << index.row() << ";" << index.column() << " : " << index.internalPointer() << "]: ";
     if (!index.isValid()) {
-        std::cout << 1 << std::endl;
         return 1;
     }
     if (index.internalPointer())
     {
         AnimationStepData* stepData = static_cast<AnimationStepData*>(index.internalPointer());
-        std::cout << int(stepData->m_substeps.size()) << std::endl;
         return int(stepData->m_substeps.size());
     }
-    std::cout << "[Oups] no internal pointer on valid index" << std::endl;
     return 1;
 }
 
@@ -137,41 +128,33 @@ int ProfilerTreeViewModel::rowCount(const QModelIndex &index) const
 int ProfilerTreeViewModel::columnCount(const QModelIndex &index) const
 {
     SOFA_UNUSED(index);
-    std::cout << "Column count 1" << std::endl;
     return 1;
 }
 
 QVariant ProfilerTreeViewModel::data(const QModelIndex &index, int role) const
 {
-    std::cout << "data [" << index.row() << ";" << index.column() << ":" << index.internalPointer() <<  "]" << std::endl;
     if (!index.isValid())
         return false;
     auto stepData = static_cast<AnimationStepData*>(index.internalPointer());
     switch(static_cast<Roles>(role))
     {
     case Roles::Name:
-        std::cout << "Name" << std::endl;
         return QVariant(QString::fromStdString(stepData->m_name));
     case Roles::Label:
-        std::cout << "Label" << std::endl;
         return QVariant(QString::fromStdString(stepData->m_name));
+    case Roles::Level:
+        return QVariant(stepData->m_level);
     case Roles::Icon:
-        std::cout << "Icon" << std::endl;
         return QVariant(QString::fromStdString(stepData->m_name));
     case Roles::SelfMs:
-        std::cout << "SelfMS" << std::endl;
-        return QVariant(stepData->m_selfMs);
+        return (stepData->m_level != 1 ? QVariant(QString::number(stepData->m_selfMs) + " ms") : "");
     case Roles::TotalMs:
-        std::cout << "TotalMs" << std::endl;
-        return QVariant(stepData->m_totalMs);
+        return (stepData->m_level == 1 ? QVariant(QString::number(stepData->m_totalMs) + " ms") : "");
     case Roles::SelfPerc:
-        std::cout << "SelfPerc" << std::endl;
-        return QVariant(stepData->m_selfPercent);
+        return (stepData->m_level != 1 ? QVariant(QString::number(stepData->m_selfPercent) + " %") : "100");
     case Roles::TotalPerc:
-        std::cout << "TotalPerc" << std::endl;
-        return QVariant(stepData->m_totalPercent);
+        return (stepData->m_level != 1 ? QVariant(QString::number(stepData->m_totalPercent) + " %") : "100");
     }
-    std::cout << "INVALID ROLE" << std::endl;
     return QVariant("INVALID ROLE");
 }
 
@@ -184,6 +167,7 @@ QHash<int, QByteArray> ProfilerTreeViewModel::roleNames() const
     {{
             { int(Roles::Name),      "name" },
             { int(Roles::Label),     "label" },
+            { int(Roles::Level),     "level" },
             { int(Roles::Icon),      "icon" },
             { int(Roles::TotalPerc), "totalPerc" },
             { int(Roles::TotalMs),   "totalMs" },

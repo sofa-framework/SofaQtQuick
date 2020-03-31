@@ -55,6 +55,7 @@ public:
     {
         Name = Qt::UserRole + 1,
         Label, // AdvancedTimer idString
+        Level, // substep's level
         Icon,  // maybe one day a matching pictogram for the idString
         TotalPerc,
         TotalMs,

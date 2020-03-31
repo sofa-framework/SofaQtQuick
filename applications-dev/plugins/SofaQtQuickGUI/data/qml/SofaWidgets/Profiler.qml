@@ -139,8 +139,7 @@ Window {
             anchors.bottom: parent.bottom
             anchors.margins: 9
             anchors.topMargin: 0
-//            color: SofaApplication.style.contentBackgroundColor
-            color: "blue"
+            color: SofaApplication.style.contentBackgroundColor
             radius: 5
 
             TreeView {
@@ -163,15 +162,25 @@ Window {
 
                 TableViewColumn {
                     role: "selfMs"
-                    title: "Self Ms"
+                    title: "Sub-step duration"
+                }
+                TableViewColumn {
+                    role: "totalMs"
+                    title: "Total step duration"
+                }
+                TableViewColumn {
+                    role: "totalPerc"
+                    title: "total"
                 }
 
                 itemDelegate: Rectangle {
                     id: delegate
                     height: 20
+                    color: "transparent"
                     Text {
                         anchors.fill: parent
                         text: styleData.value
+                        clip: true
                     }
                 }
 
@@ -180,43 +189,51 @@ Window {
                 }
 
                 headerDelegate: Rectangle {
-                    x: 5
-                    y: 2
-                    height: 18
-//                    color: SofaApplication.style.contentBackgroundColor
-                    color: "red"
+                    implicitHeight: 20
+                    color: "transparent"
+                    border.color: "black"
                     property var pressed: styleData.pressed
                     onPressedChanged: forceActiveFocus()
                     Label {
+                        id: hdrlbl
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: 5
+                        anchors.rightMargin: 5
+
                         color: "black"
                         text: styleData.value
+                        clip: true
+                        elide: "ElideRight"
                     }
 
                 }
 
                 style: QQCS1.TreeViewStyle {
-                    headerDelegate: GBRect {
-                        color: "#757575"
-                        border.color: "black"
-                        borderWidth: 1
-                        borderGradient: Gradient {
-                            GradientStop { position: 0.0; color: "#7a7a7a" }
-                            GradientStop { position: 1.0; color: "#5c5c5c" }
-                        }
-                        height: 20
-                        width: textItem.implicitWidth
-                        Text {
-                            id: textItem
-                            anchors.fill: parent
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: styleData.textAlignment
-                            anchors.leftMargin: 12
-                            text: styleData.value
-                            elide: Text.ElideRight
-                            color: textColor
-                            renderType: Text.NativeRendering
-                        }
-                    }
+//                    headerDelegate: GBRect {
+//                        color: "#757575"
+//                        border.color: "black"
+//                        borderWidth: 1
+//                        borderGradient: Gradient {
+//                            GradientStop { position: 0.0; color: "#7a7a7a" }
+//                            GradientStop { position: 1.0; color: "#5c5c5c" }
+//                        }
+//                        height: 20
+//                        width: textItem.implicitWidth
+//                        Text {
+//                            id: textItem
+//                            anchors.fill: parent
+//                            verticalAlignment: Text.AlignVCenter
+//                            horizontalAlignment: styleData.textAlignment
+//                            anchors.leftMargin: 12
+//                            text: styleData.value
+//                            clip: true
+//                            elide: Text.ElideRight
+//                            color: textColor
+//                            renderType: Text.NativeRendering
+//                        }
+//                    }
 
                     branchDelegate: ColorImage {
                         id: groupBoxArrow
