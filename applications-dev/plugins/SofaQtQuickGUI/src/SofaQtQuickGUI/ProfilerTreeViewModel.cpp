@@ -76,55 +76,30 @@ QModelIndex ProfilerTreeViewModel::index(int row, int column, const QModelIndex 
     std::cout << "index r: " << row <<" c: " << column << " p: " << parent.internalPointer() << std::endl;
     if (m_steps.empty()) return QModelIndex();
 
-    // root items
+    AnimationStepData* stepData;
     if (!parent.isValid())
-    {
-        if (!row && !column) {
-            std::cout << "returning root" << std::endl;
-            return createIndex(0,0, m_steps[size_t(m_stepNumber)]);
-        }
-        std::cout << "[OUPS] invalid parent, row col not 0" << std::endl;
+        stepData = m_steps[size_t(m_stepNumber)];
+    else
+        stepData = static_cast<AnimationStepData*>(parent.internalPointer());
+
+    stepData = stepData->m_substeps[size_t(row)];
+    if (!stepData)
         return QModelIndex();
-    }
-    AnimationStepData* stepData = static_cast<AnimationStepData*>(parent.internalPointer());
-    if (!stepData) {
-        std::cout << "[OUPS] NO stepData for parent" << std::endl;
-        return QModelIndex();
-    }
-    if (stepData->m_substeps.size() < size_t(row)) {
-        std::cout << "[OUPS] requested row number outside of substeps range" << std::endl;
-        return QModelIndex();
-    }
-    std::cout << "returning a substep yay" << std::endl;
-    return createIndex(row, 0, stepData->m_substeps[size_t(row)]);
+    return createIndex(row, column, stepData);
 }
 
 // Returns the index of the parent step
 QModelIndex ProfilerTreeViewModel::parent(const QModelIndex &index) const
 {
-    std::cout << "looking for parent of [" << index.row() << ";" << index.column() << " : " << index.internalPointer() << "]" << std::endl;
     if(!index.isValid()) {
         std::cout << "[OUPS] invalid index" << std::endl;
         return QModelIndex();
     }
 
     AnimationStepData* stepData = static_cast<AnimationStepData*>(index.internalPointer());
-    if (!stepData) {
-        std::cout << "[OUPS] NO stepData for index" << std::endl;
+    AnimationStepData* parent = stepData->m_parent;
+    if (parent == m_steps[size_t(m_stepNumber)])
         return QModelIndex();
-    }
-
-    if  (!stepData->m_parent) {
-        std::cout << "no parent node for index [" << index.row() << ";" << index.column() << " : " << index.internalPointer() << "]" << std::endl;
-        return QModelIndex();
-    }
-
-    auto parent = stepData->m_parent;
-
-    if  (!parent) {
-        std::cout << "parent of index is root step, returning createIndex(0, 0, parent)" << std::endl;
-        return createIndex(0, 0, parent);
-    }
 
     auto gdParent = parent->m_parent;
     size_t row = size_t(std::distance(gdParent->m_substeps.begin(),

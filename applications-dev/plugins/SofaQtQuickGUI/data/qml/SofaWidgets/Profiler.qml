@@ -156,12 +156,22 @@ Window {
                     bufferSize: 100
                 }
 
+                TableViewColumn {
+                    role: "label"
+                    title: "Step ID"
+                }
+
+                TableViewColumn {
+                    role: "selfMs"
+                    title: "Self Ms"
+                }
+
                 itemDelegate: Rectangle {
                     id: delegate
                     height: 20
                     Text {
                         anchors.fill: parent
-                        text: label
+                        text: styleData.value
                     }
                 }
 
