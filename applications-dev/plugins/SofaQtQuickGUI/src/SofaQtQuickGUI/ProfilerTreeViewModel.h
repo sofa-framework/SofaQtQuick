@@ -24,7 +24,7 @@ public:
 
     Q_PROPERTY(int bufferSize READ getBufferSize WRITE setBufferSize NOTIFY bufferSizeChanged)
 
-    Q_INVOKABLE void setProfilerTo(int stepNumber);
+    Q_INVOKABLE void seek(int stepNumber);
     Q_INVOKABLE QVariant recordStep(int step, const QString& idString = "Animate");
     Q_INVOKABLE void activateTimer(bool activate, const QString& idString = "Animate");
 
@@ -64,7 +64,7 @@ public:
     ///////////////////////////////////////////////////////////////////////////////////
 };
 
-} /// namespace _profilertreeviewmodel_
+}  // namespace _profilertreeviewmodel_
     using _profilertreeviewmodel_::ProfilerTreeViewModel;
 }  // namespace sofaqtquick
 
