@@ -16,11 +16,11 @@ AnimationStepData::AnimationStepData(int level, std::string name, ctime_t start)
     , m_start(start)
     , m_parent(nullptr)
 {
-
 }
 
 AnimationStepData::AnimationStepData(int step, const std::string& idString)
     : m_stepIteration(step),
+      m_level(0),
       m_name(idString),
       m_parent(nullptr)
 {

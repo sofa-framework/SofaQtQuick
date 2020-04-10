@@ -25,6 +25,7 @@ public:
     Q_PROPERTY(int bufferSize READ getBufferSize WRITE setBufferSize NOTIFY bufferSizeChanged)
 
     Q_INVOKABLE void seek(int stepNumber);
+    Q_INVOKABLE void clearBuffer();
     Q_INVOKABLE QVariant recordStep(int step, const QString& idString = "Animate");
     Q_INVOKABLE void activateTimer(bool activate, const QString& idString = "Animate");
 
@@ -54,6 +55,7 @@ public:
     enum class Roles
     {
         Name = Qt::UserRole + 1,
+        Step, // AdvancedTimer idString
         Label, // AdvancedTimer idString
         Level, // substep's level
         Icon,  // maybe one day a matching pictogram for the idString

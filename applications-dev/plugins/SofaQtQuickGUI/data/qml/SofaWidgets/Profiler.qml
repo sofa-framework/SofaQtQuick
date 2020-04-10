@@ -15,20 +15,32 @@ import ProfilerTreeViewModel 1.0
 Window {
     id: profiler
     onVisibleChanged: {
+        print("onVisibleChanged")
         profilerModel.activateTimer(true)
+        stepsDuration.clearChart();
+        stepsDuration.updateChart(0,0)
     }
 
     property var rootNode : SofaApplication.sofaScene.rootNode
     onRootNodeChanged: {
         time = rootNode.getData("time")
+        dt = rootNode.getData("dt")
+        stepsDuration.clearChart()
+        stepsDuration.updateChart(0,0)
     }
     property var time
-    Connections {
-        target: time
-        property var stepNumber: 0
-        onValueChanged: {
-            stepNumber++
+    property var dt
+    property var stepNumber: time.value / dt.value
+    property var oldStepNb
+    onStepNumberChanged: {
+        if (profiler.visible && oldStepNb !== stepNumber) {
+            while(oldStepNb < stepNumber - 2) {
+                print("old:" + Number(++oldStepNb).toString())
+                stepsDuration.updateChart(oldStepNb, profilerModel.recordStep(stepNumber))
+            }
+            print("new:" + Number(stepNumber).toString())
             stepsDuration.updateChart(stepNumber, profilerModel.recordStep(stepNumber))
+            oldStepNb = stepNumber
         }
     }
 
@@ -80,15 +92,30 @@ Window {
             }
 
             function updateChart(step, duration) {
+                print("step: " + Number(step).toString())
+                print("duration: " + Number(duration).toString())
                 fullAnimationStep.append(step, duration)
-                if (step > 99) {
+                if (fullAnimationStep.count > profilerModel.bufferSize) {
                     fullAnimationStep.remove(0)
                     axisX.min = fullAnimationStep.at(0).x
-                    axisX.max = fullAnimationStep.at(99).x
                 }
+                axisX.max = fullAnimationStep.at(fullAnimationStep.count -1).x
                 if (duration > axisY.max) {
                     axisY.max = roundUp(duration, 100)
                 }
+            }
+
+            function clearChart() {
+                var currentStep = time.value / rootNode.getData("dt").value
+
+                axisX.min = currentStep
+                axisX.max = currentStep + profilerModel.bufferSize
+                profilerModel.clearBuffer();
+                profilerModel.seek(0)
+                verticalCursorBar.clear()
+                verticalCursorBar.append(axisX.min, axisY.min)
+                verticalCursorBar.append(axisX.min, axisY.max)
+                fullAnimationStep.clear()
             }
 
             LineSeries {
@@ -103,11 +130,9 @@ Window {
                 Component.onCompleted: {
                     append(0,0)
                     axisX.min = 0
-                    axisX.max = 100
+                    axisX.max = profilerModel.bufferSize
                 }
             }
-
-
 
             MouseArea {
                 anchors.fill: parent
@@ -115,9 +140,9 @@ Window {
                     var p = Qt.point(mouse.x, mouse.y);
                     var value = stepsDuration.mapToValue(p, fullAnimationStep);
                     verticalCursorBar.clear()
-                    verticalCursorBar.append(fullAnimationStep.at(value.x - axisX.min).x, axisY.min)
-                    verticalCursorBar.append(fullAnimationStep.at(value.x - axisX.min).x, axisY.max)
-                    var a = Number(fullAnimationStep.at(value.x - axisX.min).x)
+                    verticalCursorBar.append(Math.round(value.x), axisY.min)
+                    verticalCursorBar.append(Math.round(value.x), axisY.max)
+                    var a = Number(value.x)
                     var b = Number(axisX.min)
                     profilerModel.seek(Number(a - b))
                 }
@@ -153,6 +178,11 @@ Window {
                 model: ProfilerTreeViewModel {
                     id: profilerModel
                     bufferSize: 100
+                }
+
+                TableViewColumn {
+                    role: "step"
+                    title: "Step"
                 }
 
                 TableViewColumn {
@@ -207,34 +237,9 @@ Window {
                         clip: true
                         elide: "ElideRight"
                     }
-
                 }
 
                 style: QQCS1.TreeViewStyle {
-//                    headerDelegate: GBRect {
-//                        color: "#757575"
-//                        border.color: "black"
-//                        borderWidth: 1
-//                        borderGradient: Gradient {
-//                            GradientStop { position: 0.0; color: "#7a7a7a" }
-//                            GradientStop { position: 1.0; color: "#5c5c5c" }
-//                        }
-//                        height: 20
-//                        width: textItem.implicitWidth
-//                        Text {
-//                            id: textItem
-//                            anchors.fill: parent
-//                            verticalAlignment: Text.AlignVCenter
-//                            horizontalAlignment: styleData.textAlignment
-//                            anchors.leftMargin: 12
-//                            text: styleData.value
-//                            clip: true
-//                            elide: Text.ElideRight
-//                            color: textColor
-//                            renderType: Text.NativeRendering
-//                        }
-//                    }
-
                     branchDelegate: ColorImage {
                         id: groupBoxArrow
                         y: 1

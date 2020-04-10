@@ -26,7 +26,6 @@ void ProfilerTreeViewModel::activateTimer(bool activate, const QString& idString
 
 void ProfilerTreeViewModel::seek(int stepNumber)
 {
-    std::cout << ("reseting model") << std::endl;
     beginResetModel();
     m_stepNumber = stepNumber;
     endResetModel();
@@ -40,6 +39,12 @@ QVariant ProfilerTreeViewModel::recordStep(int step, const QString& idString)
     return QVariant::fromValue(m_steps.back()->m_totalMs);
 }
 
+void ProfilerTreeViewModel::clearBuffer()
+{
+    beginResetModel();
+    m_steps.clear();
+    endResetModel();
+}
 
 
 
@@ -140,6 +145,8 @@ QVariant ProfilerTreeViewModel::data(const QModelIndex &index, int role) const
     {
     case Roles::Name:
         return QVariant(QString::fromStdString(stepData->m_name));
+    case Roles::Step:
+        return QVariant(stepData->m_level > 0 ? QString("") : QString::number(stepData->m_stepIteration));
     case Roles::Label:
         return QVariant(QString::fromStdString(stepData->m_name));
     case Roles::Level:
@@ -166,6 +173,7 @@ QHash<int, QByteArray> ProfilerTreeViewModel::roleNames() const
     static QHash<int, QByteArray> mapping
     {{
             { int(Roles::Name),      "name" },
+            { int(Roles::Step),      "step" },
             { int(Roles::Label),     "label" },
             { int(Roles::Level),     "level" },
             { int(Roles::Icon),      "icon" },
