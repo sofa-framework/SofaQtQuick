@@ -12,23 +12,20 @@ ToolTip {
     font.family: "tahoma"
     timeout: 4000
 
-    implicitHeight: 25
-
-    Component.onCompleted: {
-        control.implicitHeight = text && description ? contentHeight + 17 : contentHeight - 5
-    }
-
     onVisibleChanged: {
     }
 
     property string description: ""
-    contentItem: ColumnLayout {
+    contentItem: Column {
+        anchors.centerIn: parent
         Text {
+            id: txt
             text: control.text ? qsTr(control.text) : qsTr(control.description)
             font: control.font
             color: "white"
         }
         Text {
+            id: desc
             visible: control.text ? true : false
             Layout.maximumWidth: 250
             text: qsTr(control.description)

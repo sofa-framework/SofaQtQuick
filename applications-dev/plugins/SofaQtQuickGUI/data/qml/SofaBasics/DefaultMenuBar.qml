@@ -6,9 +6,8 @@ import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
 import SofaBasics 1.0
 import SofaViewListModel 1.0
-import GraphView 1.0
-import ProfilerView 1.0
 import SofaApplication 1.0
+import SofaWidgets 1.0
 
 MenuBar {
     id: menuBar
@@ -323,12 +322,18 @@ MenuBar {
             MenuItem {
                 text: "Profiler";
                 onTriggered: {
-                    ProfilerView.open()
+                    profilerWidget.visible = true
+
                     windowMenu.close()
                 }
                 ToolTip {
                     text: qsTr("Open the default Profiler")
                     description: "To visualize where the computation take place"
+                }
+
+                Profiler {
+                    id: profilerWidget
+                    visible: false
                 }
             }
 

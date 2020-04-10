@@ -45,6 +45,8 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/SelectableSofaParticle.cpp
     src/SofaQtQuickGUI/Console.cpp
     src/SofaQtQuickGUI/SofaParticleInteractor.cpp
+    src/SofaQtQuickGUI/ProfilerTreeView.cpp
+    src/SofaQtQuickGUI/ProfilerTreeViewModel.cpp
     src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterPython.cpp
     src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterCpp.cpp
     src/SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.cpp
@@ -129,6 +131,8 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Console.h
     src/SofaQtQuickGUI/PythonConsole.h
     src/SofaQtQuickGUI/SofaParticleInteractor.h
+    src/SofaQtQuickGUI/ProfilerTreeView.h
+    src/SofaQtQuickGUI/ProfilerTreeViewModel.h
     src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterPython.h
     src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterCpp.h
     src/SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.h
