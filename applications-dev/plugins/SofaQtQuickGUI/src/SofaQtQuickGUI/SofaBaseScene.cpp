@@ -1621,6 +1621,7 @@ void SofaBaseScene::checkForCanvases()
         {
             m_canvas = newCanvases;
         }
+        else return;
     }
     emit notifyCanvasChanged();
 }
