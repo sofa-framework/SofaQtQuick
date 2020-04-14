@@ -518,6 +518,31 @@ void SofaViewer::checkAndInit()
         visualParams->displayFlags().setShowVisualModels(true);
     }
     */
+
+    glGenTextures(1, &tex);
+
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
+
+    int w = 128;
+    int h = 128;
+    unsigned char data[128 * 128];
+    for (int j = 0; j < h; ++j)
+        for (int i = 0; i < w; ++i) {
+            data[j * w + i] = (i < w / 64 || j < h / 64 ||
+                               i > w - (w / 64) || j > h - (h / 64)
+                               ? 200 : 0);
+        }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA8, w, h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, (GLvoid*)data);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
 }
 
 void SofaViewer::drawVisuals() const
@@ -660,6 +685,47 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
     setupVisualParams(this->getVisualParams());
 
     mySofaScene->prepareSceneForDrawing();
+
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_LIGHTING);
+
+    //for the quick and dirty, immediate mode
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glLineWidth(2);
+
+    glBegin(GL_LINES);
+    glColor4f(1,0,0,1);
+    glVertex3f(0.1f,0,0);
+    glVertex3f(1000,0,0);
+    glVertex3f(-0.1f,0,0);
+    glVertex3f(-1000,0,0);
+
+    glColor4f(0,1,0,1);
+    glVertex3f(0,0.1f,0);
+    glVertex3f(0,1000,0);
+    glVertex3f(0,-0.1f,0);
+    glVertex3f(0,-1000,0);
+
+    glColor4f(0,0,1,1);
+    glVertex3f(0,0,0.1f);
+    glVertex3f(0,0,1000);
+    glVertex3f(0,0,-0.1f);
+    glVertex3f(0,0,-1000);
+    glEnd();
+
+    glColor4f(1,1,1,1);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0); glVertex3f(-1000, 0, -1000);
+    glTexCoord2f(2048, 0); glVertex3f(1000, 0, -1000);
+    glTexCoord2f(2048, 2048); glVertex3f(1000, 0, 1000);
+    glTexCoord2f(0, 2048); glVertex3f(-1000, 0, 1000);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
 
 
     for(Node* node : nodes)
@@ -1422,6 +1488,8 @@ void SofaViewer::internalRender(int width, int height) const
         renderFrame();
 
     preDraw();
+
+
     drawEditorView(roots(),true,true);
     postDraw();
 }

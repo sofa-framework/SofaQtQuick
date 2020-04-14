@@ -222,6 +222,7 @@ protected:
 private:
     QRect nativeRect() const;
     QRect qtRect() const;
+    unsigned int tex;
 
 private slots:
     void handleBackgroundImageSourceChanged(QUrl newBackgroundImageSource);
