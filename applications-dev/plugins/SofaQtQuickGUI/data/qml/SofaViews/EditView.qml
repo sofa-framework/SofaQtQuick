@@ -574,25 +574,25 @@ EditView
                                     model: ["Milimetres (mm)", "Centimeters (cm)", "Decimeters (dm)", "Meters (m)", "Decameters (dam)", "Hectometers (hm)", "Kilometers (km)"]
                                     currentIndex: 3
                                     Component.onCompleted: {
-                                        sceneUnits = 11
+                                        sceneUnits = 1000
                                     }
 
                                     onCurrentTextChanged: {
                                         print( currentText)
                                         if (currentText.includes("(mm)"))
-                                            sceneUnits = 14
+                                            sceneUnits = 1000000
                                         if (currentText.includes("(cm)"))
-                                            sceneUnits = 13
+                                            sceneUnits = 100000
                                         if (currentText.includes("(dm)"))
-                                            sceneUnits = 12
+                                            sceneUnits = 10000
                                         if (currentText.includes("(m)"))
-                                            sceneUnits = 11
+                                            sceneUnits = 1000
                                         if (currentText.includes("(dam)"))
-                                            sceneUnits = 10
+                                            sceneUnits = 100
                                         if (currentText.includes("(hm)"))
-                                            sceneUnits = 9
+                                            sceneUnits = 10
                                         if (currentText.includes("(km)"))
-                                            sceneUnits = 8
+                                            sceneUnits = 1
                                     }
                                 }
                             }

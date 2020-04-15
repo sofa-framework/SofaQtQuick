@@ -751,9 +751,9 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
     glColor4f(1,1,1,0.5);
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0); glVertex3f(-1000, 0, -1000);
-    glTexCoord2f(std::pow(2, sceneUnits()), 0); glVertex3f(1000, 0, -1000);
-    glTexCoord2f(std::pow(2, sceneUnits()), std::pow(2, sceneUnits())); glVertex3f(1000, 0, 1000);
-    glTexCoord2f(0, std::pow(2, sceneUnits())); glVertex3f(-1000, 0, 1000);
+    glTexCoord2f(2*sceneUnits(), 0); glVertex3f(1000, 0, -1000);
+    glTexCoord2f(2*sceneUnits(), 2*sceneUnits()); glVertex3f(1000, 0, 1000);
+    glTexCoord2f(0,2*sceneUnits()); glVertex3f(-1000, 0, 1000);
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
