@@ -565,6 +565,39 @@ EditView
                                 }
                             }
 
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Label {
+                                    text: "units: "
+                                }
+                                ComboBox {
+                                    model: ["Milimetres (mm)", "Centimeters (cm)", "Decimeters (dm)", "Meters (m)", "Decameters (dam)", "Hectometers (hm)", "Kilometers (km)"]
+                                    currentIndex: 3
+                                    Component.onCompleted: {
+                                        sceneUnits = 11
+                                    }
+
+                                    onCurrentTextChanged: {
+                                        print( currentText)
+                                        if (currentText.includes("(mm)"))
+                                            sceneUnits = 14
+                                        if (currentText.includes("(cm)"))
+                                            sceneUnits = 13
+                                        if (currentText.includes("(dm)"))
+                                            sceneUnits = 12
+                                        if (currentText.includes("(m)"))
+                                            sceneUnits = 11
+                                        if (currentText.includes("(dam)"))
+                                            sceneUnits = 10
+                                        if (currentText.includes("(hm)"))
+                                            sceneUnits = 9
+                                        if (currentText.includes("(km)"))
+                                            sceneUnits = 8
+                                    }
+                                }
+                            }
+
+
                             // background
 
                             Label {

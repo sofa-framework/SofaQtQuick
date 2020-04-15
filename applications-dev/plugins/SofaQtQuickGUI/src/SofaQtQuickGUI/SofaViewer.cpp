@@ -686,8 +686,18 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
 
     mySofaScene->prepareSceneForDrawing();
 
+    float distanceToPoint = 0.07f * projectOnPlane(QPointF(width(), height()),
+                                           QVector3D(0,0,0),
+                                           camera()->direction()).distanceToPoint(camera()->eye());
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
 
     glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_LIGHTING);
 
@@ -697,32 +707,53 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
 
     glLineWidth(2);
 
+
+
     glBegin(GL_LINES);
     glColor4f(1,0,0,1);
-    glVertex3f(0.1f,0,0);
+    glVertex3f(distanceToPoint,0,0);
     glVertex3f(1000,0,0);
-    glVertex3f(-0.1f,0,0);
+
+    glColor4f(0.5f,0,0,1);
+    glVertex3f(-distanceToPoint,0,0);
     glVertex3f(-1000,0,0);
 
+
+
     glColor4f(0,1,0,1);
-    glVertex3f(0,0.1f,0);
+    glVertex3f(0,distanceToPoint,0);
     glVertex3f(0,1000,0);
-    glVertex3f(0,-0.1f,0);
+
+    glColor4f(0,0.5f,0,1);
+    glVertex3f(0,-distanceToPoint,0);
     glVertex3f(0,-1000,0);
 
+
+
     glColor4f(0,0,1,1);
-    glVertex3f(0,0,0.1f);
+    glVertex3f(0,0,distanceToPoint);
     glVertex3f(0,0,1000);
-    glVertex3f(0,0,-0.1f);
+
+    glColor4f(0,0,0.5f,1);
+    glVertex3f(0,0,-distanceToPoint);
     glVertex3f(0,0,-1000);
     glEnd();
 
-    glColor4f(1,1,1,1);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+//    std::cout << "" << std::endl;
+//    std::cout << sceneUnits() << std::endl;
+//    std::cout << std::pow(2, sceneUnits()) << std::endl;
+    glColor4f(1,1,1,0.5);
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0); glVertex3f(-1000, 0, -1000);
-    glTexCoord2f(2048, 0); glVertex3f(1000, 0, -1000);
-    glTexCoord2f(2048, 2048); glVertex3f(1000, 0, 1000);
-    glTexCoord2f(0, 2048); glVertex3f(-1000, 0, 1000);
+    glTexCoord2f(std::pow(2, sceneUnits()), 0); glVertex3f(1000, 0, -1000);
+    glTexCoord2f(std::pow(2, sceneUnits()), std::pow(2, sceneUnits())); glVertex3f(1000, 0, 1000);
+    glTexCoord2f(0, std::pow(2, sceneUnits())); glVertex3f(-1000, 0, 1000);
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
@@ -1432,6 +1463,7 @@ void SofaViewer::internalRender(int width, int height) const
 
     if(!myCamera)
         return;
+
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);

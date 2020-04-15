@@ -88,6 +88,7 @@ public:
     Q_PROPERTY(bool alwaysDraw READ alwaysDraw WRITE setAlwaysDraw NOTIFY alwaysDrawChanged) /// \brief always draw the scene in the fbo
     Q_PROPERTY(bool autoPaint READ autoPaint WRITE setAutoPaint NOTIFY autoPaintChanged) /// \brief paint the fbo on the screen every frame, if false: you must call update() to request a paint
     Q_PROPERTY(QQmlListProperty<sofaqtquick::Manipulator> manipulators READ manipulators)
+    Q_PROPERTY(float sceneUnits READ sceneUnits WRITE setSceneUnits NOTIFY sceneUnitsChanged)
 
 public:
     Renderer* createRenderer() const {return new SofaRenderer(const_cast<SofaViewer*>(this));}
@@ -128,6 +129,16 @@ public:
 
 	bool alwaysDraw() const { return myAlwaysDraw; }
 	void setAlwaysDraw(bool myAlwaysDraw);
+
+    float sceneUnits() const { return mySceneUnits; }
+    void setSceneUnits(float units)
+    {
+        if (mySceneUnits != units)
+        {
+            mySceneUnits = units;
+            emit sceneUnitsChanged(mySceneUnits);
+        }
+    }
 
     sofa::core::visual::VisualParams* getVisualParams() const { return m_visualParams; }
 
@@ -194,6 +205,7 @@ signals:
     void drawManipulatorsChanged(bool newDrawManipulators);
     void drawSelectedChanged(bool newDrawSelected);
 	void alwaysDrawChanged(bool newAlwaysDraw);
+    void sceneUnitsChanged(float newSceneUnits);
 
     void preDraw() const;
     void postDraw() const;
@@ -267,6 +279,7 @@ protected:
     bool                        myDrawSelected;
 	bool						myAlwaysDraw;
     bool                        myAutoPaint;
+    float                       mySceneUnits;
 
     QList<Manipulator*>                         m_manipulators;
 
