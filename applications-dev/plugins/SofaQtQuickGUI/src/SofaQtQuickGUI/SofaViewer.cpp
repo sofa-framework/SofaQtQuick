@@ -690,74 +690,79 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
                                            QVector3D(0,0,0),
                                            camera()->direction()).distanceToPoint(camera()->eye());
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
+    glDisable(GL_LIGHTING);
+    if (myDrawFrame)
+    {
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
 
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+
+        glLineWidth(2);
+        glBegin(GL_LINES);
+        glColor4f(1,0,0,1);
+        glVertex3f(distanceToPoint,0,0);
+        glVertex3f(1000,0,0);
+
+        glColor4f(0.5f,0,0,1);
+        glVertex3f(-distanceToPoint,0,0);
+        glVertex3f(-1000,0,0);
+
+
+        glColor4f(0,1,0,1);
+        glVertex3f(0,distanceToPoint,0);
+        glVertex3f(0,1000,0);
+
+        glColor4f(0,0.5f,0,1);
+        glVertex3f(0,-distanceToPoint,0);
+        glVertex3f(0,-1000,0);
+
+
+        glColor4f(0,0,1,1);
+        glVertex3f(0,0,distanceToPoint);
+        glVertex3f(0,0,1000);
+
+        glColor4f(0,0,0.5f,1);
+        glVertex3f(0,0,-distanceToPoint);
+        glVertex3f(0,0,-1000);
+        glEnd();
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+    }
+
+    float gridSize = float(std::ceil(camera()->zFar()));
+    float texScale = sceneUnits() * gridSize * 2.0f;
 
     glEnable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_LIGHTING);
 
     //for the quick and dirty, immediate mode
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex);
 
-    glLineWidth(2);
-
-
-
-    glBegin(GL_LINES);
-    glColor4f(1,0,0,1);
-    glVertex3f(distanceToPoint,0,0);
-    glVertex3f(1000,0,0);
-
-    glColor4f(0.5f,0,0,1);
-    glVertex3f(-distanceToPoint,0,0);
-    glVertex3f(-1000,0,0);
-
-
-
-    glColor4f(0,1,0,1);
-    glVertex3f(0,distanceToPoint,0);
-    glVertex3f(0,1000,0);
-
-    glColor4f(0,0.5f,0,1);
-    glVertex3f(0,-distanceToPoint,0);
-    glVertex3f(0,-1000,0);
-
-
-
-    glColor4f(0,0,1,1);
-    glVertex3f(0,0,distanceToPoint);
-    glVertex3f(0,0,1000);
-
-    glColor4f(0,0,0.5f,1);
-    glVertex3f(0,0,-distanceToPoint);
-    glVertex3f(0,0,-1000);
-    glEnd();
-
-
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-
-//    std::cout << "" << std::endl;
-//    std::cout << sceneUnits() << std::endl;
-//    std::cout << std::pow(2, sceneUnits()) << std::endl;
-    glColor4f(1,1,1,0.5);
+    glColor4f(1,1,1,0.4f);
     glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex3f(-1000, 0, -1000);
-    glTexCoord2f(2*sceneUnits(), 0); glVertex3f(1000, 0, -1000);
-    glTexCoord2f(2*sceneUnits(), 2*sceneUnits()); glVertex3f(1000, 0, 1000);
-    glTexCoord2f(0,2*sceneUnits()); glVertex3f(-1000, 0, 1000);
+
+    glTexCoord2f(0, 0);
+    glVertex3f(-gridSize, 0, -gridSize);
+
+    glTexCoord2f(texScale, 0);
+    glVertex3f(gridSize, 0, -gridSize);
+
+    glTexCoord2f(texScale, texScale);
+    glVertex3f(gridSize, 0, gridSize);
+
+    glTexCoord2f(0,texScale);
+    glVertex3f(-gridSize, 0, gridSize);
+
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
-
 
     for(Node* node : nodes)
     {
@@ -1516,8 +1521,8 @@ void SofaViewer::internalRender(int width, int height) const
     }
 
     /// draw the scene frame
-    if(myDrawFrame)
-        renderFrame();
+//    if(myDrawFrame)
+//        renderFrame();
 
     preDraw();
 
