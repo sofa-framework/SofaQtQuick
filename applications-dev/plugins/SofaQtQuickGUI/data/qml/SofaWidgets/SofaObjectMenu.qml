@@ -9,8 +9,7 @@ import SofaComponent 1.0
 import Sofa.Core.SofaData 1.0
 import SofaWidgets 1.0
 import SofaBasics 1.0
-import GraphView 1.0
-import SofaViews 1.0
+//import SofaViews 1.0
 
 Menu {
 
@@ -122,7 +121,7 @@ Menu {
                 modality: Qt.NonModal
                 flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
                 visible: true
-                color: sofaApplication.style.contentBackgroundColor
+                color: SofaApplication.style.contentBackgroundColor
 
                 Loader {
                     id: loader

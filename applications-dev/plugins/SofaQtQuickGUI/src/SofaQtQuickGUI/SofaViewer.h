@@ -158,6 +158,7 @@ public:
     QSize nativeSize() const;
 
     bool intersectRayWithPlane(const QVector3D& rayOrigin, const QVector3D& rayDirection, const QVector3D& planeOrigin, const QVector3D& planeNormal, QVector3D& intersectionPoint) const;
+    void recomputeBBox(float radiusFactor = 1.0f) const; // radiusFactor scales the bounding box used to compute the zoom level
 
     Q_INVOKABLE QVector3D projectOnLine(const QPointF& ssPoint, const QVector3D& lineOrigin, const QVector3D& lineDirection) const;
     Q_INVOKABLE QVector3D projectOnPlane(const QPointF& ssPoint, const QVector3D& planeOrigin, const QVector3D& planeNormal) const;

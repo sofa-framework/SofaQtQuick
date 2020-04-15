@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
@@ -75,9 +75,14 @@ CameraView {
         SofaApplication.removeSofaViewer(root);
     }
 
-    onActiveFocusChanged: {
-        if(activeFocus)
-            SofaApplication.setFocusedSofaViewer(root);
+    Connections {
+        target: sofaScene
+        onAnimateChanged: {
+            if (sofaScene.animate) {
+                animateBorder.running = true
+                root.forceActiveFocus()
+            }
+        }
     }
 
     Connections {
@@ -125,7 +130,7 @@ CameraView {
     {
         id: rescanForCameraTimer
         interval: 500
-        repeat: false
+        repeat: true
         onTriggered: {
             updateCameraFromIndex(0);
         }
@@ -133,23 +138,26 @@ CameraView {
 
     function updateCameraFromIndex(index)
     {
-        if(camera)
+        var listCameraInSofa = sofaScene.componentsByType("BaseCamera");
+        if(listCameraInSofa.size() === 0)
         {
-            var listCameraInSofa = sofaScene.componentsByType("BaseCamera");
-            if(listCameraInSofa.size() === 0)
-            {
-                rescanForCameraTimer.start()
-                return;
-            }
-            if(listCameraInSofa.size() < index)
-            {
-                rescanForCameraTimer.start()
-                return;
-            }
-            noCamera.visible = false
-
-            camera.sofaComponent = listCameraInSofa.at(index);
+            rescanForCameraTimer.start()
+            return null;
         }
+        if(listCameraInSofa.size() < index)
+        {
+            rescanForCameraTimer.start()
+            return null;
+        }
+        noCamera.visible = false
+
+        if (idComboList.count !== listCameraInSofa.size())
+        {
+            idComboList.clear()
+            for (var camera = 0 ; camera < listCameraInSofa.size() ; ++camera)
+                idComboList.append({"name": listCameraInSofa.at(camera).getName() })
+        }
+        return listCameraInSofa.at(index)
     }
 
     function destroyCamera() {
@@ -165,7 +173,7 @@ CameraView {
 
         //Todo fetch index from somewhere
         var defaultIndex = 0;
-        updateCameraFromIndex(0);
+        camera.sofaComponent = updateCameraFromIndex(0);
 
         if(!keepCamera)
             viewAll();
@@ -275,6 +283,13 @@ CameraView {
             if(root.sofaScene)
                 root.sofaScene.mouseMove(mouse, root);
         }
+
+
+        onActiveFocusChanged: {
+            if(activeFocus) {
+                SofaApplication.setFocusedSofaViewer(root);
+            }
+        }
     }
 
     // keyboard interaction forwarded to the sofaScene.
@@ -354,7 +369,8 @@ CameraView {
         }
     }
 
-    property bool highlightIfFocused: SofaApplication.sofaViewers.length > 1
+    property bool highlightIfFocused: SofaApplication.sofaViewers.length >= 1
+
     Rectangle {
         id: borderHighlighting
         anchors.fill: parent
@@ -363,331 +379,318 @@ CameraView {
         border.width: 2
         border.color: "red"
 
-        enabled: root.highlightIfFocused && root === SofaApplication.focusedSofaViewer
-        onEnabledChanged: {
-            if(enabled)
-                visible = true;
-            else
-                visible = false;
+        enabled: {
+            if (root.highlightIfFocused) {
+                if (root === SofaApplication.focusedSofaViewer)
+                    return true;
+                if (SofaApplication.focusedSofaViewer === null)
+                    return true;
+                return false
+            }
+            return false
         }
+        visible: enabled
 
         onVisibleChanged: if(!visible) opacity = 0.0
+        opacity: 0
 
         SequentialAnimation {
-            running: borderHighlighting.visible
+            id: animateBorder
+            running: sofaScene.animate
 
             NumberAnimation {
                 target: borderHighlighting
                 property: "opacity"
-                to: 1.0
+                from: 1.0
+                to: 0.2
                 duration: 200
             }
             NumberAnimation {
                 target: borderHighlighting
                 property: "opacity"
                 from: 1.0
-                to: 0.5
-                duration: 800
+                to: 0.2
+                duration: 200
+            }
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 200
+            }
+            NumberAnimation {
+                target: borderHighlighting
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 200
             }
         }
     }
 
     // toolpanel
-    Rectangle {
+    SidePanel {
         id: toolPanel
-        color: "lightgrey"
-        anchors.top: toolPanelSwitch.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.topMargin: -6
-        anchors.bottomMargin: 20
-        anchors.rightMargin: -radius
-        width: 250
-        radius: 5
-        visible: false
-        opacity: 0.9
+        z: 2
+        control: Flickable {
+            id: flick
+            clip: true
+            flickableDirection: Flickable.VerticalFlick
+            boundsMovement: Flickable.StopAtBounds
+            contentHeight: panelColumn.height + 50
+            contentWidth: flick.width
 
-        // avoid mouse event propagation through the toolpanel to the sofa viewer
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.AllButtons
-            onWheel: wheel.accepted = true
-        }
-
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: toolPanel.radius / 2
-            anchors.rightMargin: anchors.margins - toolPanel.anchors.rightMargin
-            spacing: 2
-
-            Text {
-                Layout.fillWidth: true
-                text: "CameraView parameters"
-                font.bold: true
-                color: "darkblue"
+            ScrollBar.horizontal: ScrollBar {
+                policy: ScrollBar.AlwaysOff
             }
 
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            ScrollBar.vertical: VerticalScrollbar {
+                id: scrollbar
+                content: panelColumn
+            }
 
-                Flickable {
-                    anchors.fill: parent
-                    contentHeight: panelColumn.implicitHeight
+            anchors.fill: parent
+            anchors.leftMargin: 5
+            anchors.topMargin: 5
 
-                    Column {
-                        id: panelColumn
+            ColumnLayout {
+                id: panelColumn
+                width: scrollbar.visible ? parent.width - 12 : parent.width - 5
+                spacing: 5
+
+                Label {
+                    Layout.fillWidth: true
+                    text: "Camera ID"
+                }
+
+                ComboBox {
+                    id: indexCameraComboBox
+                    Layout.fillWidth: true
+
+                    model: root.idComboList
+                    property var selectedIndex: 0
+                    Connections {
+                        target: root.idComboList
+                        onCountChanged: {
+                            indexCameraComboBox.currentIndex = indexCameraComboBox.selectedIndex
+                        }
+                    }
+                    onAccepted: {
+                        indexCameraComboBox.selectedIndex = indexCameraComboBox.currentIndex
+                        root.updateCameraFromIndex(indexCameraComboBox.currentIndex)
+                    }
+
+                }
+                GroupBox {
+                    id: visualPanel
+                    Layout.fillWidth: true
+                    title: "Visual"
+
+                    GridLayout {
                         anchors.fill: parent
-                        spacing: 5
-                        GroupBox {
-                            id: idCameraPanel
-                            implicitWidth: parent.width
-                            title: "ID"
+                        columnSpacing: 0
+                        rowSpacing: 2
+                        columns: 2
 
-                            GridLayout {
-                                anchors.fill: parent
-                                columnSpacing: 0
-                                rowSpacing: 2
-                                columns: 2
+                        Label {
+                            Layout.fillWidth: true
+                            text: "Antialiasing"
+                        }
 
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Camera"
-                                }
+                        CheckBox {
+                            id: antialiasingSwitch
+                            Layout.alignment: Qt.AlignCenter
+                            Component.onCompleted: checked = (0 !== root.antialiasingSamples)
 
-                                RowLayout {
-                                    id: idCameraLayout
-                                    Layout.alignment: Qt.AlignCenter
-                                    Layout.columnSpan: 2
-
-                                    ComboBox {
-                                        id: indexCameraComboBox
-                                        Layout.fillWidth: true
-
-                                        model: root.idComboList
-
-                                        onCurrentIndexChanged : switchCamera();
-
-                                        function switchCamera() {
-                                            //onsole.log("Change to " + indexViewerComboBox.currentIndex);
-                                            root.updateCameraFromIndex(indexCameraComboBox.currentIndex);
-                                            //root.xraymodel.update()
-                                        }
-                                    }
+                            onCheckedChanged: {
+                                if(checked) {
+                                    antialiasingSlider.uploadValue(antialiasingSlider.minimumValue);
+                                    antialiasingLayout.visible = true;
+                                } else {
+                                    antialiasingLayout.visible = false;
+                                    antialiasingSlider.uploadValue(0);
                                 }
                             }
-                        }
-                        GroupBox {
-                            id: visualPanel
-                            implicitWidth: parent.width
-                            title: "Visual"
 
-                            GridLayout {
-                                anchors.fill: parent
-                                columnSpacing: 0
-                                rowSpacing: 2
-                                columns: 2
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: "Antialiasing"
-                                }
-
-                                Switch {
-                                    id: antialiasingSwitch
-                                    Layout.alignment: Qt.AlignCenter
-                                    Component.onCompleted: checked = (0 !== root.antialiasingSamples)
-                                    
-                                    onCheckedChanged: {
-                                        if(checked) {
-                                            antialiasingSlider.uploadValue(antialiasingSlider.minimumValue);
-                                            antialiasingLayout.visible = true;
-                                        } else {
-                                            antialiasingLayout.visible = false;
-                                            antialiasingSlider.uploadValue(0);
-                                        }
-                                    }
-
-                                    ToolTip {
-                                        description: "Enable / Disable Antialiasing\n\nNote : You must resize your window before the changes will take effect"
-                                    }
-                                }
-
-                                RowLayout {
-                                    id: antialiasingLayout
-                                    Layout.alignment: Qt.AlignCenter
-                                    Layout.columnSpan: 2
-
-                                    Slider {
-                                        id: antialiasingSlider
-                                        Layout.fillWidth: true
-                                        Component.onCompleted: downloadValue();
-                                        onValueChanged: if(visible) uploadValue(value);
-
-                                        stepSize: 1
-                                        from: 1
-                                        to: 4
-
-                                        function downloadValue() {
-                                            value = Math.min((root.antialiasingSamples >= 1 ? Math.log(root.antialiasingSamples) / Math.log(2.0) : minimumValue), maximumValue);
-                                        }
-
-                                        function uploadValue(newValue) {
-                                            if(undefined === newValue)
-                                                newValue = value;
-
-                                            root.antialiasingSamples = (newValue >= 1 ? Math.round(Math.pow(2.0, newValue)) : 0);
-                                        }
-
-                                        Connections {
-                                            target: root
-                                            onAntialiasingSamplesChanged: antialiasingSlider.downloadValue();
-                                        }
-
-                                        ToolTip {
-                                            description: "Change the number of samples used for antialiasing\n\nNote : You must resize your window before the changes will take effect"
-                                        }
-                                    }
-
-                                    TextField {
-                                        Layout.preferredWidth: 32
-                                        readOnly: true
-                                        text: root.antialiasingSamples;
-                                    }
-                                }
+                            ToolTip {
+                                description: "Enable / Disable Antialiasing\n\nNote : You must resize your window before the changes will take effect"
                             }
                         }
-                        GroupBox {
-                            id: savePanel
-                            implicitWidth: parent.width
 
-                            title: "Save"
+                        RowLayout {
+                            id: antialiasingLayout
+                            Layout.alignment: Qt.AlignCenter
+                            Layout.columnSpan: 2
 
-                            GridLayout {
-                                anchors.fill: parent
-                                columnSpacing: 2
-                                rowSpacing: 2
-                                columns: 2
+                            Slider {
+                                id: antialiasingSlider
+                                Layout.fillWidth: true
+                                Component.onCompleted: downloadValue();
+                                onValueChanged: if(visible) uploadValue(value);
 
-                                Item {
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: screenshotButton.implicitHeight
+                                stepSize: 1
+                                from: 1
+                                to: 4
 
-                                    Button {
-                                        id: screenshotButton
-                                        anchors.fill: parent
-                                        text: "Screenshot"
-                                        checked: false
-                                        checkable: false
-
-                                        onClicked: saveScreenshotDialog.open();
-
-                                        FileDialog {
-                                            id: saveScreenshotDialog
-                                            folder: "Captured/Screen/"
-                                            selectExisting: false
-                                            title: "Path to the screenshot to save"
-
-                                            onAccepted: {
-                                                var path = fileUrl.toString().replace("file://", "");
-                                                root.takeScreenshot(path);
-                                            }
-                                        }
-
-                                        ToolTip {
-                                            description: "Save screenshot"
-                                        }
-                                    }
+                                function downloadValue() {
+                                    value = Math.min((root.antialiasingSamples >= 1 ? Math.log(root.antialiasingSamples) / Math.log(2.0) : minimumValue), maximumValue);
                                 }
 
-                                Item {
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: movieButton.implicitHeight
+                                function uploadValue(newValue) {
+                                    if(undefined === newValue)
+                                        newValue = value;
 
-                                    Button {
-                                        id: movieButton
-                                        anchors.fill: parent
-                                        text: "Movie"
-                                        checked: false
-                                        checkable: true
-
-                                        onClicked: {
-                                            if(checked)
-                                                saveVideoDialog.open();
-                                            else
-                                                root.stopVideoRecording();
-                                        }
-
-                                        FileDialog {
-                                            id: saveVideoDialog
-                                            folder: "Captured/Movie/"
-                                            selectExisting: false
-                                            title: "Path to the movie to save"
-
-                                            onAccepted: {
-                                                root.startVideoRecording(fileUrl.toString().replace("file://", ""));
-                                            }
-
-                                            onRejected: {
-                                                movieButton.checked = false;
-                                            }
-                                        }
-
-                                        ToolTip {
-                                            description: "Save video"
-                                        }
-                                    }
-                                }
-
-                                Label {
-                                    Layout.fillWidth: true
-                                    Layout.columnSpan: 2
-
-                                    text: "Resolution"
-                                }
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-
-                                    Label {
-                                        text: "X"
-                                    }
-
-                                    TextField {
-                                        id: captureWidthTextField
-                                        Layout.fillWidth: true
-                                        validator: IntValidator {bottom: 1}
-
-                                        text: "1"
-                                    }
-                                }
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-
-                                    Label {
-                                        text: " Y"
-                                    }
-
-                                    TextField {
-                                        id: captureHeightTextField
-                                        Layout.fillWidth: true
-                                        validator: IntValidator {bottom: 1}
-
-                                        text: "1"
-                                    }
+                                    root.antialiasingSamples = (newValue >= 1 ? Math.round(Math.pow(2.0, newValue)) : 0);
                                 }
 
                                 Connections {
                                     target: root
-                                    onWidthChanged: updateResolutionTextFields();
-                                    onHeightChanged: updateResolutionTextFields();
+                                    onAntialiasingSamplesChanged: antialiasingSlider.downloadValue();
+                                }
 
-                                    function updateResolutionTextFields() {
-                                        captureWidthTextField.text = root.width.toFixed(0);
-                                        captureHeightTextField.text = root.height.toFixed(0);
+                                ToolTip {
+                                    description: "Change the number of samples used for antialiasing\n\nNote : You must resize your window before the changes will take effect"
+                                }
+                            }
+
+                            TextField {
+                                Layout.preferredWidth: 32
+                                readOnly: true
+                                text: root.antialiasingSamples;
+                            }
+                        }
+                    }
+                }
+                GroupBox {
+                    id: savePanel
+                    Layout.fillWidth: true
+
+                    title: "Save"
+
+                    GridLayout {
+                        anchors.fill: parent
+                        columnSpacing: 2
+                        rowSpacing: 2
+                        columns: 2
+
+                        Item {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: screenshotButton.implicitHeight
+
+                            Button {
+                                id: screenshotButton
+                                anchors.fill: parent
+                                text: "Screenshot"
+                                checked: false
+                                checkable: false
+
+                                onClicked: saveScreenshotDialog.open();
+
+                                FileDialog {
+                                    id: saveScreenshotDialog
+                                    folder: "Captured/Screen/"
+                                    selectExisting: false
+                                    title: "Path to the screenshot to save"
+
+                                    onAccepted: {
+                                        var path = fileUrl.toString().replace("file://", "");
+                                        root.takeScreenshot(path);
                                     }
                                 }
+
+                                ToolTip {
+                                    description: "Save screenshot"
+                                }
+                            }
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: movieButton.implicitHeight
+
+                            Button {
+                                id: movieButton
+                                anchors.fill: parent
+                                text: "Movie"
+                                checked: false
+                                checkable: true
+
+                                onClicked: {
+                                    if(checked)
+                                        saveVideoDialog.open();
+                                    else
+                                        root.stopVideoRecording();
+                                }
+
+                                FileDialog {
+                                    id: saveVideoDialog
+                                    folder: "Captured/Movie/"
+                                    selectExisting: false
+                                    title: "Path to the movie to save"
+
+                                    onAccepted: {
+                                        root.startVideoRecording(fileUrl.toString().replace("file://", ""));
+                                    }
+
+                                    onRejected: {
+                                        movieButton.checked = false;
+                                    }
+                                }
+
+                                ToolTip {
+                                    description: "Save video"
+                                }
+                            }
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            Layout.columnSpan: 2
+
+                            text: "Resolution"
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+
+                            Label {
+                                text: "X"
+                            }
+
+                            TextField {
+                                id: captureWidthTextField
+                                Layout.fillWidth: true
+                                validator: IntValidator {bottom: 1}
+
+                                text: "1"
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+
+                            Label {
+                                text: " Y"
+                            }
+
+                            TextField {
+                                id: captureHeightTextField
+                                Layout.fillWidth: true
+                                validator: IntValidator {bottom: 1}
+
+                                text: "1"
+                            }
+                        }
+
+                        Connections {
+                            target: root
+                            onWidthChanged: updateResolutionTextFields();
+                            onHeightChanged: updateResolutionTextFields();
+
+                            function updateResolutionTextFields() {
+                                captureWidthTextField.text = root.width.toFixed(0);
+                                captureHeightTextField.text = root.height.toFixed(0);
                             }
                         }
                     }
@@ -705,7 +708,7 @@ CameraView {
             anchors.centerIn: parent
             height: 30
             width: 30
-            z:0
+            z: 0
             source:  "qrc:/icon/screenshot.png"
             opacity: 0.3
         }
@@ -727,23 +730,5 @@ CameraView {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-    }
-
-    Image {
-        id: toolPanelSwitch
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.topMargin: 26
-        anchors.rightMargin: 3
-        source: toolPanel.visible ? "qrc:/icon/minus.png" : "qrc:/icon/plus.png"
-        width: 12
-        height: width
-        visible: configurable
-
-        MouseArea {
-            anchors.fill: parent
-            propagateComposedEvents: true
-            onClicked: toolPanel.visible = !toolPanel.visible
-        }
     }
 }

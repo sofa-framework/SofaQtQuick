@@ -153,5 +153,7 @@
         <file>SofaDataTypes/DynamicTableView.qml</file>
         <file>SofaInteractors/UserInteractor_EditMode.qml</file>
         <file>SofaBasics/VerticalScrollbar.qml</file>
+        <file>SofaBasics/Slider.qml</file>
+        <file>SofaWidgets/Profiler.qml</file>
     </qresource>
 </RCC>

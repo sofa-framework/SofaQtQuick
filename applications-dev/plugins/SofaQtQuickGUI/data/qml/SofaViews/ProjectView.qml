@@ -9,9 +9,6 @@ import SofaWidgets 1.0
 import QtQml 2.12
 import QtQuick.Window 2.12
 import Asset 1.0
-import PythonAsset 1.0
-import TextureAsset 1.0
-import MeshAsset 1.0
 import QtGraphicalEffects 1.12
 import SofaApplication 1.0
 
@@ -31,12 +28,18 @@ Item {
         color: SofaApplication.style.contentBackgroundColor
     }
 
+
     ColumnLayout {
         anchors.fill: parent
         Rectangle {
             id: headerID
             Layout.fillWidth: true
-
+            MouseArea {
+                anchors.fill: parent
+                onPressed: {
+                    root.forceActiveFocus()
+                }
+            }
 
             implicitHeight: 25
             color: SofaApplication.style.contentBackgroundColor
@@ -92,6 +95,7 @@ Item {
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton
                 onClicked: {
+                    forceActiveFocus()
                     var pos = SofaApplication.getIdealPopupPos(generalProjectMenu, projectViewMouseArea)
                     generalProjectMenu.x = mouse.x + pos[0]
                     generalProjectMenu.y = mouse.y + pos[1]
@@ -100,6 +104,8 @@ Item {
             }
             ListView {
                 id: folderView
+                interactive: true
+                focus: true
                 anchors.fill: parent
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
@@ -114,85 +120,94 @@ Item {
                     content: folderView.contentItem
                 }
 
-                header: RowLayout{
+                header: Rectangle {
+                    height: 18
                     implicitWidth: folderView.width
-
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator1
-                            width: 2
-                            height: 20
-                            color: "#393939"
+                    color: "transparent"
+                    MouseArea {
+                        width: childrenRect.width
+                        height: childrenRect.height
+                        onPressed: {
+                            root.forceActiveFocus()
+                        }
+                        RowLayout {
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator1
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator1.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Name"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator1.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Name"
-                        }
-                    }
 
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator2
-                            width: 2
-                            height: 20
-                            color: "#393939"
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator2
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator2.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Type"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator2.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Type"
-                        }
-                    }
 
-                    Rectangle {
-                        color: SofaApplication.style.contentBackgroundColor
-                        Layout.fillWidth: true
-                        implicitHeight: 20
-                        implicitWidth: folderView.width / 3
-                        Rectangle {
-                            id: separator3
-                            width: 2
-                            height: 20
-                            color: "#393939"
                             Rectangle {
-                                x: 1
-                                width: 1
-                                height: 20
-                                color: "#959595"
+                                color: SofaApplication.style.contentBackgroundColor
+                                Layout.fillWidth: true
+                                implicitHeight: 20
+                                implicitWidth: folderView.width / 3
+                                Rectangle {
+                                    id: separator3
+                                    width: 2
+                                    height: 20
+                                    color: "#393939"
+                                    Rectangle {
+                                        x: 1
+                                        width: 1
+                                        height: 20
+                                        color: "#959595"
+                                    }
+                                }
+                                Label {
+                                    anchors.left: separator3.right
+                                    leftPadding: 5
+                                    color: "black"
+                                    text: "Size"
+                                }
                             }
-                        }
-                        Label {
-                            anchors.left: separator3.right
-                            leftPadding: 5
-                            color: "black"
-                            text: "Size"
                         }
                     }
                 }
-
                 FolderListModel {
                     id: folderModel
 
@@ -208,7 +223,7 @@ Item {
                     showFiles: true
                     caseSensitive: true
                     rootFolder: SofaApplication.currentProject.rootDirPath
-                    nameFilters: SofaApplication.currentProject.getSupportedTypes()
+//                    nameFilters: SofaApplication.currentProject.getSupportedTypes()
                 }
 
                 property var selectedItem: null
@@ -217,11 +232,11 @@ Item {
 
                     Rectangle {
                         id: wrapper
-
                         width: root.width
                         height: 20
                         color: index % 2 ? "#4c4c4c" : "#454545"
                         property string highlightColor: ListView.isCurrentItem || folderView.selectedItem === wrapper ? "#82878c" : "transparent"
+                        property var asset: SofaApplication.currentProject.getAsset(filePath)
                         Rectangle {
                             anchors.fill: parent
                             color: wrapper.highlightColor
@@ -236,7 +251,7 @@ Item {
                                         width: 15
                                         height: 15
                                         fillMode: Image.PreserveAspectFit
-                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : SofaApplication.currentProject.getAsset(filePath).iconPath
+                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : asset ? asset.iconPath : "qrc:/icon/ICON_FILE_BLANK.png"
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
@@ -246,7 +261,7 @@ Item {
                                         text: fileName
                                         clip: true
                                         elide: Text.ElideRight
-                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || (asset ? asset.isSofaContent :false) ? "#efefef" : "darkgrey"
                                         anchors.left: iconId.right
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -256,8 +271,8 @@ Item {
                                     Text {
                                         width: parent.width
                                         leftPadding: 10
-                                        text: fileIsDir ? "Folder" : SofaApplication.currentProject.getAsset(filePath).typeString
-                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
+                                        text: fileIsDir ? "Folder" : asset ? asset.typeString : "Unknown file type"
+                                        color: fileIsDir || (asset ? asset.isSofaContent : false) ? "#efefef" : "darkgrey"
 
                                         clip: true
                                         elide: Text.ElideRight
@@ -274,7 +289,7 @@ Item {
                                                                              (fileSize > 1e6) ? (fileSize / 1e6).toFixed(1) + " M" :
                                                                                                 (fileSize > 1e3) ? (fileSize / 1e3).toFixed(1) + " k" :
                                                                                                                    fileSize + " bytes"
-                                        color: fileIsDir || SofaApplication.currentProject.getAsset(filePath).isSofaContent ? "#efefef" : "darkgrey"
+                                        color: fileIsDir || (asset ? asset.isSofaContent : false) ? "#efefef" : "darkgrey"
                                         clip: true
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
@@ -289,7 +304,7 @@ Item {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
                             fileIsDir: index !== -1 ? folderModel.get(index, "fileIsDir") : ""
-                            model: folderModel.get(index, "fileIsDir") ? null : SofaApplication.currentProject.getAsset(filePath)
+                            model: folderModel.get(index, "fileIsDir") ? null : asset
                         }
 
                         MouseArea {
@@ -297,34 +312,36 @@ Item {
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
                             anchors.fill: parent
                             hoverEnabled: true
+
                             onHoveredChanged: {
                                 if (containsMouse) {
                                     folderView.currentIndex = index;
                                 }
                             }
 
-                            function insertAsset(index, rootNode)
+                            function insertAsset(index)
                             {
                                 var _parent = SofaApplication.selectedComponent
                                 if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
                                 if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
 
                                 var newNode = SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath")).create(_parent)
-                                var hasNodes = newNode.getChildren().size()
+                                var hasNodes = newNode.children().size()
                                 console.error("ParentNode type: " + _parent)
                                 console.error("newNode type: " + newNode)
                                 _parent.dump()
                                 //                                newNode.copyTo(_parent)
                                 if (hasNodes) {
-                                    var childsList = _parent.getChildren()
+                                    var childsList = _parent.children()
                                     if (childsList.size() !== 0) {
                                         return childsList.last()
                                     }
                                 }
-                                return parent
+                                return _parent
                             }
 
                             onDoubleClicked: {
+                                forceActiveFocus()
                                 if (folderModel.isFolder(index)) {
                                     folderModel.folder = folderModel.get(index, "fileURL")
                                 } else {
@@ -332,13 +349,13 @@ Item {
                                         SofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                     else {
-                                        var rootNode = SofaApplication.sofaScene.root()
-                                        var insertedAsset = insertAsset(index, rootNode)
+                                        var insertedAsset = insertAsset(index)
                                         SofaApplication.selectedComponent = insertedAsset
                                     }
                                 }
                             }
                             onClicked: {
+                                forceActiveFocus()
                                 if (Qt.RightButton === mouse.button)
                                 {
                                     var pos = SofaApplication.getIdealPopupPos(projectMenu, mouseRegion)
@@ -371,7 +388,6 @@ Item {
 
                 model: folderModel
                 highlight: Rectangle { color: "#82878c"; radius: 5 }
-                focus: true
             }
         }
     }

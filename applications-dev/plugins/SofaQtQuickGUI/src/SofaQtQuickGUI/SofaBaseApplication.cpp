@@ -223,7 +223,7 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
 ///
 void SofaBaseApplication::openInEditorFromUrl(const QUrl& fullpath, const int lineno) const
 {
-    openInEditor(fullpath.toLocalFile(), lineno);
+    openInEditor(fullpath.path(), lineno);
 }
 
 QString SofaBaseApplication::createFolderIn(const QString& parent)
@@ -670,7 +670,6 @@ void SofaBaseApplication::setProjectDirectory(const std::string& dir)
     {
         std::string directory = sofa::helper::system::DataRepository.getFile(dir);
         QDir dir(directory.c_str());
-        sofa::helper::system::DataRepository.addFirstPath(dir.absolutePath().toStdString());
         m_currentProject->setRootDir(QUrl(dir.absolutePath()));
     }
     else {

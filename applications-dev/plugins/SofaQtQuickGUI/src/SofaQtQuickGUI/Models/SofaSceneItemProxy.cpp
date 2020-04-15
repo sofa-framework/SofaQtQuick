@@ -35,6 +35,8 @@ SofaSceneItemProxy::SofaSceneItemProxy(QObject* parent) :
 bool SofaSceneItemProxy::filterAcceptsRow(int sourceRow,
         const QModelIndex &sourceParent) const
 {
+    if (sourceModel() == nullptr)
+        return false;
     QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent) ;
 
     /// If requested we only show the nodes in the graph.

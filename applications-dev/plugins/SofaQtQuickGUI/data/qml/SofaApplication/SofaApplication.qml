@@ -29,7 +29,7 @@ import SofaBaseApplicationSingleton 1.0
 import SofaMessageList 1.0
 import SofaViewListModel 1.0
 import SofaProject 1.0
-import GraphView 1.0
+//import GraphView 1.0
 import SofaBaseScene 1.0
 import SofaInteractors 1.0
 import SofaBasics 1.0

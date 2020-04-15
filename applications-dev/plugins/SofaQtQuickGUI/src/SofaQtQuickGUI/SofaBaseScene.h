@@ -110,6 +110,7 @@ public:
     Q_PROPERTY(bool defaultAnimate READ defaultAnimate WRITE setDefaultAnimate NOTIFY defaultAnimateChanged)
     Q_PROPERTY(bool asynchronous READ asynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
     Q_PROPERTY(bool pyQtSynchronous READ pyQtSynchronous WRITE setPyQtForceSynchronous NOTIFY pyQtForceSynchronousChanged)
+    Q_PROPERTY(SofaNode* rootNode READ getRootNode NOTIFY rootNodeChanged)
 
     Q_ENUMS(Status)
     enum Status {
@@ -255,6 +256,7 @@ public:
     Q_INVOKABLE sofaqtquick::bindings::SofaBaseObject* componentByType(const QString& typeName);
     Q_INVOKABLE SofaBaseObjectList* componentsByType(const QString& typeName);
     Q_INVOKABLE sofaqtquick::bindings::SofaNode* root();
+    sofaqtquick::bindings::SofaNode* getRootNode() { return root(); }
 
     // TODO: avoid this kind of specialization if possible
     Q_INVOKABLE sofaqtquick::SofaBase* visualStyleComponent();
@@ -301,7 +303,7 @@ public:
     const sofa::simulation::Node::SPtr& sofaRootNode() const { return mySofaRootNode; }
     sofa::simulation::Node::SPtr& sofaRootNode() { return mySofaRootNode; }
     void setSofaRootNode(sofa::simulation::Node::SPtr node) {
-        mySofaRootNode = node.get();
+        mySofaRootNode = node;
         markVisualDirty();
         myTextureAreDirty = true;
     }

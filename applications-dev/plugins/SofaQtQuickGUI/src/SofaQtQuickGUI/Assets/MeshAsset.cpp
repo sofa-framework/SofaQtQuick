@@ -33,10 +33,10 @@ namespace sofaqtquick
 {
 
 /// Register all mesh assets extensions to the factory
-bool __stl = AssetFactory::registerAsset("stl", new AssetCreator<MeshAsset>());
-bool __obj = AssetFactory::registerAsset("obj", new AssetCreator<MeshAsset>());
-bool __vtk = AssetFactory::registerAsset("vtk", new AssetCreator<MeshAsset>());
-bool __gmsh = AssetFactory::registerAsset("gmsh", new AssetCreator<MeshAsset>());
+static bool __stl = AssetFactory::registerAsset("stl", new AssetCreator<MeshAsset>());
+static bool __obj = AssetFactory::registerAsset("obj", new AssetCreator<MeshAsset>());
+static bool __vtk = AssetFactory::registerAsset("vtk", new AssetCreator<MeshAsset>());
+static bool __gmsh = AssetFactory::registerAsset("gmsh", new AssetCreator<MeshAsset>());
 
 const MeshAsset::LoaderMap MeshAsset::_loaders = MeshAsset::createLoaders();
 
@@ -76,14 +76,17 @@ sofaqtquick::bindings::SofaNode* MeshAsset::create(sofaqtquick::bindings::SofaNo
     sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
                 dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
 
+    auto params = sofa::core::ExecParams::defaultInstance();
     /// Initialize the object
-    node->init(sofa::core::ExecParams::defaultInstance());
+    node->init(params);
 
-    parent->self()->addChild(node);
+//    parent->self()->addChild(node);
+
+    if (!parent->addChild(node.get())) return nullptr;
 
     /// Initialize the object assets.
+    node->init(params);
 
-    node->execute<VisualInitVisitor>(nullptr);
     return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
 }
 

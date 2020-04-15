@@ -28,7 +28,7 @@
 
 #include "ProfilerView.h"
 #include <QApplication>
-namespace sofaqtquick::views
+namespace plop
 {
 
 using namespace sofa::helper;
@@ -46,7 +46,10 @@ ProfilerChartView::ProfilerChartView(QChart *chart, QWidget *parent, int bufferS
     , m_pointSelected(-1)
     , m_maxY(1000)
 {
-
+    setMinimumWidth(parent->size().width());
+    setMinimumHeight(parent->size().height() / 2);
+    chart->setMinimumWidth(parent->size().width());
+    chart->setMinimumHeight(parent->size().height() / 2);
 }
 
 void ProfilerChartView::mousePressEvent(QMouseEvent *event)
@@ -94,7 +97,7 @@ SReal convertInMs(ctime_t t, int nbIter=1)
 
 ///////////////////////////////////////// AnimationSubStepData ///////////////////////////////////
 
-ProfilerView::AnimationSubStepData::AnimationSubStepData(int level, std::string name, ctime_t start)
+AnimationSubStepData::AnimationSubStepData(int level, std::string name, ctime_t start)
     : m_level(level)
     , m_name(name)
     , m_nbrCall(1)
@@ -103,7 +106,7 @@ ProfilerView::AnimationSubStepData::AnimationSubStepData(int level, std::string 
 
 }
 
-ProfilerView::AnimationSubStepData::~AnimationSubStepData()
+AnimationSubStepData::~AnimationSubStepData()
 {
     for (unsigned int i=0; i<m_children.size(); ++i)
         delete m_children[i];
@@ -111,7 +114,7 @@ ProfilerView::AnimationSubStepData::~AnimationSubStepData()
     m_children.clear();
 }
 
-void ProfilerView::AnimationSubStepData::computeTimeAndPercentage(SReal invTotalMs)
+void AnimationSubStepData::computeTimeAndPercentage(SReal invTotalMs)
 {
     if (!m_children.empty()) // compute from leaf to trunk
     {
@@ -144,7 +147,7 @@ void ProfilerView::AnimationSubStepData::computeTimeAndPercentage(SReal invTotal
     }
 }
 
-SReal ProfilerView::AnimationSubStepData::getStepMs(const std::string& stepName, const std::string& parentName)
+SReal AnimationSubStepData::getStepMs(const std::string& stepName, const std::string& parentName)
 {
     SReal result = 0.0;
     if (parentName == m_name)
@@ -172,12 +175,13 @@ SReal ProfilerView::AnimationSubStepData::getStepMs(const std::string& stepName,
 
 ///////////////////////////////////////// AnimationStepData ///////////////////////////////////
 
-ProfilerView::AnimationStepData::AnimationStepData(int step, const std::string& idString)
+AnimationStepData::AnimationStepData(int step, const std::string& idString)
     : m_stepIteration(step)
     , m_totalMs(0.0)
 {
     m_subSteps.clear();
     
+    std::cout << "AnimationStepData" << std::endl;
     bool res = processData(idString);
     if (!res) // error clear data
     {
@@ -191,10 +195,10 @@ ProfilerView::AnimationStepData::AnimationStepData(int step, const std::string& 
 }
 
 
-bool ProfilerView::AnimationStepData::processData(const std::string& idString)
+bool AnimationStepData::processData(const std::string& idString)
 {
     sofa::helper::vector<Record> _records = sofa::helper::AdvancedTimer::getRecords(idString);
-
+    std::cout << _records.size() << std::endl;
     //AnimationSubStepData* currentSubStep = nullptr;
     std::stack<AnimationSubStepData*> processStack;
     int level = 0;
@@ -287,7 +291,7 @@ bool ProfilerView::AnimationStepData::processData(const std::string& idString)
 }
 
 
-SReal ProfilerView::AnimationStepData::getStepMs(const std::string& stepName, const std::string& parentName)
+SReal AnimationStepData::getStepMs(const std::string& stepName, const std::string& parentName)
 {
     SReal result = 0.0;
     if (parentName == "")
@@ -312,7 +316,7 @@ SReal ProfilerView::AnimationStepData::getStepMs(const std::string& stepName, co
 }
 
 
-ProfilerView::AnimationStepData::~AnimationStepData()
+AnimationStepData::~AnimationStepData()
 {
     for (unsigned int i=0; i<m_subSteps.size(); ++i)
     {
@@ -339,10 +343,12 @@ ProfilerView::ProfilerView(QWidget *parent)
 
     // fill buffer with empty data.
     m_profilingData.resize(m_bufferSize);
-    for (unsigned int i=0; i<m_bufferSize; ++i)
+    for (unsigned int i=0; i<m_bufferSize; ++i) {
+        std::cout << "New AnimationStepData " << i << std::endl;
         m_profilingData[i] = new AnimationStepData();
+    }
 
-    resize(1000,800);
+    resize(1000,800 / 2);
 
     // creating chart widget
     createChart();
@@ -409,7 +415,8 @@ void ProfilerView::createTreeView()
 {
     // set column names
     QStringList columnNames;
-    columnNames << "Hierarchy Step Name" << "Total (%)" << "Self (%)" << "Time (ms)" << "Self (ms)";
+    columnNames << "Hierarchy Step Name" << "Total (%)" << "Self (%)"
+                << "Time (ms)" << "Self (ms)";
     //tree_steps->setHeaderLabels(columnNames);
 
     // set column properties
@@ -439,6 +446,7 @@ void ProfilerView::createChart()
     }
 
     m_chart = new QChart();
+    m_chart->setMinimumSize(this->size());
     m_chart->addSeries(m_series);
     m_chart->addSeries(m_selectionSeries);
     m_axisY = new QValueAxis();
@@ -451,13 +459,12 @@ void ProfilerView::createChart()
 
     m_chartView = new ProfilerChartView(m_chart, this, m_bufferSize);
     m_chartView->setRenderHint(QPainter::Antialiasing);
-
-    //Layout_graph->addWidget(m_chartView);
 }
 
 
 void ProfilerView::updateChart()
 {
+    std::cout << "updateChart()" << std::endl;
     bool updateAxis = false;
 
     // Need to slide all the serie. Sure this could be optimised with deeper knowledge in QLineSeries/QChart
@@ -584,4 +591,4 @@ void ProfilerView::onStepSelected(QTreeWidgetItem *item, int /*column*/)
 }
 
 
-} // namespace sofa
+} // namespace sofaqtquick

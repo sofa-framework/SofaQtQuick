@@ -28,6 +28,9 @@ using sofa::core::objectmodel::BaseObject;
 #include <sofa/core/objectmodel/BaseNode.h>
 using sofa::core::objectmodel::BaseNode;
 
+#include <sofa/core/objectmodel/DataFileName.h>
+using sofa::core::objectmodel::DataFileName;
+
 #include <sofa/defaulttype/DataTypeInfo.h>
 using sofa::defaulttype::AbstractTypeInfo;
 

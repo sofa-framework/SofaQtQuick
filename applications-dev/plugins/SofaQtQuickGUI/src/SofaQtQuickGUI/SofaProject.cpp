@@ -124,7 +124,7 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     m_directories.clear();
 
     chdir(m_rootDir.path().toStdString().c_str());
-    msg_warning() << "Setting root directory to '" << m_rootDir.path().toStdString()<<"'";
+    msg_info() << "Setting root directory to '" << m_rootDir.path().toStdString()<<"'";
     QFileInfo root = QFileInfo(m_rootDir.path());
     scan(root);
     emit rootDirChanged(m_rootDir);
@@ -134,9 +134,9 @@ void SofaProject::setRootDir(const QUrl& rootDir)
     QUrl url("file://" + m_rootDir.path() + "/scenes/" + dir.dirName() + ".py");
     auto lastOpened = m_projectSettings->value("lastOpened", "").toString();
     if (lastOpened != "" && QFileInfo(lastOpened).exists())
-        url = lastOpened;
+        url = dir.absoluteFilePath(lastOpened);
     else if (QFileInfo(url.path()).exists())
-        m_projectSettings->setValue("lastOpened", url.path());
+        m_projectSettings->setValue("lastOpened", QVariant::fromValue(dir.relativeFilePath(url.path())));
     if (m_currentScene)
         m_currentScene->setSource(url);
 
@@ -349,14 +349,6 @@ void SofaProject::removeDirEntries(DirectoryAsset& folder)
             if(wasFile)
             {
                 msg_info() << "removing: " << cfinfo.absoluteFilePath().toStdString();
-                auto t = m_assets[cfinfo.absoluteFilePath()]->getTypeString().replace(" ", "_");
-                if (m_projectSettings)
-                {
-                    m_projectSettings->beginGroup("assets");
-                    m_projectSettings->setValue(t, m_projectSettings->value(t,"").toString().replace(";"+cfinfo.absoluteFilePath(), ""));
-                    m_projectSettings->setValue("scenes", m_projectSettings->value("scenes","").toString().replace(";"+cfinfo.absoluteFilePath(), ""));
-                    m_projectSettings->endGroup();
-                }
                 m_assets.remove(cfinfo.absoluteFilePath());
             }
             else
@@ -404,12 +396,6 @@ void SofaProject::scan(const QFileInfo& file)
         msg_info() << "register asset: " << file.absoluteFilePath().toStdString();
         m_assets[filePath] = AssetFactory::createInstance(file.filePath(), file.suffix());
         auto t = m_assets[filePath]->isScene() ? "scenes" : m_assets[filePath]->getTypeString().replace(" ", "_");
-        if (m_projectSettings)
-        {
-            m_projectSettings->beginGroup("assets");
-            m_projectSettings->setValue(t, m_projectSettings->value(t,"").toString().replace(";"+filePath, "")+";"+filePath);
-            m_projectSettings->endGroup();
-        }
         return;
     }
 
@@ -492,7 +478,6 @@ bool SofaProject::createProjectTree(const QUrl& dir)
         d.mkpath(".");
 
     bool ret = d.mkdir("assets");
-    ret = ret & d.mkdir("assets");
     ret = ret & d.mkdir("scenes");
     ret = ret & d.mkdir("assets/resources");
     ret = ret & d.mkdir("assets/scripts");
@@ -524,15 +509,12 @@ const QString SofaProject::getFileCount(const QUrl& url)
 
 Asset* SofaProject::getAsset(const QString& filePath)
 {
-    const auto& it = m_assets.find(filePath);
-    if (it != m_assets.end())
+    auto val = m_assets.value(filePath);
+    if (val != nullptr)
     {
-        msg_info() << "getAsset for: " << filePath.toStdString() << " => " << it.value();
-        if(it.value() != nullptr)
-            return it.value().get();
+        msg_info() << "getAsset for: " << filePath.toStdString();
+        return val.get();
     }
-    msg_info() << "getAsset not asset for: " << filePath.toStdString() ;
-
     return nullptr;
 }
 
@@ -579,7 +561,7 @@ QString SofaProject::createTemplateFile(const QString& directory, const QString&
     if (templateType == "Canvas")
         extension ="qml";
 
-    QFile file(getSaveFile("New " + templateType, directory, 0, "Asset file (*." + extension + ")").path());
+    QFile file(getSaveFile("New " + templateType, "file://"+dir, 0, "Asset file (*." + extension + ")").path());
     if (file.open(QIODevice::WriteOnly))
     {
 

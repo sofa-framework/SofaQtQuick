@@ -39,25 +39,27 @@ TextureAsset::TextureAsset(std::string path, std::string extension)
 
 sofaqtquick::bindings::SofaNode* TextureAsset::create(sofaqtquick::bindings::SofaNode* parent, const QString& assetName)
 {
+    SOFA_UNUSED(parent);
     SOFA_UNUSED(assetName);
-    if (_loaders.find(m_extension) == _loaders.end())
-    {
-        msg_error("Unknown file format.");
-        return new sofaqtquick::bindings::SofaNode(nullptr);
-    }
-    sofa::simulation::Node::SPtr root;
-    root->setName("NEWTEXTURE");
-    OglModel::SPtr vmodel = sofa::core::objectmodel::New<OglModel>();
-    vmodel->setFilename("mesh/cube.obj");
-    vmodel->setName("vmodel");
-    vmodel->texturename.setValue(m_path);
+//    if (_loaders.find(m_extension) == _loaders.end())
+//    {
+//        msg_error("Unknown file format.");
+//        return nullptr;
+//    }
+//    sofa::simulation::Node::SPtr root;
+//    root->setName("NEWTEXTURE");
+//    OglModel::SPtr vmodel = sofa::core::objectmodel::New<OglModel>();
+//    vmodel->setFilename("mesh/cube.obj");
+//    vmodel->setName("vmodel");
+//    vmodel->texturename.setValue(m_path);
 
-    root->addObject(vmodel);
-    root->init(sofa::core::ExecParams::defaultInstance());
-    sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
-                dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
-    parent->self()->addChild(node);
-    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
+//    root->addObject(vmodel);
+//    root->init(sofa::core::ExecParams::defaultInstance());
+//    sofa::simulation::graph::DAGNode::SPtr node = sofa::simulation::graph::DAGNode::SPtr(
+//                dynamic_cast<sofa::simulation::graph::DAGNode*>(root.get()));
+//    parent->self()->addChild(node);
+//    return new sofaqtquick::bindings::SofaNode(node, dynamic_cast<QObject*>(this));
+    return nullptr;
 }
 
 void TextureAsset::getDetails()

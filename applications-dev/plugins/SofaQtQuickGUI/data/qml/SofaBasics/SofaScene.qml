@@ -48,11 +48,29 @@ SofaBaseScene
             break;
         case SofaBaseScene.Error:
             statusMessage = 'SofaScene "' + root.path + '" issued an error during loading';
+            SofaApplication.selectedComponent = null
             break;
         case SofaBaseScene.Ready:
-            statusMessage = 'SofaScene "' + root.path + '" loaded successfully';
+            var fatals = SofaApplication.sofaMessageList.getFatalCount()
+            var errors = SofaApplication.sofaMessageList.getErrorCount()
+            var warnings = SofaApplication.sofaMessageList.getWarningCount()
+            var deprecated = SofaApplication.sofaMessageList.getDeprecatedCount()
+            if (fatals) {
+                statusMessage = 'SofaScene "' + root.path + '" issued a fatal error during loading';
+                SofaApplication.selectedComponent = null
+                break;
+            }
+            else if (errors)
+                statusMessage = 'SofaScene "' + root.path + '" loaded with ' + errors + " errors and " + warnings + " warnings";
+            else if (warnings)
+                statusMessage = 'SofaScene "' + root.path + '" loaded successfully with ' + warnings + " warnings";
+            else if (deprecated)
+                statusMessage = 'SofaScene "' + root.path + '" loaded successfully. Consider upgrading your scene: ' + deprecated + " deprecated messages";
+            else
+                statusMessage = 'SofaScene "' + root.path + '" loaded successfully';
+
             SofaApplication.sceneSettings.addRecent(root.path);
-            SofaApplication.selectedComponent = SofaApplication.sofaScene.root() ;
+            SofaApplication.selectedComponent = SofaApplication.sofaScene.root();
             break;
         }
     }

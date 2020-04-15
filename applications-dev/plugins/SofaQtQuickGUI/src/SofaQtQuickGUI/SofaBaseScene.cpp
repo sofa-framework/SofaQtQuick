@@ -247,8 +247,9 @@ void SofaBaseScene::openScene(QUrl projectDir)
     options = QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
     QString title = "Choose scene file to open";
     QString filters = "SofaScene files (*.xml *.scn *.py *.pyscn)";
-    QUrl sceneUrl = QFileDialog::getOpenFileUrl(nullptr, title, projectDir, filters, nullptr, options);
-    this->setSource(sceneUrl);
+    QUrl sceneUrl = QFileDialog::getOpenFileUrl(nullptr, title, projectDir.toLocalFile(), filters, nullptr, options);
+    if (!sceneUrl.isEmpty() && sceneUrl.isValid())
+        this->setSource(sceneUrl);
 }
 
 void SofaBaseScene::reloadScene()
@@ -292,7 +293,7 @@ void SofaBaseScene::saveSceneAs(QUrl projectDir)
     options = QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly;
     QString title = "Save scene as";
     QString filters = "SofaScene files (*.xml *.scn *.py *.pyscn";
-    QUrl sceneUrl = QFileDialog::getSaveFileUrl(nullptr, title, projectDir, filters, nullptr, options);
+    QUrl sceneUrl = QFileDialog::getSaveFileUrl(nullptr, title, projectDir.toLocalFile(), filters, nullptr, options);
     saveScene(sceneUrl.path());
 }
 
@@ -322,7 +323,7 @@ bool LoaderProcess(SofaBaseScene* sofaScene)
 
     Node::SPtr n = sofaScene->sofaSimulation()->load(sofaScene->path().toLatin1().toStdString());
     sofaScene->setSofaRootNode(n);
-    if( sofaScene->sofaRootNode().get() )
+    if ( sofaScene->sofaRootNode().get() )
     {
         sofaScene->sofaSimulation()->init(sofaScene->sofaRootNode().get());
 
@@ -345,6 +346,7 @@ bool LoaderProcess(SofaBaseScene* sofaScene)
     else
     {
         sofaScene->setStatus(SofaBaseScene::Status::Error);
+        sofaScene->setSofaRootNode(sofa::simulation::Node::create("root"));
         return false;
     }
 }
@@ -1609,14 +1611,19 @@ private:
 
 void SofaBaseScene::checkForCanvases()
 {
-    GetCanvasVisitor visitor;
-    mySofaRootNode->executeVisitor(&visitor);
-    QList<QObject*> newCanvases = visitor.getCanvases();
-    if (newCanvases.size() != m_canvas.size() || visitor.needsRefresh)
-    {
-        m_canvas = newCanvases;
-        emit notifyCanvasChanged();
+    if (!mySofaRootNode.get()) {
+        m_canvas.clear();
+    } else {
+        GetCanvasVisitor visitor;
+        mySofaRootNode->executeVisitor(&visitor);
+        QList<QObject*> newCanvases = visitor.getCanvases();
+        if (newCanvases.size() != m_canvas.size() || visitor.needsRefresh)
+        {
+            m_canvas = newCanvases;
+        }
+        else return;
     }
+    emit notifyCanvasChanged();
 }
 
 SelectableSofaParticle* SofaBaseScene::pickParticle(const QVector3D& origin, const QVector3D& direction, double distanceToRay, double distanceToRayGrowth, const QStringList& tags, const QList<SofaBase*>& roots)

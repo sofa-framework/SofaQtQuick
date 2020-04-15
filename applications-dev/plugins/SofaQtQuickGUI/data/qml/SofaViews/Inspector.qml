@@ -51,6 +51,15 @@ Item {
                 Layout.preferredHeight: 20
                 Layout.fillWidth: true
                 color: "transparent"
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: {
+                        print( "Mouse area pressed in a rectangle.")
+                        root.forceActiveFocus()
+                    }
+                }
+
+
                 DropArea {
                     id: dropArea
                     anchors.fill: parent
@@ -114,8 +123,14 @@ Item {
 
                 ScrollBar.vertical: VerticalScrollbar {
                     id: scrollbar
+                    implicitWidth: 12
                     content: content
                 }
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: forceActiveFocus()
+                }
+
 
                 contentWidth: content.width; contentHeight: content.height
                 ColumnLayout {
@@ -175,11 +190,13 @@ Item {
                 if (item) {
                     if (item instanceof DynamicContent_Error)
                         item.errorMessage = "No inspector widget for this asset type"
-                    item.selectedAsset = Qt.binding(function() {
-                        if (root.selectedAsset)
-                            return root.selectedAsset
-                        else return null
-                    })
+                    else {
+                        item.selectedAsset = Qt.binding(function() {
+                            if (root.selectedAsset)
+                                return root.selectedAsset
+                            else return null
+                        })
+                    }
                     item.parent = assetArea
                 }
             }

@@ -44,7 +44,7 @@
 #include <sofa/helper/AdvancedTimer.h>
 #include <deque>
 
-namespace sofaqtquick::views
+namespace plop
 {
 
 
@@ -92,6 +92,67 @@ protected:
     int m_maxY;
 };
 
+
+/**
+ * @brief The AnimationSubStepData Internal class to store data for each step of the animation. Correspond to one AdvanceTimer::begin/end
+ * Data stored/computed will be step name, its time in ms and the corresponding % inside the whole step.
+ * the total ms and percentage it represent if this step has substeps.
+ * Buffer of AnimationSubStepData corresponding to its children substeps
+ */
+class AnimationSubStepData
+{
+public:
+    AnimationSubStepData(int level, std::string name, ctime_t start);
+    virtual ~AnimationSubStepData();
+
+    int m_level;
+    std::string m_name;
+    int m_nbrCall;
+    ctime_t m_start;
+    ctime_t m_end;
+
+    std::string m_tag;
+    SReal m_totalMs;
+    SReal m_totalPercent;
+    SReal m_selfMs;
+    SReal m_selfPercent;
+
+    void computeTimeAndPercentage(SReal invTotalMs);
+    // Method to get a given step duration (ms) given its name and parent name
+    SReal getStepMs(const std::string& stepName, const std::string& parentName);
+
+    sofa::helper::vector<AnimationSubStepData*> m_children;
+};
+
+/**
+ * @brief The AnimationStepData internal class to store all info of a animation step recorded by advanceTimer
+ * Data stored/computed will be the step number, and the total time in ms of the step.
+ * All Data will then be stored inside a tree of \sa AnimationSubStepData tree.
+ */
+class AnimationStepData
+{
+public:
+    // default constructor for empty data.
+    AnimationStepData()
+        : m_stepIteration(-1)
+        , m_totalMs(0.0)
+    {}
+
+    AnimationStepData(int step, const std::string& idString);
+
+    // Method to get a given step duration (ms) given its name and parent name
+    SReal getStepMs(const std::string& stepName, const std::string& parentName);
+
+    virtual ~AnimationStepData();
+    int m_stepIteration;
+    SReal m_totalMs;
+
+    sofa::helper::vector<AnimationSubStepData*> m_subSteps;
+protected:
+    bool processData(const std::string& idString);
+};
+
+
 /**
  * @brief The SofaWindowProfiler class
  * This class is a QDialog widget to display information recorded by AdvancedTimer mechanism
@@ -115,65 +176,6 @@ public:
 
     /// Method to clear all Data and reset graph
     void resetGraph();
-
-    /**
-     * @brief The AnimationSubStepData Internal class to store data for each step of the animation. Correspond to one AdvanceTimer::begin/end
-     * Data stored/computed will be step name, its time in ms and the corresponding % inside the whole step.
-     * the total ms and percentage it represent if this step has substeps.
-     * Buffer of AnimationSubStepData corresponding to its children substeps
-     */
-    class AnimationSubStepData
-    {
-    public:
-        AnimationSubStepData(int level, std::string name, ctime_t start);
-        virtual ~AnimationSubStepData();
-
-        int m_level;        
-        std::string m_name;
-        int m_nbrCall;
-        ctime_t m_start;
-        ctime_t m_end;
-
-        std::string m_tag;
-        SReal m_totalMs;
-        SReal m_totalPercent;
-        SReal m_selfMs;
-        SReal m_selfPercent;
-
-        void computeTimeAndPercentage(SReal invTotalMs);
-        // Method to get a given step duration (ms) given its name and parent name
-        SReal getStepMs(const std::string& stepName, const std::string& parentName);
-
-        sofa::helper::vector<AnimationSubStepData*> m_children;
-    };
-
-    /**
-     * @brief The AnimationStepData internal class to store all info of a animation step recorded by advanceTimer
-     * Data stored/computed will be the step number, and the total time in ms of the step.
-     * All Data will then be stored inside a tree of \sa AnimationSubStepData tree.
-     */
-    class AnimationStepData
-    {
-    public:
-        // default constructor for empty data.
-        AnimationStepData()
-            : m_stepIteration(-1)
-            , m_totalMs(0.0)
-        {}
-
-        AnimationStepData(int step, const std::string& idString);
-
-        // Method to get a given step duration (ms) given its name and parent name
-        SReal getStepMs(const std::string& stepName, const std::string& parentName);
-
-        virtual ~AnimationStepData();
-        int m_stepIteration;
-        SReal m_totalMs;
-
-        sofa::helper::vector<AnimationSubStepData*> m_subSteps;
-    protected:
-        bool processData(const std::string& idString);
-    };
 
 protected:
     /// Method called at creation to init the chart
@@ -237,6 +239,6 @@ protected:
 };
 
 
-} // namespace sofa
+} // namespace sofaqtquick
 
 #endif // SOFA_WINDOWPROFILER_H

@@ -53,6 +53,7 @@ public:
 
     Q_INVOKABLE QString getName() const;
     Q_INVOKABLE void setName(const QString& name);
+    virtual bool rename(const QString& /*name*/) { return false; }
     Q_INVOKABLE QString getClassName() const;
     Q_INVOKABLE QStringList getInheritedClassNames() const;
     Q_INVOKABLE QString getTemplateName() const;

@@ -5,6 +5,7 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 import SofaBasics 1.0
 import SofaWidgets 1.0
+import SofaApplication 1.0
 import Sofa.Core.SofaNode 1.0
 import QtQml 2.3
 
@@ -12,24 +13,26 @@ Menu {
     id: assetMenu
 
 
+    property bool showLoadScene
+    onShowLoadSceneChanged: {
+        reloadAssetModel()
+    }
 
     property var asset
     property string assetName: asset ? asset.getTypeString() : "()"
     property var parentNode
     property var basemodel
     property var sceneModel
-    property var sofaScene
     property var treeView
     property var selection
 
     title: "Asset Content " + assetName
 
-    onAssetChanged: {
+    function reloadAssetModel() {
         if (assetMenu.asset) {
-            menuRepeater.model = assetMenu.asset.scriptContent
+            menuRepeater.model = showLoadScene ? assetMenu.asset.scriptActions : assetMenu.asset.scriptContent
             if (menuRepeater.model === undefined) {
                 enabled = false
-                visible = false
             }
             else if (menuRepeater.model.length) {
                 enabled = true
@@ -39,22 +42,32 @@ Menu {
             }
             else {
                 enabled = false
-                visible = false
             }
         }
     }
 
-    MenuSeparator {}
+    onAssetChanged: {
+        reloadAssetModel()
+    }
+
     Repeater {
         id: menuRepeater
 
         delegate : MenuItem {
-            text: modelData["name"]
-            icon.source: getIconSource(modelData["type"])
+            text: {
+                if (modelData["type"] === "SofaScene")
+                    return modelData["name"] + " (add)"
+                else if (modelData["type"] === "SofaScene (load)")
+                    return modelData["name"] + " (load)"
+                else
+                    return modelData["name"]
+            }
+            font.bold: modelData["type"] === menuRepeater.model[0]["type"] && modelData["name"] === menuRepeater.model[0]["name"]
 
+            icon.source: getIconSource(modelData["type"])
             function getIconSource(type)
             {
-                if(type  === "SofaScene")
+                if(type  === "SofaScene (load)")
                     return "qrc:/icon/ICON_PYSCN.png";
                 if (type === "class")
                     return "qrc:/icon/ICON_PYTHON.png";
@@ -67,11 +80,24 @@ Menu {
                 return "qrc:/icon/ICON_PYTHON.png";
             }
 
+            ToolTip {
+                enabled: modelData["type"] === "SofaScene"
+                text: "add scene as new node in the current scene graph"
+            }
+
+            ToolTip {
+                enabled: modelData["type"] === "SofaScene (load)"
+                text: "Loads the scene in place of the current scene graph"
+            }
 
             function doCreate() {
-                var p = asset.create(parentNode, text)
+                if (modelData["type"] === "SofaScene (load)") {
+                    SofaApplication.sofaScene.source = asset.path
+                }
+
+                var p = asset.create(parentNode, modelData["name"])
                 if (!p){
-                    console.log("Unable to create and asset for: ", text)
+                    console.log("Unable to create and asset for: ", modelData["name"])
                     return
                 }
 

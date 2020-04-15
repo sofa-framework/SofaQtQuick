@@ -22,6 +22,7 @@ along with Sofa. If not, see <http://www.gnu.org/licenses/>.
 
 #include <SofaQtQuickGUI/config.h>
 #include <SofaQtQuickGUI/Bindings/SofaComponent.h>
+#include <SofaQtQuickGUI/Bindings/SofaNode.h>
 #include <QAbstractListModel>
 
 #include <sofa/helper/vector.h>
@@ -98,9 +99,14 @@ public:
     /// inherited from MessageHandler
     void process(Message &m) override;
 
-    int getMessageCount() const ;
+    int getMessageCount() const;
+    Q_INVOKABLE int getFatalCount() const { return m_fatals.size(); }
+    Q_INVOKABLE int getErrorCount() const { return m_errors.size(); }
+    Q_INVOKABLE int getWarningCount() const { return m_warnings.size(); }
+    Q_INVOKABLE int getDeprecatedCount() const { return m_deprecated.size(); }
 
     Q_INVOKABLE void clear() ;
+//    Q_INVOKABLE void rootMessages(sofaqtquick::bindings::SofaNode* root);
 
 signals:
     void messageCountChanged() ;
@@ -109,6 +115,11 @@ signals:
 
 private:
     sofa::helper::vector<Message> m_messages ;
+    sofa::helper::vector<Message*> m_fatals;
+    sofa::helper::vector<Message*> m_errors;
+    sofa::helper::vector<Message*> m_warnings;
+    sofa::helper::vector<Message*> m_deprecated;
+
 };
 
 }  // namespace console
