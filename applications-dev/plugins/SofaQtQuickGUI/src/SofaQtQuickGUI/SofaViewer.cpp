@@ -506,6 +506,42 @@ void SofaViewer::checkAndInit()
         myPickingShaderProgram->setParent(this);
     }
 
+    if(!myGridShaderProgram)
+    {
+        myGridShaderProgram = new QOpenGLShaderProgram();
+        myGridShaderProgram->create();
+        myGridShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+                                                     "void main(void)\n"
+                                                     "{\n"
+                                                     "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                                                     "}");
+        myGridShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+                                                     "#define N 15.0                                                      \
+                                                      #define NN (N*cos(iTime/4.0) + N + 10.0)                            \
+                                                                                                                          \
+                                                      void mainImage( out vec4 fragColor, in vec2 fragCoord )             \
+                                                      {                                                                   \
+                                                          fragCoord -= .5;                                                \
+                                                          float pW1 = 1.0;                                                \
+                                                          float pW2 = 3.0;                                                \
+                                                          float pix = 1.5;                                                \
+                                                                                                                          \
+                                                          //vec4 color = vec4(1, 0, 0, 1);                                \
+                                                                                                                          \
+                                                          vec2 p1 = abs(mod(fragCoord + pW1/2.0 + pix, NN) - pix);        \
+                                                          vec2 p2 = abs(mod(fragCoord + pW2/2.0 + pix, 10.0 * NN) - pix); \
+                                                                                                                          \
+                                                          float g1 = min(p1.x, p1.y) + 1.0 - pW1;                         \
+                                                          float g2 = min(p2.x, p2.y) + 1.0 - pW2;                         \
+                                                                                                                          \
+                                                          fragColor = vec4( min(g1, g2) );                                \
+                                                      }");
+        myGridShaderProgram->link();
+
+        myGridShaderProgram->moveToThread(thread());
+        myGridShaderProgram->setParent(this);
+    }
+
     /*
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
     if(visualParams)
@@ -519,6 +555,31 @@ void SofaViewer::checkAndInit()
         visualParams->displayFlags().setShowVisualModels(true);
     }
     */
+
+    glGenTextures(1, &tex);
+
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
+
+    int w = 128;
+    int h = 128;
+    unsigned char data[128 * 128];
+    for (int j = 0; j < h; ++j)
+        for (int i = 0; i < w; ++i) {
+            data[j * w + i] = (i < w / 64 || j < h / 64 ||
+                               i > w - (w / 64) || j > h - (h / 64)
+                               ? 200 : 0);
+        }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA8, w, h, 0, GL_ALPHA, GL_UNSIGNED_BYTE, (GLvoid*)data);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
 }
 
 void SofaViewer::drawVisuals() const
@@ -662,7 +723,99 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
 
     mySofaScene->prepareSceneForDrawing();
 
+    float distanceToPoint = 0.07f * projectOnPlane(QPointF(width(), height()),
+                                           QVector3D(0,0,0),
+                                           camera()->direction()).distanceToPoint(camera()->eye());
 
+    glDisable(GL_LIGHTING);
+    if (myDrawFrame)
+    {
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+
+        glLineWidth(2);
+        glBegin(GL_LINES);
+        glColor4f(1,0,0,1);
+        glVertex3f(distanceToPoint,0,0);
+        glVertex3f(1000,0,0);
+
+        glColor4f(0.5f,0,0,1);
+        glVertex3f(-distanceToPoint,0,0);
+        glVertex3f(-1000,0,0);
+
+
+        glColor4f(0,1,0,1);
+        glVertex3f(0,distanceToPoint,0);
+        glVertex3f(0,1000,0);
+
+        glColor4f(0,0.5f,0,1);
+        glVertex3f(0,-distanceToPoint,0);
+        glVertex3f(0,-1000,0);
+
+
+        glColor4f(0,0,1,1);
+        glVertex3f(0,0,distanceToPoint);
+        glVertex3f(0,0,1000);
+
+        glColor4f(0,0,0.5f,1);
+        glVertex3f(0,0,-distanceToPoint);
+        glVertex3f(0,0,-1000);
+        glEnd();
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+    }
+
+//    myGridShaderProgram->bind();
+    float gridSize = float(std::ceil(camera()->zFar()));
+    float texScale = sceneUnits() * gridSize * 2.0f;
+
+    glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //for the quick and dirty, immediate mode
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glColor4f(1,1,1,0.4f);
+//    glEnableClientState(GL_VERTEX_ARRAY);
+
+//    float gridVertices[] = {
+//        -gridSize, 0, -gridSize,
+//        gridSize, 0, -gridSize,
+//        gridSize, 0, gridSize,
+//        -gridSize, 0, gridSize
+//    };
+
+//    glVertexPointer(3, GL_FLOAT, 0, gridVertices);
+//    glDrawArrays(GL_QUADS, 0, 4);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glBegin(GL_QUADS);
+
+    glTexCoord2f(0, 0);
+    glVertex3f(-gridSize, 0, -gridSize);
+
+    glTexCoord2f(texScale, 0);
+    glVertex3f(gridSize, 0, -gridSize);
+
+    glTexCoord2f(texScale, texScale);
+    glVertex3f(gridSize, 0, gridSize);
+
+    glTexCoord2f(0,texScale);
+    glVertex3f(-gridSize, 0, gridSize);
+
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+
+//    myGridShaderProgram->release();
     for(Node* node : nodes)
     {
         if(!node)
@@ -1379,6 +1532,7 @@ void SofaViewer::internalRender(int width, int height) const
     if(!myCamera)
         return;
 
+
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     {
@@ -1433,10 +1587,12 @@ void SofaViewer::internalRender(int width, int height) const
     }
 
     /// draw the scene frame
-    if(myDrawFrame)
-        renderFrame();
+//    if(myDrawFrame)
+//        renderFrame();
 
     preDraw();
+
+
     drawEditorView(roots(),true,true);
     postDraw();
 }

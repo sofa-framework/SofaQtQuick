@@ -521,7 +521,6 @@ EditView
                                     previousColor = root.backgroundColor;
                                     color = previousColor;
                                 }
-
                                 onColorChanged: root.backgroundColor = color
 
                                 onAccepted: previousColor = color
@@ -538,9 +537,7 @@ EditView
                                 }
                             }
                         }
-
                         // background
-
                         Label {
                             Layout.fillWidth: true
                             text: "Frame"
@@ -557,8 +554,35 @@ EditView
                                 text: "Enable / Disable Scene Frame"
                             }
                         }
+                        Label {
+                            Layout.fillWidth: true
+                            text: "units: "
+                        }
+                        ComboBox {
+                            model: ["Milimetres (mm)", "Centimeters (cm)", "Decimeters (dm)", "Meters (m)", "Decameters (dam)", "Hectometers (hm)", "Kilometers (km)"]
+                            currentIndex: 3
+                            Component.onCompleted: {
+                                sceneUnits = 1
+                            }
+                            onCurrentTextChanged: {
+                                print( currentText)
+                                if (currentText.includes("(mm)"))
+                                    sceneUnits = 1000
+                                if (currentText.includes("(cm)"))
+                                    sceneUnits = 100
+                                if (currentText.includes("(dm)"))
+                                    sceneUnits = 10
+                                if (currentText.includes("(m)"))
+                                    sceneUnits = 1
+                                if (currentText.includes("(dam)"))
+                                    sceneUnits = 0.1
+                                if (currentText.includes("(hm)"))
+                                    sceneUnits = 0.01
+                                if (currentText.includes("(km)"))
+                                    sceneUnits = 0.001
+                            }
+                        }
                     }
-
                 }
                 // save screenshot / movie
 
