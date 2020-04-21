@@ -261,13 +261,14 @@ private:
     };
 
 protected:
-    sofa::core::visual::VisualParams* m_visualParams {nullptr};
-    QOpenGLFramebufferObject*   myFBO                {nullptr};
-    QOpenGLFramebufferObject*   myPickingFBO         {nullptr};
+    sofa::core::visual::VisualParams* m_visualParams     {nullptr};
+    QOpenGLFramebufferObject*   myFBO                    {nullptr};
+    QOpenGLFramebufferObject*   myPickingFBO             {nullptr};
     QOpenGLShaderProgram*       myHighlightShaderProgram {nullptr};
     QOpenGLShaderProgram*       myPickingShaderProgram   {nullptr};
-    SofaBaseScene*                  mySofaScene          {nullptr};
-    Camera*						myCamera             {nullptr};
+    QOpenGLShaderProgram*       myGridShaderProgram      {nullptr};
+    SofaBaseScene*              mySofaScene              {nullptr};
+    Camera*						myCamera                 {nullptr};
     QList<sofaqtquick::bindings::SofaBase*> myRoots;
     QColor                      myBackgroundColor;
     QUrl                        myBackgroundImageSource;
@@ -282,7 +283,7 @@ protected:
     bool                        myAutoPaint;
     float                       mySceneUnits;
 
-    QList<Manipulator*>                         m_manipulators;
+    QList<Manipulator*>         m_manipulators;
 
 
 };

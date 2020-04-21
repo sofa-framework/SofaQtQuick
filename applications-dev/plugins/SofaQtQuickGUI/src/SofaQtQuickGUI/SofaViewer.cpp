@@ -506,6 +506,42 @@ void SofaViewer::checkAndInit()
         myPickingShaderProgram->setParent(this);
     }
 
+    if(!myGridShaderProgram)
+    {
+        myGridShaderProgram = new QOpenGLShaderProgram();
+        myGridShaderProgram->create();
+        myGridShaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex,
+                                                     "void main(void)\n"
+                                                     "{\n"
+                                                     "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+                                                     "}");
+        myGridShaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment,
+                                                     "#define N 15.0                                                      \
+                                                      #define NN (N*cos(iTime/4.0) + N + 10.0)                            \
+                                                                                                                          \
+                                                      void mainImage( out vec4 fragColor, in vec2 fragCoord )             \
+                                                      {                                                                   \
+                                                          fragCoord -= .5;                                                \
+                                                          float pW1 = 1.0;                                                \
+                                                          float pW2 = 3.0;                                                \
+                                                          float pix = 1.5;                                                \
+                                                                                                                          \
+                                                          //vec4 color = vec4(1, 0, 0, 1);                                \
+                                                                                                                          \
+                                                          vec2 p1 = abs(mod(fragCoord + pW1/2.0 + pix, NN) - pix);        \
+                                                          vec2 p2 = abs(mod(fragCoord + pW2/2.0 + pix, 10.0 * NN) - pix); \
+                                                                                                                          \
+                                                          float g1 = min(p1.x, p1.y) + 1.0 - pW1;                         \
+                                                          float g2 = min(p2.x, p2.y) + 1.0 - pW2;                         \
+                                                                                                                          \
+                                                          fragColor = vec4( min(g1, g2) );                                \
+                                                      }");
+        myGridShaderProgram->link();
+
+        myGridShaderProgram->moveToThread(thread());
+        myGridShaderProgram->setParent(this);
+    }
+
     /*
     sofa::core::visual::VisualParams* visualParams = sofa::core::visual::VisualParams::defaultInstance();
     if(visualParams)
@@ -735,6 +771,7 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
         glPopMatrix();
     }
 
+//    myGridShaderProgram->bind();
     float gridSize = float(std::ceil(camera()->zFar()));
     float texScale = sceneUnits() * gridSize * 2.0f;
 
@@ -747,6 +784,19 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
     glBindTexture(GL_TEXTURE_2D, tex);
 
     glColor4f(1,1,1,0.4f);
+//    glEnableClientState(GL_VERTEX_ARRAY);
+
+//    float gridVertices[] = {
+//        -gridSize, 0, -gridSize,
+//        gridSize, 0, -gridSize,
+//        gridSize, 0, gridSize,
+//        -gridSize, 0, gridSize
+//    };
+
+//    glVertexPointer(3, GL_FLOAT, 0, gridVertices);
+//    glDrawArrays(GL_QUADS, 0, 4);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+
     glBegin(GL_QUADS);
 
     glTexCoord2f(0, 0);
@@ -765,6 +815,7 @@ void SofaViewer::drawEditorView(const QList<sofaqtquick::bindings::SofaBase*>&  
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
 
+//    myGridShaderProgram->release();
     for(Node* node : nodes)
     {
         if(!node)
