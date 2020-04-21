@@ -113,7 +113,15 @@ def buildDataParams(datas, indent, scn):
                         if data.getName() != "depend":
                             v = repr(data.value)
                             if "DataFileName" in str(data):
-                                s += ", " + data.getName() + "='" + os.path.relpath(v[1:-1], os.path.dirname(SofaApplication.getSceneSource())) + "'"
+                                if os.path.exists(os.path.dirname(SofaApplication.getScene()) + "/" + v[1:-1]):
+                                    # If the path exists & is relative
+                                    s += ", " + data.getName() + "='" + v[1:-1] + "'"
+                                elif os.path.relpath(v[1:-1], os.path.dirname(SofaApplication.getScene())):
+                                    # If the path can be expressed relative to the scene file:
+                                    s += ", " + data.getName() + "='" + os.path.relpath(v[1:-1], os.path.dirname(SofaApplication.getScene())) + "'"
+                                else:
+                                    # fallback (relative path, but not relative to scene file)
+                                    s += ", " + data.getName() + "='" + v[1:-1] + "'"
                             else:
                                 s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
     return s
