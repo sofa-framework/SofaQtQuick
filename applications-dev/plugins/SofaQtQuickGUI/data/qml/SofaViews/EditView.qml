@@ -542,7 +542,6 @@ EditView
                             Layout.fillWidth: true
                             text: "Frame"
                         }
-
                         CheckBox {
                             id: frameSwitch
                             Layout.alignment: Qt.AlignRight
@@ -554,11 +553,13 @@ EditView
                                 text: "Enable / Disable Scene Frame"
                             }
                         }
+
                         Label {
                             Layout.fillWidth: true
                             text: "units: "
                         }
                         ComboBox {
+                            Layout.fillWidth: true
                             model: ["Milimetres (mm)", "Centimeters (cm)", "Decimeters (dm)", "Meters (m)", "Decameters (dam)", "Hectometers (hm)", "Kilometers (km)"]
                             currentIndex: 3
                             Component.onCompleted: {
