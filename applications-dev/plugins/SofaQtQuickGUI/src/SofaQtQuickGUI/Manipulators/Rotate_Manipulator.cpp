@@ -147,16 +147,19 @@ void Rotate_Manipulator::setValue(const QQuaternion& value)
             if (rotData->getName() == "direction")
             {
                 data->setValue(toVec3d(value.rotatedVector(startDirection)));
+                data->setPersistent(true);
             }
             else
             {
                 Vec3d e = toQuaternion(value).toEulerVector();
                 data->setValue(Vec3d(toDegrees(e.x()), toDegrees(e.y()), toDegrees(e.z())));
+                data->setPersistent(true);
             }
         }
         else
         {
             dynamic_cast<sofa::Data<Quaternion>*>(rotData)->setValue(toQuaternion(value));
+            rotData->setPersistent(true);
         }
     }
     if (m_particleIndex == -1)
@@ -178,6 +181,7 @@ void Rotate_Manipulator::setValue(const QQuaternion& value)
         typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 5, double(value.z()));
         typeinfo->setScalarValue(valueptr, size_t(m_particleIndex) * typeinfo->BaseType()->size() + 6, double(value.scalar()));
         obj->rawBase()->findData("position")->endEditVoidPtr();
+        obj->rawBase()->findData("position")->setPersistent(true);
     }
 }
 

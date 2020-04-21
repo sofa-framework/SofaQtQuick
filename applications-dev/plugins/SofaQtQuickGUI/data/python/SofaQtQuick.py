@@ -107,7 +107,7 @@ def buildDataParams(datas, indent, scn):
                 relPath = os.path.relpath(data.getParent().getPathName(), data.getOwner().getContext().getPathName())
                 s += ", " + data.getName()+ "='@" + relPath +"'"
         else:
-            if data.getName() not in ["name","prefabname", "docstring"] and data.isPersistent():
+            if data.getName() not in ["name","prefabname", "docstring"] and (data.isPersistent() or data.isRequired()):
                 if " " not in data.getName() and data.getName() != "Help":
                     if data.getName() != "modulepath":
                         if data.getName() != "depend":
