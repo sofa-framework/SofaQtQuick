@@ -69,14 +69,11 @@ Row {
         DropArea {
             id: dropArea
             anchors.fill: parent
-            onEntered: {
-                if(  drag.source.url && !textField.readOnly)
-                    drag.accept(false)
-            }
             onDropped: {
-                if(drag.source.url && !textField.readOnly)
+                if (drag.source.asset.path && !textField.readOnly)
                 {
-                    textField.text = cleanDisplayPath(drag.source.localPath)
+                    textField.text = cleanDisplayPath(drag.source.asset.path)
+                    sofaData.value = textField.text ;
                 }
             }
         }
