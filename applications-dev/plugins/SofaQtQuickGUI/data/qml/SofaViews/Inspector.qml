@@ -105,6 +105,25 @@ Item {
                     CheckBox {
                         id : showAll
                     }
+                    Button {
+                        id : customizeButton
+                        hoverEnabled: true
+                        ColorImage {
+                            width: 13
+                            height: 13
+                            anchors.centerIn: parent
+                            source: "qrc:/icon/edit.png"
+                            fillMode: Image.PreserveAspectFit
+                            color: customizeButton.hovered ? "darkgrey" : "#393939"
+                        }
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        onClicked: {
+                            var file = SofaApplication.inspectorsDirectory() + SofaApplication.selectedComponent.getClassName() + ".qml";
+                            SofaApplication.createInspector(file)
+                            SofaApplication.openInEditor(file)
+                        }
+                    }
                 }
             }
 
@@ -146,26 +165,11 @@ Item {
                                 return null
 
                             if (showAll.checked)
-                                return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
+                                return "qrc:/CustomInspectorWidgets/BaseInspector.qml"
 
-                            var ui = Qt.createComponent("qrc:/CustomInspectorWidgets/" + component.getClassName() + "Inspector.qml")
-                            if (ui.status === Component.Ready)
-                            {
-                                return ui
-                            }
-                            else {
-                                var list = component.getInheritedClassNames()
-
-                                for (var i = 0 ; i < list.length; ++i) {
-                                    ui = Qt.createComponent("qrc:/CustomInspectorWidgets/" + list[i] + "Inspector.qml")
-                                    if (ui.status === Component.Ready) {
-                                        return ui
-                                    }
-                                }
-                            }
-                            return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
+                            return SofaApplication.inspectorsDirectory() + component.getClassName() + ".qml"
                         }
-                        sourceComponent: getWidget(SofaApplication.selectedComponent)
+                        source: getWidget(SofaApplication.selectedComponent)
                         onLoaded: {
                             item.showAll = Qt.binding(function(){ return showAll.checked})
                         }

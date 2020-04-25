@@ -106,6 +106,7 @@ public:
     Q_INVOKABLE QString loadFile(const QString& filename);
     Q_SLOT bool saveFile(const QString& destination, const QString& data);
     Q_SLOT bool copyFile(const QString& source, const QString& destination);
+    Q_INVOKABLE bool fileExists(const QString& filepath);
 
     Q_SLOT QImage screenshotComponent(QQuickItem* item, const QSize& forceSize = QSize()) const;
     Q_SLOT QImage screenshotComponent(QQmlComponent* component, const QSize& forceSize = QSize()) const; // \warning created object screenshot will be linked to the global context hence the component bindings (apart from the ones using the component context and the global context) will not be kept, prefer the version of screenshotComponent that need an item you created yourself if you need bindings with a parent context
@@ -131,6 +132,12 @@ public:
 
     Q_INVOKABLE QString binaryDirectory() const;
     Q_INVOKABLE void saveScreenshot(const QString& path);
+
+    Q_INVOKABLE QString templatesDirectory() const;
+    Q_INVOKABLE QString inspectorsDirectory() const;
+    Q_INVOKABLE QString assetsDirectory() const;
+
+    Q_INVOKABLE bool createInspector(QString file);
 
     Q_INVOKABLE QObject* instanciateURL(const QUrl& url);
 
