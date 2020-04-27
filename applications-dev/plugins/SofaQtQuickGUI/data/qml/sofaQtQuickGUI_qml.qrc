@@ -134,7 +134,6 @@
         <file>SofaViews/ExampleView.qml</file>
         <file>SofaWidgets/AssetView.qml</file>
         <file>AssetView.qml</file>
-        <file>CustomInspectorWidgets/MeshLoaderInspector.qml</file>
         <file>CustomInspectorWidgets/BaseInspector.qml</file>
         <file>CustomInspectorWidgets/qmldir</file>
         <file>SofaViews/CamView.qml</file>

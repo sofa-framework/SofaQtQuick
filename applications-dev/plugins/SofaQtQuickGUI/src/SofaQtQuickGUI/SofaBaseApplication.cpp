@@ -625,14 +625,50 @@ bool SofaBaseApplication::createInspector(QString file)
         f.open(QIODevice::WriteOnly);
         if (f.isOpen()) {
             f.write("import QtQuick 2.0                              \n"
-                       "import CustomInspectorWidgets 1.0               \n"
-                       "                                                \n"
-                       "CustomInspector {                               \n"
-                       "    dataDict: {                                 \n"
-                       "        \"Base\": [\"name\",\"componentState\"] \n"
-                       "    }                                           \n"
-                       "}                                               \n"
-                       );
+                    "import CustomInspectorWidgets 1.0               \n"
+                    "                                                \n"
+                    "CustomInspector {                               \n"
+                    "    dataDict: {                                 \n"
+                    "        \"Base\": [\"name\",\"componentState\"] \n"
+                    "    }                                           \n"
+                    "}                                               \n"
+                    );
+            f.close();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SofaBaseApplication::createAssetTemplate(QString file)
+{
+    if (!fileExists(file)) {
+        QFile f(file);
+        f.open(QIODevice::WriteOnly);
+        if (f.isOpen()) {
+            f.write("#!/usr/bin/python3                                                                                                          \n"
+                    "                                                                                                                            \n"
+                    "import Sofa.Core                                                                                                            \n"
+                    "import subprocess                                                                                                           \n"
+                    "import os                                                                                                                   \n"
+                    "                                                                                                                            \n"
+                    "# type_string: short asset description string                                                                               \n"
+                    "type_string = 'Unknown file type'                                                                                           \n"
+                    "                                                                                                                            \n"
+                    "# icon_path: url of the asset icon                                                                                          \n"
+                    "icon_path = 'qrc:/icon/ICON_FILE_BLANK.png'                                                                                 \n"
+                    "                                                                                                                            \n"
+                    "# Used for Python scripts, determines whether it is sofa content or not                                                     \n"
+                    "is_sofa_content = False                                                                                                     \n"
+                    "                                                                                                                            \n"
+                    "# Method called to instantiate the asset in the scene graph.                                                                \n"
+                    "#def create(node, assetName, assetPath):                                                                                    \n"
+                    "#    pass                                                                                                                   \n"
+                    "                                                                                                                            \n"
+                    "# Method called to open a third party tool when clicking on 'Open in Editor'. Opens in favorite file editor by default      \n"
+                    "#def openThirdParty(assetPath):                                                                                             \n"
+                    "#    pass                                                                                                                   \n"
+                    );
             f.close();
             return true;
         }

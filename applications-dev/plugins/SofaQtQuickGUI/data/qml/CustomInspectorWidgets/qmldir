@@ -1,4 +1,3 @@
 module CustomInspectorWidgets
 CustomInspector 1.0 CustomInspector.qml
 BaseInspector 1.0 BaseInspector.qml
-MeshLoaderInspector 1.0 MeshLoaderInspector.qml

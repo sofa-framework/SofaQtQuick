@@ -54,7 +54,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onPressed: {
-                        print( "Mouse area pressed in a rectangle.")
+                        print("Mouse area pressed in a rectangle.")
                         root.forceActiveFocus()
                     }
                 }
@@ -165,11 +165,25 @@ Item {
                                 return null
 
                             if (showAll.checked)
-                                return "qrc:/CustomInspectorWidgets/BaseInspector.qml"
+                                return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
 
-                            return SofaApplication.inspectorsDirectory() + component.getClassName() + ".qml"
+                            var ui = Qt.createComponent(SofaApplication.inspectorsDirectory() + component.getClassName() + ".qml")
+                            if (ui.status === Component.Ready) {
+                                return ui
+                            }
+                            else {
+                                var list = component.getInheritedClassNames()
+
+                                for (var i = 0 ; i < list.length; ++i) {
+                                    ui = Qt.createComponent(SofaApplication.inspectorsDirectory() + list[i] + ".qml")
+                                    if (ui.status === Component.Ready) {
+                                        return ui
+                                    }
+                                }
+                            }
+                            return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
                         }
-                        source: getWidget(SofaApplication.selectedComponent)
+                        sourceComponent: getWidget(SofaApplication.selectedComponent)
                         onLoaded: {
                             item.showAll = Qt.binding(function(){ return showAll.checked})
                         }

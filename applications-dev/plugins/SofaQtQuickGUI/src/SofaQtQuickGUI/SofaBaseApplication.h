@@ -138,6 +138,7 @@ public:
     Q_INVOKABLE QString assetsDirectory() const;
 
     Q_INVOKABLE bool createInspector(QString file);
+    Q_INVOKABLE bool createAssetTemplate(QString file);
 
     Q_INVOKABLE QObject* instanciateURL(const QUrl& url);
 
