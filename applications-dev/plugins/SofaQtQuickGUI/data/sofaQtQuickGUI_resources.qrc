@@ -12,7 +12,6 @@
         <file>config/classic.ini</file>
         <file>config/fullview.ini</file>
         <file>config/quadview.ini</file>
-        <file>python/BaseHeader.py</file>
         <file>python/PythonConsole.py</file>
         <file>icon/downArrow.png</file>
         <file>icon/rightArrow.png</file>
