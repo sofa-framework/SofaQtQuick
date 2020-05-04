@@ -15,7 +15,7 @@ namespace sofaqtquick
 TemplateAsset::TemplateAsset(std::string path, std::string extension)
     : Asset(path, extension)
 {
-    std::string modulepath = sofa::helper::Utils::getExecutableDirectory() + "/config/templates/";
+    std::string modulepath = sofa::helper::Utils::getExecutableDirectory() + "/config/templates/assets/";
     std::string modulename =  extension + "Asset.py";
     m_templatePath = modulepath + modulename;
 

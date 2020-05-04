@@ -29,7 +29,7 @@ GridView {
         position: cornerPositions[corner]
         showIndicators: listModel.columnCount() === 1
         value: dataValue
-        onValueChanged: {
+        onValueEditted: {
             listModel.setData(_index, value, 0)
         }
     }
