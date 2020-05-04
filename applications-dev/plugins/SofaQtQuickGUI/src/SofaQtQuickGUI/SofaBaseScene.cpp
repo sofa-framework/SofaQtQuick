@@ -119,6 +119,7 @@ using sofaqtquick::SofaBaseApplication;
 #include <QGuiApplication>
 #include <QOffscreenSurface>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -266,6 +267,12 @@ void SofaBaseScene::saveScene(QString sceneFile)
         file = sceneFile;
     }
     SofaNode* root = new sofaqtquick::SofaNode(DAGNode::SPtr(static_cast<DAGNode*>(mySofaRootNode->toBaseNode())));
+    if (root->getData("time")->getValue() > 0)
+    {
+        QString title("Warning: This scene has already been execued");
+        if (QMessageBox::question(nullptr, title, tr("Are your sure that you want to save an executed scene?")) == QMessageBox::StandardButton::No)
+            return;
+    }
     QFile::copy(file, file + ".backup");
     sofapython3::PythonEnvironment::executePython([file, root]()
     {

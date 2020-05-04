@@ -85,6 +85,41 @@ Item //
         SofaBaseApplicationSingleton.copyFile(src, dest)
     }
 
+    function fileExists(file)
+    {
+        return SofaBaseApplicationSingleton.fileExists(file);
+    }
+
+    function binaryDirectory()
+    {
+        return SofaBaseApplicationSingleton.binaryDirectory();
+    }
+
+    function templatesDirectory()
+    {
+        return SofaBaseApplicationSingleton.templatesDirectory();
+    }
+
+    function assetsDirectory()
+    {
+        return SofaBaseApplicationSingleton.assetsDirectory();
+    }
+
+    function inspectorsDirectory()
+    {
+        return SofaBaseApplicationSingleton.inspectorsDirectory();
+    }
+
+    function createInspector(file)
+    {
+        return SofaBaseApplicationSingleton.createInspector(file);
+    }
+
+    function createAssetTemplate(file)
+    {
+        return SofaBaseApplicationSingleton.createAssetTemplate(file);
+    }
+
     /// Returns the absolute position of the mouse in a mouseArea
     /// Takes a MouseArea as argument
     function getAbsolutePosition(node) {

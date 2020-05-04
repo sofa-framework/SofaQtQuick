@@ -41,10 +41,10 @@ Row {
     property SofaData sofaData
 
     function cleanDisplayPath(fileUrl) {
-        if (fileUrl === SofaApplication.currentProject.rootDir + "/")
+        if (fileUrl === SofaApplication.currentProject.rootDir.toString().replace("qrc:", "") + "/")
             var path = "./"
         else {
-            path = fileUrl.replace(SofaApplication.currentProject.rootDir, "")
+            path = fileUrl.replace(SofaApplication.currentProject.rootDir.toString().replace("qrc:", ""), "")
             if (path[0] === "/") {
                 path = path.substring(1, path.length)
             }
@@ -69,14 +69,11 @@ Row {
         DropArea {
             id: dropArea
             anchors.fill: parent
-            onEntered: {
-                if(  drag.source.url && !textField.readOnly)
-                    drag.accept(false)
-            }
             onDropped: {
-                if(drag.source.url && !textField.readOnly)
+                if (drag.source.asset.path && !textField.readOnly)
                 {
-                    textField.text = cleanDisplayPath(drag.source.localPath)
+                    textField.text = cleanDisplayPath(drag.source.asset.path)
+                    sofaData.value = textField.text ;
                 }
             }
         }
@@ -155,6 +152,7 @@ Row {
             }else{
                 url = "file://"+SofaApplication.currentProject.rootDir
             }
+            print (url)
             if (sofaData.isDirectory()) {
                 var fileUrl = SofaApplication.currentProject.chooseProjectDir("Please Choose a directory:", url).toString().replace("file://", "")
                 if (fileUrl !== "") fileUrl += "/"
@@ -163,7 +161,9 @@ Row {
                 fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url).toString().replace("file://", "")
             if (fileUrl === "") return
             sofaData.value = fileUrl;
-            if (fileUrl.startsWith(SofaApplication.currentProject.rootDir)) {
+            print(fileUrl)
+            print(SofaApplication.currentProject.rootDir)
+            if (fileUrl.startsWith(SofaApplication.currentProject.rootDir.toString().replace("qrc:", ""))) {
                 textField.text = cleanDisplayPath(fileUrl)
             } else {
                 textField.text = fileUrl

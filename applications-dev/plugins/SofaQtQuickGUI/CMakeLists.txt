@@ -13,7 +13,6 @@ find_package(SofaPython3 QUIET)
 if (SofaPython3_FOUND)
     set (SOFAPYTHON_LIBRARY SofaPython3)
     include_directories(${SofaPython3_INCLUDE_DIRS})
-    #  add_definitions("-DSOFAQTQUICK_WITH_SOFAPYTHON3")
 else()
     message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
 endif ()
@@ -206,17 +205,23 @@ list(APPEND SOURCE_FILES
     src/SofaQtQuickGUI/Models/ShapeGraphModel.cpp
     )
 
+set(SCRIPT_TEMPLATES
+    data/config/templates/scripts/emptyController.py
+    data/config/templates/scripts/emptyDataEngine.py
+    data/config/templates/scripts/emptyForceField.py
+    data/config/templates/scripts/emptyPrefab.py
+    data/config/templates/scripts/emptyScene.py
+    data/config/templates/scripts/emptyCanvas.qml
+    )
+
 set(ASSET_TEMPLATES
-    data/config/templates/MeshAsset.py
-    data/config/templates/PythonAsset.py
-    data/python/templates/emptyController.py
-    data/python/templates/emptyDataEngine.py
-    data/python/templates/emptyForceField.py
-    data/python/templates/emptyPrefab.py
-    data/python/templates/emptyScene.py
-    data/python/templates/openInBlender.py
-    data/python/templates/stlAsset.py
-    data/python/templates/stlAsset.qml
+    data/config/templates/assets/openInBlender.py
+    data/config/templates/assets/stlAsset.py
+    data/config/templates/assets/stlAsset.qml
+    )
+
+set(INSPECTOR_TEMPLATES
+    data/config/templates/inspectors/MeshSTLLoader.qml
     )
 
 
@@ -247,7 +252,6 @@ set(EXTRA_FILES
     )
 
 set(PYTHON_FILES
-    data/python/BaseHeader.py
     data/python/PythonConsole.py
     data/python/SofaQtQuick.py
     )
@@ -325,8 +329,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${NODEEDITOR_LIBRARY})
 sofa_install_libraries(LIBRARIES ${NODEEDITOR_LIBRARY})
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${NODEEDITOR_INCLUDE_PATH}>")
 
-file(COPY ${ASSET_TEMPLATES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates)
-install(FILES ${ASSET_TEMPLATES} DESTINATION bin/config/templates)
+file(COPY     ${SCRIPT_TEMPLATES}     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/scripts)
+file(COPY     ${ASSET_TEMPLATES}      DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/assets)
+file(COPY     ${INSPECTORS_TEMPLATES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/inspectors)
+install(FILES ${SCRIPT_TEMPLATES}     DESTINATION bin/config/templates/scripts)
+install(FILES ${ASSET_TEMPLATES}      DESTINATION bin/config/templates/assets)
+install(FILES ${INSPECTORS_TEMPLATES} DESTINATION bin/config/templates/inspectors)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "-DSOFA_BUILD_SOFAQTQUICKGUI")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")

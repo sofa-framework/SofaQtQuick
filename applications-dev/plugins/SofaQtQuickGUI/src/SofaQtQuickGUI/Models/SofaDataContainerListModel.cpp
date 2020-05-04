@@ -208,7 +208,7 @@ bool SofaDataContainerListModel::setData(const QModelIndex &index, const QVarian
         typeinfo->setScalarValue(m_sofaData->rawData()->beginEditVoidPtr(),
                                  row * size_t(nCols()) + col,
                                  value.toReal());
-        m_sofaData->rawData()->endEditVoidPtr();
+        m_sofaData->rawData()->endEditVoidPtr();        
         m_sofaData->_connect();
     }
     else if (typeinfo->Integer()) {
@@ -221,6 +221,7 @@ bool SofaDataContainerListModel::setData(const QModelIndex &index, const QVarian
     }
     else
         return  false;
+    m_sofaData->setPersistent(true);
     return true;
 }
 

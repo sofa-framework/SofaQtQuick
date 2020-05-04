@@ -201,6 +201,13 @@ void SofaBaseApplication::openInEditor(const QString& fullpath, const int lineno
 
 
     QString path = QFileInfo(fullpath).absoluteFilePath();
+
+    QFileInfo finfo(path);
+    if (!finfo.exists()) {
+        QFile file(path);
+        file.open(QIODevice::NewOnly);
+        if (file.isOpen()) file.close();
+    }
     QString line = std::to_string(lineno).c_str();
 
     QString editor = settings.value("DefaultEditor").toString();
@@ -357,6 +364,12 @@ bool SofaBaseApplication::copyFile(const QString& source, const QString& destina
 
         return QFile::copy(source, destination);
     }
+}
+
+bool SofaBaseApplication::fileExists(const QString &filepath)
+{
+    QFileInfo finfo(filepath);
+    return finfo.exists();
 }
 
 QImage SofaBaseApplication::screenshotComponent(QQuickItem* item, const QSize& forceSize) const
@@ -582,6 +595,88 @@ QString SofaBaseApplication::binaryDirectory() const
 {
     return QCoreApplication::applicationDirPath() + "/";
 }
+
+QString SofaBaseApplication::templatesDirectory() const
+{
+    return QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/");
+}
+
+QString SofaBaseApplication::inspectorsDirectory() const
+{
+    QString templatesDir = templatesDirectory();
+    QDir d(templatesDir);
+    if (!d.exists("inspectors"))
+        d.mkdir("inspectors");
+    return templatesDir + "inspectors/";
+}
+
+QString SofaBaseApplication::assetsDirectory() const
+{
+    QString templatesDir = templatesDirectory();
+    QDir d(templatesDir);
+    if (!d.exists("assets")) d.mkdir("assets");
+    return templatesDir + "assets/";
+}
+
+bool SofaBaseApplication::createInspector(QString file)
+{
+    if (!fileExists(file)) {
+        QFile f(file);
+        f.open(QIODevice::WriteOnly);
+        if (f.isOpen()) {
+            f.write("import QtQuick 2.0                              \n"
+                    "import CustomInspectorWidgets 1.0               \n"
+                    "                                                \n"
+                    "CustomInspector {                               \n"
+                    "    dataDict: {                                 \n"
+                    "        \"Base\": [\"name\",\"componentState\"] \n"
+                    "    }                                           \n"
+                    "}                                               \n"
+                    );
+            f.close();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SofaBaseApplication::createAssetTemplate(QString file)
+{
+    if (!fileExists(file)) {
+        QFile f(file);
+        f.open(QIODevice::WriteOnly);
+        if (f.isOpen()) {
+            f.write("#!/usr/bin/python3                                                                                                          \n"
+                    "                                                                                                                            \n"
+                    "import Sofa.Core                                                                                                            \n"
+                    "import subprocess                                                                                                           \n"
+                    "import os                                                                                                                   \n"
+                    "                                                                                                                            \n"
+                    "# type_string: short asset description string                                                                               \n"
+                    "type_string = 'Unknown file type'                                                                                           \n"
+                    "                                                                                                                            \n"
+                    "# icon_path: url of the asset icon                                                                                          \n"
+                    "icon_path = 'qrc:/icon/ICON_FILE_BLANK.png'                                                                                 \n"
+                    "                                                                                                                            \n"
+                    "# Used for Python scripts, determines whether it is sofa content or not                                                     \n"
+                    "is_sofa_content = False                                                                                                     \n"
+                    "                                                                                                                            \n"
+                    "# Method called to instantiate the asset in the scene graph.                                                                \n"
+                    "#def create(node, assetName, assetPath):                                                                                    \n"
+                    "#    pass                                                                                                                   \n"
+                    "                                                                                                                            \n"
+                    "# Method called to open a third party tool when clicking on 'Open in Editor'. Opens in favorite file editor by default      \n"
+                    "#def openThirdParty(assetPath):                                                                                             \n"
+                    "#    pass                                                                                                                   \n"
+                    );
+            f.close();
+            return true;
+        }
+    }
+    return false;
+}
+
+
 
 void SofaBaseApplication::saveScreenshot(const QString& path)
 {

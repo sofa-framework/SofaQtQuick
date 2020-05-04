@@ -41,6 +41,7 @@ class Asset : public QObject
     Q_PROPERTY(bool isSofaContent READ getIsSofaContent NOTIFY isSofaContentChanged)
     Q_PROPERTY(QString path READ path NOTIFY pathChanged)
     Q_PROPERTY(bool isScene READ isScene NOTIFY isSceneChanged)
+    Q_PROPERTY(QString extension READ extension NOTIFY extensionChanged)
 
     QDateTime getLastModified() { return m_lastModified; }
     void setLastModified(const QDateTime& t) { m_lastModified = t; }
@@ -50,6 +51,7 @@ class Asset : public QObject
     Q_INVOKABLE virtual QUrl getIconPath() { return QUrl("qrc:/icon/ICON_FILE_BLANK"); }
     Q_INVOKABLE virtual bool getIsSofaContent() { return false; }
     Q_INVOKABLE QString path() { return QString(m_path.c_str()); }
+    Q_INVOKABLE QString extension() { return QString(m_extension.c_str()); }
 
 protected:
 
@@ -58,6 +60,7 @@ protected:
     Q_SIGNAL void pathChanged(const QString& type);
     Q_SIGNAL void isSofaContentChanged(bool val);
     Q_SIGNAL void isSceneChanged(bool);
+    Q_SIGNAL void extensionChanged(const QString& ext);
 
 
     typedef std::map<std::string, BaseAssetLoader *> LoaderMap;

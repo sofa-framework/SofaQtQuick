@@ -199,5 +199,30 @@ Menu {
             }
         }
     }
-    
+
+    MenuSeparator {}
+
+    Loader {
+        sourceComponent: !fileIsDir && model && model.extension !== "py" ? customizeAssetComponent : null
+    }
+
+    Component {
+        id: customizeAssetComponent
+
+            MenuItem {
+            id: customizeAsset
+            text: "Edit asset actions..."
+
+            onTriggered: {
+                var assetTemplateFile = SofaApplication.assetsDirectory() + model.extension + "Asset.py"
+                SofaApplication.createAssetTemplate(assetTemplateFile);
+                SofaApplication.openInEditor(assetTemplateFile);
+            }
+
+            ToolTip {
+                text: "Open Asset template in editor"
+                description: "Asset templates are scripts determining how assets are instantiated in the scene graph."
+            }
+        }
+    }
 }

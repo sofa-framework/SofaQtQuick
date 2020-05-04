@@ -54,7 +54,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onPressed: {
-                        print( "Mouse area pressed in a rectangle.")
+                        print("Mouse area pressed in a rectangle.")
                         root.forceActiveFocus()
                     }
                 }
@@ -105,6 +105,25 @@ Item {
                     CheckBox {
                         id : showAll
                     }
+                    Button {
+                        id : customizeButton
+                        hoverEnabled: true
+                        ColorImage {
+                            width: 13
+                            height: 13
+                            anchors.centerIn: parent
+                            source: "qrc:/icon/edit.png"
+                            fillMode: Image.PreserveAspectFit
+                            color: customizeButton.hovered ? "darkgrey" : "#393939"
+                        }
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        onClicked: {
+                            var file = SofaApplication.inspectorsDirectory() + SofaApplication.selectedComponent.getClassName() + ".qml";
+                            SofaApplication.createInspector(file)
+                            SofaApplication.openInEditor(file)
+                        }
+                    }
                 }
             }
 
@@ -148,16 +167,15 @@ Item {
                             if (showAll.checked)
                                 return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
 
-                            var ui = Qt.createComponent("qrc:/CustomInspectorWidgets/" + component.getClassName() + "Inspector.qml")
-                            if (ui.status === Component.Ready)
-                            {
+                            var ui = Qt.createComponent(SofaApplication.inspectorsDirectory() + component.getClassName() + ".qml")
+                            if (ui.status === Component.Ready) {
                                 return ui
                             }
                             else {
                                 var list = component.getInheritedClassNames()
 
                                 for (var i = 0 ; i < list.length; ++i) {
-                                    ui = Qt.createComponent("qrc:/CustomInspectorWidgets/" + list[i] + "Inspector.qml")
+                                    ui = Qt.createComponent(SofaApplication.inspectorsDirectory() + list[i] + ".qml")
                                     if (ui.status === Component.Ready) {
                                         return ui
                                     }
