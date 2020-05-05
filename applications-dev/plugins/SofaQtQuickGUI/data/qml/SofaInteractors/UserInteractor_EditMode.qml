@@ -165,14 +165,13 @@ UserInteractor {
         })
 
         addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-        })
-        addMousePressedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
-            if (ctrlPressed) {
+            if (sofaViewer.getManipulator("Snapping_Manipulator").enabled === true) {
                 var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
                 if(selectable && selectable.sofaComponent) {
                     model.sofaData = SofaApplication.selectedComponent.findData("position")
                     var p = selectable.position
                     model.insertRow([p.x, p.y, p.z])
+                    return
                 }
             }
             var particle = sofaViewer.pickParticle(Qt.point(mouse.x, mouse.y));

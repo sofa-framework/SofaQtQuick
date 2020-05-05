@@ -393,6 +393,20 @@ MenuBar {
         }
 
     }
+    Menu {
+        Preferences {
+            id: prefs
+        }
+
+        title: "&Tools"
+        MenuItem {
+            text: "Preferences...";
+            enabled : true
+            onTriggered: {
+                prefs.visible = true
+            }
+        }
+    }
 
     Menu {
         title: "&Help"

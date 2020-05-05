@@ -100,4 +100,29 @@ Column {
             description: "Rotates the selected item (default: local reference frame)\n Shortcut: Shift+Space, R"
         }
     }
+
+    ManipulatorMenu {
+        id: snapMenu
+        property string manipulatorName: "Snapping_Manipulator"
+        manipulator: sofaViewer.getManipulator(manipulatorName)
+
+        onOptionChanged: {
+            manipulator = setManipulator(manipulatorName)
+        }
+
+        model: null
+        image: "qrc:/icon/ICON_SNAP_MODE.png"
+        Shortcut {
+            context: Qt.ApplicationShortcut
+            sequence: "Shift+Space, S";
+            onActivated: {
+                setManipulator(translateMenu.manipulatorName)
+            }
+        }
+        ToolTip {
+            visible: translateMenu.containsMouse
+            text: "Snap"
+            description: "Provided that a MechanicalObject is selected, snaps new DOFs on visual geometries\n Shortcut: Shift+Space, S"
+        }
+    }
 }

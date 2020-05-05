@@ -618,6 +618,16 @@ QString SofaBaseApplication::assetsDirectory() const
     return templatesDir + "assets/";
 }
 
+QString SofaBaseApplication::callbacksDirectory() const
+{
+    QString templatesDir = templatesDirectory();
+    QDir d(templatesDir);
+
+    if (!d.exists("callbacks")) d.mkdir("callbacks");
+    sofapython3::PythonEnvironment::addPythonModulePath(templatesDir.toStdString() + "callbacks/");
+    return templatesDir + "callbacks/";
+}
+
 bool SofaBaseApplication::createInspector(QString file)
 {
     if (!fileExists(file)) {
@@ -676,6 +686,26 @@ bool SofaBaseApplication::createAssetTemplate(QString file)
     return false;
 }
 
+bool SofaBaseApplication::createCallback(QString file)
+{
+    if (!fileExists(file)) {
+        QFile f(file);
+        f.open(QIODevice::WriteOnly);
+        if (f.isOpen()) {
+            f.write("#!/usr/bin/python3\n"
+                    "\n"
+                    "import Sofa.Core\n"
+                    "\n"
+                    "\n"
+                    "def convert(src, dst):\n"
+                    "    dst = src.value\n"
+                    );
+            f.close();
+            return true;
+        }
+    }
+    return false;
+}
 
 
 void SofaBaseApplication::saveScreenshot(const QString& path)
@@ -1042,12 +1072,14 @@ void SofaBaseApplication::ApplyBackupSettings(const QString& backupSettingsPath)
 
 void SofaBaseApplication::ApplyDefaultSettings(const QString& defaultSettingsPath, const QString& backupSettingsPath)
 {
-    QString finalDefaultSettingsPath = ":/config/default.ini";
+    std::cout << "applying default settings...:" << std::endl;
+    QString finalDefaultSettingsPath = QString::fromStdString(sofa::helper::Utils::getExecutableDirectory() + "/config/templates/layouts/default.ini");
     if(!defaultSettingsPath.isEmpty())
         finalDefaultSettingsPath = defaultSettingsPath;
 
     // copy properties of default.ini into the backup and current settings if the settings file does not exist
     QSettings defaultSettings(finalDefaultSettingsPath, QSettings::IniFormat);
+    std::cout << defaultSettings.fileName().toStdString() << std::endl;
     QSettings settings;
     settings.clear();
 
@@ -1301,7 +1333,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
     bool optionConfigFile = false;
 
     //default config file
-    QString configPath = QCoreApplication::applicationDirPath() + "/config/";
+    QString configPath = QCoreApplication::applicationDirPath() + "/config";
     //apply the app settings or use the default.ini settings if it is the first time the user launch the application or use the app.backup.ini in case of application crash
     QSettings::setPath(QSettings::Format::IniFormat, QSettings::Scope::UserScope, configPath);
 
@@ -1319,7 +1351,7 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
         else
         {
             //second search in the config template dir (with or without the .ini suffix)
-            QString qrcPath = ":/config/";
+            QString qrcPath = ":/config/templates/layouts/";
             QString configName = guiConfigOptionValue.section(".", 0, 0) + ".ini";
             qDebug() << qrcPath + configName;
             QFileInfo fileInfo2(qrcPath + configName);
@@ -1339,11 +1371,18 @@ bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &
 
     if (optionConfigFile)
     {
-        //copy content of the given config file into the "system", as this one cant be changed later on
+        // copy content of the given layout config file into the "system" config file, under the "layout" group, as the given layout must stay read only
         QSettings optionConfigSettings(configPath, QSettings::Format::IniFormat);
         QSettings settings;
-        settings.clear();
-
+        for (auto group : settings.childGroups())
+        {
+            if (group.startsWith("ui"))
+            {
+                settings.beginGroup(group);
+                settings.remove("");
+                settings.endGroup();
+            }
+        }
         CopySettings(optionConfigSettings, settings);
     }
 

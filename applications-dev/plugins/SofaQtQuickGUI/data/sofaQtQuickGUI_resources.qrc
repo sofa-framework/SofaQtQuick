@@ -106,5 +106,6 @@
         <file>icon/breakLink.png</file>
         <file>icon/edit.png</file>
         <file>icon/clear.png</file>
+        <file>icon/ICON_SNAP_MODE.png</file>
     </qresource>
 </RCC>

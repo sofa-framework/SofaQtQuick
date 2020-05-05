@@ -38,8 +38,12 @@ using sofa::defaulttype::AbstractTypeInfo;
 #include "../DataHelper.h"
 using sofaqtquick::helper::convertDataInfoToProperties;
 
+#include <QMessageBox>
+#include <QInputDialog>
+
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 using sofaqtquick::SofaBaseApplication;
+#include <SofaPython3/PythonFactory.h>
 
 namespace sofaqtquick::bindings::_sofadata_
 {
@@ -180,6 +184,60 @@ bool SofaData::setLink(const QString& path)
         return status;
     }
 
+    return false;
+}
+
+/// This method tries to link 2 datafields of incompatible types by using a python conversion macro
+/// The function first tries to import a module named "srcType2dstType"
+/// If the module exists, create a callback in dstData's Owner, named dstDataName_srcType2dstType,
+///  that links srcData to dstData by calling the conversion macro in the python script
+/// Otherwise, we let the user create the macro in the callbacksDirectory for later use.
+bool SofaData::tryLinkingIncompatibleTypes(const QString& path)
+{
+    Base* owner = rawData()->getOwner();
+    BaseNode* root = nullptr;
+    if (owner->toBaseNode() != nullptr)
+        root = owner->toBaseNode()->getRoot();
+    if (owner->toBaseObject() != nullptr)
+        root = owner->toBaseObject()->getContext()->getRootContext()->toBaseNode();
+    BaseData* srcData = sofaqtquick::helper::findData(root, path);
+    if (srcData)
+    {
+        SofaBaseApplication::Instance()->callbacksDirectory(); // just making sure the pythonPath contains the callbacks folder...
+        BaseData* dstData = rawData();
+        bool ret = false;
+        sofapython3::PythonEnvironment::executePython([srcData, dstData, &ret](){
+            QString srcType = srcData->getValueTypeString().c_str();
+            QString dstType = dstData->getValueTypeString().c_str();
+            auto modulename = srcType.replace("<", "_").replace(">", "_").toStdString() + "2" + dstType.replace("<", "_").replace(">", "_").toStdString();
+            sofapython3::py::module m = sofapython3::py::module::import(modulename.c_str());
+            if (!m.is_none()) {
+                dstData->getOwner()->addUpdateCallback(dstData->getName() + "_" + modulename,  {srcData}, [modulename, srcData, dstData]() {
+                    sofapython3::PythonEnvironment::executePython([modulename, srcData, dstData](){
+                        sofapython3::py::module m = sofapython3::py::module::import(modulename.c_str());
+                        m.attr("convert")(sofapython3::PythonFactory::toPython(srcData),
+                                          sofapython3::PythonFactory::toPython(dstData));
+                    });
+                    return sofa::core::objectmodel::ComponentState::Valid;
+                }, {dstData});
+                ret = true;
+            }
+        });
+        if (ret)
+            return true;
+        QString srcType = srcData->getValueTypeString().c_str();
+        QString dstType = dstData->getValueTypeString().c_str();
+        QString title("Warning: You're trying to link incompatible types. ");
+        title = title + srcType + " != " + dstType ;
+        if (QMessageBox::question(nullptr, title, tr("Do you want to create a PythonDataTrackerEngine?")) == QMessageBox::StandardButton::Yes)
+        {
+            auto sa = SofaBaseApplication::Instance();
+            auto modulename = srcType.replace("<", "_").replace(">", "_") + "2" + dstType.replace("<", "_").replace(">", "_");
+
+            sa->createCallback(sa->callbacksDirectory() + modulename + ".py");
+            sa->openInEditor(sa->callbacksDirectory() + modulename + ".py");
+        }
+    }
     return false;
 }
 

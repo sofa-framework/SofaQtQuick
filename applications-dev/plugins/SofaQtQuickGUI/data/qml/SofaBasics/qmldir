@@ -58,3 +58,4 @@ SofaLinkItem 1.0 SofaLinkItem.qml
 SofaCanvas 1.0 SofaCanvas.qml
 VerticalScrollbar 1.0 VerticalScrollbar.qml
 Slider 1.0 Slider.qml
+TabView 1.0 TabView.qml

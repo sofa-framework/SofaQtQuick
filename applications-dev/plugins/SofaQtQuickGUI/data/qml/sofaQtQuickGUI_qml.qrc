@@ -154,5 +154,10 @@
         <file>SofaBasics/VerticalScrollbar.qml</file>
         <file>SofaBasics/Slider.qml</file>
         <file>SofaWidgets/Profiler.qml</file>
+        <file>SofaWidgets/Preferences.qml</file>
+        <file>SofaWidgets/ConfigPreferences.qml</file>
+        <file>SofaWidgets/ExternalToolsPreferences.qml</file>
+        <file>SofaWidgets/TemplatesPreferences.qml</file>
+        <file>SofaBasics/TabView.qml</file>
     </qresource>
 </RCC>

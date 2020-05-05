@@ -26,7 +26,10 @@ Button {
     property bool useHoverOpacity: true
     Image {
         id: image
-        anchors.fill: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        height: parent.height
+        width: parent.height
         source: iconSource
         fillMode: Image.PreserveAspectFit
         Loader {

@@ -93,6 +93,7 @@ public:
     Q_INVOKABLE void setPersistent(bool);
     Q_INVOKABLE bool setValue(const QVariant& getValue);
     Q_INVOKABLE bool setLink(const QString& path);
+    Q_INVOKABLE bool tryLinkingIncompatibleTypes(const QString& path);
     Q_INVOKABLE QString getLinkPath()const;
     Q_INVOKABLE bool isLinkValid(const QString& path);
     Q_INVOKABLE void setParent(SofaData* parent);

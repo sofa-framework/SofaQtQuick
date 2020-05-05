@@ -68,6 +68,7 @@ set(SOURCE_FILES
     src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Scale_Manipulator.cpp
     src/SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.cpp
+    src/SofaQtQuickGUI/Manipulators/Snapping_Manipulator.cpp
     src/SofaQtQuickGUI/Models/SofaDataListModel.cpp
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.cpp
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.cpp
@@ -151,6 +152,7 @@ set(HEADER_FILES
     src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.h
     src/SofaQtQuickGUI/Manipulators/Scale_Manipulator.h
     src/SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h
+    src/SofaQtQuickGUI/Manipulators/Snapping_Manipulator.h
     src/SofaQtQuickGUI/Models/SofaDataListModel.h
     src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h
     src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.h
@@ -224,6 +226,12 @@ set(INSPECTOR_TEMPLATES
     data/config/templates/inspectors/MeshSTLLoader.qml
     )
 
+set(CONFIG_TEMPLATES
+    data/config/default.ini
+    data/config/classic.ini
+    data/config/fullview.ini
+    data/config/quadview.ini
+    )
 
 
 add_definitions("-DSOFAQTQUICKGUI_QML_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")
@@ -239,13 +247,6 @@ list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaViews/")
 set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
-
-set(CONFIG_FILES
-    data/config/default.ini
-    data/config/classic.ini
-    data/config/fullview.ini
-    data/config/quadview.ini
-    )
 
 set(EXTRA_FILES
     src/SofaQtQuickGUI/QMLUI/Readme.md
@@ -315,7 +316,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "-fsized-deallocation")
 endif ()
 
-add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
+add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaComponentBase SofaMeshCollision
     Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine Qt5::Charts stdc++fs QmlUI)
 #target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
@@ -332,9 +333,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${NODEEDITO
 file(COPY     ${SCRIPT_TEMPLATES}     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/scripts)
 file(COPY     ${ASSET_TEMPLATES}      DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/assets)
 file(COPY     ${INSPECTORS_TEMPLATES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/inspectors)
-install(FILES ${SCRIPT_TEMPLATES}     DESTINATION bin/config/templates/scripts)
-install(FILES ${ASSET_TEMPLATES}      DESTINATION bin/config/templates/assets)
-install(FILES ${INSPECTORS_TEMPLATES} DESTINATION bin/config/templates/inspectors)
+file(COPY     ${CONFIG_TEMPLATES}     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/layouts)
+install(FILES ${SCRIPT_TEMPLATES}         DESTINATION bin/config/templates/scripts)
+install(FILES ${ASSET_TEMPLATES}          DESTINATION bin/config/templates/assets)
+install(FILES ${INSPECTORS_TEMPLATES}     DESTINATION bin/config/templates/inspectors)
+install(FILES ${CONFIG_TEMPLATES}         DESTINATION bin/config/templates/layouts)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "-DSOFA_BUILD_SOFAQTQUICKGUI")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")

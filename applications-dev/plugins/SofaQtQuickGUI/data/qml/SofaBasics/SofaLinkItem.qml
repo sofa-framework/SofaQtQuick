@@ -37,6 +37,12 @@ ColumnLayout {
             Keys.forwardTo: [listView.currentItem, listView]
 
             onEditingFinished: {
+                if (!listView.currentItem && sofaData.tryLinkingIncompatibleTypes(txtField.text)) {
+                    txtField.borderColor = "#393939"
+                    focus = false
+                    return;
+                }
+
                 txtField.text = listView.currentItem.text
                 setLinkIfValid(listView.currentItem.text)
 

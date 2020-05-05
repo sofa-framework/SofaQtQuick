@@ -28,6 +28,8 @@ using sofaqtquick::Translate_Manipulator;
 using sofaqtquick::Rotate_Manipulator;
 #include <SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h>
 using sofaqtquick::Viewpoint_Manipulator;
+#include <SofaQtQuickGUI/Manipulators/Snapping_Manipulator.h>
+using sofaqtquick::Snapping_Manipulator;
 
 #include <sofa/simulation/Node.h>
 #include <sofa/core/visual/VisualParams.h>
@@ -1699,6 +1701,8 @@ Manipulator* SofaViewer::getManipulator(const QString &name)
         m = new Rotate_Manipulator(this);
     else if (name == "Viewpoint_Manipulator")
         m = new Viewpoint_Manipulator(this);
+    else if (name == "Snapping_Manipulator")
+        m = new Snapping_Manipulator(this);
     if (m != nullptr)
         m_manipulators.push_back(m);
     return m;

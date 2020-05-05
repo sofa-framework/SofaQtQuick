@@ -18,3 +18,7 @@ EditModeManipulators 1.0 EditModeManipulators.qml
 CameraModeManipulators 1.0 CameraModeManipulators.qml
 ManipulatorMenu 1.0 ManipulatorMenu.qml
 Profiler 1.0 Profiler.qml
+Preferences 1.0 Preferences.qml
+ConfigPreferences 1.0 ConfigPreferences.qml
+TemplatesPreferences 1.0 TemplatesPreferences.qml
+ExternalToolsPreferences 1.0 ExternalToolsPreferences.qml
