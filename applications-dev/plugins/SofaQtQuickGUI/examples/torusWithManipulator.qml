@@ -192,7 +192,7 @@ SofaSceneInterface {
         onSelectedComponentChanged: {
             var selectedComponent = sofaScene.selectedComponent;
             if(selectedComponent) {
-                var selectedComponentName = sofaScene.selectedComponent.name();
+                var selectedComponentName = sofaScene.selectedComponent.getName();
 
                 // deduce the component index from its name
                 currentIndex = Number(selectedComponentName.slice(selectedComponentName.lastIndexOf("_") + 1));

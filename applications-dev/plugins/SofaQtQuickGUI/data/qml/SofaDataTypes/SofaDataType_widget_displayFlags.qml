@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.2
 import SofaBasics 1.0
@@ -32,7 +32,7 @@ TreeView {
     implicitWidth: 300
     implicitHeight: flickableItem.contentHeight
 
-    property var dataObject: null
+    property var sofaData: null
 
     frameVisible: false
     headerVisible: false
@@ -46,7 +46,7 @@ TreeView {
     model: SofaDisplayFlagsTreeModel {
         id: displayFlagsModel
 
-        displayFlagsData: root.dataObject ? root.dataObject.sofaData : null
+        displayFlagsData: root.sofaData ? root.sofaData : null
     }
 
     Component.onCompleted: expandAll();

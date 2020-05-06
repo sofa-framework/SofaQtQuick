@@ -11,4 +11,8 @@ SofaDataType_Material 1.0 SofaDataType_Material.qml
 SofaDataType_poissonRatio.notimplementedyet 1.0 SofaDataType_poissonRatio.notimplementedyet.qml
 SofaDataType_string 1.0 SofaDataType_string.qml
 SofaDataType_widget_displayFlags 1.0 SofaDataType_widget_displayFlags.qml
-SofaDataType_RGBAColor 1.0 SofaDataTyp_RGBAColor.qml
+SofaDataType_RGBAColor 1.0 SofaDataType_RGBAColor.qml
+SofaDataType_ComponentState 1.0 SofaDataType_ComponentState.qml
+DynamicContainerView 1.0 DynamicContainerView.qml
+StaticContainerView 1.0 StaticContainerView.qml
+

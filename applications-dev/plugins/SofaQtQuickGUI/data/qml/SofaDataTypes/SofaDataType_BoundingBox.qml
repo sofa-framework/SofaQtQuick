@@ -17,188 +17,210 @@ You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
+import SofaBasics 1.0
+import SofaColorScheme 1.0
+import Sofa.Core.SofaData 1.0
 
-ColumnLayout {
+RowLayout {
     id: root
-    spacing: 0
+    spacing: -1
+    property SofaData sofaData: null
+    implicitWidth: parent.implicitWidth
+    property var values: []
+    onSofaDataChanged: {
+        var valStrings = sofaData.value.split(' ')
+        for (var i = 0 ; i < valStrings.length ; i++) {
+            values.push(Number(valStrings[i]))
+        }
+        spinBox0.value = values[0]
+        spinBox1.value = values[1]
+        spinBox2.value = values[2]
+        spinBox3.value = values[3]
+        spinBox4.value = values[4]
+        spinBox5.value = values[5]
+    }
 
-    property var dataObject: null
 
-    property var values: undefined !== dataObject.value ? dataObject.value.split(' ') : []
-
-    RowLayout {
+    ColumnLayout {
+        spacing: -1
         Layout.fillWidth: true
-        Layout.fillHeight: true
-        spacing: 0
-
-        Text {
-            id: minLabel
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
+        Label {
+            Layout.preferredWidth: 30
+            color: "black"
             text: "Min"
         }
-
-        TextField {
-            id: textField0
+        Label {
+            Layout.preferredWidth: 30
+            color: "black"
+            text: "Max"
+        }
+    }
+    ColumnLayout {
+        spacing: -1
+        Layout.fillWidth: true
+        SpinBox {
+            id: spinBox0
             property int index: 0
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
 
-            //validator: DoubleValidator {decimals: 3}
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
-
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField0
-                property: "text"
-                value: root.values[textField0.index]
-                when: !dataObject.readOnly
+                target: spinBox0
+                property: "value"
+                value: root.values[spinBox0.index]
             }
+
+            position: cornerPositions["TopLeft"]
         }
+        SpinBox {
+            id: spinBox3
+            property int index: 3
 
-        TextField {
-            id: textField1
-            property int index: 1
+            Layout.fillWidth: true
 
-            Layout.fillWidth: true;
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
 
-            //validator: DoubleValidator {decimals: 3}
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
-
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField1
-                property: "text"
-                value: root.values[textField1.index]
-                when: !dataObject.readOnly
-            }
-        }
-
-        TextField {
-            id: textField2
-            property int index: 2
-
-            Layout.fillWidth: true;
-
-            //validator: DoubleValidator {decimals: 3}
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
-
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
-                }
+                target: spinBox3
+                property: "value"
+                value: root.values[spinBox3.index]
             }
 
-            Binding {
-                target: textField2
-                property: "text"
-                value: root.values[textField2.index]
-                when: !dataObject.readOnly
-            }
+            position: cornerPositions["BottomLeft"]
         }
     }
 
-    RowLayout {
+
+
+    ColumnLayout {
+        spacing: -1
         Layout.fillWidth: true
-        spacing: 0
+        SpinBox {
+            id: spinBox1
+            property int index: 1
 
-        Text {
-            id: maxLabel
-            text: "Max"
-            Layout.preferredWidth: Math.max(minLabel.implicitWidth, maxLabel.implicitWidth)
-        }
+            Layout.fillWidth: true
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
 
-        TextField {
-            id: textField3
-            property int index: 3
-
-            Layout.fillWidth: true;
-
-            //validator: DoubleValidator {decimals: 3}
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
-
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField3
-                property: "text"
-                value: root.values[textField3.index]
-                when: !dataObject.readOnly
+                target: spinBox1
+                property: "value"
+                value: root.values[spinBox1.index]
             }
-        }
 
-        TextField {
-            id: textField4
+            position: cornerPositions["Middle"]
+        }
+        SpinBox {
+            id: spinBox4
             property int index: 4
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            //validator: DoubleValidator {decimals: 3}
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField4
-                property: "text"
-                value: root.values[textField4.index]
-                when: !dataObject.readOnly
+                target: spinBox4
+                property: "value"
+                value: root.values[spinBox4.index]
             }
-        }
 
-        TextField {
-            id: textField5
+            position: cornerPositions["Middle"]
+        }
+    }
+
+
+    ColumnLayout {
+        spacing: -1
+        Layout.fillWidth: true
+        SpinBox {
+            id: spinBox2
+            property int index: 2
+
+            Layout.fillWidth: true
+
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
+
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
+                }
+            }
+
+            Binding {
+                target: spinBox2
+                property: "value"
+                value: root.values[spinBox2.index]
+            }
+
+            position: cornerPositions["TopRight"]
+        }
+        SpinBox {
+            id: spinBox5
             property int index: 5
 
-            Layout.fillWidth: true;
+            Layout.fillWidth: true
 
-            //validator: DoubleValidator {decimals: 3}
-            readOnly: dataObject.readOnly
-            enabled: !dataObject.readOnly
+            showIndicators: false
+            readOnly: sofaData.properties.readOnly
 
-            onTextChanged: {
-                if(!dataObject.readOnly) {
-                    root.values[index] = text;
-                    dataObject.value = root.values.join(' ');
+            value: root.values[index]
+            onValueChanged: {
+                if(!sofaData.properties.readOnly) {
+                    root.values[index] = value;
+                    sofaData.value = root.values.join(' ');
                 }
             }
 
             Binding {
-                target: textField5
-                property: "text"
-                value: root.values[textField5.index]
-                when: !dataObject.readOnly
+                target: spinBox5
+                property: "value"
+                value: root.values[spinBox5.index]
             }
+
+            position: cornerPositions["BottomRight"]
         }
     }
 }

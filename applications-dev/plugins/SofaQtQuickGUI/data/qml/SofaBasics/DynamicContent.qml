@@ -1,5 +1,6 @@
-/*
+/*******************************************************************
 Copyright 2015, Anatoscope
+Copyright 2019, CNRS
 
 This file is part of sofaqtquick.
 
@@ -15,350 +16,335 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-import QtQuick 2.0
-import QtQuick.Controls 1.0
+*******************************************************************/
+/*******************************************************************
+ * Contributors:
+ *   - Olivier Carre (Anatoscope) initial version
+ *   - damien.marchal@univ-lille.fr (CNRS) deep refactoring
+ *******************************************************************/
+import QtQuick 2.5
+import QtQuick.Controls 2.4
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import QtQuick.Controls.Styles 1.2
 import QtQuick.Window 2.2
-import Qt.labs.folderlistmodel 2.1
 import Qt.labs.settings 1.0
 import SofaApplication 1.0
+import SofaViewListModel 1.0
+import SofaBasics 1.0
+import SofaColorScheme 1.0
 
+//import LiveFileMonitorSingleton 1.0
+
+
+//TODO(dmarchal 10/01/2019): move the file model into a separated file
+//TODO(dmarchal 10/01/2019): move the drop down menu into a separated file
+
+/// DynamicContent is a widget that contains one of the SofaViews
+/// with a menu to select which is the view to display.
 Item {
-    id: root
-    clip: true
 
+    /// Refreshing the view every time a file is modified
+    //property var files : LiveFileMonitorSingleton.files
+    //onFilesChanged: {
+    //if (checkBoxEditting.checked)
+    //    loaderLocation.refresh(comboBox.model.get(comboBox.currentIndex))
+    //}
+
+
+    //TODO(dmarchal: 10/01/2019 move that into an utilitary file)
+    //TODO(dmarchal: 28/01/2019 unify the function so it can work with any object having a "lenght" property
+    function findIndex(model, criteria) {
+        for(var i = 0; i < model.count(); ++i) { if (criteria(model.get(i))) return i }
+        return null
+    }
+
+    /// SofaViewListModel is a Singleton that hold the list of views (name, path)
+    /// to expose into the view selector. The model is implemented in C++
+    /// and inherit from QAbstractItemModel
+    property QtObject listModel: SofaViewListModel
+
+    property string defaultContentName
+    property string currentContentName
+    property string sourceDir: "qrc:/SofaViews"
+    property int    contentUiId: 0
+    property var    properties
+
+    property int uiId: bootstrap()
+    property int previousUiId: uiId
+
+    readonly property alias contentItem: loaderLocation.contentItem
     readonly property bool isDynamicContent: true
 
-    property int uiId: 0
-    property int previousUiId: uiId
-    onUiIdChanged: {
+    id: root
+    clip: true
+    anchors.fill: parent
+
+    onUiIdChanged:
+    {
         SofaApplication.uiSettings.replace(previousUiId, uiId);
     }
 
-    QtObject {
-        id: d
-
-        property Timer timer: Timer {
-            interval: 200
-            running: false
-            repeat: false
-            onTriggered: errorLabel.visible = true
-        }
-    }
-
+    /// This stores the setting for this view.
     Settings {
         id: uiSettings
         category: 0 !== root.uiId ? "ui_" + root.uiId : "dummy"
 
-        property string sourceDir
-        property string defaultContentName
-        property string currentContentName
-        property int    contentUiId
+        property alias sourceDir : root.sourceDir
+        property alias defaultContentName : root.defaultContentName
+        property alias currentContentName : root.currentContentName
+        property alias contentUiId : root.contentUiId
     }
 
-    function init() {
-        uiSettings.contentUiId          = Qt.binding(function() {return root.contentUiId;});
-        uiSettings.sourceDir            = Qt.binding(function() {return root.sourceDir;});
-        uiSettings.defaultContentName   = Qt.binding(function() {return root.defaultContentName;});
-        uiSettings.currentContentName   = Qt.binding(function() {return root.currentContentName;});
-    }
-
-    function load() {
-        if(0 === uiId)
+    /// Initialize the view.
+    function bootstrap()
+    {
+        // If the view is created from one that already has a parent set we duplicate
+        /// it.
+        if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId)
+        {
+            root.uiId = parent.contentUiId;
             return;
+        }
 
-        root.contentUiId        = uiSettings.contentUiId;
-        root.sourceDir          = uiSettings.sourceDir;
-        root.defaultContentName = uiSettings.defaultContentName;
-        root.currentContentName = uiSettings.currentContentName;
+        /// Otherwise we create a new view ID.
+        root.uiId = SofaApplication.uiSettings.generate();
     }
 
-    function setNoSettings() {
-        SofaApplication.uiSettings.remove(uiId);
-        uiId = 0;
-    }
-
-    property string defaultContentName
-    property string currentContentName
-    property string sourceDir: "qrc:/SofaWidgets"
-    property int    contentUiId: 0
-
-    property var    properties
-
-    onCurrentContentNameChanged: folderListModel.update()
-    Component.onCompleted: {
-        if(0 === root.uiId) {
-            if(parent && undefined !== parent.contentUiId && 0 !== parent.contentUiId) {
-                root.uiId = parent.contentUiId;
-                load();
-            }
-            else
-                root.uiId = SofaApplication.uiSettings.generate();
-        }
-        else
-            load();
-
-        init();
-    }
-
-    FolderListModel {
-        id: folderListModel
-        nameFilters: ["*.qml"]
-        showDirs: false
-        showFiles: false
-        sortField: FolderListModel.Name
-        folder: root.sourceDir
-
-        property var delayedUpdateTimer: Timer {
-            interval: 1
-            repeat: false
-            running: true
-            onTriggered: folderListModel.showFiles = true;
-        }
-
-        onCountChanged: update();
-
-        property var sceneConnections: Connections {
-            target: SofaApplication.sofaScene
-            onReadyChanged: if(SofaApplication.sofaScene.ready) folderListModel.refresh();
-        }
-
-        function refresh() {
-            showFiles = false;
-            showFiles = true;
-        }
-
-        function update() {
-            listModel.clear();
-
-            var contentSet = false;
-
-            var previousIndex = comboBox.currentIndex;
-            for(var i = 0; i < count; ++i)
-            {
-                var fileBaseName = get(i, "fileBaseName");
-                var filePath = get(i, "filePath").toString();
-                if(-1 !== folder.toString().indexOf("qrc:"))
-                    filePath = "qrc" + filePath;
-
-                listModel.insert(i, {"fileBaseName": fileBaseName, "filePath": filePath});
-
-                if(0 === root.currentContentName.localeCompare(fileBaseName)) {
-                    comboBox.currentIndex = i;
-                    contentSet = true;
-                }
-            }
-
-            if(!contentSet) {
-                for(var i = 0; i < count; ++i)
-                {
-                    var fileBaseName = get(i, "fileBaseName");
-
-                    if(0 === defaultContentName.localeCompare(fileBaseName)) {
-                        comboBox.currentIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            if(count > 0 && previousIndex === comboBox.currentIndex)
-                loaderLocation.refresh();
-        }
-    }
-
-    readonly property alias contentItem: loaderLocation.contentItem
     Item {
         anchors.fill: parent
 
-        ColumnLayout {
-            anchors.fill: parent
-            spacing: 0
+        /////////////////////////////////////////////////////////
+        // The toolbar containing a dropdown menu and some
+        // button and checkbox.
+        /////////////////////////////////////////////////////////
+        ToolBar {
+            id: toolBar
+//            color: "#757575"
+//            border.color: "black"
 
-            Item {
-                id: loaderLocation
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                visible: contentItem
+//            borderWidth: 1
+//            borderGradient: Gradient {
+//                GradientStop { position: 0.0; color: "#7a7a7a" }
+//                GradientStop { position: 1.0; color: "#5c5c5c" }
+//            }
+            height: 24
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
 
-                property Item contentItem
+            function anyDescendantHasActiveFocus(ancestor) {
+                let item = ancestor.Window.activeFocusItem;
+                while (item) {
+                    if (item === ancestor)
+                        return true;
+                    item = item.parent;
+                }
+                return false;
+            }
 
-                onContentItemChanged: {
-                    refreshStandbyItem();
+            background: Rectangle {
+                id: background
+                color: toolBar.hovered || activeFocus|| toolBar.anyDescendantHasActiveFocus(loaderLocation) ? "#959595" : "#686868"
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: background.forceActiveFocus()
                 }
 
-                property string errorMessage
-                function refresh() {
-                    if(-1 === comboBox.currentIndex || comboBox.currentIndex >= listModel.count)
-                        return;
 
-                    var currentData = listModel.get(comboBox.currentIndex);
-                    if(currentData) {
-                        var source = listModel.get(comboBox.currentIndex).filePath;
-
-                        if(root.currentContentName === comboBox.currentText && null !== loaderLocation.contentItem)
-                            return;
-
-                        root.currentContentName = comboBox.currentText;
-
-                        if(loaderLocation.contentItem) {
-                            if(undefined !== loaderLocation.contentItem.setNoSettings)
-                                loaderLocation.contentItem.setNoSettings();
-
-                            loaderLocation.contentItem.destroy();
-                            loaderLocation.contentItem = null;
-                        }
-
-                        var contentComponent = Qt.createComponent(source);
-                        if(contentComponent.status === Component.Error) {
-                            loaderLocation.errorMessage = contentComponent.errorString();
-                            refreshStandbyItem();
-                        } else {
-                            if(0 === root.contentUiId)
-                                root.contentUiId = SofaApplication.uiSettings.generate();
-
-                            var contentProperties = root.properties;
-                            if(!contentProperties)
-                                contentProperties = {};
-
-                            contentProperties["uiId"] = root.contentUiId;
-                            contentProperties["anchors.fill"] = loaderLocation;
-                            var content = contentComponent.createObject(loaderLocation, contentProperties);
-
-                            if(undefined !== content.uiId)
-                                root.contentUiId = Qt.binding(function() {return content.uiId;});
-                            else
-                            {
-                                SofaApplication.uiSettings.remove(root.contentUiId);
-                                root.contentUiId = 0;
-                            }
-
-                            loaderLocation.contentItem = content;
-                        }
+                GBRect {
+                    anchors.top: parent.top
+                    anchors.topMargin: 1
+                    implicitHeight: parent.implicitHeight - 1
+                    implicitWidth: parent.implicitWidth + 2
+                    borderWidth: 1
+                    borderGradient: Gradient {
+                        GradientStop { position: 0.0; color: "#7a7a7a" }
+                        GradientStop { position: 1.0; color: "#5c5c5c" }
                     }
-                }
-
-                function refreshStandbyItem() {
-                    if(contentItem) {
-                        d.timer.stop();
-                        errorLabel.visible = false;
-                    } else {
-                        d.timer.start();
-                    }
+                    color: "transparent"
                 }
             }
 
-            Rectangle {
-                id: errorLabel
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                color: "#555555"
-                visible: false
+            RowLayout {
+                id: toolBarLayout
+                y: 2
+                spacing: 2
+                ComboBox
+                {
+                    id: comboBox
+                    textRole: "name"
+                    model: listModel
+                    sizeToContents: true
+                    currentIndex: -1
+
+                    onCurrentIndexChanged:
+                    {
+                        loaderLocation.refresh(listModel.get(currentIndex));
+                        root.currentContentName = currentContentName;
+                    }
+
+                    //property var files : LiveFileMonitorSingleton.files
+                    //onFilesChanged: {
+                    //    loaderLocation.refresh(listModel.get(currentIndex))
+                    //}
+
+                    function findIndexFor(name)
+                    {
+                        var c = findIndex(model, function(item) {
+                            return item.name === name
+                        });
+                        return c;
+                    }
+
+                    Component.onCompleted: function()
+                    {
+                        /// search in the model if there is one item with the
+                        /// same name as in the combobox.
+                        if (findIndexFor(root.currentContentName) !== null){
+                            currentIndex = findIndexFor(root.currentContentName);
+                        }
+                        else{
+                            console.error("Unable to find index for view: " + root.currentContentName)
+                        }
+                    }
+                }
+
+                /// Open a new windows with this content.
+                Button
+                {
+                    position: cornerPositions["Single"]
+                    Image {
+                        anchors.centerIn: parent
+                        source: "qrc:/icon/subWindow.png"
+                    }
+                    onClicked: {
+                        windowComponent.createObject(SofaApplication, {"source": "file:///"+listModel.get(comboBox.currentIndex).filePath,
+                                                         "title" : comboBox.currentText });
+                    }
+
+                    Component {
+                        id: windowComponent
+
+                        Window {
+                            property url source
+
+                            id: window
+                            width: 400
+                            height: 600
+                            modality: Qt.NonModal
+                            flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
+                            visible: true
+                            color: "#787878"
+
+                            Loader {
+                                id: loader
+                                anchors.fill: parent
+                                source: window.source
+                            }
+                        }
+                    }
+                }
 
                 Label {
-                    anchors.fill: parent
-                    color: "red"
-                    visible: 0 !== loaderLocation.errorMessage.length
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-
-                    text: "An error occurred, the content could not be loaded ! Reason: " + loaderLocation.errorMessage
-                    wrapMode: Text.WordWrap
-                    font.bold: true
+                    id: showAllLabel
+                    Layout.alignment: Qt.AlignVCenter
+                    text: "Live Coding:"
+                    color: "black"
                 }
-            }
+                CheckBox {
+                    id : checkBoxEditting
+                    Layout.alignment: Qt.AlignVCenter
+                    ToolTip {
+                        text: "Live Coding"
+                        description: "Activates Live coding on the current view"
+                    }
+                }
 
-            Rectangle {
-                id: toolBar
-                Layout.fillWidth: true
-                Layout.preferredHeight: visible ? 22 : 0
-                color: "lightgrey"
-                visible: false
-
-                Flickable {
-                    anchors.fill: parent
-                    anchors.leftMargin: 32
-                    contentWidth: toolBarLayout.implicitWidth
-
-                    RowLayout {
-                        id: toolBarLayout
-                        height: parent.height
-                        spacing: 2
-
-                        ComboBox {
-                            id: comboBox
-                            Layout.preferredWidth: 150
-                            Layout.preferredHeight: 20
-                            textRole: "fileBaseName"
-                            style: ComboBoxStyle {}
-
-                            model: ListModel {
-                                id: listModel
-                            }
-
-                            onCurrentIndexChanged: {
-                                loaderLocation.refresh();
-                            }
-                        }
-
-                        Button {
-                            iconSource: "qrc:/icon/subWindow.png"
-                            Layout.preferredWidth: Layout.preferredHeight
-                            Layout.preferredHeight: 20
-
-                            onClicked: windowComponent.createObject(SofaApplication, {"source": listModel.get(comboBox.currentIndex).filePath});
-
-                            Component {
-                                id: windowComponent
-
-                                Window {
-                                    id: window
-                                    width: 400
-                                    height: 600
-                                    modality: Qt.NonModal
-                                    flags: Qt.Tool | Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint |Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint
-                                    visible: true
-                                    color: "lightgrey"
-
-                                    Component.onCompleted: {
-                                        width = Math.max(width, Math.max(loader.implicitWidth, loader.width));
-                                        height = Math.min(height, Math.max(loader.implicitHeight, loader.height));
-                                    }
-
-                                    onClosing: destroy();
-
-                                    property url source
-
-                                    Loader {
-                                        id: loader
-                                        anchors.fill: parent
-
-                                        source: window.source
-                                    }
-                                }
-                            }
-                        }
+                Label {
+                    id: showDebugLogLabel
+                    Layout.alignment: Qt.AlignVCenter
+                    text: "Debug:"
+                    color: "black"
+                }
+                CheckBox {
+                    id : showDebugLogCheckBox
+                    Layout.alignment: Qt.AlignVCenter
+                    ToolTip {
+                        text: "Show debug message"
+                        description: "Activates printing of extra message in the current view"
+                    }
+                    onCheckedChanged: {
+                        loaderLocation.contentItem.isDebugPrintEnabled = checked;
                     }
                 }
             }
         }
 
-        Image {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.bottomMargin: 3
-            anchors.leftMargin: 16
-            source: toolBar.visible ? "qrc:/icon/minus.png" : "qrc:/icon/plus.png"
-            width: 12
-            height: width
+        /// This is the content of the view.
+        Item {
+            id: loaderLocation
+            anchors.top : toolBar.bottom
+            anchors.left : parent.left
+            anchors.right : parent.right
+            anchors.bottom : parent.bottom
+            visible: contentItem
 
-            MouseArea {
+            Rectangle {
                 anchors.fill: parent
-                onClicked: toolBar.visible = !toolBar.visible
+                color: SofaApplication.style.contentBackgroundColor
+            }
+
+            property Item contentItem
+            property string errorMessage
+
+            /// @brief refresh the content "area" of the view with the given name
+            function refresh(viewEntry)
+            {
+
+                if(!viewEntry)
+                    return
+
+                var name = viewEntry.name;
+                var source = viewEntry.filePath;
+
+                /// Check if there is an existing view loaded
+                /// If this is the case the view should be destroyed and the content set
+                /// to null.
+                if(loaderLocation.contentItem) {
+                    loaderLocation.contentItem.destroy();
+                    loaderLocation.contentItem = null;
+                }
+
+
+                /// Load the component from a qml file.
+                var contentComponent = Qt.createComponent("file://"+source);
+                if(contentComponent.status === Component.Error)
+                {
+                    ///TODO(dmarchal 28/01/2019) Fix loader.
+                    console.error("Error while loading: " + contentComponent.errorString());
+                    loaderLocation.contentItem = Qt.createComponent("qrc:/SofaBasics/DynamicContent_Error.qml").createObject(loaderLocation.contentItem);
+                    return;
+                }
+
+                /// Create an uid in the SofaApplication settings.
+                if(root.contentUiId === 0)
+                {
+                    root.contentUiId = SofaApplication.uiSettings.generate();
+                }
+
+                ///TODO(dmarchal 28/01/2019) I don't understand what is this for.
+                var contentProperties = root.properties;
+                if(!contentProperties)
+                    contentProperties = "";
+
+                contentProperties["anchors.fill"] = loaderLocation;
+                var content = contentComponent.createObject(loaderLocation, contentProperties);
+
+                loaderLocation.contentItem = content;
+                root.currentContentName = name;
             }
         }
     }
 }
+

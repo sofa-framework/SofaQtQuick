@@ -19,7 +19,6 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 
 pragma Singleton
 import QtQuick 2.0
-import SofaScene 1.0
 import SofaApplication 1.0
 import "."
 

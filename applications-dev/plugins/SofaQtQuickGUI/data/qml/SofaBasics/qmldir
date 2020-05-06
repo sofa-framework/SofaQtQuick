@@ -1,3 +1,5 @@
+module SofaBasics
+SuggestionBox 1.0 SuggestionBox.qml
 Fit 1.0 Fit.qml
 IconButton 1.0 IconButton.qml
 UserInteractor 1.0 UserInteractor.qml
@@ -14,6 +16,7 @@ DefaultMenuBar 1.0 DefaultMenuBar.qml
 DefaultToolBar 1.0 DefaultToolBar.qml
 DefaultStatusBar 1.0 DefaultStatusBar.qml
 DynamicContent 1.0 DynamicContent.qml
+DynamicContent_Error 1.0 DynamicContent_Error.qml
 DynamicSplitView 1.0 DynamicSplitView.qml
 FPSItem 1.0 FPSItem.qml
 SofaTimeItem 1.0 SofaTimeItem.qml
@@ -26,7 +29,32 @@ Vector3DSpinBox 1.0 Vector3DSpinBox.qml
 Vector4DSpinBox 1.0 Vector4DSpinBox.qml
 MementoBar 1.0 MementoBar.qml
 MementoObject 1.0 MementoObject.qml
+QmlUIArea 1.0 QmlUIArea.qml
 singleton MementoManager 1.0 MementoManager.qml
 ClipPlane 1.0 ClipPlane.qml
 WindowResizer 1.0 WindowResizer.qml
 ColorChooser 1.0 ColorChooser.qml
+TextField 1.0 TextField.qml
+SpinBox 1.0 SpinBox.qml
+DoubleSpinBox 1.0 DoubleSpinBox.qml
+CheckBox 1.0 CheckBox.qml
+Button 1.0 Button.qml
+IconComboBox 1.0 IconComboBox.qml
+ComboBox 1.0 ComboBox.qml
+GroupBox 1.0 GroupBox.qml
+ToolButton 1.0 ToolButton.qml
+GBRect 1.0 GBRect.qml
+MenuBar 1.0 MenuBar.qml
+SidePanel 1.0 SidePanel.qml
+TreeView 1.0 TreeView.qml
+MenuSeparator 1.0 MenuSeparator.qml
+Menu 1.0 Menu.qml
+MenuItem 1.0 MenuItem.qml
+SofaSceneFileDialog 1.0 SofaSceneFileDialog.qml
+Popup 1.0 Popup.qml
+singleton SofaDataWidgetFactory 1.0 SofaDataWidgetFactory.qml
+ListViewDelegate 1.0 ListViewDelegate.qml
+SofaLinkItem 1.0 SofaLinkItem.qml
+SofaCanvas 1.0 SofaCanvas.qml
+VerticalScrollbar 1.0 VerticalScrollbar.qml
+Slider 1.0 Slider.qml

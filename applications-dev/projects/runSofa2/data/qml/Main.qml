@@ -18,14 +18,12 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
-import QtQuick.Controls.Styles 1.3
-import SofaScene 1.0
-import SofaBasics 1.0
 import SofaApplication 1.0
-import SofaWidgets 1.0
+import SofaViews 1.0
+import SofaBasics 1.0
 
 ApplicationWindow {
     id: root
@@ -55,31 +53,21 @@ ApplicationWindow {
                 sofaScene.source = source;
             }
         }
-    }
 
-//    style: ApplicationWindowStyle {
-//        background: null
-//    }
+        Component.onCompleted: {
+            SofaApplication.sofaScene = sofaScene
+        }
+    }
 
     Component.onCompleted: {
         showNormal();
-        //showFullScreen();
-    }
-
-    // dialog
-    property FileDialog openSofaSceneDialog: openSofaSceneDialog
-    FileDialog {
-        id: openSofaSceneDialog
-        nameFilters: ["SofaScene files (*.xml *.scn *.pscn *.py *.simu *)"]
-        onAccepted: sofaScene.source = fileUrl;
     }
 
     menuBar: DefaultMenuBar {
         id: menuBar
-        sofaScene: root.sofaScene
     }
 
-    toolBar: DefaultToolBar {
+    header: DefaultToolBar {
         id: toolBar
         sofaScene: root.sofaScene
     }
@@ -90,15 +78,16 @@ ApplicationWindow {
         uiId: 1
         sourceComponent: Component {
             DynamicContent {
-                defaultContentName: "SofaViewer"
-                sourceDir: "qrc:/SofaWidgets"
-                properties: {"sofaScene": root.sofaScene, "drawFrame": false}
+                defaultContentName: "Hierarchy"
+                sourceDir: "qrc:/SofaViews"
+                properties: {"sofaScene": root.sofaScene, "drawFrame": false, "sofaApplication": SofaApplication}
             }
         }
     }
 
-    statusBar: DefaultStatusBar {
+    footer: DefaultStatusBar {
         id: statusBar
         sofaScene: root.sofaScene
     }
+
 }

@@ -1,193 +1,266 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(SofaQtQuickGUI)
+cmake_minimum_required(VERSION VERSION 3.14)
+project(SofaQtQuickGUI VERSION 1.0)
 
-set(SOFAQTQUICKGUI_MAJOR_VERSION 0)
-set(SOFAQTQUICKGUI_MINOR_VERSION 1)
-set(SOFAQTQUICKGUI_VERSION ${SOFAQTQUICKGUI_MAJOR_VERSION}.${SOFAQTQUICKGUI_MINOR_VERSION})
+set (CMAKE_CXX_STANDARD 17)
 
-include(cmake/GeneratePluginConfig.cmake)
+find_package(SofaFramework REQUIRED)
+find_package(SofaOpenglVisual REQUIRED)
+find_package(SofaGeneral REQUIRED)
+find_package(SofaCommon REQUIRED)
+find_package(QmlUI REQUIRED)
 
-if(SOFA_BUILD_TESTS)
-    find_package(SofaTest QUIET)
-    if(SofaTest_FOUND)
-        add_subdirectory(SofaQtQuickGUI_test)
-    endif()
-endif()
+find_package(SofaPython3 QUIET)
+if (SofaPython3_FOUND)
+    set (SOFAPYTHON_LIBRARY SofaPython3)
+    include_directories(${SofaPython3_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
+endif ()
+
+#NodeEditor
+#option(SOFAGUIQT_ENABLE_NODEGRAPH "Build the Node graph representation. NodeEditor library is needed." OFF)
+#if (SOFAGUIQT_ENABLE_NODEGRAPH)
+set(NODEEDITOR_LIBRARY "/usr/local/lib/libnodes.so")
+set(NODEEDITOR_INCLUDE_PATH "/usr/local/include")
+find_package(NodeEditor REQUIRED)
+#endif()
+#sofa_set_01(SOFAGUIQT_HAVE_NODEEDITOR VALUE ${SOFAGUIQT_ENABLE_NODEGRAPH} BOTH_SCOPES)
+
 
 set(SOURCE_FILES
-    SofaQtQuickGUI.cpp
-    SofaApplication.cpp
-    SofaViewer.cpp
-    ControlledSofaViewer.cpp
-    Camera.cpp
-    SofaScene.cpp
-    SofaComponent.cpp
-    SofaComponentList.cpp
-    SofaData.cpp
-    SofaSceneListModel.cpp
-    Selectable.cpp
-    SelectableManipulator.cpp
-    SelectableSofaComponent.cpp
-    SelectableSofaParticle.cpp
-    SofaDataListModel.cpp
-    SofaDisplayFlagsTreeModel.cpp
-    SofaPythonInteractor.cpp
-    SofaInspectorDataListModel.cpp
-    Console.cpp
-    PythonConsole.cpp
-    SofaParticleInteractor.cpp
-    Manipulator.cpp
-    Manipulator2D_Translation.cpp
-    Manipulator2D_Rotation.cpp
-    Manipulator3D_Translation.cpp
-    Manipulator3D_Rotation.cpp
-    SofaCamera.cpp
-)
+    src/SofaQtQuickGUI/DataHelper.cpp
+    src/SofaQtQuickGUI/SofaQtQuickQmlModule.cpp
+    src/SofaQtQuickGUI/SofaBaseApplication.cpp
+    src/SofaQtQuickGUI/SofaViewer.cpp
+    src/SofaQtQuickGUI/Windows/CameraView.cpp
+    src/SofaQtQuickGUI/Windows/EditView.cpp
+    src/SofaQtQuickGUI/Windows/AssetView.cpp
+    src/SofaQtQuickGUI/Camera.cpp
+    src/SofaQtQuickGUI/SofaBaseScene.cpp
+    src/SofaQtQuickGUI/SofaComponentList.cpp
+    src/SofaQtQuickGUI/Selectable.cpp
+    src/SofaQtQuickGUI/SelectableManipulator.cpp
+    src/SofaQtQuickGUI/SelectableSofaComponent.cpp
+    src/SofaQtQuickGUI/SelectableSofaParticle.cpp
+    src/SofaQtQuickGUI/Console.cpp
+    src/SofaQtQuickGUI/SofaParticleInteractor.cpp
+    src/SofaQtQuickGUI/ProfilerTreeView.cpp
+    src/SofaQtQuickGUI/ProfilerTreeViewModel.cpp
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterPython.cpp
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterCpp.cpp
+    src/SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.cpp
+    src/SofaQtQuickGUI/Bindings/SofaFactory.cpp
+    src/SofaQtQuickGUI/Bindings/SofaCamera.cpp
+    src/SofaQtQuickGUI/Bindings/SofaComponent.cpp
+    src/SofaQtQuickGUI/Bindings/SofaBase.cpp
+    src/SofaQtQuickGUI/Bindings/SofaBaseObject.cpp
+    src/SofaQtQuickGUI/Bindings/SofaNode.cpp
+    src/SofaQtQuickGUI/Bindings/SofaData.cpp
+    src/SofaQtQuickGUI/Bindings/SofaDataFileName.cpp
+    src/SofaQtQuickGUI/Bindings/SofaLink.cpp
+    src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.cpp
+    src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.cpp
+    src/SofaQtQuickGUI/Helper/QGTest.cpp
+    src/SofaQtQuickGUI/Helper/QMathExtensions.cpp
+    src/SofaQtQuickGUI/Helper/sofaqtconversions.cpp
+    src/SofaQtQuickGUI/Manipulators/Manipulator.cpp
+    src/SofaQtQuickGUI/Manipulators/Rotate_Manipulator.cpp
+    src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.cpp
+    src/SofaQtQuickGUI/Manipulators/Scale_Manipulator.cpp
+    src/SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.cpp
+    src/SofaQtQuickGUI/Models/SofaDataListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.cpp
+    src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneListProxy.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneItemModel.cpp
+    src/SofaQtQuickGUI/Models/SofaSceneItemProxy.cpp
+    src/SofaQtQuickGUI/Models/SofaViewListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaDataContainerListModel.cpp
+    src/SofaQtQuickGUI/Models/SofaLinkCompletionModel.cpp
+    src/SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.cpp
+    src/SofaQtQuickGUI/QMLUI/QMLUI.cpp
+    src/SofaQtQuickGUI/QMLUI/View.cpp
+    src/SofaQtQuickGUI/Rendering/ObjectRenderer.cpp
+    src/SofaQtQuickGUI/Rendering/SceneRenderer.cpp
+    src/SofaQtQuickGUI/LiveFileMonitor.cpp
+    src/SofaQtQuickGUI/LiveQMLFileMonitor.cpp
+    src/SofaQtQuickGUI/SofaProject.cpp
+    src/SofaQtQuickGUI/Assets/Asset.cpp
+    src/SofaQtQuickGUI/Assets/DirectoryAsset.cpp
+    src/SofaQtQuickGUI/Assets/PythonAsset.cpp
+    src/SofaQtQuickGUI/Assets/SceneAsset.cpp
+    src/SofaQtQuickGUI/Assets/TextureAsset.cpp
+    src/SofaQtQuickGUI/Assets/TemplateAsset.cpp
+    src/SofaQtQuickGUI/Assets/CanvasAsset.cpp
+    src/SofaQtQuickGUI/Assets/AssetFactory.cpp
+    )
+
+if (SofaPython_FOUND)
+    list(APPEND SOURCE_FILES
+        src/SofaQtQuickGUI/PythonConsole.cpp
+        # src/SofaQtQuickGUI/SofaPythonInteractor.cpp
+        )
+else ()
+    list(APPEND SOURCE_FILES
+        src/SofaQtQuickGUI/Python3Console.cpp
+        src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.cpp
+        # src/SofaQtQuickGUI/SofaPython3Interactor.cpp
+        )
+endif ()
 
 set(HEADER_FILES
-    SofaQtQuickGUI.h
-    SofaApplication.h
-    ProcessState.h
-    SofaViewer.h
-    ControlledSofaViewer.h
-    Camera.h
-    SofaScene.h
-    SofaComponent.h
-    SofaComponentList.h
-    SofaData.h
-    SofaSceneListModel.h
-    Selectable.h
-    SelectableManipulator.h
-    SelectableSofaComponent.h
-    SelectableSofaParticle.h
-    SofaDataListModel.h
-    SofaDisplayFlagsTreeModel.h
-    SofaPythonInteractor.h
-    SofaInspectorDataListModel.h
-    Console.h
-    PythonConsole.h
-    SofaParticleInteractor.h
-    Manipulator.h
-    Manipulator2D_Translation.h
-    Manipulator2D_Rotation.h
-    Manipulator3D_Translation.h
-    Manipulator3D_Rotation.h
-    SofaCamera.h
-    helper/QMathExtensions.h
-)
+    src/SofaQtQuickGUI/config.h
+    src/SofaQtQuickGUI/DataHelper.h
+    src/SofaQtQuickGUI/SofaQtQuickQmlModule.h
+    src/SofaQtQuickGUI/SofaBaseApplication.h
+    src/SofaQtQuickGUI/ProcessState.h
+    src/SofaQtQuickGUI/SofaViewer.h
+    src/SofaQtQuickGUI/Windows/CameraView.h
+    src/SofaQtQuickGUI/Windows/EditView.h
+    src/SofaQtQuickGUI/Windows/AssetView.h
+    src/SofaQtQuickGUI/Camera.h
+    src/SofaQtQuickGUI/SofaBaseScene.h
+    src/SofaQtQuickGUI/SofaComponentList.h
+    src/SofaQtQuickGUI/Selectable.h
+    src/SofaQtQuickGUI/SelectableManipulator.h
+    src/SofaQtQuickGUI/SelectableSofaComponent.h
+    src/SofaQtQuickGUI/SelectableSofaParticle.h
+    # src/SofaQtQuickGUI/SofaPythonInteractor.h
+    src/SofaQtQuickGUI/Console.h
+    src/SofaQtQuickGUI/PythonConsole.h
+    src/SofaQtQuickGUI/SofaParticleInteractor.h
+    src/SofaQtQuickGUI/ProfilerTreeView.h
+    src/SofaQtQuickGUI/ProfilerTreeViewModel.h
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterPython.h
+    src/SofaQtQuickGUI/SyntaxHighlight/QSyntaxHighlighterCpp.h
+    src/SofaQtQuickGUI/SyntaxHighlight/HighlightComponent.h
+    src/SofaQtQuickGUI/Bindings/SofaFactory.h
+    src/SofaQtQuickGUI/Bindings/SofaComponent.h
+    src/SofaQtQuickGUI/Bindings/SofaCamera.h
+    src/SofaQtQuickGUI/Bindings/SofaBase.h
+    src/SofaQtQuickGUI/Bindings/SofaBaseObject.h
+    src/SofaQtQuickGUI/Bindings/SofaNode.h
+    src/SofaQtQuickGUI/Bindings/SofaData.h
+    src/SofaQtQuickGUI/Bindings/SofaDataFileName.h
+    src/SofaQtQuickGUI/Bindings/SofaLink.h
+    src/SofaQtQuickGUI/Bindings/SofaCoreBindingContext.h
+    src/SofaQtQuickGUI/Bindings/SofaCoreBindingFactory.h
+    src/SofaQtQuickGUI/Manipulators/Manipulator.h
+    src/SofaQtQuickGUI/Manipulators/Rotate_Manipulator.h
+    src/SofaQtQuickGUI/Manipulators/Translate_Manipulator.h
+    src/SofaQtQuickGUI/Manipulators/Scale_Manipulator.h
+    src/SofaQtQuickGUI/Manipulators/Viewpoint_Manipulator.h
+    src/SofaQtQuickGUI/Models/SofaDataListModel.h
+    src/SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h
+    src/SofaQtQuickGUI/Models/SofaInspectorDataListModel.h
+    src/SofaQtQuickGUI/Models/SofaSceneListModel.h
+    src/SofaQtQuickGUI/Models/SofaSceneListProxy.h
+    src/SofaQtQuickGUI/Models/SofaSceneItemModel.h
+    src/SofaQtQuickGUI/Models/SofaSceneItemProxy.h
+    src/SofaQtQuickGUI/Models/SofaViewListModel.h
+    src/SofaQtQuickGUI/Models/SofaDataContainerListModel.h
+    src/SofaQtQuickGUI/Models/SofaLinkCompletionModel.h
+    #    src/SofaQtQuickGUI/Models/CustomInspectorModel.h
+    src/SofaQtQuickGUI/Modules/SofaRuntime/SofaRuntimeModule.h
+    src/SofaQtQuickGUI/QMLUI/QMLUI.h
+    src/SofaQtQuickGUI/QMLUI/View.h
+    src/SofaQtQuickGUI/Rendering/ObjectRenderer.h
+    src/SofaQtQuickGUI/Rendering/SceneRenderer.h
+    src/SofaQtQuickGUI/Helper/QMathExtensions.h
+    src/SofaQtQuickGUI/Helper/QGTest.h
+    src/SofaQtQuickGUI/Helper/QtStl/QtStl.h
+    src/SofaQtQuickGUI/Helper/sofaqtconversions.h
+    src/SofaQtQuickGUI/LiveFileMonitor.h
+    src/SofaQtQuickGUI/LiveQMLFileMonitor.h
+    src/SofaQtQuickGUI/SofaProject.h
+    src/SofaQtQuickGUI/Assets/Asset.h
+    src/SofaQtQuickGUI/Assets/DirectoryAsset.h
+    src/SofaQtQuickGUI/Assets/PythonAsset.h
+    src/SofaQtQuickGUI/Assets/TextureAsset.h
+    src/SofaQtQuickGUI/Assets/TemplateAsset.h
+    src/SofaQtQuickGUI/Assets/SceneAsset.h
+    src/SofaQtQuickGUI/Assets/CanvasAsset.h
+    src/SofaQtQuickGUI/Assets/AssetFactory.h
+    src/SofaQtQuickGUI/Assets/AssetFactory.inl
+    )
 
-set(QML_FILES
-    data/qml/SofaDataTypes/qmldir
-    data/qml/SofaDataTypes/SofaDataType_notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_boolean.qml
-    data/qml/SofaDataTypes/SofaDataType_0to1RatioWidget.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_array.qml
-    data/qml/SofaDataTypes/SofaDataType_boolean.qml
-    data/qml/SofaDataTypes/SofaDataType_BoundingBox.qml
-    data/qml/SofaDataTypes/SofaDataType_Material.qml
-    data/qml/SofaDataTypes/SofaDataType_OptionsGroup.qml
-    data/qml/SofaDataTypes/SofaDataType_FileName.qml
-    data/qml/SofaDataTypes/SofaDataType_graph_linear.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_graph.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_number.qml
-    data/qml/SofaDataTypes/SofaDataType_poissonRatio.notimplementedyet.qml
-    data/qml/SofaDataTypes/SofaDataType_string.qml
-    data/qml/SofaDataTypes/SofaDataType_RGBAColor.qml
-    data/qml/SofaDataTypes/SofaDataType_widget_displayFlags.qml
-    data/qml/SofaApplication/qmldir
-    data/qml/SofaApplication/SofaApplication.qml
-    data/qml/SofaBasics/qmldir
-    data/qml/SofaBasics/IconButton.qml
-    data/qml/SofaBasics/ToolTip.qml
-    data/qml/SofaBasics/BubbleToolTip.qml
-    data/qml/SofaBasics/DefaultStatusBar.qml
-    data/qml/SofaBasics/DefaultToolBar.qml
-    data/qml/SofaBasics/DefaultMenuBar.qml
-    data/qml/SofaBasics/SofaScene.qml
-    data/qml/SofaBasics/SofaSceneInterface.qml
-    data/qml/SofaBasics/SofaDataItem.qml
-    data/qml/SofaBasics/SofaPythonInteractor.qml
-    data/qml/SofaBasics/UserInteractor.qml
-    data/qml/SofaBasics/Fit.qml
-    data/qml/SofaBasics/Camera.qml
-    data/qml/SofaBasics/SofaCamera.qml
-    data/qml/SofaBasics/FPSItem.qml
-    data/qml/SofaBasics/SofaTimeItem.qml
-    data/qml/SofaBasics/ContentItem.qml
-    data/qml/SofaBasics/ExplicitSwitch.qml
-    data/qml/SofaBasics/RangeSlider.qml
-    data/qml/SofaBasics/CollapsibleGroupBox.qml
-    data/qml/SofaBasics/Vector2DSpinBox.qml
-    data/qml/SofaBasics/Vector3DSpinBox.qml
-    data/qml/SofaBasics/Vector4DSpinBox.qml
-    data/qml/SofaBasics/DynamicSplitView.qml
-    data/qml/SofaBasics/DynamicContent.qml
-    data/qml/SofaBasics/MementoBar.qml
-    data/qml/SofaBasics/MementoObject.qml
-    data/qml/SofaBasics/MementoManager.qml
-    data/qml/SofaBasics/WindowResizer.qml
-    data/qml/SofaBasics/ClipPlane.qml
-    data/qml/SofaBasics/ColorChooser.qml
-    data/qml/SofaInteractors/qmldir
-    data/qml/SofaInteractors/UserInteractor_MoveCamera.qml
-    data/qml/SofaInteractors/UserInteractor_Selection.qml
-    data/qml/SofaInteractors/UserInteractor_SofaParticleInteractor.qml
-    data/qml/SofaManipulators/qmldir
-    data/qml/SofaManipulators/Manipulator.qml
-    data/qml/SofaManipulators/Manipulator2D_Translation.qml
-    data/qml/SofaManipulators/Manipulator2D_Rotation.qml
-    data/qml/SofaManipulators/Manipulator3D_Translation.qml
-    data/qml/SofaManipulators/Manipulator3D_Rotation.qml
-    data/qml/SofaWidgets/qmldir
-    data/qml/SofaWidgets/QML_LiveCoding.qml
-    data/qml/SofaWidgets/SofaViewer.qml
-    data/qml/SofaWidgets/ControlledSofaViewer.qml
-    data/qml/SofaWidgets/SofaDataView.qml
-    data/qml/SofaWidgets/ImageViewer.qml
-    data/qml/SofaWidgets/PythonConsole.qml
-    data/qml/SofaWidgets/SofaDataListView.qml
-    data/qml/SofaWidgets/SofaSceneGraphView.qml
-    data/qml/SofaWidgets/SofaSceneToolPanel.qml
-    data/qml/SofaWidgets/SofaSimulationControl.qml
-    data/qml/SofaWidgets/SofaVisualizationControl.qml
-    data/qml/SofaWidgets/AffineTransformationController.qml
-    data/qml/SofaWidgets/ColorSelector.qml
-    data/qml/SofaWidgets/SofaSceneViewer.qml
+if (SofaPython3_FOUND)
+    list(APPEND HEADER_FILES src/SofaQtQuickGUI/SofaQtQuick_PythonEnvironment.h)
+endif ()
 
-    data/qml/SofaWidgets/Inspector.qml
-    data/qml/SofaWidgets/Message.qml
-)
+list(APPEND HEADER_FILES
+    src/SofaQtQuickGUI/Windows/GraphView.h
+    src/SofaQtQuickGUI/Windows/ShapeEditorView.h
+    src/SofaQtQuickGUI/Windows/ProfilerView.h
+    src/SofaQtQuickGUI/Models/SofaComponentGraphModel.h
+    src/SofaQtQuickGUI/Models/ShapeGraphModel.h
+    )
 
+list(APPEND SOURCE_FILES
+    src/SofaQtQuickGUI/Windows/GraphView.cpp
+    src/SofaQtQuickGUI/Windows/ShapeEditorView.cpp
+    src/SofaQtQuickGUI/Windows/ProfilerView.cpp
+    src/SofaQtQuickGUI/Models/SofaComponentGraphModel.cpp
+    src/SofaQtQuickGUI/Models/ShapeGraphModel.cpp
+    )
+
+set(SCRIPT_TEMPLATES
+    data/config/templates/scripts/emptyController.py
+    data/config/templates/scripts/emptyDataEngine.py
+    data/config/templates/scripts/emptyForceField.py
+    data/config/templates/scripts/emptyPrefab.py
+    data/config/templates/scripts/emptyScene.py
+    data/config/templates/scripts/emptyCanvas.qml
+    )
+
+set(ASSET_TEMPLATES
+    data/config/templates/assets/openInBlender.py
+    data/config/templates/assets/stlAsset.py
+    data/config/templates/assets/stlAsset.qml
+    )
+
+set(INSPECTOR_TEMPLATES
+    data/config/templates/inspectors/MeshSTLLoader.qml
+    )
+
+
+
+add_definitions("-DSOFAQTQUICKGUI_QML_DIR=\"${CMAKE_CURRENT_LIST_DIR}/data/qml/\"")
 
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/GTest/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaDataTypes/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaApplication/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaBasics/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaColorScheme/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaInteractors/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaManipulators/")
 list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaWidgets/")
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/data/qml/SofaViews/")
 set(QML_IMPORT_PATH "${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
-
-
-
 
 set(CONFIG_FILES
     data/config/default.ini
     data/config/classic.ini
     data/config/fullview.ini
     data/config/quadview.ini
+    )
 
-)
+set(EXTRA_FILES
+    src/SofaQtQuickGUI/QMLUI/Readme.md
+    )
 
 set(PYTHON_FILES
-    data/python/BaseHeader.py
     data/python/PythonConsole.py
-)
+    data/python/SofaQtQuick.py
+    )
+sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "data/python")
 
 set(QRC_FILES
     data/sofaQtQuickGUI_resources.qrc
     data/qml/sofaQtQuickGUI_qml.qrc
-)
+    )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -200,7 +273,8 @@ if(WIN32)
     endif()
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml WebEngine  Charts REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
 include_directories(${Qt5Gui_INCLUDE_DIRS})
@@ -208,6 +282,8 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS})
 include_directories(${Qt5QuickControls2_INCLUDE_DIRS})
 include_directories(${Qt5Qml_INCLUDE_DIRS})
 include_directories(${Qt5Quick_INCLUDE_DIRS})
+include_directories(${Qt5Quick_INCLUDE_DIRS})
+include_directories(${Qt5QmlLive_INCLUDE_DIRS})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${Qt5Gui_DEFINITIONS})
@@ -216,54 +292,79 @@ add_definitions(${Qt5QuickControls2_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 
+#find_package(ASSIMP REQUIRED)
+#message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
+#include_directories( ${ASSIMP_INCLUDE_DIR})
+
 if (WIN32)
     # Does not work with Visual Studio config generation
     #if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG")
 endif()
 
-set(_configPluginFileName plugin_list.conf)
-set(_defaultConfigPluginFileName "${_configPluginFileName}.default")
-set(_defaultConfigPluginFilePath "${CMAKE_BINARY_DIR}/${_pluginLocation}/${_defaultConfigPluginFileName}")
-sofa_generate_plugin_config_qtquick(${_defaultConfigPluginFilePath})
-message("Write Plugin list at ${_defaultConfigPluginFilePath}")
-
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
+# We need to put the .inl after the call of qt5_wrap_cpp to avoid having the inline mocced.
 set(HEADER_FILES ${HEADER_FILES}
-    SofaParticleInteractor.inl
-)
+    src/SofaQtQuickGUI/SofaParticleInteractor.inl
+    )
 
-add_definitions(-DCONFIG_PLUGIN_FILENAME=${_configPluginFileName})
-add_definitions(-DDEFAULT_CONFIG_PLUGIN_FILENAME=${_defaultConfigPluginFileName})
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # Sized deallocaion is not enabled by default under clang after c++14
+    set(CMAKE_CXX_FLAGS "-fsized-deallocation")
+endif ()
 
-find_package(SofaFramework REQUIRED)
-find_package(SofaPython REQUIRED)
+add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaComponentBase SofaMeshCollision
+    Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine Qt5::Charts stdc++fs QmlUI)
+#target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
-add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES} ${PYTHON_FILES})
-target_link_libraries(${PROJECT_NAME} SofaPython SofaSimulationGraph SofaComponentBase Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick)
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${ASSIMP_INCLUDE_DIR}>")
 
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${SOFAQTQUICKGUI_VERSION})
 
-add_definitions("-DSOFA_BUILD_SOFAQTQUICKGUI")
+target_link_libraries(${PROJECT_NAME} PUBLIC ${NODEEDITOR_LIBRARY})
+sofa_install_libraries(LIBRARIES ${NODEEDITOR_LIBRARY})
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${NODEEDITOR_INCLUDE_PATH}>")
 
+file(COPY     ${SCRIPT_TEMPLATES}     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/scripts)
+file(COPY     ${ASSET_TEMPLATES}      DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/assets)
+file(COPY     ${INSPECTORS_TEMPLATES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/inspectors)
+install(FILES ${SCRIPT_TEMPLATES}     DESTINATION bin/config/templates/scripts)
+install(FILES ${ASSET_TEMPLATES}      DESTINATION bin/config/templates/assets)
+install(FILES ${INSPECTORS_TEMPLATES} DESTINATION bin/config/templates/inspectors)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE "-DSOFA_BUILD_SOFAQTQUICKGUI")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQT_QML_DEBUG")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DQMLJSDEBUGGER")
+
+##TODO(dmarchal) A virer et remplacer par des vrai resources.
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DSOFAQTQUICK_DIRECTORY_VIEW=\"${CMAKE_CURRENT_SOURCE_DIR}/data/qml/SofaViews\"")
 
 if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,CXX>:${CXX11_FLAG}>")
 endif()
+#if(WIN32)
+#        sofa_copy_libraries(${ASSIMP_DLL})
+#endif()
+#sofa_install_libraries(${ASSIMP_DLL})
 
-
+set(SOFAQTQUICKGUI_VERSION 1.0)
 ## Install rules for the library; CMake package configurations files
-sofa_create_package(${PROJECT_NAME} ${SOFAQTQUICKGUI_VERSION} ${PROJECT_NAME} ${PROJECT_NAME})
+sofa_generate_package(NAME ${PROJECT_NAME} VERSION ${SOFAQTQUICKGUI_VERSION} TARGETS ${PROJECT_NAME} INCLUDE_INSTALL_DIR ${PROJECT_NAME} INCLUDE_SOURCE_DIR "src/${PROJECT_NAME}")
 
-## Install rules for the resources
-install(DIRECTORY examples/ DESTINATION share/sofa/plugins/${PROJECT_NAME})
 
-## Hand-crafted install rules for the headers, to preserve the directory structure
-foreach(HEADER ${HEADER_FILES})
-    string(REGEX MATCH "(.*)[/\\]" DIR ${HEADER})
-    install(FILES ${HEADER} DESTINATION "include/${PROJECT_NAME}/${DIR}")
-endforeach(HEADER HEADERS)
+
+if( SofaPython3_FOUND )
+  add_subdirectory(src/SofaQtQuickGUI/Python)
+endif()
+
+
+if(SOFA_BUILD_TESTS)
+    find_package(SofaTest QUIET)
+    if(SofaTest_FOUND)
+        add_subdirectory(SofaQtQuickGUI_test)
+    endif()
+endif()

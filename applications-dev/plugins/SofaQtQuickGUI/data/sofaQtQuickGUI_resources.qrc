@@ -12,7 +12,6 @@
         <file>config/classic.ini</file>
         <file>config/fullview.ini</file>
         <file>config/quadview.ini</file>
-        <file>python/BaseHeader.py</file>
         <file>python/PythonConsole.py</file>
         <file>icon/downArrow.png</file>
         <file>icon/rightArrow.png</file>
@@ -38,5 +37,74 @@
         <file>icon/rotate.png</file>
         <file>icon/undo.png</file>
         <file>icon/redo.png</file>
+        <file>icon/linkArrow.png</file>
+        <file>icon/check.png</file>
+        <file>icon/spinboxRight.png</file>
+        <file>icon/spinboxLeft.png</file>
+        <file>icon/step.png</file>
+        <file>icon/pause.png</file>
+        <file>icon/play.png</file>
+        <file>icon/replay.png</file>
+        <file>icon/menuArrow.png</file>
+        <file>icon/menuCheckBoxChecked.png</file>
+        <file>icon/menuCheckBox.png</file>
+        <file>icon/menuArrowDown.png</file>
+        <file>icon/ICON_CAMERA.png</file>
+        <file>icon/ICON_DISK_DRIVE.png</file>
+        <file>icon/ICON_FILE_BLANK.png</file>
+        <file>icon/ICON_FILE_FOLDER.png</file>
+        <file>icon/ICON_FILE_IMAGE.png</file>
+        <file>icon/ICON_FILE_MOVIE.png</file>
+        <file>icon/ICON_GEAR.png</file>
+        <file>icon/ICON_NEWFOLDER.png</file>
+        <file>icon/ICON_MESH.png</file>
+        <file>icon/ICON_PYController.png</file>
+        <file>icon/ICON_PYEngine.png</file>
+        <file>icon/ICON_PYSCN.png</file>
+        <file>icon/ICON_PYTHON.png</file>
+        <file>icon/ICON_PREFAB.png</file>
+        <file>icon/iconmessage_base.png</file>
+        <file>icon/state_bubble_1.png</file>
+        <file>icon/state_bubble_2.png</file>
+        <file>icon/state_bubble_3.png</file>
+        <file>icon/state_bubble_4.png</file>
+        <file>icon/leave_grayed.png</file>
+        <file>icon/linkInvalid.png</file>
+        <file>icon/linkValid.png</file>
+        <file>icon/state_bubble_5.png</file>
+        <file>icon/iconerror.png</file>
+        <file>icon/iconinfo.png</file>
+        <file>icon/iconwarning.png</file>
+        <file>icon/ICON_CANVAS.png</file>
+        <file>icon/ICON_CANVAS2.png</file>
+        <file>icon/ICON_CONTACT.png</file>
+        <file>icon/ICON_LOCK.png</file>
+        <file>icon/ICON_MAGNET.png</file>
+        <file>icon/ICON_PARAMS.png</file>
+        <file>icon/ICON_PIN.png</file>
+        <file>icon/ICON_PREFAB2.png</file>
+        <file>icon/ICON_PREFAB3.png</file>
+        <file>icon/ICON_CONTROLLER2.png</file>
+        <file>icon/ICON_ENGINE2.png</file>
+        <file>icon/ICON_ENGINE3.png</file>
+        <file>icon/ICON_ROTATION_MODIFIER.png</file>
+        <file>icon/ICON_SCALE_MODIFIER.png</file>
+        <file>icon/ICON_TRANLSATION_MODIFIER.png</file>
+        <file>icon/ICON_CAMERA_MODIFIER.png</file>
+        <file>icon/ICON_VIEWPOINT_MODIFIER.png</file>
+        <file>icon/ICON_EDIT_MODE.png</file>
+        <file>icon/ICON_EDIT_MODE2.png</file>
+        <file>icon/ICON_OBJECT_MODE.png</file>
+        <file>icon/ICON_PYSCN_MONOCHROME.png</file>
+        <file>icon/ICON_LEAVE.png</file>
+        <file>icon/ICON_TO_CODELINE.png</file>
+        <file>icon/ICON_WARNING.png</file>
+        <file>icon/ManipulatorMenuCorner.png</file>
+        <file>icon/ICON_ROTATION_WORLD_MODIFIER.png</file>
+        <file>icon/validLink.png</file>
+        <file>icon/invalidLink.png</file>
+        <file>icon/breakLink.png</file>
+        <file>icon/edit.png</file>
+        <file>icon/clear.png</file>
     </qresource>
 </RCC>

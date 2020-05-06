@@ -1,6 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.3
-import QtQuick.Controls.Styles 1.3
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 import QtGraphicalEffects 1.0
@@ -8,14 +7,13 @@ import QtGraphicalEffects 1.0
 RowLayout {
 
     id: root
-
     property alias  r: root.color.r
     property alias  g: root.color.g
     property alias  b: root.color.b
     property alias  a: root.color.a
 
     property color  color: Qt.rgba(0.5,0.5,0.5,1)
-    property int    preferredWidth: 60
+    property int    preferredWidth: 20
     property int    preferredHeight: 20
     property bool   fillWidth: true
 
@@ -31,7 +29,8 @@ RowLayout {
         Layout.alignment: Qt.AlignCenter
         Layout.fillWidth:  root.fillWidth
         color: root.color
-        radius: 2
+        radius: 0
+        border.color: "#393939"
 
         MouseArea {
             anchors.fill: parent

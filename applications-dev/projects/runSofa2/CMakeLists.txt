@@ -6,7 +6,7 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
-    ""
+  ""
 )
 
 set(QML_FILES
@@ -33,7 +33,7 @@ if(WIN32)
 endif()
 
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Quick Qml REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
+find_package(Qt5 COMPONENTS Core Gui Widgets Quick QuickControls2 Qml WebView REQUIRED PATHS "${SOFA-EXTERNAL_QT5_PATH}")
 # make sure to use QT > 5.0
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -41,22 +41,42 @@ include_directories(${Qt5Gui_INCLUDE_DIRS})
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 include_directories(${Qt5Qml_INCLUDE_DIRS})
 include_directories(${Qt5Quick_INCLUDE_DIRS})
+include_directories(${Qt5WebView_INCLUDE_DIRS})
 
 add_definitions(${Qt5Core_DEFINITIONS})
 add_definitions(${Qt5Gui_DEFINITIONS})
 add_definitions(${Qt5Widgets_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
+add_definitions(${Qt5WebView_DEFINITIONS})
 
-find_package(SofaFramework REQUIRED)
 find_package(SofaQtQuickGUI REQUIRED)
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    # Sized deallocaion is not enabled by default under clang after c++14
+    set(CMAKE_CXX_FLAGS "-fsized-deallocation")
+endif ()
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # Sized deallocaion is not enabled by default under clang after c++14
+    set(CMAKE_CXX_FLAGS "-fsized-deallocation")
+endif ()
 
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
 
+# path to the live coding workspace (sofaqtquick/applications-dev) Must be the root of all editable qml files
+# Set the same path for the qmllivebench workspace dir
+list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../")
+set(QML_IMPORT_PATH "${QML_IMPORT_PATH};${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
+
+set(QMLLIVE_WORKSPACE_PATH \"${CMAKE_CURRENT_LIST_DIR}/../../\")
+configure_file("${PROJECT_NAME}.h.in" "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h")
+install(FILES "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h" DESTINATION "include/${PROJECT_NAME}" COMPONENT headers)
+
+
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
-target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick)
+target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::WebView)
 
-sofa_install_targets(SofaGui ${PROJECT_NAME} "")
+sofa_install_targets(${PROJECT_NAME} ${PROJECT_NAME} "")
 

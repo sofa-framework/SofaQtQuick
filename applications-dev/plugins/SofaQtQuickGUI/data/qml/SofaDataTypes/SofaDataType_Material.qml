@@ -18,21 +18,21 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
+import SofaBasics 1.0
 
 TextField {
     id: root
 
-    property var dataObject: null
+    property var sofaData: null
 
-    readOnly: dataObject.readOnly
-    enabled: !dataObject.readOnly
-    text: undefined !== dataObject.value ? dataObject.value.toString() : ""
+    readOnly: sofaData.isReadOnly
+    text: undefined !== sofaData.value ? sofaData.value.toString() : ""
 
     Binding {
-        target: dataObject
+        target: sofaData
         property: "value"
         value: root.text
-        when: !dataObject.readOnly
+        when: !sofaData.isReadOnly
     }
 }

@@ -35,6 +35,9 @@ QtObject {
 
     property var keyPressedMapping: Array()
     property var keyReleasedMapping: Array()
+    property var modifierPressedMapping: Array()
+    property var modifierReleasedMapping: Array()
+
 
     // mapping between user interaction and binding
     function addMouseClickedMapping(button, binding) {
@@ -103,19 +106,25 @@ QtObject {
     function mouseMoved(mouse, sofaViewer) {
         var binding = mouseMovedMapping;
         if(binding)
-            binding(mouse, sofaViewer);
+            binding(Qt.point(Math.floor(mouse.x), Math.floor(mouse.y)), sofaViewer);
     }
 
     function keyPressed(event, sofaViewer) {
-        var binding = keyPressedMapping[event.key];
-        if(binding)
-            binding(event, sofaViewer);
+        var any = keyPressedMapping[Qt.Key_Any];
+        if(any)
+            any(event, sofaViewer);
+        var keyFunc = keyPressedMapping[event.key];
+        if(keyFunc)
+            keyFunc(event, sofaViewer);
     }
 
     function keyReleased(event, sofaViewer) {
-        var binding = keyReleasedMapping[event.key];
-        if(binding)
-            binding(event, sofaViewer);
+        var any = keyReleasedMapping[Qt.Key_Any];
+        if(any)
+            any(event, sofaViewer);
+        var keyFunc = keyReleasedMapping[event.key];
+        if(keyFunc)
+            keyFunc(event, sofaViewer);
     }
 
     function init() {

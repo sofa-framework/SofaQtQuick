@@ -18,7 +18,8 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
+import SofaBasics 1.0
 
 /***************************************************************************************************
   *
@@ -26,29 +27,31 @@ import QtQuick.Controls 1.3
   * an optiongroups have a dedicated property holding the possible choices represented with
   * string.
   * To access these choices you can use:
-  *   - root.dataObject.properties.choices
+  *   - root.sofaData.properties.choices
   *
   *************************************************************************************************/
 ComboBox {
     id: root
 
-    property var dataObject: null
-
-    enabled: !dataObject.readOnly
-
-    model: {
-        return dataObject.properties.choices;
+    property var sofaData: null
+    onSofaDataChanged: {
+        if (sofaData == null) return;
+        model = sofaData.properties.choices
     }
 
+    enabled: !sofaData.readOnly
+
     onModelChanged: {
+        if (sofaData == null)
+            return;
         var values = model.toString().split(',');
         for (var idx = 0 ; idx < values.length ; idx++)
-            if (values[idx] === dataObject.value)
+            if (values[idx] === sofaData.value)
                 currentIndex = idx;
     }
 
     onCurrentTextChanged: {
-        dataObject.value = currentText;
-        dataObject.upload();
+        if (sofaData && sofaData.value !== currentText)
+            sofaData.value = currentText;
     }
 }

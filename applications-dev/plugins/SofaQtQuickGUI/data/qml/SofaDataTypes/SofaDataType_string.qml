@@ -18,7 +18,9 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 2.4
+import QtQuick.Layouts 1.3
+import SofaBasics 1.0
 
 /***************************************************************************************************
   *
@@ -28,18 +30,32 @@ import QtQuick.Controls 1.3
 TextField {
     id: root
 
-    property var dataObject: null
+    property var sofaData: null
+    readOnly: sofaData.properties.type !== "string" ? true : sofaData.properties.readOnly
+    implicitWidth: parent.width
+    Layout.fillWidth: true
+    selectByMouse: true
 
-    readOnly: dataObject.readOnly
-    enabled: !dataObject.readOnly
-    text: undefined !== dataObject.value ? dataObject.value.toString() : ""
+    text: sofaData.value.toString()
+    Connections
+    {
+        target: sofaData
+        onValueChanged: {
+            text=sofaData.value.toString()
+            console.log("VALUE HAS CHANGED... "+ text)
+        }
+    }
 
-    onAccepted: dataObject.upload();
-
-    Binding {
-        target: dataObject
-        property: "value"
-        value: root.text
-        when: !dataObject.readOnly
+    onAccepted:
+    {
+        console.log("VALUE HAS CHANGED... SETTING" +  text)
+        sofaData.value = text
+        root.focus = false
+    }
+    onEditingFinished:
+    {
+        console.log("VALUE HAS CHANGED... SETTING2" + text)
+        sofaData.value = text
+        root.focus = false
     }
 }

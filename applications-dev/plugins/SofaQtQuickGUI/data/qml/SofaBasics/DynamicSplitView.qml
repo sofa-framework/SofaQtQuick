@@ -18,7 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 import Qt.labs.settings 1.0
@@ -53,6 +53,7 @@ Item {
 
     property bool isLoaded: false
     function load() {
+
         if(0 === uiId)
             return;
 
@@ -64,8 +65,8 @@ Item {
             item.load();
         }
 
-        for(var i = 0; i < root.children.length; ++i) {
-            var item = root.children[i];
+        for(i = 0; i < root.children.length; ++i) {
+            item = root.children[i];
             if(!item.isSplitter && !item.isView)
                 continue;
 
@@ -85,25 +86,23 @@ Item {
                 for(var i = 0; i < viewIdArray.length; ++i) {
                     if(0 === viewIdArray[i].length)
                         continue;
-
                     createView({"uiId": viewIdArray[i]});
                 }
 
                 var splitterIdArray = uiSettings.splitterIds.split(';');
-                for(var i = 0; i < splitterIdArray.length; ++i) {
+                for(i = 0; i < splitterIdArray.length; ++i) {
                     if(0 === splitterIdArray[i].length)
                         continue;
-
                     createSplitter({"uiId": splitterIdArray[i]});
                 }
-
                 load();
             }
         }
 
         // use the default settings if there is no saved one
-        if(0 === children.length)
+        if(0 === children.length){
             var view = createView();
+        }
     }
 
     onChildrenChanged: {
@@ -173,6 +172,7 @@ Item {
             return null;
 
         for(var i = 0; i < children.length; ++i) {
+
             var item = children[i];
             if(!item.isView)
                 continue;
@@ -185,7 +185,8 @@ Item {
     }
 
     function createView(properties) {
-        if(undefined === properties)
+
+       if(undefined === properties)
             properties = {};
 
         var view = viewComponent.createObject(root, properties);
@@ -196,7 +197,8 @@ Item {
         return view;
     }
 
-    function splitView(view, orientation, position) {
+    function splitView(view, orientation, position)
+    {
         var splitter = null;
 
         if(Qt.Horizontal === orientation) {
@@ -204,16 +206,17 @@ Item {
 
             var newView;
             if(position.x > view.x + view.width /2) {
-                newView = createView({"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": splitter, "rightEdge": view.rightEdge});
+                newView = createView(
+                            {"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": splitter, "rightEdge": view.rightEdge});
                 view.rightEdge = splitter;
             } else {
-                newView = createView({"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": view.leftEdge, "rightEdge": splitter});
+                newView = createView(
+                            {"topEdge": view.topEdge, "bottomEdge": view.bottomEdge, "leftEdge": view.leftEdge, "rightEdge": splitter});
                 view.leftEdge = splitter;
             }
         } else {
             splitter = createSplitter({"y": position.y, "topLeftEdge": view.leftEdge, "bottomRightEdge": view.rightEdge, "orientation": Qt.Horizontal});
 
-            var newView;
             if(position.y < view.y + view.height /2) {
                 newView = createView({"topEdge": view.topEdge, "bottomEdge": splitter, "leftEdge": view.leftEdge, "rightEdge": view.rightEdge});
                 view.topEdge = splitter;
@@ -307,7 +310,7 @@ Item {
         // merge vertically - top to bottom
         if(view.bottomEdge && view.bottomEdge === mergingView.topEdge && view.leftEdge === mergingView.leftEdge && view.rightEdge === mergingView.rightEdge) {
             // splitter is shared only by the two views
-            var splitter = view.bottomEdge;
+            splitter = view.bottomEdge;
             if(splitter.topLeftEdge === view.leftEdge && splitter.bottomRightEdge === view.rightEdge) {
                 splitter.destroyByUser();
                 view.bottomEdge = mergingView.bottomEdge;
@@ -323,8 +326,8 @@ Item {
                     mergingView.destroyByUser();
                 } else { // splitter is shared by two views and also by other views on the left and on the right
                     view.bottomEdge = mergingView.bottomEdge;
-                    var leftSplitter = createSplitter({"y": splitter.y, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.leftEdge, "orientation": splitter.orientation});
-                    var rightSplitter = createSplitter({"y": splitter.y, "topLeftEdge": view.rightEdge, "bottomRightEdge": splitter.bottomRightEdge, "orientation": splitter.orientation});
+                    leftSplitter = createSplitter({"y": splitter.y, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.leftEdge, "orientation": splitter.orientation});
+                    rightSplitter = createSplitter({"y": splitter.y, "topLeftEdge": view.rightEdge, "bottomRightEdge": splitter.bottomRightEdge, "orientation": splitter.orientation});
                     replaceWithSuitableSplitter(splitter, leftSplitter, rightSplitter);
                     mergingView.destroyByUser();
                     splitter.destroyByUser();
@@ -335,7 +338,7 @@ Item {
         // merge horizontally - right to left
         if(view.rightEdge && view.rightEdge === mergingView.leftEdge && view.bottomEdge === mergingView.bottomEdge && view.topEdge === mergingView.topEdge) {
             // splitter is shared only by the two views
-            var splitter = view.rightEdge;
+            splitter = view.rightEdge;
             if(splitter.bottomRightEdge === view.bottomEdge && splitter.topLeftEdge === view.topEdge) {
                 splitter.destroyByUser();
                 view.rightEdge = mergingView.rightEdge;
@@ -363,7 +366,7 @@ Item {
         // merge horizontally - left to right
         if(view.leftEdge && view.leftEdge === mergingView.rightEdge && view.bottomEdge === mergingView.bottomEdge && view.topEdge === mergingView.topEdge) {
             // splitter is shared only by the two views
-            var splitter = view.leftEdge;
+            splitter = view.leftEdge;
             if(splitter.bottomRightEdge === view.bottomEdge && splitter.topLeftEdge === view.topEdge) {
                 splitter.destroyByUser();
                 view.leftEdge = mergingView.leftEdge;
@@ -380,7 +383,7 @@ Item {
                 } else { // splitter is shared by two views and also by other views on the left and on the right
                     view.leftEdge = mergingView.leftEdge;
                     var bottomSplitter = createSplitter({"x": splitter.x, "topLeftEdge": view.bottomEdge, "bottomRightEdge": splitter.bottomRightEdge, "orientation": splitter.orientation});
-                    var topSplitter = createSplitter({"x": splitter.x, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.topEdge, "orientation": splitter.orientation});
+                    topSplitter = createSplitter({"x": splitter.x, "topLeftEdge": splitter.topLeftEdge, "bottomRightEdge": view.topEdge, "orientation": splitter.orientation});
                     replaceWithSuitableSplitter(splitter, bottomSplitter, topSplitter);
                     mergingView.destroyByUser();
                     splitter.destroyByUser();
@@ -456,15 +459,15 @@ Item {
 
             z: 0
             readonly property bool isView: true
-
             property int uiId: 0
             property int previousUiId: uiId
+            property int contentUiId: 0
+
             onUiIdChanged: {
                 SofaApplication.uiSettings.replace(previousUiId, uiId);
                 init();
             }
 
-            property int contentUiId: 0
 
             Settings {
                 id: uiSettings
@@ -476,11 +479,10 @@ Item {
                 property int leftEdgeUiId   : 0
                 property int rightEdgeUiId  : 0
 
-                Component.onCompleted: {
+                Component.onCompleted:
+                {
                     view.contentUiId = uiSettings.contentUiId;
-
                     view.active = true;
-
                     uiSettings.contentUiId = Qt.binding(function() {return null !== view.item && undefined !== view.item.uiId ? view.item.uiId : 0;});
                 }
             }
@@ -525,11 +527,8 @@ Item {
             property bool isUserDestroyed: false
             function destroyByUser() {
                 isUserDestroyed = true;
-
-                if(item && undefined !== item.setNoSettings)
-                    item.setNoSettings();
-
                 destroy();
+                SofaApplication.uiSettings.remove(contentUiId);
             }
 
             property Item corner
@@ -607,7 +606,7 @@ Item {
 
                         if(dragTarget) {
                             if(dragTarget.isSplitter) {
-                                var splitter = dragTarget;
+                                splitter = dragTarget;
                                 if(Qt.Vertical === splitter.orientation) {
                                     splitter.x = mapToItem(root, mouse.x, mouse.y).x;
                                     var dragBoundary = computeDragXBoundary(splitter);
@@ -616,7 +615,7 @@ Item {
                                     splitter.x = Math.max(dragMinimumX, Math.min(splitter.x, dragMaximumX));
                                 } else {
                                     splitter.y = mapToItem(root, mouse.x, mouse.y).y;
-                                    var dragBoundary = computeDragYBoundary(splitter);
+                                    dragBoundary = computeDragYBoundary(splitter);
                                     var dragMinimumY = dragBoundary.min;
                                     var dragMaximumY = dragBoundary.max;
                                     splitter.y = Math.max(dragMinimumY, Math.min(splitter.y, dragMaximumY));
@@ -851,7 +850,7 @@ Item {
 
     function shareEdge(splitter, otherSplitter) {
         if((null !== splitter.bottomRightEdge && splitter.bottomRightEdge === otherSplitter.topLeftEdge) ||
-           (null !== splitter.topLeftEdge && splitter.topLeftEdge === otherSplitter.bottomRightEdge)) {
+                (null !== splitter.topLeftEdge && splitter.topLeftEdge === otherSplitter.bottomRightEdge)) {
             return true;
         }
 
@@ -1018,6 +1017,9 @@ Item {
                 splitter.relativeX          = uiSettings.relativeX;
                 splitter.relativeY          = uiSettings.relativeY;
                 splitter.orientation        = uiSettings.orientation;
+
+                splitter.x = splitter.relativeX * root.width
+                splitter.y = splitter.relativeY * root.height
             }
 
             Component.onCompleted: {
