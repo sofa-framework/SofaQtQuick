@@ -10,6 +10,7 @@ import Sofa
 import Sofa.Core
 import Sofa.Helper
 import SofaApplication
+import splib
 
 ######################################################################
 #################### INTROSPECTING HELPER METHODS ####################
@@ -215,6 +216,16 @@ def callFunction(file, function, *args, **kwargs):
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     return getattr(m, function)(*args, **kwargs)
+
+
+def createTypeConversionEngine(modulename, node, srcData, dstData, srcType, dstType):
+    engineName = "to_"+dstData.getOwner().getName() + "_" + dstData.getName()
+    if engineName not in node.objects:
+        m = importlib.import_module(modulename)
+        e = splib.TypeConversionEngine(name=engineName, dstType=dstData.typeName())
+        dstData.setParent(e.dst)
+        node.addObject(e)
+    e.addDataConversion(srcData, m.convert)
 
 
 def createPrefabFromNode(fileName, node, name, help):

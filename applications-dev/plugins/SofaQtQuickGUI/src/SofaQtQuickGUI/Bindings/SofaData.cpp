@@ -206,22 +206,27 @@ bool SofaData::tryLinkingIncompatibleTypes(const QString& path)
         SofaBaseApplication::Instance()->callbacksDirectory(); // just making sure the pythonPath contains the callbacks folder...
         BaseData* dstData = rawData();
         bool ret = false;
-        sofapython3::PythonEnvironment::executePython([srcData, dstData, &ret](){
+        sofapython3::PythonEnvironment::executePython([root, srcData, dstData, &ret](){
             QString srcType = srcData->getValueTypeString().c_str();
             QString dstType = dstData->getValueTypeString().c_str();
             auto modulename = srcType.replace("<", "_").replace(">", "_").toStdString() + "2" + dstType.replace("<", "_").replace(">", "_").toStdString();
+            sofapython3::PythonEnvironment::runString("import sys\nprint(sys.path)");
             sofapython3::py::module m = sofapython3::py::module::import(modulename.c_str());
-            if (!m.is_none()) {
-                dstData->getOwner()->addUpdateCallback(dstData->getName() + "_" + modulename,  {srcData}, [modulename, srcData, dstData]() {
-                    sofapython3::PythonEnvironment::executePython([modulename, srcData, dstData](){
-                        sofapython3::py::module m = sofapython3::py::module::import(modulename.c_str());
-                        m.attr("convert")(sofapython3::PythonFactory::toPython(srcData),
-                                          sofapython3::PythonFactory::toPython(dstData));
-                    });
-                    return sofa::core::objectmodel::ComponentState::Valid;
-                }, {dstData});
+            sofapython3::py::module sqq = sofapython3::py::module::import("SofaQtQuick");
+            std::string engineName = "to_"+dstData->getOwner()->getName() + "_" + dstData->getName();
+
+            if (static_cast<sofa::simulation::Node*>(root)->getObject(engineName))
                 ret = true;
+            else if (!m.is_none())
+            {
+                sqq.attr("createTypeConversionEngine")(modulename.c_str(),
+                                                       sofapython3::PythonFactory::toPython(root),
+                                                       sofapython3::PythonFactory::toPython(srcData),
+                                                       sofapython3::PythonFactory::toPython(dstData),
+                                                       srcType.toStdString().c_str(),
+                                                       dstType.toStdString().c_str());
             }
+            ret = true;
         });
         if (ret)
             return true;

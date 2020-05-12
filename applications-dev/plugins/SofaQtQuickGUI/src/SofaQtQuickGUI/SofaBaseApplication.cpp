@@ -697,8 +697,8 @@ bool SofaBaseApplication::createCallback(QString file)
                     "import Sofa.Core\n"
                     "\n"
                     "\n"
-                    "def convert(src, dst):\n"
-                    "    dst = src.value\n"
+                    "def convert(src):\n"
+                    "    return src.value\n"
                     );
             f.close();
             return true;
