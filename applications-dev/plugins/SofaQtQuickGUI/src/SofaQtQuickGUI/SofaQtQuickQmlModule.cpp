@@ -68,7 +68,7 @@ using sofaqtquick::bindings::SofaBaseObjectList;
 #include <SofaQtQuickGUI/Models/SofaLinkCompletionModel.h>
 #include <SofaQtQuickGUI/Models/SofaInspectorDataListModel.h>
 #include <SofaQtQuickGUI/Models/SofaDisplayFlagsTreeModel.h>
-//#include <SofaQtQuickGUI/Models/CustomInspectorModel.h>
+#include <SofaQtQuickGUI/Models/SofaCameraListModel.h>
 #include <SofaQtQuickGUI/Windows/CameraView.h>
 #include <SofaQtQuickGUI/Windows/EditView.h>
 #include <SofaQtQuickGUI/Windows/AssetView.h>
@@ -307,7 +307,7 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<SofaDataContainerListModel>                     ("SofaDataContainerListModel"           , versionMajor, versionMinor, "SofaDataContainerListModel");
     qmlRegisterType<SofaLinkCompletionModel>                        ("SofaLinkCompletionModel"              , versionMajor, versionMinor, "SofaLinkCompletionModel");
     qmlRegisterType<SofaInspectorDataListModel>                     ("SofaInspectorDataListModel"           , versionMajor, versionMinor, "SofaInspectorDataListModel");
-    //    qmlRegisterType<CustomInspectorModel>                           ("CustomInspectorModel"                 , versionMajor, versionMinor, "CustomInspectorModel");
+    qmlRegisterType<SofaCameraListModel>                            ("SofaCameraListModel"                  , versionMajor, versionMinor, "SofaCameraListModel");
     qmlRegisterType<SofaDisplayFlagsTreeModel>                      ("SofaDisplayFlagsTreeModel"            , versionMajor, versionMinor, "SofaDisplayFlagsTreeModel");
     qmlRegisterType<SofaViewer>                                     ("SofaViewer"                           , versionMajor, versionMinor, "SofaViewer");
     qmlRegisterType<CameraView>                                     ("CameraView"                           , versionMajor, versionMinor, "CameraView");

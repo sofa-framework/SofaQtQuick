@@ -26,6 +26,7 @@ import SofaBasics 1.0
 import SofaBaseScene 1.0
 import SofaApplication 1.0
 import CameraView 1.0
+import SofaCameraListModel 1.0
 
 CameraView {
     readonly property string docstring :
@@ -44,9 +45,6 @@ CameraView {
     property int maximumValue: 16
 
     property bool configurable: true
-    property var idComboList: ListModel {
-        id: cameraNameItems
-    }
 
     property int uiId: 0
     property int previousUiId: uiId
@@ -65,7 +63,7 @@ CameraView {
 
         if(root.sofaScene && root.sofaScene.ready)
         {
-            recreateCamera();
+            recreateCamera(0);
         }
 
 
@@ -122,9 +120,40 @@ CameraView {
         SofaCamera {}
     }
 
+    property var cameraListModel: SofaCameraListModel {
+        onModelReset: {
+            root.recreateCamera(0)
+        }
+        Component.onCompleted: {
+            rescanForCameraTimer.start()
+        }
+    }
+
     property bool defaultCameraOrthographic: false
     property bool keepCamera: false
     property bool hideBusyIndicator: false
+
+    function destroyCamera() {
+        if (root.camera !== null) {
+            root.camera.destroy();
+            root.camera = null;
+        }
+    }
+
+    function recreateCamera(idx) {
+        destroyCamera()
+        if (idx < cameraListModel.rowCount() && idx >= 0) {
+
+            root.camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
+            root.camera.bindCameraFromScene(root.sofaScene, idx)
+            root.camera.sofaComponent = root.sofaScene.componentsByType("BaseCamera").at(idx)
+
+            if(!keepCamera)
+                viewAll();
+        }
+        noCamera.visible = root.camera && root.camera.sofaComponent ? true : false
+    }
+
 
     Timer
     {
@@ -132,60 +161,19 @@ CameraView {
         interval: 500
         repeat: true
         onTriggered: {
-            updateCameraFromIndex(0);
+            if (!cameraListModel.sofaScene)
+                cameraListModel.sofaScene = root.sofaScene
+            cameraListModel.update()
         }
-    }
-
-    function updateCameraFromIndex(index)
-    {
-        var listCameraInSofa = sofaScene.componentsByType("BaseCamera");
-        if(listCameraInSofa.size() === 0)
-        {
-            rescanForCameraTimer.start()
-            return null;
-        }
-        if(listCameraInSofa.size() < index)
-        {
-            rescanForCameraTimer.start()
-            return null;
-        }
-        noCamera.visible = false
-
-        if (idComboList.count !== listCameraInSofa.size())
-        {
-            idComboList.clear()
-            for (var camera = 0 ; camera < listCameraInSofa.size() ; ++camera)
-                idComboList.append({"name": listCameraInSofa.at(camera).getName() })
-        }
-        return listCameraInSofa.at(index)
-    }
-
-    function destroyCamera() {
-        if(camera!==null) {
-            camera.destroy();
-            camera = null;
-        }
-    }
-
-    function recreateCamera() {
-        camera = cameraComponent.createObject(root, {orthographic: defaultCameraOrthographic} );
-        camera.bindCameraFromScene(root.sofaScene, 0)
-
-        //Todo fetch index from somewhere
-        var defaultIndex = 0;
-        camera.sofaComponent = updateCameraFromIndex(0);
-
-        if(!keepCamera)
-            viewAll();
     }
 
     Connections {
         target: sofaScene
-        onStatusChanged :{
-            if(SofaBaseScene.Ready === root.sofaScene.status){
-                root.recreateCamera();
+        onStatusChanged: {
+            if (SofaBaseScene.Ready === root.sofaScene.status) {
+                cameraListModel.sofaScene = root.sofaScene;
             }
-            if(SofaBaseScene.Unloading === root.sofaScene.status){
+            if (SofaBaseScene.Unloading === root.sofaScene.status) {
                 root.destroyCamera();
             }
         }
@@ -467,20 +455,12 @@ CameraView {
                 ComboBox {
                     id: indexCameraComboBox
                     Layout.fillWidth: true
+                    textRole: "name"
 
-                    model: root.idComboList
-                    property var selectedIndex: 0
-                    Connections {
-                        target: root.idComboList
-                        onCountChanged: {
-                            indexCameraComboBox.currentIndex = indexCameraComboBox.selectedIndex
-                        }
+                    model: root.cameraListModel
+                    onCurrentIndexChanged: {
+                        root.recreateCamera(currentIndex)
                     }
-                    onAccepted: {
-                        indexCameraComboBox.selectedIndex = indexCameraComboBox.currentIndex
-                        root.updateCameraFromIndex(indexCameraComboBox.currentIndex)
-                    }
-
                 }
                 GroupBox {
                     id: visualPanel
