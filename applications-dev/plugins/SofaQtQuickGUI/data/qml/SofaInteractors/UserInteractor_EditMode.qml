@@ -171,6 +171,9 @@ UserInteractor {
                     model.sofaData = SofaApplication.selectedComponent.findData("position")
                     var p = selectable.position
                     model.insertRow([p.x, p.y, p.z])
+                    SofaApplication.selectedComponent.init()
+                    SofaApplication.selectedComponent.reinit()
+                    SofaApplication.selectedComponent.findData("showObject").value = 1
                     return
                 }
             }
