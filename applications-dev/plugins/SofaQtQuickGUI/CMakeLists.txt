@@ -20,8 +20,8 @@ endif ()
 #NodeEditor
 #option(SOFAGUIQT_ENABLE_NODEGRAPH "Build the Node graph representation. NodeEditor library is needed." OFF)
 #if (SOFAGUIQT_ENABLE_NODEGRAPH)
-set(NODEEDITOR_LIBRARY "/usr/local/lib/libnodes.so")
-set(NODEEDITOR_INCLUDE_PATH "/usr/local/include")
+FIND_LIBRARY(NODEEDITOR_LIBRARY NAMES nodes HINTS /usr/local/lib ../../../../../nodeeditor/build/lib)
+FIND_PATH(NODEEDITOR_INCLUDE_PATH nodes/internal/moc_Node.cpp HINTS /usr/local/include ../../../../../nodeeditor/build/include)
 find_package(NodeEditor REQUIRED)
 #endif()
 #sofa_set_01(SOFAGUIQT_HAVE_NODEEDITOR VALUE ${SOFAGUIQT_ENABLE_NODEGRAPH} BOTH_SCOPES)
@@ -320,7 +320,7 @@ endif ()
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaComponentBase SofaMeshCollision
-    Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine Qt5::Charts stdc++fs QmlUI)
+    Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine Qt5::Charts QmlUI)
 #target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
