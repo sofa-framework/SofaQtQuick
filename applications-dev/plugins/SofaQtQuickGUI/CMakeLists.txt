@@ -17,16 +17,6 @@ else()
     message(FATAL_ERROR "SofaPython3 is required to compile SofaQtQuick")
 endif ()
 
-#NodeEditor
-#option(SOFAGUIQT_ENABLE_NODEGRAPH "Build the Node graph representation. NodeEditor library is needed." OFF)
-#if (SOFAGUIQT_ENABLE_NODEGRAPH)
-FIND_LIBRARY(NODEEDITOR_LIBRARY NAMES nodes HINTS /usr/local/lib ../../../../../nodeeditor/build/lib)
-FIND_PATH(NODEEDITOR_INCLUDE_PATH nodes/internal/moc_Node.cpp HINTS /usr/local/include ../../../../../nodeeditor/build/include)
-find_package(NodeEditor REQUIRED)
-#endif()
-#sofa_set_01(SOFAGUIQT_HAVE_NODEEDITOR VALUE ${SOFAGUIQT_ENABLE_NODEGRAPH} BOTH_SCOPES)
-
-
 set(SOURCE_FILES
     src/SofaQtQuickGUI/DataHelper.cpp
     src/SofaQtQuickGUI/SofaQtQuickQmlModule.cpp
@@ -295,6 +285,20 @@ add_definitions(${Qt5QuickControls2_DEFINITIONS})
 add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 
+#NodeEditor
+include(ExternalProject)
+
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+ExternalProject_Add(nodeeditor
+    GIT_REPOSITORY https://github.com/paceholder/nodeeditor
+    GIT_TAG 2.1.3
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DDOWNLOAD_DATA=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
+)
+
+set(NodeEditor_DIR ${EXTERNAL_INSTALL_LOCATION})
+find_package(NodeEditor REQUIRED)
+set(NODEEDITOR_LIBRARY ${EXTERNAL_INSTALL_LOCATION}/lib/libnodes.so)
+set(NODEEDITOR_INCLUDE_PATH ${EXTERNAL_INSTALL_LOCATION}/include)
 #find_package(ASSIMP REQUIRED)
 #message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
 #include_directories( ${ASSIMP_INCLUDE_DIR})
