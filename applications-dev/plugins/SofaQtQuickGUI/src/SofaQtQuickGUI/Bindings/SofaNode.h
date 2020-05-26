@@ -105,6 +105,8 @@ public:
 
     Q_INVOKABLE void moveChild(SofaNode* node, SofaNode* prev_parent);
     Q_INVOKABLE void moveObject(SofaBaseObject* obj);
+    Q_INVOKABLE void insertAfter(SofaBaseObject* afterObject, SofaBaseObject* obj);
+    Q_INVOKABLE void insertObject(SofaBaseObject* obj, unsigned int position);
 
     Q_INVOKABLE void removeObject(SofaBaseObject* obj);
 

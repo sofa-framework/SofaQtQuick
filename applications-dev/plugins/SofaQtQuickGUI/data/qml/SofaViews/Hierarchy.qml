@@ -777,29 +777,29 @@ Rectangle {
                     }
 
                     function dropFromHierarchy(src) {
-                        var oldIndex = src.index
-                        oldIndex = sceneModel.mapToSource(oldIndex)
-                        var theComponent = basemodel.getBaseFromIndex(oldIndex)
-                        if (!theComponent)
-                            return
+                        print("drop from Hierarchy: " + src.item.getName())
+                        var theComponent = src.item
+
                         var newIndex = styleData.index
                         newIndex = sceneModel.mapToSource(newIndex)
                         var parentNode = basemodel.getBaseFromIndex(newIndex)
 
-                        if (!parentNode.isNode()) {
+                        if (parentNode.isNode()) {
+                            var oldParent = theComponent.getFirstParent()
+
+                            if (oldParent.getPathName() !== parentNode.getPathName() &&
+                                    parentNode.getPathName() !== theComponent.getPathName()) {
+                                if (theComponent.isNode()) {
+                                    parentNode.moveChild(theComponent, oldParent)
+                                }
+                                else {
+                                    parentNode.moveObject(theComponent)
+                                }
+                            }
+                        } else {
+                            var atPlaceObject = parentNode
                             parentNode = parentNode.getFirstParent()
-                        }
-
-                        var oldParent = theComponent.getFirstParent()
-
-                        if (oldParent.getPathName() !== parentNode.getPathName() &&
-                                parentNode.getPathName() !== theComponent.getPathName()) {
-                            if (theComponent.isNode()) {
-                                parentNode.moveChild(theComponent, oldParent)
-                            }
-                            else {
-                                parentNode.moveObject(theComponent)
-                            }
+                            parentNode.insertAfter(atPlaceObject, theComponent)
                         }
                     }
 
