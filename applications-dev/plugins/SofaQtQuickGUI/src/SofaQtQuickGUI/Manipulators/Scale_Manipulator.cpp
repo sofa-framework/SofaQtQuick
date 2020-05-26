@@ -4,6 +4,7 @@
 #include <SofaQtQuickGUI/SofaBaseApplication.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
 #include <SofaQtQuickGUI/Helper/sofaqtconversions.h>
+#include <sofa/core/visual/VisualParams.h>
 
 using namespace sofa::defaulttype;
 namespace sofaqtquick
@@ -16,140 +17,80 @@ Scale_Manipulator::Scale_Manipulator(QObject* parent)
     m_index = -1;
 }
 
-void Scale_Manipulator::drawXArrow(const Vec3d& pos)
+void Scale_Manipulator::drawFace(const std::vector<Vec3d>& q, s_color color, sofa::core::visual::DrawTool& dt, int idx, bool dir)
 {
-    Vec3d p1 = pos + Vec3d(squareWidth, 0.0, 0.0);
-    Vec3d p2 = p1 + Vec3d(arrowLength, 0.0, 0.0);
-
-    if (m_index == 0)
-    {
-        glPushAttrib(GL_ENABLE_BIT);
-        glLineStipple(2, 0xAAAA);
-        glEnable(GL_LINE_STIPPLE);
-        glLineWidth(0.2f);
-        drawtools.drawInfiniteLine(pos, Vec3d(1.0, 0.0, 0.0), lightwhite);
-        drawtools.drawInfiniteLine(pos, Vec3d(-1.0, 0.0, 0.0), lightwhite);
-        glDisable(GL_LINE_STIPPLE);
-        glPopAttrib();
-    }
-    drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 0 ? highlightred : red, 16);
-}
-
-void Scale_Manipulator::drawYArrow(const Vec3d& pos)
-{
-    Vec3d p1 = pos + Vec3d(0.0, squareWidth, 0.0);
-    Vec3d p2 = p1 + Vec3d(0.0, arrowLength, 0.0);
-
-    if (m_index == 1)
-    {
-        glPushAttrib(GL_ENABLE_BIT);
-        glLineStipple(2, 0xAAAA);
-        glEnable(GL_LINE_STIPPLE);
-        glLineWidth(0.2f);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 1.0, 0.0), lightwhite);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, -1.0, 0.0), lightwhite);
-        glDisable(GL_LINE_STIPPLE);
-        glPopAttrib();
-    }
-    drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 1 ? highlightgreen : green, 16);
-}
-
-void Scale_Manipulator::drawZArrow(const Vec3d& pos)
-{
-    Vec3d p1 = pos + Vec3d(0.0, 0.0, squareWidth);
-    Vec3d p2 = p1 + Vec3d(0.0, 0.0, arrowLength);
-
-    if (m_index == 2)
-    {
-        glPushAttrib(GL_ENABLE_BIT);
-        glLineStipple(2, 0xAAAA);
-        glEnable(GL_LINE_STIPPLE);
-        glLineWidth(0.2f);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, 1.0), lightwhite);
-        drawtools.drawInfiniteLine(pos, Vec3d(0.0, 0.0, -1.0), lightwhite);
-        glDisable(GL_LINE_STIPPLE);
-        glPopAttrib();
-    }
-    drawtools.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, m_index == 2 ? highlightblue : blue, 16);
-}
-
-void Scale_Manipulator::drawXYPlane(const Vec3d& pos)
-{
-    if (lightblue.w() != 1.0f)
+    if (color.light.w() != 1.0f)
     {
         // if we removed the alpha it's for picking
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
-    // Draw XY plane
-    Vec3d a = pos + Vec3d(squareWidth * 2.0, squareWidth * 2.0, 0.0);
-    Vec3d b = a + Vec3d(squareWidth, 0.0, 0.0);
-    Vec3d c = b + Vec3d(0.0, squareWidth, 0.0);
-    Vec3d d = c + Vec3d(-squareWidth, 0.0, 0.0);
-    drawtools.drawQuad(a,b,c,d, Vec3d(0,0,1), m_index == 3 ? highlightblue : lightblue);
-    drawtools.drawLineLoop({a,b,c,d}, lineThickness, blue);
-}
+    bool shouldDraw = m_index == idx || (m_isUniform && m_index != -1);
+    glEnable(GL_DEPTH_TEST);
+    dt.drawQuad(q[0],q[1],q[2],q[3], (dir ? -color.primitive : color.primitive), shouldDraw ? color.highlight : color.light);
+    dt.drawLineLoop({q[0],q[1],q[2],q[3]}, lineThickness, color.color);
 
-void Scale_Manipulator::drawYZPlane(const Vec3d& pos)
-{
-    if (lightred.w() != 1.0f)
+    Vec3d p1 = Vec3d((q[0].x() + q[2].x()) / 2, (q[0].y() + q[2].y()) / 2, (q[0].z() + q[2].z()) / 2);
+    Vec3d p2 = p1 + ((dir ? color.primitive : -color.primitive) * arrowLength);
+
+    if (shouldDraw)
     {
-        // if we removed the alpha it's for picking
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glPushAttrib(GL_ENABLE_BIT);
+        glLineStipple(2, 0xAAAA);
+        glEnable(GL_LINE_STIPPLE);
+        glLineWidth(0.2f);
+        dt.drawInfiniteLine(p1, color.primitive, white.light);
+        dt.drawInfiniteLine(p2, -color.primitive, white.light);
+        glDisable(GL_LINE_STIPPLE);
+        glPopAttrib();
     }
+    dt.drawArrow(p1, p2, radius, float(arrowLength) / 5.0f, radius*5.0f, shouldDraw ? color.highlight : color.light, 16);
+    Vec3d vecLen(arrowLength / 8.0, arrowLength / 8.0, arrowLength / 8.0);
 
-    // Draw YZ plane
-    Vec3d a = pos + Vec3d(0.0, squareWidth * 2.0, squareWidth * 2.0);
-    Vec3d b = a + Vec3d(0.0, squareWidth, 0.0);
-    Vec3d c = b + Vec3d(0.0, 0.0, squareWidth);
-    Vec3d d = c + Vec3d(0.0, -squareWidth, 0.0);
-    drawtools.drawQuad(a,b,c,d, Vec3d(1,0,0), m_index == 4 ? highlightred : lightred);
-    drawtools.drawLineLoop({a,b,c,d}, lineThickness, red);
+    dt.drawQuad(p2 + vecLen.linearProduct(Vec3d(-1.0, -1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(-1.0, 1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(-1.0, 1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(-1.0, -1.0, 1.0)),
+                (dir ? -color.primitive : color.primitive),
+                shouldDraw ? color.highlight : color.light * 0.4);
+
+    dt.drawQuad(p2 + vecLen.linearProduct(Vec3d(-1.0, -1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(-1.0, -1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, -1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, -1.0, -1.0)),
+                (dir ? -color.primitive : color.primitive),
+                shouldDraw ? color.highlight : color.light * 0.4);
+
+    dt.drawQuad(p2 + vecLen.linearProduct(Vec3d(-1.0, -1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(-1.0, 1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, 1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, -1.0, -1.0)),
+                (dir ? -color.primitive : color.primitive),
+                shouldDraw ? color.highlight : color.light * 0.4);
+
+
+    dt.drawQuad(p2 + vecLen.linearProduct(Vec3d(-1.0, 1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(-1.0, 1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, 1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, 1.0, -1.0)),
+                (dir ? -color.primitive : color.primitive),
+                shouldDraw ? color.highlight : color.light * 0.4);
+
+    dt.drawQuad(p2 + vecLen.linearProduct(Vec3d(1.0, 1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, 1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, -1.0, -1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, -1.0, 1.0)),
+                (dir ? -color.primitive : color.primitive),
+                shouldDraw ? color.highlight : color.light * 0.4);
+
+    dt.drawQuad(p2 + vecLen.linearProduct(Vec3d(-1.0, -1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(-1.0, 1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, 1.0, 1.0)),
+                p2 + vecLen.linearProduct(Vec3d(1.0, -1.0, 1.0)),
+                (dir ? -color.primitive : color.primitive),
+                shouldDraw ? color.highlight : color.light * 0.4);
 }
 
-void Scale_Manipulator::drawZXPlane(const Vec3d& pos)
-{
-    if (lightgreen.w() != 1.0f)
-    {
-        // if we removed the alpha it's for picking
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-
-    // Draw ZX plane
-    Vec3d a = pos + Vec3d(squareWidth * 2.0, 0.0, squareWidth * 2.0);
-    Vec3d b = a + Vec3d(0.0, 0.0, squareWidth);
-    Vec3d c = b + Vec3d(squareWidth, 0.0, 0.0);
-    Vec3d d = c + Vec3d(0.0, 0.0, -squareWidth);
-    drawtools.drawQuad(a,b,c,d, Vec3d(0,1,0), m_index == 5 ? highlightgreen : lightgreen);
-    drawtools.drawLineLoop({a,b,c,d}, lineThickness, green);
-}
-
-void Scale_Manipulator::drawCamPlane(const Vec3d& pos, bool isPicking)
-{
-    Vec3d up(double(cam->up().x()),
-             double(cam->up().y()),
-             double(cam->up().z()));
-    Vec3d right(double(cam->right().x()),
-             double(cam->right().y()),
-             double(cam->right().z()));
-
-    Vec3d fwd(double(cam->direction().x()),
-              double(cam->direction().y()),
-              double(cam->direction().z()));
-
-    Vec3d a = pos + (up * (squareWidth / 2.0) + (right * (squareWidth / 2.0)));
-    Vec3d b = a - (up * squareWidth);
-    Vec3d c = b - (right * squareWidth);
-    Vec3d d = c + (up * squareWidth);
-    drawtools.drawLineLoop({a,b,c,d}, lineThickness, white);
-    if (m_index == 6 || isPicking)
-        drawtools.drawQuad(a,b,c,d, fwd, m_index == 6 ? highlightwhite : white);
-
-    drawtools.drawSphere(pos, crossSize*1.3f, black);
-    drawtools.drawSphere(pos, crossSize, yellow);
-}
 
 sofa::core::objectmodel::BaseData* Scale_Manipulator::getData()
 {
@@ -158,16 +99,57 @@ sofa::core::objectmodel::BaseData* Scale_Manipulator::getData()
     /// @bmarques TODO: We need a way to select a default data field to manipulate
     /// Then we'll also need a way to manually pick which datafield we want to manipulate
     for (auto& d : obj->rawBase()->getDataFields())
-        if (d->getValueTypeString() == "Vec3d" && (d->getName() == "translation" || d->getName() == "position"))
+        if (d->getValueTypeString() == "Vec3d" && d->getName() == "scale3d")
             return d;
     return nullptr;
 }
 
 void Scale_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bool isPicking)
 {
-    data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
-    if (!data) return;
-    QVector3D pos = helper::toQVector3D(data->getValue());
+    BoundingBox bbox = SofaBaseApplication::GetSelectedComponent()->rawBase()->f_bbox.getValue();
+    std::vector<Vec3d> front;
+    front.push_back(bbox.minBBox());
+    front.push_back(Vec3d(bbox.minBBox().x(), bbox.maxBBox().y(), bbox.minBBox().z()));
+    front.push_back(Vec3d(bbox.maxBBox().x(), bbox.maxBBox().y(), bbox.minBBox().z()));
+    front.push_back(Vec3d(bbox.maxBBox().x(), bbox.minBBox().y(), bbox.minBBox().z()));
+
+    std::vector<Vec3d> back;
+    back.push_back(bbox.maxBBox());
+    back.push_back(Vec3d(bbox.minBBox().x(), bbox.maxBBox().y(), bbox.maxBBox().z()));
+    back.push_back(Vec3d(bbox.minBBox().x(), bbox.minBBox().y(), bbox.maxBBox().z()));
+    back.push_back(Vec3d(bbox.maxBBox().x(), bbox.minBBox().y(), bbox.maxBBox().z()));
+
+    std::vector<Vec3d> left;
+    left.push_back(bbox.minBBox());
+    left.push_back(Vec3d(bbox.minBBox().x(), bbox.minBBox().y(), bbox.maxBBox().z()));
+    left.push_back(Vec3d(bbox.minBBox().x(), bbox.maxBBox().y(), bbox.maxBBox().z()));
+    left.push_back(Vec3d(bbox.minBBox().x(), bbox.maxBBox().y(), bbox.minBBox().z()));
+
+    std::vector<Vec3d> right;
+    right.push_back(bbox.maxBBox());
+    right.push_back(Vec3d(bbox.maxBBox().x(), bbox.minBBox().y(), bbox.maxBBox().z()));
+    right.push_back(Vec3d(bbox.maxBBox().x(), bbox.minBBox().y(), bbox.minBBox().z()));
+    right.push_back(Vec3d(bbox.maxBBox().x(), bbox.maxBBox().y(), bbox.minBBox().z()));
+
+    std::vector<Vec3d> top;
+    top.push_back(bbox.maxBBox());
+    top.push_back(Vec3d(bbox.minBBox().x(), bbox.maxBBox().y(), bbox.maxBBox().z()));
+    top.push_back(Vec3d(bbox.minBBox().x(), bbox.maxBBox().y(), bbox.minBBox().z()));
+    top.push_back(Vec3d(bbox.maxBBox().x(), bbox.maxBBox().y(), bbox.minBBox().z()));
+
+    std::vector<Vec3d> bottom;
+    bottom.push_back(bbox.minBBox());
+    bottom.push_back(Vec3d(bbox.minBBox().x(), bbox.minBBox().y(), bbox.maxBBox().z()));
+    bottom.push_back(Vec3d(bbox.maxBBox().x(), bbox.minBBox().y(), bbox.maxBBox().z()));
+    bottom.push_back(Vec3d(bbox.maxBBox().x(), bbox.minBBox().y(), bbox.minBBox().z()));
+
+
+    QVector3D pos = helper::toQVector3D(Vec3d((bbox.minBBox().x() + bbox.maxBBox().x())/2.0,
+                                              (bbox.minBBox().y() + bbox.maxBBox().y())/2.0,
+                                              (bbox.minBBox().z() + bbox.maxBBox().z())/2.0));
+
+    sofa::core::visual::DrawToolGL& dt = *dynamic_cast<sofa::core::visual::DrawToolGL*>(
+                viewer.getVisualParams()->drawTool());
 
     cam = viewer.camera();
     if (!cam) return;
@@ -191,46 +173,43 @@ void Scale_Manipulator::internalDraw(const SofaViewer& viewer, int pickIndex, bo
     lineThickness = 1.0f;
     crossSize = 0.0028f * distanceToPoint;
 
+    red.primitive =   Vec3f(1.0f, 0.0f, 0.0f);
+    green.primitive = Vec3f(0.0f, 1.0f, 0.0f);
+    blue.primitive =  Vec3f(0.0f, 0.0f, 1.0f);
 
-    highlightred = Vec4f(1.0f, 0.5f, 0.5f, 1.0f);
-    highlightgreen = Vec4f(0.5f, 1.0f, 0.5f, 1.0f);
-    highlightblue = Vec4f(0.5f, 0.5f, 1.0f, 1.0f);
-    highlightwhite = Vec4f(1.0f, 1.0f, 1.0f, isPicking ? 1.0f : 0.2f);
+    red.highlight = Vec4f(1.0f, 0.5f, 0.5f, 0.7f);
+    green.highlight = Vec4f(0.5f, 1.0f, 0.5f, 0.7f);
+    blue.highlight = Vec4f(0.5f, 0.5f, 1.0f, 0.7f);
+    white.highlight = Vec4f(1.0f, 1.0f, 1.0f, isPicking ? 1.0f : 0.2f);
 
-    lightred = Vec4f(0.86f, 0.27f, 0.33f, isPicking ? 1.0f : 0.2f);
-    lightgreen = Vec4f(0.56f, 0.79f, 0.0f, isPicking ? 1.0f : 0.2f);
-    lightblue = Vec4f(0.30f, 0.53f, 0.94f, isPicking ? 1.0f : 0.2f);
-    lightwhite = Vec4f(.4f, 0.4f, 0.4f, 0.01f);
+    red.light = Vec4f(0.86f, 0.27f, 0.33f, isPicking ? 1.0f : 0.2f);
+    green.light = Vec4f(0.56f, 0.79f, 0.0f, isPicking ? 1.0f : 0.2f);
+    blue.light = Vec4f(0.30f, 0.53f, 0.94f, isPicking ? 1.0f : 0.2f);
+    white.light = Vec4f(.4f, 0.4f, 0.4f, 0.01f);
 
-    red = Vec4f(0.86f, 0.27f, 0.33f, 1.0f);
-    green = Vec4f(0.56f, 0.79f, 0.0f, 1.0f);
-    blue = Vec4f(0.30f, 0.53f, 0.94f, 1.0f);
-    white = Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
+    red.color = Vec4f(0.86f, 0.27f, 0.33f, 1.0f);
+    green.color = Vec4f(0.56f, 0.79f, 0.0f, 1.0f);
+    blue.color = Vec4f(0.30f, 0.53f, 0.94f, 1.0f);
+    white.color = Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
     black = Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
     yellow = Vec4f(0.957f, 0.65f, 0.0f, 1.0f);
 
     if (pickIndex == -1 || pickIndex == 0)
-        drawXArrow(helper::toVec3d(pos));
+        drawFace(right, red, dt, 0);
+    if (pickIndex == -1 || pickIndex == 3)
+        drawFace(left, red, dt, 3, false);
 
     if (pickIndex == -1 || pickIndex == 1)
-        drawYArrow(helper::toVec3d(pos));
+        drawFace(top, green, dt, 1);
+    if (pickIndex == -1 || pickIndex == 4)
+        drawFace(bottom, green, dt, 4, false);
 
     if (pickIndex == -1 || pickIndex == 2)
-        drawZArrow(helper::toVec3d(pos));
-
-    if (pickIndex == -1 || pickIndex == 3)
-        drawXYPlane(helper::toVec3d(pos));
-
-    if (pickIndex == -1 || pickIndex == 4)
-        drawYZPlane(helper::toVec3d(pos));
-
+        drawFace(back, blue, dt, 2);
     if (pickIndex == -1 || pickIndex == 5)
-        drawZXPlane(helper::toVec3d(pos));
+        drawFace(front, blue, dt, 5, false);
 
     glDisable(GL_BLEND);
-
-    if (pickIndex == -1 || pickIndex == 6)
-        drawCamPlane(helper::toVec3d(pos), isPicking);
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_MULTISAMPLE_ARB);
@@ -245,98 +224,97 @@ void Scale_Manipulator::mouseMoved(const QPointF& mouse, SofaViewer* viewer)
     Camera* cam = viewer->camera();
     if (!cam) return;
 
-        bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
-        if (!obj || !obj->rawBase()) return;
+    bindings::SofaBase* obj = SofaBaseApplication::Instance()->getSelectedComponent();
+    if (!obj || !obj->rawBase()) return;
 
-        /// @bmarques TODO: We need a way to select a default data field to manipulate
-        /// Then we'll also need a way to manually pick which datafield we want to manipulate
-        /// Currently, let's just go through all datafields of the object,
-        /// and select whichever Vec3d comes first...
-        data = dynamic_cast<sofa::Data<Vec3d>*>(getData());
-        if (!data) return;
-        QVector3D pos = helper::toQVector3D(data->getValue());
+    /// @bmarques TODO: We need a way to select a default data field to manipulate
+    /// Then we'll also need a way to manually pick which datafield we want to manipulate
+    /// Currently, let's just go through all datafields of the object,
+    /// and select whichever Vec3d comes first...
+    BoundingBox bbox = SofaBaseApplication::GetSelectedComponent()->rawBase()->f_bbox.getValue();
+    QVector3D pos = helper::toQVector3D(Vec3d((bbox.minBBox().x() + bbox.maxBBox().x()) / 2.0,
+                                              (bbox.minBBox().y() + bbox.maxBBox().y()) / 2.0,
+                                              (bbox.minBBox().z() + bbox.maxBBox().z()) / 2.0));
+
+    data = dynamic_cast<sofa::Data<Vec3d>*>(GetData());
     QVector3D translated;
+    double ratio;
+    Vec3d res;
+
+
+
     switch (m_index)
     {
-    case 0: // only move along X axis
+    case 0: // move along X axis
+    case 3:
         translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(1,0,0)) - shift;
-        break;
-    case 1: // only move along Y axis
-        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(0,1,0)) - shift;
-        break;
-    case 2: // only move along Z axis
-        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
-                                                           float(pos.y()),
-                                                           float(pos.z())),
-                                          QVector3D(0,0,1)) - shift;
-        break;
-    case 3: // only move along XY plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
-                                                            float(pos.y()),
-                                                            float(pos.z())),
-                                           QVector3D(0,0,1)) - shift;
-        break;
-    case 4: // only move along YZ plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            QVector3D(1,0,0)) - shift;
+        ratio = ((m_index == 3 ? -translated.x() : translated.x()) + initialAxisLength) / initialAxisLength;
+
+        res = Vec3d(ratio, data->getValue().y(), data->getValue().z());
         break;
-    case 5: // only move along ZX plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+    case 1: // move along Y axis
+    case 4:
+        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
                                            QVector3D(0,1,0)) - shift;
+        ratio = ((m_index == 4 ? -translated.y() : translated.y()) + initialAxisLength) / initialAxisLength;
+        res = Vec3d(data->getValue().x(), ratio, data->getValue().z());
         break;
-    case 6: // only move along Camera plane
-        translated = viewer->projectOnPlane(mouse, QVector3D(float(pos.x()),
+    case 2: // move along Z axis
+    case 5:
+        translated = viewer->projectOnLine(mouse, QVector3D(float(pos.x()),
                                                             float(pos.y()),
                                                             float(pos.z())),
-                                           cam->direction()) - shift;
+                                           QVector3D(0,0,1)) - shift;
+        ratio = ((m_index == 5 ? -translated.z() : translated.z()) + initialAxisLength) / initialAxisLength;
+        res = Vec3d(data->getValue().x(), data->getValue().y(), ratio);
+        break;
+    default: ratio = 1.0;
         break;
     };
 
     // It's easy to overflow when translating along axis that is almost
     // parallel to camera direction....
     for (int i = 0 ; i < 3 ; ++i)
-        if (isnan(translated[i]) || isinf(translated[i]))
+        if (isnan(translated[i]) || isinf(translated[i])) {
             translated[i] = pos[i];
+            ratio = 1.0;
+        }
 
-    data->setValue(Vec3d(double(translated.x()), double(translated.y()), double(translated.z())));
+    if (m_isUniform)
+        data->setValue(Vec3d(ratio, ratio, ratio));
+    else
+        data->setValue(res);
+    data->setPersistent(true);
     emit displayTextChanged(getDisplayText());
 }
 
 void Scale_Manipulator::mousePressed(const QPointF &mouse, SofaViewer *viewer)
 {
-    QVector3D pos = helper::toQVector3D(dynamic_cast<sofa::Data<Vec3d>*>(getData())->getValue());
+    BoundingBox bbox = SofaBaseApplication::GetSelectedComponent()->rawBase()->f_bbox.getValue();
+    QVector3D pos = helper::toQVector3D(Vec3d((bbox.minBBox().x() + bbox.maxBBox().x()) / 2.0,
+                                              (bbox.minBBox().y() + bbox.maxBBox().y()) / 2.0,
+                                              (bbox.minBBox().z() + bbox.maxBBox().z()) / 2.0));
     switch (m_index)
     {
-    case 0: // only move along X axis
-        shift = viewer->projectOnLine(mouse, pos, QVector3D(1,0,0)) - pos;
+    case 0: // move along X axis
+    case 3:
+        shift = viewer->projectOnLine(mouse, pos, QVector3D(1,0,0));
+        initialAxisLength = bbox.maxBBox().x() - bbox.minBBox().x() / 2;
         break;
-    case 1: // only move along Y axis
-        shift = viewer->projectOnLine(mouse, pos, QVector3D(0,1,0)) - pos;
+    case 1: // move along Y axis
+    case 4:
+        shift = viewer->projectOnLine(mouse, pos, QVector3D(0,1,0));
+        initialAxisLength = bbox.maxBBox().y() - bbox.minBBox().y() / 2;
         break;
-    case 2: // only move along Z axis
-        shift = viewer->projectOnLine(mouse, pos, QVector3D(0,0,1)) - pos;
-        break;
-    case 3: // only move along XY plane
-        shift = viewer->projectOnPlane(mouse, pos, QVector3D(0,0,1)) - pos;
-        break;
-    case 4: // only move along YZ plane
-        shift = viewer->projectOnPlane(mouse, pos, QVector3D(1,0,0)) - pos;
-        break;
-    case 5: // only move along ZX plane
-        shift = viewer->projectOnPlane(mouse, pos, QVector3D(0,1,0)) - pos;
-        break;
-    case 6: // only move along Camera plane
-        shift = viewer->projectOnPlane(mouse, pos, cam->direction()) - pos;
+    case 2: // move along Z axis
+    case 5:
+        shift = viewer->projectOnLine(mouse, pos, QVector3D(0,0,1));
+        initialAxisLength = bbox.maxBBox().z() - bbox.minBBox().z() / 2;
         break;
     };
 
@@ -348,17 +326,40 @@ void Scale_Manipulator::mouseReleased(const QPointF &/*mouse*/, SofaViewer */*vi
 {
     active = false;
     emit displayTextChanged(getDisplayText());
+    m_index = -1;
 }
 
 int Scale_Manipulator::getIndices() const
 {
-    return 7;
+    return 6;
 }
 
 QString Scale_Manipulator::getDisplayText() const
 {
+    const Vec3d& scale (dynamic_cast<sofa::Data<Vec3d>*>(GetData())->getValue());
+
+    std::cout << scale << std::endl;
     if (active)
-        return QString::fromStdString(getData()->getValueString()).replace(" ", " ; ");
+    {
+        if (!m_isUniform)
+        {
+            switch (m_index)
+            {
+            case 0: // move along X axis
+            case 3:
+                return "X: " + QString::number(scale.x());
+            case 1: // move along Y axis
+            case 4:
+                return "Y: " + QString::number(scale.y());
+            case 2: // move along Z axis
+            case 5:
+                return "Z: " + QString::number(scale.z());
+            };
+        }
+        else {
+            return QString::number(scale.x());
+        }
+    }
     return "";
 }
 

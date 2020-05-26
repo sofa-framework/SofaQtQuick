@@ -102,9 +102,11 @@ Column {
                 option: false
             }
         }
-        onOptionSelected: {
-            rotateMenu.setManipulator()
-            SofaApplication.selectedManipulator.local = option
+
+        onOptionChanged: {
+            manipulator = setManipulator(manipulatorName)
+            manipulator.local = option
+            image = iconSource
         }
 
         Shortcut {
@@ -123,4 +125,46 @@ Column {
         }
 
     }
+
+    ManipulatorMenu {
+        id: scaleMenu
+        property string manipulatorName: "Scale_Manipulator"
+        manipulator: sofaViewer.getManipulator(manipulatorName)
+
+        model: ListModel {
+            ListElement {
+                title: "Uniform"
+                option: true
+                iconSource: "qrc:/icon/ICON_SCALE_MODIFIER.png"
+            }
+            ListElement {
+                title: "Non-Uniform"
+                option: false
+                iconSource: "qrc:/icon/ICON_SCALE_MODIFIER.png"
+
+            }
+        }
+
+        onOptionChanged: {
+            manipulator = setManipulator(manipulatorName)
+            manipulator.uniform = option
+            image = iconSource
+        }
+
+        image: manipulator.uniform ? "qrc:/icon/ICON_SCALE_MODIFIER.png" : "qrc:/icon/ICON_SCALE_MODIFIER.png"
+        Shortcut {
+            context: Qt.ApplicationShortcut
+            sequence: "Shift+Space, S";
+            onActivated: {
+                manipulator = setManipulator(translateMenu.manipulatorName)
+                manipulator.uniform = true
+            }
+        }
+        ToolTip {
+            visible: translateMenu.containsMouse
+            text: "Scale"
+            description: "Scales the selected item (default: per-axis modifier)\n Shortcut: Shift+Space, S"
+        }
+    }
+
 }

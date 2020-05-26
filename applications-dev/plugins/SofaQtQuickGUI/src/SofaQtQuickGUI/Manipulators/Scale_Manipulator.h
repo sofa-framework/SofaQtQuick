@@ -11,6 +11,7 @@ namespace sofaqtquick
 
 class Scale_Manipulator : public Manipulator
 {
+    Q_OBJECT
 public:
     Scale_Manipulator(QObject* parent = nullptr);
 
@@ -25,14 +26,23 @@ public:
 
     static sofa::core::objectmodel::BaseData* getData();
     
+    Q_PROPERTY(bool uniform READ getUniform WRITE setUniform NOTIFY uniformChanged)
+signals:
+    void uniformChanged(bool);
 private:
-    void drawXArrow(const sofa::defaulttype::Vec3d& pos);
-    void drawYArrow(const sofa::defaulttype::Vec3d& pos);
-    void drawZArrow(const sofa::defaulttype::Vec3d& pos);
-    void drawXYPlane(const sofa::defaulttype::Vec3d& pos);
-    void drawYZPlane(const sofa::defaulttype::Vec3d& pos);
-    void drawZXPlane(const sofa::defaulttype::Vec3d& pos);
-    void drawCamPlane(const sofa::defaulttype::Vec3d& pos, bool isPicking);
+    bool getUniform() { return m_isUniform; }
+    void setUniform(bool isUniform) { m_isUniform = isUniform; }
+    bool m_isUniform;
+
+private:
+    struct s_color {
+        sofa::defaulttype::Vec4f highlight;
+        sofa::defaulttype::Vec4f light;
+        sofa::defaulttype::Vec4f color;
+        sofa::defaulttype::Vec3f primitive;
+    };
+
+    void drawFace(const std::vector<sofa::defaulttype::Vec3d>& q, const s_color color, sofa::core::visual::DrawTool& dt, int idx, bool dir = true);
 
     float radius;
     float lineThickness;
@@ -40,29 +50,22 @@ private:
     double arrowLength;
     double squareWidth;
 
-    sofa::core::visual::DrawToolGL drawtools;
+    bool _pickIndex;
     bindings::SofaBase* obj;
     sofa::Data<sofa::defaulttype::Vec3d>* data;
     Camera* cam;
 
-    sofa::defaulttype::Vec4f highlightred;
-    sofa::defaulttype::Vec4f highlightgreen;
-    sofa::defaulttype::Vec4f highlightblue;
-    sofa::defaulttype::Vec4f highlightwhite;
 
-    sofa::defaulttype::Vec4f lightred;
-    sofa::defaulttype::Vec4f lightgreen;
-    sofa::defaulttype::Vec4f lightblue;
-    sofa::defaulttype::Vec4f lightwhite;
+    s_color blue;
+    s_color green;
+    s_color red;
+    s_color white;
 
-    sofa::defaulttype::Vec4f red;
-    sofa::defaulttype::Vec4f green;
-    sofa::defaulttype::Vec4f blue;
-    sofa::defaulttype::Vec4f white;
     sofa::defaulttype::Vec4f black;
     sofa::defaulttype::Vec4f yellow;
 
     QVector3D shift;
+    double initialAxisLength;
     bool active {false};
 };
 

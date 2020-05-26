@@ -1,6 +1,7 @@
 import QtQuick 2.0
-import Rotate_Manipulator 1.0
+import Scale_Manipulator 1.0
 
-Rotate_Manipulator {
+Scale_Manipulator {
     id: root
+    uniform: false
 }
