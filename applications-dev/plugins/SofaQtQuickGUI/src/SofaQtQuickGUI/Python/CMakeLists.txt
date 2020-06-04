@@ -47,7 +47,7 @@ SP3_add_python_module(
         ${SOURCE_FILES}
         ${HEADER_FILES}
     DEPENDS
-        SofaCore SofaPython3 SofaPython3_Sofa_Core SofaQtQuickGUI
+        SofaCore SofaPython3::Plugin SofaPython3::Bindings.Sofa.Core SofaQtQuickGUI
     DESTINATION
         ${PACKAGE_DIRECTORY}
 )
