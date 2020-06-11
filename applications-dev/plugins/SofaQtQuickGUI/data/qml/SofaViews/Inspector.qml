@@ -73,15 +73,23 @@ Item {
                                 console.error("Cannot link datafields to themselves")
                                 return;
                             }
+                            marea.cursorShape = Qt.WaitCursor
                             for (var fname of droppedItem.getDataFields())
                             {
-                                var data = SofaApplication.selectedComponent.findData(fname);
-                                if (data !== null && data.isAutoLink())
-                                {
-                                    data.setValue(droppedItem.getData(fname).getValue())
-                                    data.setParent(droppedItem.getData(fname))
+                                var sofaData = SofaApplication.selectedComponent.findData(fname);
+                                if (sofaData !== null) {
+                                    var data = drag.source.item.getData(sofaData.getName())
+                                    if (data !== null && sofaData.isAutoLink())
+                                    {
+                                        sofaData.setValue(data.value)
+                                        sofaData.setParent(data)
+                                    }
                                 }
                             }
+                            var src = customInspectorLoader.sourceComponent
+                            customInspectorLoader.sourceComponent = null
+                            customInspectorLoader.sourceComponent = src
+                            marea.cursorShape = Qt.ArrowCursor
                         }
                     }
                 }
@@ -90,6 +98,8 @@ Item {
                     id: header
                     anchors.fill: parent
                     anchors.rightMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.topMargin: 5
 
                     Text {
                         id: detailsArea
@@ -97,31 +107,16 @@ Item {
                         text : "Details " + ((SofaApplication.selectedComponent===null)? "" : "("+ SofaApplication.selectedComponent.getClassName() + ")")
                         color: "black"
                     }
-                    Label {
-                        id: showAllLabel
-                        text: "Show all: "
-                        color: "black"
-                    }
-                    CheckBox {
+                    ComboBox {
                         id : showAll
-                    }
-                    Button {
-                        id : customizeButton
-                        hoverEnabled: true
-                        ColorImage {
-                            width: 13
-                            height: 13
-                            anchors.centerIn: parent
-                            source: "qrc:/icon/edit.png"
-                            fillMode: Image.PreserveAspectFit
-                            color: customizeButton.hovered ? "darkgrey" : "#393939"
-                        }
-                        implicitWidth: 20
-                        implicitHeight: 20
-                        onClicked: {
-                            var file = SofaApplication.inspectorsDirectory() + SofaApplication.selectedComponent.getClassName() + ".qml";
-                            SofaApplication.createInspector(file)
-                            SofaApplication.openInEditor(file)
+                        model: ["Show all", "Show custom", "Edit custom..."]
+                        onCurrentIndexChanged: {
+                            if (currentIndex === 2) {
+                                var file = SofaApplication.inspectorsDirectory() + SofaApplication.selectedComponent.getClassName() + ".qml";
+                                SofaApplication.createInspector(file)
+                                SofaApplication.openInEditor(file)
+                                currentIndex = 1
+                            }
                         }
                     }
                 }
@@ -146,6 +141,7 @@ Item {
                     content: content
                 }
                 MouseArea {
+                    id: marea
                     anchors.fill: parent
                     onPressed: forceActiveFocus()
                 }
@@ -164,7 +160,7 @@ Item {
                             if (!component)
                                 return null
 
-                            if (showAll.checked)
+                            if (showAll.currentIndex === 0)
                                 return Qt.createComponent("qrc:/CustomInspectorWidgets/BaseInspector.qml")
 
                             var ui = Qt.createComponent(SofaApplication.inspectorsDirectory() + component.getClassName() + ".qml")
@@ -185,7 +181,7 @@ Item {
                         }
                         sourceComponent: getWidget(SofaApplication.selectedComponent)
                         onLoaded: {
-                            item.showAll = Qt.binding(function(){ return showAll.checked})
+                            item.showAll = Qt.binding(function(){ return showAll.currentIndex === 0})
                         }
                     }
                 }

@@ -42,9 +42,11 @@ ColumnLayout {
 
                         Label {
                             Layout.minimumWidth: root.labelWidth
+                            Layout.maximumWidth: root.labelWidth
 
                             text:  modelData
                             color: sofaDataLayout.sofaData.properties.required ? "red" : "black"
+                            elide: Text.ElideRight
                             ToolTip {
                                 text: sofaDataLayout.sofaData.getName()
                                 description: sofaDataLayout.sofaData.getHelp()
@@ -67,15 +69,15 @@ ColumnLayout {
                                         }
                                         var data = drag.source.item.getData(sofaData.getName())
                                         if (data !== null) {
-                                            sofaData.parent = (data)
-                                            sofaData.value = data.value
+                                            sofaData.setValue(data.value)
+                                            sofaData.setParent(data)
                                         }
                                     }
                                 }
                             }
                             Component.onCompleted: {
                                 if (width > root.labelWidth)
-                                    root.labelWidth = width
+                                    root.labelWidth = 150
                             }
                         }
                         Loader {
@@ -93,15 +95,16 @@ ColumnLayout {
                                 anchors.fill: parent
 
                                 onDropped: {
-                                    data = drag.source.item.findData(sofaData.getName())
+                                    var data = drag.source.item.getData(sofaData.getName())
                                     if (drag.source.item.getPathName() === SofaApplication.selectedComponent.getPathName()) {
                                         console.error("Cannot link datafields to themselves")
                                         return;
                                     }
 
                                     if (data !== null) {
-                                        sofaData.parent = data
-                                        var v = sofaData.value
+                                        print("DropArea2")
+                                        sofaData.setValue(data.value)
+                                        sofaData.setParent(data)
                                     }
                                 }
                             }
@@ -151,13 +154,14 @@ ColumnLayout {
                         Layout.minimumWidth: root.labelWidth
                         Component.onCompleted: {
                             if (width > root.labelWidth)
-                                root.labelWidth = width
+                                root.labelWidth = 150
                         }
                         color: "black"
                         MouseArea {
                             anchors.fill: parent
                             onPressed: forceActiveFocus()
                         }
+                        elide: Text.ElideRight
                     }
                     TextField {
                         Layout.fillWidth: true
@@ -191,12 +195,12 @@ ColumnLayout {
                     Layout.fillWidth: true
                     Label {
                         Layout.minimumWidth: infosLayout.labelWidth
-
+                        elide: Text.ElideRight
                         text: modelData + " :"
                         color: "black"
                         Component.onCompleted: {
                             if (width > infosLayout.labelWidth)
-                                infosLayout.labelWidth = width
+                                infosLayout.labelWidth = 150
                         }
                         MouseArea {
                             anchors.fill: parent
