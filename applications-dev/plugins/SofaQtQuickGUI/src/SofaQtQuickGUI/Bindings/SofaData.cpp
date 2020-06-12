@@ -48,9 +48,9 @@ using sofaqtquick::SofaBaseApplication;
 namespace sofaqtquick::bindings::_sofadata_
 {
 
-void QmlDDGNode::notifyEndEdit(const sofa::core::ExecParams *params)
+void QmlDDGNode::notifyEndEdit()
 {
-    DDGNode::notifyEndEdit(params);
+    DDGNode::notifyEndEdit();
     SofaBaseApplication::requestDataViewUpdate(this);
 }
 

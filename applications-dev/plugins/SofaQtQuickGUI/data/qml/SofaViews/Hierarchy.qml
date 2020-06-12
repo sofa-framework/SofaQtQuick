@@ -102,17 +102,53 @@ Rectangle {
         headerDelegate: Rectangle {
             x: 5
             y: 2
-            height: 18
+            height: 30
+            width: parent.width - 10
             color: SofaApplication.style.contentBackgroundColor
             property var pressed: styleData.pressed
             onPressedChanged: forceActiveFocus()
-            Label {
-                color: "black"
-                text: styleData.value
+            RowLayout {
+                id: headerLayout
+                anchors.top: parent.top
+                width: parent.width
+
+                height: 22
+                Label {
+                    Layout.fillWidth: true
+                    color: "black"
+                    text: styleData.value
+                }
+
+                Label {
+                    text: "Show only nodes: "
+                }
+
+                CheckBox {
+                    id: nodesCheckBox
+                    checked: false
+                    onCheckedChanged: {
+                        sceneModel.showOnlyNodes(checked)
+                    }
+                }
             }
-
+            Rectangle {
+                id: sep
+                anchors.top: headerLayout.bottom
+                y: 0
+                x: 5
+                width: parent.width - 10
+                height: 1
+                color: "#393939"
+            }
+            Rectangle {
+                anchors.top: sep.bottom
+                y: 1
+                x: 5
+                width: parent.width - 10
+                height: 1
+                color: "#959595"
+            }
         }
-
         style: QQCS1.TreeViewStyle {
             headerDelegate: GBRect {
                 color: "#757575"
@@ -678,10 +714,12 @@ Rectangle {
                 property SofaBase item
                 Drag.active: mouseArea.drag.active
                 Drag.onActiveChanged: {
-                    var srcIndex = sceneModel.mapToSource(index)
-                    var theComponent = basemodel.getBaseFromIndex(srcIndex)
-                    item = theComponent
-                    print("Dragging " + item.getName())
+                    if (Drag.active) {
+                        var srcIndex = sceneModel.mapToSource(index)
+                        var theComponent = basemodel.getBaseFromIndex(srcIndex)
+                        item = theComponent
+                        print("Dragging " + item.getName())
+                    }
                 }
 
                 Drag.dragType: Drag.Automatic
@@ -777,29 +815,29 @@ Rectangle {
                     }
 
                     function dropFromHierarchy(src) {
-                        var oldIndex = src.index
-                        oldIndex = sceneModel.mapToSource(oldIndex)
-                        var theComponent = basemodel.getBaseFromIndex(oldIndex)
-                        if (!theComponent)
-                            return
+                        print("drop from Hierarchy: " + src.item.getName())
+                        var theComponent = src.item
+
                         var newIndex = styleData.index
                         newIndex = sceneModel.mapToSource(newIndex)
                         var parentNode = basemodel.getBaseFromIndex(newIndex)
 
-                        if (!parentNode.isNode()) {
+                        if (parentNode.isNode()) {
+                            var oldParent = theComponent.getFirstParent()
+
+                            if (oldParent.getPathName() !== parentNode.getPathName() &&
+                                    parentNode.getPathName() !== theComponent.getPathName()) {
+                                if (theComponent.isNode()) {
+                                    parentNode.moveChild(theComponent, oldParent)
+                                }
+                                else {
+                                    parentNode.moveObject(theComponent)
+                                }
+                            }
+                        } else {
+                            var atPlaceObject = parentNode
                             parentNode = parentNode.getFirstParent()
-                        }
-
-                        var oldParent = theComponent.getFirstParent()
-
-                        if (oldParent.getPathName() !== parentNode.getPathName() &&
-                                parentNode.getPathName() !== theComponent.getPathName()) {
-                            if (theComponent.isNode()) {
-                                parentNode.moveChild(theComponent, oldParent)
-                            }
-                            else {
-                                parentNode.moveObject(theComponent)
-                            }
+                            parentNode.insertAfter(atPlaceObject, theComponent)
                         }
                     }
 
@@ -850,21 +888,4 @@ Rectangle {
         }
     }
 
-    Label {
-        anchors.right: nodesCheckBox.left
-        anchors.bottom: nodesCheckBox.bottom
-        text: "Show only nodes: "
-    }
-
-    CheckBox {
-        id: nodesCheckBox
-        anchors.top: treeView.anchors.top
-        anchors.topMargin: 1
-        anchors.right: root.right
-        anchors.rightMargin: 5
-        checked: false
-        onCheckedChanged: {
-            sceneModel.showOnlyNodes(checked)
-        }
-    }
 }

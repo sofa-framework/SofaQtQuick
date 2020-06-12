@@ -6,6 +6,7 @@ find_package(SofaTest REQUIRED)
 find_package(SofaGTestMain REQUIRED)
 find_package(Qt5Test REQUIRED)
 find_package(Qt5QuickTest REQUIRED)
+find_package(SofaQtQuickGUI REQUIRED)
 
 
 set(HEADER_FILES

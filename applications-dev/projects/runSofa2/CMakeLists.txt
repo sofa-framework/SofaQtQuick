@@ -50,16 +50,8 @@ add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 add_definitions(${Qt5WebView_DEFINITIONS})
 
+find_package(SofaFramework REQUIRED)
 find_package(SofaQtQuickGUI REQUIRED)
-if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-    # Sized deallocaion is not enabled by default under clang after c++14
-    set(CMAKE_CXX_FLAGS "-fsized-deallocation")
-endif ()
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    # Sized deallocaion is not enabled by default under clang after c++14
-    set(CMAKE_CXX_FLAGS "-fsized-deallocation")
-endif ()
 
 qt5_wrap_cpp(MOC_FILES ${HEADER_FILES}) # do not use "set(CMAKE_AUTOMOC ON)" since all the mocced files will be compiled by a single compilation unit leading to a "out of heap space" issue on MSVC
 qt5_add_resources(RESOURCE_FILES ${QRC_FILES})
@@ -73,10 +65,10 @@ set(QMLLIVE_WORKSPACE_PATH \"${CMAKE_CURRENT_LIST_DIR}/../../\")
 configure_file("${PROJECT_NAME}.h.in" "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h")
 install(FILES "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h" DESTINATION "include/${PROJECT_NAME}" COMPONENT headers)
 
-
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
-target_link_libraries(${PROJECT_NAME} SofaQtQuickGUI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::WebView)
+target_link_libraries(${PROJECT_NAME} PUBLIC SofaHelper Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::WebView)
+target_link_libraries(${PROJECT_NAME} PUBLIC SofaQtQuickGUI)
 
 sofa_install_targets(${PROJECT_NAME} ${PROJECT_NAME} "")
 
