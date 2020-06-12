@@ -81,7 +81,7 @@ SofaNode* SofaBaseObject::getFirstParent()
 bool SofaBaseObject::rename(const QString& name)
 {
     auto obj = dynamic_cast<sofa::simulation::Node*>(getFirstParent()->self())->getObject(name.toStdString());
-    if (obj != nullptr && obj->getPathName() != m_self->getPathName())
+    if (obj != nullptr && obj->getPathName() != self()->getPathName())
         return false;
     m_self->setName(name.toStdString());
     return true;

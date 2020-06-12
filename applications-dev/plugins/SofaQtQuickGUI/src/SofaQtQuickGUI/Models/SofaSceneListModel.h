@@ -34,7 +34,7 @@ namespace sofaqtquick
 /// \class A Model of the sofa scene graph allowing us to show the graph in a ListView
 /// The model is not implementing any visualization feature like collapsing or hidding
 /// some information. Those have to be implemented by in an external proxying model.
-class SofaSceneListModel : public QAbstractListModel, private sofa::simulation::MutationListener
+class SOFA_SOFAQTQUICKGUI_API SofaSceneListModel : public QAbstractListModel, private sofa::simulation::MutationListener
 {
     Q_OBJECT
 
