@@ -23,7 +23,7 @@ public:
 
     Q_INVOKABLE bool isDirectory()
     {
-        return dynamic_cast<DataFileName*>(rawData())->isDirectory();
+        return dynamic_cast<DataFileName*>(rawData())->getPathType() == 1;
     }
     Q_INVOKABLE QString getRelativePath()
     {
