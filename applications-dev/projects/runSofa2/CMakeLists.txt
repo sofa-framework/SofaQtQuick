@@ -62,13 +62,17 @@ list(APPEND QML_DIRS "${CMAKE_CURRENT_LIST_DIR}/../../")
 set(QML_IMPORT_PATH "${QML_IMPORT_PATH};${QML_DIRS}" CACHE STRING "Qt Creator extra qml import paths" FORCE)
 
 set(QMLLIVE_WORKSPACE_PATH \"${CMAKE_CURRENT_LIST_DIR}/../../\")
-configure_file("${PROJECT_NAME}.h.in" "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h")
-install(FILES "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}.h" DESTINATION "include/${PROJECT_NAME}" COMPONENT headers)
+configure_file("${PROJECT_NAME}.h.in" "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}/${PROJECT_NAME}.h")
+install(FILES "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}/${PROJECT_NAME}.h" DESTINATION "include/${PROJECT_NAME}/${PROJECT_NAME}" COMPONENT headers)
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${CONFIG_FILES})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC SofaHelper Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::WebView)
-target_link_libraries(${PROJECT_NAME} PUBLIC SofaQtQuickGUI)
+target_link_libraries(${PROJECT_NAME} PUBLIC SofaQtQuickGUI SofaFramework)
+
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+
 
 sofa_install_targets(${PROJECT_NAME} ${PROJECT_NAME} "")
 
