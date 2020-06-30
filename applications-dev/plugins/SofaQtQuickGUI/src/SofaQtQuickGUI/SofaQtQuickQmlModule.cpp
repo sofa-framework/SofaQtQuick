@@ -43,6 +43,7 @@ using sofaqtquick::Rotate_Manipulator;
 #include <SofaQtQuickGUI/Bindings/SofaData.h>
 #include <SofaQtQuickGUI/Bindings/SofaLink.h>
 #include <SofaQtQuickGUI/Bindings/SofaBase.h>
+#include <SofaQtQuickGUI/Bindings/SofaDataFileName.h>
 using sofaqtquick::bindings::SofaBase;
 
 #include <SofaQtQuickGUI/Bindings/SofaNode.h>
@@ -244,10 +245,10 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaData*");
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("_sofadata_::SofaData*");
 
-    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaDataFileName*");
-    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::_sofadatafilename_::SofaDataFileName*");
-    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("SofaDataFileName*");
-    qRegisterMetaType<sofaqtquick::bindings::SofaData*>("_sofadatafilename_::SofaDataFileName*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaDataFileName*>("sofaqtquick::bindings::SofaDataFileName*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaDataFileName*>("sofaqtquick::bindings::_sofadatafilename_::SofaDataFileName*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaDataFileName*>("SofaDataFileName*");
+    qRegisterMetaType<sofaqtquick::bindings::SofaDataFileName*>("_sofadatafilename_::SofaDataFileName*");
 
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaLink*");
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::_sofalink_::SofaLink*");
@@ -336,6 +337,11 @@ void registerSofaTypesToQml(const char* /*uri*/)
                                                                  versionMajor, versionMinor,
                                                                  "SofaData",
                                                                  QString("It is not possible to create a Sofa.Core.SofaBaseData object"));
+
+    qmlRegisterUncreatableType<sofaqtquick::bindings::SofaDataFileName> ("Sofa.Core.SofaDataFileName",
+                                                                 versionMajor, versionMinor,
+                                                                 "SofaDataFileName",
+                                                                 QString("It is not possible to create a Sofa.Core.SofaDataFileName object"));
 
     qmlRegisterType<SofaNode> ("Sofa.Core.SofaNode",
                                versionMajor, versionMinor,

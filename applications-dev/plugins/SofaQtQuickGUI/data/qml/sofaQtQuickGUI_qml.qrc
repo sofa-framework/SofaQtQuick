@@ -159,5 +159,6 @@
         <file>SofaWidgets/ExternalToolsPreferences.qml</file>
         <file>SofaWidgets/TemplatesPreferences.qml</file>
         <file>SofaBasics/TabView.qml</file>
+        <file>SofaDataTypes/ImportFileDialog.qml</file>
     </qresource>
 </RCC>
