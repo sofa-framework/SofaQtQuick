@@ -22,63 +22,86 @@ import QtQuick.Controls 2.4
 import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.0
 import SofaBasics 1.0
-import Sofa.Core.SofaData 1.0
+import Sofa.Core.SofaDataFileName 1.0
 import SofaApplication 1.0
 
-/***************************************************************************************************
-  *
-  * A widget dedicated to edit DataFileName object.
-  * This object is used to store filenames.
-  *
-  *  TextField + Icon to open a file selector.
-  *
-  *************************************************************************************************/
-Row {
-    id: root
-    spacing : -1
-    width: parent.width
+RowLayout {
+    id: dataFileName
+    property SofaDataFileName sofaData
+    anchors.fill: parent
+    spacing: -1
 
-    property SofaData sofaData
+    Connections {
+        target: sofaData
+        onValueChanged: {
+            textfield.text = getTextFieldValue(sofaData.getFullPath())
+        }
+    }
 
-    function cleanDisplayPath(fileUrl) {
-        if (fileUrl === SofaApplication.currentProject.rootDir.toString().replace("qrc:", "") + "/")
-            var path = "./"
-        else {
-            path = fileUrl.replace(SofaApplication.currentProject.rootDir.toString().replace("qrc:", ""), "")
-            if (path[0] === "/") {
-                path = path.substring(1, path.length)
-            }
+    ImportFileDialog {
+        id: importDialog
+    }
+
+    function isInProjectTree(path) {
+        if (path.startsWith(SofaApplication.currentProject.rootDirPath))
+                return true
+        else if (SofaApplication.fileExists(SofaApplication.currentProject.rootDirPath + "/" + path))
+            return true
+        return false;
+    }
+
+    function getRelativeToProjectTree(path) {
+        if (path.startsWith(SofaApplication.currentProject.rootDirPath))
+            return path.replace(SofaApplication.currentProject.rootDirPath, "").slice(1)
+        return path
+    }
+
+    // converts a path to either relative to root, or absolute if out-of-tree
+    function getTextFieldValue(path) {
+        if (isInProjectTree(path)) {
+            return getRelativeToProjectTree(path)
         }
         return path
     }
 
+
     TextField {
-        id: textField
+        id: textfield
+        text: getTextFieldValue(sofaData.getFullPath())
+
+        Layout.fillWidth: true
         enabled: true
         readOnly: sofaData.properties.readOnly
-        width: root.width - openButton.width - root.spacing
-        text: cleanDisplayPath(sofaData.value.toString())
         selectByMouse: true
+        position: cornerPositions["Left"]
+
+        function setDataValue(txt) {
+            importDialog.externalFile = txt
+            if (!isInProjectTree(txt)) {
+                importDialog.open()
+            }
+            sofaData.setValue(importDialog.externalFile)
+            focus = false
+        }
 
         onAccepted: {
-            /// Get the URL from the file chooser and convert it to a string.
-            sofaData.value = textField.text ;
+            setDataValue(text)
         }
-        position: cornerPositions["Left"]
+
+        onEditingFinished: {
+            setDataValue(text)
+        }
 
         DropArea {
             id: dropArea
             anchors.fill: parent
             onDropped: {
-                if (drag.source.asset.path && !textField.readOnly)
-                {
-                    textField.text = cleanDisplayPath(drag.source.asset.path)
-                    sofaData.value = textField.text ;
+                if (drag.source.asset.path && !textfield.readOnly) {
+                    setDataValue(drag.source.asset.path)
                 }
             }
         }
     }
-
     Button {
         id: openButton
         Layout.alignment: Qt.AlignTop
@@ -92,83 +115,27 @@ Row {
 
         }
 
-        Dialog {
-            id: importAssetDialog
-            standardButtons: StandardButton.Yes | StandardButton.No
-            title: qsTr("Import asset?")
-            width: 400
-            height: 150
-            contentItem: Rectangle  {
-                anchors.fill: parent
-                color: SofaApplication.style.contentBackgroundColor
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    TextArea {
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        text: qsTr("The file you selected is located outside of the project.\nThis will break its packageability.\nWould you rather copy the asset to your project directory?")
-                    }
-                    TextField {
-                        id: path
-                        Layout.fillWidth: true
-                        text: textField.text
-                    }
-                    RowLayout {
-                        Label {
-                            Layout.fillWidth: true
-                            text: ""
-                        }
-                        Button {
-                            id: yes
-                            text: "Yes"
-                            onClicked: {
-                                var filename = textField.text.split("/")
-                                filename = filename[filename.length-1]
-                                SofaApplication.copyFile(textField.text, path.text + filename)
-                                sofaData.value = path.text + filename
-                                textField.text = path.text + filename
-                                print("copied!")
-                                importAssetDialog.close()
-                            }
-                        }
-                        Button {
-                            id: no
-                            text: "No"
-                            onClicked: {
-                                sofaData.value = textField.text
-                                importAssetDialog.close()
-                            }
-                        }
-                    }
-                }
-            }
+        function openDirectoryDialog(dir) {
+            var target = SofaApplication.currentProject.chooseProjectDir(
+                        "Please Choose a directory:", dir).toString().replace("file://", "")
+            if (target !== "") target += "/"
+            textfield.setDataValue(target)
         }
+
+        function openFileDialog(dir) {
+            var target = SofaApplication.currentProject.getOpenFile("Please Choose a file:", dir).toString().replace("file://", "")
+            textfield.setDataValue(target)
+        }
+
         onClicked: {
-            /// Open the FileDialog at the specified location.
-            var url = "";
-            if( sofaData.properties.folderurl !== ""){
-                url = "file://"+sofaData.properties.folderurl
-            }else{
-                url = "file://"+SofaApplication.currentProject.rootDir
-            }
-            print (url)
-            if (sofaData.isDirectory()) {
-                var fileUrl = SofaApplication.currentProject.chooseProjectDir("Please Choose a directory:", url).toString().replace("file://", "")
-                if (fileUrl !== "") fileUrl += "/"
-            }
+            var currentDir = SofaApplication.currentProject.rootDir;
+            if( sofaData.properties.folderurl !== "")
+                currentDir = "file://"+sofaData.properties.folderurl
+
+            if (sofaData.isDirectory())
+                openDirectoryDialog(currentDir)
             else
-                fileUrl = SofaApplication.currentProject.getOpenFile("Please Choose a file:", url).toString().replace("file://", "")
-            if (fileUrl === "") return
-            sofaData.value = fileUrl;
-            print(fileUrl)
-            print(SofaApplication.currentProject.rootDir)
-            if (fileUrl.startsWith(SofaApplication.currentProject.rootDir.toString().replace("qrc:", ""))) {
-                textField.text = cleanDisplayPath(fileUrl)
-            } else {
-                textField.text = fileUrl
-                importAssetDialog.open()
-            }
+                openFileDialog(currentDir)
         }
         position: cornerPositions["Right"]
     }

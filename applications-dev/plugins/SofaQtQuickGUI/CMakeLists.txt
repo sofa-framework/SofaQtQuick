@@ -286,22 +286,7 @@ add_definitions(${Qt5Qml_DEFINITIONS})
 add_definitions(${Qt5Quick_DEFINITIONS})
 
 #NodeEditor
-include(ExternalProject)
-
-set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
-ExternalProject_Add(nodeeditor
-    GIT_REPOSITORY https://github.com/paceholder/nodeeditor
-    GIT_TAG 2.1.3
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DDOWNLOAD_DATA=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
-)
-
-set(NodeEditor_DIR ${EXTERNAL_INSTALL_LOCATION})
-find_package(NodeEditor REQUIRED)
-set(NODEEDITOR_LIBRARY ${EXTERNAL_INSTALL_LOCATION}/lib/libnodes.so)
-set(NODEEDITOR_INCLUDE_PATH ${EXTERNAL_INSTALL_LOCATION}/include)
-#find_package(ASSIMP REQUIRED)
-#message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
-#include_directories( ${ASSIMP_INCLUDE_DIR})
+find_package (NodeEditor REQUIRED)
 
 if (WIN32)
     # Does not work with Visual Studio config generation
@@ -325,16 +310,13 @@ endif ()
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${MOC_FILES} ${SOURCE_FILES} ${QRC_FILES} ${RESOURCE_FILES} ${QML_FILES} ${PYTHON_FILES} ${EXTRA_FILES} ${ASSET_TEMPLATES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${SOFAPYTHON_LIBRARY} SofaOpenglVisual SofaGeneralLoader SofaLoader SofaSimulationGraph SofaGraphComponent SofaBoundaryCondition SofaBase SofaMeshCollision
     Qt5::Core Qt5::Gui Qt5::Widgets Qt5::QuickControls2 Qt5::Qml Qt5::Quick Qt5::WebEngine Qt5::Charts QmlUI)
-#target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
+target_link_libraries(${PROJECT_NAME} PUBLIC NodeEditor::nodes)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
 target_include_directories(${PROJECT_NAME} PUBLIC "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${ASSIMP_INCLUDE_DIR}>")
 
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${NODEEDITOR_LIBRARY})
-sofa_install_libraries(LIBRARIES ${NODEEDITOR_LIBRARY})
-target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${NODEEDITOR_INCLUDE_PATH}>")
 
 file(COPY     ${SCRIPT_TEMPLATES}     DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/scripts)
 file(COPY     ${ASSET_TEMPLATES}      DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config/templates/assets)

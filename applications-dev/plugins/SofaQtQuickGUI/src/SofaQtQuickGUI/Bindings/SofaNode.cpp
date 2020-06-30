@@ -541,10 +541,10 @@ bool SofaNode::rename(const QString& name)
     for(auto p : dynamic_cast<sofa::core::objectmodel::BaseNode*>(m_self.get())->getParents())
     {
         auto obj = dynamic_cast<sofa::simulation::Node*>(p)->getObject(name.toStdString());
-        if (obj != nullptr && obj->getPathName() != m_self->getPathName())
+        if (obj != nullptr && obj->getPathName() != self()->getPathName())
             return false;
         for (auto c : p->getChildren())
-            if (c->getName() == name.toStdString() && c->getPathName() != m_self->getPathName())
+            if (c->getName() == name.toStdString() && c->getPathName() != self()->getPathName())
                 return false;
     }
     m_self->setName(name.toStdString());
