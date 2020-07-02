@@ -98,8 +98,10 @@ def getAbsPythonCallPath(node, rootNode):
         # relPath = physics.visu.eye
         return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
 
-def buildDataParams(datas, indent, scn):
+def buildDataParams(obj, indent, scn):
     s = ""
+    datas = obj.getDataFields()
+    links = obj.getLinks()
     for data in datas:
         if data.hasParent():
             scn[0] += indent + "### THERE WAS A LINK. "
@@ -125,16 +127,23 @@ def buildDataParams(datas, indent, scn):
                                     s += ", " + data.getName() + "='" + v[1:-1] + "'"
                             else:
                                 s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
+    for link in links:
+        if link.getLinkedBase() and link.getName() != "context":
+            s += ", " + link.getName() + "='" + link.getLinkedPath() + "'"
+
+    entry = Sofa.Core.ObjectFactory.getComponent(obj.getClassName())
+    if entry.defaultTemplate != obj.getTemplateName():
+        s += ", template='" + obj.getTemplateName() + "'"
     return s
 
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
     for o in node.objects:
-        s = buildDataParams(o.getDataFields(), indent, scn)
+        s = buildDataParams(o, indent, scn)
         scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".addObject('"
         scn[0] += o.getClassName() + "', name='" + o.name.value + "'" + s + ")\n"
 
     for child in node.children:
-        s = buildDataParams(child.getDataFields(), indent, scn)
+        s = buildDataParams(child, indent, scn)
         if child.getData("prefabname") is not None:
             #print('createPrefab '+str(child.name))
             scn[0] += (indent + "####################### Prefab: " +
@@ -179,6 +188,67 @@ def getRelPath(path, relativeTo):
     return newPath
 
 
+
+
+def getDependenciesFor(object):
+    if type(object) is Sofa.Core.Node:
+        return object.parents
+    list = []
+    for d in object.getDataFields():
+        if d.getParent() and type(d.getParent().getOwner()) != Sofa.Core.Node:
+            list.append(d.getParent().getOwner())
+
+    for l in object.getLinks():
+        if l.getLinkedBase() and type(l.getLinkedBase()) != Sofa.Core.Node and l.getName() != "slaves":
+            list.append(l.getLinkedBase())
+
+    list.append(object.getContext())
+    return list
+
+
+def getNodeDepth(node):
+    n = 0
+    for p in node.parents:
+        n = max(getNodeDepth(p)+1, n)
+    return n
+
+
+def getDependencyDepth(item):
+    n = 0
+    if type(item) is Sofa.Core.Node:
+        return getNodeDepth(item)
+    else:
+        deps = getDependenciesFor(item)
+
+        for d in deps:
+            n = max(getDependencyDepth(d)+1, n)
+
+    return n
+
+
+def getDependencyDepthMap(root, map):
+    map[root] = getNodeDepth(root)
+    for o in root.objects:
+        map[o] = getDependencyDepth(o)
+    for c in root.children:
+        map.update(getDependencyDepthMap(c, map))
+    return sorted(map.items(), key=lambda item: item[1])
+
+
+
+
+def saveScene(node, indent, scn):
+    map = getDependencyDepthMap(node, {})
+    map.pop(0)
+    for i in map:
+        if type(i[0]) is Sofa.Core.Node:
+            scn[0] += indent + getAbsPythonCallPath(i[0].parents[0], node) + ".addChild('" + i[0].getName() + "')\n"
+        else:
+            attributes = buildDataParams(i[0], indent, scn)
+            parentPath = indent + getAbsPythonCallPath(i[0].getContext() if type(i[0]) == Sofa.Core.Object else i[0].parents[0], node)
+            scn[0] += parentPath + ".addObject('" + i[0].getClassName() + "', name='" + i[0].getName() + "'" + attributes + ")\n"
+
+
 def saveAsPythonScene(fileName, node):
     root = node
     fd = open(fileName, "w+")
@@ -190,7 +260,9 @@ def saveAsPythonScene(fileName, node):
     modules = []
     modulepaths = []
     scn = [""]
-    saveRec(root, "    ", modules, modulepaths, scn, root)
+    saveScene(node, "    ", scn)
+
+#    saveRec(root, "    ", modules, modulepaths, scn, root)
 
     fd.write("# all Paths\n")
     for p in list(dict.fromkeys(modulepaths)):
