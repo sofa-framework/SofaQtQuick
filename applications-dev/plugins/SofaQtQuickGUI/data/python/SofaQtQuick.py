@@ -53,6 +53,7 @@ def collectMetaData(obj):
     data["lineno"] = str(inspect.findsource(obj.__original__ if "__original__" in dir(obj) else obj)[1])
     return data
 
+
 # returns a dictionary of all callable objects in the module, with their type as key
 def getPythonModuleContent(moduledir, modulename):
     objects = {}
@@ -72,6 +73,7 @@ def getPythonModuleContent(moduledir, modulename):
             if meta != None:
                 objects[i] = meta
     return objects
+
 
 def getPythonModuleDocstring(mpath):
     "Get module-level docstring of Python module at mpath, e.g. 'path/to/file.py'."
@@ -97,6 +99,13 @@ def getAbsPythonCallPath(node, rootNode):
         # node.getPathName() = "/Snake/physics/visu/eye"
         # relPath = physics.visu.eye
         return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
+
+def getAbsolutePythonPath(node):
+    if node.getRoot() == node:
+        return node.getName()
+    else:
+        return node.getRoot().getName() + node.getPathName().replace("/", ".")
+
 
 def buildDataParams(obj, indent, scn):
     s = ""
@@ -135,6 +144,7 @@ def buildDataParams(obj, indent, scn):
     if entry.defaultTemplate != obj.getTemplateName():
         s += ", template='" + obj.getTemplateName() + "'"
     return s
+
 
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
     for o in node.objects:
@@ -188,8 +198,6 @@ def getRelPath(path, relativeTo):
     return newPath
 
 
-
-
 def getDependenciesFor(object):
     if type(object) is Sofa.Core.Node:
         return object.parents
@@ -206,47 +214,50 @@ def getDependenciesFor(object):
     return list
 
 
-def getNodeDepth(node):
-    n = 0
-    for p in node.parents:
-        n = max(getNodeDepth(p)+1, n)
-    return n
-
-
-def getDependencyDepth(item):
-    n = 0
+def createItem(item, node, indent, scn):
     if type(item) is Sofa.Core.Node:
-        return getNodeDepth(item)
+        scn[0] += indent + getAbsolutePythonPath(item.parents[0]) + ".addChild('" + item.getName() + "')\n"
     else:
-        deps = getDependenciesFor(item)
-
-        for d in deps:
-            n = max(getDependencyDepth(d)+1, n)
-
-    return n
+        attributes = buildDataParams(item, indent, scn)
+        parentPath = indent + getAbsolutePythonPath(item.getContext() if type(item) == Sofa.Core.Object else item.parents[0])
+        scn[0] += parentPath + ".addObject('" + item.getClassName() + "', name='" + item.getName() + "'" + attributes + ")\n"
+    return item
 
 
-def getDependencyDepthMap(root, map):
-    map[root] = getNodeDepth(root)
-    for o in root.objects:
-        map[o] = getDependencyDepth(o)
-    for c in root.children:
-        map.update(getDependencyDepthMap(c, map))
-    return sorted(map.items(), key=lambda item: item[1])
+def hasNotYetCreatedDependencies(item, created):
+    for dep in getDependenciesFor(item):
+        if dep not in created:
+            return True
+    return False
 
 
+def try_create_dependent_item(node, indent, scn, created, not_created):
+    for item in not_created:
+        if not hasNotYetCreatedDependencies(item, created):
+            created.append(createItem(item, node, indent, scn))
+            not_created.remove(item)
+
+def r_createNode(node, indent, scn, created, not_created):
+    for o in node.objects:
+        if not hasNotYetCreatedDependencies(o, created):
+            created.append(createItem(o, node, indent, scn))
+        else:
+            scn[0] += indent + "# " + o.getName() + " (" + o.getClassName() + ") will be created later because of upstream dependencies\n"
+            not_created.append(o)
+    # Deal with components having a dependency to a component located within the same node
+    try_create_dependent_item(node, indent, scn, created, not_created)
+    for c in node.children:
+        scn[0] += "\n"
+        created.append(createItem(c, node, indent, scn))
+        r_createNode(c, indent, scn, created, not_created)
+        # Deal with components having a dependency to upstream-located or sibling-located components
+        try_create_dependent_item(node, indent, scn, created, not_created)
 
 
 def saveScene(node, indent, scn):
-    map = getDependencyDepthMap(node, {})
-    map.pop(0)
-    for i in map:
-        if type(i[0]) is Sofa.Core.Node:
-            scn[0] += indent + getAbsPythonCallPath(i[0].parents[0], node) + ".addChild('" + i[0].getName() + "')\n"
-        else:
-            attributes = buildDataParams(i[0], indent, scn)
-            parentPath = indent + getAbsPythonCallPath(i[0].getContext() if type(i[0]) == Sofa.Core.Object else i[0].parents[0], node)
-            scn[0] += parentPath + ".addObject('" + i[0].getClassName() + "', name='" + i[0].getName() + "'" + attributes + ")\n"
+    created = [node]
+    not_created = []
+    r_createNode(node, indent, scn, created, not_created)
 
 
 def saveAsPythonScene(fileName, node):
@@ -278,6 +289,7 @@ def saveAsPythonScene(fileName, node):
     fd.write(scn[0])
     return True
 
+
 def callFunction(file, function, *args, **kwargs):
     # First let's load that script:
     importlib.invalidate_caches()
@@ -308,7 +320,6 @@ def createPrefabFromNode(fileName, node, name, help):
     fd.write("import os\n")
     fd.write("import Sofa\n")
     fd.write("import Sofa.Core\n")
-
 
     modules = []
     modulepaths = []
