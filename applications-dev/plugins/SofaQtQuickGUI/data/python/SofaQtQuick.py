@@ -53,6 +53,7 @@ def collectMetaData(obj):
     data["lineno"] = str(inspect.findsource(obj.__original__ if "__original__" in dir(obj) else obj)[1])
     return data
 
+
 # returns a dictionary of all callable objects in the module, with their type as key
 def getPythonModuleContent(moduledir, modulename):
     objects = {}
@@ -72,6 +73,7 @@ def getPythonModuleContent(moduledir, modulename):
             if meta != None:
                 objects[i] = meta
     return objects
+
 
 def getPythonModuleDocstring(mpath):
     "Get module-level docstring of Python module at mpath, e.g. 'path/to/file.py'."
@@ -98,8 +100,17 @@ def getAbsPythonCallPath(node, rootNode):
         # relPath = physics.visu.eye
         return rootNode.name.value + node.getPathName().replace(rootNode.getPathName(), "").replace("/", ".")
 
-def buildDataParams(datas, indent, scn):
+def getAbsolutePythonPath(node):
+    if node.getRoot() == node:
+        return node.getName()
+    else:
+        return node.getRoot().getName() + node.getPathName().replace("/", ".")
+
+
+def buildDataParams(obj, indent, scn):
     s = ""
+    datas = obj.getDataFields()
+    links = obj.getLinks()
     for data in datas:
         if data.hasParent():
             scn[0] += indent + "### THERE WAS A LINK. "
@@ -125,16 +136,24 @@ def buildDataParams(datas, indent, scn):
                                     s += ", " + data.getName() + "='" + v[1:-1] + "'"
                             else:
                                 s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
+    for link in links:
+        if link.getLinkedBase() and link.getName() != "context":
+            s += ", " + link.getName() + "='" + link.getLinkedPath() + "'"
+
+    entry = Sofa.Core.ObjectFactory.getComponent(obj.getClassName())
+    if entry.defaultTemplate != obj.getTemplateName():
+        s += ", template='" + obj.getTemplateName() + "'"
     return s
+
 
 def saveRec(node, indent, modules, modulepaths, scn, rootNode):
     for o in node.objects:
-        s = buildDataParams(o.getDataFields(), indent, scn)
+        s = buildDataParams(o, indent, scn)
         scn[0] += indent + getAbsPythonCallPath(node, rootNode) + ".addObject('"
         scn[0] += o.getClassName() + "', name='" + o.name.value + "'" + s + ")\n"
 
     for child in node.children:
-        s = buildDataParams(child.getDataFields(), indent, scn)
+        s = buildDataParams(child, indent, scn)
         if child.getData("prefabname") is not None:
             #print('createPrefab '+str(child.name))
             scn[0] += (indent + "####################### Prefab: " +
@@ -179,6 +198,68 @@ def getRelPath(path, relativeTo):
     return newPath
 
 
+def getDependenciesFor(object):
+    if type(object) is Sofa.Core.Node:
+        return object.parents
+    list = []
+    for d in object.getDataFields():
+        if d.getParent() and type(d.getParent().getOwner()) != Sofa.Core.Node:
+            list.append(d.getParent().getOwner())
+
+    for l in object.getLinks():
+        if l.getLinkedBase() and type(l.getLinkedBase()) != Sofa.Core.Node and l.getName() != "slaves":
+            list.append(l.getLinkedBase())
+
+    list.append(object.getContext())
+    return list
+
+
+def createItem(item, node, indent, scn):
+    if type(item) is Sofa.Core.Node:
+        scn[0] += indent + getAbsolutePythonPath(item.parents[0]) + ".addChild('" + item.getName() + "')\n"
+    else:
+        attributes = buildDataParams(item, indent, scn)
+        parentPath = indent + getAbsolutePythonPath(item.getContext() if type(item) == Sofa.Core.Object else item.parents[0])
+        scn[0] += parentPath + ".addObject('" + item.getClassName() + "', name='" + item.getName() + "'" + attributes + ")\n"
+    return item
+
+
+def hasNotYetCreatedDependencies(item, created):
+    for dep in getDependenciesFor(item):
+        if dep not in created:
+            return True
+    return False
+
+
+def try_create_dependent_item(node, indent, scn, created, not_created):
+    for item in not_created:
+        if not hasNotYetCreatedDependencies(item, created):
+            created.append(createItem(item, node, indent, scn))
+            not_created.remove(item)
+
+def r_createNode(node, indent, scn, created, not_created):
+    for o in node.objects:
+        if not hasNotYetCreatedDependencies(o, created):
+            created.append(createItem(o, node, indent, scn))
+        else:
+            scn[0] += indent + "# " + o.getName() + " (" + o.getClassName() + ") will be created later because of upstream dependencies\n"
+            not_created.append(o)
+    # Deal with components having a dependency to a component located within the same node
+    try_create_dependent_item(node, indent, scn, created, not_created)
+    for c in node.children:
+        scn[0] += "\n"
+        created.append(createItem(c, node, indent, scn))
+        r_createNode(c, indent, scn, created, not_created)
+        # Deal with components having a dependency to upstream-located or sibling-located components
+        try_create_dependent_item(node, indent, scn, created, not_created)
+
+
+def saveScene(node, indent, scn):
+    created = [node]
+    not_created = []
+    r_createNode(node, indent, scn, created, not_created)
+
+
 def saveAsPythonScene(fileName, node):
     root = node
     fd = open(fileName, "w+")
@@ -190,7 +271,9 @@ def saveAsPythonScene(fileName, node):
     modules = []
     modulepaths = []
     scn = [""]
-    saveRec(root, "    ", modules, modulepaths, scn, root)
+    saveScene(node, "    ", scn)
+
+#    saveRec(root, "    ", modules, modulepaths, scn, root)
 
     fd.write("# all Paths\n")
     for p in list(dict.fromkeys(modulepaths)):
@@ -205,6 +288,7 @@ def saveAsPythonScene(fileName, node):
     fd.write("\n\ndef createScene("+ node.getName() +"):\n")
     fd.write(scn[0])
     return True
+
 
 def callFunction(file, function, *args, **kwargs):
     # First let's load that script:
@@ -236,7 +320,6 @@ def createPrefabFromNode(fileName, node, name, help):
     fd.write("import os\n")
     fd.write("import Sofa\n")
     fd.write("import Sofa.Core\n")
-
 
     modules = []
     modulepaths = []
