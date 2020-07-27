@@ -241,16 +241,23 @@ def hasNotYetCreatedDependencies(item, created, prefab=None):
     return False
 
 
-def try_create_dependent_item(node, indent, scn, created, not_created):
+def try_create_dependent_item(node, indent, scn, created, not_created, external_deps = [], prefab = None):
     for item in not_created:
         if not hasNotYetCreatedDependencies(item, created):
-            created.append(createItem(item, node, indent, scn))
+            if prefab == None:
+                created.append(createItem(item, node, indent, scn))
+            else:
+                created.append(createItemInPrefab(item, node, indent, scn, external_deps, prefab))
+
             not_created.remove(item)
 
-def r_createNode(node, indent, scn, created, not_created):
+def r_createNode(node, indent, scn, created, not_created, external_deps = [], prefab = None):
     for o in node.objects:
         if not hasNotYetCreatedDependencies(o, created):
-            created.append(createItem(o, node, indent, scn))
+            if prefab == None:
+                created.append(createItem(o, node, indent, scn))
+            else:
+                created.append(createItemInPrefab(o, node, indent, scn, external_deps, prefab))
         else:
             scn[0] += indent + "# " + o.getName() + " (" + o.getClassName() + ") will be created later because of upstream dependencies\n"
             not_created.append(o)
@@ -258,10 +265,13 @@ def r_createNode(node, indent, scn, created, not_created):
     try_create_dependent_item(node, indent, scn, created, not_created)
     for c in node.children:
         scn[0] += "\n"
-        created.append(createItem(c, node, indent, scn))
-        r_createNode(c, indent, scn, created, not_created)
+        if prefab == None:
+            created.append(createItem(c, node, indent, scn))
+        else:
+            created.append(createItemInPrefab(c, node, indent, scn, external_deps, prefab))
+        r_createNode(c, indent, scn, created, not_created, external_deps, prefab)
         # Deal with components having a dependency to upstream-located or sibling-located components
-        try_create_dependent_item(node, indent, scn, created, not_created)
+        try_create_dependent_item(node, indent, scn, created, not_created, external_deps, prefab)
 
 
 def saveScene(node, indent, scn):
@@ -336,8 +346,8 @@ def r_createPrefab(node, indent, scn, created, not_created, external_deps, prefa
     try_create_dependent_item(node, indent, scn, created, not_created)
     for c in node.children:
         scn[0] += "\n"
-        created.append(createItem(c, node, indent, scn))
-        r_createNode(c, indent, scn, created, not_created)
+        created.append(createItemInPrefab(c, node, indent, scn, external_deps, prefab))
+        r_createNode(c, indent, scn, created, not_created, external_deps, prefab)
         # Deal with components having a dependency to upstream-located or sibling-located components
         try_create_dependent_item(node, indent, scn, created, not_created)
 
