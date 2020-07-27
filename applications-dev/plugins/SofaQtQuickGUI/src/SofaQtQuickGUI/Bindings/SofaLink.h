@@ -44,6 +44,7 @@ namespace sofaqtquick::bindings
             /// Returns the number of link in the SofaLink (in case of multilinks)
             Q_INVOKABLE unsigned int getSize();
             Q_INVOKABLE SofaBase* getLinkedBase(size_t index = 0);
+            Q_INVOKABLE void setLinkedBase(SofaBase* linkedbase);
             Q_INVOKABLE SofaData* getLinkedData(size_t index = 0);
             Q_INVOKABLE QString   getLinkedPath(size_t index = 0);
 
