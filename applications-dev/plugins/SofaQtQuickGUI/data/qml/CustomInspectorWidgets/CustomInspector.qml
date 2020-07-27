@@ -164,11 +164,21 @@ ColumnLayout {
                         elide: Text.ElideRight
                     }
                     TextField {
+                        id: link_txtfield
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         readOnly: true
 
                         text: component.findLink(modelData).getLinkedPath().trim()
+                        DropArea {
+                            id: link_dropArea1
+                            anchors.fill: parent
+
+                            onDropped: {
+                                component.findLink(modelData).setLinkedBase(drag.source.item)
+                                link_txtfield.text = Qt.binding(function(){ return component.findLink(modelData).getLinkedPath().trim() })
+                            }
+                        }
                     }
                     Rectangle {
                         color: "transparent"
