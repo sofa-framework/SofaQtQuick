@@ -145,7 +145,7 @@ def buildDataParams(obj, indent, scn, prefab=None, external_deps=[]):
                                 s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
     for link in links:
         if link in external_deps and prefab != None:
-            s += ", " + link.getName() + "=" + "self." + getParameterName(link, prefab)
+            s += ", " + link.getName() + "=" + "self." + getParameterName(link, prefab) + ".value"
 
         elif link.getLinkedBase() and link.getName() != "context":
             s += ", " + link.getName() + "='" + link.getLinkedPath() + "'"
@@ -315,9 +315,9 @@ def writeExternalDependencies(external_deps, prefab, indent):
     for item in external_deps:
         itemName = getParameterName(item, prefab)
         if item is Sofa.Core.Data:
-            str += indent + "self.addData(name='" + itemName + "', type='" + item.typeName() + "')\n"
+            str += indent + "self.addDataParameter(name='" + itemName + "', type='" + item.typeName() + "')\n"
         else:
-            str += indent + "self.addLink(name='" + itemName + "')\n"
+            str += indent + "self.addLinkParameter(name='" + itemName + "', help='" + item.getHelp()  + "')\n"
     return str
 
 
