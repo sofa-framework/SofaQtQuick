@@ -315,9 +315,9 @@ def writeExternalDependencies(external_deps, prefab, indent):
     for item in external_deps:
         itemName = getParameterName(item, prefab)
         if item is Sofa.Core.Data:
-            str += indent + "self.addDataParameter(name='" + itemName + "', type='" + item.typeName() + "')\n"
+            str += indent + "self.addPrefabParameter(name='" + itemName + "', type='" + item.typeName() + "')\n"
         else:
-            str += indent + "self.addLinkParameter(name='" + itemName + "', help='" + item.getHelp()  + "')\n"
+            str += indent + "self.addPrefabParameter(name='" + itemName + "', type='Link', help='" + item.getHelp()  + "')\n"
     return str
 
 
@@ -351,6 +351,17 @@ def r_createPrefab(node, indent, scn, created, not_created, external_deps, prefa
         # Deal with components having a dependency to upstream-located or sibling-located components
         try_create_dependent_item(node, indent, scn, created, not_created)
 
+
+def addExternalDepsCheck(fd, external_deps, prefab):
+    fd.write("        if ")
+    first = True
+    for item in external_deps:
+        if not first:
+            fd.write(" or ")
+        first = False
+        itemName = getParameterName(item, prefab)
+        fd.write("not self.findData('"+ itemName +"')")
+    fd.write(':\n            return\n')
 
 def createPrefab(fileName, prefab, name, help):
     external_deps = []
@@ -398,6 +409,10 @@ def createPrefab(fileName, prefab, name, help):
     externalCreated = created
     for item in external_deps:
         externalCreated.append(item.getLinkedBase())
+
+    fd.write("\n\n    def doReInit(self):\n")
+
+    addExternalDepsCheck(fd, external_deps, prefab)
 
     r_createPrefab(prefab, "        ", scn, created + external_deps, not_created, external_deps, prefab)
     fd.write(scn[0])
