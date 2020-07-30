@@ -12,7 +12,7 @@ namespace qmlui
       d_lastModified(initData(&d_lastModified, uint(0), "lastModified",
                               "the Timestamp of the last modification of filename", false, true))
   {
-      m_componentstate = sofa::core::objectmodel::ComponentState::Loading;
+      d_componentState.setValue(sofa::core::objectmodel::ComponentState::Loading);
       d_qmlFile.setRequired(true);
   }
 
@@ -22,12 +22,12 @@ namespace qmlui
       tracker.trackData(d_lastModified);
       if (!d_qmlFile.isSet() || d_qmlFile.getExtension() != "qml")
       {
-          m_componentstate = sofa::core::objectmodel::ComponentState::Invalid;
+          d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
           msg_error("Canvas") << "Canvas initialized without a qml UI file";
       }
       else
       {
-          m_componentstate = sofa::core::objectmodel::ComponentState::Valid;
+          d_componentState.setValue(sofa::core::objectmodel::ComponentState::Valid);
       }
   }
   

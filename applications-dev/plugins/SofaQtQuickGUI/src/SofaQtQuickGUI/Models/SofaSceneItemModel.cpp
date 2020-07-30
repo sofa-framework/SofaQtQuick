@@ -82,7 +82,7 @@ void SofaSceneItemModel::emitAllChanges(Node* node)
 
     for (BaseObject::SPtr object: node->object)
     {
-        if( m_dataTracker.hasChanged(object->m_componentstate) )
+        if( m_dataTracker.hasChanged(object->d_componentState) )
         {
             QModelIndex t = index(node, object.get());
             emit dataChanged(t,t);
@@ -94,7 +94,7 @@ void SofaSceneItemModel::emitAllChanges(Node* node)
         emitAllChanges(child.get());
     }
 
-    if( m_dataTracker.hasChanged(node->m_componentstate) )
+    if( m_dataTracker.hasChanged(node->d_componentState) )
     {
         QModelIndex t = index(node);
         emit dataChanged(t,t);
@@ -348,7 +348,7 @@ QVariant SofaSceneItemModel::data(const QModelIndex &index, int role) const
     case Roles::Row:
         return QVariant(index.row());
     case Roles::Status:
-        return QVariant(QString::fromStdString(currentBase->d_componentstate.getValueString()));
+        return QVariant(QString::fromStdString(currentBase->d_componentState.getValueString()));
     }
 
     return QVariant(QString("INVALID ROLE"));
