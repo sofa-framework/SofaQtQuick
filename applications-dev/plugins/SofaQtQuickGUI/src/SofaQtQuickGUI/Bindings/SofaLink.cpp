@@ -70,6 +70,11 @@ SofaBase* SofaLink::getLinkedBase(size_t index)
                                                          "Unable to get SofaBase.");
 }
 
+void SofaLink::setLinkedBase(sofaqtquick::bindings::_sofabase_::SofaBase *linkedbase)
+{
+    m_self->setLinkedBase(linkedbase->rawBase());
+}
+
 SofaData* SofaLink::getLinkedData(size_t index)
 {
     if(index >= m_self->getSize())
