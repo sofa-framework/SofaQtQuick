@@ -9,6 +9,8 @@ using namespace sofa::core::objectmodel;
 
 void SofaLinkCompletionModel::setSofaData(sofaqtquick::bindings::_sofadata_::SofaData *newSofaData)
 {
+    if (!newSofaData) return;
+
     m_sofaData = newSofaData;
     sofa::core::objectmodel::Base* base = newSofaData->rawData()->getOwner();
     m_relativeRoot = base->toBaseNode();
@@ -102,6 +104,7 @@ Base* SofaLinkCompletionModel::getLastValidObject(QString& lastValidLinkPath)
 
 void SofaLinkCompletionModel::updateModel()
 {
+    if (!m_sofaData) return;
     beginResetModel();
     QString lastValidLinkPath = "";
     std::string path_separator = "/";
@@ -112,9 +115,9 @@ void SofaLinkCompletionModel::updateModel()
         path_separator = "";
         data_separator = "";
     }
-    if (lastValidLinkPath[lastValidLinkPath.size() -1] == "/")
+    else if (lastValidLinkPath[lastValidLinkPath.size() -1] == "/")
         path_separator = "";
-    if (lastValidLinkPath[lastValidLinkPath.size() -1] == ".")
+    else if (lastValidLinkPath[lastValidLinkPath.size() -1] == ".")
         data_separator = "";
     m_modelText.clear();
     m_modelName.clear();
@@ -124,6 +127,7 @@ void SofaLinkCompletionModel::updateModel()
         endResetModel();
         return;
     }
+
     if (lastValid->toBaseNode())
     {
         BaseNode* node = lastValid->toBaseNode();
@@ -144,13 +148,16 @@ void SofaLinkCompletionModel::updateModel()
         }
     }
 
-    for (auto data : lastValid->getDataFields())
+    if (m_isComponent)
     {
-        if (data->getValueTypeString() == sofaData()->rawData()->getValueTypeString())
+        for (auto data : lastValid->getDataFields())
         {
-            m_modelText.push_back(lastValidLinkPath+QString::fromStdString(data_separator+data->getName()));
-            m_modelName.push_back(QString::fromStdString(data->getName()));
-            m_modelHelp.push_back(QString::fromStdString(data->getHelp()));
+            if (data->getValueTypeString() == sofaData()->rawData()->getValueTypeString())
+            {
+                m_modelText.push_back(lastValidLinkPath+QString::fromStdString(data_separator+data->getName()));
+                m_modelName.push_back(QString::fromStdString(data->getName()));
+                m_modelHelp.push_back(QString::fromStdString(data->getHelp()));
+            }
         }
     }
     m_modelText.erase(std::remove_if(m_modelText.begin(), m_modelText.end(),

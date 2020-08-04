@@ -29,6 +29,11 @@ public:
 
     Q_PROPERTY(sofaqtquick::bindings::SofaData* sofaData READ sofaData WRITE setSofaData NOTIFY sofaDataChanged)
     Q_PROPERTY(QString linkPath READ getLinkPath WRITE setLinkPath NOTIFY linkPathChanged)
+    Q_PROPERTY(bool isComponent READ isComponent WRITE setIsComponent NOTIFY isComponentChanged)
+
+    inline bool isComponent() const { return m_isComponent; }
+    void setIsComponent(bool isComponent) { m_isComponent = isComponent; }
+
 
     inline sofaqtquick::bindings::SofaData* sofaData() const { return m_sofaData; }
     void setSofaData(sofaqtquick::bindings::SofaData* newSofaData);
@@ -39,6 +44,7 @@ public:
 signals:
     void sofaDataChanged(sofaqtquick::bindings::SofaData* newSofaData) const;
     void linkPathChanged(QString newlinkPath) const;
+    void isComponentChanged(bool isComponent) const;
 
 protected:
     int	rowCount(const QModelIndex & parent = QModelIndex()) const;
@@ -48,6 +54,7 @@ protected:
 private:
     sofaqtquick::bindings::SofaData* m_sofaData;
     QString m_linkPath;
+    bool m_isComponent;
 
     QStringList m_modelText;
     QStringList m_modelName;

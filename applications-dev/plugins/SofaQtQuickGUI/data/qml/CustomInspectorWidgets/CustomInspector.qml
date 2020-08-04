@@ -45,7 +45,7 @@ ColumnLayout {
                             Layout.maximumWidth: root.labelWidth
 
                             text:  modelData
-                            color: sofaDataLayout.sofaData.properties.required ? "red" : "black"
+                            color: sofaDataLayout.sofaData.properties.required && !sofaDataLayout.sofaData.properties.set ? "red" : "black"
                             elide: Text.ElideRight
                             ToolTip {
                                 text: sofaDataLayout.sofaData.getName()
