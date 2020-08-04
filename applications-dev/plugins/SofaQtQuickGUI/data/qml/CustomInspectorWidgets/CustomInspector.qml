@@ -63,6 +63,11 @@ ColumnLayout {
                                     keys: ["text/plain"]
                                     anchors.fill: parent
                                     onDropped: {
+                                        if (sofaData.getValueType() === "PrefabLink") {
+                                            sofaData.value = "@" + drag.source.item.getPathName()
+                                            return;
+                                        }
+
                                         if (drag.source.item.getPathName() === SofaApplication.selectedComponent.getPathName()) {
                                             console.error("Cannot link datafields to themselves")
                                             return;
@@ -95,6 +100,10 @@ ColumnLayout {
                                 anchors.fill: parent
 
                                 onDropped: {
+                                    if (sofaData.getValueType() === "PrefabLink") {
+                                        sofaData.value = "@" + drag.source.item.getPathName()
+                                        return;
+                                    }
                                     var data = drag.source.item.getData(sofaData.getName())
                                     if (drag.source.item.getPathName() === SofaApplication.selectedComponent.getPathName()) {
                                         console.error("Cannot link datafields to themselves")

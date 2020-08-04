@@ -25,6 +25,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 #include <SofaQtQuickGUI/ProcessState.h>
 
 #include <sofa/helper/system/FileSystem.h>
+#include <sofa/helper/system/PluginManager.h>
 #include <sofa/helper/system/FileRepository.h>
 #include <sofa/helper/Utils.h>
 #include <sofa/helper/BackTrace.h>
@@ -1251,6 +1252,8 @@ sofaqtquick::bindings::SofaBase* SofaBaseApplication::GetSelectedComponent()
 
 bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
+    sofa::helper::system::PluginManager::getInstance().loadPluginByName("SofaPython3");
+
     OurInstance = new SofaBaseApplication();
 
     // color console

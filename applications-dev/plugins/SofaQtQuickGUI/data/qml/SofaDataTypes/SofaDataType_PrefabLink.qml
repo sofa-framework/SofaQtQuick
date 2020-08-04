@@ -42,19 +42,16 @@ TextField {
         target: sofaData
         onValueChanged: {
             text=sofaData.value.toString()
-            console.log("VALUE HAS CHANGED... "+ text)
         }
     }
 
     onAccepted:
     {
-        console.log("VALUE HAS CHANGED... SETTING" +  text)
         sofaData.value = text
         root.focus = false
     }
     onEditingFinished:
     {
-        console.log("VALUE HAS CHANGED... SETTING2" + text)
         sofaData.value = text
         root.focus = false
     }
