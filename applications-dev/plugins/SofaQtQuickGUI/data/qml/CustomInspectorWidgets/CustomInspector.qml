@@ -3,8 +3,7 @@ import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import SofaApplication 1.0
 import SofaBasics 1.0
-
-
+import SofaLinkCompletionModel 1.0
 
 
 ColumnLayout {
@@ -111,7 +110,6 @@ ColumnLayout {
                                     }
 
                                     if (data !== null) {
-                                        print("DropArea2")
                                         sofaData.setValue(data.value)
                                         sofaData.setParent(data)
                                     }
@@ -173,10 +171,10 @@ ColumnLayout {
                         elide: Text.ElideRight
                     }
                     TextField {
-                        id: link_txtfield
+                        id: txtField
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        readOnly: true
+                        readOnly: false
 
                         text: component.findLink(modelData).getLinkedPath().trim()
                         DropArea {
@@ -185,8 +183,15 @@ ColumnLayout {
 
                             onDropped: {
                                 component.findLink(modelData).setLinkedBase(drag.source.item)
-                                link_txtfield.text = Qt.binding(function(){ return component.findLink(modelData).getLinkedPath().trim() })
+                                txtField.text = Qt.binding(function(){ return component.findLink(modelData).getLinkedPath().trim() })
                             }
+                        }
+                        onEditingFinished: {
+                            component.findLink(modelData).setLinkedPath(text)
+                            focus = false
+                        }
+                        onTextEdited: {
+                            component.findLink(modelData).setLinkedPath(text)
                         }
                     }
                     Rectangle {
@@ -200,7 +205,6 @@ ColumnLayout {
                 }
             }
         }
-
     }
     GroupBox {
         title: "Infos"

@@ -45,6 +45,7 @@ namespace sofaqtquick::bindings
             Q_INVOKABLE unsigned int getSize();
             Q_INVOKABLE SofaBase* getLinkedBase(size_t index = 0);
             Q_INVOKABLE void setLinkedBase(SofaBase* linkedbase);
+            Q_INVOKABLE void setLinkedPath(const QString& str);
             Q_INVOKABLE SofaData* getLinkedData(size_t index = 0);
             Q_INVOKABLE QString   getLinkedPath(size_t index = 0);
 
