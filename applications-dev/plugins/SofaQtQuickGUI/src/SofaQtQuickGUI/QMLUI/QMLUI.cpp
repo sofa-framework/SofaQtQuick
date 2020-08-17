@@ -51,9 +51,9 @@ void QmlUILoader::resetAndLoadAll(QList<QObject*> list)
 
 void QmlUILoader::load(SofaBaseObject* canvas)
 {
-    std::cout << "loading canvas " << canvas->getName() << ". Status: " << canvas->self()->m_componentstate << std::endl;
-    if (canvas->self()->m_componentstate == sofa::core::objectmodel::ComponentState::Loading ||
-            canvas->self()->m_componentstate == sofa::core::objectmodel::ComponentState::Invalid)
+    std::cout << "loading canvas " << canvas->getName() << ". Status: " << canvas->self()->d_componentState.getValue() << std::endl;
+    if (canvas->self()->d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Loading ||
+            canvas->self()->d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
         canvas->init();
     QQmlEngine* engine = qmlEngine(this);
     if(!engine)

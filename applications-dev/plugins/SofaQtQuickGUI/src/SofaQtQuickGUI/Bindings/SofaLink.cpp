@@ -75,6 +75,11 @@ void SofaLink::setLinkedBase(sofaqtquick::bindings::_sofabase_::SofaBase *linked
     m_self->setLinkedBase(linkedbase->rawBase());
 }
 
+void SofaLink::setLinkedPath(const QString& path)
+{
+    m_self->read(path.toStdString());
+}
+
 SofaData* SofaLink::getLinkedData(size_t index)
 {
     if(index >= m_self->getSize())

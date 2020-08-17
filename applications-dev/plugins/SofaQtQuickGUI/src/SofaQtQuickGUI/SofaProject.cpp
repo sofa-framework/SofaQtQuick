@@ -544,7 +544,7 @@ bool SofaProject::createPrefab(SofaBase* node)
             py::module::import("Sofa.Core");
             py::object rootNode = sofapython3::PythonFactory::toPython(node->base()->toBaseNode());
             py::module m = py::module::import("SofaQtQuick");
-            return py::cast<bool>(m.attr("createPrefab")(fileName, rootNode, name.toStdString(), help.toStdString()));
+            return py::cast<bool>(m.attr("saveAsPythonPrefab")(fileName, rootNode, name.toStdString(), help.toStdString()));
         }
     }
     return false;

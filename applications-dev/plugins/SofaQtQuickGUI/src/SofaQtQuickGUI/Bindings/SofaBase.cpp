@@ -290,7 +290,7 @@ void SofaBase::dump() const
 QString SofaBase::componentStateAsString() const
 {
     std::stringstream s;
-    s << rawBase()->d_componentstate.getValue();
+    s << rawBase()->d_componentState.getValue();
     return QString::fromStdString(s.str());
 }
 

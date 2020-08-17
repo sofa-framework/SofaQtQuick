@@ -160,5 +160,6 @@
         <file>SofaWidgets/TemplatesPreferences.qml</file>
         <file>SofaBasics/TabView.qml</file>
         <file>SofaDataTypes/ImportFileDialog.qml</file>
+        <file>SofaDataTypes/SofaDataType_PrefabLink.qml</file>
     </qresource>
 </RCC>

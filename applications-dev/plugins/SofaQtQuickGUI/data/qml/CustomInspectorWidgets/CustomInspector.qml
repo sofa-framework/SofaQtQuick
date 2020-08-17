@@ -3,8 +3,7 @@ import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import SofaApplication 1.0
 import SofaBasics 1.0
-
-
+import SofaLinkCompletionModel 1.0
 
 
 ColumnLayout {
@@ -45,7 +44,7 @@ ColumnLayout {
                             Layout.maximumWidth: root.labelWidth
 
                             text:  modelData
-                            color: sofaDataLayout.sofaData.properties.required ? "red" : "black"
+                            color: sofaDataLayout.sofaData.properties.required && !sofaDataLayout.sofaData.properties.set ? "red" : "black"
                             elide: Text.ElideRight
                             ToolTip {
                                 text: sofaDataLayout.sofaData.getName()
@@ -63,6 +62,11 @@ ColumnLayout {
                                     keys: ["text/plain"]
                                     anchors.fill: parent
                                     onDropped: {
+                                        if (sofaData.getValueType() === "PrefabLink") {
+                                            sofaData.value = "@" + drag.source.item.getPathName()
+                                            return;
+                                        }
+
                                         if (drag.source.item.getPathName() === SofaApplication.selectedComponent.getPathName()) {
                                             console.error("Cannot link datafields to themselves")
                                             return;
@@ -95,6 +99,10 @@ ColumnLayout {
                                 anchors.fill: parent
 
                                 onDropped: {
+                                    if (sofaData.getValueType() === "PrefabLink") {
+                                        sofaData.value = "@" + drag.source.item.getPathName()
+                                        return;
+                                    }
                                     var data = drag.source.item.getData(sofaData.getName())
                                     if (drag.source.item.getPathName() === SofaApplication.selectedComponent.getPathName()) {
                                         console.error("Cannot link datafields to themselves")
@@ -102,7 +110,6 @@ ColumnLayout {
                                     }
 
                                     if (data !== null) {
-                                        print("DropArea2")
                                         sofaData.setValue(data.value)
                                         sofaData.setParent(data)
                                     }
@@ -164,10 +171,10 @@ ColumnLayout {
                         elide: Text.ElideRight
                     }
                     TextField {
-                        id: link_txtfield
+                        id: txtField
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        readOnly: true
+                        readOnly: false
 
                         text: component.findLink(modelData).getLinkedPath().trim()
                         DropArea {
@@ -176,8 +183,15 @@ ColumnLayout {
 
                             onDropped: {
                                 component.findLink(modelData).setLinkedBase(drag.source.item)
-                                link_txtfield.text = Qt.binding(function(){ return component.findLink(modelData).getLinkedPath().trim() })
+                                txtField.text = Qt.binding(function(){ return component.findLink(modelData).getLinkedPath().trim() })
                             }
+                        }
+                        onEditingFinished: {
+                            component.findLink(modelData).setLinkedPath(text)
+                            focus = false
+                        }
+                        onTextEdited: {
+                            component.findLink(modelData).setLinkedPath(text)
                         }
                     }
                     Rectangle {
@@ -191,7 +205,6 @@ ColumnLayout {
                 }
             }
         }
-
     }
     GroupBox {
         title: "Infos"
