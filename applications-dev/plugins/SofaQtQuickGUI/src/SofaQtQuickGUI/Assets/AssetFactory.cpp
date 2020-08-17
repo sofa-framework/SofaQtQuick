@@ -5,6 +5,7 @@
 #include "TextureAsset.h"
 #include "TemplateAsset.h"
 #include "PythonAsset.h"
+#include <QQmlEngine>
 
 namespace sofaqtquick
 {
@@ -29,16 +30,17 @@ QStringList AssetFactory::getSupportedTypes()
     return keys;
 }
 
-std::shared_ptr<Asset>
+QSharedPointer<Asset>
 AssetFactory::createInstance(const QString& path,
                              const QString& extension)
 {
     const auto& creator = getFactoryCreators().find(extension.toStdString());
     if (creator == getFactoryCreators().end())
-        return std::shared_ptr<TemplateAsset>{new TemplateAsset(path.toStdString(),
+        return QSharedPointer<Asset>{new TemplateAsset(path.toStdString(),
                                           extension.toStdString())};
-    return creator->second->createInstance(path.toStdString(),
+    auto ptr = creator->second->createInstance(path.toStdString(),
                                           extension.toStdString());
+    return QSharedPointer<Asset>(ptr);
 }
 
 bool AssetFactory::registerAsset(const std::string& extension,

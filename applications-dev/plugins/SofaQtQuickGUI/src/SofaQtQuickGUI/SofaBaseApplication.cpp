@@ -785,8 +785,10 @@ sofaqtquick::SofaProject* SofaBaseApplication::getCurrentProject()
 
 void SofaBaseApplication::setCurrentProject(sofaqtquick::SofaProject* newProject)
 {
-    if (m_currentProject)
+    if (m_currentProject && newProject != m_currentProject)
+    {
         delete m_currentProject;
+    }
     m_currentProject = newProject;
 }
 

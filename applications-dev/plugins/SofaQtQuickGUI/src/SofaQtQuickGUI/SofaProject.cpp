@@ -400,7 +400,7 @@ void SofaProject::scan(const QFileInfo& file)
     }
 
     msg_info() << "register dir: " <<  file.absoluteFilePath().toStdString() ;
-    std::shared_ptr<DirectoryAsset> dirAsset { new DirectoryAsset(file.filePath()) };
+    QSharedPointer<DirectoryAsset> dirAsset { new DirectoryAsset(file.filePath()) };
     dirAsset->getDetails();
     m_directories[filePath] = dirAsset;
 
@@ -507,12 +507,13 @@ const QString SofaProject::getFileCount(const QUrl& url)
     return QString(str.c_str());
 }
 
+
 Asset* SofaProject::getAsset(const QString& filePath)
 {
     auto val = m_assets.value(filePath);
     if (val != nullptr)
     {
-        msg_info() << "getAsset for: " << filePath.toStdString();
+        QQmlEngine::setObjectOwnership(val.get(), QQmlEngine::ObjectOwnership::CppOwnership);
         return val.get();
     }
     return nullptr;

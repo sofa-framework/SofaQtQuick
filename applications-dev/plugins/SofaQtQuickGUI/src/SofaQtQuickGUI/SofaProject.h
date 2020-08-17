@@ -84,7 +84,6 @@ public:
     Q_INVOKABLE void saveSceneAsNewProject();
 
 
-
     Q_INVOKABLE void scan(const QFileInfo& folder);
     Q_INVOKABLE void scan(const QUrl& url);
 
@@ -125,8 +124,8 @@ private:
 
     QUrl m_rootDir; // The Project's root fs directory
 
-    QMap<QString, std::shared_ptr<Asset> > m_assets; /// project asset's URLs with their associated loaders
-    QMap<QString, std::shared_ptr<DirectoryAsset> > m_directories;
+    QMap<QString, QSharedPointer<Asset> > m_assets; /// project asset's URLs with their associated loaders
+    QMap<QString, QSharedPointer<DirectoryAsset> > m_directories;
     QSettings* m_projectSettings {nullptr};
 
     ProjectMonitor* m_watcher {nullptr};

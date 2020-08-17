@@ -41,7 +41,7 @@ Item {
             spacing: 10
             Repeater {
                 Layout.fillWidth: true
-                model: selectedAsset.scriptContent
+                model: selectedAsset ? selectedAsset.scriptContent : null
                 GroupBox {
                     id: gbox
                     Layout.fillWidth: true
