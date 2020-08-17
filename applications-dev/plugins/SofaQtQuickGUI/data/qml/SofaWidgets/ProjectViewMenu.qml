@@ -15,7 +15,7 @@ import SofaApplication 1.0
 Menu {
     id: projectMenu
 
-    property Asset model
+    property var model
 
     property var filePath
     property bool fileIsDir: true
@@ -68,7 +68,7 @@ Menu {
 
     SofaAssetMenu {
         id: assetsList
-        enabled: model && model.scriptContent.length > 1
+        enabled: (model && model.scriptContent.length > 1) ? true : false
         asset: model
         parentNode: SofaApplication.selectedComponent
         modal: true

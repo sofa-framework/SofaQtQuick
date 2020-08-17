@@ -223,11 +223,20 @@ Item {
                     showFiles: true
                     caseSensitive: true
                     rootFolder: SofaApplication.currentProject.rootDirPath
-//                    nameFilters: SofaApplication.currentProject.getSupportedTypes()
+                    //                    nameFilters: SofaApplication.currentProject.getSupportedTypes()
+
+                    onStatusChanged: {
+                        if (folderModel.status === FolderListModel.Ready)
+                            folderView.delegate = fileDelegate
+                        else
+                            folderView.delegate = null
+                    }
                 }
 
                 property var selectedItem: null
-                delegate: Component {
+                delegate: fileDelegate
+
+                Component {
                     id: fileDelegate
 
                     Rectangle {
@@ -236,7 +245,12 @@ Item {
                         height: 20
                         color: index % 2 ? "#4c4c4c" : "#454545"
                         property string highlightColor: ListView.isCurrentItem || folderView.selectedItem === wrapper ? "#82878c" : "transparent"
-                        property var asset: SofaApplication.currentProject.getAsset(filePath)
+                        property var asset: {
+                            var asset = SofaApplication.currentProject.getAsset(filePath)
+                        }
+                        onAssetChanged: {
+                        }
+
                         Rectangle {
                             anchors.fill: parent
                             color: wrapper.highlightColor
@@ -251,7 +265,10 @@ Item {
                                         width: 15
                                         height: 15
                                         fillMode: Image.PreserveAspectFit
-                                        source: fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : asset ? asset.iconPath : "qrc:/icon/ICON_FILE_BLANK.png"
+                                        source: {
+                                            asset = SofaApplication.currentProject.getAsset(filePath)
+                                            return fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : (asset) ? asset.iconPath : "qrc:/icon/ICON_FILE_BLANK.png";
+                                        }
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
@@ -303,8 +320,8 @@ Item {
                         ProjectViewMenu {
                             id: projectMenu
                             filePath: folderModel.get(index, "filePath")
-                            fileIsDir: index !== -1 ? folderModel.get(index, "fileIsDir") : ""
-                            model: folderModel.get(index, "fileIsDir") ? null : asset
+                            fileIsDir: (index !== -1) ? folderModel.get(index, "fileIsDir") : true
+                            model: asset
                         }
 
                         MouseArea {
@@ -322,13 +339,13 @@ Item {
                             function insertAsset(index)
                             {
                                 var _parent = SofaApplication.selectedComponent
-                                if (_parent === null) { console.error("taking root node"); _parent = sofaScene.root()}
-                                if (!_parent.isNode()) { console.error("taking object's parent"); _parent = _parent.getFirstParent()}
+                                if (_parent === null) _parent = sofaScene.root()
+                                if (!_parent.isNode()) _parent = _parent.getFirstParent()
 
-                                var newNode = SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath")).create(_parent)
+                                var _asset = SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath"))
+                                if (_asset === null) return null
+                                var newNode = _asset.create(_parent)
                                 var hasNodes = newNode.children().size()
-                                console.error("ParentNode type: " + _parent)
-                                console.error("newNode type: " + newNode)
                                 _parent.dump()
                                 //                                newNode.copyTo(_parent)
                                 if (hasNodes) {
@@ -344,8 +361,10 @@ Item {
                                 forceActiveFocus()
                                 if (folderModel.isFolder(index)) {
                                     folderModel.folder = folderModel.get(index, "fileURL")
-                                } else {
-                                    if (SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath")).isScene) {
+                                }
+                                else {
+                                    var _asset = SofaApplication.currentProject.getAsset(folderModel.get(index, "filePath"))
+                                    if (_asset !== null && _asset.isScene) {
                                         SofaApplication.sofaScene.source = folderModel.get(index, "filePath")
                                     }
                                     else {

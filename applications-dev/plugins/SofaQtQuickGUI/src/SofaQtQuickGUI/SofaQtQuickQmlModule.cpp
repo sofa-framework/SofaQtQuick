@@ -229,6 +229,7 @@ static QObject* createSofaBaseApplication(QQmlEngine *engine,
 
 
 
+
 void registerSofaTypesToQml(const char* /*uri*/)
 {
     qRegisterMetaType<SofaBaseScene::Status>("Status");
@@ -236,8 +237,8 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qRegisterMetaType<QVariantMap*>("QVariantMap*");
     qRegisterMetaType<SofaBaseScene*>("const SofaBaseScene*");
     qRegisterMetaType<SofaBaseScene*>("SofaBaseScene*");
-    qRegisterMetaType<SofaBaseScene*>("const SofaScene*");
     qRegisterMetaType<Asset*>("Asset*");
+    qRegisterMetaType<SofaBaseScene*>("const SofaScene*");
     qRegisterMetaType<QUrlList>("QUrlList");
 
     qRegisterMetaType<sofaqtquick::bindings::SofaData*>("sofaqtquick::bindings::SofaData*");
@@ -281,26 +282,18 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<Camera>                                         ("Camera"                               , versionMajor, versionMinor, "Camera");
     qmlRegisterType<SofaCamera>                                     ("SofaCamera"                           , versionMajor, versionMinor, "SofaCamera");
     qmlRegisterType<SofaParticleInteractor>                         ("SofaParticleInteractor"               , versionMajor, versionMinor, "SofaParticleInteractor");
-    //    qmlRegisterType<SofaPythonInteractor>                           ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
-    qmlRegisterType<Translate_Manipulator>                              ("Translate_Manipulator"                    , versionMajor, versionMinor, "Translate_Manipulator");
-    qmlRegisterType<Viewpoint_Manipulator>                              ("Viewpoint_Manipulator"                    , versionMajor, versionMinor, "Viewpoint_Manipulator");
-    qmlRegisterType<Rotate_Manipulator>                              ("Rotate_Manipulator"                    , versionMajor, versionMinor, "Rotate_Manipulator");
+    //    qmlRegisterType<SofaPythonInteractor>                     ("SofaPythonInteractor"                 , versionMajor, versionMinor, "SofaPythonInteractor");
+    qmlRegisterType<Translate_Manipulator>                          ("Translate_Manipulator"                    , versionMajor, versionMinor, "Translate_Manipulator");
+    qmlRegisterType<Viewpoint_Manipulator>                          ("Viewpoint_Manipulator"                    , versionMajor, versionMinor, "Viewpoint_Manipulator");
+    qmlRegisterType<Rotate_Manipulator>                             ("Rotate_Manipulator"                    , versionMajor, versionMinor, "Rotate_Manipulator");
     qmlRegisterType<Scale_Manipulator>                              ("Scale_Manipulator"                    , versionMajor, versionMinor, "Scale_Manipulator");
-    qmlRegisterType<Snapping_Manipulator>                              ("Snapping_Manipulator"                    , versionMajor, versionMinor, "Snapping_Manipulator");
-    //    qmlRegisterType<Manipulator2D_Translation>                      ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");
-    //    qmlRegisterType<Manipulator2D_Rotation>                         ("Manipulator2D_Rotation"               , versionMajor, versionMinor, "Manipulator2D_Rotation");
-    //    qmlRegisterType<Manipulator3D_Translation>                      ("Manipulator3D_Translation"            , versionMajor, versionMinor, "Manipulator3D_Translation");
-    //    qmlRegisterType<Manipulator3D_InPlaneTranslation>               ("Manipulator3D_InPlaneTranslation"     , versionMajor, versionMinor, "Manipulator3D_InPlaneTranslation");
-    //    qmlRegisterType<Manipulator3D_Rotation>                         ("Manipulator3D_Rotation"               , versionMajor, versionMinor, "Manipulator3D_Rotation");
+    qmlRegisterType<Snapping_Manipulator>                           ("Snapping_Manipulator"                    , versionMajor, versionMinor, "Snapping_Manipulator");
+    //    qmlRegisterType<Manipulator2D_Translation>                ("Manipulator2D_Translation"            , versionMajor, versionMinor, "Manipulator2D_Translation");
+    //    qmlRegisterType<Manipulator2D_Rotation>                   ("Manipulator2D_Rotation"               , versionMajor, versionMinor, "Manipulator2D_Rotation");
+    //    qmlRegisterType<Manipulator3D_Translation>                ("Manipulator3D_Translation"            , versionMajor, versionMinor, "Manipulator3D_Translation");
+    //    qmlRegisterType<Manipulator3D_InPlaneTranslation>         ("Manipulator3D_InPlaneTranslation"     , versionMajor, versionMinor, "Manipulator3D_InPlaneTranslation");
+    //    qmlRegisterType<Manipulator3D_Rotation>                   ("Manipulator3D_Rotation"               , versionMajor, versionMinor, "Manipulator3D_Rotation");
     qmlRegisterType<SofaBaseScene>                                  ("SofaBaseScene"                        , versionMajor, versionMinor, "SofaBaseScene");
-    qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
-    qmlRegisterUncreatableType<SofaBaseList>                        ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
-    qmlRegisterUncreatableType<SofaBaseObjectList>                  ("SofaBaseObjectList"                   , versionMajor, versionMinor, "SofaBaseObjectList", "SofaBaseObjectList is not instantiable");
-    qmlRegisterUncreatableType<Selectable>                          ("Selectable"                           , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
-    qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator"                , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
-    qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"              , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");
-    qmlRegisterUncreatableType<SelectableSofaParticle>              ("SelectableSofaParticle"               , versionMajor, versionMinor, "SelectableSofaParticle", "SelectableSofaParticle is not instantiable");
-    qmlRegisterUncreatableType<ProcessState>                        ("ProcessState"                         , versionMajor, versionMinor, "ProcessState", "ProcessState is not instantiable");
     qmlRegisterType<SofaSceneListProxy>                             ("SofaSceneListModel"                   , versionMajor, versionMinor, "SofaSceneListModel");
     qmlRegisterType<SofaSceneItemModel>                             ("SofaSceneItemModel"                   , versionMajor, versionMinor, "SofaSceneItemModel");
     qmlRegisterType<SofaSceneItemProxy>                             ("SofaSceneItemProxy"                   , versionMajor, versionMinor, "SofaSceneItemProxy");
@@ -316,12 +309,21 @@ void registerSofaTypesToQml(const char* /*uri*/)
     qmlRegisterType<AssetView>                                      ("AssetView"                            , versionMajor, versionMinor, "AssetView");
     qmlRegisterType<PythonConsole>                                  ("PythonConsole"                        , versionMajor, versionMinor, "PythonConsole");
     qmlRegisterType<SofaProject>                                    ("SofaProject"                          , versionMajor, versionMinor, "SofaProject");
-    qmlRegisterUncreatableType<Asset>                               ("Asset"                                , versionMajor, versionMinor, "Asset", QString("It is not possible to create an Asset"));
-    qmlRegisterType<PythonAsset>                                    ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset");
     qmlRegisterType<HighlightComponent>                             ("HighlightComponent"                   , versionMajor, versionMinor, "HighlightComponent");
+
+    qmlRegisterUncreatableType<SofaComponent> 	                    ("SofaComponent"                        , versionMajor, versionMinor, "SofaComponent", "SofaComponent is not instantiable");
+    qmlRegisterUncreatableType<SofaBaseList>                        ("SofaComponentList"                    , versionMajor, versionMinor, "SofaComponentList", "SofaComponentList is not instantiable");
+    qmlRegisterUncreatableType<SofaBaseObjectList>                  ("SofaBaseObjectList"                   , versionMajor, versionMinor, "SofaBaseObjectList", "SofaBaseObjectList is not instantiable");
+    qmlRegisterUncreatableType<Selectable>                          ("Selectable"                           , versionMajor, versionMinor, "Selectable", "Selectable is not instantiable");
+    qmlRegisterUncreatableType<SelectableManipulator>               ("SelectableManipulator"                , versionMajor, versionMinor, "SelectableManipulator", "SelectableManipulator is not instantiable");
+    qmlRegisterUncreatableType<SelectableSofaComponent>             ("SelectableSofaComponent"              , versionMajor, versionMinor, "SelectableSofaComponent", "SelectableSofaComponent is not instantiable");
+    qmlRegisterUncreatableType<SelectableSofaParticle>              ("SelectableSofaParticle"               , versionMajor, versionMinor, "SelectableSofaParticle", "SelectableSofaParticle is not instantiable");
+    qmlRegisterUncreatableType<ProcessState>                        ("ProcessState"                         , versionMajor, versionMinor, "ProcessState", "ProcessState is not instantiable");
+
+    qmlRegisterUncreatableType<Asset>                               ("Asset"                                , versionMajor, versionMinor, "Asset",         QString("It is not possible to create an Asset"));
+    qmlRegisterUncreatableType<PythonAsset>                         ("PythonAsset"                          , versionMajor, versionMinor, "PythonAsset",   QString("It is not possible to create a PythonAsset"));
     qmlRegisterUncreatableType<TemplateAsset>                       ("TemplateAsset"                        , versionMajor, versionMinor, "TemplateAsset", QString("It is not possible to create a TemplateAsset from QML"));
-//    qmlRegisterUncreatableType<MeshAsset>                           ("MeshAsset"                            , versionMajor, versionMinor, "MeshAsset", QString("It is not possible to create a MeshAsset"));
-    qmlRegisterUncreatableType<TextureAsset>                        ("TextureAsset"                         , versionMajor, versionMinor, "TextureAsset", QString("It is not possible to create a TextureAsset"));
+    qmlRegisterUncreatableType<TextureAsset>                        ("TextureAsset"                         , versionMajor, versionMinor, "TextureAsset",  QString("It is not possible to create a TextureAsset"));
 
     qmlRegisterUncreatableType<sofaqtquick::bindings::SofaLink> ("Sofa.Core.SofaLink",
                                                                  versionMajor, versionMinor,

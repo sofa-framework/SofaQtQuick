@@ -15,7 +15,7 @@ class SOFA_SOFAQTQUICKGUI_API BaseAssetCreator
 {
   public:
     virtual ~BaseAssetCreator();
-    virtual std::shared_ptr<Asset> createInstance(std::string path,
+    virtual QSharedPointer<Asset> createInstance(std::string path,
                                                   std::string extension) = 0;
 };
 
@@ -30,8 +30,8 @@ class SOFA_SOFAQTQUICKGUI_API AssetCreator : public BaseAssetCreator
   public:
     AssetCreator();
     virtual ~AssetCreator();
-    virtual std::shared_ptr<Asset> createInstance(std::string path,
-                                                  std::string extension);
+    virtual QSharedPointer<Asset> createInstance(std::string path,
+                                                 std::string extension);
 };
 
 /**
@@ -44,7 +44,7 @@ class SOFA_SOFAQTQUICKGUI_API AssetFactory
 {
   public:
     static QStringList getSupportedTypes();
-    static std::shared_ptr<Asset> createInstance(const QString& path,
+    static QSharedPointer<Asset> createInstance(const QString& path,
                                                  const QString& extension);
     static bool registerAsset(const std::string& extension,
                               BaseAssetCreator* creator);
