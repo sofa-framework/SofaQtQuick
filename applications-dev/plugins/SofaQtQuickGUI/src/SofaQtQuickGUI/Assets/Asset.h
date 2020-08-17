@@ -47,6 +47,7 @@ class Asset : public QObject
     void setLastModified(const QDateTime& t) { m_lastModified = t; }
 
     virtual bool isScene() { return false; }
+    virtual bool isPrefab() { return false; }
     Q_INVOKABLE virtual QString getTypeString() { return "Unknown file format"; }
     Q_INVOKABLE virtual QUrl getIconPath() { return QUrl("qrc:/icon/ICON_FILE_BLANK"); }
     Q_INVOKABLE virtual bool getIsSofaContent() { return false; }

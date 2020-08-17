@@ -184,6 +184,26 @@ QUrl PythonAsset::getAssetInspectorWidget() {
     return QUrl("qrc:/SofaWidgets/PythonAssetInspector.qml");
 }
 
+QString PythonAsset::getTypeString()
+{
+    if (isScene())
+        return "Python Scene";
+    else if (isPrefab())
+        return "Python Prefab";
+    else
+        return "Python script";
+}
+
+QUrl PythonAsset::getIconPath()
+{
+    if (isScene())
+        return QUrl("qrc:/icon/ICON_PYSCN.png");
+    else if (isPrefab())
+        return QUrl("qrc:/icon/ICON_PREFAB.png");
+    else
+        return QUrl("qrc:/icon/ICON_PYTHON.png");
+}
+
 QString PythonAsset::getTemporaryFileName(const QString& inFile) const
 {
     return QDir::tempPath() + "/" + QFileInfo(inFile).completeBaseName()+".py";
@@ -242,6 +262,16 @@ bool PythonAsset::isScene()
     getDetails();
     for (const auto& item : m_assetsContent){
         if (item["type"] == "SofaScene")
+            return true;
+    }
+    return false;
+}
+
+bool PythonAsset::isPrefab()
+{
+    getDetails();
+    for (const auto& item : m_assetsContent){
+        if (item["type"] == "SofaPrefab")
             return true;
     }
     return false;

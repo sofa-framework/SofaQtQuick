@@ -169,6 +169,11 @@ class GraphSerializer:
             fd.write("from " + m + " import *\n")
 
 
+    def get_rel_path(self, src, dest):
+        # relpath is calculated from contexts. if src is a component, get his context
+        return os.path.relpath(dest.getPathName(), src.getContext().getPathName() if hasattr(src, "getContext") else src.getPathName())
+
+
     def buildDataParams(self, fd, obj):
         """
         takes an object (node, component, prefab...) and write down
@@ -183,16 +188,16 @@ class GraphSerializer:
             if data.hasParent():
                 if self.is_prefab and data in self.external_deps:
                     fd.write(self.indent + "### THERE WAS A LINK. ")
-                    fd.write(data.getParent().getLinkPath() + "=>" + data.getLinkPath() + "\n")
+                    fd.write(data.getParent().getLinkPath() + " => " + data.getParent().getLinkPath() + "\n")
                     if data.getName() != "name":
                         relPath = os.path.relpath(data.getParent().getPathName(), data.getOwner().getContext().getPathName())
                         s += ", " + data.getName()+ "='@" + relPath +"'"
                 else:
-                    fd.write(self.indent + "### THERE WAS A LINK. ")
-                    fd.write(self.node.getPathName() + "." + self.getParameterName(data) + "=>" + data.getLinkPath() + "\n")
                     if data.getName() != "name":
-                        relPath = os.path.relpath(self.node.getPathName(), data.getOwner().getContext().getPathName())
-                        s += ", " + data.getName()+ "='@" + relPath +"'"
+                        fd.write(self.indent + "### THERE WAS A LINK. ")
+                        fd.write(obj.getPathName() + "." + data.getName() + " => " + data.getParent().getLinkPath() + "\n")
+                        relPath = self.get_rel_path(obj, data.getParent().getOwner()) + "." + data.getParent().getName()
+                        s += ", " + data.getName()+ "='@" + relPath + "'"
             else:
                 if data.getName() not in ["name","prefabname", "docstring"] and (data.isPersistent() or data.isRequired()):
                     if " " not in data.getName() and data.getName() != "Help":
