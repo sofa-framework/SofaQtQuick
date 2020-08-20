@@ -95,12 +95,12 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     QString asset_name = assetName;
     if (asset_name == "" && m_assetsContent.size() > 0)
         asset_name = m_assetsContent.first()["name"].toString();
-    /// An asset needs a context.
-    bool isContextFree { m_assetsContent[asset_name]["type"] == "SofaPrefab" };
+//    /// An asset needs a context.
+//    bool isContextFree { m_assetsContent[asset_name]["type"] == "SofaPrefab" };
 
-    /// Some python asset can be created in a root less manner. This is the case for
-    /// the SofaPrefab.
-    if( !isContextFree )
+//    /// Some python asset can be created in a root less manner. This is the case for
+//    /// the SofaPrefab.
+//    if( !isContextFree )
         args.append(sofapython3::PythonFactory::toPython(root.get()));
 
     /// call the function
@@ -116,10 +116,10 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     {
         auto resnode = dynamic_cast<sofa::simulation::graph::DAGNode*>(base->toBaseNode());
 
-        if(isContextFree)
-        {
-            parent->addChild(resnode);
-        }
+//        if(isContextFree)
+//        {
+//            parent->addChild(resnode);
+//        }
         resnode->init(sofa::core::ExecParams::defaultInstance());
         return new sofaqtquick::bindings::SofaNode(resnode, dynamic_cast<QObject*>(this));
     }

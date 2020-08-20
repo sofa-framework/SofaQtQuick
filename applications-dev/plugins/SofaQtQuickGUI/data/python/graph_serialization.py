@@ -66,7 +66,14 @@ class GraphSerializer:
 
 
     def write_prefab_parameters(self, fd):
-        fd.write(self.indent + "# external deps: " + ", ".join((dep.getPathName().replace(self.node.getPathName(), "") if isinstance(dep, Sofa.Core.Data) else dep.getName()) for dep in self.external_deps) + "\n")
+        fd.write("\n\n    \"\"\" Prefab parameters: \"\"\"\n")
+        fd.write("    def createParams(self, *args, **kwargs):\n")
+        fd.write(self.indent + "# external deps: ")
+        if len(self.external_deps) == 0:
+            fd.write("No external dependency\n")
+            fd.write(self.indent + "pass")
+        else:
+            fd.write(", ".join((dep.getPathName().replace(self.node.getPathName(), "") if isinstance(dep, Sofa.Core.Data) else dep.getName()) for dep in self.external_deps) + "\n")
         str = ''
         extParamsList = []
         for item in self.external_deps:
@@ -74,11 +81,9 @@ class GraphSerializer:
             if itemName not in extParamsList:
                 extParamsList.append(itemName)
                 if isinstance(item, Sofa.Core.Data):
-                    fd.write(self.indent + "self.addPrefabParameter(name='" + itemName + "', type='Link', help='')\n")
-                    fd.write(self.indent + "self." + itemName + ".setTargetPath(kwargs.get('" + itemName + "', ''))\n")
+                    fd.write(self.indent + "self.addPrefabParameter(name='" + itemName + "', type='Link', help='', default=kwargs.get('"+itemName+"', None))\n")
                 else:
-                    fd.write(self.indent + "self.addPrefabParameter(name='" + itemName + "', type='Link', help='" + item.getHelp()  + "')\n")
-                    fd.write(self.indent + "self." + itemName + ".setTargetPath(kwargs.get('" + itemName + "', ''))\n")
+                    fd.write(self.indent + "self.addPrefabParameter(name='" + itemName + "', type='Link', help='" + item.getHelp()  + "', default=kwargs.get('"+itemName+"', None))\n")
 
 
     def write_definition(self, fd):
@@ -202,7 +207,7 @@ class GraphSerializer:
                         fd.write(data.getParent().getLinkPath() + " => " + data.getParent().getLinkPath() + "\n")
                         relPath = os.path.relpath(data.getParent().getPathName(), data.getOwner().getContext().getPathName())
                         # s += ", " + data.getName()+ "='@" + relPath +"'"
-                        s += ", " + data.getName() + "=self." + self.getParameterName(data) + ".getTargetBase()." + data.getName() + ".getLinkPath()"
+                        s += ", " + data.getName() + "=self." + self.getParameterName(data) + "." + data.getName()
                 else:
                     if data.getName() != "name":
                         fd.write(self.indent + "### THERE WAS A LINK. ")
@@ -226,10 +231,9 @@ class GraphSerializer:
                                         # fallback (relative path, but not relative to scene file)
                                         s += ", " + data.getName() + "='" + v[1:-1] + "'"
                                 elif "DataLink" in str(data):
-                                    fd.write(self.indent + "# found DataLink " + data.getName() + "\n")
-                                    s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
+                                    s += ", " + data.getName() + "='" + v + "'"
                                 else:
-                                    s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in repr(data.value) else repr(data.value))
+                                    s += ", " + data.getName() + "=" + ( v[v.find('['):v.rfind(']')+1] if "array" in v else v)
         for link in links:
             if link in self.external_deps and self.is_prefab:
                 s += ", " + link.getName() + "=" + "self." + self.getParameterName(link) + ".value"
@@ -260,7 +264,7 @@ class GraphSerializer:
             attributes = self.buildDataParams(fd, item)
             parentPath = self.getAbsPythonCallPath(item.getContext() if hasattr(item, "getContext") else item.parents[0])
             if isinstance(item, Sofa.Prefab):
-                fd.write(self.indent + parentPath + ".addChild(" + str(item.prefabname.value) + "(" + parentPath + ", name='" + item.getName() + "'" + attributes + "))\n")
+                fd.write(self.indent + str(item.prefabname.value) + "(" + parentPath + ", name='" + item.getName() + "'" + attributes + ")\n")
             else:
                 fd.write(self.indent + parentPath + ".addObject('" + item.getClassName() + "', name='" + item.getName() + "'" + attributes + ")\n")
         return item
