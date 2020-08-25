@@ -13,8 +13,11 @@ ProfilerTreeViewModel::ProfilerTreeViewModel(QObject* parent)
 
 
 ProfilerTreeViewModel::~ProfilerTreeViewModel() {
-    delete m_steps.front();
-    m_steps.pop_front();
+    if (!m_steps.empty())
+    {
+        delete m_steps.front();
+        m_steps.pop_front();
+    }
 }
 
 void ProfilerTreeViewModel::activateTimer(bool activate, const QString& idString)

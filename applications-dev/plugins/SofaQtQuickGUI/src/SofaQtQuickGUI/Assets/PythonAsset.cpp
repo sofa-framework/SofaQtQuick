@@ -95,12 +95,12 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     QString asset_name = assetName;
     if (asset_name == "" && m_assetsContent.size() > 0)
         asset_name = m_assetsContent.first()["name"].toString();
-    /// An asset needs a context.
-    bool isContextFree { m_assetsContent[asset_name]["type"] == "SofaPrefab" };
+//    /// An asset needs a context.
+//    bool isContextFree { m_assetsContent[asset_name]["type"] == "SofaPrefab" };
 
-    /// Some python asset can be created in a root less manner. This is the case for
-    /// the SofaPrefab.
-    if( !isContextFree )
+//    /// Some python asset can be created in a root less manner. This is the case for
+//    /// the SofaPrefab.
+//    if( !isContextFree )
         args.append(sofapython3::PythonFactory::toPython(root.get()));
 
     /// call the function
@@ -116,10 +116,10 @@ sofaqtquick::bindings::SofaNode* PythonAsset::create(sofaqtquick::bindings::Sofa
     {
         auto resnode = dynamic_cast<sofa::simulation::graph::DAGNode*>(base->toBaseNode());
 
-        if(isContextFree)
-        {
-            parent->addChild(resnode);
-        }
+//        if(isContextFree)
+//        {
+//            parent->addChild(resnode);
+//        }
         resnode->init(sofa::core::ExecParams::defaultInstance());
         return new sofaqtquick::bindings::SofaNode(resnode, dynamic_cast<QObject*>(this));
     }
@@ -184,6 +184,26 @@ QUrl PythonAsset::getAssetInspectorWidget() {
     return QUrl("qrc:/SofaWidgets/PythonAssetInspector.qml");
 }
 
+QString PythonAsset::getTypeString()
+{
+    if (isScene())
+        return "Python Scene";
+    else if (isPrefab())
+        return "Python Prefab";
+    else
+        return "Python script";
+}
+
+QUrl PythonAsset::getIconPath()
+{
+    if (isScene())
+        return QUrl("qrc:/icon/ICON_PYSCN.png");
+    else if (isPrefab())
+        return QUrl("qrc:/icon/ICON_PREFAB.png");
+    else
+        return QUrl("qrc:/icon/ICON_PYTHON.png");
+}
+
 QString PythonAsset::getTemporaryFileName(const QString& inFile) const
 {
     return QDir::tempPath() + "/" + QFileInfo(inFile).completeBaseName()+".py";
@@ -242,6 +262,16 @@ bool PythonAsset::isScene()
     getDetails();
     for (const auto& item : m_assetsContent){
         if (item["type"] == "SofaScene")
+            return true;
+    }
+    return false;
+}
+
+bool PythonAsset::isPrefab()
+{
+    getDetails();
+    for (const auto& item : m_assetsContent){
+        if (item["type"] == "SofaPrefab")
             return true;
     }
     return false;

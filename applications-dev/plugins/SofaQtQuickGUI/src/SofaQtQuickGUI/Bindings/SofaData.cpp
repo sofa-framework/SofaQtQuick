@@ -145,7 +145,14 @@ QString SofaData::getPathName() const
 {
     const BaseData* data = rawData();
     const Base* owner = data->getOwner();
-
+    if (!owner)
+    {
+        // special case for DataAlias: they don't have an actual owner,
+        // but their ownerClass are DataLinks. getLinkPath returns a consistent path
+        // taking their lack of direct context into account
+        if (data->getOwnerClass() == "DataLink")
+            return QString::fromStdString(data->getLinkPath());
+    }
     QString prefix = "";
     if(owner->toBaseNode())
         prefix = QString::fromStdString(owner->toBaseNode()->getPathName());

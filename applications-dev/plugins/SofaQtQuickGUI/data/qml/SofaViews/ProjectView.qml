@@ -268,7 +268,7 @@ Item {
                                         source: {
                                             asset = SofaApplication.currentProject.getAsset(filePath)
                                             return fileIsDir ? "qrc:/icon/ICON_FILE_FOLDER.png" : (asset) ? asset.iconPath : "qrc:/icon/ICON_FILE_BLANK.png";
-                                        }
+					}
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 

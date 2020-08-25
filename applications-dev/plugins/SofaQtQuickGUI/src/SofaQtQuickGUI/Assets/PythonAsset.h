@@ -64,8 +64,8 @@ public:
     Q_PROPERTY(QVariantList scriptActions READ scriptActions NOTIFY scriptActionsChanged)
 
 protected:
-    Q_INVOKABLE virtual QString getTypeString() override { return "Python prefab"; }
-    Q_INVOKABLE virtual QUrl getIconPath() override { return isScene() ? QUrl("qrc:/icon/ICON_PYSCN.png") : QUrl("qrc:/icon/ICON_PYTHON.png"); }
+    Q_INVOKABLE virtual QString getTypeString() override;
+    Q_INVOKABLE virtual QUrl getIconPath() override;
     Q_INVOKABLE virtual bool getIsSofaContent() override ;
 
     static const LoaderMap _loaders;
@@ -79,6 +79,7 @@ private:
     void copyFileToCache(const QString& inPath, const QString& outFile) const;
 
     virtual bool isScene() override;
+    virtual bool isPrefab() override;
     QVariantList scriptContent();
     QVariantList scriptActions();
     Q_SIGNAL void scriptContentChanged(QVariantList);

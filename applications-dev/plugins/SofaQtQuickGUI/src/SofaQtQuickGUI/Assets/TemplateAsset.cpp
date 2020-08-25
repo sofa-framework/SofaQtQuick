@@ -8,7 +8,7 @@ using py3 = sofapython3::PythonEnvironment;
 #include <sofa/helper/Utils.h>
 #include <QFileInfo>
 #include <QDir>
-
+#include <QString>
 namespace sofaqtquick
 {
 
@@ -16,7 +16,8 @@ TemplateAsset::TemplateAsset(std::string path, std::string extension)
     : Asset(path, extension)
 {
     std::string modulepath = sofa::helper::Utils::getExecutableDirectory() + "/config/templates/assets/";
-    std::string modulename =  extension + "Asset.py";
+
+    std::string modulename = QString::fromStdString(extension).toLower().toStdString() + "Asset.py";
     m_templatePath = modulepath + modulename;
 
     QFileInfo finfo(QString::fromStdString(m_templatePath));

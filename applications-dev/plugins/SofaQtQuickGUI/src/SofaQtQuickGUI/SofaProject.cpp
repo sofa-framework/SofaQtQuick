@@ -512,10 +512,7 @@ Asset* SofaProject::getAsset(const QString& filePath)
 {
     auto val = m_assets.value(filePath);
     if (val != nullptr)
-    {
-        QQmlEngine::setObjectOwnership(val.get(), QQmlEngine::ObjectOwnership::CppOwnership);
         return val.get();
-    }
     return nullptr;
 }
 

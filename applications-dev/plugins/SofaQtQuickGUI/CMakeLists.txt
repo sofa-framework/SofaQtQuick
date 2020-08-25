@@ -247,6 +247,7 @@ set(EXTRA_FILES
 set(PYTHON_FILES
     data/python/PythonConsole.py
     data/python/SofaQtQuick.py
+    data/python/graph_serialization.py
     )
 sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "data/python")
 

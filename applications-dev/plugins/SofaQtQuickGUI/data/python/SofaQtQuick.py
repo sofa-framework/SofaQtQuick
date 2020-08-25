@@ -130,7 +130,7 @@ def getPrefabMetaData(func, node):
     inspect = importlib.import_module("inspect")
     f = func.__init__ if inspect.isclass(func) else func
     node.addData(name="modulename", value=inspect.getmodulename(f.__code__.co_filename), type="string", help="module containing the prefab", group="Infos")
-    node.addData(name="prefabname", value=f.__code__.co_name, type="string", help="prefab's function name", group="Infos")
+    node.addData(name="prefabname", value=f.__code__.co_name, type="string", help="prefab's name", group="Infos")
     node.addData(name="modulepath", value=f.__code__.co_filename, type="string", help="module path for this prefab", group="Infos")
     node.addData(name="lineno", value=f.__code__.co_firstlineno, type="int", help="first line number of the prefab in the module", group="Infos")
     node.addData(name="sourcecode", value=inspect.getsource(func), type="string", help="The prefab's source code", group="Infos")
