@@ -125,6 +125,11 @@ Item //
         return SofaBaseApplicationSingleton.createAssetTemplate(file);
     }
 
+    function createFolderIn(parent)
+    {
+        return SofaBaseApplicationSingleton.createFolderIn(parent);
+    }
+
     /// Returns the absolute position of the mouse in a mouseArea
     /// Takes a MouseArea as argument
     function getAbsolutePosition(node) {
