@@ -195,7 +195,7 @@ private:
     QString					myPythonDirectory;
     QString                 myDataDirectory;
 
-    sofaqtquick::bindings::SofaBase* m_selectedComponent;
+    sofa::core::objectmodel::Base* m_selectedComponent;
 
     QTimer m_viewUpdater;
     std::map<QmlDDGNode*, int> m_pendingUpdates;

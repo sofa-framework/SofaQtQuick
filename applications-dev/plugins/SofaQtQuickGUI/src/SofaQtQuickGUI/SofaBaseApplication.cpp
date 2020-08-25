@@ -98,7 +98,7 @@ SofaBaseApplication* SofaBaseApplication::OurInstance = nullptr;
 SofaBaseApplication::SofaBaseApplication(QObject* parent) : QObject(parent),
     myPythonDirectory(),
     myDataDirectory(),
-    m_selectedComponent(new SofaBase(nullptr))
+    m_selectedComponent(nullptr)
 {
     OurInstance = this;
 
@@ -1217,9 +1217,9 @@ class UseOpenGLDebugLoggerRunnable : public QRunnable
 
 sofaqtquick::bindings::SofaBase* SofaBaseApplication::getSelectedComponent() const
 {
-    if(m_selectedComponent->rawBase() == nullptr)
+    if(m_selectedComponent == nullptr)
         return nullptr;
-    return m_selectedComponent;
+    return new SofaBase(m_selectedComponent);
 }
 
 
@@ -1227,11 +1227,11 @@ void SofaBaseApplication::setSelectedComponent(sofaqtquick::bindings::SofaBase* 
 {
     if (selectedComponent == nullptr
         || selectedComponent->rawBase() == nullptr
-        || selectedComponent->rawBase() == m_selectedComponent->rawBase())
+        || selectedComponent->rawBase() == m_selectedComponent)
         return;
-    m_selectedComponent = selectedComponent;
-    emit selectedComponentChanged(m_selectedComponent);
-    emit signalComponent(m_selectedComponent->getPathName());
+    m_selectedComponent = selectedComponent->rawBase();
+    emit selectedComponentChanged(selectedComponent);
+    emit signalComponent(selectedComponent->getPathName());
 }
 
 void SofaBaseApplication::SetSelectedComponent(sofaqtquick::bindings::SofaBase* selectedComponent)
