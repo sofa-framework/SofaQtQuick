@@ -29,8 +29,8 @@ Menu {
 
     property bool nodeActivated: true
     property SofaData activated: null
-    property string sourceLocation : null
-    property string creationLocation : null
+    property var sourceLocation : null
+    property var creationLocation : null
 
     /// Window that contains the object message. The windows is only created when the menu item
     /// is clicked

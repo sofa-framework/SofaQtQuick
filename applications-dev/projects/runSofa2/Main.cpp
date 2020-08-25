@@ -87,8 +87,8 @@ int main(int argc, char **argv)
     /// IMPORTANT NOTE: this function MUST be call before QApplication creation in order to be able to load a SofaScene containing calls to OpenGL functions (e.g. containing OglModel)
     sofaqtquick::SofaBaseApplication::Initialization();
 
-    QApplication app(argc, argv);
     QtWebView::initialize();
+    QApplication app(argc, argv);
     QQmlApplicationEngine applicationEngine;
     QQuickStyle::setStyle("Imagine");
     /// application specific settings

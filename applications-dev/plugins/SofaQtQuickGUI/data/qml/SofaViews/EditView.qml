@@ -81,7 +81,7 @@ EditView
 
     Connections {
         target: SofaApplication
-        onFocusedSofaViewerChanged: {
+        function onFocusedSofaViewerChanged(focusedSofaViewer) {
             if((root === SofaApplication.focusedSofaViewer || !SofaApplication.focusedSofaViewer) && !root.activeFocus)
                 root.forceActiveFocus();
             else
@@ -130,7 +130,7 @@ EditView
 
     Connections {
         target: root.sofaScene
-        onStatusChanged: {
+        function onStatusChanged(status) {
             if(root.sofaScene && SofaScene.Ready === root.sofaScene.status)
                 root.recreateCamera();
         }
@@ -191,7 +191,7 @@ EditView
     //        property int videoFrameNumber: 0
     //        property var sceneConnections: Connections {
     //            target: root.sofaScene && videoRecordingPrivate.saveVideo ? root.sofaScene : null
-    //            onStepEnd: videoRecordingPrivate.saveVideoFrame();
+    //            function onStepEnd(step) { videoRecordingPrivate.saveVideoFrame() }
     //        }
 
     //        function saveVideoFrame() {
@@ -476,7 +476,7 @@ EditView
 
                                 Connections {
                                     target: root
-                                    onAntialiasingSamplesChanged: antialiasingSlider.downloadValue();
+                                    function onAntialiasingSamplesChanged(antialiasingSamples) { antialiasingSlider.downloadValue() }
                                 }
 
                                 ToolTip {
@@ -717,8 +717,8 @@ EditView
 
                         Connections {
                             target: root
-                            onWidthChanged: updateResolutionTextFields();
-                            onHeightChanged: updateResolutionTextFields();
+                            function onWidthChanged(width) { updateResolutionTextFields() }
+                            function onHeightChanged(height) { updateResolutionTextFields() }
 
                             function updateResolutionTextFields() {
                                 captureWidthTextField.text = root.width.toFixed(0);
@@ -766,12 +766,12 @@ EditView
 
                                     Connections {
                                         target: root
-                                        onCameraChanged: orthoButton.update();
+                                        function onCameraChanged(camera) { orthoButton.update() }
                                     }
 
                                     Connections {
                                         target: root.camera
-                                        onOrthographicChanged: orthoButton.update();
+                                        function onOrthographicChanged(ortho) { orthoButton.update() }
                                     }
 
                                     function update() {
@@ -804,12 +804,12 @@ EditView
 
                                     Connections {
                                         target: root
-                                        onCameraChanged: perspectiveButton.update();
+                                        function onCameraChanged(camera) { perspectiveButton.update() }
                                     }
 
                                     Connections {
                                         target: root.camera
-                                        onOrthographicChanged: perspectiveButton.update();
+                                        function onOrthographicChanged(ortho) { perspectiveButton.update() }
                                     }
 
                                     function update() {
@@ -870,7 +870,7 @@ EditView
 
                                             Connections {
                                                 target: root.camera
-                                                onZNearChanged: zNearTextField.download();
+                                                function onZNearChanged(znear) { zNearTextField.download() }
                                             }
 
                                             function download() {
@@ -924,7 +924,7 @@ EditView
 
                                             Connections {
                                                 target: root.camera
-                                                onZFarChanged: zFarTextField.download();
+                                                function onZFarChanged(zfar) { zFarTextField.download() }
                                             }
 
                                             function download() {

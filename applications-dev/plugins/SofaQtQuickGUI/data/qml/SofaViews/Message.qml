@@ -124,7 +124,7 @@ Column {
 
                 Connections {
                     target : SofaApplication.sofaMessageList
-                    onRowsRemoved : {
+                    function onRowsRemoved() {
                         if( p1scores.currentIndex <= 0 ){
                             p1scores.currentIndex = -1
                         }

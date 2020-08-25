@@ -53,8 +53,8 @@ RowLayout {
         Connections
         {
             target: root.sofaData
-            onValueChanged: {
-                text=root.sofaData.value.toString()
+            function onValueChanged(value) {
+                text=value.toString()
             }
         }
 

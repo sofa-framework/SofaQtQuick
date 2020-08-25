@@ -246,10 +246,9 @@ SofaBaseScene
 
         Connections {
             target: root
-            onReadyChanged: {
+            function onReadyChanged(ready) {
                 if(!ready)
                     interfaceLoader.source = "";
-
                 SofaApplication.trimComponentCache();
             }
         }

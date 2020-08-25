@@ -22,8 +22,8 @@ ColumnLayout {
     Connections
     {
         target: root.sofaData
-        onValueChanged: {
-            root.value=root.sofaData.value
+        function onValueChanged(value) {
+            root.value=value
         }
     }
 

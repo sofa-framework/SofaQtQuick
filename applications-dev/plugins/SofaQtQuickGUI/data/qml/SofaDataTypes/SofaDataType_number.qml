@@ -42,21 +42,12 @@ SpinBox
     Connections
     {
         target: sofaData
-        onValueChanged: {
-            value=sofaData.value
+        function onValueChanged(value) {
+            value=value
         }
     }
 
     onValueChanged: {
         sofaData.value = value
     }
-//    Connections
-//    {
-//        target: spinbox
-//        onValueEditted: function(newvalue)
-//        {
-//            console.log("COUCOUC2 " + newvalue)
-//            sofaData.value = newvalue
-//        }
-//    }
 }

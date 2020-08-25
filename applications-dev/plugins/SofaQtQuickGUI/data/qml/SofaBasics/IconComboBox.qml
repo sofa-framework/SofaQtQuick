@@ -92,7 +92,7 @@ ComboBox {
         contextType: "2d"
         Connections {
             target: control
-            onPressedChanged: canvas.requestPaint()
+            function onPressedChanged(pressed) { canvas.requestPaint() }
         }
         opacity: 0.4
 

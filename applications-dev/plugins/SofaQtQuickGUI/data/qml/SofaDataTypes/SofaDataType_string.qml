@@ -40,7 +40,7 @@ TextField {
     Connections
     {
         target: sofaData
-        onValueChanged: {
+        function onValueChanged(value) {
             text=sofaData.value.toString()
         }
     }
