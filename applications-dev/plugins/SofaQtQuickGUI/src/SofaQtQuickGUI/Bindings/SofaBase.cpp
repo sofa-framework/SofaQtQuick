@@ -65,6 +65,12 @@ SofaBase::SofaBase(const SofaBase& o)
     m_self = o.rawBase();
 }
 
+SofaBase& SofaBase::operator=(const SofaBase& o)
+{
+    m_self = o.rawBase();
+    return *this;
+}
+
 QString SofaBase::getName() const
 {
     return QString::fromStdString(m_self->getName());

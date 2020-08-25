@@ -18,6 +18,7 @@ along with sofaqtquick. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <SofaQtQuickGUI/SelectableSofaComponent.h>
+#include <QQmlEngine>
 
 namespace sofaqtquick
 {
@@ -25,7 +26,7 @@ namespace sofaqtquick
 SelectableSofaComponent::SelectableSofaComponent(sofaqtquick::bindings::SofaBaseObject* sofaComponent) : Selectable(),
     mySofaComponent(sofaComponent)
 {
-
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 SelectableSofaComponent::~SelectableSofaComponent()

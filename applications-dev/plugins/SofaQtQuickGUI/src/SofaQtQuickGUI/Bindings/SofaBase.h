@@ -49,6 +49,7 @@ class SOFA_SOFAQTQUICKGUI_API SofaBase : public QObject
 public:
     SofaBase(Base::SPtr self);
     SofaBase(const SofaBase& o);
+    SofaBase& operator=(const SofaBase& o);
     ~SofaBase() {}
 
     Q_INVOKABLE QString getName() const;
