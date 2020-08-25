@@ -48,7 +48,7 @@ ToolBar {
 
     Connections {
         target: root.sofaScene
-        onStatusMessageChanged: statusMessage = root.sofaScene.statusMessage;
+        function onStatusMessageChanged(sm) { statusMessage = root.sofaScene.statusMessage }
     }
 
     RowLayout {

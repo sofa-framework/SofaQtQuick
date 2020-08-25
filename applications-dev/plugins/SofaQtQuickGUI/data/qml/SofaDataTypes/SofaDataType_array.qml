@@ -43,7 +43,7 @@ ColumnLayout {
     Connections
     {
         target: sofaData
-        onValueChanged: {
+        function onValueChanged(value) {
             numEntries=updateText()
         }
     }

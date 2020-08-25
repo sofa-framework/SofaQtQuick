@@ -33,7 +33,7 @@ RowLayout {
 
     Connections {
         target: sofaData
-        onValueChanged: {
+        function onValueChanged(value) {
             textfield.text = getTextFieldValue(sofaData.getFullPath())
         }
     }

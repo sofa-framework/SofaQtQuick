@@ -146,7 +146,6 @@ UserInteractor {
         addMouseClickedMapping(Qt.LeftButton, function(mouse, sofaViewer) {
             var selectable = sofaViewer.pickObject(Qt.point(mouse.x, mouse.y));
             if(selectable && selectable.sofaComponent) {
-                console.error("SelectedCompoennt: " + selectable.sofaComponent)
                 SofaApplication.selectedComponent = selectable.sofaComponent;
             }
 

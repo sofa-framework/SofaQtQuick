@@ -59,7 +59,7 @@ RowLayout {
     Connections
     {
         target: sofaData
-        onValueChanged: {
+        function onValueChanged(value) {
             root.text = getValue()
         }
     }

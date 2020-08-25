@@ -153,7 +153,6 @@ SofaBaseScene::SofaBaseScene(QObject *parent) : QObject(parent),
     myStepTimer(new QTimer(this)),
     mySelectedComponent(nullptr)
 {
-    std::cout << "SCENE CREATED ..... " << std::endl;
     m_scenechecker=new SceneCheckerVisitor(ExecParams::defaultInstance());
     m_scenechecker->addCheck(SceneCheckAPIChange::newSPtr());
     m_scenechecker->addCheck(SceneCheckDuplicatedName::newSPtr());
@@ -170,7 +169,7 @@ SofaBaseScene::SofaBaseScene(QObject *parent) : QObject(parent),
     QVector<QString> plugins;
     plugins.append("SofaPython3");
     plugins.append("QmlUI");
-    plugins.append("SofaAllCommonComponents");
+    plugins.append("SofaComponentAll");
     for(const QString& plugin : plugins)
     {
         std::string s = plugin.toStdString();
@@ -510,7 +509,6 @@ void SofaBaseScene::open()
     // load the requested scene synchronously / asynchronously
     if(currentAsynchronous)
     {
-        std::cout << " ...ASYNC LOADING... " << std::endl;
         LoaderThread* loaderThread = new LoaderThread(this);
 
         connect(loaderThread, &QThread::finished, this, [this, loaderThread]() {
@@ -528,8 +526,6 @@ void SofaBaseScene::open()
     }
     else
     {
-        std::cout << " ...SYNCHRONOUS LOADING... " << std::endl;
-
         if(!LoaderProcess(this))
             setStatus(Status::Error);
         else

@@ -1255,6 +1255,7 @@ sofaqtquick::bindings::SofaBase* SofaBaseApplication::GetSelectedComponent()
 bool SofaBaseApplication::DefaultMain(QApplication& app, QQmlApplicationEngine &applicationEngine, const QString& mainScript)
 {
     sofa::helper::system::PluginManager::getInstance().loadPluginByName("SofaPython3");
+    sofa::helper::system::PluginManager::getInstance().loadPluginByName("SofaComponentAll");
 
     OurInstance = new SofaBaseApplication();
 

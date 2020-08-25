@@ -57,8 +57,8 @@ Rectangle {
         //    /// is trying to notify that the user is interested to get visual feedback on where componets are.
         Connections {
             target: SofaApplication
-            onSignalComponent: function(objectpath){
-                var c = SofaApplication.sofaScene.get(objectpath)
+            function onSignalComponent(path) {
+                var c = SofaApplication.sofaScene.get(path)
                 if(c)
                 {
                     var baseIndex = basemodel.getIndexFromBase(c)
@@ -406,7 +406,7 @@ Rectangle {
 
             Connections {
                 target: treeView
-                onCurrentIndexChanged: {
+                function onCurrentIndexChanged(currentIndex) {
                     var srcIndex = sceneModel.mapToSource(treeView.currentIndex)
                     var treeViewComponent = basemodel.getBaseFromIndex(srcIndex)
                     srcIndex = sceneModel.mapToSource(styleData.index)

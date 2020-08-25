@@ -32,8 +32,8 @@ Menu {
     property var currentModelIndex;    ///< The index in the model.
     property var currentObject: model.getBaseFromIndex(currentModelIndex) ;
     property SofaData name: null
-    property string sourceLocation : null
-    property string creationLocation : null
+    property var sourceLocation : null
+    property var creationLocation : null
 
     MenuItem {
         enabled: true
